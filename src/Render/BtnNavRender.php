@@ -2,23 +2,17 @@
 
 namespace App\Render;
 
-use App\Cnst\MenuCnst;
 use App\Render\LinkRender;
 use App\Render\TagRender;
 use App\Service\ConfigService;
-use App\Service\PageParamsService;
 
 class BtnNavRender
 {
 	const ORDER_AND_GROUP = [
-		'admin'				=> true,
-		'columns_show'		=> false,
-		'view'				=> true,
 		'nav'				=> true,
 	];
 
 	protected array $out = [];
-	protected array $local_admin = [];
 
 	public function __construct(
 		protected LinkRender $link_render,
@@ -31,22 +25,6 @@ class BtnNavRender
 	public function get():string
 	{
 		$out = [];
-
-		if ($this->local_admin)
-		{
-			$local_admin = '<div class="btn-group pull-right" role="group">';
-			$local_admin .= '<button type="button" class="btn btn-info btn-lg dropdown-toggle" ';
-			$local_admin .= 'data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">';
-			$local_admin .= '<i class="fa fa-cog" title="Admin functies"></i>&nbsp;';
-			$local_admin .= '<span class="caret"></span>';
-			$local_admin .= '</button>';
-			$local_admin .= '<ul class="dropdown-menu dropleft">';
-			$local_admin .= implode('', $this->local_admin);
-			$local_admin .= '</ul>';
-			$local_admin .= '</div>';
-
-			$this->out['admin'][] = $local_admin;
-		}
 
 		foreach (self::ORDER_AND_GROUP as $key => $is_group)
 		{
@@ -162,86 +140,5 @@ class BtnNavRender
 		$this->out['nav'][] = $this->btn_fa(
 			$route, $params_context, $params_list,
 			$title, $fa);
-	}
-
-	public function local_admin(
-		string $menu,
-		PageParamsService $pp
-	):void
-	{
-		$main_menu = MenuCnst::LOCAL_ADMIN_MAIN[$menu] ?? $menu;
-
-		if (!isset(MenuCnst::LOCAL_ADMIN[$main_menu]))
-		{
-			return;
-		}
-
-		foreach(MenuCnst::LOCAL_ADMIN[$main_menu] as $menu_key => $ary)
-		{
-			if (isset($ary['config_en']))
-			{
-				if ($ary['config_en'] === 'intersystem')
-				{
-					if (!$this->config_service->get_intersystem_en($pp->schema()))
-					{
-						continue;
-					}
-				}
-
-				if (!$this->config_service->get_bool($ary['config_en'], $pp->schema()))
-				{
-					continue;
-				}
-			}
-
-			if (isset($ary['divider']))
-			{
-				$this->local_admin[] = '<li class="divider"></li>';
-				continue;
-			}
-
-			$item = '<li';
-
-			if ($menu === $menu_key)
-			{
-				$item .= ' class="active"';
-			}
-
-			$item .= '>';
-
-			$item .= $this->link_render->link_fa(
-				$ary['route'], $pp->ary(), $ary['params'] ?? [],
-				$ary['label'], [], $ary['fa']);
-
-			$item .= '</li>';
-
-			$this->local_admin[] = $item;
-		}
-	}
-
-	public function columns_show():void
-	{
-		$this->out['columns_show'] = $this->tag_render->get('button', [
-				'class'			=> 'btn btn-default btn-lg',
-				'title'			=> 'Weergave kolommen',
-				'data-toggle'	=> 'collapse',
-				'data-target'	=> '#columns_show',
-			],
-			$this->tag_render->fa('columns')
-		);
-	}
-
-	public function view(
-		string $route,
-		array $params_context,
-		array $params,
-		string $title,
-		string $fa,
-		bool $active
-	):void
-	{
-		$this->out['view'][] = $this->btn_fa_active(
-			$route, $params_context, $params,
-			$title, $fa, $active);
 	}
 }

@@ -1,3 +1,7 @@
+{%- set route = app.request.attributes.get('_route') -%}
+{%- set route_params = app.request.attributes.get('_route_params') -%}
+{%- set query_params = app.request.query.all() -%}
+
 {%- block assets_add -%}
 	{{- assets_add([
 		'jquery', 'bootstrap', 'fontawesome',
@@ -7,9 +11,11 @@
 	]) -}}
 
 	{{- assets_add_print_css(['print.css']) -}}
+
 	{%- if csv_en is defined -%}
 		{{- assets_add(['csv.js']) -}}
 	{%- endif -%}
+
 	{%- if pp_ary().edit.en is defined and s_role('admin') and is_s_system_self() -%}
 		{{- assets_add([
 			'codemirror',

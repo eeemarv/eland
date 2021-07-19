@@ -1,0 +1,10 @@
+{%- extends 'news/base/news_base.html.twig' -%}
+
+{%- set news_view_btns = {
+    'news_list': {'fa': 'align-justify', 'title': 'view.list'},
+    'news_extended': {'fa': 'th-list', 'title': 'view.extended'}
+} -%}
+
+{%- block btn_view -%}
+    {%- include 'include/nav_btn_group.html.twig' with {'btns': news_view_btns} -%}
+{%- endblock btn_view -%}

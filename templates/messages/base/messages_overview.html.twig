@@ -1,5 +1,14 @@
 {%- extends 'messages/base/messages_base.html.twig' -%}
 
+{%- set messages_view_btns = {
+    ('messages_list'~ (is_self ? '_self' : '')): {'fa': 'align-justify', 'title': 'view.list'},
+    ('messages_extended' ~ (is_self ? '_self' : '')): {'fa': 'th-list', 'title': 'view.extended'}
+} -%}
+
+{%- block btn_view -%}
+    {%- include 'include/nav_btn_group.html.twig' with {'btns': messages_view_btns} -%}
+{%- endblock btn_view -%}
+
 {%- block heading_title -%}
     {%- if filter_uid -%}
         {%- if is_self -%}

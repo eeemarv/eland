@@ -254,6 +254,12 @@ unique_filter:
   existing_items: >-
     Reeds bestaand:
 
+view:
+  list: lijst
+  tiles: Tegels met foto's
+  map: Kaart
+  extended: Lijst met omschrijvingen
+
 calendar:
   title: >-
     Kalender

@@ -6,7 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Render\AccountRender;
-use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Render\PaginationRender;
@@ -60,7 +59,6 @@ class MessagesExtendedController extends AbstractController
         bool $is_self,
         AccountRender $account_render,
         BtnTopRender $btn_top_render,
-        BtnNavRender $btn_nav_render,
         ConfigService $config_service,
         ItemAccessService $item_access_service,
         SelectRender $select_render,
@@ -107,14 +105,6 @@ class MessagesExtendedController extends AbstractController
         $filtered = $fetch_and_filter['filtered'];
         $params = $fetch_and_filter['params'];
         $out = $fetch_and_filter['out'];
-
-        MessagesListController::set_view_btn_nav(
-            $btn_nav_render,
-            $pp,
-            $params,
-            'extended',
-            $is_self
-        );
 
         if (!count($messages))
         {

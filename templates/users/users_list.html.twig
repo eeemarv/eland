@@ -1,4 +1,4 @@
-{%- extends 'users/base/users_base.html.twig' -%}
+{%- extends 'users/base/users_overview.html.twig' -%}
 
 {%- set csv_en = true -%}
 
@@ -18,6 +18,10 @@
         ]) -}}
     {%- endif -%}
 {%- endblock assets_add -%}
+
+{%- block btn_show_columns -%}
+    {%- include 'include/btn_show_columns.html.twig' -%}
+{%- endblock btn_show_columns -%}
 
 {%- block css -%}
     {{- parent() -}}

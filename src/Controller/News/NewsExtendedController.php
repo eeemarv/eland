@@ -3,7 +3,6 @@
 namespace App\Controller\News;
 
 use App\Render\AccountRender;
-use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
@@ -37,7 +36,6 @@ class NewsExtendedController extends AbstractController
         Db $db,
         ConfigService $config_service,
         ItemAccessService $item_access_service,
-        BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
         AccountRender $account_render,
         DateFormatService $date_format_service,
@@ -59,9 +57,7 @@ class NewsExtendedController extends AbstractController
         );
 
         NewsListController::set_btns(
-            false,
             $btn_top_render,
-            $btn_nav_render,
             $pp
         );
 

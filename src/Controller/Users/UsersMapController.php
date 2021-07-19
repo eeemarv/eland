@@ -3,7 +3,6 @@
 namespace App\Controller\Users;
 
 use App\Render\AccountRender;
-use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Service\CacheService;
@@ -40,7 +39,6 @@ class UsersMapController extends AbstractController
         string $status,
         Db $db,
         AccountRender $account_render,
-        BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
         CacheService $cache_service,
         ItemAccessService $item_access_service,
@@ -198,8 +196,6 @@ class UsersMapController extends AbstractController
             $btn_top_render->add('users_add', $pp->ary(),
                 [], 'Gebruiker toevoegen');
         }
-
-        UsersListController::btn_nav($btn_nav_render, $pp->ary(), $params, 'users_map');
 
         $data_map = json_encode([
             'users'     => $data_users,

@@ -2,7 +2,6 @@
 
 namespace App\Controller\Calendar;
 
-use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
@@ -22,7 +21,6 @@ class CalendarListController extends AbstractController
         ConfigService $config_service,
         ItemAccessService $item_access_service,
         BtnTopRender $btn_top_render,
-        BtnNavRender $btn_nav_render,
         DateFormatService $date_format_service,
         LinkRender $link_render,
         PageParamsService $pp,
@@ -42,9 +40,7 @@ class CalendarListController extends AbstractController
         );
 
         self::set_btns(
-            true,
             $btn_top_render,
-            $btn_nav_render,
             $pp
         );
 
@@ -152,9 +148,7 @@ class CalendarListController extends AbstractController
     }
 
     public static function set_btns(
-        bool $is_list,
         BtnTopRender $btn_top_render,
-        BtnNavRender $btn_nav_render,
         PageParamsService $pp
     ):void
     {
@@ -163,12 +157,6 @@ class CalendarListController extends AbstractController
             $btn_top_render->add('news_add', $pp->ary(),
                 [], 'Nieuws toevoegen');
         }
-
-        $btn_nav_render->view('news_list', $pp->ary(),
-            [], 'Lijst', 'align-justify', $is_list);
-
-        $btn_nav_render->view('news_extended', $pp->ary(),
-            [], 'Lijst met omschrijvingen', 'th-list', !$is_list);
     }
 
     public static function no_news(

@@ -12,12 +12,10 @@ use App\Cnst\BulkCnst;
 use App\HtmlProcess\HtmlPurifier;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
-use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\SelectRender;
 use App\Repository\AccountRepository;
 use App\Service\AlertService;
-use App\Service\AssetsService;
 use App\Service\CacheService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
@@ -67,8 +65,6 @@ class UsersListController extends AbstractController
         SessionInterface $session,
         AccountRender $account_render,
         AlertService $alert_service,
-        AssetsService $assets_service,
-        BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
         CacheService $cache_service,
         ConfigService $config_service,
@@ -1160,14 +1156,10 @@ class UsersListController extends AbstractController
             $btn_top_render->local('#bulk_actions', 'Bulk acties', 'envelope-o');
         }
 
-        $btn_nav_render->columns_show();
-
-        self::btn_nav($btn_nav_render, $pp->ary(), $params, 'users_list');
-
         $f_col = '';
 
         $f_col .= '<div class="panel panel-info collapse" ';
-        $f_col .= 'id="columns_show">';
+        $f_col .= 'id="show_columns">';
         $f_col .= '<div class="panel-heading">';
         $f_col .= '<h2>Weergave kolommen</h2>';
 
@@ -2014,28 +2006,6 @@ class UsersListController extends AbstractController
             'content'   => $out,
             'schema'    => $pp->schema(),
         ]);
-    }
-
-    static public function btn_nav(
-        BtnNavRender $btn_nav_render,
-        array $pp_ary,
-        array $params,
-        string $matched_route
-    ):void
-    {
-        $btn_nav_render->view('users_list', $pp_ary,
-            $params, 'Lijst', 'align-justify',
-            $matched_route === 'users_list');
-
-        $btn_nav_render->view('users_tiles', $pp_ary,
-            $params, 'Tegels met foto\'s', 'th',
-            $matched_route === 'users_tiles');
-
-        unset($params['status']);
-
-        $btn_nav_render->view('users_map', $pp_ary,
-            $params, 'Kaart', 'map-marker',
-            $matched_route === 'users_map');
     }
 
     static public function get_status_def_ary(

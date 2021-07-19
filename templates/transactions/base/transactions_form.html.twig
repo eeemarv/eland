@@ -17,7 +17,7 @@
     {%- endblock -%}
 
     {%- block cancel_btn -%}
-        <a href="{{- path(app.request.attributes.get('_route'), pp_ary()) -}}" class="btn btn-lg btn-default">
+        <a href="{{- path(route, pp_ary()) -}}" class="btn btn-lg btn-default">
             {{- 'btn.cancel'|trans -}}
         </a>
         &nbsp;

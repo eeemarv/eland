@@ -1,8 +1,5 @@
 {%- if pp_ary().edit.en is defined and s_role('admin') and is_s_system_self() -%}
 	{%- set cms_token = constant('App\\Cnst\\PagesCnst::CMS_TOKEN') -%}
-	{%- set route = app.request.attributes.get('_route') -%}
-	{%- set route_params = app.request.attributes.get('_route_params') -%}
-	{%- set query_params = app.request.query.all() -%}
 
 	{%- set cms_linked = {
 		'password_reset': {

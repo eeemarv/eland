@@ -6,7 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Cnst\StatusCnst;
-use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
@@ -40,7 +39,6 @@ class UsersTilesController extends AbstractController
         Request $request,
         string $status,
         Db $db,
-        BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
         LinkRender $link_render,
         ItemAccessService $item_access_service,
@@ -95,8 +93,6 @@ class UsersTilesController extends AbstractController
             $btn_top_render->add('users_add', $pp->ary(),
                 [], 'Gebruiker toevoegen');
         }
-
-        UsersListController::btn_nav($btn_nav_render, $pp->ary(), $params, 'users_tiles');
 
         $out = UsersListController::get_filter_and_tab_selector(
             $params,

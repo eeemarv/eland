@@ -11,7 +11,6 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use App\Cnst\BulkCnst;
 use App\Cnst\MessageTypeCnst;
 use App\Render\AccountRender;
-use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Render\PaginationRender;
@@ -119,7 +118,6 @@ class MessagesListController extends AbstractController
         FormTokenService $form_token_service,
         AccountRender $account_render,
         AlertService $alert_service,
-        BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
         DateFormatService $date_format_service,
         IntersystemsService $intersystems_service,
@@ -416,14 +414,6 @@ class MessagesListController extends AbstractController
         $cat_params = $fetch_and_filter['cat_params'];
         $is_owner = $fetch_and_filter['is_owner'];
         $out = $fetch_and_filter['out'];
-
-        self::set_view_btn_nav(
-            $btn_nav_render,
-            $pp,
-            $params,
-            'list',
-            $is_self
-        );
 
         if ($pp->is_admin())
         {
@@ -891,23 +881,6 @@ class MessagesListController extends AbstractController
         $menu_service->set('messages');
 
         return $out;
-    }
-
-    public static function set_view_btn_nav(
-        BtnNavRender $btn_nav_render,
-        PageParamsService $pp,
-        array $params,
-        string $view,
-        bool $is_self
-    )
-    {
-        $self_suffix = $is_self ? '_self' : '';
-
-        $btn_nav_render->view('messages_list' . $self_suffix, $pp->ary(),
-            $params, 'Lijst', 'align-justify', $view === 'list');
-
-        $btn_nav_render->view('messages_extended' . $self_suffix, $pp->ary(),
-            $params, 'Lijst met omschrijvingen', 'th-list', $view === 'extended');
     }
 
     public static function fetch_and_filter(

@@ -3,7 +3,6 @@
 namespace App\Twig;
 
 use App\Service\AssetsService;
-use PhpParser\Node\Expr\Cast\String_;
 use Twig\Extension\RuntimeExtensionInterface;
 
 class AssetsRuntime implements RuntimeExtensionInterface
