@@ -108,10 +108,12 @@
 			{%- if block('btn_nav_top_right') -%}
 				<div class="pull-right">
 					{%- block btn_nav_top_right -%}
-						{%- if pp_role('admin') -%}
-							{%- block local_admin_menu -%}
-								{%- include 'include/local_admin_menu.html.twig' -%}
-							{%- endblock local_admin_menu -%}
+						{%- if pp_role('admin') and block('local_admin_menu') -%}
+							<div class="btn-group" role="group">
+								{%- block local_admin_menu -%}
+									{%- include 'include/local_admin_menu.html.twig' -%}
+								{%- endblock local_admin_menu -%}
+							</div>
 						{%- endif -%}
 						{%- block btn_show_columns -%}{%- endblock -%}
 						{%- block btn_view -%}{%- endblock -%}
@@ -119,10 +121,6 @@
 					{%- endblock btn_nav_top_right -%}
 				</div>
 			{%- endif -%}
-
-			{%- block btn_nav -%}
-				{{- btn_nav() -}}
-			{%- endblock btn_nav -%}
 		</div>
 	</div>
 	{%- endblock btn_row -%}

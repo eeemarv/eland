@@ -5,7 +5,6 @@ namespace App\Service;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Cnst\MenuCnst;
-use App\Render\BtnNavRender;
 
 class MenuService
 {
@@ -14,7 +13,6 @@ class MenuService
 	public function __construct(
 		protected ConfigService $config_service,
 		protected ItemAccessService $item_access_service,
-		protected BtnNavRender $btn_nav_render,
 		protected PageParamsService $pp,
 		protected VarRouteService $vr
 	)

@@ -1,5 +1,15 @@
 {%- extends 'docs/base/docs_base.html.twig' -%}
 
+{%- block btn_item_nav -%}
+    {%- include 'include/nav_btn_group.html.twig' with {
+        'nav_route': 'docs_map',
+        'overview_route': 'docs',
+        'fa': 'files-o',
+        'nav_route_params': pp_ary(),
+    } -%}
+{%- endblock btn_item_nav -%}
+
+
 {%- block heading_title -%}
     {{- 'docs_map.title'|trans({
         '%name%': doc_map.name

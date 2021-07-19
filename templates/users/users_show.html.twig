@@ -9,6 +9,15 @@
     {%- endif -%}
 {%- endblock assets_add -%}
 
+{%- block btn_item_nav -%}
+    {%- include 'include/nav_btn_group.html.twig' with {
+        'nav_route': 'users_show',
+        'overview_route': 'users',
+        'fa': 'users',
+        'nav_route_params': pp_ary()|merge({'status': status}),
+    } -%}
+{%- endblock btn_item_nav -%}
+
 {%- block heading_title -%}
     {%- if is_self -%}
         {{- 'users_show.my_profile'|trans -}}:

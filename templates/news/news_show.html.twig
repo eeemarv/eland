@@ -1,5 +1,14 @@
 {%- extends 'news/base/news_base.html.twig' -%}
 
+{%- block btn_item_nav -%}
+    {%- include 'include/nav_btn_group.html.twig' with {
+        'nav_route': 'news_show',
+        'overview_route': 'news',
+        'fa': 'calendar-o',
+        'nav_route_params': pp_ary(),
+    } -%}
+{%- endblock btn_item_nav -%}
+
 {%- block heading_title -%}
     {{- 'news_show.title'|trans({
         '%subject%': news_item.subject

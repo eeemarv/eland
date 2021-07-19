@@ -1,7 +1,4 @@
 {%- if csv_en is defined -%}
-    {%- if local_admin_menu is defined -%}
-        <div class="btn-group" role="group">
-    {%- endif -%}
     <a href="#" data-csv class="csv btn btn-info btn-lg" title="{{- 'btn.download_csv'|trans -}}">
         <i class="fa fa-file"></i>
     </a>
@@ -31,7 +28,4 @@
             {%- endfor -%}
         </ul>
     </div>
-    {%- if csv_en is defined -%}
-        </div>
-    {%- endif -%}
 {%- endif -%}

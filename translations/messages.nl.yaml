@@ -242,6 +242,11 @@ mail_form:
     is niet mogelijk want er is geen E-mail
     adres ingesteld voor je gebruikersaccount.
 
+nav:
+  prev: Vorige
+  next: Volgende
+  list: Lijst
+
 object_info:
   edit_count: >-
     , Aangepast: %edit_count%

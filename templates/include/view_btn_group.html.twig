@@ -1,0 +1,7 @@
+<div class="btn-group ml-5p" role="group">
+    {%- for r, d in btns -%}
+        <a href="{{- path(r, route_params|merge(query_params)|merge(d.params|default({}))) -}}" class="btn btn-default btn-lg{%- if r == route %} active{%- endif -%}" title="{{- d.title|trans -}}">
+            <i class="fa fa-{{- d.fa -}}"></i>
+        </a>
+    {%- endfor -%}
+</div>

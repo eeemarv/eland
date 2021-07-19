@@ -13,7 +13,6 @@ use App\Cnst\RoleCnst;
 use App\Controller\Contacts\ContactsUserShowInlineController;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
-use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Repository\AccountRepository;
@@ -80,7 +79,6 @@ class UsersShowController extends AbstractController
         AccountRender $account_render,
         AlertService $alert_service,
         AssetsService $assets_service,
-        BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
         ConfigService $config_service,
         FormTokenService $form_token_service,
@@ -268,7 +266,7 @@ class UsersShowController extends AbstractController
         $sql_next_where = implode(' and ', $sql_next['where']);
         $sql_prev_where = implode(' and ', $sql_prev['where']);
 
-        $next = $db->fetchOne('select id
+        $next_id = $db->fetchOne('select id
             from ' . $pp->schema() . '.users u
             where
             ' . $sql_next_where . '
@@ -277,7 +275,7 @@ class UsersShowController extends AbstractController
             $sql_next['params'],
             $sql_next['types']);
 
-        $prev = $db->fetchOne('select id
+        $prev_id = $db->fetchOne('select id
             from ' . $pp->schema() . '.users u
             where
             ' . $sql_prev_where . '
@@ -375,18 +373,6 @@ class UsersShowController extends AbstractController
                     $tus, 'Transactie naar ' . $account_render->str($id, $pp->schema()));
             }
         }
-
-        $pp_status_ary = $pp->ary();
-        $pp_status_ary['status'] = $status;
-
-        $prev_ary = $prev ? ['id' => $prev] : [];
-        $next_ary = $next ? ['id' => $next] : [];
-
-        $btn_nav_render->nav('users_show', $pp_status_ary,
-            $prev_ary, $next_ary, false);
-
-        $btn_nav_render->nav_list($vr->get('users'), $pp_status_ary,
-            [], 'Overzicht', 'users');
 
         $out = '<div class="row">';
         $out .= '<div class="col-md-6">';
@@ -798,7 +784,10 @@ class UsersShowController extends AbstractController
         return $this->render('users/users_show.html.twig', [
             'content'   => $out,
             'id'        => $id,
+            'status'    => $status,
             'is_self'   => $is_self,
+            'prev_id'   => $prev_id,
+            'next_id'   => $next_id,
             'intersystem_missing'   => $intersystem_missing,
             'intersystem_id'        => $intersystem_id,
             'schema'    => $pp->schema(),

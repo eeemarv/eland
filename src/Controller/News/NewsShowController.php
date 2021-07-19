@@ -3,7 +3,6 @@
 namespace App\Controller\News;
 
 use App\Render\AccountRender;
-use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
@@ -11,7 +10,6 @@ use App\Service\DateFormatService;
 use App\Service\ItemAccessService;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
-use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -39,15 +37,13 @@ class NewsShowController extends AbstractController
         int $id,
         Db $db,
         AccountRender $account_render,
-        BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
         ConfigService $config_service,
         DateFormatService $date_format_service,
         ItemAccessService $item_access_service,
         MenuService $menu_service,
         LinkRender $link_render,
-        PageParamsService $pp,
-        VarRouteService $vr
+        PageParamsService $pp
     ):Response
     {
         if (!$config_service->get_bool('news.enabled', $pp->schema()))
@@ -73,13 +69,13 @@ class NewsShowController extends AbstractController
 
         $news_item = $news[$id];
 
-        $next = $prev = $current_news = false;
+        $next_id = $prev_id = $current_news = false;
 
         foreach($news as $nid => $ndata)
         {
             if ($current_news)
             {
-                $next = $nid;
+                $next_id = $nid;
                 break;
             }
 
@@ -89,7 +85,7 @@ class NewsShowController extends AbstractController
                 continue;
             }
 
-            $prev = $nid;
+            $prev_id = $nid;
         }
 
         if($pp->is_admin())
@@ -100,15 +96,6 @@ class NewsShowController extends AbstractController
             $btn_top_render->del('news_del', $pp->ary(),
                 ['id' => $id], 'Nieuwsbericht verwijderen');
         }
-
-        $prev_ary = $prev ? ['id' => $prev] : [];
-        $next_ary = $next ? ['id' => $next] : [];
-
-        $btn_nav_render->nav('news_show', $pp->ary(),
-            $prev_ary, $next_ary, false);
-
-        $btn_nav_render->nav_list($vr->get('news'), $pp->ary(),
-            [], 'Lijst', 'calendar-o');
 
         $out = NewsExtendedController::render_news_item(
             $news_item,
@@ -127,6 +114,8 @@ class NewsShowController extends AbstractController
         return $this->render('news/news_show.html.twig', [
             'content'   => $out,
             'news_item' => $news_item,
+            'prev_id'   => $prev_id,
+            'next_id'   => $next_id,
             'schema'    => $pp->schema(),
         ]);
     }

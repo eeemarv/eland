@@ -5,6 +5,15 @@
     {{- assets_add(['summernote', 'summernote_forum_post.js']) -}}
 {%- endblock assets_add -%}
 
+{%- block btn_item_nav -%}
+    {%- include 'include/nav_btn_group.html.twig' with {
+        'nav_route': 'forum_topic',
+        'overview_route': 'forum',
+        'fa': 'comments',
+        'nav_route_params': pp_ary(),
+    } -%}
+{%- endblock btn_item_nav -%}
+
 {%- block heading_title -%}
     {{- 'forum_topic.title'|trans({
         '%topic_subject%': forum_topic.subject,

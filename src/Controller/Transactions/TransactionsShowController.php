@@ -4,7 +4,6 @@ namespace App\Controller\Transactions;
 
 use App\Cnst\MessageTypeCnst;
 use App\Render\AccountRender;
-use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Service\AssetsService;
@@ -44,7 +43,6 @@ class TransactionsShowController extends AbstractController
         ConfigService $config_service,
         DateFormatService $date_format_service,
         BtnTopRender $btn_top_render,
-        BtnNavRender $btn_nav_render,
         AccountRender $account_render,
         AssetsService $assets_service,
         IntersystemsService $intersystems_service,
@@ -101,14 +99,14 @@ class TransactionsShowController extends AbstractController
             $inter_transaction = false;
         }
 
-        $next = $db->fetchOne('select id
+        $next_id = $db->fetchOne('select id
             from ' . $pp->schema() . '.transactions
             where id > ?
             order by id asc
             limit 1',
             [$id], [\PDO::PARAM_INT]);
 
-        $prev = $db->fetchOne('select id
+        $prev_id = $db->fetchOne('select id
             from ' . $pp->schema() . '.transactions
             where id < ?
             order by id desc
@@ -123,15 +121,6 @@ class TransactionsShowController extends AbstractController
             $btn_top_render->edit('transactions_edit', $pp->ary(),
                 ['id' => $id], 'Omschrijving aanpassen');
         }
-
-        $prev_ary = $prev ? ['id' => $prev] : [];
-        $next_ary = $next ? ['id' => $next] : [];
-
-        $btn_nav_render->nav('transactions_show', $pp->ary(),
-            $prev_ary, $next_ary, true);
-
-        $btn_nav_render->nav_list('transactions', $pp->ary(),
-            [], 'Lijst', 'exchange');
 
         $real_to = $transaction['real_to'] ? true : false;
         $real_from = $transaction['real_from'] ? true : false;
@@ -562,6 +551,8 @@ class TransactionsShowController extends AbstractController
 
         return $this->render('transactions/transactions_show.html.twig', [
             'content'   => $out,
+            'prev_id'   => $prev_id,
+            'next_id'   => $next_id,
             'schema'    => $pp->schema(),
         ]);
     }

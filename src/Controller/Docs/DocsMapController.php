@@ -6,7 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\MenuService;
-use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
@@ -40,7 +39,6 @@ class DocsMapController extends AbstractController
         Db $db,
         LinkRender $link_render,
         BtnTopRender $btn_top_render,
-        BtnNavRender $btn_nav_render,
         ItemAccessService $item_access_service,
         DateFormatService $date_format_service,
         MenuService $menu_service,
@@ -83,7 +81,7 @@ class DocsMapController extends AbstractController
             $docs[] = $row;
         }
 
-        $prev = $db->fetchOne('select m.id
+        $prev_id = $db->fetchOne('select m.id
             from ' . $pp->schema() . '.doc_maps m
             inner join ' . $pp->schema() . '.docs d
                 on d.map_id = m.id
@@ -94,7 +92,7 @@ class DocsMapController extends AbstractController
         [$item_access_service->get_visible_ary_for_page(), $name],
         [Db::PARAM_STR_ARRAY, \PDO::PARAM_STR]);
 
-        $next = $db->fetchOne('select m.id
+        $next_id = $db->fetchOne('select m.id
             from ' . $pp->schema() . '.doc_maps m
             inner join ' . $pp->schema() . '.docs d
                 on d.map_id = m.id
@@ -113,15 +111,6 @@ class DocsMapController extends AbstractController
             $btn_top_render->edit('docs_map_edit', $pp->ary(),
                 ['id' => $id], 'Map aanpassen');
         }
-
-        $prev_ary = $prev ? ['id' => $prev] : [];
-        $next_ary = $next ? ['id' => $next] : [];
-
-        $btn_nav_render->nav('docs_map', $pp->ary(),
-            $prev_ary, $next_ary, false);
-
-        $btn_nav_render->nav_list('docs', $pp->ary(),
-            [], 'Overzicht', 'files-o');
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
@@ -231,6 +220,8 @@ class DocsMapController extends AbstractController
         return $this->render('docs/docs_map.html.twig', [
             'content'   => $out,
             'doc_map'   => $doc_map,
+            'prev_id'   => $prev_id,
+            'next_id'   => $next_id,
             'schema'    => $pp->schema(),
         ]);
     }

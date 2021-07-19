@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use App\Service\MenuService;
-use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Render\PaginationRender;
@@ -45,7 +44,6 @@ class ContactsController extends AbstractController
         Request $request,
         Db $db,
         AlertService $alert_service,
-        BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
         PaginationRender $pagination_render,
         SelectRender $select_render,

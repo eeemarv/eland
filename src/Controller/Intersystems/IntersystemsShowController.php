@@ -2,7 +2,6 @@
 
 namespace App\Controller\Intersystems;
 
-use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
@@ -39,7 +38,6 @@ class IntersystemsShowController extends AbstractController
         AlertService $alert_service,
         LinkRender $link_render,
         ConfigService $config_service,
-        BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
         SystemsService $systems_service,
         PageParamsService $pp,
@@ -77,9 +75,6 @@ class IntersystemsShowController extends AbstractController
 
         $btn_top_render->del('intersystems_del', $pp->ary(),
             ['id' => $id], 'Intersysteem verwijderen');
-
-        $btn_nav_render->nav_list('intersystems', $pp->ary(),
-            [], 'Lijst', 'share-alt');
 
         $out = '<div class="panel panel-default printview">';
         $out .= '<div class="panel-heading">';

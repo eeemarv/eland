@@ -13,7 +13,6 @@ use App\Controller\Contacts\ContactsUserShowInlineController;
 use App\Controller\Users\UsersShowController;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
-use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Repository\CategoryRepository;
@@ -56,7 +55,6 @@ class MessagesShowController extends AbstractController
         CategoryRepository $category_repository,
         AccountRender $account_render,
         AlertService $alert_service,
-        BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
         ConfigService $config_service,
         DateFormatService $date_format_service,
@@ -217,7 +215,7 @@ class MessagesShowController extends AbstractController
 
         $sql_where = count($sql_where) ? ' and ' . implode(' and ', $sql_where) : '';
 
-        $prev = $db->fetchOne('select m.id
+        $prev_id = $db->fetchOne('select m.id
             from ' . $pp->schema() . '.messages m,
                 ' . $pp->schema() . '.users u
             where m.id > ?
@@ -226,7 +224,7 @@ class MessagesShowController extends AbstractController
             limit 1',
             [$id], [\PDO::PARAM_INT]);
 
-        $next = $db->fetchOne('select m.id
+        $next_id = $db->fetchOne('select m.id
             from ' . $pp->schema() . '.messages m,
                 ' . $pp->schema() . '.users u
             where m.id < ?
@@ -282,15 +280,6 @@ class MessagesShowController extends AbstractController
                     $tus, 'Transactie voor dit aanbod');
             }
         }
-
-        $prev_ary = $prev ? ['id' => $prev] : [];
-        $next_ary = $next ? ['id' => $next] : [];
-
-        $btn_nav_render->nav('messages_show', $pp->ary(),
-            $prev_ary, $next_ary, false);
-
-        $btn_nav_render->nav_list($vr->get('messages'), $pp->ary(),
-            [], 'Lijst', 'newspaper-o');
 
         $out = '';
 
@@ -528,6 +517,8 @@ class MessagesShowController extends AbstractController
         return $this->render('messages/messages_show.html.twig', [
             'content'   => $out,
             'message'   => $message,
+            'prev_id'   => $prev_id,
+            'next_id'   => $next_id,
             'schema'    => $pp->schema(),
         ]);
     }

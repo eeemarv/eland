@@ -9,6 +9,15 @@
     {%- endif -%}
 {%- endblock assets_add -%}
 
+{%- block btn_item_nav -%}
+    {%- include 'include/nav_btn_group.html.twig' with {
+        'nav_route': 'messages_show',
+        'overview_route': 'messages',
+        'fa': 'newspaper-o',
+        'nav_route_params': pp_ary(),
+    } -%}
+{%- endblock btn_item_nav -%}
+
 {%- block heading_title -%}
     {%- set heading_title_trans_key = 'messages_show.title.'
         ~ message.offer_want -%}

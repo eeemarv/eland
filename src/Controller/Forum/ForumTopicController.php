@@ -4,7 +4,6 @@ namespace App\Controller\Forum;
 
 use App\HtmlProcess\HtmlPurifier;
 use App\Render\AccountRender;
-use App\Render\BtnNavRender;
 use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
@@ -46,7 +45,6 @@ class ForumTopicController extends AbstractController
         Db $db,
         AccountRender $account_render,
         AlertService $alert_service,
-        BtnNavRender $btn_nav_render,
         BtnTopRender $btn_top_render,
         ConfigService $config_service,
         DateFormatService $date_format_service,
@@ -119,7 +117,7 @@ class ForumTopicController extends AbstractController
             $alert_service->error($errors);
         }
 
-        $prev = $db->fetchOne('select id
+        $prev_id = $db->fetchOne('select id
             from ' . $pp->schema() . '.forum_topics
             where last_edit_at > ?
                 and access in (?)
@@ -132,7 +130,7 @@ class ForumTopicController extends AbstractController
                 Db::PARAM_STR_ARRAY,
             ]);
 
-        $next = $db->fetchOne('select id
+        $next_id = $db->fetchOne('select id
             from ' . $pp->schema() . '.forum_topics
             where last_edit_at < ?
                 and access in (?)
@@ -153,15 +151,6 @@ class ForumTopicController extends AbstractController
             $btn_top_render->del('forum_del_topic', $pp->ary(),
                 ['id' => $id], 'Onderwerp verwijderen');
         }
-
-        $prev_ary = $prev ? ['id' => $prev] : [];
-        $next_ary = $next ? ['id' => $next] : [];
-
-        $btn_nav_render->nav('forum_topic', $pp->ary(),
-            $prev_ary, $next_ary, false);
-
-        $btn_nav_render->nav_list('forum', $pp->ary(),
-            [], 'Forum onderwerpen', 'comments');
 
         $out = '';
 
@@ -263,6 +252,8 @@ class ForumTopicController extends AbstractController
         return $this->render('forum/forum_topic.html.twig', [
             'content'       => $out,
             'forum_topic'   => $forum_topic,
+            'prev_id'       => $prev_id,
+            'next_id'       => $next_id,
             'schema'        => $pp->schema(),
         ]);
     }
