@@ -4,7 +4,6 @@ namespace App\Controller\Transactions;
 
 use App\Cnst\MessageTypeCnst;
 use App\Render\AccountRender;
-use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
@@ -42,7 +41,6 @@ class TransactionsShowController extends AbstractController
         Db $db,
         ConfigService $config_service,
         DateFormatService $date_format_service,
-        BtnTopRender $btn_top_render,
         AccountRender $account_render,
         AssetsService $assets_service,
         IntersystemsService $intersystems_service,
@@ -112,15 +110,6 @@ class TransactionsShowController extends AbstractController
             order by id desc
             limit 1',
             [$id], [\PDO::PARAM_INT]);
-
-        if ($pp->is_admin()
-            && ($inter_transaction
-                || !($transaction['real_from']
-                    || $transaction['real_to'])))
-        {
-            $btn_top_render->edit('transactions_edit', $pp->ary(),
-                ['id' => $id], 'Omschrijving aanpassen');
-        }
 
         $real_to = $transaction['real_to'] ? true : false;
         $real_from = $transaction['real_from'] ? true : false;
@@ -550,9 +539,14 @@ class TransactionsShowController extends AbstractController
         $menu_service->set('transactions');
 
         return $this->render('transactions/transactions_show.html.twig', [
-            'content'   => $out,
-            'prev_id'   => $prev_id,
-            'next_id'   => $next_id,
+            'content'           => $out,
+            'transaction'       => $transaction,
+            'is_inter'          => $intersystem_trans,
+            'inter_transaction' => $inter_transaction,
+            'inter_schema'      => $inter_schema,
+            'id'                => $id,
+            'prev_id'           => $prev_id,
+            'next_id'           => $next_id,
         ]);
     }
 }

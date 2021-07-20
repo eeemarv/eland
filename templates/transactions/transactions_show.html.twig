@@ -1,5 +1,15 @@
 {%- extends 'transactions/base/transactions_base.html.twig' -%}
 
+{%- block btn_top_edit -%}
+    {%- if pp_role('admin')
+        and (inter_transaction or not is_inter) -%}
+        {%- include 'include/btn_top/edit.html.twig' with {
+            'btn_route': 'transactions_edit',
+            'btn_title': 'transactions_edit.title'
+        } -%}
+    {%- endif -%}
+{%- endblock btn_top_edit -%}
+
 {%- block btn_item_nav -%}
     {%- include 'include/nav_btn_group_reverse.html.twig' with {
         'nav_route': 'transactions_show',

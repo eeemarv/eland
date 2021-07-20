@@ -5,7 +5,6 @@ namespace App\Controller\Transactions;
 use App\Cnst\BulkCnst;
 use App\Cnst\MessageTypeCnst;
 use App\Render\AccountRender;
-use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Render\PaginationRender;
 use App\Render\SelectRender;
@@ -22,7 +21,6 @@ use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
-use App\Service\UserCacheService;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
@@ -70,7 +68,6 @@ class TransactionsController extends AbstractController
         AlertService $alert_service,
         ItemAccessService $item_access_service,
         FormTokenService $form_token_service,
-        BtnTopRender $btn_top_render,
         ConfigService $config_service,
         DateFormatService $date_format_service,
         IntersystemsService $intersystems_service,
@@ -78,7 +75,6 @@ class TransactionsController extends AbstractController
         PaginationRender $pagination_render,
         SelectRender $select_render,
         TypeaheadService $typeahead_service,
-        UserCacheService $user_cache_service,
         PageParamsService $pp,
         SessionUserService $su,
         MenuService $menu_service
@@ -635,46 +631,6 @@ class TransactionsController extends AbstractController
             = $params['s']['asc'] ? 0 : 1;
         $tableheader_ary[$params['s']['orderby']]['fa']
             = $params['s']['asc'] ? 'sort-asc' : 'sort-desc';
-
-        if ($filter_uid)
-        {
-            $user = $user_cache_service->get((int) $filter['uid'], $pp->schema());
-            $user_str = $account_render->str($user['id'], $pp->schema());
-        }
-
-        if ($pp->is_admin() || $pp->is_user())
-        {
-            if ($filter_uid)
-            {
-                if ($user['status'] != 7)
-                {
-                    if ($is_owner)
-                    {
-                        $btn_top_render->add('transactions_add', $pp->ary(),
-                            [], 'Transactie toevoegen');
-                    }
-                    else
-                    {
-                        $btn_top_render->add_trans('transactions_add', $pp->ary(),
-                            ['tuid' => $user['id']],
-                            'Transactie naar ' . $user_str);
-                    }
-                }
-            }
-            else
-            {
-                $btn_top_render->add('transactions_add', $pp->ary(),
-                    [], 'Transactie toevoegen');
-            }
-        }
-
-        if ($pp->is_admin())
-        {
-            if ($bulk_actions_enabled)
-            {
-                $btn_top_render->local('#bulk_actions', 'Bulk acties', 'envelope-o');
-            }
-        }
 
         $filtered = !$filter_uid && (
             $filter_q
@@ -1314,10 +1270,11 @@ class TransactionsController extends AbstractController
         $menu_service->set('transactions');
 
         return $this->render($template, [
-            'content'   => $out,
-            'filtered'  => $filtered,
-            'is_self'   => $is_self,
-            'uid'       => $filter['uid'] ?? 0,
+            'content'               => $out,
+            'filtered'              => $filtered,
+            'is_self'               => $is_self,
+            'bulk_actions_enabled'  => $bulk_actions_enabled,
+            'uid'                   => $filter['uid'] ?? 0,
         ]);
     }
 

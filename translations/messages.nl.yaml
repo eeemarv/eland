@@ -812,6 +812,7 @@ transactions:
 
 transactions_add:
   title: Nieuwe transactie
+  btn_add_to_user: Nieuwe transactie naar %user%
 
 transactions_autominlimit:
   title: Automatische minimum limiet

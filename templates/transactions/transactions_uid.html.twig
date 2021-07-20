@@ -1,5 +1,45 @@
 {%- extends 'transactions/transactions_list.html.twig' -%}
 
+{#
+if ($filter_uid)
+{
+    if ($user['status'] != 7)
+    {
+        if ($is_owner)
+        {
+            $btn_top_render->add('transactions_add', $pp->ary(),
+                [], 'Transactie toevoegen');
+        }
+        else
+        {
+            $btn_top_render->add_trans('transactions_add', $pp->ary(),
+                ['tuid' => $user['id']],
+                'Transactie naar ' . $user_str);
+        }
+    }
+}
+#}
+
+{%- block btn_top_add -%}
+    {%- if pp_role('admin') or pp_role('user') -%}
+        {%- if is_self -%}
+            {%- include 'include/btn_top/add.html.twig' with {
+                'btn_route': 'transactions_add',
+                'btn_title': 'transactions_add.title'
+            } -%}
+        {%- else -%}
+            {%- include 'include/btn_top/add.html.twig' with {
+                    'btn_route': 'transactions_add',
+                    'btn_route_params': {'tuid': uid},
+                    'btn_title': 'transactions_add.btn_add_to_user',
+                    'btn_title_trans_params': {
+                        '%user%': account(uid, schema)
+                    }
+            } -%}
+        {%- endif -%}
+    {%- endif -%}
+{%- endblock btn_top_add -%}
+
 {%- block heading_title -%}
     {%- if is_self -%}
         {{- 'transactions_self.title'|trans -}}
