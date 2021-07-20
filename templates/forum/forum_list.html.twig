@@ -1,5 +1,14 @@
 {%- extends 'forum/base/forum_base.html.twig' -%}
 
+{%- block btn_top_add -%}
+    {%- if pp_role('admin') or pp_role('user') -%}
+        {%- include 'include/btn_top/add.html.twig' with {
+            'btn_route': 'forum_add_topic',
+            'btn_title': 'forum_add_topic.title'
+        } -%}
+    {%- endif -%}
+{%- endblock btn_top_add -%}
+
 {%- set csv_en = true -%}
 
 {%- block css -%}

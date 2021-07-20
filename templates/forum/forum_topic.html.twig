@@ -5,6 +5,30 @@
     {{- assets_add(['summernote', 'summernote_forum_post.js']) -}}
 {%- endblock assets_add -%}
 
+{%- block btn_top_edit -%}
+    {%- if pp_role('admin') or su_is_owner(forum_topic.user_id) -%}
+        {%- include 'include/btn_top/edit.html.twig' with {
+            'btn_route': 'forum_edit_topic',
+            'btn_title': 'forum_edit_topic.title.' ~ (su_is_owner(forum_topic.user_id) ? 'personal' : 'admin'),
+            'btn_title_trans_params': {
+                '%topic_subject%': forum_topic.subject
+            }
+        } -%}
+    {%- endif -%}
+{%- endblock btn_top_edit -%}
+
+{%- block btn_top_del -%}
+    {%- if pp_role('admin') or su_is_owner(forum_topic.user_id) -%}
+        {%- include 'include/btn_top/del.html.twig' with {
+            'btn_route': 'forum_del_topic',
+            'btn_title': 'forum_del_topic.title.' ~ (su_is_owner(forum_topic.user_id) ? 'personal' : 'admin'),
+            'btn_title_trans_params': {
+                '%topic_subject%': forum_topic.subject
+            }
+        } -%}
+    {%- endif -%}
+{%- endblock btn_top_del -%}
+
 {%- block btn_item_nav -%}
     {%- include 'include/nav_btn_group.html.twig' with {
         'nav_route': 'forum_topic',

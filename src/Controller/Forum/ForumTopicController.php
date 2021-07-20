@@ -4,7 +4,6 @@ namespace App\Controller\Forum;
 
 use App\HtmlProcess\HtmlPurifier;
 use App\Render\AccountRender;
-use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
@@ -45,7 +44,6 @@ class ForumTopicController extends AbstractController
         Db $db,
         AccountRender $account_render,
         AlertService $alert_service,
-        BtnTopRender $btn_top_render,
         ConfigService $config_service,
         DateFormatService $date_format_service,
         FormTokenService $form_token_service,
@@ -71,9 +69,6 @@ class ForumTopicController extends AbstractController
             || $pp->is_admin();
 
         $forum_topic = self::get_forum_topic($id, $db, $pp, $item_access_service);
-
-        $s_topic_owner = $forum_topic['user_id'] === $su->id()
-            && $su->is_system_self() && !$pp->is_guest();
 
         $forum_posts = $db->fetchAllAssociative('select *
             from ' . $pp->schema() . '.forum_posts
@@ -142,15 +137,6 @@ class ForumTopicController extends AbstractController
                 \PDO::PARAM_STR,
                 Db::PARAM_STR_ARRAY,
             ]);
-
-        if ($pp->is_admin() || $s_topic_owner)
-        {
-            $btn_top_render->edit('forum_edit_topic', $pp->ary(),
-                ['id' => $id], 'Onderwerp aanpassen');
-
-            $btn_top_render->del('forum_del_topic', $pp->ary(),
-                ['id' => $id], 'Onderwerp verwijderen');
-        }
 
         $out = '';
 
@@ -252,6 +238,7 @@ class ForumTopicController extends AbstractController
         return $this->render('forum/forum_topic.html.twig', [
             'content'       => $out,
             'forum_topic'   => $forum_topic,
+            'id'            => $id,
             'prev_id'       => $prev_id,
             'next_id'       => $next_id,
         ]);
