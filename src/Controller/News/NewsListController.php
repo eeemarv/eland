@@ -2,7 +2,6 @@
 
 namespace App\Controller\News;
 
-use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
@@ -35,7 +34,6 @@ class NewsListController extends AbstractController
         Db $db,
         ConfigService $config_service,
         ItemAccessService $item_access_service,
-        BtnTopRender $btn_top_render,
         DateFormatService $date_format_service,
         LinkRender $link_render,
         PageParamsService $pp,
@@ -51,11 +49,6 @@ class NewsListController extends AbstractController
             $db,
             $config_service,
             $item_access_service,
-            $pp
-        );
-
-        self::set_btns(
-            $btn_top_render,
             $pp
         );
 
@@ -157,18 +150,6 @@ class NewsListController extends AbstractController
         }
 
         return $news;
-    }
-
-    public static function set_btns(
-        BtnTopRender $btn_top_render,
-        PageParamsService $pp
-    ):void
-    {
-        if($pp->is_admin())
-        {
-            $btn_top_render->add('news_add', $pp->ary(),
-                [], 'Nieuws toevoegen');
-        }
     }
 
     public static function no_news(

@@ -1,5 +1,14 @@
 {%- extends 'news/base/news_base.html.twig' -%}
 
+{%- block btn_top_add -%}
+    {%- if pp_role('admin') -%}
+        {%- include 'include/btn_top/add.html.twig' with {
+            'btn_route': 'news_add',
+            'btn_title': 'news_add.title'
+        } -%}
+    {%- endif -%}
+{%- endblock btn_top_add -%}
+
 {%- set news_view_btns = {
     'news_list': {'fa': 'align-justify', 'title': 'view.list'},
     'news_extended': {'fa': 'th-list', 'title': 'view.extended'}

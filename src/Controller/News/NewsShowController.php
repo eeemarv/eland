@@ -3,7 +3,6 @@
 namespace App\Controller\News;
 
 use App\Render\AccountRender;
-use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
@@ -37,7 +36,6 @@ class NewsShowController extends AbstractController
         int $id,
         Db $db,
         AccountRender $account_render,
-        BtnTopRender $btn_top_render,
         ConfigService $config_service,
         DateFormatService $date_format_service,
         ItemAccessService $item_access_service,
@@ -88,15 +86,6 @@ class NewsShowController extends AbstractController
             $prev_id = $nid;
         }
 
-        if($pp->is_admin())
-        {
-            $btn_top_render->edit('news_edit', $pp->ary(),
-                ['id' => $id], 'Nieuwsbericht aanpassen');
-
-            $btn_top_render->del('news_del', $pp->ary(),
-                ['id' => $id], 'Nieuwsbericht verwijderen');
-        }
-
         $out = NewsExtendedController::render_news_item(
             $news_item,
             $show_access,
@@ -114,6 +103,7 @@ class NewsShowController extends AbstractController
         return $this->render('news/news_show.html.twig', [
             'content'   => $out,
             'news_item' => $news_item,
+            'id'        => $id,
             'prev_id'   => $prev_id,
             'next_id'   => $next_id,
         ]);

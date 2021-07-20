@@ -1,5 +1,29 @@
 {%- extends 'news/base/news_base.html.twig' -%}
 
+{%- block btn_top_edit -%}
+    {%- if pp_role('admin') -%}
+        {%- include 'include/btn_top/edit.html.twig' with {
+            'btn_route': 'news_edit',
+            'btn_title': 'news_edit.title',
+            'btn_title_trans_params': {
+                '%subject%': news_item.subject
+            }
+        } -%}
+    {%- endif -%}
+{%- endblock btn_top_edit -%}
+
+{%- block btn_top_del -%}
+    {%- if pp_role('admin') -%}
+        {%- include 'include/btn_top/del.html.twig' with {
+            'btn_route': 'news_del',
+            'btn_title': 'news_del.title',
+            'btn_title_trans_params': {
+                '%subject%': news_item.subject
+            }
+        } -%}
+    {%- endif -%}
+{%- endblock btn_top_del -%}
+
 {%- block btn_item_nav -%}
     {%- include 'include/nav_btn_group.html.twig' with {
         'nav_route': 'news_show',
