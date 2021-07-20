@@ -6,7 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Render\AccountRender;
-use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Render\PaginationRender;
 use App\Render\SelectRender;
@@ -58,7 +57,6 @@ class MessagesExtendedController extends AbstractController
         Db $db,
         bool $is_self,
         AccountRender $account_render,
-        BtnTopRender $btn_top_render,
         ConfigService $config_service,
         ItemAccessService $item_access_service,
         SelectRender $select_render,
@@ -84,7 +82,6 @@ class MessagesExtendedController extends AbstractController
             $db,
             $is_self,
             $account_render,
-            $btn_top_render,
             $config_service,
             $item_access_service,
             $link_render,

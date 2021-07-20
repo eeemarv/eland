@@ -13,7 +13,6 @@ use App\Controller\Contacts\ContactsUserShowInlineController;
 use App\Controller\Users\UsersShowController;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
-use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Repository\CategoryRepository;
 use App\Service\AlertService;
@@ -55,7 +54,6 @@ class MessagesShowController extends AbstractController
         CategoryRepository $category_repository,
         AccountRender $account_render,
         AlertService $alert_service,
-        BtnTopRender $btn_top_render,
         ConfigService $config_service,
         DateFormatService $date_format_service,
         FormTokenService $form_token_service,
@@ -247,39 +245,6 @@ class MessagesShowController extends AbstractController
         );
 
         $contacts_content = $contacts_response->getContent();
-
-        if ($pp->is_admin() || $su->is_owner($message['user_id']))
-        {
-            $btn_top_render->edit('messages_edit', $pp->ary(),
-                ['id' => $id],	ucfirst($message['label']['offer_want']) . ' aanpassen');
-
-            $btn_top_render->del('messages_del', $pp->ary(),
-                ['id' => $id], ucfirst($message['label']['offer_want']) . ' verwijderen');
-        }
-
-        if ($message['offer_want'] === 'offer'
-            && $transactions_enabled
-            && ($pp->is_admin()
-                || (!$su->is_owner($message['user_id'])
-                    && $user['status'] !== 7
-                    && !($pp->is_guest() && $su->is_system_self()))))
-        {
-            $tus = ['mid' => $id];
-
-            if (!$su->is_system_self())
-            {
-                $tus['tus'] = $pp->schema();
-
-            }
-
-            $self_transactions_enabled = $config_service->get_bool('transactions.enabled', $su->schema());
-
-            if ($self_transactions_enabled)
-            {
-                $btn_top_render->add_trans('transactions_add', $su->ary(),
-                    $tus, 'Transactie voor dit aanbod');
-            }
-        }
 
         $out = '';
 
@@ -517,6 +482,7 @@ class MessagesShowController extends AbstractController
         return $this->render('messages/messages_show.html.twig', [
             'content'   => $out,
             'message'   => $message,
+            'id'        => $id,
             'prev_id'   => $prev_id,
             'next_id'   => $next_id,
         ]);

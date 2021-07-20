@@ -630,6 +630,8 @@ messages:
 messages_add:
   title: >-
     Vraag of aanbod toevoegen
+  btn_add_for_user: >-
+    Vraag of aanbod toevoegen voor %user%
 
 messages_cleanup:
   title: >-
@@ -661,12 +663,12 @@ messages_del:
   title:
     offer:
       admin: >-
-        Aanbod van "%user%" verwijderen?
+        Aanbod van %user% verwijderen?
       personal: >-
         Je aanbod verwijderen?
     want:
       admin: >-
-        Vraag van "%user%" verwijderen?
+        Vraag van %user% verwijderen?
       personal: >-
         Je vraag verwijderen?
 
@@ -674,12 +676,12 @@ messages_edit:
   title:
     offer:
       admin: >-
-        Aanbod "%subject%" van "%user%" aanpassen
+        Aanbod "%subject%" van %user% aanpassen
       personal: >-
         Je aanbod "%subject%" aanpassen
     want:
       admin: >-
-        Vraag "%subject%" van "%user%" aanpassen
+        Vraag "%subject%" van %user% aanpassen
       personal: >-
         Je vraag "%subject%" aanpassen
 

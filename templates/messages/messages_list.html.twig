@@ -7,6 +7,12 @@
     {{- assets_add(['table_sel.js', 'messages_filter.js']) -}}
 {%- endblock assets_add -%}
 
+{%- block btn_top_bulk -%}
+    {%- if pp_role('admin') -%}
+        {%- include 'include/btn_top/bulk.html.twig' -%}
+    {%- endif -%}
+{%- endblock btn_top_bulk -%}
+
 {%- block css -%}
     {{- parent() -}}
     {{- encore_entry_link_tags('footable') -}}

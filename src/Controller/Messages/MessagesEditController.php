@@ -524,9 +524,21 @@ class MessagesEditController extends AbstractController
 
                 if ($pp->is_admin())
                 {
-                    $account_code = $su->user()['code'] ?? '';
+                    $uid = (int) $request->query->get('uid');
+
+                    if ($uid > 0)
+                    {
+                        $uid_user = $user_cache_service->get($uid, $pp->schema());
+                    }
+
+                    if (!isset($uid_user) || !$uid_user)
+                    {
+                        $uid_user = $su->user();
+                    }
+
+                    $account_code = $uid_user['code'] ?? '';
                     $account_code .= ' ';
-                    $account_code .= $su->user()['name'] ?? '';
+                    $account_code .= $uid_user['name'] ?? '';
                     $account_code = trim($account_code);
                 }
             }

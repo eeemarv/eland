@@ -11,7 +11,6 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use App\Cnst\BulkCnst;
 use App\Cnst\MessageTypeCnst;
 use App\Render\AccountRender;
-use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Render\PaginationRender;
 use App\Render\SelectRender;
@@ -118,7 +117,6 @@ class MessagesListController extends AbstractController
         FormTokenService $form_token_service,
         AccountRender $account_render,
         AlertService $alert_service,
-        BtnTopRender $btn_top_render,
         DateFormatService $date_format_service,
         IntersystemsService $intersystems_service,
         ItemAccessService $item_access_service,
@@ -390,7 +388,6 @@ class MessagesListController extends AbstractController
             $db,
             $is_self,
             $account_render,
-            $btn_top_render,
             $config_service,
             $item_access_service,
             $link_render,
@@ -414,14 +411,6 @@ class MessagesListController extends AbstractController
         $cat_params = $fetch_and_filter['cat_params'];
         $is_owner = $fetch_and_filter['is_owner'];
         $out = $fetch_and_filter['out'];
-
-        if ($pp->is_admin())
-        {
-            if ($bulk_actions_enabled)
-            {
-                $btn_top_render->local('#bulk_actions', 'Bulk acties', 'envelope-o');
-            }
-        }
 
         if (!count($messages))
         {
@@ -886,7 +875,6 @@ class MessagesListController extends AbstractController
         Db $db,
         bool $is_self,
         AccountRender $account_render,
-        BtnTopRender $btn_top_render,
         ConfigService $config_service,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
@@ -1461,27 +1449,6 @@ class MessagesListController extends AbstractController
                     'name'          => $name . $count_str,
                     'children'      => [],
                 ];
-            }
-        }
-
-        if ($pp->is_admin() || $pp->is_user())
-        {
-            if ($is_owner || !isset($filter['uid']))
-            {
-                $btn_top_render->add('messages_add', $pp->ary(),
-                    [], 'Vraag of aanbod toevoegen');
-            }
-
-            if ($filter_uid)
-            {
-                if ($pp->is_admin() && !$is_owner)
-                {
-                    $str = 'Vraag of aanbod voor ';
-                    $str .= $account_render->str((int) $filter['uid'], $pp->schema());
-
-                    $btn_top_render->add('messages_add', $pp->ary(),
-                        ['uid' => $filter['uid']], $str);
-                }
             }
         }
 

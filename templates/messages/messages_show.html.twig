@@ -9,6 +9,47 @@
     {%- endif -%}
 {%- endblock assets_add -%}
 
+{%- block btn_top_edit -%}
+    {%- if pp_role('admin') or su_is_owner(message.user_id) -%}
+        {%- include 'include/btn_top/edit.html.twig' with {
+            'btn_route': 'messages_edit',
+            'btn_title': 'messages_edit.title.' ~ message.offer_want ~ (su_is_owner(message.user_id) ? '.personal': '.admin'),
+            'btn_title_trans_params': {
+                '%user%': account(message.user_id, schema),
+                '%subject%': message.subject
+            }
+        } -%}
+    {%- endif -%}
+{%- endblock btn_top_edit -%}
+
+{%- block btn_top_del -%}
+    {%- if pp_role('admin') or su_is_owner(message.user_id) -%}
+        {%- include 'include/btn_top/del.html.twig' with {
+            'btn_route': 'messages_del',
+            'btn_title': 'messages_del.title.' ~ message.offer_want ~ (su_is_owner(message.user_id) ? '.personal': '.admin'),
+            'btn_title_trans_params': {
+                '%user%': account(message.user_id, schema)
+            }
+        } -%}
+    {%- endif -%}
+{%- endblock btn_top_del -%}
+
+{%- block btn_top_transaction -%}
+    {%- if message.offer_want is same as 'offer'
+        and config_bool('transactions.enabled', schema)
+        and config_bool('transactions.enabled', su_schema())
+        and (pp_role('admin') or not su_is_owner(message.user_id))  -%}
+        {%- include 'include/btn_top/transaction.html.twig' with {
+            'btn_route': 'transactions_add',
+            'btn_route_params': su_ary()|merge({'mid': id, 'tus': schema}),
+            'btn_title': 'btn.transaction_to',
+            'btn_title_trans_params': {
+                '%user%': account(message.user_id, schema)
+            }
+        } -%}
+    {%- endif -%}
+{%- endblock btn_top_transaction -%}
+
 {%- block btn_item_nav -%}
     {%- include 'include/nav_btn_group.html.twig' with {
         'nav_route': 'messages_show',
