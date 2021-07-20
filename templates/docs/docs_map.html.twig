@@ -1,5 +1,29 @@
 {%- extends 'docs/base/docs_base.html.twig' -%}
 
+{%- block btn_top_add -%}
+    {%- if pp_role('admin') -%}
+        {%- include 'include/btn_top/add.html.twig' with {
+            'btn_route': 'docs_add',
+            'btn_route_params': {
+                'map_id': id
+            },
+            'btn_title': 'docs_add.title'
+        } -%}
+    {%- endif -%}
+{%- endblock btn_top_add -%}
+
+{%- block btn_top_edit -%}
+    {%- if pp_role('admin') -%}
+        {%- include 'include/btn_top/edit.html.twig' with {
+            'btn_route': 'docs_map_edit',
+            'btn_title': 'docs_map_edit.title',
+            'btn_title_trans_params': {
+                '%name%': doc_map.name
+            }
+        } -%}
+    {%- endif -%}
+{%- endblock btn_top_edit -%}
+
 {%- block btn_item_nav -%}
     {%- include 'include/nav_btn_group.html.twig' with {
         'nav_route': 'docs_map',
@@ -8,7 +32,6 @@
         'nav_route_params': pp_ary(),
     } -%}
 {%- endblock btn_item_nav -%}
-
 
 {%- block heading_title -%}
     {{- 'docs_map.title'|trans({

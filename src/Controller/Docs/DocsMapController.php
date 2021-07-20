@@ -6,7 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\MenuService;
-use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
@@ -38,7 +37,6 @@ class DocsMapController extends AbstractController
         int $id,
         Db $db,
         LinkRender $link_render,
-        BtnTopRender $btn_top_render,
         ItemAccessService $item_access_service,
         DateFormatService $date_format_service,
         MenuService $menu_service,
@@ -102,15 +100,6 @@ class DocsMapController extends AbstractController
             limit 1',
         [$item_access_service->get_visible_ary_for_page(), $name],
         [Db::PARAM_STR_ARRAY, \PDO::PARAM_STR]);
-
-        if ($pp->is_admin())
-        {
-            $btn_top_render->add('docs_add', $pp->ary(),
-                ['map_id' => $id], 'Document opladen');
-
-            $btn_top_render->edit('docs_map_edit', $pp->ary(),
-                ['id' => $id], 'Map aanpassen');
-        }
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
@@ -220,6 +209,7 @@ class DocsMapController extends AbstractController
         return $this->render('docs/docs_map.html.twig', [
             'content'   => $out,
             'doc_map'   => $doc_map,
+            'id'        => $id,
             'prev_id'   => $prev_id,
             'next_id'   => $next_id,
         ]);
