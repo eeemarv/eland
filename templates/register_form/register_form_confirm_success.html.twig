@@ -7,8 +7,8 @@
 {%- block cms_edit_extra -%}
 
     {%- if pp_ary().edit is defined
-        and s_role('admin')
-        and is_s_system_self() -%}
+        and su_role('admin')
+        and su_is_system_self() -%}
 
         <div class="panel panel-info">
         <div class="panel-heading">

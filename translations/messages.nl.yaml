@@ -21,6 +21,7 @@ access:
 btn:
   add: Toevoegen
   approve: Goedkeuren
+  bulk: Bulk acties
   cancel: Annuleren
   del: Verwijderen
   download_csv: Download CSV
@@ -29,12 +30,15 @@ btn:
   generate: Genereer
   generate_password_title: >-
     Genereer automatisch een paswoord
+  password: Paswoord
   password_reset: Reset Paswoord
   register: Inschrijven
   save_password: Bewaar paswoord
   send: Verzenden
   show: Toon
   show_columns: Toon Kolommen
+  transaction: Transactie
+  transaction_to: Transactie naar %user%
   try_again: Opnieuw proberen
 
 date_format:

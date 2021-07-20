@@ -4,10 +4,67 @@
     {{- parent() -}}
     {{- assets_add(['leaflet', 'contacts_user_map.js']) -}}
     {{- assets_add(['jqplot', 'plot_user_transactions.js']) -}}
-    {%- if pp_role('admin') or is_s_owner(id) -%}
+    {%- if pp_role('admin') or su_is_owner(id) -%}
         {{- assets_add(['fileupload', 'upload_image.js']) -}}
     {%- endif -%}
 {%- endblock assets_add -%}
+
+{%- block btn_top_edit -%}
+    {%- if pp_role('admin') -%}
+        {%- include 'include/btn_top/edit.html.twig' with {
+            'btn_route': 'users_edit'
+        } -%}
+    {%- elseif su_is_owner(id) -%}
+        {%- include 'include/btn_top/edit.html.twig' with {
+            'btn_route': 'users_edit_self',
+            'btn_title': 'users_edit_self.title'
+        } -%}
+    {%- endif -%}
+{%- endblock btn_top_edit -%}
+
+{%- block btn_top_del -%}
+    {%- if pp_role('admin') and count_transactions is same as 0 and not su_is_owner(id) -%}
+        {%- include 'include/btn_top/del.html.twig' with {
+            'btn_route': 'users_del',
+            'btn_title': 'users_del.title',
+            'btn_title_trans_params': {
+                '%user%': account(id, schema)
+            }
+        } -%}
+    {%- endif -%}
+{%- endblock btn_top_del -%}
+
+{%- block btn_top_password_edit -%}
+    {%- if pp_role('admin') -%}
+        {%- include 'include/btn_top/password_edit.html.twig' with {
+            'btn_route': 'users_password_edit',
+            'btn_title': 'users_password_edit.title',
+            'btn_title_trans_params': {
+                '%user%': account(id, schema)
+            }
+        } -%}
+    {%- elseif su_is_owner(id) -%}
+        {%- include 'include/btn_top/password_edit.html.twig' with {
+            'btn_route': 'users_password_edit_self',
+            'btn_title': 'users_password_edit_self.title'
+        } -%}
+    {%- endif -%}
+{%- endblock btn_top_password_edit -%}
+
+{%- block btn_top_transaction -%}
+    {%- if config_bool('transactions.enabled', schema)
+        and config_bool('transactions.enabled', su_schema())
+        and (pp_role('admin') or not su_is_owner(id))  -%}
+        {%- include 'include/btn_top/transaction.html.twig' with {
+            'btn_route': 'transactions_add',
+            'btn_route_params': su_ary()|merge({'tuid': id, 'tus': schema}),
+            'btn_title': 'btn.transaction_to',
+            'btn_title_trans_params': {
+                '%user%': account(id, schema)
+            }
+        } -%}
+    {%- endif -%}
+{%- endblock btn_top_transaction -%}
 
 {%- block btn_item_nav -%}
     {%- include 'include/nav_btn_group.html.twig' with {

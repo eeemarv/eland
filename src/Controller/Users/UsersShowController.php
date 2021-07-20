@@ -13,7 +13,6 @@ use App\Cnst\RoleCnst;
 use App\Controller\Contacts\ContactsUserShowInlineController;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
-use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Repository\AccountRepository;
 use App\Service\AlertService;
@@ -79,7 +78,6 @@ class UsersShowController extends AbstractController
         AccountRender $account_render,
         AlertService $alert_service,
         AssetsService $assets_service,
-        BtnTopRender $btn_top_render,
         ConfigService $config_service,
         FormTokenService $form_token_service,
         ItemAccessService $item_access_service,
@@ -329,50 +327,6 @@ class UsersShowController extends AbstractController
         );
 
         $contacts_content = $contacts_response->getContent();
-
-        if ($pp->is_admin())
-        {
-            $btn_top_render->edit('users_edit', $pp->ary(),
-                ['id' => $id], 'Gebruiker aanpassen');
-
-            $btn_top_render->edit_pw('users_password_edit', $pp->ary(),
-                ['id' => $id], 'Paswoord aanpassen');
-        }
-        else if ($su->is_owner($id))
-        {
-            $btn_top_render->edit('users_edit_self', $pp->ary(),
-                [], 'Mijn profiel aanpassen');
-
-            $btn_top_render->edit_pw('users_password_edit_self', $pp->ary(),
-                [], 'Mijn paswoord aanpassen');
-        }
-
-        if ($pp->is_admin() && !$count_transactions && !$su->is_owner($id))
-        {
-            $btn_top_render->del('users_del', $pp->ary(),
-                ['id' => $id], 'Gebruiker verwijderen');
-        }
-
-        if ($transactions_enabled
-            && ($pp->is_admin()
-                || (!$su->is_owner($id) && $user['status'] !== 7
-                && !($pp->is_guest() && $su->is_system_self()))))
-        {
-            $tus = ['tuid' => $id];
-
-            if (!$su->is_system_self())
-            {
-                $tus['tus'] = $pp->schema();
-            }
-
-            $self_transactions_enabled = $config_service->get_bool('transactions.enabled', $su->schema());
-
-            if ($self_transactions_enabled)
-            {
-                $btn_top_render->add_trans('transactions_add', $su->ary(),
-                    $tus, 'Transactie naar ' . $account_render->str($id, $pp->schema()));
-            }
-        }
 
         $out = '<div class="row">';
         $out .= '<div class="col-md-6">';
@@ -788,6 +742,8 @@ class UsersShowController extends AbstractController
             'is_self'   => $is_self,
             'prev_id'   => $prev_id,
             'next_id'   => $next_id,
+            'count_transactions'    => $count_transactions,
+            'count_messages'        => $count_messages,
             'intersystem_missing'   => $intersystem_missing,
             'intersystem_id'        => $intersystem_id,
         ]);

@@ -3,7 +3,6 @@
 namespace App\Controller\Users;
 
 use App\Render\AccountRender;
-use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Service\CacheService;
 use App\Service\ConfigService;
@@ -39,7 +38,6 @@ class UsersMapController extends AbstractController
         string $status,
         Db $db,
         AccountRender $account_render,
-        BtnTopRender $btn_top_render,
         CacheService $cache_service,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
@@ -189,12 +187,6 @@ class UsersMapController extends AbstractController
         {
             $ref_geo['lat'] = $lat_add / $shown_count;
             $ref_geo['lng'] = $lng_add / $shown_count;
-        }
-
-        if ($pp->is_admin())
-        {
-            $btn_top_render->add('users_add', $pp->ary(),
-                [], 'Gebruiker toevoegen');
         }
 
         $data_map = json_encode([

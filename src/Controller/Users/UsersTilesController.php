@@ -6,7 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Cnst\StatusCnst;
-use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
@@ -39,7 +38,6 @@ class UsersTilesController extends AbstractController
         Request $request,
         string $status,
         Db $db,
-        BtnTopRender $btn_top_render,
         LinkRender $link_render,
         ItemAccessService $item_access_service,
         ConfigService $config_service,
@@ -87,12 +85,6 @@ class UsersTilesController extends AbstractController
             where 1 = 1 ' . $sql_where . '
             order by u.code asc',
             $sql['params'], $sql['types']);
-
-        if ($pp->is_admin())
-        {
-            $btn_top_render->add('users_add', $pp->ary(),
-                [], 'Gebruiker toevoegen');
-        }
 
         $out = UsersListController::get_filter_and_tab_selector(
             $params,

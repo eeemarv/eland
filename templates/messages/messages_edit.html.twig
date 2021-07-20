@@ -3,7 +3,7 @@
 {%- block heading_title -%}
     {%- set heading_title_trans_key = 'messages_edit.title.'
         ~ message.offer_want ~ '.'
-        ~ (is_s_owner(message.user_id) ? 'personal' : 'admin') -%}
+        ~ (su_is_owner(message.user_id) ? 'personal' : 'admin') -%}
 
     {{- heading_title_trans_key|trans({
         '%subject%': message.subject,

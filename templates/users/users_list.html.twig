@@ -23,6 +23,12 @@
     {%- include 'include/btn_show_columns.html.twig' -%}
 {%- endblock btn_show_columns -%}
 
+{%- block btn_top_bulk -%}
+    {%- if pp_role('admin') -%}
+        {%- include 'include/btn_top/bulk.html.twig' -%}
+    {%- endif -%}
+{%- endblock btn_top_bulk -%}
+
 {%- block css -%}
     {{- parent() -}}
     {{- encore_entry_link_tags('footable') -}}

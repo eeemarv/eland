@@ -1,4 +1,4 @@
-{%- if pp_ary().edit.en is defined and s_role('admin') and is_s_system_self() -%}
+{%- if pp_ary().edit.en is defined and su_role('admin') and su_is_system_self() -%}
 	{%- set cms_token = constant('App\\Cnst\\PagesCnst::CMS_TOKEN') -%}
 
 	{%- set cms_linked = {

@@ -1,0 +1,7 @@
+<a href="{{- path(btn_route, pp_ary()|merge(btn_route_params|default({}))) -}}" class="btn btn-{{- btn_class }} btn-lg" title="{{- btn_title|trans(btn_title_trans_params|default({})) -}}">
+    <i class="fa fa-{{- fa -}}"></i>
+    <span class="hidden-xs hidden-sm">
+        &nbsp;
+        {{- btn_label|trans -}}
+    </span>
+</a>

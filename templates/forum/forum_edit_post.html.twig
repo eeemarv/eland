@@ -7,7 +7,7 @@
 
 {%- block heading_title -%}
     {%- set heading_title_trans_key = 'forum_edit_post.title.'
-        ~ (is_s_owner(forum_post.user_id) ? 'personal' : 'admin') -%}
+        ~ (su_is_owner(forum_post.user_id) ? 'personal' : 'admin') -%}
 
     {{- heading_title_trans_key|trans({
         '%topic_subject%': forum_topic.subject,

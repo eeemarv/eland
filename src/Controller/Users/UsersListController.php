@@ -12,7 +12,6 @@ use App\Cnst\BulkCnst;
 use App\HtmlProcess\HtmlPurifier;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
-use App\Render\BtnTopRender;
 use App\Render\SelectRender;
 use App\Repository\AccountRepository;
 use App\Service\AlertService;
@@ -65,7 +64,6 @@ class UsersListController extends AbstractController
         SessionInterface $session,
         AccountRender $account_render,
         AlertService $alert_service,
-        BtnTopRender $btn_top_render,
         CacheService $cache_service,
         ConfigService $config_service,
         DateFormatService $date_format_service,
@@ -1146,14 +1144,6 @@ class UsersListController extends AbstractController
                 $activity[$row['id_from']]['trans']['total'] += $row['count'];
                 $activity[$row['id_from']]['amount']['total'] += $row['sum'];
             }
-        }
-
-        if ($pp->is_admin())
-        {
-            $btn_top_render->add('users_add', $pp->ary(),
-                [], 'Gebruiker toevoegen');
-
-            $btn_top_render->local('#bulk_actions', 'Bulk acties', 'envelope-o');
         }
 
         $f_col = '';

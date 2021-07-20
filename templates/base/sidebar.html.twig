@@ -13,7 +13,7 @@
 		{{- assets_add(['csv.js']) -}}
 	{%- endif -%}
 
-	{%- if pp_ary().edit.en is defined and s_role('admin') and is_s_system_self() -%}
+	{%- if pp_ary().edit.en is defined and su_role('admin') and su_is_system_self() -%}
 		{{- assets_add([
 			'codemirror',
 			'summernote',
@@ -122,6 +122,13 @@
 					<i class="fa fa-chevron-left"></i>
 				</button>
 			</div>
+
+			{%- block btn_top_add -%}{%- endblock -%}
+			{%- block btn_top_edit -%}{%- endblock -%}
+			{%- block btn_top_del -%}{%- endblock -%}
+			{%- block btn_top_password_edit -%}{%- endblock -%}
+			{%- block btn_top_transaction -%}{%- endblock -%}
+			{%- block btn_top_bulk -%}{%- endblock -%}
 
 			{%- block btn_top -%}
 				{{- btn_top() -}}

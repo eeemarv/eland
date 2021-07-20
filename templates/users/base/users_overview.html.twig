@@ -9,3 +9,12 @@
 {%- block btn_view -%}
     {%- include 'include/view_btn_group.html.twig' with {'btns': users_view_btns} -%}
 {%- endblock btn_view -%}
+
+{%- block btn_top_add -%}
+    {%- if pp_role('admin') -%}
+        {%- include 'include/btn_top/add.html.twig' with {
+            'btn_route': 'users_add',
+            'btn_title': 'users_add.title'
+        } -%}
+    {%- endif -%}
+{%- endblock btn_top_add -%}

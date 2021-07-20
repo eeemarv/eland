@@ -4,7 +4,7 @@
     {{- parent() -}}
     {{- assets_add(['leaflet', 'contacts_user_map.js',]) -}}
     {{- assets_add(['jssor', 'messages_show_images_slider.js',]) -}}
-    {%- if pp_role('admin') or is_s_owner(message.user_id) -%}
+    {%- if pp_role('admin') or su_is_owner(message.user_id) -%}
         {{- assets_add(['fileupload', 'messages_show_images_upload.js',]) -}}
     {%- endif -%}
 {%- endblock assets_add -%}
