@@ -114,7 +114,6 @@ class NewsDelController extends AbstractController
         return $this->render('news/news_del.html.twig', [
             'content'   => $out,
             'news_item' => $news_item,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

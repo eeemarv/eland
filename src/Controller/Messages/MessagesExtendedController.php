@@ -122,7 +122,6 @@ class MessagesExtendedController extends AbstractController
                 'cid'           => $cid,
                 'filter_uid'    => $filter_uid,
                 'filtered'      => $filtered,
-                'schema'        => $pp->schema(),
             ]);
         }
 
@@ -226,7 +225,6 @@ class MessagesExtendedController extends AbstractController
             'cid'           => $cid,
             'filter_uid'    => $filter_uid,
             'filtered'      => $filtered,
-            'schema'        => $pp->schema(),
         ]);
     }
 }

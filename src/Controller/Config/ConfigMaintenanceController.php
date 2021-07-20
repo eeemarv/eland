@@ -67,7 +67,6 @@ class ConfigMaintenanceController extends AbstractController
 
         return $this->render('config/config_maintenance.html.twig', [
             'form'          => $form->createView(),
-            'schema'        => $pp->schema(),
         ]);
     }
 }

@@ -652,7 +652,6 @@ class ContactsController extends AbstractController
             return $this->render('contacts/contacts.html.twig', [
                 'content'   => $out,
                 'filtered'  => $filtered,
-                'schema'    => $pp->schema(),
             ]);
         }
 
@@ -796,7 +795,6 @@ class ContactsController extends AbstractController
         return $this->render('contacts/contacts.html.twig', [
             'content'   => $out,
             'filtered'  => $filtered,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

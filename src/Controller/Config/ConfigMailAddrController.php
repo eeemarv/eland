@@ -86,7 +86,6 @@ class ConfigMailAddrController extends AbstractController
 
         return $this->render('config/config_mail_addr.html.twig', [
             'form'          => $form->createView(),
-            'schema'        => $pp->schema(),
         ]);
     }
 }

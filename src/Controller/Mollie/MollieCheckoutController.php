@@ -203,7 +203,6 @@ class MollieCheckoutController extends AbstractController
             'content'       => $out,
             'is_paid'       => $mollie_payment['is_paid'],
             'is_canceled'   => $mollie_payment['is_canceled'],
-            'schema'        => $pp->schema(),
         ]);
     }
 }

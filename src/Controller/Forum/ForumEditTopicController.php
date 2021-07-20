@@ -185,7 +185,6 @@ class ForumEditTopicController extends AbstractController
         return $this->render('forum/forum_edit_topic.html.twig', [
             'content'       => $out,
             'forum_topic'   => $forum_topic,
-            'schema'        => $pp->schema(),
         ]);
     }
 }

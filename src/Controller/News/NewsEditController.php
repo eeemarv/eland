@@ -234,7 +234,6 @@ class NewsEditController extends AbstractController
         return $this->render('news/news_edit.html.twig', [
             'content'   => $out,
             'news_item' => $news_item,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

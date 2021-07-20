@@ -115,7 +115,6 @@ class ContactTypesAddController extends AbstractController
 
         return $this->render('contact_types/contact_types_add.html.twig', [
             'content'   => $out,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

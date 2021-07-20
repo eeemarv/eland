@@ -119,7 +119,6 @@ class MollieConfigController extends AbstractController
 
         return $this->render('mollie/mollie_config.html.twig', [
             'content'   => $out,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

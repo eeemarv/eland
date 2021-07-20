@@ -153,7 +153,6 @@ class MessagesImagesDelController extends AbstractController
         return $this->render('messages/messages_images_del.html.twig', [
             'content'   => $out,
             'message'   => $message,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

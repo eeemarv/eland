@@ -129,7 +129,6 @@ class CategoriesAddController extends AbstractController
 
         return $this->render('categories/categories_add.html.twig', [
             'content'   => $out,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

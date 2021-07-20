@@ -436,7 +436,6 @@ class MessagesListController extends AbstractController
                 'filter_cid'    => $filter_cid,
                 'cid'           => $cid,
                 'filtered'      => $filtered,
-                'schema'        => $pp->schema(),
             ]);
         }
 
@@ -860,7 +859,6 @@ class MessagesListController extends AbstractController
             'filter_cid'    => $filter_cid,
             'cid'           => $cid,
             'filtered'      => $filtered,
-            'schema'        => $pp->schema(),
         ]);
     }
 

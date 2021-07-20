@@ -69,7 +69,6 @@ class NewsListController extends AbstractController
 
             return $this->render('news/news_list.html.twig', [
                 'content'   => $content,
-                'schema'    => $pp->schema(),
             ]);
         }
 
@@ -130,7 +129,6 @@ class NewsListController extends AbstractController
 
         return $this->render('news/news_list.html.twig', [
             'content'   => $out,
-            'schema'    => $pp->schema(),
         ]);
     }
 

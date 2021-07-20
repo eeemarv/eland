@@ -196,7 +196,6 @@ class UsersTilesController extends AbstractController
 
         return $this->render('users/users_tiles.html.twig', [
             'content'   => $out,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

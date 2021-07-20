@@ -358,7 +358,6 @@ class TransactionsEditController extends AbstractController
 
         return $this->render('transactions/transactions_edit.html.twig', [
             'content'   => $out,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

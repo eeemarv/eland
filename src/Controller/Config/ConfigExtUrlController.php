@@ -64,7 +64,6 @@ class ConfigExtUrlController extends AbstractController
 
         return $this->render('config/config_ext_url.html.twig', [
             'form'          => $form->createView(),
-            'schema'        => $pp->schema(),
         ]);
     }
 }

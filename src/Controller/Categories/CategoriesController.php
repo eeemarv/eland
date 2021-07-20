@@ -312,7 +312,6 @@ class CategoriesController extends AbstractController
 
         return $this->render('categories/categories_list.html.twig', [
             'content'   => $out,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

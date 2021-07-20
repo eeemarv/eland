@@ -222,7 +222,6 @@ class DocsMapController extends AbstractController
             'doc_map'   => $doc_map,
             'prev_id'   => $prev_id,
             'next_id'   => $next_id,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

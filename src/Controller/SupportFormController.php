@@ -213,7 +213,6 @@ class SupportFormController extends AbstractController
 
         return $this->render('support_form/support_form.html.twig', [
             'content'   => $out,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

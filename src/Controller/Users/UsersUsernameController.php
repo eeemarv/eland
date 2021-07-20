@@ -65,7 +65,6 @@ class UsersUsernameController extends AbstractController
 
         return $this->render('users/users_username.html.twig', [
             'form'          => $form->createView(),
-            'schema'        => $pp->schema(),
         ]);
     }
 }

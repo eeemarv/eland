@@ -134,7 +134,6 @@ class CategoriesDelController extends AbstractController
         return $this->render('categories/categories_del.html.twig', [
             'content'   => $out,
             'category'  => $category,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

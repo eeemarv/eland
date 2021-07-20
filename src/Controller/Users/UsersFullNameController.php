@@ -71,7 +71,6 @@ class UsersFullNameController extends AbstractController
 
         return $this->render('users/users_full_name.html.twig', [
             'form'          => $form->createView(),
-            'schema'        => $pp->schema(),
         ]);
     }
 }

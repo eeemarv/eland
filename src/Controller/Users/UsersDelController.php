@@ -156,7 +156,6 @@ class UsersDelController extends AbstractController
         return $this->render('users/users_del.html.twig', [
             'content'   => $out,
             'id'        => $id,
-            'schema'    => $pp->schema(),
         ]);
     }
 

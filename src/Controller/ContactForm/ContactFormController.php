@@ -204,7 +204,6 @@ class ContactFormController extends AbstractController
 
         return $this->render('contact_form/contact_form.html.twig', [
             'content'   => $out,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

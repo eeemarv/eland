@@ -254,7 +254,6 @@ class ForumTopicController extends AbstractController
             'forum_topic'   => $forum_topic,
             'prev_id'       => $prev_id,
             'next_id'       => $next_id,
-            'schema'        => $pp->schema(),
         ]);
     }
 

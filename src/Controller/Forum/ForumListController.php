@@ -108,7 +108,6 @@ class ForumListController extends AbstractController
 
             return $this->render('forum/forum_list.html.twig', [
                 'content'   => $out,
-                'schema'    => $pp->schema(),
             ]);
         }
 
@@ -161,7 +160,6 @@ class ForumListController extends AbstractController
 
         return $this->render('forum/forum_list.html.twig', [
             'content'   => $out,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

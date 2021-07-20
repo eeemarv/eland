@@ -201,7 +201,6 @@ class IntersystemsShowController extends AbstractController
         return $this->render('intersystems/intersystems_show.html.twig', [
             'content'   => $out,
             'name'      => $group['groupname'],
-            'schema'    => $pp->schema(),
         ]);
     }
 }

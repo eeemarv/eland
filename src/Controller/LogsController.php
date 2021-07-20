@@ -455,7 +455,6 @@ class LogsController extends AbstractController
         return $this->render('logs/logs.html.twig', [
             'content'   => $out,
             'filtered'  => $filtered,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

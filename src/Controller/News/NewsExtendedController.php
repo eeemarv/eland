@@ -71,7 +71,6 @@ class NewsExtendedController extends AbstractController
 
             return $this->render('news/news_extended.html.twig', [
                 'content'   => $content,
-                'schema'    => $pp->schema(),
             ]);
         }
 
@@ -96,7 +95,6 @@ class NewsExtendedController extends AbstractController
 
         return $this->render('news/news_extended.html.twig', [
             'content'   => $out,
-            'schema'    => $pp->schema(),
         ]);
     }
 

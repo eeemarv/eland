@@ -70,7 +70,6 @@ class ConfigDateFormatController extends AbstractController
 
         return $this->render('config/config_date_format.html.twig', [
             'form'          => $form->createView(),
-            'schema'        => $pp->schema(),
         ]);
     }
 }

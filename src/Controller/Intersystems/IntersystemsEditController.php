@@ -139,7 +139,6 @@ class IntersystemsEditController extends AbstractController
 
         return $this->render('intersystems/intersystems_edit.html.twig', [
             'content'   => $content,
-            'schema'    => $pp->schema(),
         ]);
     }
 

@@ -76,7 +76,6 @@ class ConfigLandingPageController extends AbstractController
 
         return $this->render('config/config_landing_page.html.twig', [
             'form'          => $form->createView(),
-            'schema'        => $pp->schema(),
         ]);
     }
 }

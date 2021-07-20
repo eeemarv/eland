@@ -31,7 +31,6 @@ class HomeController extends AbstractController
         $menu_service->set('home');
 
         return $this->render('pages/home.html.twig', [
-            'schema'    => $pp->schema(),
         ]);
     }
 }

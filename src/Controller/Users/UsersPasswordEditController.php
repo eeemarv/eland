@@ -235,7 +235,6 @@ class UsersPasswordEditController extends AbstractController
             'content'   => $out,
             'is_self'   => $is_self,
             'id'        => $id,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

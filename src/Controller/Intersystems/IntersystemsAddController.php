@@ -144,7 +144,6 @@ class IntersystemsAddController extends AbstractController
 
         return $this->render('intersystems/intersystems_add.html.twig', [
             'content'   => $content,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

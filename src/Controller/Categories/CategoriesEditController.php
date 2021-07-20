@@ -137,7 +137,6 @@ class CategoriesEditController extends AbstractController
         return $this->render('categories/categories_edit.html.twig', [
             'content'   => $out,
             'category'  => $category,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

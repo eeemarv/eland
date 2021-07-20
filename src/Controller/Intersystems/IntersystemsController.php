@@ -248,7 +248,6 @@ class IntersystemsController extends AbstractController
 
         return $this->render('intersystems/intersystems.html.twig', [
             'content'   => $out,
-            'schema'    => $pp->schema(),
         ]);
     }
 

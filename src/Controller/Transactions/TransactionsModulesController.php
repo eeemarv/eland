@@ -85,7 +85,6 @@ class TransactionsModulesController extends AbstractController
 
         return $this->render('transactions/transactions_modules.html.twig', [
             'form'          => $form->createView(),
-            'schema'        => $pp->schema(),
         ]);
     }
 }

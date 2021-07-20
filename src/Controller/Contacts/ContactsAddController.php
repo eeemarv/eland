@@ -431,7 +431,6 @@ class ContactsAddController extends AbstractController
             'content'   => $out,
             'is_self'   => $is_self,
             'user_id'   => $user_id,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

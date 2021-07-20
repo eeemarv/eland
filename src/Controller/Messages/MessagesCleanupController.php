@@ -171,7 +171,6 @@ class MessagesCleanupController extends AbstractController
 
         return $this->render('messages/messages_cleanup.html.twig', [
             'content'   => $out,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

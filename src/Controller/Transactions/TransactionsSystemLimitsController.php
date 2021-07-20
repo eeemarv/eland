@@ -75,7 +75,6 @@ class TransactionsSystemLimitsController extends AbstractController
 
         return $this->render('transactions/transactions_system_limits.html.twig', [
             'form'          => $form->createView(),
-            'schema'        => $pp->schema(),
         ]);
     }
 }

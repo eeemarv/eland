@@ -86,7 +86,6 @@ class UsersConfigNewController extends AbstractController
 
         return $this->render('users/users_config_new.html.twig', [
             'form'          => $form->createView(),
-            'schema'        => $pp->schema(),
         ]);
     }
 }

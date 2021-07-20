@@ -1021,7 +1021,6 @@ class TransactionsMassController extends AbstractController
 
         return $this->render('transactions/transactions_mass.html.twig', [
             'content'   => $out,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

@@ -2004,7 +2004,6 @@ class UsersListController extends AbstractController
 
         return $this->render('users/users_list.html.twig', [
             'content'   => $out,
-            'schema'    => $pp->schema(),
         ]);
     }
 

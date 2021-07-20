@@ -54,7 +54,6 @@ class CalendarListController extends AbstractController
 
             return $this->render('base/navbar.html.twig', [
                 'content'   => $content,
-                'schema'    => $pp->schema(),
             ]);
         }
 
@@ -115,7 +114,6 @@ class CalendarListController extends AbstractController
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
-            'schema'    => $pp->schema(),
         ]);
     }
 

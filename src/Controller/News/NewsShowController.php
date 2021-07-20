@@ -116,7 +116,6 @@ class NewsShowController extends AbstractController
             'news_item' => $news_item,
             'prev_id'   => $prev_id,
             'next_id'   => $next_id,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

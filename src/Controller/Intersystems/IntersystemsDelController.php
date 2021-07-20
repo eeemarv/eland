@@ -106,7 +106,6 @@ class IntersystemsDelController extends AbstractController
         return $this->render('intersystems/intersystems_del.html.twig', [
             'content'   => $out,
             'name'      => $group['groupname'],
-            'schema'    => $pp->schema(),
         ]);
     }
 }

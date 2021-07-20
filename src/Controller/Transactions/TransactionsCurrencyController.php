@@ -81,7 +81,6 @@ class TransactionsCurrencyController extends AbstractController
 
         return $this->render('transactions/transactions_currency.html.twig', [
             'form'          => $form->createView(),
-            'schema'        => $pp->schema(),
         ]);
     }
 }

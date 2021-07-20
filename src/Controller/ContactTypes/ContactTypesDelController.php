@@ -106,7 +106,6 @@ class ContactTypesDelController extends AbstractController
         return $this->render('contact_types/contact_types_del.html.twig', [
             'content'   => $out,
             'name'      => $ct['name'],
-            'schema'    => $pp->schema(),
         ]);
     }
 }

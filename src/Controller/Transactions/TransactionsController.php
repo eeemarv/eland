@@ -941,7 +941,6 @@ class TransactionsController extends AbstractController
                 'filtered'  => $filtered,
                 'is_self'   => $is_self,
                 'uid'       => $filter['uid'] ?? 0,
-                'schema'    => $pp->schema(),
             ]);
         }
 
@@ -1319,7 +1318,6 @@ class TransactionsController extends AbstractController
             'filtered'  => $filtered,
             'is_self'   => $is_self,
             'uid'       => $filter['uid'] ?? 0,
-            'schema'    => $pp->schema(),
         ]);
     }
 

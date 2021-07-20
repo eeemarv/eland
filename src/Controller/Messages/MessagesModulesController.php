@@ -91,7 +91,6 @@ class MessagesModulesController extends AbstractController
 
         return $this->render('messages/messages_modules.html.twig', [
             'form'          => $form->createView(),
-            'schema'        => $pp->schema(),
         ]);
     }
 }

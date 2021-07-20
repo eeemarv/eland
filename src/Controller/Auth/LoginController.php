@@ -368,7 +368,6 @@ class LoginController extends AbstractController
 
         return $this->render('login/login.html.twig', [
             'content'   => $out,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

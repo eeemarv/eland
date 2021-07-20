@@ -519,7 +519,6 @@ class MessagesShowController extends AbstractController
             'message'   => $message,
             'prev_id'   => $prev_id,
             'next_id'   => $next_id,
-            'schema'    => $pp->schema(),
         ]);
     }
 

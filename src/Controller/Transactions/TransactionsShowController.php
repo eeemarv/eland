@@ -553,7 +553,6 @@ class TransactionsShowController extends AbstractController
             'content'   => $out,
             'prev_id'   => $prev_id,
             'next_id'   => $next_id,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

@@ -790,7 +790,6 @@ class UsersShowController extends AbstractController
             'next_id'   => $next_id,
             'intersystem_missing'   => $intersystem_missing,
             'intersystem_id'        => $intersystem_id,
-            'schema'    => $pp->schema(),
         ]);
     }
 

@@ -70,7 +70,6 @@ class RegisterFormConfirmController extends AbstractController
             $template .= '.html.twig';
 
             return $this->render($template, [
-                'schema'    => $pp->schema(),
             ]);
         }
 
@@ -83,7 +82,6 @@ class RegisterFormConfirmController extends AbstractController
             $menu_service->set('register_form');
 
             return $this->render('register_form/register_form_confirm_fail.html.twig', [
-                'schema'    => $pp->schema(),
             ]);
         }
 
@@ -240,7 +238,6 @@ class RegisterFormConfirmController extends AbstractController
         $menu_service->set('register_form');
 
         return $this->render('register_form/register_form_confirm_success.html.twig', [
-            'schema'    => $pp->schema(),
         ]);
     }
 }

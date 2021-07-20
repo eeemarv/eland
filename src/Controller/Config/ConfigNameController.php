@@ -66,7 +66,6 @@ class ConfigNameController extends AbstractController
 
         return $this->render('config/config_name.html.twig', [
             'form'          => $form->createView(),
-            'schema'        => $pp->schema(),
         ]);
     }
 }

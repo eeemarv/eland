@@ -92,7 +92,6 @@ class UsersModulesController extends AbstractController
 
         return $this->render('users/users_modules.html.twig', [
             'form'          => $form->createView(),
-            'schema'        => $pp->schema(),
         ]);
     }
 }

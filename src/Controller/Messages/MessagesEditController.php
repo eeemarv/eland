@@ -906,7 +906,6 @@ class MessagesEditController extends AbstractController
         return $this->render($template, [
             'content'   => $out,
             'message'   => $message,
-            'schema'    => $pp->schema(),
         ]);
     }
 

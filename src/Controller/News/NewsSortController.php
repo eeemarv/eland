@@ -71,7 +71,6 @@ class NewsSortController extends AbstractController
 
         return $this->render('news/news_sort.html.twig', [
             'form'          => $form->createView(),
-            'schema'        => $pp->schema(),
         ]);
     }
 }

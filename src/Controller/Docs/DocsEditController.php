@@ -263,7 +263,6 @@ class DocsEditController extends AbstractController
         return $this->render('docs/docs_edit.html.twig', [
             'content'   => $out,
             'doc'       => $doc,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

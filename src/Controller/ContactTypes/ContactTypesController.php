@@ -152,7 +152,6 @@ class ContactTypesController extends AbstractController
 
         return $this->render('contact_types/contact_types.html.twig', [
             'content'   => $out,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

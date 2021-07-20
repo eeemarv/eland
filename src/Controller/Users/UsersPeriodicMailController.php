@@ -216,7 +216,6 @@ class UsersPeriodicMailController extends AbstractController
             'block_inactive_layout' => $block_inactive_layout,
             'block_select_options'  => $block_select_options,
             'block_ary'             => $block_ary,
-            'schema'                => $pp->schema(),
         ]);
     }
 }

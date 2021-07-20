@@ -3,16 +3,24 @@
 namespace App\Twig;
 
 use App\Service\PageParamsService;
-use App\Service\SessionUserService;
 use Twig\Extension\RuntimeExtensionInterface;
 
-class PpRoleRuntime implements RuntimeExtensionInterface
+class PpRuntime implements RuntimeExtensionInterface
 {
 	public function __construct(
-		protected PageParamsService $pp,
-		protected SessionUserService $su
+		protected PageParamsService $pp
 	)
 	{
+	}
+
+	public function get_ary():array
+	{
+		return $this->pp->ary();
+	}
+
+	public function get_schema():string
+	{
+		return $this->pp->schema();
 	}
 
 	public function has_role(string $role):bool

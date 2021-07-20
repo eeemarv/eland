@@ -332,7 +332,6 @@ class UsersMapController extends AbstractController
 
         return $this->render('users/users_map.html.twig', [
             'content'   => $out,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

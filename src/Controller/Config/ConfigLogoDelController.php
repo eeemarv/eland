@@ -63,7 +63,6 @@ class ConfigLogoDelController extends AbstractController
 
         return $this->render('config/config_logo_del.html.twig', [
             'form'          => $form->createView(),
-            'schema'        => $pp->schema(),
         ]);
     }
 }

@@ -173,7 +173,6 @@ class TransactionsAutoMinLimitController extends AbstractController
 
         return $this->render('transactions/transactions_autominlimit.html.twig', [
             'content'   => $out,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

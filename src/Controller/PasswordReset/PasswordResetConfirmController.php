@@ -154,7 +154,6 @@ class PasswordResetConfirmController extends AbstractController
 
         return $this->render('password_reset/password_reset_confirm.html.twig', [
             'content'   => $out,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

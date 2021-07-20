@@ -170,7 +170,6 @@ class DocsMapEditController extends AbstractController
         return $this->render('docs/docs_map_edit.html.twig', [
             'content'   => $out,
             'doc_map'   => $doc_map,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

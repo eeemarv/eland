@@ -1347,7 +1347,6 @@ class UsersEditController extends AbstractController
             'content'   => $out,
             'id'        => $id,
             'is_self'   => $is_self,
-            'schema'    => $pp->schema(),
         ]);
     }
 

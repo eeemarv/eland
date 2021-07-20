@@ -255,7 +255,6 @@ class RegisterFormController extends AbstractController
 
         return $this->render('register_form/register_form.html.twig', [
             'content'   => $out,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

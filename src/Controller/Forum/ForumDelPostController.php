@@ -132,7 +132,6 @@ class ForumDelPostController extends AbstractController
             'content'       => $out,
             'forum_topic'   => $forum_topic,
             'forum_post'    => $forum_post,
-            'schema'        => $pp->schema(),
         ]);
     }
 }

@@ -252,7 +252,6 @@ class ExportController extends AbstractController
 
         return $this->render('export/export.html.twig', [
             'content'   => $out,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

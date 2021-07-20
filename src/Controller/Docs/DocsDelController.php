@@ -153,7 +153,6 @@ class DocsDelController extends AbstractController
         return $this->render('docs/docs_del.html.twig', [
             'content'   => $out,
             'doc'       => $doc,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

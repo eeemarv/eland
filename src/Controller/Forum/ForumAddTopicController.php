@@ -157,7 +157,6 @@ class ForumAddTopicController extends AbstractController
 
         return $this->render('forum/forum_add_topic.html.twig', [
             'content'   => $out,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

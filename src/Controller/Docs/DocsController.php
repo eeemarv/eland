@@ -253,7 +253,6 @@ class DocsController extends AbstractController
 
         return $this->render('docs/docs.html.twig', [
             'content'   => $out,
-            'schema'    => $pp->schema(),
         ]);
     }
 }

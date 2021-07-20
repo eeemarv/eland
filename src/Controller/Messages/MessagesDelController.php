@@ -175,7 +175,6 @@ class MessagesDelController extends AbstractController
         return $this->render('messages/messages_del.html.twig', [
             'content'   => $out,
             'message'   => $message,
-            'schema'    => $pp->schema(),
         ]);
     }
 }
