@@ -258,6 +258,12 @@ object_info:
   per_unit: >-
     per %unit%
 
+pagination:
+  row_count_and_page_pos: >-
+    Totaal: %row_count%, Pagina %page% van %page_num%
+  per_page: Per pagina
+  total: Totaal
+
 unique_filter:
   item_not_unique: >-
     Dit item bestaat reeds!

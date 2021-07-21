@@ -30,6 +30,10 @@
     {%- include 'include/heading_btn_filter.html.twig' -%}
 {%- endblock heading_append -%}
 
+{%- block pagination -%}
+    {%- include 'include/pagination.html.twig' -%}
+{%- endblock pagination -%}
+
 {%- block css -%}
     {{- parent() -}}
     {{- encore_entry_link_tags('datepicker') -}}

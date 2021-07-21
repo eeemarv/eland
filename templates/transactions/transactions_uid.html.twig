@@ -1,25 +1,5 @@
 {%- extends 'transactions/transactions_list.html.twig' -%}
 
-{#
-if ($filter_uid)
-{
-    if ($user['status'] != 7)
-    {
-        if ($is_owner)
-        {
-            $btn_top_render->add('transactions_add', $pp->ary(),
-                [], 'Transactie toevoegen');
-        }
-        else
-        {
-            $btn_top_render->add_trans('transactions_add', $pp->ary(),
-                ['tuid' => $user['id']],
-                'Transactie naar ' . $user_str);
-        }
-    }
-}
-#}
-
 {%- block btn_top_add -%}
     {%- if pp_role('admin') or pp_role('user') -%}
         {%- if is_self -%}

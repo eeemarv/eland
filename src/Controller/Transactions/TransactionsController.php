@@ -894,8 +894,10 @@ class TransactionsController extends AbstractController
 
             return $this->render($template, [
                 'content'   => $out,
+                'row_count' => $row_count,
                 'filtered'  => $filtered,
                 'is_self'   => $is_self,
+                'bulk_actions_enabled'  => $bulk_actions_enabled,
                 'uid'       => $filter['uid'] ?? 0,
             ]);
         }
