@@ -16,18 +16,19 @@
     'config_maintenance': 'config_maintenance.title'
 } -%}
 
+{%- block pane_select -%}
+    <ul class="nav nav-pills">
+        {%- for rt, lbl in config_menu -%}
+            <li role="presentation"{%- if app.request.get('_route') == rt %} class="active"{%- endif -%}>
+                <a href="{{- path(rt, pp_ary()) -}}">
+                    {{- lbl|trans -}}
+                </a>
+            </li>
+        {%- endfor -%}
+    </ul>
+{%- endblock pane_select -%}
+
 {%- block content -%}
-
-<ul class="nav nav-pills">
-    {%- for rt, lbl in config_menu -%}
-        <li role="presentation"{%- if app.request.get('_route') == rt %} class="active"{%- endif -%}>
-            <a href="{{- path(rt, pp_ary()) -}}">
-                {{- lbl|trans -}}
-            </a>
-        </li>
-    {%- endfor -%}
-</ul>
-
 <div class="panel panel-info">
     <div class="panel-heading">
         {%- block config_heading -%}

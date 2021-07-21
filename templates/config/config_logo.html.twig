@@ -5,9 +5,9 @@
     {{- assets_add(['fileupload', 'upload_image.js']) -}}
 {%- endblock assets_add -%}
 
-{%- set logo = config_str('system.logo', schema) -%}
-
 {%- block pane_content -%}
+
+{%- set logo = config_str('system.logo', schema) -%}
 
 <div class="panel-body bg-info">
     <div class="col-md-6">
