@@ -14,6 +14,13 @@
     </div>
 {%- endblock form_content -%}
 
+{%- block cancel_btn -%}
+    <a href="{{- path('config_logo', pp_ary()) -}}" class="btn btn-lg btn-default">
+        {{- 'btn.cancel'|trans -}}
+    </a>
+    &nbsp;
+{%- endblock -%}
+
 {%- block submit_btn -%}
     {{- form_widget(form.submit, {
         'label': 'btn.del',
