@@ -887,8 +887,11 @@ class TransactionsController extends AbstractController
             $menu_service->set('transactions');
 
             return $this->render($template, [
-                'content'   => $out,
-                'row_count' => $row_count,
+                'data_list_raw'         => $out,
+                'filter_form_raw'       => $flt,
+                'bulk_actions_raw'      => '',
+                'footnote'              => '',
+                'row_count'             => $row_count,
                 'filtered'  => $filtered,
                 'is_self'   => $is_self,
                 'bulk_actions_enabled'  => $bulk_actions_enabled,
@@ -1266,7 +1269,7 @@ class TransactionsController extends AbstractController
         return $this->render($template, [
             'data_list_raw'         => $out,
             'filter_form_raw'       => $flt,
-            'bulk_actions_raw'      => $blk,
+            'bulk_actions_raw'      => $blk ?? '',
             'footnote'              => $footnote,
             'row_count'             => $row_count,
             'filtered'              => $filtered,
