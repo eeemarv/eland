@@ -41,11 +41,23 @@
 {%- block content -%}{%- endblock -%}
 
 {%- block data_list -%}
-    {{- data_list_raw|raw -}}
+    {%- if row_count -%}
+        {{- data_list_raw|raw -}}
+    {%- else -%}
+        {%- include 'include/no_results.html.twig' -%}
+    {%- endif -%}
 {%- endblock data_list -%}
 
 {%- block footnote -%}
-    {{- footnote|raw -}}
+    <ul>
+        <li>
+            {{- 'transactions.amount_sum'|trans({
+                '%amount_sum%': amount_sum,
+                '%currency%': config_str('transactions.currency.name', schema)
+            }) -}}
+        </li>
+        {%- include 'transactions/include/valuation.html.twig' -%}
+    </ul>
 {%- endblock footnote -%}
 
 {%- block bulk_actions -%}

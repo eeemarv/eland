@@ -876,29 +876,6 @@ class TransactionsController extends AbstractController
 
         $out = '';
 
-        if (!count($transactions))
-        {
-            $out .= '<br>';
-            $out .= '<div class="panel panel-default">';
-            $out .= '<div class="panel-body">';
-            $out .= '<p>Er zijn geen resultaten.</p>';
-            $out .= '</div></div>';
-
-            $menu_service->set('transactions');
-
-            return $this->render($template, [
-                'data_list_raw'         => $out,
-                'filter_form_raw'       => $flt,
-                'bulk_actions_raw'      => '',
-                'footnote'              => '',
-                'row_count'             => $row_count,
-                'filtered'  => $filtered,
-                'is_self'   => $is_self,
-                'bulk_actions_enabled'  => $bulk_actions_enabled,
-                'uid'       => $filter['uid'] ?? 0,
-            ]);
-        }
-
         $out .= '<div class="panel panel-primary printview">';
         $out .= '<div class="table-responsive">';
         $out .= '<table class="table table-bordered table-striped ';
@@ -1179,17 +1156,6 @@ class TransactionsController extends AbstractController
 
         $out .= '</table></div></div>';
 
-        $footnote = '<ul>';
-        $footnote .= '<li>';
-        $footnote .= 'Totaal: ';
-        $footnote .= '<strong>';
-        $footnote .= $amount_sum;
-        $footnote .= '</strong> ';
-        $footnote .= $config_service->get_str('transactions.currency.name', $pp->schema());
-        $footnote .= '</li>';
-        $footnote .= self::get_valuation($config_service, $pp->schema());
-        $footnote .= '</ul>';
-
         if ($pp->is_admin() && $bulk_actions_enabled)
         {
             $blk = BulkCnst::TPL_SELECT_BUTTONS;
@@ -1270,8 +1236,8 @@ class TransactionsController extends AbstractController
             'data_list_raw'         => $out,
             'filter_form_raw'       => $flt,
             'bulk_actions_raw'      => $blk ?? '',
-            'footnote'              => $footnote,
             'row_count'             => $row_count,
+            'amount_sum'            => $amount_sum,
             'filtered'              => $filtered,
             'is_self'               => $is_self,
             'bulk_actions_enabled'  => $bulk_actions_enabled,

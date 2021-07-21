@@ -1,5 +1,9 @@
+lang: Nederlands
 var: >
   %var%
+
+no_results: >-
+  Er zijn geen resultaten.
 
 access:
   admin:
@@ -817,6 +821,10 @@ support_form:
 
 transactions:
   title: Transacties
+  amount_sum: >-
+    Totaal: %amount_sum% %currency%
+  valuation: >-
+    Valuatie: %per_hour_ratio% %currency% per uur.
 
 transactions_add:
   title: Nieuwe transactie
