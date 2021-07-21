@@ -6,7 +6,6 @@ use App\Cnst\BulkCnst;
 use App\Cnst\MessageTypeCnst;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
-use App\Render\PaginationRender;
 use App\Render\SelectRender;
 use App\Service\AlertService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -72,7 +71,6 @@ class TransactionsController extends AbstractController
         DateFormatService $date_format_service,
         IntersystemsService $intersystems_service,
         LinkRender $link_render,
-        PaginationRender $pagination_render,
         SelectRender $select_render,
         TypeaheadService $typeahead_service,
         PageParamsService $pp,
@@ -582,9 +580,6 @@ class TransactionsController extends AbstractController
             }
         }
 
-        $pagination_render->init($vr_route, $pp->ary(),
-            $row_count, $params);
-
         $asc_preset_ary = [
             'asc'	=> 0,
             'fa' 	=> 'sort',
@@ -645,40 +640,40 @@ class TransactionsController extends AbstractController
         $template .= $filter_uid ? 'uid' : 'list';
         $template .= '.html.twig';
 
-        $out = '';
+        $flt = '';
 
-        $out .= '<div class="panel panel-info';
-        $out .= $filtered ? '' : ' collapse';
-        $out .= '" id="filter">';
-        $out .= '<div class="panel-heading">';
+        $flt .= '<div class="panel panel-info';
+        $flt .= $filtered ? '' : ' collapse';
+        $flt .= '" id="filter">';
+        $flt .= '<div class="panel-heading">';
 
-        $out .= '<form method="get" ';
-        $out .= 'class="form-horizontal" ';
-        $out .= 'action="';
-        $out .= $link_render->context_path('transactions', $pp->ary(), []);
-        $out .= '">';
+        $flt .= '<form method="get" ';
+        $flt .= 'class="form-horizontal" ';
+        $flt .= 'action="';
+        $flt .= $link_render->context_path('transactions', $pp->ary(), []);
+        $flt .= '">';
 
-        $out .= '<div class="row">';
+        $flt .= '<div class="row">';
 
-        $out .= '<div class="col-sm-12">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<i class="fa fa-search"></i>';
-        $out .= '</span>';
-        $out .= '<input type="text" class="form-control" id="q" value="';
-        $out .= $filter['q'] ?? '';
-        $out .= '" name="f[q]" placeholder="Zoekterm">';
-        $out .= '</div>';
-        $out .= '</div>';
+        $flt .= '<div class="col-sm-12">';
+        $flt .= '<div class="input-group margin-bottom">';
+        $flt .= '<span class="input-group-addon">';
+        $flt .= '<i class="fa fa-search"></i>';
+        $flt .= '</span>';
+        $flt .= '<input type="text" class="form-control" id="q" value="';
+        $flt .= $filter['q'] ?? '';
+        $flt .= '" name="f[q]" placeholder="Zoekterm">';
+        $flt .= '</div>';
+        $flt .= '</div>';
 
-        $out .= '</div>';
+        $flt .= '</div>';
 
-        $out .= '<div class="row">';
+        $flt .= '<div class="row">';
 
-        $out .= '<div class="col-sm-5">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="fcode_addon">Van ';
-        $out .= '<span class="fa fa-user"></span></span>';
+        $flt .= '<div class="col-sm-5">';
+        $flt .= '<div class="input-group margin-bottom">';
+        $flt .= '<span class="input-group-addon" id="fcode_addon">Van ';
+        $flt .= '<span class="fa fa-user"></span></span>';
 
         $typeahead_service->ini($pp->ary())
             ->add('accounts', ['status' => 'active']);
@@ -695,27 +690,27 @@ class TransactionsController extends AbstractController
             $typeahead_service->add('accounts', ['status' => 'im']);
         }
 
-        $out .= '<input type="text" class="form-control" ';
-        $out .= 'aria-describedby="fcode_addon" ';
+        $flt .= '<input type="text" class="form-control" ';
+        $flt .= 'aria-describedby="fcode_addon" ';
 
-        $out .= 'data-typeahead="';
+        $flt .= 'data-typeahead="';
 
-        $out .= $typeahead_service->str([
+        $flt .= $typeahead_service->str([
             'filter'		=> 'accounts',
             'new_users_days'        => $new_users_days,
             'show_new_status'       => $show_new_status,
             'show_leaving_status'   => $show_leaving_status,
         ]);
 
-        $out .= '" ';
+        $flt .= '" ';
 
-        $out .= 'name="f[fcode]" id="fcode" placeholder="Account Code" ';
-        $out .= 'value="';
-        $out .= $fcode ?? '';
-        $out .= '">';
+        $flt .= 'name="f[fcode]" id="fcode" placeholder="Account Code" ';
+        $flt .= 'value="';
+        $flt .= $fcode ?? '';
+        $flt .= '">';
 
-        $out .= '</div>';
-        $out .= '</div>';
+        $flt .= '</div>';
+        $flt .= '</div>';
 
         $andor_options = [
             'and'	=> 'EN',
@@ -723,93 +718,93 @@ class TransactionsController extends AbstractController
             'nor'	=> 'NOCH',
         ];
 
-        $out .= '<div class="col-sm-2">';
-        $out .= '<select class="form-control margin-bottom" name="f[andor]">';
-        $out .= $select_render->get_options($andor_options, $filter['andor'] ?? 'and');
-        $out .= '</select>';
-        $out .= '</div>';
+        $flt .= '<div class="col-sm-2">';
+        $flt .= '<select class="form-control margin-bottom" name="f[andor]">';
+        $flt .= $select_render->get_options($andor_options, $filter['andor'] ?? 'and');
+        $flt .= '</select>';
+        $flt .= '</div>';
 
-        $out .= '<div class="col-sm-5">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="tcode_addon">Naar ';
-        $out .= '<span class="fa fa-user"></span></span>';
-        $out .= '<input type="text" class="form-control margin-bottom" ';
-        $out .= 'data-typeahead-source="fcode" ';
-        $out .= 'placeholder="Account Code" ';
-        $out .= 'aria-describedby="tcode_addon" ';
-        $out .= 'name="f[tcode]" value="';
-        $out .= $tcode ?? '';
-        $out .= '">';
-        $out .= '</div>';
-        $out .= '</div>';
+        $flt .= '<div class="col-sm-5">';
+        $flt .= '<div class="input-group margin-bottom">';
+        $flt .= '<span class="input-group-addon" id="tcode_addon">Naar ';
+        $flt .= '<span class="fa fa-user"></span></span>';
+        $flt .= '<input type="text" class="form-control margin-bottom" ';
+        $flt .= 'data-typeahead-source="fcode" ';
+        $flt .= 'placeholder="Account Code" ';
+        $flt .= 'aria-describedby="tcode_addon" ';
+        $flt .= 'name="f[tcode]" value="';
+        $flt .= $tcode ?? '';
+        $flt .= '">';
+        $flt .= '</div>';
+        $flt .= '</div>';
 
-        $out .= '</div>';
+        $flt .= '</div>';
 
-        $out .= '<div class="row">';
+        $flt .= '<div class="row">';
 
         $date_col_width = $service_stuff_enabled ? '6' : '5';
 
-        $out .= '<div class="col-sm-' . $date_col_width . '">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="fdate_addon">Vanaf ';
-        $out .= '<span class="fa fa-calendar"></span></span>';
-        $out .= '<input type="text" class="form-control margin-bottom" ';
-        $out .= 'aria-describedby="fdate_addon" ';
+        $flt .= '<div class="col-sm-' . $date_col_width . '">';
+        $flt .= '<div class="input-group margin-bottom">';
+        $flt .= '<span class="input-group-addon" id="fdate_addon">Vanaf ';
+        $flt .= '<span class="fa fa-calendar"></span></span>';
+        $flt .= '<input type="text" class="form-control margin-bottom" ';
+        $flt .= 'aria-describedby="fdate_addon" ';
 
-        $out .= 'id="fdate" name="f[fdate]" ';
-        $out .= 'value="';
-        $out .= $fdate ?? '';
-        $out .= '" ';
-        $out .= 'data-provide="datepicker" ';
-        $out .= 'data-date-format="';
-        $out .= $date_format_service->datepicker_format($pp->schema());
-        $out .= '" ';
-        $out .= 'data-date-default-view-date="-1y" ';
-        $out .= 'data-date-end-date="0d" ';
-        $out .= 'data-date-language="nl" ';
-        $out .= 'data-date-today-highlight="true" ';
-        $out .= 'data-date-autoclose="true" ';
-        $out .= 'data-date-immediate-updates="true" ';
-        $out .= 'data-date-orientation="bottom" ';
-        $out .= 'placeholder="';
-        $out .= $date_format_service->datepicker_placeholder($pp->schema());
-        $out .= '">';
+        $flt .= 'id="fdate" name="f[fdate]" ';
+        $flt .= 'value="';
+        $flt .= $fdate ?? '';
+        $flt .= '" ';
+        $flt .= 'data-provide="datepicker" ';
+        $flt .= 'data-date-format="';
+        $flt .= $date_format_service->datepicker_format($pp->schema());
+        $flt .= '" ';
+        $flt .= 'data-date-default-view-date="-1y" ';
+        $flt .= 'data-date-end-date="0d" ';
+        $flt .= 'data-date-language="nl" ';
+        $flt .= 'data-date-today-highlight="true" ';
+        $flt .= 'data-date-autoclose="true" ';
+        $flt .= 'data-date-immediate-updates="true" ';
+        $flt .= 'data-date-orientation="bottom" ';
+        $flt .= 'placeholder="';
+        $flt .= $date_format_service->datepicker_placeholder($pp->schema());
+        $flt .= '">';
 
-        $out .= '</div>';
-        $out .= '</div>';
+        $flt .= '</div>';
+        $flt .= '</div>';
 
-        $out .= '<div class="col-sm-' . $date_col_width . '">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="tdate_addon">Tot ';
-        $out .= '<span class="fa fa-calendar"></span></span>';
-        $out .= '<input type="text" class="form-control margin-bottom" ';
-        $out .= 'aria-describedby="tdate_addon" ';
+        $flt .= '<div class="col-sm-' . $date_col_width . '">';
+        $flt .= '<div class="input-group margin-bottom">';
+        $flt .= '<span class="input-group-addon" id="tdate_addon">Tot ';
+        $flt .= '<span class="fa fa-calendar"></span></span>';
+        $flt .= '<input type="text" class="form-control margin-bottom" ';
+        $flt .= 'aria-describedby="tdate_addon" ';
 
-        $out .= 'id="tdate" name="f[tdate]" ';
-        $out .= 'value="';
-        $out .= $tdate ?? '';
-        $out .= '" ';
-        $out .= 'data-provide="datepicker" ';
-        $out .= 'data-date-format="';
-        $out .= $date_format_service->datepicker_format($pp->schema());
-        $out .= '" ';
-        $out .= 'data-date-end-date="0d" ';
-        $out .= 'data-date-language="nl" ';
-        $out .= 'data-date-today-highlight="true" ';
-        $out .= 'data-date-autoclose="true" ';
-        $out .= 'data-date-immediate-updates="true" ';
-        $out .= 'data-date-orientation="bottom" ';
-        $out .= 'placeholder="';
-        $out .= $date_format_service->datepicker_placeholder($pp->schema());
-        $out .= '">';
+        $flt .= 'id="tdate" name="f[tdate]" ';
+        $flt .= 'value="';
+        $flt .= $tdate ?? '';
+        $flt .= '" ';
+        $flt .= 'data-provide="datepicker" ';
+        $flt .= 'data-date-format="';
+        $flt .= $date_format_service->datepicker_format($pp->schema());
+        $flt .= '" ';
+        $flt .= 'data-date-end-date="0d" ';
+        $flt .= 'data-date-language="nl" ';
+        $flt .= 'data-date-today-highlight="true" ';
+        $flt .= 'data-date-autoclose="true" ';
+        $flt .= 'data-date-immediate-updates="true" ';
+        $flt .= 'data-date-orientation="bottom" ';
+        $flt .= 'placeholder="';
+        $flt .= $date_format_service->datepicker_placeholder($pp->schema());
+        $flt .= '">';
 
-        $out .= '</div>';
-        $out .= '</div>';
+        $flt .= '</div>';
+        $flt .= '</div>';
 
         if ($service_stuff_enabled)
         {
-            $out .= '<div class="col-sm-10">';
-            $out .= '<div class="input-group margin-bottom custom-checkbox">';
+            $flt .= '<div class="col-sm-10">';
+            $flt .= '<div class="input-group margin-bottom custom-checkbox">';
 
             foreach (MessageTypeCnst::SERVICE_STUFF_TPL_ARY as $key => $d)
             {
@@ -833,23 +828,23 @@ class TransactionsController extends AbstractController
                 $label .= $count_ary[$key];
                 $label .= ')</span>';
 
-                $out .= strtr(BulkCnst::TPL_CHECKBOX_INLINE, [
+                $flt .= strtr(BulkCnst::TPL_CHECKBOX_INLINE, [
                     '%name%'        => 'f[' . $key . ']',
                     '%attr%'        => isset($filter[$key]) ? ' checked' : '',
                     '%label%'       => $label,
                 ]);
             }
 
-            $out .= '</div>';
-            $out .= '</div>';
+            $flt .= '</div>';
+            $flt .= '</div>';
         }
 
-        $out .= '<div class="col-sm-2">';
-        $out .= '<input type="submit" value="Toon" ';
-        $out .= 'class="btn btn-default btn-block">';
-        $out .= '</div>';
+        $flt .= '<div class="col-sm-2">';
+        $flt .= '<input type="submit" value="Toon" ';
+        $flt .= 'class="btn btn-default btn-block">';
+        $flt .= '</div>';
 
-        $out .= '</div>';
+        $flt .= '</div>';
 
         $params_form = array_merge($params, $pp->ary());
         unset($params_form['role_short']);
@@ -870,16 +865,16 @@ class TransactionsController extends AbstractController
                 continue;
             }
 
-            $out .= '<input name="' . $name . '" ';
-            $out .= 'value="' . $value . '" type="hidden">';
+            $flt .= '<input name="' . $name . '" ';
+            $flt .= 'value="' . $value . '" type="hidden">';
         }
 
-        $out .= '</form>';
+        $flt .= '</form>';
 
-        $out .= '</div>';
-        $out .= '</div>';
+        $flt .= '</div>';
+        $flt .= '</div>';
 
-        $out .= $pagination_render->get();
+        $out = '';
 
         if (!count($transactions))
         {
@@ -888,7 +883,6 @@ class TransactionsController extends AbstractController
             $out .= '<div class="panel-body">';
             $out .= '<p>Er zijn geen resultaten.</p>';
             $out .= '</div></div>';
-            $out .= $pagination_render->get();
 
             $menu_service->set('transactions');
 
@@ -1182,47 +1176,45 @@ class TransactionsController extends AbstractController
 
         $out .= '</table></div></div>';
 
-        $out .= $pagination_render->get();
-
-        $out .= '<ul>';
-        $out .= '<li>';
-        $out .= 'Totaal: ';
-        $out .= '<strong>';
-        $out .= $amount_sum;
-        $out .= '</strong> ';
-        $out .= $config_service->get_str('transactions.currency.name', $pp->schema());
-        $out .= '</li>';
-        $out .= self::get_valuation($config_service, $pp->schema());
-        $out .= '</ul>';
+        $footnote = '<ul>';
+        $footnote .= '<li>';
+        $footnote .= 'Totaal: ';
+        $footnote .= '<strong>';
+        $footnote .= $amount_sum;
+        $footnote .= '</strong> ';
+        $footnote .= $config_service->get_str('transactions.currency.name', $pp->schema());
+        $footnote .= '</li>';
+        $footnote .= self::get_valuation($config_service, $pp->schema());
+        $footnote .= '</ul>';
 
         if ($pp->is_admin() && $bulk_actions_enabled)
         {
-            $out .= BulkCnst::TPL_SELECT_BUTTONS;
+            $blk = BulkCnst::TPL_SELECT_BUTTONS;
 
-            $out .= '<h3>Bulk acties met geselecteerde transacties</h3>';
-            $out .= '<div class="panel panel-info">';
-            $out .= '<div class="panel-heading">';
+            $blk .= '<h3>Bulk acties met geselecteerde transacties</h3>';
+            $blk .= '<div class="panel panel-info">';
+            $blk .= '<div class="panel-heading">';
 
-            $out .= '<ul class="nav nav-tabs" role="tablist">';
+            $blk .= '<ul class="nav nav-tabs" role="tablist">';
 
             if ($service_stuff_enabled)
             {
-                $out .= '<li class="active"><a href="#service_stuff_tab" ';
-                $out .= 'data-toggle="tab">Diensten / Spullen</a></li>';
+                $blk .= '<li class="active"><a href="#service_stuff_tab" ';
+                $blk .= 'data-toggle="tab">Diensten / Spullen</a></li>';
             }
 
-            $out .= '</ul>';
+            $blk .= '</ul>';
 
-            $out .= '<div class="tab-content">';
+            $blk .= '<div class="tab-content">';
 
             if ($service_stuff_enabled)
             {
-                $out .= '<div role="tabpanel" class="tab-pane active" id="service_stuff_tab">';
-                $out .= '<h3>Diensten of spullen</h3>';
-                $out .= '<form method="post">';
+                $blk .= '<div role="tabpanel" class="tab-pane active" id="service_stuff_tab">';
+                $blk .= '<h3>Diensten of spullen</h3>';
+                $blk .= '<form method="post">';
 
-                $out .= '<div class="form-group">';
-                $out .= '<div class="custom-radio">';
+                $blk .= '<div class="form-group">';
+                $blk .= '<div class="custom-radio">';
 
                 foreach (MessageTypeCnst::SERVICE_STUFF_TPL_ARY as $key => $render_data)
                 {
@@ -1239,7 +1231,7 @@ class TransactionsController extends AbstractController
                     $label .= $render_data['label'];
                     $label .= '</span>';
 
-                    $out .= strtr(BulkCnst::TPL_RADIO_INLINE,[
+                    $blk .= strtr(BulkCnst::TPL_RADIO_INLINE,[
                         '%name%'    => 'bulk_field[service_stuff]',
                         '%value%'   => $key,
                         '%attr%'    => ' required',
@@ -1247,32 +1239,36 @@ class TransactionsController extends AbstractController
                     ]);
                 }
 
-                $out .= '</div>';
-                $out .= '</div>';
+                $blk .= '</div>';
+                $blk .= '</div>';
 
-                $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+                $blk .= strtr(BulkCnst::TPL_CHECKBOX, [
                     '%name%'    => 'bulk_verify[service_stuff]',
                     '%label%'   => 'Ik heb nagekeken dat de juiste transacties geselecteerd zijn.',
                     '%attr%'    => ' required',
                 ]);
 
-                $out .= '<input type="submit" value="Aanpassen" ';
-                $out .= 'name="bulk_submit[service_stuff]" class="btn btn-primary btn-lg">';
-                $out .= $form_token_service->get_hidden_input();
-                $out .= '</form>';
-                $out .= '</div>';
+                $blk .= '<input type="submit" value="Aanpassen" ';
+                $blk .= 'name="bulk_submit[service_stuff]" class="btn btn-primary btn-lg">';
+                $blk .= $form_token_service->get_hidden_input();
+                $blk .= '</form>';
+                $blk .= '</div>';
             }
 
-            $out .= '<div class="clearfix"></div>';
-            $out .= '</div>';
-            $out .= '</div>';
-            $out .= '</div>';
+            $blk .= '<div class="clearfix"></div>';
+            $blk .= '</div>';
+            $blk .= '</div>';
+            $blk .= '</div>';
         }
 
         $menu_service->set('transactions');
 
         return $this->render($template, [
-            'content'               => $out,
+            'data_list_raw'         => $out,
+            'filter_form_raw'       => $flt,
+            'bulk_actions_raw'      => $blk,
+            'footnote'              => $footnote,
+            'row_count'             => $row_count,
             'filtered'              => $filtered,
             'is_self'               => $is_self,
             'bulk_actions_enabled'  => $bulk_actions_enabled,

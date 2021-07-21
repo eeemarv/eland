@@ -184,9 +184,15 @@
 		{{- content|raw -}}
 	{%- endblock content -%}
 
+	{%- block data_list -%}{%- endblock -%}
+
 	{%- block pagination_bottom -%}
 		{{- block('pagination') -}}
 	{%- endblock pagination_bottom -%}
+
+	{%- block footnote -%}{%- endblock -%}
+
+	{%- block bulk_actions -%}{%- endblock -%}
 
 	{%- block content_bottom -%}
 		{%- embed 'embed/static_content.html.twig' with {

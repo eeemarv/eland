@@ -1,13 +1,12 @@
 {%- set p_params = query_params.p ?? [] -%}
 {%- set start = p_params.start ?? '0' -%}
 {%- set limit = p_params.limit ?? '25' -%}
-{%- set limit_options = [10, 25, 50, 100, 250, 500, 100] -%}
 {%- set limit_options = {'10':'10', '25':'25', '50':'50', '100':'100', '250':'250', '500':'500', '1000':'1000'} -%}
 {%- if limit_options[limit] is not defined -%}
 	{%- set limit_options = limit_options|merge({limit: limit})|sort -%}
 {%- endif -%}
-{%- page_num = (row_count / limit)|round(0, 'ceil') -%}
-{%- page = (start / limit)|round(0, 'floor') -%}
+{%- set page_num = (row_count / limit)|round(0, 'ceil') -%}
+{%- set page = start // limit -%}
 
 {%- set min_adj = page - 2 -%}
 {%- set min_adj = min_adj < 0 ? 0 : min_adj -%}
@@ -46,7 +45,7 @@
 						{%- endfor -%}
 					</select>
 
-					{%- set hidden_ary = query_params|filter((v, k) => k != 'p')|merge({'p': {'start': '0'}})|flatten_array -%}
+					{%- set hidden_ary = query_params|merge({'p': {'start': '0'}})|flatten -%}
 
 					{%- for n, v in hidden_ary -%}
 						<input name="{{- n -}}" value="{{- v -}}" type="hidden">

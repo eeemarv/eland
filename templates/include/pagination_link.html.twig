@@ -1,4 +1,4 @@
-<li{%- if p == page %} class="active"{%- endif -%}
+<li{%- if p == page %} class="active"{%- endif -%}>
 	<a href="{{- path(route, pp_ary()|merge(query_params)|merge({'p': {'limit': limit, 'start': p * limit}})) -}}">
 		{{- (p + 1) -}}
 	</a>

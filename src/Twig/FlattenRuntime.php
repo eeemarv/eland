@@ -4,16 +4,12 @@ namespace App\Twig;
 
 use Twig\Extension\RuntimeExtensionInterface;
 
-class FlattenArrayRuntime implements RuntimeExtensionInterface
+class FlattenRuntime implements RuntimeExtensionInterface
 {
-	public function __construct(
-	)
-	{
-	}
-
-	public function get_flatten_array(array $params):array
+	public function get_flatten(array $params):array
 	{
 		$out_ary = [];
+
         $params = http_build_query($params, 'prefix', '&');
         $params = urldecode($params);
         $params = explode('&', $params);

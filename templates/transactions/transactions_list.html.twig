@@ -30,9 +30,27 @@
     {%- include 'include/heading_btn_filter.html.twig' -%}
 {%- endblock heading_append -%}
 
+{%- block filter_form -%}
+    {{- filter_form_raw|raw -}}
+{%- endblock filter_form -%}
+
 {%- block pagination -%}
     {%- include 'include/pagination.html.twig' -%}
 {%- endblock pagination -%}
+
+{%- block content -%}{%- endblock -%}
+
+{%- block data_list -%}
+    {{- data_list_raw|raw -}}
+{%- endblock data_list -%}
+
+{%- block footnote -%}
+    {{- footnote|raw -}}
+{%- endblock footnote -%}
+
+{%- block bulk_actions -%}
+    {{- bulk_actions_raw|raw -}}
+{%- endblock bulk_actions -%}
 
 {%- block css -%}
     {{- parent() -}}
