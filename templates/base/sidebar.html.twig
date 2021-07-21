@@ -174,9 +174,19 @@
 		{%- endembed -%}
 	{%- endblock content_top -%}
 
+	{%- block filter_form -%}{%- endblock -%}
+
+	{%- block pane_select -%}{%- endblock -%}
+
+	{%- block pagination -%}{%- endblock -%}
+
 	{%- block content -%}
 		{{- content|raw -}}
 	{%- endblock content -%}
+
+	{%- block pagination_bottom -%}
+		{{- block('pagination') -}}
+	{%- endblock pagination_bottom -%}
 
 	{%- block content_bottom -%}
 		{%- embed 'embed/static_content.html.twig' with {
