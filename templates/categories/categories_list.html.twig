@@ -1,5 +1,12 @@
 {%- extends 'categories/base/categories_base.html.twig' -%}
 
+{%- block btn_top_add -%}
+    {%- include 'include/btn_top/add.html.twig' with {
+        'btn_route': 'categories_add',
+        'btn_title': 'categories_add.title'
+    } -%}
+{%- endblock btn_top_add -%}
+
 {%- block assets_add -%}
     {{- parent() -}}
     {{- assets_add(['sortable', 'categories.js']) -}}

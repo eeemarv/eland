@@ -2,7 +2,6 @@
 
 namespace App\Controller\ContactTypes;
 
-use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Service\MenuService;
 use App\Service\PageParamsService;
@@ -31,7 +30,6 @@ class ContactTypesController extends AbstractController
 
     public function __invoke(
         Db $db,
-        BtnTopRender $btn_top_render,
         LinkRender $link_render,
         PageParamsService $pp,
         MenuService $menu_service
@@ -51,9 +49,6 @@ class ContactTypesController extends AbstractController
         {
             $contact_count[$row['id_type_contact']] = $row['count'];
         }
-
-        $btn_top_render->add('contact_types_add', $pp->ary(),
-            [], 'Contact type toevoegen');
 
         $out = '<div class="panel panel-default printview">';
 

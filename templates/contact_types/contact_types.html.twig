@@ -1,5 +1,12 @@
 {%- extends 'contact_types/base/contact_types_base.html.twig' -%}
 
+{%- block btn_top_add -%}
+    {%- include 'include/btn_top/add.html.twig' with {
+        'btn_route': 'contact_types_add',
+        'btn_title': 'contact_types_add.title'
+    } -%}
+{%- endblock btn_top_add -%}
+
 {%- block heading_title -%}
     {{- 'contact_types.title'|trans -}}
 {%- endblock heading_title -%}

@@ -1,5 +1,22 @@
 {%- extends 'intersystems/base/intersystems_base.html.twig' -%}
 
+{%- block btn_top_edit -%}
+    {%- include 'include/btn_top/edit.html.twig' with {
+        'btn_route': 'intersystems_edit',
+        'btn_title': 'intersystems_edit.title'
+    } -%}
+{%- endblock btn_top_edit -%}
+
+{%- block btn_top_del -%}
+    {%- include 'include/btn_top/del.html.twig' with {
+        'btn_route': 'intersystems_del',
+        'btn_title': 'intersystems_del.title',
+        'btn_title_trans_params': {
+            '%name%': name
+        }
+    } -%}
+{%- endblock btn_top_del -%}
+
 {%- block heading_title -%}
     {{- 'intersystems_show.title'|trans({
         '%name%': name

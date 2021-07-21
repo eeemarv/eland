@@ -6,7 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use App\Service\MenuService;
-use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
@@ -42,7 +41,6 @@ class CategoriesController extends AbstractController
         FormTokenService $form_token_service,
         MenuService $menu_service,
         LinkRender $link_render,
-        BtnTopRender $btn_top_render,
         PageParamsService $pp,
         VarRouteService $vr
     ):Response
@@ -206,9 +204,6 @@ class CategoriesController extends AbstractController
 
             $alert_service->error($errors);
         }
-
-        $btn_top_render->add('categories_add',
-            $pp->ary(), [], 'Categorie toevoegen');
 
         $out = '<p><ul>';
         $out .= '<li>Versleep categorieën om plaats en volgorde te veranderen..</li>';

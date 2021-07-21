@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use App\Service\MenuService;
-use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Render\PaginationRender;
 use App\Render\SelectRender;
@@ -44,7 +43,6 @@ class ContactsController extends AbstractController
         Request $request,
         Db $db,
         AlertService $alert_service,
-        BtnTopRender $btn_top_render,
         PaginationRender $pagination_render,
         SelectRender $select_render,
         LinkRender $link_render,
@@ -462,11 +460,6 @@ class ContactsController extends AbstractController
         {
             $abbrev_ary[$row['abbrev']] = $row['abbrev'];
         }
-
-        $btn_top_render->add('contacts_add', $pp->ary(),
-            [], 'Contact toevoegen');
-
-        $btn_top_render->local('#bulk_actions', 'Bulk acties', 'envelope-o');
 
         $filtered = !isset($filter['uid']) && (
             $filter_q

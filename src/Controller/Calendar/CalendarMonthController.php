@@ -3,7 +3,6 @@
 namespace App\Controller\Calendar;
 
 use App\Render\AccountRender;
-use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
@@ -23,7 +22,6 @@ class CalendarMonthController extends AbstractController
         Db $db,
         ConfigService $config_service,
         ItemAccessService $item_access_service,
-        BtnTopRender $btn_top_render,
         AccountRender $account_render,
         DateFormatService $date_format_service,
         LinkRender $link_render,
@@ -40,11 +38,6 @@ class CalendarMonthController extends AbstractController
             $db,
             $config_service,
             $item_access_service,
-            $pp
-        );
-
-        CalendarListController::set_btns(
-            $btn_top_render,
             $pp
         );
 

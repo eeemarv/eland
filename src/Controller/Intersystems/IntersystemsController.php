@@ -2,7 +2,6 @@
 
 namespace App\Controller\Intersystems;
 
-use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\MenuService;
@@ -34,7 +33,6 @@ class IntersystemsController extends AbstractController
     public function __invoke(
         Db $db,
         Predis $predis,
-        BtnTopRender $btn_top_render,
         ConfigService $config_service,
         LinkRender $link_render,
         PageParamsService $pp,
@@ -97,9 +95,6 @@ class IntersystemsController extends AbstractController
                 'role'	        => $u['role'],
             ];
         }
-
-        $btn_top_render->add('intersystems_add', $pp->ary(),
-            [], 'InterSysteem toevoegen');
 
         $out = '<p>';
         $out .= 'Een eLAND interSysteem verbinding laat intertrading toe tussen ';

@@ -21,30 +21,6 @@
     {%- endif -%}
 {%- endblock btn_top_add -%}
 
-{#
-if ($pp->is_admin() || $pp->is_user())
-{
-    if ($is_owner || !isset($filter['uid']))
-    {
-        $btn_top_render->add('messages_add', $pp->ary(),
-            [], 'Vraag of aanbod toevoegen');
-    }
-
-    if ($filter_uid)
-    {
-        if ($pp->is_admin() && !$is_owner)
-        {
-            $str = 'Vraag of aanbod voor ';
-            $str .= $account_render->str((int) $filter['uid'], $pp->schema());
-
-            $btn_top_render->add('messages_add', $pp->ary(),
-                ['uid' => $filter['uid']], $str);
-        }
-    }
-}
-#}
-
-
 {%- set messages_view_btns = {
     ('messages_list'~ (is_self ? '_self' : '')): {'fa': 'align-justify', 'title': 'view.list'},
     ('messages_extended' ~ (is_self ? '_self' : '')): {'fa': 'th-list', 'title': 'view.extended'}

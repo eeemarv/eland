@@ -1,5 +1,12 @@
 {%- extends 'intersystems/base/intersystems_base.html.twig' -%}
 
+{%- block btn_top_add -%}
+    {%- include 'include/btn_top/add.html.twig' with {
+        'btn_route': 'intersystems_add',
+        'btn_title': 'instersystems_add.title'
+    } -%}
+{%- endblock btn_top_add -%}
+
 {%- block heading_title -%}
     {{- 'intersystems.title'|trans -}}
 {%- endblock heading_title -%}

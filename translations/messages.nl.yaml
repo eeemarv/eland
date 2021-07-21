@@ -23,6 +23,7 @@ btn:
   approve: Goedkeuren
   bulk: Bulk acties
   cancel: Annuleren
+  config: Configuratie
   del: Verwijderen
   download_csv: Download CSV
   edit: Aanpassen
@@ -430,6 +431,7 @@ contacts:
 contacts_add:
   title: >-
     Contact voor %user% toevoegen
+  btn_add: Contact toevoegen
 contacts_add_self:
   title: Contact toevoegen
 contacts_edit:

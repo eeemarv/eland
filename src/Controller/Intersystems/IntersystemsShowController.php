@@ -2,7 +2,6 @@
 
 namespace App\Controller\Intersystems;
 
-use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
@@ -38,7 +37,6 @@ class IntersystemsShowController extends AbstractController
         AlertService $alert_service,
         LinkRender $link_render,
         ConfigService $config_service,
-        BtnTopRender $btn_top_render,
         SystemsService $systems_service,
         PageParamsService $pp,
         MenuService $menu_service
@@ -69,12 +67,6 @@ class IntersystemsShowController extends AbstractController
                 from ' . $pp->schema() . '.users
                 where code = ?', [$group['localletscode']]);
         }
-
-        $btn_top_render->edit('intersystems_edit', $pp->ary(),
-            ['id' => $id], 'Intersysteem aanpassen');
-
-        $btn_top_render->del('intersystems_del', $pp->ary(),
-            ['id' => $id], 'Intersysteem verwijderen');
 
         $out = '<div class="panel panel-default printview">';
         $out .= '<div class="panel-heading">';
@@ -200,6 +192,7 @@ class IntersystemsShowController extends AbstractController
 
         return $this->render('intersystems/intersystems_show.html.twig', [
             'content'   => $out,
+            'id'        => $id,
             'name'      => $group['groupname'],
         ]);
     }

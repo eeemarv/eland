@@ -2,7 +2,6 @@
 
 namespace App\Controller\Calendar;
 
-use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
@@ -20,7 +19,6 @@ class CalendarListController extends AbstractController
         Db $db,
         ConfigService $config_service,
         ItemAccessService $item_access_service,
-        BtnTopRender $btn_top_render,
         DateFormatService $date_format_service,
         LinkRender $link_render,
         PageParamsService $pp,
@@ -36,11 +34,6 @@ class CalendarListController extends AbstractController
             $db,
             $config_service,
             $item_access_service,
-            $pp
-        );
-
-        self::set_btns(
-            $btn_top_render,
             $pp
         );
 
@@ -143,18 +136,6 @@ class CalendarListController extends AbstractController
         }
 
         return $news;
-    }
-
-    public static function set_btns(
-        BtnTopRender $btn_top_render,
-        PageParamsService $pp
-    ):void
-    {
-        if($pp->is_admin())
-        {
-            $btn_top_render->add('news_add', $pp->ary(),
-                [], 'Nieuws toevoegen');
-        }
     }
 
     public static function no_news(

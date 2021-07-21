@@ -7,7 +7,6 @@ use App\Cnst\StatusCnst;
 use App\HtmlProcess\HtmlPurifier;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
-use App\Render\BtnTopRender;
 use App\Render\LinkRender;
 use App\Render\PaginationRender;
 use App\Service\AlertService;
@@ -67,7 +66,6 @@ class MolliePaymentsController extends AbstractController
         AlertService $alert_service,
         AccountRender $account_render,
         PaginationRender $pagination_render,
-        BtnTopRender $btn_top_render,
         FormTokenService $form_token_service,
         ConfigService $config_service,
         ItemAccessService $item_access_service,
@@ -721,12 +719,6 @@ class MolliePaymentsController extends AbstractController
         {
             $alert_service->error($errors);
         }
-
-        $btn_top_render->create('mollie_payments_add', $pp->ary(),
-            [], 'Betaalverzoeken aanmaken');
-
-        $btn_top_render->config('mollie_config', $pp->ary(),
-            [], 'Mollie configuratie');
 
         $filtered = !$filter_uid && (
             $filter_q

@@ -1,5 +1,19 @@
 {%- extends 'mollie/base/mollie_base.html.twig' -%}
 
+{%- block btn_top_add -%}
+    {%- include 'include/btn_top/add.html.twig' with {
+        'btn_route': 'mollie_payments_add',
+        'btn_title': 'mollie_payments_add.title'
+    } -%}
+{%- endblock btn_top_add -%}
+
+{%- block btn_top_config -%}
+    {%- include 'include/btn_top/config.html.twig' with {
+        'btn_route': 'mollie_config',
+        'btn_title': 'mollie_config.title'
+    } -%}
+{%- endblock btn_top_config -%}
+
 {%- set csv_en = true -%}
 
 {%- block assets_add -%}
