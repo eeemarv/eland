@@ -94,7 +94,7 @@ error_fileupload:
     Fout bij het opladen van de afbeelding.
 
 help:
-  email_tag: >-
+  mail_tag: >-
     Deze prefix wordt tussen haken [tag] toegevoegd
     aan het onderwerp van alle E-mail-berichten die
     het systeem verzendt.
@@ -331,6 +331,9 @@ categories_edit:
 categories_del:
   title: >-
     Categorie "%name%" verwijderen?
+
+cms_edit_modus:
+  title: CMS edit modus
 
 config:
   title: Instellingen
@@ -612,6 +615,9 @@ login:
   btn: Inloggen
   password_reset_request_link: >-
     Klik hier als je je paswoord vergeten bent.
+
+logout:
+  title: Uitloggen
 
 logs:
   title: Logs
@@ -1043,6 +1049,9 @@ users_show:
     De interSysteem-verbinding ontbreekt
   coupled_intersystem: >-
     Gekoppeld interSysteem
+
+users_show_self:
+  title: Mijn gegevens
 
 users_username:
   title: >-

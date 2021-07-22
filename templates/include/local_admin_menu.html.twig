@@ -11,20 +11,8 @@
             <span class="caret"></span>
         </button>
         <ul class="dropdown-menu dropleft">
-            {%- for r, d in local_admin_menu -%}
-                {%- if d.config_en is not defined or config_bool(d.config_en, schema) -%}
-                    <li{%- if r == route %} class="active"{%- endif -%}>
-                        <a href="{{- path(r, pp_ary()) -}}">
-                            <i class="fa fa-{{- d.fa -}}"></i>
-                            &nbsp;
-                            {%- if r.menu is defined -%}
-                                {{- (r ~ '.menu')|trans -}}
-                            {%- else -%}
-                                {{- (r ~ '.title')|trans -}}
-                            {%- endif -%}
-                        </a>
-                    </li>
-                {%- endif -%}
+            {%- for rt, dt in local_admin_menu -%}
+                {%- include 'include/menu_item.html.twig' -%}
             {%- endfor -%}
         </ul>
     </div>

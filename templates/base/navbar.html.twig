@@ -1,6 +1,12 @@
 {%- extends 'base/sidebar.html.twig' -%}
 {%- import 'macro/menu.html.twig' as m -%}
 
+{%- set user_menu =  {
+	'users_show_self': {'fa': 'user'},
+	'messages_self': {'fa': 'newspaper-o', 'config_en': 'messages.enabled'},
+	'transactions_self': {'fa': 'exchange', 'config_en': 'transactions.enabled'},
+} -%}
+
 {%- block navbar_toggle_button -%}
 	<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1" aria-expanded="false">
 		<span class="sr-only">Toggle navigation</span>
@@ -29,6 +35,26 @@
 			{%- set account_name = account_name ~ ' [' ~ config_str('system.name', su_schema()) ~ ']' -%}
 		{%- endif -%}
 
+		{%- if not pp_role('anonymous') -%}
+			{%- embed 'embed/menu_dropdown.html.twig' -%}
+				{%- block fa -%}user{%- endblock fa -%}
+				{%- block label -%}{{- account_name -}}{%- endblock label -%}
+				{%- block menu_items -%}
+					{%- if pp_role('user') or pp_role('admin') -%}
+						{%- for rt, dt in user_menu -%}
+							{%- include 'include/menu_item.html.twig' -%}
+						{%- endfor -%}
+						<li class="divider"></li>
+					{%- endif -%}
+					{%- include 'include/menu_item.html.twig' with {
+						'rt': 'logout',
+						'dt': {'fa': 'sign-out'}
+					} -%}
+				{%- endblock menu_items -%}
+			{%- endembed -%}
+		{%- endif -%}
+
+		{#
 		{%- if pp_role('guest') or su_is_master() -%}
 
 			{{- m.navbar_menu_dropdown_button(account_name, 'user', menu_nav_logout(), false, {}) -}}
@@ -39,11 +65,49 @@
 			{%- set su_role_short = su_role('user') ? 'u' : 'a' -%}
 			{{- m.navbar_menu_dropdown_button(account_name, 'user', menu_nav_user(), false, {'role_short': su_role_short}) -}}
 		{%- endif -%}
+		#}
 
 		{%- if su_role('admin') and su_is_system_self() -%}
+			{#
 			{{- m.navbar_menu_dropdown_button('Admin', 'cog', menu_nav_admin(), true, {}) -}}
+			#}
+			{%- embed 'embed/menu_dropdown.html.twig' -%}
+				{%- block menu_class %} bg-info{%- endblock menu_class -%}
+				{%- block fa -%}cog{%- endblock fa -%}
+				{%- block label -%}{{- 'label.admin'|trans -}}{%- endblock label -%}
+				{%- block menu_items -%}
+					<li class="divider"></li>
+					{%- if pp_ary().edit.en is defined -%}
+						<li class="active-group">
+							<a href="{{- path(route, pp_ary()|merge(query_params)|merge({'edit': {'en': '0'}})) -}}">
+					{%- else -%}
+						<li>
+							<a href="{{- path(route, pp_ary()|merge(query_params)|merge({'edit': {'en': '1', 'route': '1', 'inline': '1'}})) -}}">
+					{%- endif -%}
+								<i class="fa fa-pencil"></i>
+								&nbsp;
+								{{- 'cms_edit_modus.title'|trans -}}
+							</a>
+						</li>
+					<li class="divider"></li>
+					<li{%- if active_menu == 'config' %} class="active"{%- endif -%}>
+						<a href="{{- path('config_name', pp_ary()) -}}">
+							<i class="fa fa-cogs"></i>
+							&nbsp;
+							{{- 'config.title'|trans -}}
+						</a>
+					</li>
+					{%- include 'include/menu_item.html.twig' with {
+						'rt': 'export',
+						'dt': {'fa': 'download'}
+					} -%}
+					{%- include 'include/menu_item.html.twig' with {
+						'rt': 'logs',
+						'dt': {'fa': 'history'}
+					} -%}
+				{%- endblock menu_items -%}
+			{%- endembed -%}
 		{%- endif -%}
-
 	{%- endblock navbar_menu -%}
 
 	</ul>
