@@ -8,7 +8,6 @@ use App\HtmlProcess\HtmlPurifier;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
-use App\Render\PaginationRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
@@ -65,7 +64,6 @@ class MolliePaymentsController extends AbstractController
         Db $db,
         AlertService $alert_service,
         AccountRender $account_render,
-        PaginationRender $pagination_render,
         FormTokenService $form_token_service,
         ConfigService $config_service,
         ItemAccessService $item_access_service,
@@ -392,9 +390,6 @@ class MolliePaymentsController extends AbstractController
                 and p.is_canceled = \'t\'::bool',
             $sql_omit_status_params,
             $sql_omit_status_types);
-
-        $pagination_render->init('mollie_payments', $pp->ary(),
-            $row_count, $params);
 
         $asc_preset_ary = [
             'asc'	=> 0,
@@ -728,37 +723,37 @@ class MolliePaymentsController extends AbstractController
             || $filter_tdate
         );
 
-        $out = '<div class="panel panel-info';
-        $out .= $filtered ? '' : ' collapse';
-        $out .= '" id="filter">';
-        $out .= '<div class="panel-heading">';
+        $flt = '<div class="panel panel-info';
+        $flt .= $filtered ? '' : ' collapse';
+        $flt .= '" id="filter">';
+        $flt .= '<div class="panel-heading">';
 
-        $out .= '<form method="get" class="form-horizontal">';
+        $flt .= '<form method="get" class="form-horizontal">';
 
-        $out .= '<div class="row">';
+        $flt .= '<div class="row">';
 
-        $out .= '<div class="col-sm-6">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<i class="fa fa-search"></i>';
-        $out .= '</span>';
-        $out .= '<input type="text" class="form-control" id="q" value="';
-        $out .= $filter['q'] ?? '';
-        $out .= '" name="f[q]" placeholder="Omschrijving">';
-        $out .= '</div>';
-        $out .= '</div>';
+        $flt .= '<div class="col-sm-6">';
+        $flt .= '<div class="input-group margin-bottom">';
+        $flt .= '<span class="input-group-addon">';
+        $flt .= '<i class="fa fa-search"></i>';
+        $flt .= '</span>';
+        $flt .= '<input type="text" class="form-control" id="q" value="';
+        $flt .= $filter['q'] ?? '';
+        $flt .= '" name="f[q]" placeholder="Omschrijving">';
+        $flt .= '</div>';
+        $flt .= '</div>';
 
-        $out .= '<div class="col-sm-6">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="code_addon">';
-        $out .= '<span class="fa fa-user"></span></span>';
+        $flt .= '<div class="col-sm-6">';
+        $flt .= '<div class="input-group margin-bottom">';
+        $flt .= '<span class="input-group-addon" id="code_addon">';
+        $flt .= '<span class="fa fa-user"></span></span>';
 
-        $out .= '<input type="text" class="form-control" ';
-        $out .= 'aria-describedby="code_addon" ';
+        $flt .= '<input type="text" class="form-control" ';
+        $flt .= 'aria-describedby="code_addon" ';
 
-        $out .= 'data-typeahead="';
+        $flt .= 'data-typeahead="';
 
-        $out .= $typeahead_service->ini($pp->ary())
+        $flt .= $typeahead_service->ini($pp->ary())
             ->add('accounts', ['status' => 'active'])
             ->add('accounts', ['status' => 'extern'])
             ->add('accounts', ['status' => 'inactive'])
@@ -771,21 +766,21 @@ class MolliePaymentsController extends AbstractController
                 'show_leaving_status'   => $show_leaving_status,
             ]);
 
-        $out .= '" ';
+        $flt .= '" ';
 
-        $out .= 'name="f[code]" id="code" placeholder="Account Code" ';
-        $out .= 'value="';
-        $out .= $code ?? '';
-        $out .= '">';
+        $flt .= 'name="f[code]" id="code" placeholder="Account Code" ';
+        $flt .= 'value="';
+        $flt .= $code ?? '';
+        $flt .= '">';
 
-        $out .= '</div>';
-        $out .= '</div>';
+        $flt .= '</div>';
+        $flt .= '</div>';
 
-        $out .= '</div>';
+        $flt .= '</div>';
 
-        $out .= '<div class="col-md-12">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<div class="custom-checkbox">';
+        $flt .= '<div class="col-md-12">';
+        $flt .= '<div class="input-group margin-bottom">';
+        $flt .= '<div class="custom-checkbox">';
 
         foreach (self::STATUS_RENDER as $key => $render)
         {
@@ -798,82 +793,82 @@ class MolliePaymentsController extends AbstractController
             $label .= '&nbsp;(' . $count_ary[$key] . ')';
             $label .= '</span>';
 
-			$out .= strtr(BulkCnst::TPL_CHECKBOX_INLINE, [
+			$flt .= strtr(BulkCnst::TPL_CHECKBOX_INLINE, [
 				'%name%'	=> $name,
 				'%attr%'	=> $attr,
 				'%label%'	=> $label,
 			]);
         }
 
-        $out .= '</div>';
-        $out .= '</div>';
-        $out .= '</div>';
+        $flt .= '</div>';
+        $flt .= '</div>';
+        $flt .= '</div>';
 
-        $out .= '<div class="row">';
+        $flt .= '<div class="row">';
 
-        $out .= '<div class="col-sm-5">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="fdate_addon">Vanaf ';
-        $out .= '<span class="fa fa-calendar"></span></span>';
-        $out .= '<input type="text" class="form-control margin-bottom" ';
-        $out .= 'aria-describedby="fdate_addon" ';
+        $flt .= '<div class="col-sm-5">';
+        $flt .= '<div class="input-group margin-bottom">';
+        $flt .= '<span class="input-group-addon" id="fdate_addon">Vanaf ';
+        $flt .= '<span class="fa fa-calendar"></span></span>';
+        $flt .= '<input type="text" class="form-control margin-bottom" ';
+        $flt .= 'aria-describedby="fdate_addon" ';
 
-        $out .= 'id="fdate" name="f[fdate]" ';
-        $out .= 'value="';
-        $out .= $fdate ?? '';
-        $out .= '" ';
-        $out .= 'data-provide="datepicker" ';
-        $out .= 'data-date-format="';
-        $out .= $date_format_service->datepicker_format($pp->schema());
-        $out .= '" ';
-        $out .= 'data-date-default-view-date="-1y" ';
-        $out .= 'data-date-end-date="0d" ';
-        $out .= 'data-date-language="nl" ';
-        $out .= 'data-date-today-highlight="true" ';
-        $out .= 'data-date-autoclose="true" ';
-        $out .= 'data-date-immediate-updates="true" ';
-        $out .= 'data-date-orientation="bottom" ';
-        $out .= 'placeholder="';
-        $out .= $date_format_service->datepicker_placeholder($pp->schema());
-        $out .= '">';
+        $flt .= 'id="fdate" name="f[fdate]" ';
+        $flt .= 'value="';
+        $flt .= $fdate ?? '';
+        $flt .= '" ';
+        $flt .= 'data-provide="datepicker" ';
+        $flt .= 'data-date-format="';
+        $flt .= $date_format_service->datepicker_format($pp->schema());
+        $flt .= '" ';
+        $flt .= 'data-date-default-view-date="-1y" ';
+        $flt .= 'data-date-end-date="0d" ';
+        $flt .= 'data-date-language="nl" ';
+        $flt .= 'data-date-today-highlight="true" ';
+        $flt .= 'data-date-autoclose="true" ';
+        $flt .= 'data-date-immediate-updates="true" ';
+        $flt .= 'data-date-orientation="bottom" ';
+        $flt .= 'placeholder="';
+        $flt .= $date_format_service->datepicker_placeholder($pp->schema());
+        $flt .= '">';
 
-        $out .= '</div>';
-        $out .= '</div>';
+        $flt .= '</div>';
+        $flt .= '</div>';
 
-        $out .= '<div class="col-sm-5">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="tdate_addon">Tot ';
-        $out .= '<span class="fa fa-calendar"></span></span>';
-        $out .= '<input type="text" class="form-control margin-bottom" ';
-        $out .= 'aria-describedby="tdate_addon" ';
+        $flt .= '<div class="col-sm-5">';
+        $flt .= '<div class="input-group margin-bottom">';
+        $flt .= '<span class="input-group-addon" id="tdate_addon">Tot ';
+        $flt .= '<span class="fa fa-calendar"></span></span>';
+        $flt .= '<input type="text" class="form-control margin-bottom" ';
+        $flt .= 'aria-describedby="tdate_addon" ';
 
-        $out .= 'id="tdate" name="f[tdate]" ';
-        $out .= 'value="';
-        $out .= $tdate ?? '';
-        $out .= '" ';
-        $out .= 'data-provide="datepicker" ';
-        $out .= 'data-date-format="';
-        $out .= $date_format_service->datepicker_format($pp->schema());
-        $out .= '" ';
-        $out .= 'data-date-end-date="0d" ';
-        $out .= 'data-date-language="nl" ';
-        $out .= 'data-date-today-highlight="true" ';
-        $out .= 'data-date-autoclose="true" ';
-        $out .= 'data-date-immediate-updates="true" ';
-        $out .= 'data-date-orientation="bottom" ';
-        $out .= 'placeholder="';
-        $out .= $date_format_service->datepicker_placeholder($pp->schema());
-        $out .= '">';
+        $flt .= 'id="tdate" name="f[tdate]" ';
+        $flt .= 'value="';
+        $flt .= $tdate ?? '';
+        $flt .= '" ';
+        $flt .= 'data-provide="datepicker" ';
+        $flt .= 'data-date-format="';
+        $flt .= $date_format_service->datepicker_format($pp->schema());
+        $flt .= '" ';
+        $flt .= 'data-date-end-date="0d" ';
+        $flt .= 'data-date-language="nl" ';
+        $flt .= 'data-date-today-highlight="true" ';
+        $flt .= 'data-date-autoclose="true" ';
+        $flt .= 'data-date-immediate-updates="true" ';
+        $flt .= 'data-date-orientation="bottom" ';
+        $flt .= 'placeholder="';
+        $flt .= $date_format_service->datepicker_placeholder($pp->schema());
+        $flt .= '">';
 
-        $out .= '</div>';
-        $out .= '</div>';
+        $flt .= '</div>';
+        $flt .= '</div>';
 
-        $out .= '<div class="col-sm-2">';
-        $out .= '<input type="submit" value="Toon" ';
-        $out .= 'class="btn btn-default btn-block">';
-        $out .= '</div>';
+        $flt .= '<div class="col-sm-2">';
+        $flt .= '<input type="submit" value="Toon" ';
+        $flt .= 'class="btn btn-default btn-block">';
+        $flt .= '</div>';
 
-        $out .= '</div>';
+        $flt .= '</div>';
 
         $params_form = array_merge($params, $pp->ary());
         unset($params_form['role_short']);
@@ -894,18 +889,16 @@ class MolliePaymentsController extends AbstractController
                 continue;
             }
 
-            $out .= '<input name="' . $name . '" ';
-            $out .= 'value="' . $value . '" type="hidden">';
+            $flt .= '<input name="' . $name . '" ';
+            $flt .= 'value="' . $value . '" type="hidden">';
         }
 
-        $out .= '</form>';
+        $flt .= '</form>';
 
-        $out .= '</div>';
-        $out .= '</div>';
+        $flt .= '</div>';
+        $flt .= '</div>';
 
-        $out .= $pagination_render->get();
-
-        $out .= '<div class="panel panel-info">';
+        $out = '<div class="panel panel-info">';
 
         $out .= '<table class="table table-bordered table-striped ';
         $out .= 'table-hover panel-body footable csv" ';
@@ -1042,117 +1035,118 @@ class MolliePaymentsController extends AbstractController
 
         $out .= '</div>';
 
-        $out .= $pagination_render->get();
+        $blk = BulkCnst::TPL_SELECT_BUTTONS;
 
-        $out .= BulkCnst::TPL_SELECT_BUTTONS;
+        $blk .= '<h3>Bulk acties met geselecteerde betaalverzoeken</h3>';
+        $blk .= '<div class="panel panel-info">';
+        $blk .= '<div class="panel-heading">';
 
-        $out .= '<h3>Bulk acties met geselecteerde betaalverzoeken</h3>';
-        $out .= '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $blk .= '<ul class="nav nav-tabs" role="tablist">';
 
-        $out .= '<ul class="nav nav-tabs" role="tablist">';
+        $blk .= '<li class="active">';
+        $blk .= '<a href="#mail_tab" data-toggle="tab">Mail</a></li>';
+        $blk .= '<li>';
 
-        $out .= '<li class="active">';
-        $out .= '<a href="#mail_tab" data-toggle="tab">Mail</a></li>';
-        $out .= '<li>';
+        $blk .= '<a href="#cancel_tab" data-toggle="tab">';
+        $blk .= 'Annuleren';
+        $blk .= '</a>';
+        $blk .= '</li>';
+        $blk .= '</ul>';
 
-        $out .= '<a href="#cancel_tab" data-toggle="tab">';
-        $out .= 'Annuleren';
-        $out .= '</a>';
-        $out .= '</li>';
-        $out .= '</ul>';
+        $blk .= '<div class="tab-content">';
 
-        $out .= '<div class="tab-content">';
+        $blk .= '<div role="tabpanel" class="tab-pane active" id="mail_tab">';
 
-        $out .= '<div role="tabpanel" class="tab-pane active" id="mail_tab">';
+        $blk .= '<form method="post">';
 
-        $out .= '<form method="post">';
+        $blk .= '<h3>E-Mail verzenden</h3>';
 
-        $out .= '<h3>E-Mail verzenden</h3>';
+        $blk .= '<div class="form-group">';
+        $blk .= '<input type="text" class="form-control" ';
+        $blk .= 'id="bulk_mail_subject" name="bulk_mail_subject" ';
+        $blk .= 'placeholder="Onderwerp" ';
+        $blk .= 'value="';
+        $blk .= $bulk_mail_subject;
+        $blk .= '" required>';
+        $blk .= '</div>';
 
-        $out .= '<div class="form-group">';
-        $out .= '<input type="text" class="form-control" ';
-        $out .= 'id="bulk_mail_subject" name="bulk_mail_subject" ';
-        $out .= 'placeholder="Onderwerp" ';
-        $out .= 'value="';
-        $out .= $bulk_mail_subject;
-        $out .= '" required>';
-        $out .= '</div>';
+        $blk .= '<div class="form-group">';
+        $blk .= '<textarea name="bulk_mail_content" ';
+        $blk .= 'class="form-control summernote" ';
+        $blk .= 'id="bulk_mail_content" rows="8" ';
+        $blk .= 'data-template-vars="';
+        $blk .= implode(',', array_keys(BulkCnst::MOLLIE_TPL_VARS));
+        $blk .= '" ';
+        $blk .= 'required>';
+        $blk .= $bulk_mail_content;
+        $blk .= '</textarea>';
+        $blk .= '<ul><li>Een betaalknop wordt toegevoegd boven je eigen bericht ';
+        $blk .= 'bij openstaande betaalverzoeken.';
+        $blk .= '</li>';
+        $blk .= '<li>Bedrag en omschrijving van betaalverzoeken worden altijd ';
+        $blk .= 'bovenaan weergegeven in de verzonden e-mails.</li></ul>';
+        $blk .= '</div>';
 
-        $out .= '<div class="form-group">';
-        $out .= '<textarea name="bulk_mail_content" ';
-        $out .= 'class="form-control summernote" ';
-        $out .= 'id="bulk_mail_content" rows="8" ';
-        $out .= 'data-template-vars="';
-        $out .= implode(',', array_keys(BulkCnst::MOLLIE_TPL_VARS));
-        $out .= '" ';
-        $out .= 'required>';
-        $out .= $bulk_mail_content;
-        $out .= '</textarea>';
-        $out .= '<ul><li>Een betaalknop wordt toegevoegd boven je eigen bericht ';
-        $out .= 'bij openstaande betaalverzoeken.';
-        $out .= '</li>';
-        $out .= '<li>Bedrag en omschrijving van betaalverzoeken worden altijd ';
-        $out .= 'bovenaan weergegeven in de verzonden e-mails.</li></ul>';
-        $out .= '</div>';
-
-        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+        $blk .= strtr(BulkCnst::TPL_CHECKBOX, [
             '%name%'    => 'bulk_mail_cc',
             '%label%'   => 'Stuur een kopie met verzendinfo naar mijzelf',
             '%attr%'    => $bulk_mail_cc ? ' checked' : '',
         ]);
 
-        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+        $blk .= strtr(BulkCnst::TPL_CHECKBOX, [
             '%name%'    => 'bulk_mail_verify',
             '%label%'   => 'Ik heb alles nagekeken.',
             '%attr%'    => ' required',
         ]);
 
-        $out .= '<input type="submit" value="Verzend" name="bulk_mail_submit" ';
-        $out .= 'class="btn btn-info btn-lg">';
+        $blk .= '<input type="submit" value="Verzend" name="bulk_mail_submit" ';
+        $blk .= 'class="btn btn-info btn-lg">';
 
-        $out .= $form_token_service->get_hidden_input();
-        $out .= '</form>';
+        $blk .= $form_token_service->get_hidden_input();
+        $blk .= '</form>';
 
-        $out .= '</div>';
+        $blk .= '</div>';
 
 //--------------------------------------
 
-        $out .= '<div role="tabpanel" class="tab-pane" ';
-        $out .= 'id="cancel_tab">';
+        $blk .= '<div role="tabpanel" class="tab-pane" ';
+        $blk .= 'id="cancel_tab">';
 
-        $out .= '<form method="post">';
+        $blk .= '<form method="post">';
 
-        $out .= '<h3>Betaalverzoek annuleren</h3>';
+        $blk .= '<h3>Betaalverzoek annuleren</h3>';
 
-        $out .= '<p>Annuleer geselecteerde ';
-        $out .= '<span class="label label-warning">open</span> ';
-        $out .= 'betaalverzoeken</p>';
+        $blk .= '<p>Annuleer geselecteerde ';
+        $blk .= '<span class="label label-warning">open</span> ';
+        $blk .= 'betaalverzoeken</p>';
 
-        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+        $blk .= strtr(BulkCnst::TPL_CHECKBOX, [
             '%name%'    => 'bulk_cancel_verify',
             '%label%'   => 'Ik heb alles nagekeken.',
             '%attr%'    => ' required',
         ]);
 
-        $out .= '<input type="submit" value="Annuleer" ';
-        $out .= 'name="bulk_cancel_submit" class="btn btn-primary btn-lg">';
+        $blk .= '<input type="submit" value="Annuleer" ';
+        $blk .= 'name="bulk_cancel_submit" class="btn btn-primary btn-lg">';
 
-        $out .= $form_token_service->get_hidden_input();
-        $out .= '</form>';
+        $blk .= $form_token_service->get_hidden_input();
+        $blk .= '</form>';
 
-        $out .= '</div>';
+        $blk .= '</div>';
 
 //--------------------------------
 
-        $out .= '</div>';
-        $out .= '</div>';
-        $out .= '</div>';
+        $blk .= '</div>';
+        $blk .= '</div>';
+        $blk .= '</div>';
 
         $menu_service->set('mollie_payments');
 
         return $this->render('mollie/mollie_payments.html.twig', [
-            'content'   => $out,
+            'data_list_raw'     => $out,
+            'filter_form_raw'   => $flt,
+            'bulk_actions_raw'  => $blk,
+            'row_count' => $row_count,
             'filtered'  => $filtered,
         ]);
     }

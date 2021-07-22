@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Render\AccountRender;
 use App\Render\LinkRender;
-use App\Render\PaginationRender;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\IntersystemsService;
@@ -39,7 +38,6 @@ class LogsController extends AbstractController
     public function __invoke(
         Request $request,
         Db $db,
-        PaginationRender $pagination_render,
         MenuService $menu_service,
         LinkRender $link_render,
         ItemAccessService $item_access_service,
@@ -207,9 +205,6 @@ class LogsController extends AbstractController
             array_merge(...array_column($sql_omit_pagination, 'params')),
             array_merge(...array_column($sql_omit_pagination, 'types')));
 
-        $pagination_render->init('logs', $pp->ary(),
-            $row_count, $params);
-
         $asc_preset_ary = [
             'asc'	=> 0,
             'indicator' => '',
@@ -244,58 +239,58 @@ class LogsController extends AbstractController
             || (isset($filter['fdate']) && $filter['fdate'] !== '')
             || (isset($filter['tdate']) && $filter['tdate'] !== '');
 
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $flt = '<div class="panel panel-info">';
+        $flt .= '<div class="panel-heading">';
 
-        $out .= '<form method="get" class="form-horizontal">';
+        $flt .= '<form method="get" class="form-horizontal">';
 
-        $out .= '<div class="row">';
+        $flt .= '<div class="row">';
 
-        $out .= '<div class="col-sm-4">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="q_addon">';
-        $out .= '<i class="fa fa-search"></i></span>';
+        $flt .= '<div class="col-sm-4">';
+        $flt .= '<div class="input-group margin-bottom">';
+        $flt .= '<span class="input-group-addon" id="q_addon">';
+        $flt .= '<i class="fa fa-search"></i></span>';
 
-        $out .= '<input type="text" class="form-control" ';
-        $out .= 'aria-describedby="q_addon" ';
-        $out .= 'name="f[q]" id="q" placeholder="Zoek Event" ';
-        $out .= 'value="';
-        $out .= $filter['q'] ?? '';
-        $out .= '">';
-        $out .= '</div>';
-        $out .= '</div>';
+        $flt .= '<input type="text" class="form-control" ';
+        $flt .= 'aria-describedby="q_addon" ';
+        $flt .= 'name="f[q]" id="q" placeholder="Zoek Event" ';
+        $flt .= 'value="';
+        $flt .= $filter['q'] ?? '';
+        $flt .= '">';
+        $flt .= '</div>';
+        $flt .= '</div>';
 
-        $out .= '<div class="col-sm-3">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="type_addon">';
-        $out .= 'Type</span>';
+        $flt .= '<div class="col-sm-3">';
+        $flt .= '<div class="input-group margin-bottom">';
+        $flt .= '<span class="input-group-addon" id="type_addon">';
+        $flt .= 'Type</span>';
 
-        $out .= '<input type="text" class="form-control" ';
-        $out .= 'aria-describedby="type_addon" ';
-        $out .= 'data-typeahead="';
+        $flt .= '<input type="text" class="form-control" ';
+        $flt .= 'aria-describedby="type_addon" ';
+        $flt .= 'data-typeahead="';
 
-        $out .= $typeahead_service->ini($pp->ary())
+        $flt .= $typeahead_service->ini($pp->ary())
             ->add('log_types', [])
             ->str();
 
-        $out .= '" ';
-        $out .= 'name="f[type]" id="type" placeholder="Type" ';
-        $out .= 'value="';
-        $out .= $filter['type'] ?? '';
-        $out .= '">';
-        $out .= '</div>';
-        $out .= '</div>';
+        $flt .= '" ';
+        $flt .= 'name="f[type]" id="type" placeholder="Type" ';
+        $flt .= 'value="';
+        $flt .= $filter['type'] ?? '';
+        $flt .= '">';
+        $flt .= '</div>';
+        $flt .= '</div>';
 
-        $out .= '<div class="col-sm-3">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="code_addon">';
-        $out .= '<span class="fa fa-user"></span></span>';
+        $flt .= '<div class="col-sm-3">';
+        $flt .= '<div class="input-group margin-bottom">';
+        $flt .= '<span class="input-group-addon" id="code_addon">';
+        $flt .= '<span class="fa fa-user"></span></span>';
 
-        $out .= '<input type="text" class="form-control" ';
-        $out .= 'aria-describedby="code_addon" ';
+        $flt .= '<input type="text" class="form-control" ';
+        $flt .= 'aria-describedby="code_addon" ';
 
-        $out .= 'data-typeahead="';
-        $out .= $typeahead_service->ini($pp->ary())
+        $flt .= 'data-typeahead="';
+        $flt .= $typeahead_service->ini($pp->ary())
             ->add('accounts', ['status' => 'active'])
             ->add('accounts', ['status' => 'inactive'])
             ->add('accounts', ['status' => 'ip'])
@@ -307,21 +302,21 @@ class LogsController extends AbstractController
                 'show_new_status'       => $show_new_status,
                 'show_leaving_status'   => $show_leaving_status,
             ]);
-        $out .= '" ';
+        $flt .= '" ';
 
-        $out .= 'name="f[code]" id="code" placeholder="Account Code" ';
-        $out .= 'value="';
-        $out .= $filter['code'] ?? '';
-        $out .= '">';
-        $out .= '</div>';
-        $out .= '</div>';
+        $flt .= 'name="f[code]" id="code" placeholder="Account Code" ';
+        $flt .= 'value="';
+        $flt .= $filter['code'] ?? '';
+        $flt .= '">';
+        $flt .= '</div>';
+        $flt .= '</div>';
 
-        $out .= '<div class="col-sm-2">';
-        $out .= '<input type="submit" value="Toon" ';
-        $out .= 'class="btn btn-default btn-block" name="zend">';
-        $out .= '</div>';
+        $flt .= '<div class="col-sm-2">';
+        $flt .= '<input type="submit" value="Toon" ';
+        $flt .= 'class="btn btn-default btn-block" name="zend">';
+        $flt .= '</div>';
 
-        $out .= '</div>';
+        $flt .= '</div>';
 
         $params_form = $params;
         unset($params_form['f']);
@@ -344,18 +339,16 @@ class LogsController extends AbstractController
                 continue;
             }
 
-            $out .= '<input name="' . $name . '" ';
-            $out .= 'value="' . $value . '" type="hidden">';
+            $flt .= '<input name="' . $name . '" ';
+            $flt .= 'value="' . $value . '" type="hidden">';
         }
 
-        $out .= '</form>';
+        $flt .= '</form>';
 
-        $out .= '</div>';
-        $out .= '</div>';
+        $flt .= '</div>';
+        $flt .= '</div>';
 
-        $out .= $pagination_render->get();
-
-        $out .= '<div class="panel panel-default printview">';
+        $out = '<div class="panel panel-default printview">';
 
         $out .= '<div class="table-responsive">';
         $out .= '<table class="table table-hover table-bordered table-striped footable csv" ';
@@ -448,12 +441,12 @@ class LogsController extends AbstractController
         $out .= '</table>';
         $out .= '</div></div>';
 
-        $out .= $pagination_render->get();
-
         $menu_service->set('logs');
 
         return $this->render('logs/logs.html.twig', [
-            'content'   => $out,
+            'data_list_raw'     => $out,
+            'filter_form_raw'   => $flt,
+            'row_count'         => $row_count,
             'filtered'  => $filtered,
         ]);
     }

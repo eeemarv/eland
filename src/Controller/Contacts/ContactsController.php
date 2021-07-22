@@ -11,7 +11,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use App\Service\MenuService;
 use App\Render\LinkRender;
-use App\Render\PaginationRender;
 use App\Render\SelectRender;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
@@ -43,7 +42,6 @@ class ContactsController extends AbstractController
         Request $request,
         Db $db,
         AlertService $alert_service,
-        PaginationRender $pagination_render,
         SelectRender $select_render,
         LinkRender $link_render,
         FormTokenService $form_token_service,
@@ -415,9 +413,6 @@ class ContactsController extends AbstractController
             $count_ary['user'] += $count_ary['guest'];
         }
 
-        $pagination_render->init('contacts', $pp->ary(),
-            $row_count, $params);
-
         $asc_preset_ary = [
             'asc'		=> 0,
             'fa' 		=> 'sort',
@@ -471,41 +466,41 @@ class ContactsController extends AbstractController
 
         $panel_collapse = !$filtered;
 
-        $out = '<div id="filter" class="panel panel-info';
-        $out .= $panel_collapse ? ' collapse' : '';
-        $out .= '">';
+        $flt = '<div id="filter" class="panel panel-info';
+        $flt .= $panel_collapse ? ' collapse' : '';
+        $flt .= '">';
 
-        $out .= '<div class="panel-heading">';
+        $flt .= '<div class="panel-heading">';
 
-        $out .= '<form method="get" class="form-horizontal">';
+        $flt .= '<form method="get" class="form-horizontal">';
 
-        $out .= '<div class="row">';
+        $flt .= '<div class="row">';
 
-        $out .= '<div class="col-sm-6">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<i class="fa fa-search"></i>';
-        $out .= '</span>';
-        $out .= '<input type="text" class="form-control" id="q" value="';
-        $out .= $filter['q'] ?? '';
-        $out .= '" name="f[q]" placeholder="Zoeken">';
-        $out .= '</div>';
-        $out .= '</div>';
+        $flt .= '<div class="col-sm-6">';
+        $flt .= '<div class="input-group margin-bottom">';
+        $flt .= '<span class="input-group-addon">';
+        $flt .= '<i class="fa fa-search"></i>';
+        $flt .= '</span>';
+        $flt .= '<input type="text" class="form-control" id="q" value="';
+        $flt .= $filter['q'] ?? '';
+        $flt .= '" name="f[q]" placeholder="Zoeken">';
+        $flt .= '</div>';
+        $flt .= '</div>';
 
-        $out .= '<div class="col-sm-6">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon">';
-        $out .= 'Type';
-        $out .= '</span>';
-        $out .= '<select class="form-control" id="abbrev" name="f[abbrev]">';
-        $out .= $select_render->get_options(array_merge(['' => ''], $abbrev_ary), $filter['abbrev'] ?? '');
-        $out .= '</select>';
-        $out .= '</div>';
-        $out .= '</div>';
+        $flt .= '<div class="col-sm-6">';
+        $flt .= '<div class="input-group margin-bottom">';
+        $flt .= '<span class="input-group-addon">';
+        $flt .= 'Type';
+        $flt .= '</span>';
+        $flt .= '<select class="form-control" id="abbrev" name="f[abbrev]">';
+        $flt .= $select_render->get_options(array_merge(['' => ''], $abbrev_ary), $filter['abbrev'] ?? '');
+        $flt .= '</select>';
+        $flt .= '</div>';
+        $flt .= '</div>';
 
-        $out .= '</div>';
+        $flt .= '</div>';
 
-        $out .= '<div class="row">';
+        $flt .= '<div class="row">';
 
         $user_status_options = [
             'all'		=> 'Alle',
@@ -518,30 +513,30 @@ class ContactsController extends AbstractController
             'extern'	=> 'Extern',
         ];
 
-        $out .= '<div class="col-sm-6">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon">';
-        $out .= 'Status ';
-        $out .= '<i class="fa fa-user"></i>';
-        $out .= '</span>';
-        $out .= '<select class="form-control" ';
-        $out .= 'id="ustatus" name="f[ustatus]">';
+        $flt .= '<div class="col-sm-6">';
+        $flt .= '<div class="input-group margin-bottom">';
+        $flt .= '<span class="input-group-addon">';
+        $flt .= 'Status ';
+        $flt .= '<i class="fa fa-user"></i>';
+        $flt .= '</span>';
+        $flt .= '<select class="form-control" ';
+        $flt .= 'id="ustatus" name="f[ustatus]">';
 
-        $out .= $select_render->get_options($user_status_options, $filter['ustatus'] ?? 'all');
+        $flt .= $select_render->get_options($user_status_options, $filter['ustatus'] ?? 'all');
 
-        $out .= '</select>';
-        $out .= '</div>';
-        $out .= '</div>';
+        $flt .= '</select>';
+        $flt .= '</div>';
+        $flt .= '</div>';
 
-        $out .= '<div class="col-sm-6">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="code_addon">Van ';
-        $out .= '<span class="fa fa-user"></span></span>';
-        $out .= '<input type="text" class="form-control" ';
-        $out .= 'aria-describedby="code_addon" ';
+        $flt .= '<div class="col-sm-6">';
+        $flt .= '<div class="input-group margin-bottom">';
+        $flt .= '<span class="input-group-addon" id="code_addon">Van ';
+        $flt .= '<span class="fa fa-user"></span></span>';
+        $flt .= '<input type="text" class="form-control" ';
+        $flt .= 'aria-describedby="code_addon" ';
 
-        $out .= 'data-typeahead="';
-        $out .= $typeahead_service->ini($pp->ary())
+        $flt .= 'data-typeahead="';
+        $flt .= $typeahead_service->ini($pp->ary())
             ->add('accounts', ['status' => 'active'])
             ->add('accounts', ['status' => 'inactive'])
             ->add('accounts', ['status' => 'ip'])
@@ -553,20 +548,20 @@ class ContactsController extends AbstractController
                 'show_new_status'       => $show_new_status,
                 'show_leaving_status'   => $show_leaving_status,
             ]);
-        $out .= '" ';
+        $flt .= '" ';
 
-        $out .= 'name="f[code]" id="code" placeholder="Account Code" ';
-        $out .= 'value="';
-        $out .= $filter['code'] ?? '';
-        $out .= '">';
-        $out .= '</div>';
-        $out .= '</div>';
+        $flt .= 'name="f[code]" id="code" placeholder="Account Code" ';
+        $flt .= 'value="';
+        $flt .= $filter['code'] ?? '';
+        $flt .= '">';
+        $flt .= '</div>';
+        $flt .= '</div>';
 
-        $out .= '</div>';
+        $flt .= '</div>';
 
-        $out .= '<div class="row">';
-        $out .= '<div class="col-sm-10">';
-        $out .= '<div class="input-group margin-bottom custom-checkbox">';
+        $flt .= '<div class="row">';
+        $flt .= '<div class="col-sm-10">';
+        $flt .= '<div class="input-group margin-bottom custom-checkbox">';
 
         foreach (AccessCnst::LABEL as $key => $d)
         {
@@ -585,22 +580,22 @@ class ContactsController extends AbstractController
             $label .= $count_ary[$key];
             $label .= ')</span>';
 
-            $out .= strtr(BulkCnst::TPL_CHECKBOX_INLINE, [
+            $flt .= strtr(BulkCnst::TPL_CHECKBOX_INLINE, [
                 '%name%'        => 'f[' . $key . ']',
                 '%attr%'        => isset($filter[$key]) ? ' checked' : '',
                 '%label%'       => $label,
             ]);
         }
 
-        $out .= '</div>';
-        $out .= '</div>';
+        $flt .= '</div>';
+        $flt .= '</div>';
 
-        $out .= '<div class="col-sm-2">';
-        $out .= '<input type="submit" value="Toon" ';
-        $out .= 'class="btn btn-default btn-block">';
-        $out .= '</div>';
+        $flt .= '<div class="col-sm-2">';
+        $flt .= '<input type="submit" value="Toon" ';
+        $flt .= 'class="btn btn-default btn-block">';
+        $flt .= '</div>';
 
-        $out .= '</div>';
+        $flt .= '</div>';
 
         $params_form = $params;
         unset($params_form['f']);
@@ -619,36 +614,16 @@ class ContactsController extends AbstractController
                 continue;
             }
 
-            $out .= '<input name="' . $name . '" ';
-            $out .= 'value="' . $value . '" type="hidden">';
+            $flt .= '<input name="' . $name . '" ';
+            $flt .= 'value="' . $value . '" type="hidden">';
         }
 
-        $out .= '</form>';
+        $flt .= '</form>';
 
-        $out .= '</div>';
-        $out .= '</div>';
+        $flt .= '</div>';
+        $flt .= '</div>';
 
-        $out .= $pagination_render->get();
-
-        if (!count($contacts))
-        {
-            $out .= '<br>';
-            $out .= '<div class="panel panel-default">';
-            $out .= '<div class="panel-body">';
-            $out .= '<p>Er zijn geen resultaten.</p>';
-            $out .= '</div></div>';
-
-            $out .= $pagination_render->get();
-
-            $menu_service->set('contacts');
-
-            return $this->render('contacts/contacts.html.twig', [
-                'content'   => $out,
-                'filtered'  => $filtered,
-            ]);
-        }
-
-        $out .= '<div class="panel panel-danger">';
+        $out = '<div class="panel panel-danger">';
         $out .= '<div class="table-responsive">';
         $out .= '<table class="table table-hover ';
         $out .= 'table-striped table-bordered footable csv" ';
@@ -743,51 +718,52 @@ class ContactsController extends AbstractController
 
         $out .= '</div></div>';
 
-        $out .= $pagination_render->get();
+        $blk = BulkCnst::TPL_SELECT_BUTTONS;
 
-        $out .= BulkCnst::TPL_SELECT_BUTTONS;
+        $blk .= '<h3>Bulk acties met geselecteerde contacten</h3>';
+        $blk .= '<div class="panel panel-info">';
+        $blk .= '<div class="panel-heading">';
 
-        $out .= '<h3>Bulk acties met geselecteerde contacten</h3>';
-        $out .= '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $blk .= '<ul class="nav nav-tabs" role="tablist">';
 
-        $out .= '<ul class="nav nav-tabs" role="tablist">';
+        $blk .= '<li class="active"><a href="#access_tab" ';
+        $blk .= 'data-toggle="tab">Zichtbaarheid</a></li>';
 
-        $out .= '<li class="active"><a href="#access_tab" ';
-        $out .= 'data-toggle="tab">Zichtbaarheid</a></li>';
+        $blk .= '</ul>';
 
-        $out .= '</ul>';
+        $blk .= '<div class="tab-content">';
 
-        $out .= '<div class="tab-content">';
+        $blk .= '<div role="tabpanel" class="tab-pane active" id="access_tab">';
+        $blk .= '<h3>Zichtbaarheid</h3>';
+        $blk .= '<form method="post">';
 
-        $out .= '<div role="tabpanel" class="tab-pane active" id="access_tab">';
-        $out .= '<h3>Zichtbaarheid</h3>';
-        $out .= '<form method="post">';
+        $blk .= $item_access_service->get_radio_buttons('bulk_field[access]');
 
-        $out .= $item_access_service->get_radio_buttons('bulk_field[access]');
-
-        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+        $blk .= strtr(BulkCnst::TPL_CHECKBOX, [
             '%name%'    => 'bulk_verify[access]',
             '%label%'   => 'Ik heb nagekeken dat de juiste contacten geselecteerd zijn.',
             '%attr%'    => ' required',
         ]);
 
-        $out .= '<input type="submit" value="Aanpassen" ';
-        $out .= 'name="bulk_submit[access]" class="btn btn-primary btn-lg">';
-        $out .= $form_token_service->get_hidden_input();
-        $out .= '</form>';
-        $out .= '</div>';
+        $blk .= '<input type="submit" value="Aanpassen" ';
+        $blk .= 'name="bulk_submit[access]" class="btn btn-primary btn-lg">';
+        $blk .= $form_token_service->get_hidden_input();
+        $blk .= '</form>';
+        $blk .= '</div>';
 
-        $out .= '<div class="clearfix"></div>';
-        $out .= '</div>';
-        $out .= '</div>';
-        $out .= '</div>';
+        $blk .= '<div class="clearfix"></div>';
+        $blk .= '</div>';
+        $blk .= '</div>';
+        $blk .= '</div>';
 
         $menu_service->set('contacts');
 
         return $this->render('contacts/contacts.html.twig', [
-            'content'   => $out,
-            'filtered'  => $filtered,
+            'data_list_raw'     => $out,
+            'filter_form_raw'   => $flt,
+            'bulk_actions_raw'  => $blk,
+            'row_count'         => $row_count,
+            'filtered' => $filtered,
         ]);
     }
 }
