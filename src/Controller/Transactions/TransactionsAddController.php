@@ -1206,7 +1206,7 @@ class TransactionsAddController extends AbstractController
 
         $out .= '<ul>';
 
-        $out .= TransactionsController::get_valuation($config_service, $pp->schema());
+        $out .= self::get_valuation($config_service, $pp->schema());
 
         $out .= '<li id="info_remote_amount_unknown" ';
         $out .= 'class="hidden">De omrekening ';
@@ -1311,5 +1311,25 @@ class TransactionsAddController extends AbstractController
         return $this->render('transactions/transactions_add.html.twig', [
             'content'   => $out,
         ]);
+    }
+
+    static public function get_valuation(
+        ConfigService $config_service,
+        string $schema
+    ):string
+    {
+        $out = '';
+
+        if ($config_service->get_bool('transactions.currency.timebased_en', $schema)
+            && $config_service->get_int('transactions.currency.per_hour_ratio', $schema) > 0)
+        {
+            $out .= '<li id="info_ratio">Valuatie: <span class="num">';
+            $out .= $config_service->get_int('transactions.currency.per_hour_ratio', $schema);
+            $out .= '</span> ';
+            $out .= $config_service->get_str('transactions.currency.name', $schema);
+            $out .= ' per uur</li>';
+        }
+
+        return $out;
     }
 }
