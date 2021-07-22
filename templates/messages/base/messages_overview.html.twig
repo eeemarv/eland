@@ -58,3 +58,25 @@
 {%- block heading_append -%}
     {%- include 'include/heading_filter.html.twig' -%}
 {%- endblock heading_append -%}
+
+{%- block filter_form -%}
+    {{- filter_form_raw|raw -}}
+{%- endblock filter_form -%}
+
+{%- block pagination -%}
+    {%- include 'include/pagination.html.twig' -%}
+{%- endblock pagination -%}
+
+{%- block content -%}{%- endblock -%}
+
+{%- block data_list -%}
+    {%- if row_count -%}
+        {{- data_list_raw|raw -}}
+    {%- else -%}
+        {%- include 'include/no_results.html.twig' -%}
+    {%- endif -%}
+{%- endblock data_list -%}
+
+{%- block bulk_actions -%}
+    {{- bulk_actions_raw|raw -}}
+{%- endblock bulk_actions -%}

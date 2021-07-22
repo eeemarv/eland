@@ -7,7 +7,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
-use App\Render\PaginationRender;
 use App\Render\SelectRender;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
@@ -63,7 +62,6 @@ class MessagesExtendedController extends AbstractController
         TypeaheadService $typeahead_service,
         LinkRender $link_render,
         MenuService $menu_service,
-        PaginationRender $pagination_render,
         PageParamsService $pp,
         SessionUserService $su,
         VarRouteService $vr,
@@ -85,7 +83,6 @@ class MessagesExtendedController extends AbstractController
             $config_service,
             $item_access_service,
             $link_render,
-            $pagination_render,
             $select_render,
             $pp,
             $su,
@@ -94,6 +91,7 @@ class MessagesExtendedController extends AbstractController
         );
 
         $messages = $fetch_and_filter['messages'];
+        $row_count = $fetch_and_filter['row_count'];
         $categories = $fetch_and_filter['categories'];
         $filter_uid = $fetch_and_filter['filter_uid'];
         $uid = $fetch_and_filter['uid'];
@@ -101,29 +99,11 @@ class MessagesExtendedController extends AbstractController
         $cid = $fetch_and_filter['cid'];
         $filtered = $fetch_and_filter['filtered'];
         $params = $fetch_and_filter['params'];
-        $out = $fetch_and_filter['out'];
-
-        if (!count($messages))
-        {
-            $out .= MessagesListController::no_messages(
-                $pagination_render,
-                $menu_service,
-            );
-
-            return $this->render('messages/messages_extended.html.twig', [
-                'content'       => $out,
-                'categories'    => $categories,
-                'is_self'       => $is_self,
-                'uid'           => $uid,
-                'filter_cid'    => $filter_cid,
-                'cid'           => $cid,
-                'filter_uid'    => $filter_uid,
-                'filtered'      => $filtered,
-            ]);
-        }
+        $flt = $fetch_and_filter['out'];
 
         $time = time();
-        $out .= $pagination_render->get();
+
+        $out = '';
 
         foreach ($messages as $msg)
         {
@@ -135,7 +115,7 @@ class MessagesExtendedController extends AbstractController
 
             $expired = $expires_at_enabled
                 && isset($msg['expires_at'])
-                && strtotime($msg['expires_at']) < $time;
+                && strtotime($msg['expires_at'] . ' UTC') < $time;
 
             $out .= '<div class="panel panel-info printview">';
             $out .= '<div class="panel-body';
@@ -209,18 +189,19 @@ class MessagesExtendedController extends AbstractController
             $out .= '</div>';
         }
 
-        $out .= $pagination_render->get();
-
         $menu_service->set('messages');
 
         return $this->render('messages/messages_extended.html.twig', [
-            'content'       => $out,
+            'data_list_raw'     => $out,
+            'filter_form_raw'   => $flt,
+            'bulk_actions_raw'  => '',
             'categories'    => $categories,
+            'row_count'     => $row_count,
             'is_self'       => $is_self,
+            'filter_uid'    => $filter_uid,
             'uid'           => $uid,
             'filter_cid'    => $filter_cid,
             'cid'           => $cid,
-            'filter_uid'    => $filter_uid,
             'filtered'      => $filtered,
         ]);
     }

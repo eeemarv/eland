@@ -12,7 +12,6 @@ use App\Cnst\BulkCnst;
 use App\Cnst\MessageTypeCnst;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
-use App\Render\PaginationRender;
 use App\Render\SelectRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
@@ -122,7 +121,6 @@ class MessagesListController extends AbstractController
         ItemAccessService $item_access_service,
         MenuService $menu_service,
         LinkRender $link_render,
-        PaginationRender $pagination_render,
         SelectRender $select_render,
         ConfigService $config_service,
         TypeaheadService $typeahead_service,
@@ -391,7 +389,6 @@ class MessagesListController extends AbstractController
             $config_service,
             $item_access_service,
             $link_render,
-            $pagination_render,
             $select_render,
             $pp,
             $su,
@@ -400,6 +397,7 @@ class MessagesListController extends AbstractController
         );
 
         $messages = $fetch_and_filter['messages'];
+        $row_count = $fetch_and_filter['row_count'];
         $filter_uid = $fetch_and_filter['filter_uid'];
         $cid = $fetch_and_filter['cid'];
         $filter_cid = $fetch_and_filter['filter_cid'];
@@ -410,27 +408,9 @@ class MessagesListController extends AbstractController
         $categories_move_options = $fetch_and_filter['categories_move_options'];
         $cat_params = $fetch_and_filter['cat_params'];
         $is_owner = $fetch_and_filter['is_owner'];
-        $out = $fetch_and_filter['out'];
+        $flt = $fetch_and_filter['out'];
 
-        if (!count($messages))
-        {
-            $out .= self::no_messages($pagination_render, $menu_service);
-
-            return $this->render('messages/messages_list.html.twig', [
-                'content'       => $out,
-                'categories'    => $categories,
-                'is_self'       => $is_self,
-                'filter_uid'    => $filter_uid,
-                'uid'           => $uid,
-                'filter_cid'    => $filter_cid,
-                'cid'           => $cid,
-                'filtered'      => $filtered,
-            ]);
-        }
-
-        $out .= $pagination_render->get();
-
-        $out .= '<div class="panel panel-info printview">';
+        $out = '<div class="panel panel-info printview">';
 
         $out .= '<div class="table-responsive">';
         $out .= '<table class="table table-striped ';
@@ -619,8 +599,6 @@ class MessagesListController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-        $out .= $pagination_render->get();
-
         if ($bulk_actions_enabled && ($pp->is_admin() || $is_owner) && count($messages))
         {
             $extend_options = [
@@ -663,83 +641,83 @@ class MessagesListController extends AbstractController
                 $cat_options .= '</option>';
             }
 
-            $out .= BulkCnst::TPL_SELECT_BUTTONS;
+            $blk = BulkCnst::TPL_SELECT_BUTTONS;
 
-            $out .= '<h3>Bulk acties met geselecteerd vraag en aanbod</h3>';
+            $blk .= '<h3>Bulk acties met geselecteerd vraag en aanbod</h3>';
 
-            $out .= '<div class="panel panel-info">';
-            $out .= '<div class="panel-heading">';
+            $blk .= '<div class="panel panel-info">';
+            $blk .= '<div class="panel-heading">';
 
-            $out .= '<ul class="nav nav-tabs" role="tablist">';
+            $blk .= '<ul class="nav nav-tabs" role="tablist">';
 
             if ($expires_at_enabled)
             {
-                $out .= '<li class="active"><a href="#extend_tab" ';
-                $out .= 'data-toggle="tab">Verlengen</a></li>';
+                $blk .= '<li class="active"><a href="#extend_tab" ';
+                $blk .= 'data-toggle="tab">Verlengen</a></li>';
             }
 
             if ($service_stuff_enabled)
             {
-                $out .= '<li><a href="#service_stuff_tab" ';
-                $out .= 'data-toggle="tab">Diensten / Spullen</a></li>';
+                $blk .= '<li><a href="#service_stuff_tab" ';
+                $blk .= 'data-toggle="tab">Diensten / Spullen</a></li>';
             }
 
             if ($category_enabled)
             {
-                $out .= '<li><a href="#category_tab" ';
-                $out .= 'data-toggle="tab">Categorie</a></li>';
+                $blk .= '<li><a href="#category_tab" ';
+                $blk .= 'data-toggle="tab">Categorie</a></li>';
             }
 
             if ($intersytem_en)
             {
-                $out .= '<li>';
-                $out .= '<a href="#access_tab" data-toggle="tab">';
-                $out .= 'Zichtbaarheid</a><li>';
+                $blk .= '<li>';
+                $blk .= '<a href="#access_tab" data-toggle="tab">';
+                $blk .= 'Zichtbaarheid</a><li>';
             }
 
-            $out .= '</ul>';
+            $blk .= '</ul>';
 
-            $out .= '<div class="tab-content">';
+            $blk .= '<div class="tab-content">';
 
             if ($expires_at_enabled)
             {
-                $out .= '<div role="tabpanel" class="tab-pane active" id="extend_tab">';
-                $out .= '<h3>Vraag en aanbod verlengen</h3>';
+                $blk .= '<div role="tabpanel" class="tab-pane active" id="extend_tab">';
+                $blk .= '<h3>Vraag en aanbod verlengen</h3>';
 
-                $out .= '<form method="post">';
+                $blk .= '<form method="post">';
 
-                $out .= '<div class="form-group">';
-                $out .= '<label for="buld_field[extend]" class="control-label">';
-                $out .= 'Verlengen met</label>';
-                $out .= '<select name="bulk_field[extend]" id="extend" class="form-control">';
-                $out .= $select_render->get_options($extend_options, '30');
-                $out .= "</select>";
-                $out .= '</div>';
+                $blk .= '<div class="form-group">';
+                $blk .= '<label for="buld_field[extend]" class="control-label">';
+                $blk .= 'Verlengen met</label>';
+                $blk .= '<select name="bulk_field[extend]" id="extend" class="form-control">';
+                $blk .= $select_render->get_options($extend_options, '30');
+                $blk .= "</select>";
+                $blk .= '</div>';
 
-                $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+                $blk .= strtr(BulkCnst::TPL_CHECKBOX, [
                     '%name%'    => 'bulk_verify[extend]',
                     '%label%'   => 'Ik heb nagekeken dat de juiste berichten geselecteerd zijn.',
                     '%attr%'    => ' required',
                 ]);
 
-                $out .= '<input type="submit" value="Verlengen" ';
-                $out .= 'name="bulk_submit[extend]" class="btn btn-primary btn-lg">';
+                $blk .= '<input type="submit" value="Verlengen" ';
+                $blk .= 'name="bulk_submit[extend]" class="btn btn-primary btn-lg">';
 
-                $out .= $form_token_service->get_hidden_input();
+                $blk .= $form_token_service->get_hidden_input();
 
-                $out .= '</form>';
+                $blk .= '</form>';
 
-                $out .= '</div>';
+                $blk .= '</div>';
             }
 
             if ($service_stuff_enabled)
             {
-                $out .= '<div role="tabpanel" class="tab-pane" id="service_stuff_tab">';
-                $out .= '<h3>Diensten of spullen</h3>';
-                $out .= '<form method="post">';
+                $blk .= '<div role="tabpanel" class="tab-pane" id="service_stuff_tab">';
+                $blk .= '<h3>Diensten of spullen</h3>';
+                $blk .= '<form method="post">';
 
-                $out .= '<div class="form-group">';
-                $out .= '<div class="custom-radio">';
+                $blk .= '<div class="form-group">';
+                $blk .= '<div class="custom-radio">';
 
                 foreach (MessageTypeCnst::SERVICE_STUFF_TPL_ARY as $key => $render_data)
                 {
@@ -756,7 +734,7 @@ class MessagesListController extends AbstractController
                     $label .= $render_data['label'];
                     $label .= '</span>';
 
-                    $out .= strtr(BulkCnst::TPL_RADIO_INLINE,[
+                    $blk .= strtr(BulkCnst::TPL_RADIO_INLINE,[
                         '%name%'    => 'bulk_field[service_stuff]',
                         '%value%'   => $key,
                         '%attr%'    => ' required',
@@ -764,29 +742,29 @@ class MessagesListController extends AbstractController
                     ]);
                 }
 
-                $out .= '</div>';
-                $out .= '</div>';
+                $blk .= '</div>';
+                $blk .= '</div>';
 
-                $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+                $blk .= strtr(BulkCnst::TPL_CHECKBOX, [
                     '%name%'    => 'bulk_verify[service_stuff]',
                     '%label%'   => 'Ik heb nagekeken dat de juiste berichten geselecteerd zijn.',
                     '%attr%'    => ' required',
                 ]);
 
-                $out .= '<input type="submit" value="Aanpassen" ';
-                $out .= 'name="bulk_submit[service_stuff]" class="btn btn-primary btn-lg">';
-                $out .= $form_token_service->get_hidden_input();
-                $out .= '</form>';
-                $out .= '</div>';
+                $blk .= '<input type="submit" value="Aanpassen" ';
+                $blk .= 'name="bulk_submit[service_stuff]" class="btn btn-primary btn-lg">';
+                $blk .= $form_token_service->get_hidden_input();
+                $blk .= '</form>';
+                $blk .= '</div>';
             }
 
             if ($category_enabled)
             {
-                $out .= '<div role="tabpanel" class="tab-pane" id="category_tab">';
-                $out .= '<h3>Verhuizen naar categorie</h3>';
-                $out .= '<form method="post">';
+                $blk .= '<div role="tabpanel" class="tab-pane" id="category_tab">';
+                $blk .= '<h3>Verhuizen naar categorie</h3>';
+                $blk .= '<form method="post">';
 
-                $out .= strtr(BulkCnst::TPL_SELECT, [
+                $blk .= strtr(BulkCnst::TPL_SELECT, [
                     '%options%' => $cat_options,
                     '%name%'    => 'bulk_field[category]',
                     '%label%'   => 'Categorie',
@@ -795,53 +773,56 @@ class MessagesListController extends AbstractController
                     '%explain%' => '',
                 ]);
 
-                $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+                $blk .= strtr(BulkCnst::TPL_CHECKBOX, [
                     '%name%'    => 'bulk_verify[category]',
                     '%label%'   => 'Ik heb nagekeken dat de juiste berichten geselecteerd zijn.',
                     '%attr%'    => ' required',
                 ]);
 
-                $out .= '<input type="submit" value="Categorie aanpassen" ';
-                $out .= 'name="bulk_submit[category]" class="btn btn-primary btn-lg">';
-                $out .= $form_token_service->get_hidden_input();
-                $out .= '</form>';
-                $out .= '</div>';
+                $blk .= '<input type="submit" value="Categorie aanpassen" ';
+                $blk .= 'name="bulk_submit[category]" class="btn btn-primary btn-lg">';
+                $blk .= $form_token_service->get_hidden_input();
+                $blk .= '</form>';
+                $blk .= '</div>';
             }
 
             if ($intersytem_en)
             {
-                $out .= '<div role="tabpanel" class="tab-pane" id="access_tab">';
-                $out .= '<h3>Zichtbaarheid instellen</h3>';
-                $out .= '<form method="post">';
+                $blk .= '<div role="tabpanel" class="tab-pane" id="access_tab">';
+                $blk .= '<h3>Zichtbaarheid instellen</h3>';
+                $blk .= '<form method="post">';
 
-                $out .= $item_access_service->get_radio_buttons('bulk_field[access]', '', '', true);
+                $blk .= $item_access_service->get_radio_buttons('bulk_field[access]', '', '', true);
 
-                $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+                $blk .= strtr(BulkCnst::TPL_CHECKBOX, [
                     '%name%'    => 'bulk_verify[access]',
                     '%label%'   => 'Ik heb nagekeken dat de juiste berichten geselecteerd zijn.',
                     '%attr%'    => ' required',
                 ]);
 
-                $out .= '<input type="submit" value="Aanpassen" ';
-                $out .= 'name="bulk_submit[access]" class="btn btn-primary btn-lg">';
-                $out .= $form_token_service->get_hidden_input();
-                $out .= '</form>';
-                $out .= '</div>';
+                $blk .= '<input type="submit" value="Aanpassen" ';
+                $blk .= 'name="bulk_submit[access]" class="btn btn-primary btn-lg">';
+                $blk .= $form_token_service->get_hidden_input();
+                $blk .= '</form>';
+                $blk .= '</div>';
             }
 
-            $out .= '</div>';
+            $blk .= '</div>';
 
-            $out .= '<div class="clearfix"></div>';
-            $out .= '</div>';
+            $blk .= '<div class="clearfix"></div>';
+            $blk .= '</div>';
 
-            $out .= '</div></div>';
+            $blk .= '</div></div>';
         }
 
         $menu_service->set('messages');
 
         return $this->render('messages/messages_list.html.twig', [
-            'content'       => $out,
+            'data_list_raw'     => $out,
+            'filter_form_raw'   => $flt,
+            'bulk_actions_raw'  => $blk ?? '',
             'categories'    => $categories,
+            'row_count'     => $row_count,
             'is_self'       => $is_self,
             'filter_uid'    => $filter_uid,
             'uid'           => $uid,
@@ -849,25 +830,6 @@ class MessagesListController extends AbstractController
             'cid'           => $cid,
             'filtered'      => $filtered,
         ]);
-    }
-
-    static public function no_messages(
-        PaginationRender $pagination_render,
-        MenuService $menu_service
-    ):string
-    {
-        $out = $pagination_render->get();
-
-        $out .= '<div class="panel panel-default">';
-        $out .= '<div class="panel-body">';
-        $out .= '<p>Er zijn geen resultaten.</p>';
-        $out .= '</div></div>';
-
-        $out .= $pagination_render->get();
-
-        $menu_service->set('messages');
-
-        return $out;
     }
 
     public static function fetch_and_filter(
@@ -878,7 +840,6 @@ class MessagesListController extends AbstractController
         ConfigService $config_service,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
-        PaginationRender $pagination_render,
         SelectRender $select_render,
         PageParamsService $pp,
         SessionUserService $su,
@@ -1386,9 +1347,6 @@ class MessagesListController extends AbstractController
             $row_count += $no_cat_count;
         }
 
-        $pagination_render->init($vr_route, $pp->ary(),
-            $row_count, $params);
-
         $categories_filter_options = [];
         $categories_filter_options[''] = '-- alle categorieën --';
 
@@ -1703,6 +1661,7 @@ class MessagesListController extends AbstractController
 
         return [
             'messages'                  => $messages,
+            'row_count'                 => $row_count,
             'params'                    => $params,
             'filtered'                  => $filtered,
             'filter_uid'                => $filter_uid,
