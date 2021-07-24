@@ -6,7 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
-use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
@@ -33,7 +32,6 @@ class TransactionsAutoMinLimitController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        MenuService $menu_service,
         LinkRender $link_render,
         PageParamsService $pp,
         ConfigService $config_service,
@@ -168,8 +166,6 @@ class TransactionsAutoMinLimitController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('transactions_autominlimit');
 
         return $this->render('transactions/transactions_autominlimit.html.twig', [
             'content'   => $out,

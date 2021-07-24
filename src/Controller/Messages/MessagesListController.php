@@ -19,7 +19,6 @@ use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
 use App\Service\ItemAccessService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
@@ -119,7 +118,6 @@ class MessagesListController extends AbstractController
         DateFormatService $date_format_service,
         IntersystemsService $intersystems_service,
         ItemAccessService $item_access_service,
-        MenuService $menu_service,
         LinkRender $link_render,
         SelectRender $select_render,
         ConfigService $config_service,
@@ -814,8 +812,6 @@ class MessagesListController extends AbstractController
 
             $blk .= '</div></div>';
         }
-
-        $menu_service->set('messages');
 
         return $this->render('messages/messages_list.html.twig', [
             'data_list_raw'     => $out,

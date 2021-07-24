@@ -5,7 +5,6 @@ namespace App\Controller\ContactTypes;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\FormTokenService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -37,8 +36,7 @@ class ContactTypesEditController extends AbstractController
         FormTokenService $form_token_service,
         AlertService $alert_service,
         LinkRender $link_render,
-        PageParamsService $pp,
-        MenuService $menu_service
+        PageParamsService $pp
     ):Response
     {
         $tc_prefetch = $db->fetchAssociative('select *
@@ -128,8 +126,6 @@ class ContactTypesEditController extends AbstractController
         $out .= '</form>';
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('contact_types');
 
         return $this->render('contact_types/contact_types_edit.html.twig', [
             'content'   => $out,

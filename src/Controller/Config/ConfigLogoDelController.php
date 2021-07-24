@@ -5,7 +5,6 @@ namespace App\Controller\Config;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -34,7 +33,6 @@ class ConfigLogoDelController extends AbstractController
         ConfigService $config_service,
         AlertService $alert_service,
         LinkRender $link_render,
-        MenuService $menu_service,
         PageParamsService $pp
     ):Response
     {
@@ -58,8 +56,6 @@ class ConfigLogoDelController extends AbstractController
             $alert_service->success('Het logo is verwijderd.');
             $link_render->redirect('config_logo', $pp->ary(), []);
         }
-
-        $menu_service->set('config_name');
 
         return $this->render('config/config_logo_del.html.twig', [
             'form'          => $form->createView(),

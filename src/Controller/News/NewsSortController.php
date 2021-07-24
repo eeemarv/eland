@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -33,7 +32,6 @@ class NewsSortController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        MenuService $menu_service,
         LinkRender $link_render,
         ConfigService $config_service,
         PageParamsService $pp
@@ -66,8 +64,6 @@ class NewsSortController extends AbstractController
             $alert_service->success('Sortering nieuws configuratie aangepast');
             $link_render->redirect('news_sort', $pp->ary(), []);
         }
-
-        $menu_service->set('news_sort');
 
         return $this->render('news/news_sort.html.twig', [
             'form'          => $form->createView(),

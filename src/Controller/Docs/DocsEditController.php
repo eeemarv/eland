@@ -10,7 +10,6 @@ use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
@@ -43,7 +42,6 @@ class DocsEditController extends AbstractController
         ItemAccessService $item_access_service,
         LinkRender $link_render,
         TypeaheadService $typeahead_service,
-        MenuService $menu_service,
         FormTokenService $form_token_service,
         PageParamsService $pp,
         SessionUserService $su,
@@ -257,8 +255,6 @@ class DocsEditController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('docs');
 
         return $this->render('docs/docs_edit.html.twig', [
             'content'   => $out,

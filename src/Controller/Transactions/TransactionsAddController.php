@@ -15,7 +15,6 @@ use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
 use App\Service\ItemAccessService;
 use App\Service\MailTransactionService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\SystemsService;
@@ -67,8 +66,7 @@ class TransactionsAddController extends AbstractController
         AutoDeactivateService $auto_deactivate_service,
         UserCacheService $user_cache_service,
         PageParamsService $pp,
-        SessionUserService $su,
-        MenuService $menu_service
+        SessionUserService $su
     ):Response
     {
         if (!$config_service->get_bool('transactions.enabled', $pp->schema()))
@@ -1305,8 +1303,6 @@ class TransactionsAddController extends AbstractController
         $out .= '</form>';
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('transactions');
 
         return $this->render('transactions/transactions_add.html.twig', [
             'content'   => $out,

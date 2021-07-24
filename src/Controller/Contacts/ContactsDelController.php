@@ -9,7 +9,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\DBAL\Connection as Db;
 use App\Service\AlertService;
-use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\LinkRender;
 use App\Service\ItemAccessService;
@@ -88,7 +87,6 @@ class ContactsDelController extends AbstractController
         AlertService $alert_service,
         UserCacheService $user_cache_service,
         FormTokenService $form_token_service,
-        MenuService $menu_service,
         ItemAccessService $item_access_service,
         AccountRender $account_render,
         PageParamsService $pp,
@@ -231,8 +229,6 @@ class ContactsDelController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('contacts');
 
         return $this->render('contacts/contacts_del.html.twig', [
             'content'   => $out,

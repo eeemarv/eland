@@ -16,7 +16,6 @@ use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
 use App\Service\ItemAccessService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
@@ -74,8 +73,7 @@ class TransactionsController extends AbstractController
         SelectRender $select_render,
         TypeaheadService $typeahead_service,
         PageParamsService $pp,
-        SessionUserService $su,
-        MenuService $menu_service
+        SessionUserService $su
     ):Response
     {
         if (!$config_service->get_bool('transactions.enabled', $pp->schema()))
@@ -1229,8 +1227,6 @@ class TransactionsController extends AbstractController
             $blk .= '</div>';
             $blk .= '</div>';
         }
-
-        $menu_service->set('transactions');
 
         return $this->render($template, [
             'data_list_raw'         => $out,

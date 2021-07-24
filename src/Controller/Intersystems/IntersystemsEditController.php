@@ -8,7 +8,6 @@ use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SystemsService;
 use App\Service\VarRouteService;
@@ -48,8 +47,7 @@ class IntersystemsEditController extends AbstractController
         SelectRender $select_render,
         ConfigService $config_service,
         SystemsService $systems_service,
-        VarRouteService $vr,
-        MenuService $menu_service
+        VarRouteService $vr
     ):Response
     {
         if (!$config_service->get_bool('intersystem.enabled', $pp->schema()))
@@ -133,8 +131,7 @@ class IntersystemsEditController extends AbstractController
             $link_render,
             $systems_service,
             $pp,
-            $vr,
-            $menu_service
+            $vr
         );
 
         return $this->render('intersystems/intersystems_edit.html.twig', [
@@ -195,8 +192,7 @@ class IntersystemsEditController extends AbstractController
         LinkRender $link_render,
         SystemsService $systems_service,
         PageParamsService $pp,
-        VarRouteService $vr,
-        MenuService $menu_service
+        VarRouteService $vr
     ):string
     {
         $out = '<div class="panel panel-info">';
@@ -317,8 +313,6 @@ class IntersystemsEditController extends AbstractController
             $link_render
         );
 */
-
-        $menu_service->set('intersystems');
 
         return $out;
     }

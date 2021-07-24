@@ -7,7 +7,6 @@ use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\ItemAccessService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -41,7 +40,6 @@ class ForumListController extends AbstractController
         ItemAccessService $item_access_service,
         LinkRender $link_render,
         PageParamsService $pp,
-        MenuService $menu_service
     ):Response
     {
         if (!$config_service->get_bool('forum.enabled', $pp->schema()))
@@ -96,8 +94,6 @@ class ForumListController extends AbstractController
             $out .= '<p>Er zijn nog geen forum onderwerpen.</p>';
             $out .= '</div></div>';
 
-            $menu_service->set('forum');
-
             return $this->render('forum/forum_list.html.twig', [
                 'content'   => $out,
             ]);
@@ -147,8 +143,6 @@ class ForumListController extends AbstractController
         $out .= '</table>';
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('forum');
 
         return $this->render('forum/forum_list.html.twig', [
             'content'   => $out,

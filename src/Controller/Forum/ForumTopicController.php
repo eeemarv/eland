@@ -10,7 +10,6 @@ use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
@@ -51,7 +50,6 @@ class ForumTopicController extends AbstractController
         LinkRender $link_render,
         PageParamsService $pp,
         SessionUserService $su,
-        MenuService $menu_service,
         HtmlPurifier $html_purifier
     ):Response
     {
@@ -232,8 +230,6 @@ class ForumTopicController extends AbstractController
             $out .= '</div>';
             $out .= '</div>';
         }
-
-        $menu_service->set('forum');
 
         return $this->render('forum/forum_topic.html.twig', [
             'content'       => $out,

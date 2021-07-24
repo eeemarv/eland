@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -32,7 +31,6 @@ class UsersUsernameController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        MenuService $menu_service,
         LinkRender $link_render,
         ConfigService $config_service,
         PageParamsService $pp
@@ -60,8 +58,6 @@ class UsersUsernameController extends AbstractController
             $alert_service->success('Gebruikersnaam configuratie aangepast');
             $link_render->redirect('users_username', $pp->ary(), []);
         }
-
-        $menu_service->set('users_username');
 
         return $this->render('users/users_username.html.twig', [
             'form'          => $form->createView(),

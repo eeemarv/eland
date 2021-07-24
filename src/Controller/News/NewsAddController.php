@@ -12,7 +12,6 @@ use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\VarRouteService;
@@ -40,7 +39,6 @@ class NewsAddController extends AbstractController
         Db $db,
         ConfigService $config_service,
         DateFormatService $date_format_service,
-        MenuService $menu_service,
         AlertService $alert_service,
         FormTokenService $form_token_service,
         ItemAccessService $item_access_service,
@@ -226,8 +224,6 @@ class NewsAddController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('news');
 
         return $this->render('news/news_add.html.twig', [
             'content'   => $out,

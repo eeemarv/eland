@@ -18,7 +18,6 @@ use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
 use App\Service\ItemAccessService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\S3Service;
 use App\Service\SessionUserService;
@@ -76,7 +75,6 @@ class MessagesEditController extends AbstractController
         IntersystemsService $intersystems_service,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
-        MenuService $menu_service,
         TypeaheadService $typeahead_service,
         PageParamsService $pp,
         SessionUserService $su,
@@ -908,8 +906,6 @@ class MessagesEditController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('messages');
 
         $template = 'messages/messages_';
         $template .= $edit_mode ? 'edit' : 'add';

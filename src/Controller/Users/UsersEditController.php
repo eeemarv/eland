@@ -23,7 +23,6 @@ use App\Service\IntersystemsService;
 use App\Service\ItemAccessService;
 use App\Service\MailAddrSystemService;
 use App\Service\MailAddrUserService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\PasswordStrengthService;
 use App\Service\SessionUserService;
@@ -115,8 +114,7 @@ class UsersEditController extends AbstractController
         MailQueue $mail_queue,
         PageParamsService $pp,
         SessionUserService $su,
-        VarRouteService $vr,
-        MenuService $menu_service
+        VarRouteService $vr
     ):Response
     {
         $full_name_enabled = $config_service->get_bool('users.fields.full_name.enabled', $pp->schema());
@@ -1340,8 +1338,6 @@ class UsersEditController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('users');
 
         return $this->render($template, [
             'content'   => $out,

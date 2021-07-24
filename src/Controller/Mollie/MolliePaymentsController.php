@@ -14,7 +14,6 @@ use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
 use App\Service\MailAddrUserService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
@@ -67,7 +66,6 @@ class MolliePaymentsController extends AbstractController
         FormTokenService $form_token_service,
         ConfigService $config_service,
         ItemAccessService $item_access_service,
-        MenuService $menu_service,
         LinkRender $link_render,
         MailQueue $mail_queue,
         TypeaheadService $typeahead_service,
@@ -1139,8 +1137,6 @@ class MolliePaymentsController extends AbstractController
         $blk .= '</div>';
         $blk .= '</div>';
         $blk .= '</div>';
-
-        $menu_service->set('mollie_payments');
 
         return $this->render('mollie/mollie_payments.html.twig', [
             'data_list_raw'     => $out,

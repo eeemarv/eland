@@ -7,7 +7,6 @@ use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\ItemAccessService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -38,8 +37,7 @@ class NewsExtendedController extends AbstractController
         AccountRender $account_render,
         DateFormatService $date_format_service,
         LinkRender $link_render,
-        PageParamsService $pp,
-        MenuService $menu_service
+        PageParamsService $pp
     ):Response
     {
         if (!$config_service->get_bool('news.enabled', $pp->schema()))
@@ -60,7 +58,7 @@ class NewsExtendedController extends AbstractController
 
         if (!count($news))
         {
-            $content = NewsListController::no_news($menu_service, $pp);
+            $content = NewsListController::no_news();
 
             return $this->render('news/news_extended.html.twig', [
                 'content'   => $content,
@@ -83,8 +81,6 @@ class NewsExtendedController extends AbstractController
                 $item_access_service
             );
         }
-
-        $menu_service->set('news');
 
         return $this->render('news/news_extended.html.twig', [
             'content'   => $out,

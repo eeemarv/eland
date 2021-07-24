@@ -14,7 +14,6 @@ use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\ThumbprintAccountsService;
@@ -52,8 +51,7 @@ class UsersDelController extends AbstractController
         IntersystemsService $intersystems_service,
         PageParamsService $pp,
         SessionUserService $su,
-        VarRouteService $vr,
-        MenuService $menu_service
+        VarRouteService $vr
     ):Response
     {
         $errors = [];
@@ -150,8 +148,6 @@ class UsersDelController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('users');
 
         return $this->render('users/users_del.html.twig', [
             'content'   => $out,

@@ -12,7 +12,6 @@ use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\TokenGeneratorService;
@@ -51,7 +50,6 @@ class MolliePaymentsAddController extends AbstractController
         FormTokenService $form_token_service,
         ConfigService $config_service,
         ItemAccessService $item_access_service,
-        MenuService $menu_service,
         LinkRender $link_render,
         AccountRender $account_render,
         DateFormatService $date_format_service,
@@ -534,8 +532,6 @@ class MolliePaymentsAddController extends AbstractController
         $out .= '<p>Wanneer ingelogd ziet de gebruiker met een openstaand betaalverzoek ';
         $out .= 'bovenaan elke pagina een link om de betaling via de Mollie website ';
         $out .= 'uit te voeren.</p>';
-
-        $menu_service->set('mollie_payments');
 
         return $this->render('mollie/mollie_payments_add.html.twig', [
             'content'   => $out,

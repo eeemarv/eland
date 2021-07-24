@@ -6,7 +6,6 @@ use App\Form\EventSubscriber\AccessFieldSubscriber;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -37,8 +36,7 @@ class UsersConfigNewController extends AbstractController
         AccessFieldSubscriber $access_field_subscriber,
         ConfigService $config_service,
         LinkRender $link_render,
-        PageParamsService $pp,
-        MenuService $menu_service
+        PageParamsService $pp
     ):Response
     {
         if (!$config_service->get_bool('users.new.enabled', $pp->schema()))
@@ -81,8 +79,6 @@ class UsersConfigNewController extends AbstractController
             $alert_service->success('Configuratie instappers aangepast');
             $link_render->redirect('users_config_new', $pp->ary(), []);
         }
-
-        $menu_service->set('users_config_new');
 
         return $this->render('users/users_config_new.html.twig', [
             'form'          => $form->createView(),

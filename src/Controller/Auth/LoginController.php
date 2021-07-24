@@ -11,7 +11,6 @@ use App\Security\User;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\UserCacheService;
@@ -39,7 +38,6 @@ class LoginController extends AbstractController
         EncoderFactoryInterface $encoder_factory,
         AlertService $alert_service,
         LoggerInterface $logger,
-        MenuService $menu_service,
         LinkRender $link_render,
         ConfigService $config_service,
         AccountRender $account_render,
@@ -363,8 +361,6 @@ class LoginController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('login');
 
         return $this->render('login/login.html.twig', [
             'content'   => $out,

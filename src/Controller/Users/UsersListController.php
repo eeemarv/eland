@@ -22,7 +22,6 @@ use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
 use App\Service\ItemAccessService;
 use App\Service\MailAddrUserService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\ThumbprintAccountsService;
@@ -80,7 +79,6 @@ class UsersListController extends AbstractController
         PageParamsService $pp,
         SessionUserService $su,
         VarRouteService $vr,
-        MenuService $menu_service,
         HtmlPurifier $html_purifier
     ):Response
     {
@@ -1989,8 +1987,6 @@ class UsersListController extends AbstractController
             $out .= '</div>';
             $out .= '</div>';
         }
-
-        $menu_service->set('users');
 
         return $this->render('users/users_list.html.twig', [
             'content'   => $out,

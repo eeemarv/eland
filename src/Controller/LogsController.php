@@ -9,7 +9,6 @@ use App\Service\DateFormatService;
 use App\Service\IntersystemsService;
 use App\Service\ItemAccessService;
 use App\Service\LogDbService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
@@ -38,7 +37,6 @@ class LogsController extends AbstractController
     public function __invoke(
         Request $request,
         Db $db,
-        MenuService $menu_service,
         LinkRender $link_render,
         ItemAccessService $item_access_service,
         LogDbService $log_db_service,
@@ -440,8 +438,6 @@ class LogsController extends AbstractController
         $out .= '</tbody>';
         $out .= '</table>';
         $out .= '</div></div>';
-
-        $menu_service->set('logs');
 
         return $this->render('logs/logs.html.twig', [
             'data_list_raw'     => $out,

@@ -10,7 +10,6 @@ use App\Service\AlertService;
 use App\Service\FormTokenService;
 use App\Service\MailAddrSystemService;
 use App\Service\MailAddrUserService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\PasswordStrengthService;
 use App\Service\SessionUserService;
@@ -69,8 +68,7 @@ class UsersPasswordEditController extends AbstractController
         PasswordStrengthService $password_strength_service,
         UserCacheService $user_cache_service,
         PageParamsService $pp,
-        SessionUserService $su,
-        MenuService $menu_service
+        SessionUserService $su
     ):Response
     {
         $errors = [];
@@ -228,8 +226,6 @@ class UsersPasswordEditController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('users');
 
         return $this->render('users/users_password_edit.html.twig', [
             'content'   => $out,

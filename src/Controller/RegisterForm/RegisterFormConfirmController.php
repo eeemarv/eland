@@ -10,7 +10,6 @@ use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\DataTokenService;
 use App\Service\MailAddrSystemService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\StaticContentService;
@@ -46,8 +45,7 @@ class RegisterFormConfirmController extends AbstractController
         MailAddrSystemService $mail_addr_system_service,
         MailQueue $mail_queue,
         PageParamsService $pp,
-        SessionUserService $su,
-        MenuService $menu_service
+        SessionUserService $su
     ):Response
     {
         if (!$config_service->get_bool('register_form.enabled', $pp->schema()))
@@ -61,8 +59,6 @@ class RegisterFormConfirmController extends AbstractController
             && $token === PagesCnst::CMS_TOKEN
             && $su->is_admin())
         {
-            $menu_service->set('register_form');
-
             $fail = $request->query->has('fail');
 
             $template = 'register_form/register_form_confirm_';
@@ -78,8 +74,6 @@ class RegisterFormConfirmController extends AbstractController
         if (!$data)
         {
             $alert_service->error('Geen geldig token.');
-
-            $menu_service->set('register_form');
 
             return $this->render('register_form/register_form_confirm_fail.html.twig', [
             ]);
@@ -234,8 +228,6 @@ class RegisterFormConfirmController extends AbstractController
                 'vars'					=> $vars,
             ], 8500);
         }
-
-        $menu_service->set('register_form');
 
         return $this->render('register_form/register_form_confirm_success.html.twig', [
         ]);

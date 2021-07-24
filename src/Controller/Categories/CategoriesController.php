@@ -5,7 +5,6 @@ namespace App\Controller\Categories;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
-use App\Service\MenuService;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
@@ -39,7 +38,6 @@ class CategoriesController extends AbstractController
         ConfigService $config_service,
         AlertService $alert_service,
         FormTokenService $form_token_service,
-        MenuService $menu_service,
         LinkRender $link_render,
         PageParamsService $pp,
         VarRouteService $vr
@@ -302,8 +300,6 @@ class CategoriesController extends AbstractController
         $out .= '" name="categories" data-categories-input>';
         $out .= $form_token_service->get_hidden_input();
         $out .= '</form>';
-
-        $menu_service->set('categories');
 
         return $this->render('categories/categories_list.html.twig', [
             'content'   => $out,

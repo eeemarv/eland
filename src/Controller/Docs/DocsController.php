@@ -5,7 +5,6 @@ namespace App\Controller\Docs;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\MenuService;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
@@ -39,7 +38,6 @@ class DocsController extends AbstractController
         LinkRender $link_render,
         ConfigService $config_service,
         PageParamsService $pp,
-        MenuService $menu_service,
         string $env_s3_url
     ):Response
     {
@@ -240,8 +238,6 @@ class DocsController extends AbstractController
             $out .= '<p>Er zijn nog geen documenten opgeladen.</p>';
             $out .= '</div></div>';
         }
-
-        $menu_service->set('docs');
 
         return $this->render('docs/docs.html.twig', [
             'content'   => $out,

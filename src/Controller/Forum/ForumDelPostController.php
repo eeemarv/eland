@@ -7,7 +7,6 @@ use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
@@ -44,8 +43,7 @@ class ForumDelPostController extends AbstractController
         AlertService $alert_service,
         PageParamsService $pp,
         SessionUserService $su,
-        ItemAccessService $item_access_service,
-        MenuService $menu_service
+        ItemAccessService $item_access_service
     ):Response
     {
         if (!$config_service->get_bool('forum.enabled', $pp->schema()))
@@ -125,8 +123,6 @@ class ForumDelPostController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('forum');
 
         return $this->render('forum/forum_del_post.html.twig', [
             'content'       => $out,

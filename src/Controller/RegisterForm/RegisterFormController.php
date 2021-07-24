@@ -9,7 +9,6 @@ use App\Service\CaptchaService;
 use App\Service\ConfigService;
 use App\Service\DataTokenService;
 use App\Service\FormTokenService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -39,7 +38,6 @@ class RegisterFormController extends AbstractController
         Db $db,
         LoggerInterface $logger,
         MailQueue $mail_queue,
-        MenuService $menu_service,
         FormTokenService $form_token_service,
         DataTokenService $data_token_service,
         CaptchaService $captcha_service,
@@ -250,8 +248,6 @@ class RegisterFormController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('register_form');
 
         return $this->render('register_form/register_form.html.twig', [
             'content'   => $out,

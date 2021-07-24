@@ -15,7 +15,6 @@ use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
 use App\Service\MailAddrSystemService;
 use App\Service\MailAddrUserService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\TransactionService;
@@ -104,7 +103,6 @@ class TransactionsMassController extends AbstractController
         FormTokenService $form_token_service,
         ItemAccessService $item_access_service,
         ConfigService $config_service,
-        MenuService $menu_service,
         LinkRender $link_render,
         AccountRender $account_render,
         MailQueue $mail_queue,
@@ -1016,8 +1014,6 @@ class TransactionsMassController extends AbstractController
         $out .= '</div>';
 
         $out .= '</form>';
-
-        $menu_service->set('transactions_mass');
 
         return $this->render('transactions/transactions_mass.html.twig', [
             'content'   => $out,

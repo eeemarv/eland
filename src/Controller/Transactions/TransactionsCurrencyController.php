@@ -5,7 +5,6 @@ namespace App\Controller\Transactions;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -37,8 +36,7 @@ class TransactionsCurrencyController extends AbstractController
         AlertService $alert_service,
         ConfigService $config_service,
         LinkRender $link_render,
-        PageParamsService $pp,
-        MenuService $menu_service
+        PageParamsService $pp
     ):Response
     {
         if (!$config_service->get_bool('transactions.enabled', $pp->schema()))
@@ -76,8 +74,6 @@ class TransactionsCurrencyController extends AbstractController
             $alert_service->success('Munteenheid aangepast');
             $link_render->redirect('transactions_currency', $pp->ary(), []);
         }
-
-        $menu_service->set('transactions_currency');
 
         return $this->render('transactions/transactions_currency.html.twig', [
             'form'          => $form->createView(),

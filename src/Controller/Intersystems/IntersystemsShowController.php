@@ -5,7 +5,6 @@ namespace App\Controller\Intersystems;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SystemsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -38,8 +37,7 @@ class IntersystemsShowController extends AbstractController
         LinkRender $link_render,
         ConfigService $config_service,
         SystemsService $systems_service,
-        PageParamsService $pp,
-        MenuService $menu_service
+        PageParamsService $pp
     ):Response
     {
         if (!$config_service->get_bool('intersystem.enabled', $pp->schema()))
@@ -187,8 +185,6 @@ class IntersystemsShowController extends AbstractController
             $link_render
         );
 */
-
-        $menu_service->set('intersystems');
 
         return $this->render('intersystems/intersystems_show.html.twig', [
             'content'   => $out,

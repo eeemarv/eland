@@ -7,7 +7,6 @@ use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\ItemAccessService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -39,7 +38,6 @@ class NewsShowController extends AbstractController
         ConfigService $config_service,
         DateFormatService $date_format_service,
         ItemAccessService $item_access_service,
-        MenuService $menu_service,
         LinkRender $link_render,
         PageParamsService $pp
     ):Response
@@ -97,8 +95,6 @@ class NewsShowController extends AbstractController
             $date_format_service,
             $item_access_service
         );
-
-        $menu_service->set('news');
 
         return $this->render('news/news_show.html.twig', [
             'content'   => $out,

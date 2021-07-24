@@ -4,7 +4,6 @@ namespace App\Controller\Users;
 
 use App\Render\LinkRender;
 use App\Service\AlertService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\UserCacheService;
@@ -58,7 +57,6 @@ class UsersImageDelController extends AbstractController
         PageParamsService $pp,
         SessionUserService $su,
         VarRouteService $vr,
-        MenuService $menu_service,
         string $env_s3_url
     ):Response
     {
@@ -120,8 +118,6 @@ class UsersImageDelController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('users');
 
         return $this->render('users/users_image_del.html.twig', [
             'content'   => $out,

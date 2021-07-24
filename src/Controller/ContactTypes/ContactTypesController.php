@@ -3,7 +3,6 @@
 namespace App\Controller\ContactTypes;
 
 use App\Render\LinkRender;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,8 +30,7 @@ class ContactTypesController extends AbstractController
     public function __invoke(
         Db $db,
         LinkRender $link_render,
-        PageParamsService $pp,
-        MenuService $menu_service
+        PageParamsService $pp
     ):Response
     {
         $types = $db->fetchAllAssociative('select *
@@ -142,8 +140,6 @@ class ContactTypesController extends AbstractController
         $out .= '<p>Kunnen niet verwijderd worden: ';
         $out .= 'contact types waarvan contacten ';
         $out .= 'bestaan en beschermde contact types (*).</p>';
-
-        $menu_service->set('contact_types');
 
         return $this->render('contact_types/contact_types.html.twig', [
             'content'   => $out,

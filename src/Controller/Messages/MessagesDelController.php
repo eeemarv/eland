@@ -15,7 +15,6 @@ use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
 use App\Service\ItemAccessService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\VarRouteService;
@@ -55,8 +54,7 @@ class MessagesDelController extends AbstractController
         DateFormatService $date_format_service,
         PageParamsService $pp,
         SessionUserService $su,
-        VarRouteService $vr,
-        MenuService $menu_service
+        VarRouteService $vr
     ):Response
     {
         if (!$config_service->get_bool('messages.enabled', $pp->schema()))
@@ -169,8 +167,6 @@ class MessagesDelController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('messages');
 
         return $this->render('messages/messages_del.html.twig', [
             'content'   => $out,

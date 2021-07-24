@@ -10,7 +10,6 @@ use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\MailAddrSystemService;
 use App\Service\MailAddrUserService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\VarRouteService;
@@ -43,7 +42,6 @@ class SupportFormController extends AbstractController
         FormTokenService $form_token_service,
         LinkRender $link_render,
         MailQueue $mail_queue,
-        MenuService $menu_service,
         MailAddrUserService $mail_addr_user_service,
         PageParamsService $pp,
         SessionUserService $su,
@@ -208,8 +206,6 @@ class SupportFormController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('support_form');
 
         return $this->render('support_form/support_form.html.twig', [
             'content'   => $out,

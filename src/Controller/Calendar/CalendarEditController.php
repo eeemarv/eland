@@ -12,7 +12,6 @@ use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -29,7 +28,6 @@ class CalendarEditController extends AbstractController
         FormTokenService $form_token_service,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
-        MenuService $menu_service,
         PageParamsService $pp,
         HtmlPurifier $html_purifier
     ):Response
@@ -216,8 +214,6 @@ class CalendarEditController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('news');
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,

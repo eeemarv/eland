@@ -4,7 +4,6 @@ namespace App\Controller\Init;
 
 use App\Render\LinkRender;
 use App\Service\AlertService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,7 +32,6 @@ class InitController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        MenuService $menu_service,
         PageParamsService $pp,
         LinkRender $link_render,
         string $env_app_init_enabled
@@ -68,8 +66,6 @@ class InitController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('init');
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,

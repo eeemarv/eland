@@ -7,7 +7,6 @@ use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\DataTokenService;
 use App\Service\FormTokenService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -39,8 +38,7 @@ class PasswordResetController extends AbstractController
         FormTokenService $form_token_service,
         MailQueue $mail_queue,
         LinkRender $link_render,
-        PageParamsService $pp,
-        MenuService $menu_service
+        PageParamsService $pp
     ):Response
     {
         $errors = [];
@@ -149,8 +147,6 @@ class PasswordResetController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('login');
 
         return $this->render('password_reset/password_reset.html.twig', [
             'content'   => $out,

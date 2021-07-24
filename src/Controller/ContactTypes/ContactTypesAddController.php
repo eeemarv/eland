@@ -5,7 +5,6 @@ namespace App\Controller\ContactTypes;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\FormTokenService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -35,8 +34,7 @@ class ContactTypesAddController extends AbstractController
         FormTokenService $form_token_service,
         LinkRender $link_render,
         AlertService $alert_service,
-        PageParamsService $pp,
-        MenuService $menu_service
+        PageParamsService $pp
     ):Response
     {
         if ($request->isMethod('POST'))
@@ -110,8 +108,6 @@ class ContactTypesAddController extends AbstractController
         $out .= '</form>';
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('contact_types');
 
         return $this->render('contact_types/contact_types_add.html.twig', [
             'content'   => $out,

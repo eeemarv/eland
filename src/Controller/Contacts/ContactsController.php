@@ -9,7 +9,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
-use App\Service\MenuService;
 use App\Render\LinkRender;
 use App\Render\SelectRender;
 use App\Service\ConfigService;
@@ -45,7 +44,6 @@ class ContactsController extends AbstractController
         SelectRender $select_render,
         LinkRender $link_render,
         FormTokenService $form_token_service,
-        MenuService $menu_service,
         TypeaheadService $typeahead_service,
         ConfigService $config_service,
         AccountRender $account_render,
@@ -755,8 +753,6 @@ class ContactsController extends AbstractController
         $blk .= '</div>';
         $blk .= '</div>';
         $blk .= '</div>';
-
-        $menu_service->set('contacts');
 
         return $this->render('contacts/contacts.html.twig', [
             'data_list_raw'     => $out,

@@ -6,7 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
-use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
@@ -47,8 +46,7 @@ class DocsAddController extends AbstractController
         S3Service $s3_service,
         TypeaheadService $typeahead_service,
         PageParamsService $pp,
-        SessionUserService $su,
-        MenuService $menu_service
+        SessionUserService $su
     ):Response
     {
         if (!$config_service->get_bool('docs.enabled', $pp->schema()))
@@ -242,8 +240,6 @@ class DocsAddController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('docs');
 
         return $this->render('docs/docs_add.html.twig', [
             'content'   => $out,

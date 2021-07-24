@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -40,7 +39,6 @@ class MessagesModulesController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        MenuService $menu_service,
         LinkRender $link_render,
         ConfigService $config_service,
         PageParamsService $pp
@@ -86,8 +84,6 @@ class MessagesModulesController extends AbstractController
             $alert_service->success('Submodules/velden vraag en aanbod aangepast');
             $link_render->redirect('messages_modules', $pp->ary(), []);
         }
-
-        $menu_service->set('messages_modules');
 
         return $this->render('messages/messages_modules.html.twig', [
             'form'          => $form->createView(),

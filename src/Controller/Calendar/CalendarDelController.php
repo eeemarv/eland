@@ -9,7 +9,6 @@ use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -31,7 +30,6 @@ class CalendarDelController extends AbstractController
         DateFormatService $date_format_service,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
-        MenuService $menu_service,
         PageParamsService $pp,
         VarRouteService $vr
     ):Response
@@ -95,8 +93,6 @@ class CalendarDelController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('news');
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,

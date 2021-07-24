@@ -7,7 +7,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use App\Service\AlertService;
-use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
@@ -40,7 +39,6 @@ class CategoriesEditController extends AbstractController
         ConfigService $config_service,
         AlertService $alert_service,
         FormTokenService $form_token_service,
-        MenuService $menu_service,
         LinkRender $link_render,
         PageParamsService $pp
     ):Response
@@ -131,8 +129,6 @@ class CategoriesEditController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('categories');
 
         return $this->render('categories/categories_edit.html.twig', [
             'content'   => $out,

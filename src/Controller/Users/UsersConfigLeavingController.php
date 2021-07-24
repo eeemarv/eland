@@ -6,7 +6,6 @@ use App\Form\EventSubscriber\AccessFieldSubscriber;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -38,8 +37,7 @@ class UsersConfigLeavingController extends AbstractController
         AccessFieldSubscriber $access_field_subscriber,
         ConfigService $config_service,
         LinkRender $link_render,
-        PageParamsService $pp,
-        MenuService $menu_service
+        PageParamsService $pp
     ):Response
     {
         if (!$config_service->get_bool('users.leaving.enabled', $pp->schema()))
@@ -96,8 +94,6 @@ class UsersConfigLeavingController extends AbstractController
             $alert_service->success('Configuratie uitstappende leden aangepast');
             $link_render->redirect('users_config_leaving', $pp->ary(), []);
         }
-
-        $menu_service->set('users_config_leaving');
 
         return $this->render('users/users_config_leaving.html.twig', [
             'form'          => $form->createView(),

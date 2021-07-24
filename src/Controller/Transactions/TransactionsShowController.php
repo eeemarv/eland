@@ -9,7 +9,6 @@ use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\IntersystemsService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\SystemsService;
@@ -47,8 +46,7 @@ class TransactionsShowController extends AbstractController
         LinkRender $link_render,
         SystemsService $systems_service,
         PageParamsService $pp,
-        SessionUserService $su,
-        MenuService $menu_service
+        SessionUserService $su
     ):Response
     {
         if (!$config_service->get_bool('transactions.enabled', $pp->schema()))
@@ -535,8 +533,6 @@ class TransactionsShowController extends AbstractController
         }
 
         $out .= '</div></div>';
-
-        $menu_service->set('transactions');
 
         return $this->render('transactions/transactions_show.html.twig', [
             'content'           => $out,

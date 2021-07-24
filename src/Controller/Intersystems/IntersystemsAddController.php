@@ -8,7 +8,6 @@ use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SystemsService;
 use App\Service\VarRouteService;
@@ -46,8 +45,7 @@ class IntersystemsAddController extends AbstractController
         SelectRender $select_render,
         SystemsService $systems_service,
         PageParamsService $pp,
-        VarRouteService $vr,
-        MenuService $menu_service
+        VarRouteService $vr
     ):Response
     {
         if (!$config_service->get_bool('intersystem.enabled', $pp->schema()))
@@ -138,8 +136,7 @@ class IntersystemsAddController extends AbstractController
             $link_render,
             $systems_service,
             $pp,
-            $vr,
-            $menu_service
+            $vr
         );
 
         return $this->render('intersystems/intersystems_add.html.twig', [

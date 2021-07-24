@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Service\FormTokenService;
-use App\Service\MenuService;
+
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -35,7 +35,6 @@ class ExportController extends AbstractController
         Db $db,
         LoggerInterface $logger,
         PageParamsService $pp,
-        MenuService $menu_service,
         FormTokenService $form_token_service,
         string $cache_dir,
         string $env_database_url
@@ -247,8 +246,6 @@ class ExportController extends AbstractController
         $out .= '</div></div>';
         $out .= $form_token_service->get_hidden_input();
         $out .= '</form>';
-
-        $menu_service->set('export');
 
         return $this->render('export/export.html.twig', [
             'content'   => $out,

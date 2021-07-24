@@ -7,7 +7,6 @@ use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\UserCacheService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -45,7 +44,6 @@ class MollieCheckoutController extends AbstractController
         UserCacheService $user_cache_service,
         FormTokenService $form_token_service,
         ConfigService $config_service,
-        MenuService $menu_service,
         LinkRender $link_render,
         PageParamsService $pp
     ):Response
@@ -196,8 +194,6 @@ class MollieCheckoutController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('mollie_payments');
 
         return $this->render('mollie/mollie_checkout.html.twig', [
             'content'       => $out,

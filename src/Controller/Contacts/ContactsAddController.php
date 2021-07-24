@@ -10,7 +10,6 @@ use App\Queue\GeocodeQueue;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\DBAL\Connection as Db;
 use App\Service\AlertService;
-use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
@@ -81,7 +80,6 @@ class ContactsAddController extends AbstractController
         Db $db,
         AlertService $alert_service,
         FormTokenService $form_token_service,
-        MenuService $menu_service,
         ConfigService $config_service,
         LinkRender $link_render,
         GeocodeQueue $geocode_queue,
@@ -424,8 +422,6 @@ class ContactsAddController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('contacts');
 
         return $this->render('contacts/contacts_add.html.twig', [
             'content'   => $out,

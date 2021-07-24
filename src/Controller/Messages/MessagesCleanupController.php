@@ -10,7 +10,6 @@ use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\VarRouteService;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -37,7 +36,6 @@ class MessagesCleanupController extends AbstractController
         ConfigService $config_service,
         FormTokenService $form_token_service,
         LinkRender $link_render,
-        MenuService $menu_service,
         PageParamsService $pp,
         VarRouteService $vr
     ):Response
@@ -166,8 +164,6 @@ class MessagesCleanupController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('messages_cleanup');
 
         return $this->render('messages/messages_cleanup.html.twig', [
             'content'   => $out,

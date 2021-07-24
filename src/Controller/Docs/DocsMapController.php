@@ -5,7 +5,6 @@ namespace App\Controller\Docs;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\MenuService;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
@@ -39,7 +38,6 @@ class DocsMapController extends AbstractController
         LinkRender $link_render,
         ItemAccessService $item_access_service,
         DateFormatService $date_format_service,
-        MenuService $menu_service,
         ConfigService $config_service,
         PageParamsService $pp,
         string $env_s3_url
@@ -203,8 +201,6 @@ class DocsMapController extends AbstractController
             $out .= '<p>Er zijn nog geen documenten opgeladen.</p>';
             $out .= '</div></div>';
         }
-
-        $menu_service->set('docs');
 
         return $this->render('docs/docs_map.html.twig', [
             'content'   => $out,

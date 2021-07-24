@@ -4,7 +4,6 @@ namespace App\Controller\Config;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\MenuService;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ConfigLogoController extends AbstractController
@@ -23,11 +22,8 @@ class ConfigLogoController extends AbstractController
     )]
 
     public function __invoke(
-        MenuService $menu_service
     ):Response
     {
-        $menu_service->set('config_name');
-
         return $this->render('config/config_logo.html.twig', [
         ]);
     }

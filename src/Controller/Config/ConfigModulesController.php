@@ -7,7 +7,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
-use App\Service\MenuService;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -45,7 +44,6 @@ class ConfigModulesController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        MenuService $menu_service,
         LinkRender $link_render,
         ConfigService $config_service,
         PageParamsService $pp
@@ -86,8 +84,6 @@ class ConfigModulesController extends AbstractController
             $alert_service->success('Modules aangepast.');
             $link_render->redirect('config_modules', $pp->ary(), []);
         }
-
-        $menu_service->set('config_name');
 
         return $this->render('config/config_modules.html.twig', [
             'form'          => $form->createView(),

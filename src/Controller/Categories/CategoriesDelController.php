@@ -7,7 +7,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use App\Service\AlertService;
-use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
@@ -41,7 +40,6 @@ class CategoriesDelController extends AbstractController
         ConfigService $config_service,
         AlertService $alert_service,
         FormTokenService $form_token_service,
-        MenuService $menu_service,
         LinkRender $link_render,
         PageParamsService $pp
     ):Response
@@ -128,8 +126,6 @@ class CategoriesDelController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('categories');
 
         return $this->render('categories/categories_del.html.twig', [
             'content'   => $out,

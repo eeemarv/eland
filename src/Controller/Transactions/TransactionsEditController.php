@@ -11,7 +11,6 @@ use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -52,8 +51,7 @@ class TransactionsEditController extends AbstractController
         LinkRender $link_render,
         IntersystemsService $intersystems_service,
         PageParamsService $pp,
-        SessionUserService $su,
-        MenuService $menu_service
+        SessionUserService $su
     ):Response
     {
         if (!$config_service->get_bool('transactions.enabled', $pp->schema()))
@@ -353,8 +351,6 @@ class TransactionsEditController extends AbstractController
         $out .= '</form>';
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('transactions');
 
         return $this->render('transactions/transactions_edit.html.twig', [
             'content'   => $out,

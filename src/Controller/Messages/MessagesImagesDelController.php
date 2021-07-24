@@ -10,7 +10,6 @@ use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
@@ -43,7 +42,6 @@ class MessagesImagesDelController extends AbstractController
         LinkRender $link_render,
         PageParamsService $pp,
         SessionUserService $su,
-        MenuService $menu_service,
         string $env_s3_url
     ):Response
     {
@@ -147,8 +145,6 @@ class MessagesImagesDelController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('messages');
 
         return $this->render('messages/messages_images_del.html.twig', [
             'content'   => $out,

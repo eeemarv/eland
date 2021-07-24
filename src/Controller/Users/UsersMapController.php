@@ -7,7 +7,6 @@ use App\Render\LinkRender;
 use App\Service\CacheService;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -44,7 +43,6 @@ class UsersMapController extends AbstractController
         ConfigService $config_service,
         PageParamsService $pp,
         SessionUserService $su,
-        MenuService $menu_service,
         string $env_map_access_token,
         string $env_map_tiles_url
     ):Response
@@ -319,8 +317,6 @@ class UsersMapController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('users');
 
         return $this->render('users/users_map.html.twig', [
             'content'   => $out,

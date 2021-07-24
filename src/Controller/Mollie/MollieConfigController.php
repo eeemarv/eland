@@ -6,7 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
-use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
@@ -34,7 +33,6 @@ class MollieConfigController extends AbstractController
         Request $request,
         ConfigService $config_service,
         AlertService $alert_service,
-        MenuService $menu_service,
         LinkRender $link_render,
         PageParamsService $pp,
         FormTokenService $form_token_service
@@ -114,8 +112,6 @@ class MollieConfigController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('mollie_payments');
 
         return $this->render('mollie/mollie_config.html.twig', [
             'content'   => $out,

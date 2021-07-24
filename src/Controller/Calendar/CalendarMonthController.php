@@ -7,7 +7,6 @@ use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\ItemAccessService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,8 +24,7 @@ class CalendarMonthController extends AbstractController
         AccountRender $account_render,
         DateFormatService $date_format_service,
         LinkRender $link_render,
-        PageParamsService $pp,
-        MenuService $menu_service
+        PageParamsService $pp
     ):Response
     {
         if (!$config_service->get_bool('calendar.enabled', $pp->schema()))
@@ -45,15 +43,6 @@ class CalendarMonthController extends AbstractController
                 && $config_service->get_intersystem_en($pp->schema()))
             || $pp->is_admin();
 
-        if (!count($news))
-        {
-            $content = CalendarListController::no_news($menu_service, $pp);
-
-            return $this->render('base/navbar.html.twig', [
-                'content'   => $content,
-            ]);
-        }
-
         $out = '';
 
         foreach ($news as $n)
@@ -70,8 +59,6 @@ class CalendarMonthController extends AbstractController
                 $item_access_service
             );
         }
-
-        $menu_service->set('news');
 
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,

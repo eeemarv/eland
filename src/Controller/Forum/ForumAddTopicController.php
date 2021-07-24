@@ -12,7 +12,6 @@ use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -43,7 +42,6 @@ class ForumAddTopicController extends AbstractController
         ItemAccessService $item_access_service,
         SessionUserService $su,
         PageParamsService $pp,
-        MenuService $menu_service,
         HtmlPurifier $html_purifier
     ):Response
     {
@@ -152,8 +150,6 @@ class ForumAddTopicController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('forum');
 
         return $this->render('forum/forum_add_topic.html.twig', [
             'content'   => $out,

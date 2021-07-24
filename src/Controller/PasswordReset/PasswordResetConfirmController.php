@@ -10,7 +10,6 @@ use App\Service\AlertService;
 use App\Service\DataTokenService;
 use App\Service\FormTokenService;
 use App\Service\MailAddrUserService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\PasswordStrengthService;
 use App\Service\SessionUserService;
@@ -48,7 +47,6 @@ class PasswordResetConfirmController extends AbstractController
         FormTokenService $form_token_service,
         AlertService $alert_service,
         LinkRender $link_render,
-        MenuService $menu_service,
         MailAddrUserService $mail_addr_user_service,
         MailQueue $mail_queue,
         PasswordStrengthService $password_strength_service,
@@ -149,8 +147,6 @@ class PasswordResetConfirmController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('login');
 
         return $this->render('password_reset/password_reset_confirm.html.twig', [
             'content'   => $out,

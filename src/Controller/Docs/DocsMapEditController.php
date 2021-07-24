@@ -6,7 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
-use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
@@ -41,7 +40,6 @@ class DocsMapEditController extends AbstractController
         LinkRender $link_render,
         TypeaheadService $typeahead_service,
         FormTokenService $form_token_service,
-        MenuService $menu_service,
         PageParamsService $pp
     ):Response
     {
@@ -164,8 +162,6 @@ class DocsMapEditController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('docs');
 
         return $this->render('docs/docs_map_edit.html.twig', [
             'content'   => $out,

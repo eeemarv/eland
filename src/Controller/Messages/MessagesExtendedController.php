@@ -10,7 +10,6 @@ use App\Render\LinkRender;
 use App\Render\SelectRender;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
@@ -61,7 +60,6 @@ class MessagesExtendedController extends AbstractController
         SelectRender $select_render,
         TypeaheadService $typeahead_service,
         LinkRender $link_render,
-        MenuService $menu_service,
         PageParamsService $pp,
         SessionUserService $su,
         VarRouteService $vr,
@@ -188,8 +186,6 @@ class MessagesExtendedController extends AbstractController
 
             $out .= '</div>';
         }
-
-        $menu_service->set('messages');
 
         return $this->render('messages/messages_extended.html.twig', [
             'data_list_raw'     => $out,

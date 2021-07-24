@@ -9,7 +9,6 @@ use App\Cnst\StatusCnst;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
@@ -43,7 +42,6 @@ class UsersTilesController extends AbstractController
         ConfigService $config_service,
         PageParamsService $pp,
         VarRouteService $vr,
-        MenuService $menu_service,
         string $env_s3_url
     ):Response
     {
@@ -183,8 +181,6 @@ class UsersTilesController extends AbstractController
         }
 
         $out .= '</div>';
-
-        $menu_service->set('users');
 
         return $this->render('users/users_tiles.html.twig', [
             'content'   => $out,

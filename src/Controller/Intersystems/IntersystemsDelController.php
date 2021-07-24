@@ -7,7 +7,6 @@ use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -42,8 +41,7 @@ class IntersystemsDelController extends AbstractController
         LinkRender $link_render,
         AlertService $alert_service,
         FormTokenService $form_token_service,
-        PageParamsService $pp,
-        MenuService $menu_service
+        PageParamsService $pp
     ):Response
     {
         if (!$config_service->get_bool('intersystem.enabled', $pp->schema()))
@@ -100,8 +98,6 @@ class IntersystemsDelController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('intersystems');
 
         return $this->render('intersystems/intersystems_del.html.twig', [
             'content'   => $out,

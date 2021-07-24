@@ -10,7 +10,6 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\DBAL\Connection as Db;
 use App\Queue\GeocodeQueue;
 use App\Service\AlertService;
-use App\Service\MenuService;
 use App\Service\FormTokenService;
 use App\Render\LinkRender;
 use App\Service\ItemAccessService;
@@ -113,7 +112,6 @@ class ContactsEditController extends AbstractController
         Db $db,
         FormTokenService $form_token_service,
         AlertService $alert_service,
-        MenuService $menu_service,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
         PageParamsService $pp,
@@ -412,8 +410,6 @@ class ContactsEditController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('contacts');
 
         return $this->render('contacts/contacts_edit.html.twig', [
             'content'   => $out,

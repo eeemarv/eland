@@ -6,7 +6,6 @@ use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\ItemAccessService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,8 +20,7 @@ class CalendarListController extends AbstractController
         ItemAccessService $item_access_service,
         DateFormatService $date_format_service,
         LinkRender $link_render,
-        PageParamsService $pp,
-        MenuService $menu_service
+        PageParamsService $pp
     ):Response
     {
         if (!$config_service->get_bool('calendar.enabled', $pp->schema()))
@@ -40,15 +38,6 @@ class CalendarListController extends AbstractController
         $show_visibility = ($pp->is_user()
                 && $config_service->get_intersystem_en($pp->schema()))
             || $pp->is_admin();
-
-        if (!count($news))
-        {
-            $content = self::no_news($menu_service, $pp);
-
-            return $this->render('base/navbar.html.twig', [
-                'content'   => $content,
-            ]);
-        }
 
         $out = '<div class="panel panel-warning printview">';
         $out .= '<div class="table-responsive">';
@@ -103,8 +92,6 @@ class CalendarListController extends AbstractController
         $out .= '</tbody>';
         $out .= '</table></div></div>';
 
-        $menu_service->set('news');
-
         return $this->render('base/navbar.html.twig', [
             'content'   => $out,
         ]);
@@ -136,19 +123,5 @@ class CalendarListController extends AbstractController
         }
 
         return $news;
-    }
-
-    public static function no_news(
-        MenuService $menu_service
-    ):string
-    {
-        $out = '<div class="panel panel-default">';
-        $out .= '<div class="panel-heading">';
-        $out .= '<p>Er zijn momenteel geen nieuwsberichten.</p>';
-        $out .= '</div></div>';
-
-        $menu_service->set('news');
-
-        return $out;
     }
 }

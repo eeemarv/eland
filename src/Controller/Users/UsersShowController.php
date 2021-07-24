@@ -23,7 +23,6 @@ use App\Service\DistanceService;
 use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
 use App\Service\MailAddrUserService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\UserCacheService;
@@ -90,7 +89,6 @@ class UsersShowController extends AbstractController
         PageParamsService $pp,
         SessionUserService $su,
         VarRouteService $vr,
-        MenuService $menu_service,
         ContactsUserShowInlineController $contacts_user_show_inline_controller,
         string $env_s3_url,
         string $env_map_access_token,
@@ -732,8 +730,6 @@ class UsersShowController extends AbstractController
             $out .= '</div>';
             $out .= '</div>';
         }
-
-        $menu_service->set('users');
 
         return $this->render('users/users_show.html.twig', [
             'content'   => $out,

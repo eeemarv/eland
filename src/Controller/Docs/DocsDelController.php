@@ -6,7 +6,6 @@ use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
-use App\Service\MenuService;
 use App\Service\PageParamsService;
 use App\Service\S3Service;
 use App\Service\TypeaheadService;
@@ -45,7 +44,6 @@ class DocsDelController extends AbstractController
         LinkRender $link_render,
         S3Service $s3_service,
         TypeaheadService $typeahead_service,
-        MenuService $menu_service,
         PageParamsService $pp,
         string $env_s3_url
     ):Response
@@ -147,8 +145,6 @@ class DocsDelController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
-
-        $menu_service->set('docs');
 
         return $this->render('docs/docs_del.html.twig', [
             'content'   => $out,
