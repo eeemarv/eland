@@ -80,7 +80,7 @@
 				{%- block label -%}{{- account_name -}}{%- endblock label -%}
 				{%- block menu_items -%}
 					{%- set pp_su_role_short = pp_ary().role_short ?? su_role_short -%}
-					{%- if su_is_system_self() -%}
+					{%- if pp_role('user') or pp_role('admin') -%}
 						{%- for rt, dt in user_menu -%}
 							{%- include 'include/menu_item_self.html.twig' -%}
 						{%- endfor -%}
