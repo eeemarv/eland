@@ -1,5 +1,4 @@
 {%- extends 'base/sidebar.html.twig' -%}
-{%- import 'macro/menu.html.twig' as m -%}
 
 {%- set user_menu =  {
 	'users_show_self': {'fa': 'user'},
@@ -21,32 +20,73 @@
 	<ul class="nav navbar-nav navbar-right">
 
 	{%- block navbar_menu -%}
-		{%- if has_menu_nav_system() -%}
-			{{- m.navbar_menu_dropdown_button('Systeem', 'share-alt', menu_nav_system(), false, {}) -}}
+		{%- set su_logins_role_short = su_logins_role_short() -%}
+		{%- set intersystem_schemas = config_bool('intersystem.enabled', schema) ? intersystem_schemas(su_schema()) : [] -%}
+
+		{%- if su_logins_role_short|length > 1 or (intersystem_schemas|length and su_logins_role_short|length) -%}
+			{%- embed 'embed/menu_dropdown.html.twig' -%}
+				{%- block fa -%}share-alt{%- endblock fa -%}
+				{%- block label -%}{{- 'system_menu.system'|trans -}}{%- endblock label -%}
+				{%- block menu_items -%}
+					<li class="dropdown-header">
+						{%- if su_logins_role_short|length == 1 -%}
+							{{- 'system_menu.own_system'|trans -}}
+						{%- else -%}
+							{{- 'system_menu.own_systems'|trans -}}
+						{%- endif -%}
+					</li>
+					{%- for sch, rlshrt in su_logins_role_short -%}
+						<li{%- if sch == su_schema() %} class="active{%- if sch != schema -%}-group{%- endif -%}"{%- endif -%}>
+							<a href="{{- path(route|fallback_route(sch), {'system': system(sch), 'role_short': rlshrt}) -}}">
+								{{- config_str('system.name', sch) -}}
+							</a>
+						</li>
+					{%- endfor -%}
+					{%- if intersystem_schemas|length -%}
+						<li class="dropdown-header">
+							{%- if intersystem_schemas|length == 1 -%}
+								{{- 'system_menu.linked_intersystem'|trans -}}
+							{%- else -%}
+								{{- 'system_menu.linked_intersystems'|trans -}}
+							{%- endif -%}
+						</li>
+					{%- endif -%}
+					{%- for sch in intersystem_schemas -%}
+						<li{%- if sch == schema %} class="active"{%- endif -%}>
+							<a href="{{- path(route|fallback_route(sch), {'system': system(sch), 'os': system(su_schema()), 'role_short': 'g', 'welcome': '1'}) -}}">
+								{{- config_str('system.name', sch) -}}
+							</a>
+						</li>
+					{%- endfor -%}
+				{%- endblock menu_items -%}
+			{%- endembed -%}
 		{%- endif -%}
 
-		{%- if su_is_master() -%}
-			{%- set account_name = 'Master' -%}
-		{%- else -%}
-			{%- set account_name = account(su_id(), su_schema()) -%}
-		{%- endif -%}
+		{%- if su_role('user') or su_role('admin') -%}
+			{%- if su_is_master() -%}
+				{%- set account_name = 'Master' -%}
+			{%- else -%}
+				{%- set account_name = account(su_id(), su_schema()) -%}
+			{%- endif -%}
 
-		{%- if not su_is_system_self() -%}
-			{%- set account_name = account_name ~ ' [' ~ config_str('system.name', su_schema()) ~ ']' -%}
-		{%- endif -%}
+			{%- if not su_is_system_self() -%}
+				{%- set account_name = account_name ~ ' [' ~ config_str('system.name', su_schema()) ~ ']' -%}
+			{%- endif -%}
 
-		{%- if not pp_role('anonymous') -%}
+			{%- set su_role_short = su_role('admin') ? 'a' : 'u' -%}
+
 			{%- embed 'embed/menu_dropdown.html.twig' -%}
 				{%- block fa -%}user{%- endblock fa -%}
 				{%- block label -%}{{- account_name -}}{%- endblock label -%}
 				{%- block menu_items -%}
-					{%- if pp_role('user') or pp_role('admin') -%}
+					{%- set pp_su_role_short = pp_ary().role_short ?? su_role_short -%}
+					{%- if su_is_system_self() -%}
 						{%- for rt, dt in user_menu -%}
-							{%- include 'include/menu_item.html.twig' -%}
+							{%- include 'include/menu_item_self.html.twig' -%}
 						{%- endfor -%}
 						<li class="divider"></li>
 					{%- endif -%}
-					{%- include 'include/menu_item.html.twig' with {
+					{%- include 'include/menu_item_self.html.twig' with {
 						'rt': 'logout',
 						'dt': {'fa': 'sign-out'}
 					} -%}

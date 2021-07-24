@@ -285,6 +285,13 @@ view:
   map: Kaart
   extended: Lijst met omschrijvingen
 
+system_menu:
+  linked_intersystem: Gekoppeld interSysteem
+  linked_intersystems: Gekoppelde interSystemen
+  own_system: Eigen systeem
+  own_systems: Eigen systemen
+  system: Systeem
+
 calendar:
   title: >-
     Kalender

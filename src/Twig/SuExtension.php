@@ -17,6 +17,7 @@ class SuExtension extends AbstractExtension
 			new TwigFunction('su_is_master', [SuRuntime::class, 'su_is_master']),
 			new TwigFunction('su_is_owner', [SuRuntime::class, 'su_is_owner']),
 			new TwigFunction('su_is_system_self', [SuRuntime::class, 'su_is_system_self']),
+			new TwigFunction('su_logins_role_short', [SuRuntime::class, 'su_logins_role_short']),
 		];
 	}
 }

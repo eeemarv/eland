@@ -1,0 +1,9 @@
+{%- if dt.config_en is not defined or config_bool(dt.config_en, schema) -%}
+    <li{%- if rt|var_route == route %} class="active"{%- endif -%}>
+        <a href="{{- path(rt|var_route, pp_ary()|merge({'role_short': pp_su_role_short})) -}}">
+            <i class="fa fa-{{- dt.fa -}}"></i>
+            &nbsp;
+            {{- (rt ~ '.title')|trans -}}
+        </a>
+    </li>
+{%- endif -%}
