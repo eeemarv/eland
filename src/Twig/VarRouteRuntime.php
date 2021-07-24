@@ -17,4 +17,9 @@ class VarRouteRuntime implements RuntimeExtensionInterface
 	{
 		return $this->vr->get($menu_route);
 	}
+
+	public function get_fallback(string $active_menu, string $schema):string
+	{
+		return $this->vr->get_fallback_route($active_menu, $schema);
+	}
 }

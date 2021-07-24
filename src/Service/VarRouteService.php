@@ -64,6 +64,27 @@ class VarRouteService
 		return $this->var_route_ary[$menu_route] ?? $menu_route;
 	}
 
+	public function get_fallback_route(string $active_menu, string $schema):string
+	{
+		if (isset(PagesCnst::LANDING[$active_menu]))
+		{
+			$route_enabled = $this->config_service->get_bool($active_menu . '.enabled', $schema);
+		}
+		else
+		{
+			$route_enabled = false;
+		}
+
+		if (!$route_enabled)
+		{
+			$default_route = $this->config_service->get_str('system.default_landing_page', $schema);
+			$default_enabled = $this->config_service->get_bool($default_route . '.enabled', $schema);
+			$active_menu = $default_enabled ? $default_route : 'users';
+		}
+
+		return $this->var_route_ary[$active_menu] ?? $active_menu;
+	}
+
 	public function get_inter(string $menu_route, string $remote_schema):string
 	{
 		if (isset(PagesCnst::LANDING[$menu_route]))

@@ -37,42 +37,4 @@ class MenuService
 	{
 		return $this->active_menu;
 	}
-
-	public function get_nav_admin():array
-	{
-		$m_ary = [];
-		$system = $this->pp->system();
-
-		foreach (MenuCnst::NAV_ADMIN as $key => $def)
-		{
-			$m_ary[$key] = $def;
-			$m_ary[$key]['system'] = $system;
-
-			if (isset($def['fallback_route']))
-			{
-				$m_ary[$key]['route'] = $this->vr->get_inter($this->active_menu, $this->pp->schema());
-			}
-		}
-
-		if (!$this->config_service->get_intersystem_en($this->pp->schema()))
-		{
-			unset($m_ary['guest_mode']);
-		}
-
-		if (isset($m_ary[$this->active_menu]))
-		{
-			$m_ary[$this->active_menu]['active'] = true;
-		}
-
-		$m_ary[$this->pp->role() . '_mode']['active_group'] = true;
-
-		if ($this->pp->edit_en())
-		{
-			$m_ary['edit_mode']['active_group'] = true;
-			$m_ary['edit_mode']['params']['edit'] = '';
-			$m_ary['edit_mode']['params']['editor'] = '';
-		}
-
-		return $m_ary;
-	}
 }

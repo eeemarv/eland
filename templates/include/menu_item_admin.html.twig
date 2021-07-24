@@ -1,0 +1,7 @@
+<li{%- if active_menu == menu|default(rt) %} class="active"{%- endif -%}>
+    <a href="{{- path(rt, pp_ary()|merge({'role_short': 'a'})) -}}">
+        <i class="fa fa-{{- fa -}}"></i>
+        &nbsp;
+        {{- (menu|default(rt) ~ '.title')|trans -}}
+    </a>
+</li>

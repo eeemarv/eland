@@ -11,6 +11,7 @@ class VarRouteExtension extends AbstractExtension
 	{
 		return [
 			new TwigFilter('var_route', [VarRouteRuntime::class, 'get']),
+			new TwigFilter('fallback_route', [VarRouteRuntime::class, 'get_fallback']),
 		];
 	}
 }

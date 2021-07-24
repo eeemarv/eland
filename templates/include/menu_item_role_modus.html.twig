@@ -1,0 +1,7 @@
+<li{%- if pp_ary().role_short == rl_shrt %} class="active-group"{%- endif -%}>
+    <a href="{{- path(rt, pp_ary()|merge(query_params)|merge({'role_short': rl_shrt})) -}}">
+        <i class="fa fa-{{- fa -}}"></i>
+        &nbsp;
+        {{- lbl|trans -}}
+    </a>
+</li>

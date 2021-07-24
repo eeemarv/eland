@@ -251,6 +251,11 @@ mail_form:
     is niet mogelijk want er is geen E-mail
     adres ingesteld voor je gebruikersaccount.
 
+modus:
+  admin: Admin modus
+  user: Leden modus
+  guest: Gast modus
+
 nav:
   prev: Vorige
   next: Volgende

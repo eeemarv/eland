@@ -54,28 +54,32 @@
 			{%- endembed -%}
 		{%- endif -%}
 
-		{#
-		{%- if pp_role('guest') or su_is_master() -%}
-
-			{{- m.navbar_menu_dropdown_button(account_name, 'user', menu_nav_logout(), false, {}) -}}
-
-		{%- elseif pp_role('user') or pp_role('admin') -%}
-			{{- m.navbar_menu_dropdown_button(account_name, 'user', menu_nav_user(), false, {}) -}}
-		{%- elseif su_role('user') or su_role('admin') -%}
-			{%- set su_role_short = su_role('user') ? 'u' : 'a' -%}
-			{{- m.navbar_menu_dropdown_button(account_name, 'user', menu_nav_user(), false, {'role_short': su_role_short}) -}}
-		{%- endif -%}
-		#}
-
 		{%- if su_role('admin') and su_is_system_self() -%}
-			{#
-			{{- m.navbar_menu_dropdown_button('Admin', 'cog', menu_nav_admin(), true, {}) -}}
-			#}
 			{%- embed 'embed/menu_dropdown.html.twig' -%}
 				{%- block menu_class %} bg-info{%- endblock menu_class -%}
 				{%- block fa -%}cog{%- endblock fa -%}
 				{%- block label -%}{{- 'label.admin'|trans -}}{%- endblock label -%}
 				{%- block menu_items -%}
+					{%- include 'include/menu_item_role_modus.html.twig' with {
+						'rt': route,
+						'rl_shrt': 'a',
+						'fa': 'cog',
+						'lbl': 'modus.admin'
+					} -%}
+					{%- include 'include/menu_item_role_modus.html.twig' with {
+						'rt': route|fallback_route(schema),
+						'rl_shrt': 'u',
+						'fa': 'user',
+						'lbl': 'modus.user'
+					} -%}
+					{%- if config_bool('intersystem.enabled', schema) -%}
+						{%- include 'include/menu_item_role_modus.html.twig' with {
+							'rt': route|fallback_route(schema),
+							'rl_shrt': 'g',
+							'fa': 'share-alt',
+							'lbl': 'modus.guest'
+						} -%}
+					{%- endif -%}
 					<li class="divider"></li>
 					{%- if pp_ary().edit.en is defined -%}
 						<li class="active-group">
@@ -90,20 +94,18 @@
 							</a>
 						</li>
 					<li class="divider"></li>
-					<li{%- if active_menu == 'config' %} class="active"{%- endif -%}>
-						<a href="{{- path('config_name', pp_ary()) -}}">
-							<i class="fa fa-cogs"></i>
-							&nbsp;
-							{{- 'config.title'|trans -}}
-						</a>
-					</li>
-					{%- include 'include/menu_item.html.twig' with {
-						'rt': 'export',
-						'dt': {'fa': 'download'}
+					{%- include 'include/menu_item_admin.html.twig' with {
+						'menu': 'config',
+						'rt': 'config_name',
+						'fa': 'cogs'
 					} -%}
-					{%- include 'include/menu_item.html.twig' with {
+					{%- include 'include/menu_item_admin.html.twig' with {
+						'rt': 'export',
+						'fa': 'download'
+					} -%}
+					{%- include 'include/menu_item_admin.html.twig' with {
 						'rt': 'logs',
-						'dt': {'fa': 'history'}
+						'fa': 'history'
 					} -%}
 				{%- endblock menu_items -%}
 			{%- endembed -%}
