@@ -10,6 +10,30 @@
     cogs
 {%- endblock heading_fa -%}
 
+{%- set config_menu = {
+    'config_name': 'config_name.title',
+    'config_logo': 'config_logo.title',
+    'config_modules': 'config_modules.title',
+    'config_mail': 'config_mail.title',
+    'config_mail_addr': 'config_mail_addr.title',
+    'config_landing_page': 'config_landing_page.title',
+    'config_ext_url': 'config_ext_url.title',
+    'config_date_format': 'config_date_format.title',
+    'config_maintenance': 'config_maintenance.title'
+} -%}
+
+{%- block pane_select -%}
+    <ul class="nav nav-pills">
+        {%- for rt, lbl in config_menu -%}
+            <li role="presentation"{%- if app.request.get('_route') == rt %} class="active"{%- endif -%}>
+                <a href="{{- path(rt, pp_ary()) -}}">
+                    {{- lbl|trans -}}
+                </a>
+            </li>
+        {%- endfor -%}
+    </ul>
+{%- endblock pane_select -%}
+
 {%- block css -%}
     {{- parent() -}}
 {%- endblock css -%}

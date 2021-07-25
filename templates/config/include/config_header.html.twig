@@ -1,0 +1,10 @@
+<div class="panel-heading">
+    <h4>
+        {{- (config_title ?? config_menu[route])|trans -}}
+    </h4>
+    {%- if config_header_help is defined -%}
+        <p>
+            {{- config_header_help -}}
+        </p>
+    {%- endif -%}
+</div>

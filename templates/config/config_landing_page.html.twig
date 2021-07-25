@@ -1,21 +1,17 @@
 {%- extends 'config/base/config_form.html.twig' -%}
-{%- form_theme form 'form_3.html.twig' -%}
 
-{%- block config_heading -%}
-    {{- parent() -}}
-    <p>
-        {{- 'config_landing_page.help'|trans -}}
-    </p>
-{%- endblock config_heading -%}
+{%- set config_header_help -%}
+    {{- 'config_landing_page.help'|trans -}}
+{%- endset -%}
 
-{%- block form_content -%}
+{%- set form_a -%}
     {{- form_row(form.landing_page, {
         'label': 'config_landing_page.landing_page.label',
         'pre_addon': {
             'fa': 'calendar',
         }
     }) -}}
-{%- endblock form_content -%}
+{%- endset -%}
 
 {%- block css -%}
     {{- parent() -}}

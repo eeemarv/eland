@@ -1,20 +1,6 @@
 {%- extends 'config/base/config_form.html.twig' -%}
-{%- form_theme form 'form_3.html.twig' -%}
 
-{%- set config_ext_menu = [
-    {'lbl': 'Systeemsnaam', 'tab': 'system-name'},
-    {'lbl': 'Logo', 'tab': 'logo'},
-    {'lbl': 'Modules', 'route': 'config_ext_modules'},
-    {'lbl': 'Munteenheid', 'tab': 'currency'},
-    {'lbl': 'E-Mail Adressen', 'tab': 'mail-addr'},
-    {'lbl': 'Saldo', 'tab': 'balance'},
-    {'lbl': 'Leden', 'tab': 'users'},
-    {'lbl': 'Nieuws', 'tab': 'news'},
-    {'lbl': 'Systeem', 'tab': 'system'},
-] -%}
-
-{%- block form_content -%}
-
+{%- set form_a -%}
     {{- form_row(form.messages_enabled, {
         'label': 'Vraag en aanbod',
         'translation_domain': false,
@@ -70,5 +56,4 @@
         'translation_domain': false,
         'required': false
     }) -}}
-
-{%- endblock form_content -%}
+{%- endset -%}

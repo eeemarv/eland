@@ -1,7 +1,6 @@
 {%- extends 'config/base/config_form.html.twig' -%}
-{%- form_theme form 'form_3.html.twig' -%}
 
-{%- block form_content -%}
+{%- set form_a -%}
     {{- form_row(form.url, {
         'label': 'config_ext_url.url.label',
         'pre_addon': {
@@ -10,7 +9,7 @@
         'help': 'config_ext_url.url.help',
         'required': false
     }) -}}
-{%- endblock form_content -%}
+{%- endset -%}
 
 {%- block css -%}
     {{- parent() -}}

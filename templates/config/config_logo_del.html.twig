@@ -1,32 +1,26 @@
 {%- extends 'config/base/config_form.html.twig' -%}
 
-{%- block config_title -%}
-    {{- 'config_logo_del.title'|trans -}}
-{%- endblock config_title -%}
+{%- set config_title -%}
+    config_logo_del.title
+{%- endset -%}
 
-{%- block form_content -%}
+{%- set form_a -%}
     <div class="row">
         <div class="col-xs-6">
             <div class="thumbnail img-upload">
-                <img src="{{- s3(config_str('system.logo', schema)) -}}" class="img-rounded">
+                <img src="{{- s3(config_str('system.logo', pp_schema())) -}}" class="img-rounded">
             </div>
         </div>
     </div>
-{%- endblock form_content -%}
+{%- endset -%}
 
-{%- block cancel_btn -%}
-    <a href="{{- path('config_logo', pp_ary()) -}}" class="btn btn-lg btn-default">
-        {{- 'btn.cancel'|trans -}}
-    </a>
-    &nbsp;
-{%- endblock -%}
+{%- set cancel_route -%}
+    config_logo
+{%- endset -%}
 
-{%- block submit_btn -%}
-    {{- form_widget(form.submit, {
-        'label': 'btn.del',
-        'attr': {'class': 'btn-danger btn-lg'},
-    }) -}}
-{%- endblock submit_btn -%}
+{%- set form_submit_btn -%}
+    {%- include 'form/submit_del_btn.html.twig' -%}
+{%- endset -%}
 
 
 

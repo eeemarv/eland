@@ -2,5 +2,6 @@ twig:
     default_path: '%kernel.project_dir%/templates'
     debug: '%kernel.debug%'
     strict_variables: '%kernel.debug%'
+    form_themes: ['form_3.html.twig']
     globals:
         env_git_rev_short: '%env(substr8:GIT_REV)%'
