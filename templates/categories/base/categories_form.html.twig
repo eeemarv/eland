@@ -1,18 +1,21 @@
 {%- extends 'categories/base/categories_base.html.twig' -%}
 
+{%- set cancel_route -%}
+    categories
+{%- endset -%}
+
 {%- block content -%}
     {%- block before_form -%}{%- endblock -%}
 
     {%- block form -%}
         {%- embed 'form/form_embed.html.twig' -%}
-            {%- import 'macro/link.html.twig' as l -%}
-            {%- import 'macro/btn_link.html.twig' as bl -%}
-
             {%- block form_a -%}
                 {%- if form.name is defined -%}
                     {{- form_row(form.name, {
                         'label': 'label.name',
-                        'addon_fa': 'clone'
+                        'pre_addon': {
+                            'fa': 'clone'
+                        }
                     }) -}}
                 {%- endif -%}
 
@@ -22,10 +25,6 @@
                     }) -}}
                 {%- endif -%}
             {%- endblock form_a -%}
-
-            {%- block form_cancel_btn -%}
-                {{- bl.cancel('categories') -}}
-            {%- endblock form_cancel_btn -%}
         {%- endembed -%}
     {%- endblock form -%}
 

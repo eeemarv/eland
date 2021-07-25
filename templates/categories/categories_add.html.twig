@@ -1,8 +1,18 @@
-{%- extends 'categories/base/categories_base.html.twig' -%}
+{%- extends 'categories/base/categories_form.html.twig' -%}
 
 {%- block heading_title -%}
     {{- 'categories_add.title'|trans -}}
 {%- endblock heading_title -%}
+
+{%- block before_form -%}
+    <p>
+        {{- 'categories_add.explain'|trans -}}
+    </p>
+{%- endblock before_form -%}
+
+{%- set form_submit_btn -%}
+    {%- include 'form/submit_add_btn.html.twig' -%}
+{%- endset -%}
 
 {%- block css -%}
     {{- parent() -}}

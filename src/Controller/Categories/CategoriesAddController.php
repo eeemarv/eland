@@ -71,44 +71,8 @@ class CategoriesAddController extends AbstractController
             $link_render->redirect('categories', $pp->ary(), []);
         }
 
-        /*
-        $out = '<p>De nieuwe categorie wordt aan het einde van de ';
-        $out .= 'lijst toegevoegd en kan nadien verplaatst worden.</p>';
-
-        $out .= '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
-
-        $out .= '<form  method="post">';
-
-        $out .= '<div class="form-group">';
-        $out .= '<label for="name" class="control-label">';
-        $out .= 'Naam</label>';
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<span class="fa fa-clone"></span></span>';
-        $out .= '<input type="text" class="form-control" ';
-        $out .= 'id="name" name="name" ';
-        $out .= 'value="';
-        $out .= $name ?? '';
-        $out .= '" required maxlength="40">';
-        $out .= '</div>';
-        $out .= '</div>';
-
-        $out .= $link_render->btn_cancel('categories', $pp->ary(), []);
-        $out .= '&nbsp;';
-        $out .= '<input type="submit" name="zend" value="Toevoegen" ';
-        $out .= 'class="btn btn-success btn-lg">';
-        $out .= $form_token_service->get_hidden_input();
-
-        $out .= '</form>';
-
-        $out .= '</div>';
-        $out .= '</div>';
-        */
-
         return $this->render('categories/categories_add.html.twig', [
             'form'  => $form->createView(),
-//            'content'   => $out,
         ]);
     }
 }

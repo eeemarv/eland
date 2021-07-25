@@ -16,7 +16,13 @@
             {%- block form_g -%}{{- form_g|default('') -}}{%- endblock -%}
             {%- block form_access -%}{%- endblock -%}
             </div>
-            {%- block form_cancel_btn -%}{{- form_cancel_btn|default('') -}}{%- endblock -%}
+            {%- block form_cancel_btn -%}
+                {%- if form_cancel_btn is defined -%}
+                    {{- form_cancel_btn -}}
+                {%- else -%}
+                    {%- include 'form/cancel_btn.html.twig' -%}
+                {%- endif -%}
+            {%- endblock -%}
             {%- block form_submit_btn -%}
                 {%- if form_submit_btn is defined -%}
                     {{- form_submit_btn -}}
