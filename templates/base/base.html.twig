@@ -1,6 +1,15 @@
+{%- set filter_route_params = {
+	'module': true,
+	'sub_module': true,
+	'is_self': true,
+	'mode': true,
+} -%}
+
 {%- set route = app.request.attributes.get('_route') -%}
 {%- set route_params = app.request.attributes.get('_route_params') -%}
+{%- set clean_route_params = route_params|filter((v, k) => filter_route_params[k] is not defined) -%}
 {%- set query_params = app.request.query.all() -%}
+{%- set all_params = clean_route_params|merge(query_params) -%}
 
 {%- block assets_add -%}
 	{{- assets_add([
@@ -98,6 +107,9 @@
 		<div class="row">
 			<div class="col-md-12">
 				<p>&nbsp;</p>
+				{%- if app.environment == 'dev' -%}
+					{{- dump(all_params) -}}
+				{%- endif -%}
 				<p>&nbsp;</p>
 			</div>
 		</div>
