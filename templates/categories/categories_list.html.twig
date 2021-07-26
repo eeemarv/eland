@@ -12,13 +12,83 @@
     {{- assets_add(['sortable', 'categories.js']) -}}
 {%- endblock assets_add -%}
 
-{#
+{%- block pre_form -%}
+    <p>
+        <ul>
+            <li>{{- 'categories.explain.drag'|trans -}}</li>
+            <li>{{- 'categories.explain.store'|trans -}}</li>
+            <li>{{- 'categories.explain.sub_types'|trans -}}</li>
+            <li>{{- 'categories.explain.allowed_in_sub'|trans -}}</li>
+            <li>{{- 'categories.explain.del'|trans -}}</li>
+        </ul>
+    </p>
+    <div class="list-group" data-sortable data-sort-base>
+    {%- set open_div = 0 -%}
+    {%- for id, cat in categories -%}
+        {%- set close_div = open_div - ((cat.level - 1) * 2) -%}
+        {%- if close_div -%}
+            {%- for i in range(1, close_div) -%}
+                </div>
+                {%- set open_div = open_div - 1 -%}
+            {%- endfor -%}
+        {%- endif -%}
+        <div class="list-group-item{%- if cat.level == 1 %} list-group-item-info{%- endif -%}" data-id="{{- id -}}"
+        {%- if cat.count > 0 %} data-has-messages{%- endif -%}
+        {%- if cat.right_id > (cat.left_id + 1) %} data-has-categories{%- endif -%}>
+        <strong>
+            {{- cat.name -}}
+            {%- if cat.count > 0 %} (
+                <a href="{{- path('messages'|var_route, pp_ary()|merge({'f': {'cid': cat.id}})) -}}">
+                    {{- cat.count -}}
+                </a> )
+            {%- endif -%}
+        </strong>
+        <div class="pull-right">
+            {%- include 'include/btn/edit.html.twig' with {
+                'btn_route': 'categories_edit',
+                'btn_route_params': {'id': id},
+                'btn_title': 'categories_edit.title',
+                'btn_title_trans_params': {
+                    '%name%': cat.name
+                }
+            } -%}
+
+            {%- if ((cat.left_id + 1) == cat.right_id) and cat.count == 0 -%}
+                {%- include 'include/btn/del.html.twig' with {
+                    'btn_route': 'categories_del',
+                    'btn_route_params': {'id': id},
+                    'btn_title': 'categories_del.title',
+                    'btn_title_trans_params': {
+                        '%name%': cat.name
+                    },
+                    'btn_attr': {
+                        'data-del-btn': ''
+                    }
+                } -%}
+            {%- endif -%}
+        </div>
+        <div class="clearfix"></div>
+        {%- if cat.count == 0 -%}
+            <div class="list-group" data-sortable>
+            {%- set open_div = open_div + 2 -%}
+        {%- else -%}
+            </div>
+        {%- endif -%}
+    {%- endfor -%}
+    {%- if open_div -%}
+        {%- for i in range(1, open_div) -%}
+            </div>
+        {%- endfor -%}
+    {%- endif -%}
+    </div>
+    <div class="mb-5p"></div>
+{%- endblock pre_form -%}
+
 {%- block form_a -%}
     {{- form_row(form.categories,{
         'attr': {'data-categories-input': 'btn-info'}
     }) -}}
 {%- endblock form_a -%}
-#}
 
 {%- block css -%}
     {{- parent() -}}

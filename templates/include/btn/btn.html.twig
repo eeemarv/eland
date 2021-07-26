@@ -1,0 +1,5 @@
+<a href="{{- path(btn_route, pp_ary()|merge(btn_route_params|default({}))) -}}" class="btn btn-{{- btn_class }}" title="{{- btn_title|trans(btn_title_trans_params|default({})) -}}"{%- for n, v in btn_attr|default({}) %} {{ n -}}="{{- v -}}"{%- endfor -%}>
+    <i class="fa fa-{{- fa -}}"></i>
+    &nbsp;
+    {{- btn_label|trans -}}
+</a>
