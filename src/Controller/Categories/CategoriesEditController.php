@@ -9,12 +9,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use App\Service\AlertService;
-use App\Service\FormTokenService;
 use App\Render\LinkRender;
 use App\Repository\CategoryRepository;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
-use Http\Discovery\Exception\NotFoundException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -38,11 +36,9 @@ class CategoriesEditController extends AbstractController
     public function __invoke(
         Request $request,
         int $id,
-        Db $db,
         CategoryRepository $category_repository,
         ConfigService $config_service,
         AlertService $alert_service,
-        FormTokenService $form_token_service,
         LinkRender $link_render,
         PageParamsService $pp
     ):Response
