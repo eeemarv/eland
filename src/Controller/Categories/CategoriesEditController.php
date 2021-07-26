@@ -2,6 +2,8 @@
 
 namespace App\Controller\Categories;
 
+use App\Command\Categories\CategoriesNameCommand;
+use App\Form\Post\Categories\CategoriesNameType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -9,6 +11,7 @@ use Doctrine\DBAL\Connection as Db;
 use App\Service\AlertService;
 use App\Service\FormTokenService;
 use App\Render\LinkRender;
+use App\Repository\CategoryRepository;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Http\Discovery\Exception\NotFoundException;
@@ -36,6 +39,7 @@ class CategoriesEditController extends AbstractController
         Request $request,
         int $id,
         Db $db,
+        CategoryRepository $category_repository,
         ConfigService $config_service,
         AlertService $alert_service,
         FormTokenService $form_token_service,
@@ -43,8 +47,6 @@ class CategoriesEditController extends AbstractController
         PageParamsService $pp
     ):Response
     {
-        $errors = [];
-
         if (!$config_service->get_bool('messages.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('messages (offer/want) module not enabled.');
@@ -55,83 +57,30 @@ class CategoriesEditController extends AbstractController
             throw new NotFoundHttpException('Categories module not enabled.');
         }
 
-        $category = $db->fetchAssociative('select *
-            from ' . $pp->schema() . '.categories
-            where id = ?', [$id], [\PDO::PARAM_INT]);
+        $category = $category_repository->get($id, $pp->schema());
 
-        if ($category === false)
+        $categories_name_command = new CategoriesNameCommand();
+        $categories_name_command->id = $id;
+        $categories_name_command->name = $category['name'];
+
+        $form = $this->createForm(CategoriesNameType::class,
+                $categories_name_command)
+            ->handleRequest($request);
+
+        if ($form->isSubmitted()
+            && $form->isValid())
         {
-            throw new NotFoundException('Category with id ' . $id . ' not found.');
+            $categories_name_command = $form->getData();
+            $name= $categories_name_command->name;
+
+            $category_repository->update_name($id, $name, $pp->schema());
+
+            $alert_service->success('Naam van Categorie aangepast van "' . $category['name'] . '" naar "' . $name . '".');
+            $link_render->redirect('categories', $pp->ary(), []);
         }
-
-        $name = $category['name'];
-
-        if ($request->isMethod('POST'))
-        {
-            $old_name = $name;
-            $name = $request->request->get('name', '');
-
-            if ($token_error = $form_token_service->get_error())
-            {
-                $errors[] = $token_error;
-            }
-
-            if (!$name === '')
-            {
-                $errors[] = 'Vul een naam in!';
-            }
-
-            if (strlen($name) > 40)
-            {
-                $errors[] = 'De naam mag maximaal 40 tekens lang zijn.';
-            }
-
-            if (!count($errors))
-            {
-                $db->update($pp->schema() . '.categories', [
-                    'name'  => $name,
-                ], ['id' => $id]);
-
-                $alert_service->success('Naam van Categorie aangepast van "' . $old_name . '" naar "' . $name . '".');
-                $link_render->redirect('categories', $pp->ary(), []);
-            }
-
-            $alert_service->error($errors);
-        }
-
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
-
-        $out .= '<form method="post">';
-
-        $out .= '<div class="form-group">';
-        $out .= '<label for="name" class="control-label">';
-        $out .= 'Naam</label>';
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<span class="fa fa-clone"></span></span>';
-        $out .= '<input type="text" class="form-control" ';
-        $out .= 'id="name" name="name" ';
-        $out .= 'value="';
-        $out .= $name ?? '';
-        $out .= '" required>';
-        $out .= '</div>';
-        $out .= '</div>';
-
-        $out .= $link_render->btn_cancel('categories', $pp->ary(), []);
-
-        $out .= '&nbsp;';
-        $out .= '<input type="submit" value="Opslaan" ';
-        $out .= 'name="zend" class="btn btn-primary btn-lg">';
-        $out .= $form_token_service->get_hidden_input();
-
-        $out .= '</form>';
-
-        $out .= '</div>';
-        $out .= '</div>';
 
         return $this->render('categories/categories_edit.html.twig', [
-            'content'   => $out,
+            'form'      => $form->createView(),
             'category'  => $category,
         ]);
     }
