@@ -123,10 +123,10 @@
 					<li class="divider"></li>
 					{%- if pp_ary().edit.en is defined -%}
 						<li class="active-group">
-							<a href="{{- path(route, pp_ary()|merge(query_params)|merge({'edit': {'en': '0'}})) -}}">
+							<a href="{{- path(route, all_params|merge({'edit': {'en': '0'}})) -}}">
 					{%- else -%}
 						<li>
-							<a href="{{- path(route, pp_ary()|merge(query_params)|merge({'edit': {'en': '1', 'route': '1', 'inline': '1'}})) -}}">
+							<a href="{{- path(route, all_params|merge({'edit': {'en': '1', 'route': '1', 'inline': '1'}})) -}}">
 					{%- endif -%}
 								<i class="fa fa-pencil"></i>
 								&nbsp;
