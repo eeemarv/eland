@@ -1,6 +1,6 @@
 {%- extends 'config/base/config_form.html.twig' -%}
 
-{%- set form_a -%}
+{%- block form_a -%}
     {{- form_row(form.enabled, {
         'label': 'config_mail.enabled.label',
         'required': false
@@ -13,7 +13,7 @@
         },
         'help': 'config_mail.tag.help',
     }) -}}
-{%- endset -%}
+{%- endblock form_a -%}
 
 {%- block css -%}
     {{- parent() -}}

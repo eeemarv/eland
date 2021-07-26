@@ -1,6 +1,6 @@
 {%- extends 'config/base/config_form.html.twig' -%}
 
-{%- set form_a -%}
+{%- block form_a -%}
     {{- form_row(form.messages_enabled, {
         'label': 'Vraag en aanbod',
         'translation_domain': false,
@@ -56,4 +56,4 @@
         'translation_domain': false,
         'required': false
     }) -}}
-{%- endset -%}
+{%- endblock form_a -%}

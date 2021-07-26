@@ -1,6 +1,6 @@
 {%- extends 'config/base/config_form.html.twig' -%}
 
-{%- set form_a-%}
+{%- block form_a-%}
     {{- form_row(form.date_format, {
         'label': 'config_date_format.date_format.label',
         'pre_addon': {
@@ -8,7 +8,7 @@
         },
         'choice_translation_domain': false
     }) -}}
-{%- endset -%}
+{%- endblock form_a -%}
 
 {%- block css -%}
     {{- parent() -}}

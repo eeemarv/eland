@@ -6,13 +6,13 @@
 {%- if local_admin_menu is defined -%}
     <div class="btn-group pull-right" role="group">
         <button type="button" class="btn btn-info btn-lg dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <i class="fa fa-cog" title="Admin functies"></i>
+            <i class="fa fa-cog" title="{{- 'label.admin_functions'|trans -}}"></i>
             &nbsp;
             <span class="caret"></span>
         </button>
         <ul class="dropdown-menu dropleft">
             {%- for rt, dt in local_admin_menu -%}
-                {%- include 'include/menu_item.html.twig' -%}
+                {%- include 'include/local_admin_menu_item.html.twig' -%}
             {%- endfor -%}
         </ul>
     </div>

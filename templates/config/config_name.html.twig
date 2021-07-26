@@ -1,13 +1,13 @@
 {%- extends 'config/base/config_form.html.twig' -%}
 
-{%- set form_a -%}
+{%- block form_a -%}
     {{- form_row(form.system_name, {
         'label': 'config_name.config_name.label',
         'pre_addon': {
             'fa': 'share-alt',
         }
     }) -}}
-{%- endset -%}
+{%- endblock form_a -%}
 
 {%- block css -%}
     {{- parent() -}}

@@ -1,11 +1,15 @@
-{%- extends 'config/base/config_pane.html.twig' -%}
+{%- extends 'config/base/config_form.html.twig' -%}
 
 {%- block assets_add -%}
     {{- parent() -}}
     {{- assets_add(['fileupload', 'upload_image.js']) -}}
 {%- endblock assets_add -%}
 
-{%- block pane_content -%}
+{%- set form = true -%}
+
+{%- block form_start -%}{%- endblock -%}
+
+{%- block form_content -%}
 
 {%- set logo = config_str('system.logo', schema) -%}
 
@@ -51,7 +55,9 @@
     </div>
 </div>
 
-{%- endblock pane_content -%}
+{%- endblock form_content -%}
+
+{%- block form_end -%}{%- endblock -%}
 
 {%- block css -%}
     {{- parent() -}}

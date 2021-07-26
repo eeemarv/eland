@@ -1,0 +1,9 @@
+{%- if dt.config_en is not defined or config_bool(dt.config_en, schema) -%}
+    <li{%- if (active_local_admin_menu is defined and rt == active_local_admin_menu) or rt == route %} class="active"{%- endif -%}>
+        <a href="{{- path(rt, pp_ary()) -}}">
+            <i class="fa fa-{{- dt.fa -}}"></i>
+            &nbsp;
+            {{- (rt ~ '.title')|trans -}}
+        </a>
+    </li>
+{%- endif -%}

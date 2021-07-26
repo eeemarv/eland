@@ -175,12 +175,12 @@ class UsersListController extends AbstractController
         {
             if (count($bulk_field) > 1)
             {
-                throw new BadRequestHttpException('Ongeldig formulier. Request voor meer dan één veld.');
+                throw new BadRequestHttpException('Unvalid form. Request for more than one field.');
             }
 
             if (count($bulk_verify) > 1)
             {
-                throw new BadRequestHttpException('Ongeldig formulier. Meer dan één bevestigingsvakje.');
+                throw new BadRequestHttpException('Unvalide form. More than one confirmation checkbox.');
             }
 
             if ($error_token = $form_token_service->get_error())
@@ -329,6 +329,7 @@ class UsersListController extends AbstractController
                     {
                         $account_repository->update_min_limit($user_id, $store_value, $su->id(), $pp->schema());
                     }
+
                     $alert_msg = 'De minimum limiet werd ';
                 }
                 else
@@ -337,6 +338,7 @@ class UsersListController extends AbstractController
                     {
                         $account_repository->update_max_limit($user_id, $store_value, $su->id(), $pp->schema());
                     }
+
                     $alert_msg = 'De maximum limiet werd ';
                 }
 

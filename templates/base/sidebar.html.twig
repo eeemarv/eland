@@ -64,14 +64,6 @@
 	'register_form': {'fa': 'check-square-o', 'access': 'anonymous'}
 } -%}
 
-{#}
-{%- set admin_menu_def = {
-	'config_name': {'fa': 'cogs'},
-	'export': {'fa': 'download'},
-	'logs': {'fa': 'history'}
-} -%}
-#}
-
 {%- block page_container -%}
 	<div class="swiper-container">
 	<div class="row-offcanvas row-offcanvas-left">
@@ -174,6 +166,8 @@
 		{%- endembed -%}
 	{%- endblock content_top -%}
 
+	{%- block columns_form -%}{%- endblock -%}
+
 	{%- block filter_form -%}{%- endblock -%}
 
 	{%- block pane_select -%}{%- endblock -%}
@@ -185,6 +179,46 @@
 	{%- endblock content -%}
 
 	{%- block data_list -%}{%- endblock -%}
+
+	{%- block pre_form -%}{%- endblock -%}
+
+	{%- block form -%}
+		{%- if form is defined -%}
+			<div class="panel panel-info">
+				{%- block form_header -%}{%- endblock -%}
+				<div class="panel-heading">
+					{%- block form_start -%}
+						{{- form_start(form, app.environment == 'dev' ? {'attr': {'novalidate': 'novalidate'}} : {}) -}}
+						{{- form_errors(form) -}}
+					{%- endblock form_start -%}
+					{%- block form_content -%}
+						<div class="custom-checkbox">
+							{%- block form_a -%}{{- form_a|default('') -}}{%- endblock -%}
+							{%- block form_b -%}{{- form_b|default('') -}}{%- endblock -%}
+							{%- block form_c -%}{{- form_c|default('') -}}{%- endblock -%}
+							{%- block form_d -%}{{- form_d|default('') -}}{%- endblock -%}
+							{%- block form_e -%}{{- form_e|default('') -}}{%- endblock -%}
+							{%- block form_f -%}{{- form_f|default('') -}}{%- endblock -%}
+							{%- block form_g -%}{{- form_g|default('') -}}{%- endblock -%}
+							{%- block form_access -%}{%- endblock -%}
+						</div>
+						{%- block form_cancel_btn -%}
+							{%- include 'form/cancel_btn.html.twig' -%}
+						{%- endblock form_cancel_btn -%}
+						{%- block form_submit_btn -%}
+							{%- include 'form/submit_edit_btn.html.twig' -%}
+						{%- endblock form_submit_btn -%}
+					{%- endblock form_content -%}
+					{%- block form_end -%}
+						{{- form_end(form) -}}
+					{%- endblock form_end -%}
+				</div>
+				{%- block form_footer -%}{%- endblock -%}
+			</div>
+		{%- endif -%}
+	{%- endblock form -%}
+
+	{%- block post_form -%}{%- endblock -%}
 
 	{%- block pagination_bottom -%}
 		{{- block('pagination') -}}

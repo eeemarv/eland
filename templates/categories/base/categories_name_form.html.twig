@@ -1,0 +1,16 @@
+{%- extends 'categories/base/categories_base.html.twig' -%}
+
+{%- block content -%}{%- endblock -%}
+
+{%- set cancel_route -%}
+    categories
+{%- endset -%}
+
+{%- block form_a -%}
+    {{- form_row(form.name, {
+        'label': 'label.name',
+        'pre_addon': {
+            'fa': 'clone'
+        }
+    }) -}}
+{%- endblock form_a -%}

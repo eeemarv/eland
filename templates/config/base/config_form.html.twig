@@ -1,9 +1,12 @@
 {%- extends 'config/base/config_base.html.twig' -%}
 
-{%- block content -%}
-    {%- embed 'form/form_embed.html.twig' -%}
-        {%- block form_header -%}
-            {%- include 'config/include/config_header.html.twig' -%}
-        {%- endblock form_header -%}
-    {%- endembed -%}
-{%- endblock content -%}
+{%- block content -%}{%- endblock -%}
+
+{%- block form_header -%}
+    <div class="panel-heading">
+        <h4>
+            {{- (config_title ?? config_menu[route])|trans -}}
+        </h4>
+        {%- block config_title_sub -%}{%- endblock -%}
+    </div>
+{%- endblock form_header -%}

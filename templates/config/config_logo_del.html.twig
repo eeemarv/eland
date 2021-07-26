@@ -4,7 +4,11 @@
     config_logo_del.title
 {%- endset -%}
 
-{%- set form_a -%}
+{%- set cancel_route -%}
+    config_logo
+{%- endset -%}
+
+{%- block form_a -%}
     <div class="row">
         <div class="col-xs-6">
             <div class="thumbnail img-upload">
@@ -12,49 +16,11 @@
             </div>
         </div>
     </div>
-{%- endset -%}
+{%- endblock form_a -%}
 
-{%- set cancel_route -%}
-    config_logo
-{%- endset -%}
-
-{%- set form_submit_btn -%}
+{%- block form_submit_btn -%}
     {%- include 'form/submit_del_btn.html.twig' -%}
-{%- endset -%}
-
-
-
-{#
-{%- block content -%}
-    {%- embed 'form/form_embed.html.twig' -%}
-        {%- import 'macro/link.html.twig' as l -%}
-        {%- import 'macro/btn_link.html.twig' as bl -%}
-        {%- block form_a -%}
-
-            {%- set logo = config('logo', schema) -%}
-
-            <div class="col-md-6">
-                <div class="text-center center-block">
-                    <img class="img-rounded img-responsive center-block py-5" src="{{- s3(logo) -}}">
-                </div>
-            </div>
-
-
-        {%- endblock form_a -%}
-
-        {%- block form_cancel_btn -%}
-            {{- bl.cancel('config_logo', {}) -}}
-        {%- endblock form_cancel_btn -%}
-
-        {%- block form_submit_btn -%}
-            {{- form_widget(form.submit,{
-                'label': 'btn.del',
-                'attr': {'class': 'btn-danger'}
-            }) -}}
-        {%- endblock form_submit_btn -%}
-    {%- endembed -%}
-{%- endblock content -%}
-#}
+{%- endblock form_submit_btn -%}
 
 {%- block css -%}
     {{- parent() -}}

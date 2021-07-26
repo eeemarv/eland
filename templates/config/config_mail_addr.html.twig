@@ -5,11 +5,13 @@
     {{- assets_add(['config_mail_addr.js']) -}}
 {%- endblock assets_add -%}
 
-{%- set config_header_help -%}
-    {{- 'config_mail_addr.help'|trans -}}
-{%- endset -%}
+{%- block config_title_sub -%}
+    <p>
+        {{- 'config_mail_addr.help'|trans -}}
+    </p>
+{%- endblock config_title_sub -%}
 
-{%- set form_a -%}
+{%- block form_a -%}
     <div class="form-group">
         {{- form_label(form.admin, 'config_mail_addr.admin.label') -}}
         &nbsp;
@@ -77,7 +79,7 @@
             {{- 'config_mail_addr.btn_add'|trans -}}
         </button>
     </div>
-{%- endset -%}
+{%- endblock form_a -%}
 
 {%- block css -%}
     {{- parent() -}}

@@ -1,11 +1,11 @@
 {%- extends 'config/base/config_form.html.twig' -%}
 
-{%- set form_a -%}
+{%- block form_a -%}
     {{- form_row(form.maintenance_en, {
         'label': 'config_maintenance.maintenance_en.label',
         'required': false
     }) -}}
-{%- endset -%}
+{%- endblock form_a -%}
 
 {%- block css -%}
     {{- parent() -}}

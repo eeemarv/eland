@@ -12,6 +12,14 @@
     {{- assets_add(['sortable', 'categories.js']) -}}
 {%- endblock assets_add -%}
 
+{#
+{%- block form_a -%}
+    {{- form_row(form.categories,{
+        'attr': {'data-categories-input': 'btn-info'}
+    }) -}}
+{%- endblock form_a -%}
+#}
+
 {%- block css -%}
     {{- parent() -}}
 {%- endblock css -%}
