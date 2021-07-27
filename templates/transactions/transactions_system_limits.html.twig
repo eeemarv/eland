@@ -8,7 +8,7 @@
     {{- 'transactions_system_limits.title'|trans -}}
 {%- endblock heading_title -%}
 
-{%- block form_content -%}
+{%- block form_a -%}
     {{- form_row(form.min, {
         'label': 'transactions_system_limits.min.label',
         'pre_addon': {
@@ -28,4 +28,4 @@
         'help': 'transactions_system_limits.max.help',
         'required': false
     }) -}}
-{%- endblock form_content -%}
+{%- endblock form_a -%}
