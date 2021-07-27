@@ -16,13 +16,10 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 class NewsType extends AbstractType
 {
-    protected AccessFieldSubscriber $access_field_subscriber;
-
     public function __construct(
-        AccessFieldSubscriber $access_field_subscriber
+        protected AccessFieldSubscriber $access_field_subscriber
     )
     {
-        $this->access_field_subscriber = $access_field_subscriber;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -34,7 +31,7 @@ class NewsType extends AbstractType
             ->add('content', SummernoteType::class)
             ->add('submit', SubmitType::class);
 
-        $this->access_field_subscriber->set_object_access_options(['admin', 'user', 'guest']);
+        $this->access_field_subscriber->add('access', ['admin', 'user', 'guest']);
         $builder->addEventSubscriber($this->access_field_subscriber);
     }
 

@@ -31,6 +31,7 @@ class AddonTypeExtension extends AbstractTypeExtension
         {
             $view->vars['pre_addon'] = $options['pre_addon'];
         }
+
         if (isset($options['post_addon']))
         {
             $view->vars['post_addon'] = $options['post_addon'];

@@ -1,4 +1,4 @@
-{%- extends 'forum/base/forum_base.html.twig' -%}
+{%- extends 'forum/base/forum_form.html.twig' -%}
 
 {%- block assets_add -%}
     {{- parent() -}}
@@ -8,3 +8,7 @@
 {%- block heading_title -%}
     {{- 'forum_add_topic.title'|trans -}}
 {%- endblock heading_title -%}
+
+{%- block form_submit_btn -%}
+    {%- include 'form/submit_add_btn.html.twig' -%}
+{%- endblock form_submit_btn -%}

@@ -2,7 +2,6 @@
 
 namespace App\Validator\User;
 
-use App\Repository\CategoryRepository;
 use App\Repository\UserRepository;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -12,17 +11,11 @@ use App\Validator\User\ActiveUser;
 
 class ActiveUserValidator extends ConstraintValidator
 {
-    protected CategoryRepository $category_repository;
-    protected UserRepository $user_repository;
-    protected PageParamsService $pp;
-
     public function __construct(
-        UserRepository $user_repository,
-        PageParamsService $pp
+        protected UserRepository $user_repository,
+        protected PageParamsService $pp
     )
     {
-        $this->user_repository = $user_repository;
-        $this->pp = $pp;
     }
 
     public function validate($user_id, Constraint $constraint)

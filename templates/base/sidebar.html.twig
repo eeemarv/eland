@@ -188,7 +188,7 @@
 				{%- block form_header -%}{%- endblock -%}
 				<div class="panel-heading">
 					{%- block form_start -%}
-						{{- form_start(form) -}}
+						{{- form_start(form, {'attr': {'novalidate': 'novalidate'}}) -}}
 						{{- form_errors(form) -}}
 					{%- endblock form_start -%}
 					{%- block form_content -%}

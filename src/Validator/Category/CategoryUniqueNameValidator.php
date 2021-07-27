@@ -11,16 +11,11 @@ use App\Service\PageParamsService;
 
 class CategoryUniqueNameValidator extends ConstraintValidator
 {
-    protected CategoryRepository $category_repository;
-    protected PageParamsService $pp;
-
     public function __construct(
-        CategoryRepository $category_repository,
-        PageParamsService $pp
+        protected CategoryRepository $category_repository,
+        protected PageParamsService $pp
     )
     {
-        $this->category_repository = $category_repository;
-        $this->pp = $pp;
     }
 
     public function validate($categories_name_command, Constraint $constraint)

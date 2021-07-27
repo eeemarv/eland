@@ -2,12 +2,15 @@
 
 namespace App\Controller\Forum;
 
+use App\Command\Forum\ForumCommand;
+use App\Form\Post\Forum\ForumTopicType;
 use App\HtmlProcess\HtmlPurifier;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use App\Render\LinkRender;
+use App\Repository\ForumRepository;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
@@ -35,6 +38,7 @@ class ForumAddTopicController extends AbstractController
     public function __invoke(
         Request $request,
         Db $db,
+        ForumRepository $forum_repository,
         ConfigService $config_service,
         AlertService $alert_service,
         LinkRender $link_render,
@@ -50,6 +54,29 @@ class ForumAddTopicController extends AbstractController
             throw new NotFoundHttpException('Forum module not enabled.');
         }
 
+        $forum_command = new ForumCommand();
+
+        $form = $this->createForm(ForumTopicType::class,
+                $forum_command, ['validation_groups' => ['topic']])
+            ->handleRequest($request);
+
+        if ($form->isSubmitted()
+            && $form->isValid())
+        {
+            $forum_command = $form->getData();
+            $subject = $forum_command->subject;
+            $content = $forum_command->content;
+            $access = $forum_command->access;
+
+            $id = $forum_repository->insert_topic($subject, $content,
+                $access, $su->id(), $pp->schema());
+
+            $alert_service->success('forum_add_topic.success');
+            $link_render->redirect('forum_topic', $pp->ary(),
+                ['id' => $id]);
+        }
+
+        /*
         $errors = [];
 
         $subject = $request->request->get('subject', '');
@@ -151,8 +178,10 @@ class ForumAddTopicController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
+        */
         return $this->render('forum/forum_add_topic.html.twig', [
-            'content'   => $out,
+ //           'content'   => $out,
+            'form'      => $form->createView(),
         ]);
     }
 }

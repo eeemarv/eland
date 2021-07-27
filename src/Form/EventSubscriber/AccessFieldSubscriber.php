@@ -88,9 +88,9 @@ class AccessFieldSubscriber implements EventSubscriberInterface
                 'choices'   => $access_options,
             ];
 
-            if (isset($data[$name]))
+            if (isset($data->$name))
             {
-                if ($data[$name] === 'guest'
+                if ($data->$name === 'guest'
                     && !$this->config_service->get_intersystem_en($this->pp->schema())
                 )
                 {
@@ -110,9 +110,9 @@ class AccessFieldSubscriber implements EventSubscriberInterface
 
         foreach ($this->fields_options as $name => $access_options)
         {
-            if (isset($data[$name]))
+            if (isset($data->$name))
             {
-                if (!in_array($data[$name], $access_options))
+                if (!in_array($data->$name, $access_options))
                 {
                     throw new UnexpectedTypeException('Unexpected type in ' . __CLASS__, 'access');
                 }
@@ -122,7 +122,7 @@ class AccessFieldSubscriber implements EventSubscriberInterface
 
             if (count($access_options) === 1)
             {
-                $data[$name] = reset($access_options);
+                $data->$name = reset($access_options);
                 $update = true;
             }
         }
