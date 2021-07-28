@@ -5,11 +5,11 @@
     {{- assets_add(['summernote', 'summernote_forum_post.js']) -}}
 {%- endblock assets_add -%}
 
-{%- set cancel_route = 'forum' -%}
-
 {%- block heading_title -%}
     {{- 'forum_add_topic.title'|trans -}}
 {%- endblock heading_title -%}
+
+{%- set cancel_route = 'forum' -%}
 
 {%- block form_submit_btn -%}
     {%- include 'form/submit_add_btn.html.twig' -%}

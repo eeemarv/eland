@@ -14,14 +14,16 @@
 {%- endblock form_a -%}
 
 {%- block form_b -%}
-    {{- form_row(form.content, {
-        'label': false,
-        'attr': {
-            'rows': 5,
-            'minlength': 10,
-            'maxlength': 5000
-        }
-    }) -}}
+    {%- if form.content is defined -%}
+        {{- form_row(form.content, {
+            'label': false,
+            'attr': {
+                'rows': 5,
+                'minlength': 10,
+                'maxlength': 5000
+            }
+        }) -}}
+    {%- endif -%}
 {%- endblock form_b -%}
 
 {%- block form_access -%}

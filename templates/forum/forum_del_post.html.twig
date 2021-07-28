@@ -1,4 +1,4 @@
-{%- extends 'forum/base/forum_base.html.twig' -%}
+{%- extends 'forum/base/forum_form.html.twig' -%}
 
 {%- block heading_title -%}
     {%- set heading_title_trans_key = 'forum_del_post.title.'
@@ -9,6 +9,13 @@
         '%user%': account(forum_post.user_id, schema)
     }) -}}
 {%- endblock heading_title -%}
+
+{%- set cancel_route = 'forum_topic' -%}
+{%- set cancel_route_params = {'id': forum_topic.id} -%}
+
+{%- block form_submit_btn -%}
+    {%- include 'form/submit_del_btn.html.twig' -%}
+{%- endblock form_submit_btn -%}
 
 {%- block css -%}
     {{- parent() -}}
