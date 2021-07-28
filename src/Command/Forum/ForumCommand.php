@@ -9,10 +9,8 @@ use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class ForumCommand
 {
-    #[NotBlank()]
     public $subject;
 
-    #[Sequentially()]
     public $content;
 
     public $access;

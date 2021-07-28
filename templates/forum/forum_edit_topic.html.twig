@@ -1,4 +1,6 @@
-{%- extends 'forum/base/forum_base.html.twig' -%}
+{%- extends 'forum/base/forum_form.html.twig' -%}
+
+{%- set cancel_route = 'forum_topic' -%}
 
 {%- block assets_add -%}
     {{- parent() -}}
