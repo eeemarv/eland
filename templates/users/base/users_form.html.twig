@@ -1,32 +1,3 @@
 {%- extends 'users/base/users_base.html.twig' -%}
 
-{%- block content -%}
-    <div class="panel panel-info">
-        <div class="panel-heading">
-
-        {{- form_start(form) -}}
-        {{- form_errors(form) -}}
-        <div class="custom-checkbox">
-
-        {%- block form_content -%}
-        {%- endblock -%}
-
-        {%- block cancel_btn -%}
-            <a href="{{- path(route, pp_ary()) -}}" class="btn btn-lg btn-default mr-5p">
-                {{- 'btn.cancel'|trans -}}
-            </a>
-        {%- endblock -%}
-
-        {%- block submit_btn -%}
-            {{- form_widget(form.submit, {
-                'label': 'btn.edit',
-                'attr': {'class': 'btn-primary btn-lg'},
-            }) -}}
-        {%- endblock submit_btn -%}
-
-        </div>
-        {{- form_end(form) -}}
-
-        </div>
-    </div>
-{%- endblock content -%}
+{%- block content -%}{%- endblock -%}
