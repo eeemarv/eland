@@ -1,0 +1,29 @@
+<div class="panel panel-default printview">
+    <div class="panel-body">
+        {%- block content -%}
+            {{- post.content|raw -}}
+        {%- endblock content -%}
+    </div>
+    <div class="panel-footer">
+        <p>
+            {%- block info -%}
+                {{- 'post.info'|trans({
+                    'user': account(post.user_id),
+                    'created_at': post.created_at|date_format('min'),
+                    'edit_count': post.edit_count
+                }) -}}
+            {%- endblock info -%}
+
+            {%- block actions -%}
+                {%- if pp_role('admin') or su_is_owner(post.user_id) -%}
+                    <span class="pull-right">
+                        {%- block edit_btn -%}
+                        {%- endblock edit_btn -%}
+                        {%- block del_btn -%}
+                        {%- endblock del_btn -%}
+                    </span>
+                {%- endif -%}
+            {%- endblock actions -%}
+        </p>
+    </div>
+</div>
