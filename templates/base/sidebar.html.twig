@@ -82,7 +82,10 @@
 				<li{%- if r == active_menu %} class="active"{%- endif -%}>
 					<a href="{{- path(r|var_route, pp_ary()) -}}">
 					<i class="fa fa-{{- m.fa -}}"></i>&nbsp;
-						{{- (r ~ '.title')|trans -}}
+						{{- (r ~ '.title')|trans({
+							'self': 'all_users',
+							'with_without_category': 'all_categories'
+						}) -}}
 					</a>
 				</li>
 			{%- endif -%}

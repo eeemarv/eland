@@ -28,7 +28,7 @@
             'btn_route': 'users_del',
             'btn_title': 'users_del.title',
             'btn_title_trans_params': {
-                '%user%': account(id, schema)
+                'user': account(id, schema)
             }
         } -%}
     {%- endif -%}
@@ -40,7 +40,7 @@
             'btn_route': 'users_password_edit',
             'btn_title': 'users_password_edit.title',
             'btn_title_trans_params': {
-                '%user%': account(id, schema)
+                'user': account(id, schema)
             }
         } -%}
     {%- elseif su_is_owner(id) -%}

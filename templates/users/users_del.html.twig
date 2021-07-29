@@ -2,7 +2,7 @@
 
 {%- block heading_title -%}
     {{- 'users_del.title'|trans({
-        '%user%': account(id, schema)|link('users_show', {'id': id})
+        'user': account(id, schema)|link('users_show', {'id': id})
     })|raw -}}
 {%- endblock heading_title -%}
 
@@ -20,7 +20,7 @@
 
     <p class="text-danger">
         {{- 'users_del.warning'|trans({
-            '%name%': account(user.id, schema)
+            'name': account(user.id, schema)
         }) -}}
     </p>
 

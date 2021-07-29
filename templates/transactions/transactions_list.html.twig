@@ -52,8 +52,8 @@
     <ul>
         <li>
             {{- 'transactions.amount_sum'|trans({
-                '%amount_sum%': amount_sum,
-                '%currency%': config_str('transactions.currency.name', schema)
+                'amount_sum': amount_sum,
+                'currency': config_str('transactions.currency.name', schema)
             }) -}}
         </li>
         {%- include 'transactions/include/valuation.html.twig' -%}

@@ -20,7 +20,6 @@ access:
     title: Zichtbaar voor leden.
   visible: Zichtbaar
   visible_for: Zichtbaar voor
-  visible_for_access: Zichtbaar voor %access%
 
 btn:
   add: Toevoegen
@@ -261,12 +260,6 @@ nav:
   prev: Vorige
   next: Volgende
   list: Lijst
-
-object_info:
-  edit_count: >-
-    , Aangepast: %edit_count%
-  per_unit: >-
-    per %unit%
 
 pagination:
   row_count_and_page_pos: >-

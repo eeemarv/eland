@@ -1,12 +1,10 @@
 {%- extends 'forum/base/forum_base.html.twig' -%}
 
 {%- block heading_title -%}
-    {%- set heading_title_trans_key = 'forum_del_topic.title.'
-        ~ (su_is_owner(forum_topic.user_id) ? 'personal' : 'admin') -%}
-
-    {{- heading_title_trans_key|trans({
-        '%topic_subject%': forum_topic.subject,
-        '%user%': account(forum_topic.user_id, schema)
+    {{- 'forum_del_topic.title'|trans({
+        'self': su_is_owner(forum_topic.user_id) ? 'self' : 'some_user',
+        'topic_subject': forum_topic.subject,
+        'user': account(forum_topic.user_id, schema)
     }) -}}
 {%- endblock -%}
 

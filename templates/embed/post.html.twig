@@ -18,6 +18,8 @@
                 {%- if pp_role('admin') or su_is_owner(post.user_id) -%}
                     <span class="pull-right">
                         {%- block edit_btn -%}
+                            <a href="{{- path(edit_route, all_params|merge(edit_route_params|default({}))) -}}" class="btn btn-primary">
+                            </a>
                         {%- endblock edit_btn -%}
                         {%- block del_btn -%}
                         {%- endblock del_btn -%}

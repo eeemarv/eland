@@ -3,8 +3,8 @@
     -%}
     <li>
         {{- 'transactions.valuation'|trans({
-            '%per_hour_ratio%': config_int('transactions.currency.per_hour_ratio', schema),
-            '%currency%': config_str('transactions.currency.name', schema)
+            'per_hour_ratio': config_int('transactions.currency.per_hour_ratio', schema),
+            'currency': config_str('transactions.currency.name', schema)
         }) -}}
     </li>
 {%- endif -%}

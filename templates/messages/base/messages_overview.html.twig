@@ -10,7 +10,7 @@
             'btn_route_params': {'uid': uid},
             'btn_title': 'messages_add.btn_add_for_user',
             'btn_title_trans_params': {
-                '%user%': account(uid, schema)
+                'user': account(uid, schema)
             }
         } -%}
     {%- elseif pp_role('admin') or pp_role('user') -%}
@@ -31,28 +31,12 @@
 {%- endblock btn_view -%}
 
 {%- block heading_title -%}
-    {%- if filter_uid -%}
-        {%- if is_self -%}
-            {{- 'messages_self.title'|trans -}}
-        {%- else -%}
-            {{- 'messages_uid.title'|trans({
-                '%account%': account(uid, schema)|link('users_show', {'id': uid})
-            })|raw -}}
-        {%- endif -%}
-    {%- else -%}
-        {{- 'messages.title'|trans -}}
-    {%- endif -%}
-
-    {%- if filter_cid -%}
-        ,&nbsp;
-        {%- if cid == 'null' -%}
-            {{- 'messages.without_category'|trans -}}
-        {%- else -%}
-            {{- 'messages.with_category'|trans({
-                '%category_name%': categories[cid]
-            }) -}}
-        {%- endif -%}
-    {%- endif -%}
+    {{- 'messages.title'|trans({
+        'self': filter_uid ? (is_self ? 'self' : 'some_user') : 'all_users',
+        'with_without_category': filter_cid ? (cid == 'null' ? 'without' : 'with') : 'all_categories',
+        'user': account(uid, schema)|link('users_show', {'id': uid}),
+        'category_name': categories[cid] ?? ''
+    })|raw -}}
 {%- endblock heading_title -%}
 
 {%- block heading_append -%}
