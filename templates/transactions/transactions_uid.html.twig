@@ -20,16 +20,6 @@
     {%- endif -%}
 {%- endblock btn_top_add -%}
 
-{%- block heading_title -%}
-    {%- if is_self -%}
-        {{- 'transactions_self.title'|trans -}}
-    {%- else -%}
-        {{- 'transactions_uid.title'|trans({
-            'account': account(uid, schema)|link('users_show', {'id': uid})
-        })|raw -}}
-    {%- endif -%}
-{%- endblock heading_title -%}
-
 {%- block heading_sub -%}
     <h2>
         {{- 'label.current_balance'|trans -}}:

@@ -1,9 +1,23 @@
 {%- extends 'base/sidebar.html.twig' -%}
 
-{%- set user_menu =  {
-	'users_show_self': {'fa': 'user'},
-	'messages_self': {'fa': 'newspaper-o', 'config_en': 'messages.enabled'},
-	'transactions_self': {'fa': 'exchange', 'config_en': 'transactions.enabled'},
+{%- set user_menu_self =  {
+	'users_show_self': {
+		'fa': 'user',
+		'title': 'users_show.title',
+		'title_trans_params': {'self': 'self', 'user': ''}
+	},
+	'messages_self': {
+		'fa': 'newspaper-o',
+		'title': 'messages.title',
+		'title_trans_params': {'self': 'self', 'with_without_category': 'all'},
+		'config_en': 'messages.enabled'
+	},
+	'transactions_self': {
+		'fa': 'exchange',
+		'title': 'transactions.title',
+		'title_trans_params': {'self': 'self'},
+		'config_en': 'transactions.enabled'
+	},
 } -%}
 
 {%- block navbar_toggle_button -%}
@@ -79,16 +93,16 @@
 				{%- block fa -%}user{%- endblock fa -%}
 				{%- block label -%}{{- account_name -}}{%- endblock label -%}
 				{%- block menu_items -%}
-					{%- set pp_su_role_short = pp_ary().role_short ?? su_role_short -%}
-					{%- if pp_role('user') or pp_role('admin') -%}
-						{%- for rt, dt in user_menu -%}
+					{%- set pp_su_role_short = pp_ary().role_short is defined and pp_ary().role_short != 'g' ? pp_ary().role_short : su_role_short -%}
+					{%- if su_is_system_self() -%}
+						{%- for rt, dt in user_menu_self -%}
 							{%- include 'include/menu_item_self.html.twig' -%}
 						{%- endfor -%}
 						<li class="divider"></li>
 					{%- endif -%}
 					{%- include 'include/menu_item_self.html.twig' with {
 						'rt': 'logout',
-						'dt': {'fa': 'sign-out'}
+						'dt': {'fa': 'sign-out', 'title': 'logout.title'}
 					} -%}
 				{%- endblock menu_items -%}
 			{%- endembed -%}

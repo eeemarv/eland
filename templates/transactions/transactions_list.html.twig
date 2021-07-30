@@ -25,6 +25,13 @@
     {%- endif -%}
 {%- endblock btn_top_bulk -%}
 
+{%- block heading_title -%}
+    {{- 'transactions.title'|trans({
+        'self': is_self ? 'self' : (uid ? 'some_user' : 'all'),
+        'account': uid ? account(uid, schema)|link('users_show', {'id': uid})
+    })|raw -}}
+{%- endblock heading_title -%}
+
 {%- block heading_append -%}
     {%- include 'include/heading_filter.html.twig' -%}
     {%- include 'include/heading_btn_filter.html.twig' -%}

@@ -648,9 +648,9 @@ messages:
   title: >-
     {self, select,
       self {{with_without_category, select,
-        with {Je vraag en aanbod in categorie "{category_name}"}
-        without {Je vraag en aanbod zonder categorie}
-        other {Je vraag en aanbod}
+        with {Mijn vraag en aanbod in categorie "{category_name}"}
+        without {Mijn vraag en aanbod zonder categorie}
+        other {Mijn vraag en aanbod}
       }}
       some_user {{with_without_category, select,
         with {Vraag en aanbod van {user} in categorie "{category_name}"}
@@ -850,7 +850,12 @@ support_form:
     administratie van {system_name}.
 
 transactions:
-  title: Transacties
+  title: >-
+    {self, select,
+      self {Mijn transacties}
+      some_user {Transacties van {account}}
+      other {Transacties}
+    }
   amount_sum: >-
     Totaal: {amount_sum} {currency}
   valuation: >-
@@ -913,10 +918,6 @@ transactions_modules:
   mass:
     label: Massa-transactie
 
-transactions_self:
-  title: >-
-    Mijn transacties
-
 transactions_system_limits:
   title: Systeemslimieten
   max:
@@ -951,10 +952,6 @@ transactions_leaving_eq:
 transactions_show:
   title: >-
     Transactie
-
-transactions_uid:
-  title: >-
-    Transacties van {account}
 
 users:
   title: Leden
@@ -1068,14 +1065,16 @@ users_periodic_mail:
     Periodieke overzichts e-mail
 
 users_show:
+  title: >-
+    {self, select,
+      self {Mijn gegevens {user}}
+      other {{user}}
+    }
   my_profile: Mijn profiel
   intersystem_missing: >-
     De interSysteem-verbinding ontbreekt
   coupled_intersystem: >-
     Gekoppeld interSysteem
-
-users_show_self:
-  title: Mijn gegevens
 
 users_username:
   title: >-
