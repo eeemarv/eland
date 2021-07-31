@@ -80,7 +80,7 @@ class ConfigModulesController extends AbstractController
             }
 
             $alert_service->success('Modules aangepast.');
-            $this->redirectToRoute('config_modules', $pp->ary());
+            return $this->redirectToRoute('config_modules', $pp->ary());
         }
 
         return $this->render('config/config_modules.html.twig', [

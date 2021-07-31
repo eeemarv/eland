@@ -44,15 +44,13 @@ class CalendarDelController extends AbstractController
             if ($error_token = $form_token_service->get_error())
             {
                 $alert_service->error($error_token);
-                $this->redirectToRoute($vr->get('news'), $pp->ary());
+                return $this->redirectToRoute($vr->get('news'), $pp->ary());
             }
 
-            if($db->delete($pp->schema() . '.news',
-
-            ['id' => $id]))
+            if($db->delete($pp->schema() . '.news', ['id' => $id]))
             {
                 $alert_service->success('Nieuwsbericht verwijderd.');
-                $this->redirectToRoute($vr->get('news'), $pp->ary());
+                return $this->redirectToRoute($vr->get('news'), $pp->ary());
             }
 
             $alert_service->error('Nieuwsbericht niet verwijderd.');

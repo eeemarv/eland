@@ -49,7 +49,7 @@ class ContactFormConfirmController extends AbstractController
         if (!$data)
         {
             $alert_service->error('Ongeldig of verlopen token.');
-            $this->redirectToRoute('contact_form', $pp->ary());
+            return $this->redirectToRoute('contact_form', $pp->ary());
         }
 
         $vars = [
@@ -77,7 +77,7 @@ class ContactFormConfirmController extends AbstractController
         $data_token_service->del($token, 'contact_form', $pp->schema());
 
         $alert_service->success('Je bericht werd succesvol verzonden.');
-        $this->redirectToRoute('contact_form', $pp->ary());
+        return $this->redirectToRoute('contact_form', $pp->ary());
 
         return new Response();
     }

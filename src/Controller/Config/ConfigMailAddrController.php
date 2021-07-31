@@ -75,7 +75,7 @@ class ConfigMailAddrController extends AbstractController
             $config_service->set_ary('mail.addresses.support', $support, $pp->schema());
 
             $alert_service->success('E-mail adressen aangepast.');
-            $this->redirectToRoute('config_mail_addr', $pp->ary());
+            return $this->redirectToRoute('config_mail_addr', $pp->ary());
         }
 
         return $this->render('config/config_mail_addr.html.twig', [

@@ -117,7 +117,7 @@ class ContactFormController extends AbstractController
                     de link aan die we je zonden om je
                     bericht te bevestigen.');
 
-                $this->redirectToRoute('contact_form', $pp->ary());
+                return $this->redirectToRoute('contact_form', $pp->ary());
             }
             else
             {

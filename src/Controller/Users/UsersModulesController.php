@@ -81,7 +81,7 @@ class UsersModulesController extends AbstractController
             }
 
             $alert_service->success('Submodules/velden leden aangepast');
-            $this->redirectToRoute('users_modules', $pp->ary());
+            return $this->redirectToRoute('users_modules', $pp->ary());
         }
 
         return $this->render('users/users_modules.html.twig', [

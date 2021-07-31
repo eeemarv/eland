@@ -59,7 +59,7 @@ class ConfigDateFormatController extends AbstractController
             $config_service->set_str('system.date_format', $form_data['date_format'], $pp->schema());
 
             $alert_service->success('Datum- en tijdweergave aangepast.');
-            $this->redirectToRoute('config_date_format', $pp->ary());
+            return $this->redirectToRoute('config_date_format', $pp->ary());
         }
 
         return $this->render('config/config_date_format.html.twig', [

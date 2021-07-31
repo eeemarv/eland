@@ -65,7 +65,7 @@ class ConfigLandingPageController extends AbstractController
             $config_service->set_str('system.default_landing_page', $form_data['landing_page'], $pp->schema());
 
             $alert_service->success('Landingspagina aangepast.');
-            $this->redirectToRoute('config_landing_page', $pp->ary());
+            return $this->redirectToRoute('config_landing_page', $pp->ary());
         }
 
         return $this->render('config/config_landing_page.html.twig', [

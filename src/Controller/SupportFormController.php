@@ -119,7 +119,7 @@ class SupportFormController extends AbstractController
                 ], 8000);
 
                 $alert_service->success('De Support E-mail is verzonden.');
-                $this->redirectToRoute($vr->get('default'), $pp->ary());
+                return $this->redirectToRoute($vr->get('default'), $pp->ary());
             }
             else
             {

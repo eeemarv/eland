@@ -59,7 +59,7 @@ class ConfigMailController extends AbstractController
             $config_service->set_str('mail.tag', $config_mail_command->tag, $pp->schema());
 
             $alert_service->success('E-mail instellingen aangepast.');
-            $this->redirectToRoute('config_mail', $pp->ary());
+            return $this->redirectToRoute('config_mail', $pp->ary());
         }
 
         return $this->render('config/config_mail.html.twig', [

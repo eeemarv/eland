@@ -53,7 +53,7 @@ class ConfigExtUrlController extends AbstractController
             $config_service->set_str('system.website_url', $config_ext_url_command->url ?? '', $pp->schema());
 
             $alert_service->success('Externe URL aangepast.');
-            $this->redirectToRoute('config_ext_url', $pp->ary());
+            return $this->redirectToRoute('config_ext_url', $pp->ary());
         }
 
         return $this->render('config/config_ext_url.html.twig', [

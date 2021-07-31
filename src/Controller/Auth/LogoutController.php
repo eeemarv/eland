@@ -59,11 +59,9 @@ class LogoutController extends AbstractController
 
         if ($pp->org_system() === '')
         {
-            $this->redirectToRoute('login', ['system' => $pp->system()]);
+            return $this->redirectToRoute('login', ['system' => $pp->system()]);
         }
 
-        $this->redirectToRoute('login', ['system' => $pp->org_system()]);
-
-        return new Response('');
+        return $this->redirectToRoute('login', ['system' => $pp->org_system()]);
     }
 }

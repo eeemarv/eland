@@ -72,7 +72,7 @@ class UsersConfigNewController extends AbstractController
             $config_service->set_str('users.new.access_pane', $access_pane, $pp->schema());
 
             $alert_service->success('Configuratie instappende leden aangepast');
-            $this->redirectToRoute('users_config_new', $pp->ary());
+            return $this->redirectToRoute('users_config_new', $pp->ary());
         }
 
         return $this->render('users/users_config_new.html.twig', [

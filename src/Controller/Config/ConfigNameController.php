@@ -55,7 +55,7 @@ class ConfigNameController extends AbstractController
             $config_service->set_str('system.name', $config_name_command->system_name, $pp->schema());
 
             $alert_service->success('Naam systeem aangepast.');
-            $this->redirectToRoute('config_name', $pp->ary());
+            return $this->redirectToRoute('config_name', $pp->ary());
         }
 
         return $this->render('config/config_name.html.twig', [

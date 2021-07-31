@@ -56,7 +56,7 @@ class ConfigMaintenanceController extends AbstractController
             $config_service->set_bool('system.maintenance_en', $form_data['maintenance_en'], $pp->schema());
 
             $alert_service->success('Onderhouds modus aangepast.');
-            $this->redirectToRoute('config_maintenance', $pp->ary());
+            return $this->redirectToRoute('config_maintenance', $pp->ary());
         }
 
         return $this->render('config/config_maintenance.html.twig', [

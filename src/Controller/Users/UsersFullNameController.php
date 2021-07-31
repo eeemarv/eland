@@ -61,7 +61,7 @@ class UsersFullNameController extends AbstractController
             $config_service->set_bool('users.fields.full_name.self_edit', $self_edit, $pp->schema());
 
             $alert_service->success('Volledige naam configuratie aangepast');
-            $this->redirectToRoute('users_full_name', $pp->ary());
+            return $this->redirectToRoute('users_full_name', $pp->ary());
         }
 
         return $this->render('users/users_full_name.html.twig', [

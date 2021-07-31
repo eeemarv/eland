@@ -198,7 +198,7 @@ class UsersPeriodicMailController extends AbstractController
             $config_service->set_ary('periodic_mail.user.layout', $block_layout, $pp->schema());
 
             $alert_service->success('Periodieke overzichts e-mail aangepast');
-            $this->redirectToRoute('users_periodic_mail', $pp->ary());
+            return $this->redirectToRoute('users_periodic_mail', $pp->ary());
         }
 
         return $this->render('users/users_periodic_mail.html.twig', [

@@ -81,7 +81,7 @@ class UsersConfigLeavingController extends AbstractController
             }
 
             $alert_service->success('Configuratie uitstappende leden aangepast');
-            $this->redirectToRoute('users_config_leaving', $pp->ary());
+            return $this->redirectToRoute('users_config_leaving', $pp->ary());
         }
 
         return $this->render('users/users_config_leaving.html.twig', [

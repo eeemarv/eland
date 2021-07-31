@@ -52,7 +52,7 @@ class ConfigLogoDelController extends AbstractController
             $config_service->set_str('system.logo', '', $pp->schema());
 
             $alert_service->success('Het logo is verwijderd.');
-            $this->redirectToRoute('config_logo', $pp->ary());
+            return $this->redirectToRoute('config_logo', $pp->ary());
         }
 
         return $this->render('config/config_logo_del.html.twig', [
