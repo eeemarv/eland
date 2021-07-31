@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Cnst\BulkCnst;
 use App\Queue\MailQueue;
-use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
@@ -40,7 +39,6 @@ class SupportFormController extends AbstractController
         AlertService $alert_service,
         ConfigService $config_service,
         FormTokenService $form_token_service,
-        LinkRender $link_render,
         MailQueue $mail_queue,
         MailAddrUserService $mail_addr_user_service,
         PageParamsService $pp,
@@ -121,7 +119,7 @@ class SupportFormController extends AbstractController
                 ], 8000);
 
                 $alert_service->success('De Support E-mail is verzonden.');
-                $link_render->redirect($vr->get('default'), $pp->ary(), []);
+                $this->redirectToRoute($vr->get('default'), $pp->ary());
             }
             else
             {

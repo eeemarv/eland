@@ -7,7 +7,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
-use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -44,7 +43,6 @@ class ConfigModulesController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        LinkRender $link_render,
         ConfigService $config_service,
         PageParamsService $pp
     ):Response
@@ -82,7 +80,7 @@ class ConfigModulesController extends AbstractController
             }
 
             $alert_service->success('Modules aangepast.');
-            $link_render->redirect('config_modules', $pp->ary(), []);
+            $this->redirectToRoute('config_modules', $pp->ary());
         }
 
         return $this->render('config/config_modules.html.twig', [

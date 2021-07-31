@@ -44,7 +44,7 @@ class CalendarDelController extends AbstractController
             if ($error_token = $form_token_service->get_error())
             {
                 $alert_service->error($error_token);
-                $link_render->redirect($vr->get('news'), $pp->ary(), []);
+                $this->redirectToRoute($vr->get('news'), $pp->ary());
             }
 
             if($db->delete($pp->schema() . '.news',
@@ -52,7 +52,7 @@ class CalendarDelController extends AbstractController
             ['id' => $id]))
             {
                 $alert_service->success('Nieuwsbericht verwijderd.');
-                $link_render->redirect($vr->get('news'), $pp->ary(), []);
+                $this->redirectToRoute($vr->get('news'), $pp->ary());
             }
 
             $alert_service->error('Nieuwsbericht niet verwijderd.');
@@ -61,20 +61,6 @@ class CalendarDelController extends AbstractController
         $news = $db->fetchAssociative('select n.*
             from ' . $pp->schema() . '.news n
             where n.id = ?', [$id]);
-
-/*
-        $out = NewsExtendedController::render_news_item(
-            $news,
-            true,
-            false,
-            false,
-            $pp,
-            $link_render,
-            $account_render,
-            $date_format_service,
-            $item_access_service
-        );
-*/
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';

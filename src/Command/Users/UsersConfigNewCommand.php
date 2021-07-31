@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Command\Config;
+namespace App\Command\Users;
 
 use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\Type;

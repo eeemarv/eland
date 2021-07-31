@@ -2,9 +2,8 @@
 
 namespace App\Controller\Users;
 
-use App\Command\Config\UsersConfigNewCommand;
+use App\Command\Users\UsersConfigNewCommand;
 use App\Form\Post\Users\UsersConfigNewType;
-use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -33,7 +32,6 @@ class UsersConfigNewController extends AbstractController
         Request $request,
         AlertService $alert_service,
         ConfigService $config_service,
-        LinkRender $link_render,
         PageParamsService $pp
     ):Response
     {
@@ -74,7 +72,7 @@ class UsersConfigNewController extends AbstractController
             $config_service->set_str('users.new.access_pane', $access_pane, $pp->schema());
 
             $alert_service->success('Configuratie instappende leden aangepast');
-            $link_render->redirect('users_config_new', $pp->ary(), []);
+            $this->redirectToRoute('users_config_new', $pp->ary());
         }
 
         return $this->render('users/users_config_new.html.twig', [

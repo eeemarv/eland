@@ -3,10 +3,11 @@
 namespace App\Controller\Users;
 
 use App\Cnst\ConfigCnst;
+use App\Command\Users\UsersPeriodicMailCommand;
+use App\Form\Post\Users\UsersPeriodicMailType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -34,7 +35,6 @@ class UsersPeriodicMailController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        LinkRender $link_render,
         ConfigService $config_service,
         PageParamsService $pp
     ):Response
@@ -102,8 +102,6 @@ class UsersPeriodicMailController extends AbstractController
             unset($block_ary['intersystem']);
         }
 
-        $form_data = [];
-
         $layout_ary = $config_service->get_ary('periodic_mail.user.layout', $pp->schema());
 
         $block_select_options = [];
@@ -151,27 +149,24 @@ class UsersPeriodicMailController extends AbstractController
             $block_select_options[$block] = $select;
         }
 
-        $form_data['days'] = $config_service->get_int('periodic_mail.days', $pp->schema());
-        $form_data['block_layout'] = json_encode($block_layout);
-        $form_data['block_select_options'] = json_encode($block_select_options);
+        $users_periodic_mail_command = new UsersPeriodicMailCommand();
 
-        $builder = $this->createFormBuilder($form_data);
-        $builder->add('days', IntegerType::class);
-        $builder->add('block_layout', HiddenType::class);
-        $builder->add('block_select_options', HiddenType::class);
-        $builder->add('submit', SubmitType::class);
-        $form = $builder->getForm();
+        $users_periodic_mail_command->days = $config_service->get_int('periodic_mail.days', $pp->schema());
+        $users_periodic_mail_command->block_layout = json_encode($block_layout);
+        $users_periodic_mail_command->block_select_options = json_encode($block_select_options);
 
-        $form->handleRequest($request);
+        $form = $this->createForm(UsersPeriodicMailType::class,
+            $users_periodic_mail_command)
+            ->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $form_data = $form->getData();
-            $days = $form_data['days'];
+            $users_periodic_mail_command = $form->getData();
 
-            $posted_block_layout = json_decode($form_data['block_layout'], true);
-            $posted_block_select_options = json_decode($form_data['block_select_options'], true);
+            $days = $users_periodic_mail_command->days;
+            $posted_block_layout = json_decode($users_periodic_mail_command->block_layout, true);
+            $posted_block_select_options = json_decode($users_periodic_mail_command->block_select_options, true);
 
             $config_service->set_int('periodic_mail.days', $days, $pp->schema());
 
@@ -203,7 +198,7 @@ class UsersPeriodicMailController extends AbstractController
             $config_service->set_ary('periodic_mail.user.layout', $block_layout, $pp->schema());
 
             $alert_service->success('Periodieke overzichts e-mail aangepast');
-            $link_render->redirect('users_periodic_mail', $pp->ary(), []);
+            $this->redirectToRoute('users_periodic_mail', $pp->ary());
         }
 
         return $this->render('users/users_periodic_mail.html.twig', [

@@ -2,7 +2,6 @@
 
 namespace App\Controller\Auth;
 
-use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -34,8 +33,7 @@ class LogoutController extends AbstractController
         LoggerInterface $logger,
         AlertService $alert_service,
         PageParamsService $pp,
-        SessionUserService $su,
-        LinkRender $link_render
+        SessionUserService $su
     ):Response
     {
         foreach($su->logins() as $schema => $user_id)
@@ -61,10 +59,10 @@ class LogoutController extends AbstractController
 
         if ($pp->org_system() === '')
         {
-            $link_render->redirect('login', ['system' => $pp->system()], []);
+            $this->redirectToRoute('login', ['system' => $pp->system()]);
         }
 
-        $link_render->redirect('login', ['system' => $pp->org_system()], []);
+        $this->redirectToRoute('login', ['system' => $pp->org_system()]);
 
         return new Response('');
     }

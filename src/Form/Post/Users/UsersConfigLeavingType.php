@@ -2,7 +2,7 @@
 
 namespace App\Form\Post\Users;
 
-use App\Command\Config\UsersConfigLeavingCommand;
+use App\Command\Users\UsersConfigLeavingCommand;
 use App\Form\EventSubscriber\AccessFieldSubscriber;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;

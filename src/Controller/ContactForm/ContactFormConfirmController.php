@@ -6,7 +6,6 @@ use App\Queue\MailQueue;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
-use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\DataTokenService;
 use App\Service\MailAddrSystemService;
@@ -33,7 +32,6 @@ class ContactFormConfirmController extends AbstractController
     public function __invoke(
         string $token,
         ConfigService $config_service,
-        LinkRender $link_render,
         AlertService $alert_service,
         DataTokenService $data_token_service,
         MailAddrSystemService $mail_addr_system_service,
@@ -51,7 +49,7 @@ class ContactFormConfirmController extends AbstractController
         if (!$data)
         {
             $alert_service->error('Ongeldig of verlopen token.');
-            $link_render->redirect('contact_form', $pp->ary(), []);
+            $this->redirectToRoute('contact_form', $pp->ary());
         }
 
         $vars = [
@@ -79,7 +77,7 @@ class ContactFormConfirmController extends AbstractController
         $data_token_service->del($token, 'contact_form', $pp->schema());
 
         $alert_service->success('Je bericht werd succesvol verzonden.');
-        $link_render->redirect('contact_form', $pp->ary(), []);
+        $this->redirectToRoute('contact_form', $pp->ary());
 
         return new Response();
     }

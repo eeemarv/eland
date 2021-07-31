@@ -7,7 +7,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
-use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -32,7 +31,6 @@ class ConfigExtUrlController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        LinkRender $link_render,
         ConfigService $config_service,
         PageParamsService $pp
     ):Response
@@ -55,7 +53,7 @@ class ConfigExtUrlController extends AbstractController
             $config_service->set_str('system.website_url', $config_ext_url_command->url ?? '', $pp->schema());
 
             $alert_service->success('Externe URL aangepast.');
-            $link_render->redirect('config_ext_url', $pp->ary(), []);
+            $this->redirectToRoute('config_ext_url', $pp->ary());
         }
 
         return $this->render('config/config_ext_url.html.twig', [

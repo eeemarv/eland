@@ -6,7 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
-use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -31,7 +30,6 @@ class ConfigMaintenanceController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        LinkRender $link_render,
         ConfigService $config_service,
         PageParamsService $pp
     ):Response
@@ -58,7 +56,7 @@ class ConfigMaintenanceController extends AbstractController
             $config_service->set_bool('system.maintenance_en', $form_data['maintenance_en'], $pp->schema());
 
             $alert_service->success('Onderhouds modus aangepast.');
-            $link_render->redirect('config_maintenance', $pp->ary(), []);
+            $this->redirectToRoute('config_maintenance', $pp->ary());
         }
 
         return $this->render('config/config_maintenance.html.twig', [

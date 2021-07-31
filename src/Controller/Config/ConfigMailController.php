@@ -7,7 +7,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
-use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -33,7 +32,6 @@ class ConfigMailController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        LinkRender $link_render,
         ConfigService $config_service,
         PageParamsService $pp
     ):Response
@@ -61,7 +59,7 @@ class ConfigMailController extends AbstractController
             $config_service->set_str('mail.tag', $config_mail_command->tag, $pp->schema());
 
             $alert_service->success('E-mail instellingen aangepast.');
-            $link_render->redirect('config_mail', $pp->ary(), []);
+            $this->redirectToRoute('config_mail', $pp->ary());
         }
 
         return $this->render('config/config_mail.html.twig', [

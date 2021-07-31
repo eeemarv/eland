@@ -7,7 +7,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
-use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -32,7 +31,6 @@ class ConfigLandingPageController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        LinkRender $link_render,
         ConfigService $config_service,
         PageParamsService $pp
     ):Response
@@ -67,7 +65,7 @@ class ConfigLandingPageController extends AbstractController
             $config_service->set_str('system.default_landing_page', $form_data['landing_page'], $pp->schema());
 
             $alert_service->success('Landingspagina aangepast.');
-            $link_render->redirect('config_landing_page', $pp->ary(), []);
+            $this->redirectToRoute('config_landing_page', $pp->ary());
         }
 
         return $this->render('config/config_landing_page.html.twig', [

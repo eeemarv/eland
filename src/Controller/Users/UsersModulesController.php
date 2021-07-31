@@ -5,7 +5,6 @@ namespace App\Controller\Users;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -45,7 +44,6 @@ class UsersModulesController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        LinkRender $link_render,
         ConfigService $config_service,
         PageParamsService $pp
     ):Response
@@ -83,7 +81,7 @@ class UsersModulesController extends AbstractController
             }
 
             $alert_service->success('Submodules/velden leden aangepast');
-            $link_render->redirect('users_modules', $pp->ary(), []);
+            $this->redirectToRoute('users_modules', $pp->ary());
         }
 
         return $this->render('users/users_modules.html.twig', [

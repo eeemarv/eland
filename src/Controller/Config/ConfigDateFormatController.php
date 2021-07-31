@@ -6,7 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
-use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\PageParamsService;
@@ -32,7 +31,6 @@ class ConfigDateFormatController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        LinkRender $link_render,
         ConfigService $config_service,
         DateFormatService $date_format_service,
         PageParamsService $pp
@@ -61,7 +59,7 @@ class ConfigDateFormatController extends AbstractController
             $config_service->set_str('system.date_format', $form_data['date_format'], $pp->schema());
 
             $alert_service->success('Datum- en tijdweergave aangepast.');
-            $link_render->redirect('config_date_format', $pp->ary(), []);
+            $this->redirectToRoute('config_date_format', $pp->ary());
         }
 
         return $this->render('config/config_date_format.html.twig', [

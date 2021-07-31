@@ -2,7 +2,6 @@
 
 namespace App\Controller\Config;
 
-use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -32,7 +31,6 @@ class ConfigLogoDelController extends AbstractController
         Request $request,
         ConfigService $config_service,
         AlertService $alert_service,
-        LinkRender $link_render,
         PageParamsService $pp
     ):Response
     {
@@ -54,7 +52,7 @@ class ConfigLogoDelController extends AbstractController
             $config_service->set_str('system.logo', '', $pp->schema());
 
             $alert_service->success('Het logo is verwijderd.');
-            $link_render->redirect('config_logo', $pp->ary(), []);
+            $this->redirectToRoute('config_logo', $pp->ary());
         }
 
         return $this->render('config/config_logo_del.html.twig', [

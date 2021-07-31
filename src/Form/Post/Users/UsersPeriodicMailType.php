@@ -2,18 +2,17 @@
 
 namespace App\Form\Post\Users;
 
-use App\Command\Users\UsersConfigNewCommand;
-use App\Form\EventSubscriber\AccessFieldSubscriber;
+use App\Command\Users\UsersPeriodicMailCommand;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class UsersConfigNewType extends AbstractType
+class UsersPeriodicMailType extends AbstractType
 {
     public function __construct(
-        protected AccessFieldSubscriber $access_field_subscriber
     )
     {
     }
@@ -21,19 +20,15 @@ class UsersConfigNewType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('days', IntegerType::class);
-
-        $this->access_field_subscriber->add('access', ['admin', 'user', 'guest']);
-        $this->access_field_subscriber->add('access_list', ['admin', 'user', 'guest']);
-        $this->access_field_subscriber->add('access_pane', ['admin', 'user', 'guest']);
-
-        $builder->addEventSubscriber($this->access_field_subscriber);
+        $builder->add('block_layout', HiddenType::class);
+        $builder->add('block_select_options', HiddenType::class);
         $builder->add('submit', SubmitType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class'    => UsersConfigNewCommand::class,
+            'data_class'    => UsersPeriodicMailCommand::class,
         ]);
     }
 }

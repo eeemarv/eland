@@ -165,12 +165,12 @@ class ContactsDelController extends AbstractController
 
                 if ($redirect_contacts)
                 {
-                    $link_render->redirect('contacts', $pp->ary(), []);
+                    $this->redirectToRoute('contacts', $pp->ary());
                 }
                 else
                 {
-                    $link_render->redirect('users_show', $pp->ary(),
-                        ['id' => $user_id]);
+                    $this->redirectToRoute('users_show', array_merge($pp->ary(),
+                        ['id' => $user_id]));
                 }
             }
 

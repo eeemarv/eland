@@ -2,10 +2,8 @@
 
 namespace App\Controller\Users;
 
-use App\Command\Config\UsersConfigLeavingCommand;
-use App\Form\EventSubscriber\AccessFieldSubscriber;
+use App\Command\Users\UsersConfigLeavingCommand;
 use App\Form\Post\Users\UsersConfigLeavingType;
-use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -34,7 +32,6 @@ class UsersConfigLeavingController extends AbstractController
         Request $request,
         AlertService $alert_service,
         ConfigService $config_service,
-        LinkRender $link_render,
         PageParamsService $pp
     ):Response
     {
@@ -84,7 +81,7 @@ class UsersConfigLeavingController extends AbstractController
             }
 
             $alert_service->success('Configuratie uitstappende leden aangepast');
-            $link_render->redirect('users_config_leaving', $pp->ary(), []);
+            $this->redirectToRoute('users_config_leaving', $pp->ary());
         }
 
         return $this->render('users/users_config_leaving.html.twig', [

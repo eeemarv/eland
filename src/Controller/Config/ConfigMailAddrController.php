@@ -6,7 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
-use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -32,7 +31,6 @@ class ConfigMailAddrController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        LinkRender $link_render,
         ConfigService $config_service,
         PageParamsService $pp
     ):Response
@@ -77,7 +75,7 @@ class ConfigMailAddrController extends AbstractController
             $config_service->set_ary('mail.addresses.support', $support, $pp->schema());
 
             $alert_service->success('E-mail adressen aangepast.');
-            $link_render->redirect('config_mail_addr', $pp->ary(), []);
+            $this->redirectToRoute('config_mail_addr', $pp->ary());
         }
 
         return $this->render('config/config_mail_addr.html.twig', [
