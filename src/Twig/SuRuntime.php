@@ -60,6 +60,7 @@ class SuRuntime implements RuntimeExtensionInterface
 			if ($id === 'master')
 			{
 				$out_ary[$schema] = 'a';
+				continue;
 			}
 
 			$role = $this->user_cache_service->get($id, $schema)['role'];

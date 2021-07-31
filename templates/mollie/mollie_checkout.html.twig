@@ -9,7 +9,7 @@
 {%- block heading_title -%}
     {%- if is_canceled -%}
         {{- 'mollie_checkout.canceled'|trans -}}
-    {%- else if is_paid -%}
+    {%- elseif is_paid -%}
         {{- 'mollie_checkout.paid'|trans -}}
     {%- else -%}
         {{- 'mollie_checkout.title'|trans -}}
