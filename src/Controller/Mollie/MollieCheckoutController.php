@@ -121,8 +121,7 @@ class MollieCheckoutController extends AbstractController
                     'mollie_payment_id' => $payment->id,
                 ], ['token' => $token]);
 
-                header('Location: ' . $payment->getCheckoutUrl(), true, 303);
-                exit;
+                return $this->redirect($payment->getCheckoutUrl(), 303);
             }
 
             $alert_service->error($errors);
