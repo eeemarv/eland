@@ -47,7 +47,7 @@ class ContactTypesDelController extends AbstractController
         if (in_array($ct['abbrev'], ContactTypesController::PROTECTED))
         {
             $alert_service->warning('Beschermd contact type.');
-            $link_render->redirect('contact_types', $pp->ary(), []);
+            return $this->redirectToRoute('contact_types', $pp->ary());
         }
 
         $hos_contact = $db->fetchOne('select id
@@ -60,7 +60,7 @@ class ContactTypesDelController extends AbstractController
             $alert_service->warning('Er is ten minste één contact
                 van dit contact type, dus kan het contact type
                 niet verwijderd worden.');
-            $link_render->redirect('contact_types', $pp->ary(), []);
+            return $this->redirectToRoute('contact_types', $pp->ary());
         }
 
         if($request->isMethod('POST'))
@@ -68,7 +68,7 @@ class ContactTypesDelController extends AbstractController
             if ($error_token = $form_token_service->get_error())
             {
                 $alert_service->error($error_token);
-                $link_render->redirect('contact_types', $pp->ary(), []);
+                return $this->redirectToRoute('contact_types', $pp->ary());
             }
 
             if ($db->delete($pp->schema() . '.type_contact', ['id' => $id]))
@@ -80,7 +80,7 @@ class ContactTypesDelController extends AbstractController
                 $alert_service->error('Fout bij het verwijderen.');
             }
 
-            $link_render->redirect('contact_types', $pp->ary(), []);
+            return $this->redirectToRoute('contact_types', $pp->ary());
         }
 
         $out = '<div class="panel panel-info">';

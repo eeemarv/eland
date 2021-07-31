@@ -151,11 +151,11 @@ class DocsEditController extends AbstractController
 
                 if (!isset($update['map_id']))
                 {
-                    $link_render->redirect('docs', $pp->ary(), []);
+                    return $this->redirectToRoute('docs', $pp->ary());
                 }
 
-                $link_render->redirect('docs_map', $pp->ary(),
-                    ['id' => $update['map_id']]);
+                return $this->redirectToRoute('docs_map', array_merge($pp->ary(),
+                    ['id' => $update['map_id']]));
             }
 
             $alert_service->error($errors);

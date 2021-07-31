@@ -4,7 +4,6 @@ namespace App\Controller\Forum;
 
 use App\Form\Post\DelType;
 use App\Render\AccountRender;
-use App\Render\LinkRender;
 use App\Repository\ForumRepository;
 use App\Service\AlertService;
 use App\Service\ConfigService;
@@ -38,7 +37,6 @@ class ForumDelPostController extends AbstractController
         Request $request,
         int $id,
         ForumRepository $forum_repository,
-        LinkRender $link_render,
         AccountRender $account_render,
         ConfigService $config_service,
         AlertService $alert_service,
@@ -87,7 +85,8 @@ class ForumDelPostController extends AbstractController
                 $alert_msg .= ' in topic "' . $topic_subject . '" werd gewist.';
 
                 $alert_service->success($alert_msg);
-                $link_render->redirect('forum_topic', $pp->ary(), ['id' => $forum_topic['id']]);
+
+                return $this->redirectToRoute('forum_topic', array_merge($pp->ary(), ['id' => $forum_topic['id']]));
             }
 
             $alert_service->error('Fout bij verwijderen van post');

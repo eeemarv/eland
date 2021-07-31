@@ -68,7 +68,7 @@ class CategoriesAddController extends AbstractController
             $category_repository->insert($name, $su, $pp->schema());
 
             $alert_service->success('Categorie "' . $name . '" toegevoegd.');
-            $link_render->redirect('categories', $pp->ary(), []);
+            return $this->redirectToRoute('categories', $pp->ary());
         }
 
         return $this->render('categories/categories_add.html.twig', [

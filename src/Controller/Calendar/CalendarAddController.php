@@ -121,8 +121,8 @@ class CalendarAddController extends AbstractController
 
                     $news['id'] = $id;
 
-                    $link_render->redirect('news_show', $pp->ary(),
-                        ['id' => $id]);
+                    return $this->redirectToRoute('news_show', array_merge($pp->ary(),
+                        ['id' => $id]));
                 }
                 else
                 {

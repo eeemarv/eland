@@ -7,9 +7,7 @@ use App\Form\Post\Categories\CategoriesNameType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Doctrine\DBAL\Connection as Db;
 use App\Service\AlertService;
-use App\Render\LinkRender;
 use App\Repository\CategoryRepository;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -39,7 +37,6 @@ class CategoriesEditController extends AbstractController
         CategoryRepository $category_repository,
         ConfigService $config_service,
         AlertService $alert_service,
-        LinkRender $link_render,
         PageParamsService $pp
     ):Response
     {
@@ -72,7 +69,8 @@ class CategoriesEditController extends AbstractController
             $category_repository->update_name($id, $name, $pp->schema());
 
             $alert_service->success('Naam van Categorie aangepast van "' . $category['name'] . '" naar "' . $name . '".');
-            $link_render->redirect('categories', $pp->ary(), []);
+
+            return $this->redirectToRoute('categories', $pp->ary());
         }
 
         return $this->render('categories/categories_edit.html.twig', [

@@ -7,7 +7,6 @@ use App\Form\Post\Forum\ForumTopicType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Render\LinkRender;
 use App\Repository\ForumRepository;
 use App\Service\AlertService;
 use App\Service\ConfigService;
@@ -36,7 +35,6 @@ class ForumAddTopicController extends AbstractController
         ForumRepository $forum_repository,
         ConfigService $config_service,
         AlertService $alert_service,
-        LinkRender $link_render,
         SessionUserService $su,
         PageParamsService $pp
     ):Response
@@ -64,8 +62,9 @@ class ForumAddTopicController extends AbstractController
                 $access, $su->id(), $pp->schema());
 
             $alert_service->success('Forum onderwerp toegevoegd.');
-            $link_render->redirect('forum_topic', $pp->ary(),
-                ['id' => $id]);
+
+            return $this->redirectToRoute('forum_topic', array_merge($pp->ary(),
+                ['id' => $id]));
         }
 
         return $this->render('forum/forum_add_topic.html.twig', [

@@ -119,8 +119,9 @@ class ForumEditPostController extends AbstractController
                 );
 
                 $alert_service->success('Reactie aangepast.');
-                $link_render->redirect('forum_topic', $pp->ary(),
-                    ['id' => $forum_topic['id']]);
+
+                return $this->redirectToRoute('forum_topic', array_merge($pp->ary(),
+                    ['id' => $forum_topic['id']]));
             }
 
             $alert_service->error($errors);

@@ -8,7 +8,6 @@ use App\Render\AccountRender;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Render\LinkRender;
 use App\Repository\ForumRepository;
 use App\Service\AlertService;
 use App\Service\ConfigService;
@@ -43,7 +42,6 @@ class ForumEditTopicController extends AbstractController
         AccountRender $account_render,
         ConfigService $config_service,
         ItemAccessService $item_access_service,
-        LinkRender $link_render,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
@@ -107,8 +105,8 @@ class ForumEditTopicController extends AbstractController
                     ' aangepast.');
             }
 
-            $link_render->redirect('forum_topic', $pp->ary(),
-                ['id' => $id]);
+            return $this->redirectToRoute('forum_topic', array_merge($pp->ary(),
+                ['id' => $id]));
         }
 
         return $this->render('forum/forum_edit_topic.html.twig', [
