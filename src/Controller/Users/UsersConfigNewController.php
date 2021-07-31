@@ -2,7 +2,8 @@
 
 namespace App\Controller\Users;
 
-use App\Form\EventSubscriber\AccessFieldSubscriber;
+use App\Command\Config\UsersConfigNewCommand;
+use App\Form\Post\Users\UsersConfigNewType;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
@@ -10,8 +11,6 @@ use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -33,7 +32,6 @@ class UsersConfigNewController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        AccessFieldSubscriber $access_field_subscriber,
         ConfigService $config_service,
         LinkRender $link_render,
         PageParamsService $pp
@@ -44,39 +42,38 @@ class UsersConfigNewController extends AbstractController
             throw new NotFoundHttpException('New users not enabled.');
         }
 
+        $users_config_new_command = new UsersConfigNewCommand();
+
         $days = $config_service->get_int('users.new.days', $pp->schema());
         $access = $config_service->get_str('users.new.access', $pp->schema());
         $access_list = $config_service->get_str('users.new.access_list', $pp->schema());
         $access_pane = $config_service->get_str('users.new.access_pane', $pp->schema());
 
-        $form_data = [
-            'days'              => $days,
-            'access'            => $access,
-            'access_list'       => $access_list,
-            'access_pane'       => $access_pane,
-        ];
+        $users_config_new_command->days = $days;
+        $users_config_new_command->access = $access;
+        $users_config_new_command->access_list = $access_list;
+        $users_config_new_command->access_pane = $access_pane;
 
-        $builder = $this->createFormBuilder($form_data);
-        $builder->add('days', IntegerType::class);
-        $builder->add('submit', SubmitType::class);
-        $access_field_subscriber->add('access', ['admin', 'user', 'guest']);
-        $access_field_subscriber->add('access_list', ['admin', 'user', 'guest']);
-        $access_field_subscriber->add('access_pane', ['admin', 'user', 'guest']);
-        $builder->addEventSubscriber($access_field_subscriber);
-        $form = $builder->getForm();
-        $form->handleRequest($request);
+        $form = $this->createForm(UsersConfigNewType::class,
+            $users_config_new_command)
+            ->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $form_data = $form->getData();
+            $users_config_new_command = $form->getData();
 
-            $config_service->set_int('users.new.days', $form_data['days'], $pp->schema());
-            $config_service->set_str('users.new.access', $form_data['access'], $pp->schema());
-            $config_service->set_str('users.new.access_list', $form_data['access_list'], $pp->schema());
-            $config_service->set_str('users.new.access_pane', $form_data['access_pane'], $pp->schema());
+            $days = $users_config_new_command->days;
+            $access = $users_config_new_command->access;
+            $access_list = $users_config_new_command->access_list;
+            $access_pane = $users_config_new_command->access_pane;
 
-            $alert_service->success('Configuratie instappers aangepast');
+            $config_service->set_int('users.new.days', $days, $pp->schema());
+            $config_service->set_str('users.new.access', $access, $pp->schema());
+            $config_service->set_str('users.new.access_list', $access_list, $pp->schema());
+            $config_service->set_str('users.new.access_pane', $access_pane, $pp->schema());
+
+            $alert_service->success('Configuratie instappende leden aangepast');
             $link_render->redirect('users_config_new', $pp->ary(), []);
         }
 

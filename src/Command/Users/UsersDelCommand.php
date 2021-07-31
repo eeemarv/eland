@@ -3,14 +3,9 @@
 namespace App\Command\Users;
 
 use Symfony\Component\Validator\Constraints\IsTrue;
-use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class UsersDelCommand
 {
+    #[IsTrue()]
     public $verify;
-
-    public static function loadValidatorMetadata(ClassMetadata $metadata)
-    {
-        $metadata->addPropertyConstraint('verify', new IsTrue());
-    }
 }

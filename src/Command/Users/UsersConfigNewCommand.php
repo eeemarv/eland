@@ -5,13 +5,10 @@ namespace App\Command\Config;
 use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\Type;
 
-class UsersConfigLeavingCommand
+class UsersConfigNewCommand
 {
     #[Type('int')]
-    public $equilibrium;
-
-    #[Type('bool')]
-    public $auto_deactivate;
+    public $days;
 
     #[Choice(['admin', 'user', 'guest'])]
     public $access;
