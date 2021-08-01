@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
 use App\Service\ConfigService;
 use App\Service\UserCacheService;
@@ -11,6 +12,7 @@ use App\Repository\AccountRepository;
 class AutoMinLimitService
 {
 	public function __construct(
+		protected Db $db,
 		protected LoggerInterface $logger,
 		protected UserCacheService $user_cache_service,
 		protected AccountRepository $account_repository,
