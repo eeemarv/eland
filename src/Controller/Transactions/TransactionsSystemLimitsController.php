@@ -2,7 +2,6 @@
 
 namespace App\Controller\Transactions;
 
-use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -33,7 +32,6 @@ class TransactionsSystemLimitsController extends AbstractController
         Request $request,
         AlertService $alert_service,
         ConfigService $config_service,
-        LinkRender $link_render,
         PageParamsService $pp
     ):Response
     {
@@ -66,7 +64,8 @@ class TransactionsSystemLimitsController extends AbstractController
             $config_service->set_int('accounts.limits.global.max', $form_data['max'], $pp->schema());
 
             $alert_service->success('Systeemslimieten aangepast');
-            $link_render->redirect('transactions_system_limits', $pp->ary(), []);
+
+            return $this->redirectToRoute('transactions_system_limits', $pp->ary());
         }
 
         return $this->render('transactions/transactions_system_limits.html.twig', [

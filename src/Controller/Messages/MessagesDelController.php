@@ -87,7 +87,8 @@ class MessagesDelController extends AbstractController
             if ($db->delete($pp->schema() . '.messages', ['id' => $id]))
             {
                 $alert_service->success(ucfirst($message['label']['offer_want_this']) . ' is verwijderd.');
-                $link_render->redirect($vr->get('messages'), $pp->ary(), []);
+
+                return $this->redirectToRoute($vr->get('messages'), $pp->ary());
             }
 
             $alert_service->error(ucfirst($message['label']['offer_want_this']) . ' is niet verwijderd.');

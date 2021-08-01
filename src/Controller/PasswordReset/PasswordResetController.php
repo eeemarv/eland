@@ -3,7 +3,6 @@
 namespace App\Controller\PasswordReset;
 
 use App\Queue\MailQueue;
-use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\DataTokenService;
 use App\Service\FormTokenService;
@@ -37,7 +36,6 @@ class PasswordResetController extends AbstractController
         DataTokenService $data_token_service,
         FormTokenService $form_token_service,
         MailQueue $mail_queue,
-        LinkRender $link_render,
         PageParamsService $pp
     ):Response
     {
@@ -113,7 +111,7 @@ class PasswordResetController extends AbstractController
                 $alert_service->success('Een link om je paswoord te resetten werd
                     naar je E-mailbox verzonden. Deze link blijft 24 uur geldig.');
 
-                $link_render->redirect('login', $pp->ary(), []);
+                return $this->redirectToRoute('login', $pp->ary());
             }
 
             $alert_service->error($errors);

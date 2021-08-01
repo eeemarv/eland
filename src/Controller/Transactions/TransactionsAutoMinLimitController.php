@@ -53,7 +53,8 @@ class TransactionsAutoMinLimitController extends AbstractController
             if ($error_token = $form_token_service->get_error())
             {
                 $alert_service->error($error_token);
-                $link_render->redirect('transactions_autominlimit', $pp->ary(), []);
+
+                return $this->redirectToRoute('transactions_autominlimit', $pp->ary());
             }
 
             $percentage = $request->request->get('percentage');
@@ -65,7 +66,8 @@ class TransactionsAutoMinLimitController extends AbstractController
             $config_service->set_str('accounts.limits.auto_min.exclude.from', $exclude_from, $pp->schema());
 
             $alert_service->success('De automatische minimum limiet instellingen zijn aangepast.');
-            $link_render->redirect('transactions_autominlimit', $pp->ary(), []);
+
+            return $this->redirectToRoute('transactions_autominlimit', $pp->ary());
         }
         else
         {

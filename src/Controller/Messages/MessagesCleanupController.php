@@ -91,7 +91,8 @@ class MessagesCleanupController extends AbstractController
                 $config_service->set_bool('messages.fields.expires_at.switch_enabled', $expires_at_switch_enabled, $pp->schema());
                 $config_service->set_bool('messages.expire.notify', $expire_notify, $pp->schema());
                 $alert_service->success('Geldigheid en opruiming instellingen van vraag en aanbod aangepast');
-                $link_render->redirect('messages_cleanup', $pp->ary(), []);
+
+                return $this->redirectToRoute('messages_cleanup', $pp->ary());
             }
 
             $alert_service->error($errors);

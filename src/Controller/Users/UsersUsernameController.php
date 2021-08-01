@@ -5,7 +5,6 @@ namespace App\Controller\Users;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -31,7 +30,6 @@ class UsersUsernameController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        LinkRender $link_render,
         ConfigService $config_service,
         PageParamsService $pp
     ):Response
@@ -56,7 +54,8 @@ class UsersUsernameController extends AbstractController
             $config_service->set_bool('users.fields.username.self_edit', $self_edit, $pp->schema());
 
             $alert_service->success('Gebruikersnaam configuratie aangepast');
-            $link_render->redirect('users_username', $pp->ary(), []);
+
+            return $this->redirectToRoute('users_username', $pp->ary());
         }
 
         return $this->render('users/users_username.html.twig', [

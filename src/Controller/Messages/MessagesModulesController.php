@@ -5,7 +5,6 @@ namespace App\Controller\Messages;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -39,7 +38,6 @@ class MessagesModulesController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        LinkRender $link_render,
         ConfigService $config_service,
         PageParamsService $pp
     ):Response
@@ -82,7 +80,8 @@ class MessagesModulesController extends AbstractController
             }
 
             $alert_service->success('Submodules/velden vraag en aanbod aangepast');
-            $link_render->redirect('messages_modules', $pp->ary(), []);
+
+            return $this->redirectToRoute('messages_modules', $pp->ary());
         }
 
         return $this->render('messages/messages_modules.html.twig', [

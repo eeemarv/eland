@@ -2,7 +2,6 @@
 
 namespace App\Controller\Init;
 
-use App\Render\LinkRender;
 use App\Service\PageParamsService;
 use App\Service\SystemsService;
 use App\Service\UserCacheService;
@@ -26,7 +25,6 @@ class InitClearUsersCacheController extends AbstractController
     public function __invoke(
         Request $request,
         PageParamsService $pp,
-        LinkRender $link_render,
         SystemsService $systems_service,
         UserCacheService $user_cache_service,
         string $env_app_init_enabled
@@ -48,9 +46,7 @@ class InitClearUsersCacheController extends AbstractController
             $user_cache_service->clear_all($schema);
         }
 
-        $link_render->redirect('init', $pp->ary(),
-            ['ok' => $request->attributes->get('_route')]);
-
-        return new Response('');
+        return $this->redirectToRoute('init', array_merge($pp->ary(),
+            ['ok' => $request->attributes->get('_route')]));
     }
 }

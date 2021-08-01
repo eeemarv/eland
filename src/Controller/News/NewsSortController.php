@@ -5,7 +5,6 @@ namespace App\Controller\News;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -32,7 +31,6 @@ class NewsSortController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        LinkRender $link_render,
         ConfigService $config_service,
         PageParamsService $pp
     ):Response
@@ -62,7 +60,8 @@ class NewsSortController extends AbstractController
             $config_service->set_bool('news.sort.asc', $self_edit, $pp->schema());
 
             $alert_service->success('Sortering nieuws configuratie aangepast');
-            $link_render->redirect('news_sort', $pp->ary(), []);
+
+            return $this->redirectToRoute('news_sort', $pp->ary());
         }
 
         return $this->render('news/news_sort.html.twig', [

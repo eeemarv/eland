@@ -2,7 +2,6 @@
 
 namespace App\Controller\Transactions;
 
-use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -35,7 +34,6 @@ class TransactionsCurrencyController extends AbstractController
         Request $request,
         AlertService $alert_service,
         ConfigService $config_service,
-        LinkRender $link_render,
         PageParamsService $pp
     ):Response
     {
@@ -72,7 +70,8 @@ class TransactionsCurrencyController extends AbstractController
             $config_service->set_int('transactions.currency.per_hour_ratio', $form_data['per_hour_ratio'], $pp->schema());
 
             $alert_service->success('Munteenheid aangepast');
-            $link_render->redirect('transactions_currency', $pp->ary(), []);
+
+            return $this->redirectToRoute('transactions_currency', $pp->ary());
         }
 
         return $this->render('transactions/transactions_currency.html.twig', [

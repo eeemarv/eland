@@ -4,7 +4,6 @@ namespace App\Controller\Messages;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -38,8 +37,7 @@ class MessagesExtendController extends AbstractController
         ConfigService $config_service,
         AlertService $alert_service,
         PageParamsService $pp,
-        SessionUserService $su,
-        LinkRender $link_render
+        SessionUserService $su
     ):Response
     {
         if (!$config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema()))
@@ -75,12 +73,12 @@ class MessagesExtendController extends AbstractController
         if (!$db->update($pp->schema() . '.messages', $m, ['id' => $id]))
         {
             $alert_service->error('Fout: ' . $message['label']['offer_want_the'] . ' is niet verlengd.');
-            $link_render->redirect('messages_show', $pp->ary(), ['id' => $id]);
+
+            return $this->redirectToRoute('messages_show', array_merge($pp->ary(), ['id' => $id]));
         }
 
         $alert_service->success(ucfirst($message['label']['offer_want_the']) . ' is verlengd.');
-        $link_render->redirect('messages_show', $pp->ary(), ['id' => $id]);
 
-        return new Response('');
+        return $this->redirectToRoute('messages_show', array_merge($pp->ary(), ['id' => $id]));
     }
 }
