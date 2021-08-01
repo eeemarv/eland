@@ -56,7 +56,7 @@ class TransactionsAutoMinLimitController extends AbstractController
                 $link_render->redirect('transactions_autominlimit', $pp->ary(), []);
             }
 
-            $percentage = $request->request->get('percentage');
+            $percentage = (int) $request->request->get('percentage');
             $exclude_to = $request->request->get('exclude_to', '');
             $exclude_from = $request->request->get('exclude_from', '');
 
@@ -131,7 +131,7 @@ class TransactionsAutoMinLimitController extends AbstractController
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-addon">';
         $out .= '<span class="fa fa-percent"></span></span>';
-        $out .= '<input type="number" id="trans_percentage" name="trans_percentage" ';
+        $out .= '<input type="number" id="percentage" name="percentage" ';
         $out .= 'value="';
         $out .= $percentage;
         $out .= '" ';
