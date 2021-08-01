@@ -2,12 +2,13 @@
 
 namespace App\Command\News;
 
+use App\Command\CommandInterface;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
-class NewsCommand
+class NewsCommand implements CommandInterface
 {
     public $subject;
     public $event_at;

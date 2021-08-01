@@ -2,13 +2,14 @@
 
 namespace App\Command\PasswordReset;
 
+use App\Command\CommandInterface;
 use App\Validator\EmailUniqueToActiveUser;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
-class PasswordResetRequestCommand
+class PasswordResetRequestCommand implements CommandInterface
 {
     public $email;
 

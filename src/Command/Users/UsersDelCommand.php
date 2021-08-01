@@ -2,9 +2,10 @@
 
 namespace App\Command\Users;
 
+use App\Command\CommandInterface;
 use Symfony\Component\Validator\Constraints\IsTrue;
 
-class UsersDelCommand
+class UsersDelCommand implements CommandInterface
 {
     #[IsTrue()]
     public $verify;

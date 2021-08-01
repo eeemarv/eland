@@ -2,12 +2,13 @@
 
 namespace App\Command\Forum;
 
+use App\Command\CommandInterface;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
-class ForumCommand
+class ForumCommand implements CommandInterface
 {
     public $subject;
 

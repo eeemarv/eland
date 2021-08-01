@@ -2,9 +2,10 @@
 
 namespace App\Command\Users;
 
+use App\Command\CommandInterface;
 use Symfony\Component\Validator\Constraints\Type;
 
-class UsersPeriodicMailCommand
+class UsersPeriodicMailCommand implements CommandInterface
 {
     #[Type('int')]
     public $days;

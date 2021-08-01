@@ -2,13 +2,14 @@
 
 namespace App\Command\MessagesModules;
 
+use App\Command\CommandInterface;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Positive;
 use Symfony\Component\Validator\Constraints\Range;
 use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
-class MessagesCleanupCommand
+class MessagesCleanupCommand implements CommandInterface
 {
     public $cleanup_enabled;
     public $cleanup_after_days;

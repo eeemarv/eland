@@ -2,9 +2,12 @@
 
 namespace App\Service;
 
+use App\Attributes\ConfigMap;
+use App\Command\CommandInterface;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
 use Predis\Client as Predis;
+use ReflectionClass;
 use Symfony\Component\Validator\Exception\LogicException;
 
 class ConfigService
@@ -247,5 +250,56 @@ class ConfigService
 		$new_user_days = $this->get_int('users.new.days', $schema);
 		$new_user_treshold = time() -  ($new_user_days * 86400);
 		return \DateTimeImmutable::createFromFormat('U', (string) $new_user_treshold);
+	}
+
+	private function command_config_map_callback(
+		CommandInterface $command,
+		callable $callable,
+		string $schema
+	):void
+	{
+		$reflection_class = new ReflectionClass($command);
+
+		foreach ($reflection_class->getProperties() as $property)
+		{
+			$attributes = $property->getAttributes(ConfigMap::class);
+			$property_name = $property->getName();
+
+			foreach ($attributes as $attribute)
+			{
+				$config_map = $attribute->newInstance();
+				call_user_func($callable, $command, $property_name, $config_map, $schema);
+			}
+		}
+	}
+
+	public function load_command(CommandInterface $command, string $schema):void
+	{
+		$callable = function(
+			CommandInterface $command,
+			string $property_name,
+			ConfigMap $config_map,
+			string $schema
+		):void {
+			$get = 'get_' . $config_map->type;
+			$command->$property_name = $this->$get($config_map->key, $schema);
+		};
+
+		$this->command_config_map_callback($command, $callable, $schema);
+	}
+
+	public function store_command(CommandInterface $command, string $schema):void
+	{
+		$callable = function(
+			CommandInterface $command,
+			string $property_name,
+			ConfigMap $config_map,
+			string $schema
+		):void {
+			$set = 'set_' . $config_map->type;
+			$this->$set($config_map->key, $command->$property_name, $schema);
+		};
+
+		$this->command_config_map_callback($command, $callable, $schema);
 	}
 }

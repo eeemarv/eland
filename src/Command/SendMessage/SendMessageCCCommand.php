@@ -2,12 +2,13 @@
 
 namespace App\Command\SendMessage;
 
+use App\Command\CommandInterface;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
-class SendMessageCCCommand
+class SendMessageCCCommand implements CommandInterface
 {
     public $message;
     public $cc;

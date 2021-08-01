@@ -2,9 +2,10 @@
 
 namespace App\Command\Config;
 
+use App\Command\CommandInterface;
 use Symfony\Component\Validator\Constraints\Type;
 
-class ConfigModulesCommand
+class ConfigModulesCommand implements CommandInterface
 {
     #[Type('bool')]
     public $messages_enabled;

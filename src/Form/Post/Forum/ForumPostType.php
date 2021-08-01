@@ -3,7 +3,6 @@
 namespace App\Form\Post\Forum;
 
 use App\Command\Forum\ForumCommand;
-use App\Form\EventSubscriber\AccessFieldSubscriber;
 use App\Form\Input\Summernote\SummernoteType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -12,13 +11,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ForumPostType extends AbstractType
 {
-    protected AccessFieldSubscriber $access_field_subscriber;
-
-    public function __construct(
-        AccessFieldSubscriber $access_field_subscriber
-    )
+    public function __construct()
     {
-        $this->access_field_subscriber = $access_field_subscriber;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)

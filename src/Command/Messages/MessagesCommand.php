@@ -2,6 +2,7 @@
 
 namespace App\Command\Messages;
 
+use App\Command\CommandInterface;
 use App\Validator\Category\CategoryIsLeaf;
 use App\Validator\User\ActiveUser;
 use Symfony\Component\Validator\Constraints\Choice;
@@ -11,7 +12,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
-class MessagesCommand
+class MessagesCommand implements CommandInterface
 {
     public $user_id;
     public $offer_want;

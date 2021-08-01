@@ -2,13 +2,14 @@
 
 namespace App\Command\Config;
 
+use App\Command\CommandInterface;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Constraints\Type;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
-class ConfigMailCommand
+class ConfigMailCommand implements CommandInterface
 {
     public $enabled;
     public $tag;

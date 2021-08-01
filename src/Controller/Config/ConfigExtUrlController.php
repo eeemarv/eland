@@ -35,10 +35,10 @@ class ConfigExtUrlController extends AbstractController
         PageParamsService $pp
     ):Response
     {
-        $config_ext_url_command = new ConfigExtUrlCommand();
-        $config_ext_url_command->url = $config_service->get_str('system.website_url', $pp->schema());
+        $command = new ConfigExtUrlCommand();
+        $config_service->load_command($command, $pp->schema());
 
-        $builder = $this->createFormBuilder($config_ext_url_command);
+        $builder = $this->createFormBuilder($command);
         $builder->add('url', UrlType::class)
             ->add('submit', SubmitType::class);
 
@@ -48,9 +48,9 @@ class ConfigExtUrlController extends AbstractController
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $config_ext_url_command = $form->getData();
+            $command = $form->getData();
 
-            $config_service->set_str('system.website_url', $config_ext_url_command->url ?? '', $pp->schema());
+            $config_service->store_command($command, $pp->schema());
 
             $alert_service->success('Externe URL aangepast.');
             return $this->redirectToRoute('config_ext_url', $pp->ary());

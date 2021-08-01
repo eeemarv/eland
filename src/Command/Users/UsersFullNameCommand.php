@@ -2,9 +2,10 @@
 
 namespace App\Command\Users;
 
+use App\Command\CommandInterface;
 use Symfony\Component\Validator\Constraints\Type;
 
-class UsersFullNameCommand
+class UsersFullNameCommand implements CommandInterface
 {
     #[Type('bool')]
     public $self_edit;

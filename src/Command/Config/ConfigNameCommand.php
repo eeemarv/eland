@@ -2,12 +2,13 @@
 
 namespace App\Command\Config;
 
+use App\Command\CommandInterface;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
-class ConfigNameCommand
+class ConfigNameCommand implements CommandInterface
 {
     public $system_name;
 

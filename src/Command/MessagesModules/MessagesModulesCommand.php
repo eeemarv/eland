@@ -2,9 +2,10 @@
 
 namespace App\Command\MessagesModules;
 
+use App\Command\CommandInterface;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
-class MessagesModulesCommand
+class MessagesModulesCommand implements CommandInterface
 {
     public $service_stuff_enabled;
     public $category_enabled;

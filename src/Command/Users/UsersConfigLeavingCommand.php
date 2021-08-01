@@ -2,10 +2,11 @@
 
 namespace App\Command\Users;
 
+use App\Command\CommandInterface;
 use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\Type;
 
-class UsersConfigLeavingCommand
+class UsersConfigLeavingCommand implements CommandInterface
 {
     #[Type('int')]
     public $equilibrium;

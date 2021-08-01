@@ -8,7 +8,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
-use App\Render\LinkRender;
 use App\Repository\CategoryRepository;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -37,7 +36,6 @@ class CategoriesAddController extends AbstractController
         CategoryRepository $category_repository,
         ConfigService $config_service,
         AlertService $alert_service,
-        LinkRender $link_render,
         PageParamsService $pp,
         SessionUserService $su
     ):Response

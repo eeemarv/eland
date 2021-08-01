@@ -2,11 +2,12 @@
 
 namespace App\Command\Docs;
 
+use App\Command\CommandInterface;
 use App\Validator\DocMap\DocMapUniqueName;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
-class DocsMapCommand
+class DocsMapCommand implements CommandInterface
 {
     public $name;
     public $id;
