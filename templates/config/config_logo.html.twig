@@ -21,7 +21,7 @@
                 class="img-rounded img-responsive center-block"
                 src="{%- if logo == '' %}{{- assets('1.gif') -}}{%- else -%}{{- s3(logo) -}}{%- endif -%}"
                 data-base-url="{{- s3() -}}"
-                data-replace-logo="1" />
+                data-replace-logo>
             <div id="no_img"{%- if logo is not same as ('') %} style="display:none;"{%- endif -%}>
                 <i class="fa fa-image fa-5x text-muted"></i>
                 <br>
