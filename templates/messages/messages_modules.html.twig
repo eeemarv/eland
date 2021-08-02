@@ -5,25 +5,25 @@
 {%- endblock heading_title -%}
 
 {%- block form_a -%}
-    {{- form_row(form.messages_fields_service_stuff_enabled, {
+    {{- form_row(form.service_stuff_enabled, {
         'label': 'Diensten/spullen schakelaar',
         'translation_domain': false,
         'required': false
     }) -}}
 
-    {{- form_row(form.messages_fields_category_enabled, {
+    {{- form_row(form.category_enabled, {
         'label': 'Categorieën',
         'translation_domain': false,
         'required': false
     }) -}}
 
-    {{- form_row(form.messages_fields_expires_at_enabled, {
+    {{- form_row(form.expires_at_enabled, {
         'label': 'Geldigheid en opruiming',
         'translation_domain': false,
         'required': false
     }) -}}
 
-    {{- form_row(form.messages_fields_units_enabled, {
+    {{- form_row(form.units_enabled, {
         'label': 'Richtprijs',
         'translation_domain': false,
         'required': false

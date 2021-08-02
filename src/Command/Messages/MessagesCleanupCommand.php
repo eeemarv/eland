@@ -1,21 +1,32 @@
 <?php declare(strict_types=1);
 
-namespace App\Command\MessagesModules;
+namespace App\Command\Messages;
 
 use App\Command\CommandInterface;
+use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Positive;
 use Symfony\Component\Validator\Constraints\Range;
 use Symfony\Component\Validator\Constraints\Sequentially;
+use Symfony\Component\Validator\Constraints\Type;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class MessagesCleanupCommand implements CommandInterface
 {
+    #[Type('bool')]
     public $cleanup_enabled;
+
+    #[NotBlank()]
+    #[Positive()]
+    #[Length(min: 1, max: 365)]
     public $cleanup_after_days;
+
     public $expires_at_days_default;
+
     public $expires_at_required;
+
     public $expires_at_switch_enabled;
+
     public $expire_notify;
 
     public static function loadValidatorMetadata(ClassMetadata $metadata)

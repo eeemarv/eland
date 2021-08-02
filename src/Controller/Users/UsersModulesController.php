@@ -14,20 +14,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class UsersModulesController extends AbstractController
 {
-    const USERS_MODULES = [
-        'users.fields.full_name.enabled',
-        'users.fields.postcode.enabled',
-        'users.fields.birthday.enabled',
-        'users.fields.hobbies.enabled',
-        'users.fields.comments.enabled',
-        'users.fields.admin_comments.enabled',
-        'users.new.enabled',
-        'users.leaving.enabled',
-        'intersystem.enabled',
-        'periodic_mail.enabled',
-        'mollie.enabled',
-    ];
-
     #[Route(
         '/{system}/{role_short}/users/modules',
         name: 'users_modules',

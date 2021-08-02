@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace App\Form\Post\MessagesModules;
+namespace App\Form\Post\Messages;
 
-use App\Command\MessagesModules\MessagesModulesCommand;
+use App\Command\Messages\MessagesModulesCommand;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
