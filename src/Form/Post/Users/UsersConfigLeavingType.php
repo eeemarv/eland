@@ -32,6 +32,7 @@ class UsersConfigLeavingType extends AbstractType
             $builder->add('equilibrium', IntegerType::class);
             $builder->add('auto_deactivate', CheckboxType::class);
         }
+
         $this->access_field_subscriber->add('access', ['admin', 'user', 'guest']);
         $this->access_field_subscriber->add('access_list', ['admin', 'user', 'guest']);
         $this->access_field_subscriber->add('access_pane', ['admin', 'user', 'guest']);

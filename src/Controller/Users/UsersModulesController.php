@@ -2,14 +2,14 @@
 
 namespace App\Controller\Users;
 
+use App\Command\Users\UsersModulesCommand;
+use App\Form\Post\Users\UsersModulesType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Routing\Annotation\Route;
 
 class UsersModulesController extends AbstractController
@@ -48,37 +48,18 @@ class UsersModulesController extends AbstractController
         PageParamsService $pp
     ):Response
     {
-        $form_data = [];
+        $command = new UsersModulesCommand();
+        $config_service->load_command($command, $pp->schema());
 
-        foreach (self::USERS_MODULES as $key)
-        {
-            $name = strtr($key, '.', '_');
-            $form_data[$name] = $config_service->get_bool($key, $pp->schema());
-        }
-
-        $builder = $this->createFormBuilder($form_data);
-
-        foreach (self::USERS_MODULES as $key)
-        {
-            $name = strtr($key, '.', '_');
-            $builder->add($name, CheckboxType::class);
-        }
-
-        $builder->add('submit', SubmitType::class);
-        $form = $builder->getForm();
+        $form = $this->createForm(UsersModulesType::class, $command);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $form_data = $form->getData();
-
-            foreach (self::USERS_MODULES as $key)
-            {
-                $name = strtr($key, '.', '_');
-                $config_service->set_bool($key, $form_data[$name], $pp->schema());
-            }
+            $command = $form->getData();
+            $config_service->store_command($command, $pp->schema());
 
             $alert_service->success('Submodules/velden leden aangepast');
             return $this->redirectToRoute('users_modules', $pp->ary());

@@ -40,25 +40,18 @@ class UsersFullNameController extends AbstractController
             throw new AccessDeniedHttpException('Full name module not enabled.');
         }
 
-        $users_full_name_command = new UsersFullNameCommand();
+        $command = new UsersFullNameCommand();
+        $config_service->load_command($command, $pp->schema());
 
-        $self_edit = $config_service->get_bool('users.fields.full_name.self_edit', $pp->schema());
-
-
-        $users_full_name_command->self_edit = $self_edit;
-
-        $form = $this->createForm(UsersFullNameType::class,
-            $users_full_name_command)
-            ->handleRequest($request);
+        $form = $this->createForm(UsersFullNameType::class, $command);
+        $form->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $users_full_name_command = $form->getData();
+            $command = $form->getData();
 
-            $self_edit = $users_full_name_command->self_edit;
-
-            $config_service->set_bool('users.fields.full_name.self_edit', $self_edit, $pp->schema());
+            $config_service->store_command($command, $pp->schema());
 
             $alert_service->success('Volledige naam configuratie aangepast');
             return $this->redirectToRoute('users_full_name', $pp->ary());

@@ -40,45 +40,18 @@ class UsersConfigLeavingController extends AbstractController
             throw new NotFoundHttpException('Leaving users not enabled.');
         }
 
-        $users_config_leaving_command = new UsersConfigLeavingCommand();
+        $command = new UsersConfigLeavingCommand();
 
-        $access = $config_service->get_str('users.leaving.access', $pp->schema());
-        $access_list = $config_service->get_str('users.leaving.access_list', $pp->schema());
-        $access_pane = $config_service->get_str('users.leaving.access_pane', $pp->schema());
-        $equilibrium = $config_service->get_int('accounts.equilibrium', $pp->schema());
-        $auto_deactivate = $config_service->get_bool('users.leaving.auto_deactivate', $pp->schema());
-        $transactions_enabled = $config_service->get_bool('transactions.enabled', $pp->schema());
+        $config_service->load_command($command, $pp->schema());
 
-        $users_config_leaving_command->equilibrium = $equilibrium;
-        $users_config_leaving_command->auto_deactivate = $auto_deactivate;
-        $users_config_leaving_command->access = $access;
-        $users_config_leaving_command->access_list = $access_list;
-        $users_config_leaving_command->access_pane = $access_pane;
-
-        $form = $this->createForm(UsersConfigLeavingType::class,
-            $users_config_leaving_command)
-            ->handleRequest($request);
+        $form = $this->createForm(UsersConfigLeavingType::class, $command);
+        $form->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $users_config_leaving_command = $form->getData();
-
-            $equilibrium = $users_config_leaving_command->equilibrium;
-            $auto_deactivate = $users_config_leaving_command->auto_deactivate;
-            $access = $users_config_leaving_command->access;
-            $access_list = $users_config_leaving_command->access_list;
-            $access_pane = $users_config_leaving_command->access_pane;
-
-            $config_service->set_str('users.leaving.access', $access, $pp->schema());
-            $config_service->set_str('users.leaving.access_list', $access_list, $pp->schema());
-            $config_service->set_str('users.leaving.access_pane', $access_pane, $pp->schema());
-
-            if ($transactions_enabled)
-            {
-                $config_service->set_int('accounts.equilibrium', $equilibrium, $pp->schema());
-                $config_service->set_bool('users.leaving.auto_deactivate', $auto_deactivate, $pp->schema());
-            }
+            $command = $form->getData();
+            $config_service->store_command($command, $pp->schema());
 
             $alert_service->success('Configuratie uitstappende leden aangepast');
             return $this->redirectToRoute('users_config_leaving', $pp->ary());

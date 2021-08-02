@@ -40,36 +40,18 @@ class UsersConfigNewController extends AbstractController
             throw new NotFoundHttpException('New users not enabled.');
         }
 
-        $users_config_new_command = new UsersConfigNewCommand();
+        $command = new UsersConfigNewCommand();
+        $config_service->load_command($command, $pp->schema());
 
-        $days = $config_service->get_int('users.new.days', $pp->schema());
-        $access = $config_service->get_str('users.new.access', $pp->schema());
-        $access_list = $config_service->get_str('users.new.access_list', $pp->schema());
-        $access_pane = $config_service->get_str('users.new.access_pane', $pp->schema());
-
-        $users_config_new_command->days = $days;
-        $users_config_new_command->access = $access;
-        $users_config_new_command->access_list = $access_list;
-        $users_config_new_command->access_pane = $access_pane;
-
-        $form = $this->createForm(UsersConfigNewType::class,
-            $users_config_new_command)
-            ->handleRequest($request);
+        $form = $this->createForm(UsersConfigNewType::class, $command);
+        $form->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $users_config_new_command = $form->getData();
+            $command = $form->getData();
 
-            $days = $users_config_new_command->days;
-            $access = $users_config_new_command->access;
-            $access_list = $users_config_new_command->access_list;
-            $access_pane = $users_config_new_command->access_pane;
-
-            $config_service->set_int('users.new.days', $days, $pp->schema());
-            $config_service->set_str('users.new.access', $access, $pp->schema());
-            $config_service->set_str('users.new.access_list', $access_list, $pp->schema());
-            $config_service->set_str('users.new.access_pane', $access_pane, $pp->schema());
+            $config_service->store_command($command, $pp->schema());
 
             $alert_service->success('Configuratie instappende leden aangepast');
             return $this->redirectToRoute('users_config_new', $pp->ary());
