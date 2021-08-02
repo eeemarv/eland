@@ -3,14 +3,13 @@
 namespace App\Controller\Config;
 
 use App\Command\Config\ConfigExtUrlCommand;
+use App\Form\Post\Config\ConfigExtUrlType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ConfigExtUrlController extends AbstractController
@@ -38,12 +37,19 @@ class ConfigExtUrlController extends AbstractController
         $command = new ConfigExtUrlCommand();
         $config_service->load_command($command, $pp->schema());
 
+        $form = $this->createForm(ConfigExtUrlType::class,
+                $command);
+
+        $form->handleRequest($request);
+
+        /*
         $builder = $this->createFormBuilder($command);
         $builder->add('url', UrlType::class)
             ->add('submit', SubmitType::class);
 
         $form = $builder->getForm();
         $form->handleRequest($request);
+        */
 
         if ($form->isSubmitted()
             && $form->isValid())
@@ -57,7 +63,7 @@ class ConfigExtUrlController extends AbstractController
         }
 
         return $this->render('config/config_ext_url.html.twig', [
-            'form'          => $form->createView(),
+            'form'  => $form->createView(),
         ]);
     }
 }

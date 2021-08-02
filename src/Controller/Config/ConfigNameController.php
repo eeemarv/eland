@@ -3,14 +3,13 @@
 namespace App\Controller\Config;
 
 use App\Command\Config\ConfigNameCommand;
+use App\Form\Post\Config\ConfigNameType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ConfigNameController extends AbstractController
@@ -35,24 +34,19 @@ class ConfigNameController extends AbstractController
         PageParamsService $pp
     ):Response
     {
-        $config_name_command = new ConfigNameCommand();
+        $command = new ConfigNameCommand();
+        $config_service->load_command($command, $pp->schema());
 
-        $config_name_command->system_name = $config_service->get_str('system.name', $pp->schema());
-
-        $builder = $this->createFormBuilder($config_name_command);
-        $builder->add('system_name', TextType::class)
-            ->add('submit', SubmitType::class);
-
-        $form = $builder->getForm();
+        $form = $this->createForm(ConfigNameType::class, $command);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $config_name_command = $form->getData();
+            $command = $form->getData();
 
-            $config_service->set_str('system.name', $config_name_command->system_name, $pp->schema());
+            $config_service->store_command($command, $pp->schema());
 
             $alert_service->success('Naam systeem aangepast.');
             return $this->redirectToRoute('config_name', $pp->ary());

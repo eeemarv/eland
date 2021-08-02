@@ -39,7 +39,7 @@ class ConfigLogoUploadController extends AbstractController
 
         if (!$uploaded_file)
         {
-            throw new BadRequestHttpException('Afbeeldingsbestand ontbreekt.');
+            throw new BadRequestHttpException('Image file missing.');
         }
 
         $res = $image_upload_service->upload($uploaded_file,

@@ -2,23 +2,15 @@
 
 namespace App\Command\Config;
 
+use App\Attributes\ConfigMap;
 use App\Command\CommandInterface;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\Sequentially;
-use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class ConfigNameCommand implements CommandInterface
 {
+    #[NotBlank()]
+    #[Length(max: 60)]
+    #[ConfigMap(type: 'str', key: 'system.name')]
     public $system_name;
-
-    public static function loadValidatorMetadata(ClassMetadata $metadata)
-    {
-        $metadata->addPropertyConstraint('system_name', new Sequentially([
-            'constraints'   => [
-                new NotBlank(),
-                new Length(['max' => 60]),
-            ],
-        ]));
-    }
 }

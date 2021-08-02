@@ -2,15 +2,14 @@
 
 namespace App\Controller\Config;
 
+use App\Command\Config\ConfigDateFormatCommand;
+use App\Form\Post\Config\ConfigDateFormatType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
 use App\Service\ConfigService;
-use App\Service\DateFormatService;
 use App\Service\PageParamsService;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ConfigDateFormatController extends AbstractController
@@ -32,31 +31,23 @@ class ConfigDateFormatController extends AbstractController
         Request $request,
         AlertService $alert_service,
         ConfigService $config_service,
-        DateFormatService $date_format_service,
         PageParamsService $pp
     ):Response
     {
-        $date_format = $config_service->get_str('system.date_format', $pp->schema());
+        $command = new ConfigDateFormatCommand();
+        $config_service->load_command($command, $pp->schema());
 
-        $form_data = [
-            'date_format'   => $date_format,
-        ];
+        $form = $this->createForm(ConfigDateFormatType::class,
+                $command);
 
-        $builder = $this->createFormBuilder($form_data);
-        $builder->add('date_format', ChoiceType::class, [
-            'choices'   => $date_format_service->get_choices(),
-        ])
-            ->add('submit', SubmitType::class);
-
-        $form = $builder->getForm();
         $form->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $form_data = $form->getData();
+            $command = $form->getData();
 
-            $config_service->set_str('system.date_format', $form_data['date_format'], $pp->schema());
+            $config_service->store_command($command, $pp->schema());
 
             $alert_service->success('Datum- en tijdweergave aangepast.');
 

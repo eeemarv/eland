@@ -2,11 +2,11 @@
 
 namespace App\Controller\Config;
 
+use App\Form\Post\DelType;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
@@ -41,9 +41,7 @@ class ConfigLogoDelController extends AbstractController
             throw new ConflictHttpException('No logo is configured for this system.');
         }
 
-        $builder = $this->createFormBuilder();
-        $builder->add('submit', SubmitType::class);
-        $form = $builder->getForm();
+        $form = $this->createForm(DelType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()

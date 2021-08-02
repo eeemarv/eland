@@ -2,14 +2,14 @@
 
 namespace App\Controller\Config;
 
+use App\Command\Config\ConfigMaintenanceCommand;
+use App\Form\Post\Config\ConfigMaintenanceType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ConfigMaintenanceController extends AbstractController
@@ -34,26 +34,19 @@ class ConfigMaintenanceController extends AbstractController
         PageParamsService $pp
     ):Response
     {
-        $maintenance_en = $config_service->get_bool('system.maintenance_en', $pp->schema());
+        $command = new ConfigMaintenanceCommand();
+        $config_service->load_command($command, $pp->schema());
 
-        $form_data = [
-            'maintenance_en'  => $maintenance_en,
-        ];
-
-        $builder = $this->createFormBuilder($form_data);
-        $builder->add('maintenance_en', CheckboxType::class)
-            ->add('submit', SubmitType::class);
-
-        $form = $builder->getForm();
+        $form = $this->createForm(ConfigMaintenanceType::class, $command);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $form_data = $form->getData();
+            $command = $form->getData();
 
-            $config_service->set_bool('system.maintenance_en', $form_data['maintenance_en'], $pp->schema());
+            $config_service->store_command($command, $pp->schema());
 
             $alert_service->success('Onderhouds modus aangepast.');
             return $this->redirectToRoute('config_maintenance', $pp->ary());

@@ -2,15 +2,14 @@
 
 namespace App\Controller\Config;
 
-use App\Cnst\ConfigCnst;
+use App\Command\Config\ConfigLandingPageCommand;
+use App\Form\Post\Config\ConfigLandingPageType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ConfigLandingPageController extends AbstractController
@@ -35,34 +34,18 @@ class ConfigLandingPageController extends AbstractController
         PageParamsService $pp
     ):Response
     {
-        $choices = [];
+        $command = new ConfigLandingPageCommand();
+        $config_service->load_command($command, $pp->schema());
 
-        $landing_page = $config_service->get_str('system.default_landing_page', $pp->schema());
-
-        foreach(ConfigCnst::LANDING_PAGE_OPTIONS as $opt => $lang)
-        {
-            $choices[$opt . '.title'] = $opt;
-        }
-
-        $form_data = [
-            'landing_page'   => $landing_page,
-        ];
-
-        $builder = $this->createFormBuilder($form_data);
-        $builder->add('landing_page', ChoiceType::class, [
-            'choices'   => $choices,
-        ])
-            ->add('submit', SubmitType::class);
-
-        $form = $builder->getForm();
+        $form = $this->createForm(ConfigLandingPageType::class, $command);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $form_data = $form->getData();
+            $command = $form->getData();
 
-            $config_service->set_str('system.default_landing_page', $form_data['landing_page'], $pp->schema());
+            $config_service->store_command($command, $pp->schema());
 
             $alert_service->success('Landingspagina aangepast.');
             return $this->redirectToRoute('config_landing_page', $pp->ary());

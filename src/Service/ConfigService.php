@@ -296,8 +296,11 @@ class ConfigService
 			ConfigMap $config_map,
 			string $schema
 		):void {
-			$set = 'set_' . $config_map->type;
-			$this->$set($config_map->key, $command->$property_name, $schema);
+			$type = $config_map->type;
+			$set = 'set_' . $type;
+			$value = $command->$property_name;
+			$value = $type === 'str' && !isset($value) ? '' : $value;
+			$this->$set($config_map->key, $value, $schema);
 		};
 
 		$this->command_config_map_callback($command, $callable, $schema);

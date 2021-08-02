@@ -2,27 +2,20 @@
 
 namespace App\Command\Config;
 
+use App\Attributes\ConfigMap;
 use App\Command\CommandInterface;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Constraints\Type;
-use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class ConfigMailCommand implements CommandInterface
 {
+    #[Type('bool')]
+    #[ConfigMap(type: 'bool', key: 'mail.enabled')]
     public $enabled;
+
+    #[NotBlank()]
+    #[Length(max: 20)]
+    #[ConfigMap(type: 'str', key: 'mail.tag')]
     public $tag;
-
-    public static function loadValidatorMetadata(ClassMetadata $metadata)
-    {
-        $metadata->addPropertyConstraint('enabled', new Type('bool'));
-
-        $metadata->addPropertyConstraint('tag', new Sequentially([
-            'constraints'   => [
-                new NotBlank(),
-                new Length(['max' => 20]),
-            ],
-        ]));
-    }
 }
