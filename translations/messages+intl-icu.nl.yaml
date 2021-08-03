@@ -874,6 +874,46 @@ transactions_add:
 
 transactions_autominlimit:
   title: Automatische minimum limiet
+  exclude_from:
+    label: Exclusief accounts
+    help: Account codes gescheiden door comma's
+  percentage:
+    label: Percentage van ontvangen bedrag
+  exclude_to:
+    label: Exclusief accounts tegenpartijen
+    help: Account codes gescheiden door comma's
+  for_accounts:
+    title: Voor accounts
+    explain: >-
+      De automatische minimum limiet is enkel van
+      toepassing op actieve accounts die rol van
+      gewone gebruiker hebben (user) en die niet
+      de status uitstapper hebben. Hieronder
+      kunnen nog verder individuele accounts
+      uitgesloten worden.
+  trigger:
+    title: >-
+      Trigger voor daling van de minimum limiet.
+    explain: >-
+      Ontvangen transacties laten de minimum limiet dalen.
+  explain:
+    general: >-
+      Met dit formulier kan een Automatische Minimum
+      Limiet ingesteld worden. De individuele Minimum
+      Limiet van Accounts zal zo automatisch lager
+      worden door ontvangen transacties tot de {open_link}Minimum
+      Systeemslimiet{close_link} bereikt wordt. De individuele
+      Account Minimum Limiet wordt gewist wanneer
+      de {open_link}Minimum Systeemslimiet{close_link} bereikt of onderschreden
+      wordt.
+    no_min_system_limit: >-
+      Wanneer geen {open_link}Minimum Systeemslimiet{close_link} is ingesteld,
+      dan blijft de individuele Account Minimum Limiet
+      bij elke transactie naar het Account telkens dalen.
+    lower_than_min_system_limit: >-
+      Individuele Account Minimum Limieten die lager zijn
+      dan de {open_link}algemene Minimum Systeemslimiet{close_link} blijven
+      altijd ongewijzigd.
 
 transactions_currency:
   title: Munteenheid

@@ -2,14 +2,14 @@
 
 namespace App\Controller\Transactions;
 
+use App\Command\Transactions\TransactionsSystemLimitsCommand;
+use App\Form\Post\Transactions\TransactionsSystemLimitsType;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -40,36 +40,24 @@ class TransactionsSystemLimitsController extends AbstractController
             throw new NotFoundHttpException('Transactions module not enabled.');
         }
 
-        $min = $config_service->get_int('accounts.limits.global.min', $pp->schema());
-        $max = $config_service->get_int('accounts.limits.global.max', $pp->schema());
+        $command = new TransactionsSystemLimitsCommand();
+        $config_service->load_command($command, $pp->schema());
 
-        $form_data = [
-            'min'   => $min,
-            'max'   => $max,
-        ];
-
-        $builder = $this->createFormBuilder($form_data);
-        $builder->add('min', IntegerType::class)
-            ->add('max', IntegerType::class)
-            ->add('submit', SubmitType::class);
-        $form = $builder->getForm();
+        $form = $this->createForm(TransactionsSystemLimitsType::class, $command);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $form_data = $form->getData();
-
-            $config_service->set_int('accounts.limits.global.min', $form_data['min'], $pp->schema());
-            $config_service->set_int('accounts.limits.global.max', $form_data['max'], $pp->schema());
+            $command = $form->getData();
+            $config_service->store_command($command, $pp->schema());
 
             $alert_service->success('Systeemslimieten aangepast');
-
             return $this->redirectToRoute('transactions_system_limits', $pp->ary());
         }
 
         return $this->render('transactions/transactions_system_limits.html.twig', [
-            'form'          => $form->createView(),
+            'form'  => $form->createView(),
         ]);
     }
 }

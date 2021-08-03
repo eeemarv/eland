@@ -1,4 +1,5 @@
-{%- extends 'transactions/base/transactions_base.html.twig' -%}
+{%- extends 'transactions/base/transactions_form.html.twig' -%}
+{%- import 'macro/anchor.html.twig' as a -%}
 
 {%- block heading_title -%}
     {{- 'transactions_autominlimit.title'|trans -}}
@@ -7,6 +8,69 @@
 {%- block heading_fa -%}
     chevron-down
 {%- endblock heading_fa -%}
+
+{%- block form_header -%}
+    <div class="panel-heading">
+        <p>
+            {{- 'transactions_autominlimit.explain.general'|trans({
+                'open_link': a.open_context_path('transactions_system_limits'),
+                'close_link': a.close()
+            })|raw -}}
+        </p>
+        <p>
+            {{- 'transactions_autominlimit.explain.no_min_system_limit'|trans({
+                'open_link': a.open_context_path('transactions_system_limits'),
+                'close_link': a.close()
+            })|raw -}}
+        </p>
+        <p>
+            {{- 'transactions_autominlimit.explain.lower_than_min_system_limit'|trans({
+                'open_link': a.open_context_path('transactions_system_limits'),
+                'close_link': a.close()
+            })|raw -}}
+        </p>
+    </div>
+{%- endblock form_header -%}
+
+{%- block form_a -%}
+    <h2>
+        {{- 'transactions_autominlimit.for_accounts.title'|trans -}}
+    </h2>
+    <p>
+        {{- 'transactions_autominlimit.for_accounts.explain'|trans -}}
+    </p>
+
+    {{- form_row(form.exclude_from, {
+        'label': 'transactions_autominlimit.exclude_from.label',
+        'help': 'transactions_autominlimit.exclude_from.help',
+        'pre_addon': {
+            'fa': 'user'
+        }
+    }) -}}
+
+    <h2>
+        {{- 'transactions_autominlimit.trigger.title'|trans -}}
+    </h2>
+    <p>
+        {{- 'transactions_autominlimit.trigger.explain'|trans -}}
+    </p>
+
+    {{- form_row(form.percentage, {
+        'label': 'transactions_autominlimit.percentage.label',
+        'pre_addon': {
+            'fa': 'percent'
+        }
+    }) -}}
+
+    {{- form_row(form.exclude_to, {
+        'label': 'transactions_autominlimit.exclude_to.label',
+        'help': 'transactions_autominlimit.exclude_to.help',
+        'pre_addon': {
+            'fa': 'user'
+        }
+    }) -}}
+
+{%- endblock form_a -%}
 
 {%- block css -%}
     {{- parent() -}}
