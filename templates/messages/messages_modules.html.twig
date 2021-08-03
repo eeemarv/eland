@@ -6,26 +6,22 @@
 
 {%- block form_a -%}
     {{- form_row(form.service_stuff_enabled, {
-        'label': 'Diensten/spullen schakelaar',
-        'translation_domain': false,
+        'label': 'messages_modules.service_stuff_enabled',
         'required': false
     }) -}}
 
     {{- form_row(form.category_enabled, {
-        'label': 'Categorieën',
-        'translation_domain': false,
+        'label': 'messages_modules.category_enabled',
         'required': false
     }) -}}
 
     {{- form_row(form.expires_at_enabled, {
-        'label': 'Geldigheid en opruiming',
-        'translation_domain': false,
+        'label': 'messages_modules.expires_at_enabled',
         'required': false
     }) -}}
 
     {{- form_row(form.units_enabled, {
-        'label': 'Richtprijs',
-        'translation_domain': false,
+        'label': 'messages_modules.units_enabled',
         'required': false
     }) -}}
 {%- endblock form_a -%}

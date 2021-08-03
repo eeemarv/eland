@@ -16,42 +16,36 @@
 {%- block form_a -%}
 
     {{- form_row(form.days, {
-        'label': 'Interval tot volgende overzichts e-mail',
-        'translation_domain': false,
+        'label': 'users_periodic_mail.days',
         'attr': {
             'min': 1
         },
         'pre_addon': {
-            'text': 'dagen'
+            'text': 'label.days'|trans
         }
     }) -}}
 
     <p>
-        Noot: Leden kunnen steeds ontvangst
-        van de Periodieke Overzichts E-mail
-        aan- of afzetten in hun profielinstellingen.
+        {{- 'users_periodic_mail.users_help'|trans -}}
     </p>
 
     <h2>
-        E-mail opmaak (versleep blokken)
+        {{- 'users_periodic_mail.layout.title'|trans -}}
     </h2>
 
     <p>
-        Verslepen gaat met muis of touchpad, maar
-        misschien niet met touch-screen. "Recent"
-        betekent "sinds de laatste periodieke
-        overzichtsmail".
+        {{- 'users_periodic_mail.layout.help'|trans -}}
     </p>
 
     <div class="row">
         {%- include 'users/include/periodic_mail_list.html.twig' with {
-            'heading': 'Inhoud',
+            'title': 'users_periodic_mail.layout.active.title',
             'list_attr': ' data-active-blocks',
             'block_list': block_layout,
             'item_class': 'bg-success'
         } -%}
         {%- include 'users/include/periodic_mail_list.html.twig' with {
-            'heading': 'Ongebruikte blokken',
+            'title': 'users_periodic_mail.layout.inactive.title',
             'list_attr': ' data-inactive-blocks',
             'block_list': block_inactive_layout,
             'item_class': 'bg-danger'

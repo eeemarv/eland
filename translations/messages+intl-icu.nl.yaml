@@ -399,9 +399,16 @@ config_maintenance:
 
 config_modules:
   title: Modules
+  public_modules: Publieke modules
+  messages_enabled: Vraag en aanbod
+  transactions_enabled: Transacties
+  news_enabled: Nieuws
+  docs_enabled: Documenten
   forum_enabled: Forum
-  contact_form_enabled: Contactformulier
-  register_form_enabled: Inschrijvingsformulier
+  support_form_enabled: Support formulier
+  home_menu_enabled: Home pagina menu (De home pagina zelf blijft altijd bereikbaar.)
+  contact_form_enabled: Contact formulier
+  register_form_enabled: Inschrijving formulier
 
 config_mail:
   title: E-mail
@@ -1063,6 +1070,23 @@ users_password_edit_self:
 users_periodic_mail:
   title: >-
     Periodieke overzichts e-mail
+  days: >-
+    Interval tot volgende overzichts e-mail
+  users_help: >-
+    Noot: Leden kunnen steeds ontvangst
+    van de Periodieke Overzichts E-mail
+    aan- of afzetten in hun profielinstellingen.
+  layout:
+    title: E-mail opmaak (versleep blokken)
+    help: >-
+      Verslepen gaat met muis of touchpad, maar
+      misschien niet met touch-screen. "Recent"
+      betekent "sinds de laatste periodieke
+      overzichtsmail".
+    active:
+      title: Inhoud
+    inactive:
+      title: Ongebruikte blokken
 
 users_show:
   title: >-
