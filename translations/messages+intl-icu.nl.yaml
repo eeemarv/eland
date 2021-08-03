@@ -913,16 +913,16 @@ transactions_mass:
 transactions_modules:
   title: >-
     Transacties submodules en velden
-  service_stuff:
+  service_stuff_enabled:
     label: Diensten/spullen schakelaar
-  limits:
+  limits_enabled:
     label: Limieten
-  autominlimit:
+  autominlimit_enabled:
     label: Automatische minimum account limiet
     help: >-
       De automatische minimum account limiet is
       enkel mogelijk wanneer "limieten" ingeschakeld zijn.
-  mass:
+  mass_enabled:
     label: Massa-transactie
 
 transactions_system_limits:

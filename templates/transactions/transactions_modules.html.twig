@@ -10,24 +10,24 @@
 {%- endblock heading_title -%}
 
 {%- block form_a -%}
-    {{- form_row(form.service_stuff, {
-        'label': 'transactions_modules.service_stuff.label',
+    {{- form_row(form.service_stuff_enabled, {
+        'label': 'transactions_modules.service_stuff_enabled.label',
         'required': false
     }) -}}
 
-    {{- form_row(form.limits, {
-        'label': 'transactions_modules.limits.label',
+    {{- form_row(form.limits_enabled, {
+        'label': 'transactions_modules.limits_enabled.label',
         'required': false
     }) -}}
 
-    {{- form_row(form.autominlimit, {
-        'label': 'transactions_modules.autominlimit.label',
-        'help': 'transactions_modules.autominlimit.help',
+    {{- form_row(form.autominlimit_enabled, {
+        'label': 'transactions_modules.autominlimit_enabled.label',
+        'help': 'transactions_modules.autominlimit_enabled.help',
         'required': false
     }) -}}
 
-    {{- form_row(form.mass, {
-        'label': 'transactions_modules.mass.label',
+    {{- form_row(form.mass_enabled, {
+        'label': 'transactions_modules.mass_enabled.label',
         'required': false
     }) -}}
 {%- endblock form_a -%}

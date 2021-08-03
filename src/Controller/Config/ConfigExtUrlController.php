@@ -42,15 +42,6 @@ class ConfigExtUrlController extends AbstractController
 
         $form->handleRequest($request);
 
-        /*
-        $builder = $this->createFormBuilder($command);
-        $builder->add('url', UrlType::class)
-            ->add('submit', SubmitType::class);
-
-        $form = $builder->getForm();
-        $form->handleRequest($request);
-        */
-
         if ($form->isSubmitted()
             && $form->isValid())
         {
