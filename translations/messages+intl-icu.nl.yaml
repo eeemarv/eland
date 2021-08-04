@@ -684,28 +684,33 @@ messages_add:
 messages_cleanup:
   title: >-
     Geldigheid en opruiming instellingen vraag en aanbod
-  help:
-    expires_at_days_default: >-
+  expires_at_days_default:
+    label: >-
+      Standaard geldigheidsduur
+    help: >-
       Bij aanmaak van nieuw vraag of aanbod wordt deze
       waarde standaard ingevuld in het formulier.
-  expires_at_days_default: >-
-    Standaard geldigheidsduur
-  expires_at_required: >-
-    De geldigheidsduur moet verplicht ingevuld worden bij
-    vraag of aanbod M.a.w. aangemaakt vraag en aanbod vervalt
-    altijd en blijft niet permanent geldig.
-  expires_at_switch_enabled: >-
-    Gebruik een eenvoudige schakelaar permanent/tijdelijk
-    bij aanmaak vraag of aanbod. Hiertoe moet hierboven
-    een standaard geldigheidsduur ingevuld zijn en verplichte
-    geldigheidsduur afgevinkt.
-  cleanup_enabled: >-
-    Ruim vervallen vraag en aanbod op na een periode (zie hieronder)
-  cleanup_after_days: >-
-    Periode alvorens bercihten verwijderd worden.
-  expire_notify: >-
-    Zend een notificatie naar de eigenaar van een vraag of aanbod
-    bericht op het moment dat het vervalt.
+  expires_at_required:
+    label: >-
+      De geldigheidsduur moet verplicht ingevuld worden bij
+      vraag of aanbod M.a.w. aangemaakt vraag en aanbod vervalt
+      altijd en blijft niet permanent geldig.
+  expires_at_switch_enabled:
+    label: >-
+      Gebruik een eenvoudige schakelaar permanent/tijdelijk
+      bij aanmaak vraag of aanbod. Hiertoe moet hierboven
+      een standaard geldigheidsduur ingevuld zijn en verplichte
+      geldigheidsduur afgevinkt.
+  cleanup_enabled:
+    label: >-
+      Ruim vervallen vraag en aanbod op na een periode (zie hieronder)
+  cleanup_after_days:
+    label: >-
+      Periode alvorens berichten verwijderd worden.
+  expire_notify:
+    label: >-
+      Zend een notificatie naar de eigenaar van een vraag of aanbod
+      bericht op het moment dat het vervalt.
 
 messages_del:
   title: >-
@@ -750,10 +755,14 @@ messages_modules:
     Submodules en velden vraag en aanbod
   explain: >-
     Noot: Uitgeschakelde submodules blijven hun data behouden.
-  service_stuff_enabled: Diensten/spullen schakelaar
-  category_enabled: Categorieën
-  expires_at_enabled: Geldigheid en opruiming
-  units_enabled: Richtprijs
+  service_stuff_enabled:
+    label: Diensten/spullen schakelaar
+  category_enabled:
+    label: Categorieën
+  expires_at_enabled:
+    label: Geldigheid en opruiming
+  units_enabled:
+    label: Richtprijs
 
 messages_self:
   title: Mijn vraag en aanbod
@@ -792,10 +801,13 @@ mollie_checkout:
     Deze betaling is geannuleerd.
   paid: >-
     Betaling geslaagd.
+
 mollie_config:
   title: Mollie configuratie
+
 mollie_payments:
   title: Mollie betaalverzoeken
+
 mollie_payments_add:
   title: Mollie betaalverzoeken aanmaken
 
