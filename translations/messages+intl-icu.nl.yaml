@@ -400,15 +400,24 @@ config_maintenance:
 config_modules:
   title: Modules
   public_modules: Publieke modules
-  messages_enabled: Vraag en aanbod
-  transactions_enabled: Transacties
-  news_enabled: Nieuws
-  docs_enabled: Documenten
-  forum_enabled: Forum
-  support_form_enabled: Support formulier
-  home_menu_enabled: Home pagina menu (De home pagina zelf blijft altijd bereikbaar.)
-  contact_form_enabled: Contact formulier
-  register_form_enabled: Inschrijving formulier
+  messages_enabled:
+    label: Vraag en aanbod
+  transactions_enabled:
+    label: Transacties
+  news_enabled:
+    label: Nieuws
+  docs_enabled:
+    label: Documenten
+  forum_enabled:
+    label: Forum
+  support_form_enabled:
+    label: Support formulier
+  home_menu_enabled:
+    label: Home pagina menu (De home pagina zelf blijft altijd bereikbaar.)
+  contact_form_enabled:
+    label: Contact formulier
+  register_form_enabled:
+    label: Inschrijving formulier
 
 config_mail:
   title: E-mail
@@ -1096,8 +1105,9 @@ users_del:
 users_full_name:
   title: >-
     Volledige naam configuratie
-  self_edit: >-
-    Gebruikers kunnen zelf hun volledige naam aanpassen
+  self_edit:
+    label: >-
+      Gebruikers kunnen zelf hun volledige naam aanpassen
 
 users_image_del:
   title: >-
@@ -1122,8 +1132,9 @@ users_password_edit_self:
 users_periodic_mail:
   title: >-
     Periodieke overzichts e-mail
-  days: >-
-    Interval tot volgende overzichts e-mail
+  days:
+    label: >-
+      Interval tot volgende overzichts e-mail
   users_help: >-
     Noot: Leden kunnen steeds ontvangst
     van de Periodieke Overzichts E-mail
@@ -1155,5 +1166,6 @@ users_show:
 users_username:
   title: >-
     Gebruikersnaam configuratie
-  self_edit: >-
-    Gebruikers kunnen zelf hun gebruikersnaam aanpassen
+  self_edit:
+    label: >-
+      Gebruikers kunnen zelf hun gebruikersnaam aanpassen
