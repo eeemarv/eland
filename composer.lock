@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4653af99b901e516759b79e82a33ddf7",
+    "content-hash": "b2dd7379558b724c258253534a2c17ab",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.187.2",
+            "version": "3.187.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "0ec4ae120cfae758efa3c283dc56eb20602f094c"
+                "reference": "b661446e7fc2a3b5fcede4e65a58c2acb9743a1c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/0ec4ae120cfae758efa3c283dc56eb20602f094c",
-                "reference": "0ec4ae120cfae758efa3c283dc56eb20602f094c",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/b661446e7fc2a3b5fcede4e65a58c2acb9743a1c",
+                "reference": "b661446e7fc2a3b5fcede4e65a58c2acb9743a1c",
                 "shasum": ""
             },
             "require": {
@@ -92,9 +92,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.187.2"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.187.3"
             },
-            "time": "2021-08-04T18:12:21+00:00"
+            "time": "2021-08-05T18:14:30+00:00"
         },
         {
             "name": "bramus/ansi-php",
@@ -7149,6 +7149,72 @@
                 }
             ],
             "time": "2021-07-21T12:38:00+00:00"
+        },
+        {
+            "name": "symfony/requirements-checker",
+            "version": "v2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/requirements-checker.git",
+                "reference": "e3d5565eb69a4a2195905c8669f32e988c8e6be0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/requirements-checker/zipball/e3d5565eb69a4a2195905c8669f32e988c8e6be0",
+                "reference": "e3d5565eb69a4a2195905c8669f32e988c8e6be0",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.9"
+            },
+            "bin": [
+                "bin/requirements-checker"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Requirements\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                }
+            ],
+            "description": "Check Symfony requirements and give recommendations",
+            "keywords": [
+                "configuration",
+                "distribution"
+            ],
+            "support": {
+                "issues": "https://github.com/symfony/requirements-checker/issues",
+                "source": "https://github.com/symfony/requirements-checker/tree/v2.0.0"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2020-09-16T06:15:56+00:00"
         },
         {
             "name": "symfony/routing",
