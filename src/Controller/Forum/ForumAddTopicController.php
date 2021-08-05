@@ -2,7 +2,7 @@
 
 namespace App\Controller\Forum;
 
-use App\Command\Forum\ForumCommand;
+use App\Command\Forum\ForumTopicCommand;
 use App\Form\Post\Forum\ForumTopicType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -44,25 +44,18 @@ class ForumAddTopicController extends AbstractController
             throw new NotFoundHttpException('Forum module not enabled.');
         }
 
-        $forum_command = new ForumCommand();
+        $command = new ForumTopicCommand();
 
-        $form = $this->createForm(ForumTopicType::class,
-                $forum_command, ['validation_groups' => ['topic']])
-            ->handleRequest($request);
+        $form = $this->createForm(ForumTopicType::class, $command);
+        $form->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $forum_command = $form->getData();
-            $subject = $forum_command->subject;
-            $content = $forum_command->content;
-            $access = $forum_command->access;
-
-            $id = $forum_repository->insert_topic($subject, $content,
-                $access, $su->id(), $pp->schema());
+            $command = $form->getData();
+            $id = $forum_repository->insert_topic($command, $su->id(), $pp->schema());
 
             $alert_service->success('Forum onderwerp toegevoegd.');
-
             return $this->redirectToRoute('forum_topic', array_merge($pp->ary(),
                 ['id' => $id]));
         }

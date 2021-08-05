@@ -55,7 +55,7 @@ class ForumDelPostController extends AbstractController
 
         if (!$item_access_service->is_visible($forum_topic['access']))
         {
-            throw new AccessDeniedHttpException('Access denied for forum topic ' . $id . '.');
+            throw new AccessDeniedHttpException('Access denied for forum topic ' . $forum_topic['id'] . '.');
         }
 
         if (!($su->is_owner($forum_post['user_id']) || $pp->is_admin()))
@@ -70,26 +70,23 @@ class ForumDelPostController extends AbstractController
             throw new AccessDeniedHttpException('Wrong route for this action.');
         }
 
-        $form = $this->createForm(DelType::class)
-            ->handleRequest($request);
+        $form = $this->createForm(DelType::class);
+        $form->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            if ($forum_repository->del_post($id, $pp->schema()))
-            {
-                $topic_subject = $forum_topic['subject'];
-                $account_str = $account_render->str($forum_post['user_id'], $pp->schema());
+            $forum_repository->del_post($id, $pp->schema());
 
-                $alert_msg = $su->is_owner($forum_post['user_id']) ? 'Je post' : 'De post van ' . $account_str;
-                $alert_msg .= ' in topic "' . $topic_subject . '" werd gewist.';
+            $topic_subject = $forum_topic['subject'];
+            $account_str = $account_render->str($forum_post['user_id'], $pp->schema());
 
-                $alert_service->success($alert_msg);
+            $alert_msg = $su->is_owner($forum_post['user_id']) ? 'Je post' : 'De post van ' . $account_str;
+            $alert_msg .= ' in topic "' . $topic_subject . '" werd gewist.';
 
-                return $this->redirectToRoute('forum_topic', array_merge($pp->ary(), ['id' => $forum_topic['id']]));
-            }
+            $alert_service->success($alert_msg);
 
-            $alert_service->error('Fout bij verwijderen van post');
+            return $this->redirectToRoute('forum_topic', array_merge($pp->ary(), ['id' => $forum_topic['id']]));
         }
 
         return $this->render('forum/forum_del_post.html.twig', [

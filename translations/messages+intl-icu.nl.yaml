@@ -267,7 +267,7 @@ pagination:
 post:
   info: >-
     {edit_count, select,
-      =0 {{user} @ {created_at}}
+      0 {{user} @ {created_at}}
       other {{user} @ {created_at}, Aangepast: {edit_count}}
     }
 

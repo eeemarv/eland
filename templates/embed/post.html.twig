@@ -8,8 +8,8 @@
         <p>
             {%- block info -%}
                 {{- 'post.info'|trans({
-                    'user': account(post.user_id),
-                    'created_at': post.created_at|date_format('min'),
+                    'user': account(post.user_id, schema),
+                    'created_at': post.created_at|date_format('min', schema),
                     'edit_count': post.edit_count
                 }) -}}
             {%- endblock info -%}

@@ -2,8 +2,8 @@
 
 namespace App\Form\Post\Forum;
 
-use App\Command\Forum\ForumCommand;
-use App\Form\Input\Summernote\SummernoteType;
+use App\Command\Forum\ForumPostCommand;
+use App\Form\Input\SummernoteType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -25,7 +25,7 @@ class ForumPostType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class'    => ForumCommand::class,
+            'data_class'    => ForumPostCommand::class,
         ]);
     }
 }

@@ -1,4 +1,4 @@
-{%- extends 'forum/base/forum_base.html.twig' -%}
+{%- extends 'forum/base/forum_form.html.twig' -%}
 
 {%- block assets_add -%}
     {{- parent() -}}
@@ -12,3 +12,6 @@
         'user': account(forum_post.user_id, schema)
     }) -}}
 {%- endblock heading_title -%}
+
+{%- set cancel_route = 'forum_topic' -%}
+{%- set cancel_route_params = {'id': forum_topic.id} -%}

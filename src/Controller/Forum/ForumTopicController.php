@@ -5,6 +5,7 @@ namespace App\Controller\Forum;
 use App\HtmlProcess\HtmlPurifier;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
+use App\Repository\ForumRepository;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;

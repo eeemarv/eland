@@ -2,7 +2,7 @@
 
 namespace App\Controller\Forum;
 
-use App\Command\Forum\ForumCommand;
+use App\Command\Forum\ForumTopicCommand;
 use App\Form\Post\Forum\ForumTopicType;
 use App\Render\AccountRender;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -55,44 +55,36 @@ class ForumEditTopicController extends AbstractController
 
         if (!$item_access_service->is_visible($forum_topic['access']))
         {
-            throw new AccessDeniedHttpException('Access denied for forum topic (1).');
+            throw new AccessDeniedHttpException('Access denied (1) for forum topic with id ' . $id);
         }
 
         if (!($su->is_owner($forum_topic['user_id']) || $pp->is_admin()))
         {
-            throw new AccessDeniedHttpException('Access Denied for forum topic (2).');
+            throw new AccessDeniedHttpException('Access Denied (2) for forum topic with id ' . $id);
         }
 
         $forum_post = $forum_repository->get_first_post($id, $pp->schema());
 
         if (!($su->is_owner($forum_post['user_id']) || $pp->is_admin()))
         {
-            throw new AccessDeniedHttpException('Access denied forum forum post.');
+            throw new AccessDeniedHttpException('Access denied (3) forum forum post');
         }
 
-        $forum_command = new ForumCommand();
+        $command = new ForumTopicCommand;
 
-        $forum_command->subject = $forum_topic['subject'];
-        $forum_command->content = $forum_post['content'];
-        $forum_command->access = $forum_topic['access'];
+        $command->subject = $forum_topic['subject'];
+        $command->content = $forum_post['content'];
+        $command->access = $forum_topic['access'];
 
-        $form = $this->createForm(ForumTopicType::class,
-                $forum_command, ['validation_groups' => ['topic']])
-            ->handleRequest($request);
+        $form = $this->createForm(ForumTopicType::class, $command);
+        $form->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $forum_command = $form->getData();
-            $subject = $forum_command->subject;
-            $content = $forum_command->content;
-            $access = $forum_command->access;
+            $command = $form->getData();
 
-            $forum_repository->update_topic($subject,
-                $access, $id, $pp->schema());
-
-            $forum_repository->update_post($content,
-                $forum_post['id'], $pp->schema());
+            $forum_repository->update_topic($command, $id, $pp->schema());
 
             if ($su->is_owner($forum_topic['user_id']))
             {

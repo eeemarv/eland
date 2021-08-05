@@ -8,17 +8,17 @@
     }) -}}
 {%- endblock heading_title -%}
 
+{%- block pre_form -%}
+    {%- embed 'embed/post.html.twig' with {
+        'post': forum_post
+    } -%}
+        {%- block actions -%}{%- endblock -%}
+    {%- endembed -%}
+{%- endblock pre_form -%}
+
 {%- set cancel_route = 'forum_topic' -%}
 {%- set cancel_route_params = {'id': forum_topic.id} -%}
 
 {%- block form_submit_btn -%}
     {%- include 'form/submit_del_btn.html.twig' -%}
 {%- endblock form_submit_btn -%}
-
-{%- block css -%}
-    {{- parent() -}}
-{%- endblock css -%}
-
-{%- block js -%}
-    {{- parent() -}}
-{%- endblock js -%}
