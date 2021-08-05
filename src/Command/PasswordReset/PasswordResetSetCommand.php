@@ -2,13 +2,14 @@
 
 namespace App\Command\PasswordReset;
 
+use App\Command\CommandInterface;
 use App\Validator\PasswordStrength;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
-class PasswordResetSetCommand
+class PasswordResetSetCommand implements CommandInterface
 {
     public $password;
 

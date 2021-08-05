@@ -13,10 +13,12 @@
     {%- if pp_role('admin') or su_is_owner(message.user_id) -%}
         {%- include 'include/btn_top/edit.html.twig' with {
             'btn_route': 'messages_edit',
-            'btn_title': 'messages_edit.title.' ~ message.offer_want ~ (su_is_owner(message.user_id) ? '.personal': '.admin'),
+            'btn_title': 'messages_edit.title',
             'btn_title_trans_params': {
-                '%user%': account(message.user_id, schema),
-                '%subject%': message.subject
+                'offer_want': message.offer_want,
+                'self': su_is_owner(message.user_id) ? 'self': 'some_user',
+                'user': account(message.user_id, schema),
+                'subject': message.subject
             }
         } -%}
     {%- endif -%}
@@ -26,9 +28,11 @@
     {%- if pp_role('admin') or su_is_owner(message.user_id) -%}
         {%- include 'include/btn_top/del.html.twig' with {
             'btn_route': 'messages_del',
-            'btn_title': 'messages_del.title.' ~ message.offer_want ~ (su_is_owner(message.user_id) ? '.personal': '.admin'),
+            'btn_title': 'messages_del.title',
             'btn_title_trans_params': {
-                '%user%': account(message.user_id, schema)
+                'offer_want': message.offer_want,
+                'self': su_is_owner(message.user_id) ? 'self' : 'some_user',
+                'user': account(message.user_id, schema)
             }
         } -%}
     {%- endif -%}
@@ -44,7 +48,7 @@
             'btn_route_params': su_ary()|merge({'mid': id, 'tus': schema}),
             'btn_title': 'btn.transaction_to',
             'btn_title_trans_params': {
-                '%user%': account(message.user_id, schema)
+                'user': account(message.user_id, schema)
             }
         } -%}
     {%- endif -%}
@@ -60,11 +64,9 @@
 {%- endblock btn_item_nav -%}
 
 {%- block heading_title -%}
-    {%- set heading_title_trans_key = 'messages_show.title.'
-        ~ message.offer_want -%}
-
-    {{- heading_title_trans_key|trans({
-        '%subject%': message.subject
+    {{- 'messages_show.title'|trans({
+        'offer_want': message.offer_want,
+        'subject': message.subject
     }) -}}
 {%- endblock heading_title -%}
 

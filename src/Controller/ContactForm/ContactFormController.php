@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
 use App\Service\FormTokenService;
-use App\Render\LinkRender;
 use App\Service\CaptchaService;
 use App\Service\ConfigService;
 use App\Service\DataTokenService;
@@ -40,7 +39,6 @@ class ContactFormController extends AbstractController
         ConfigService $config_service,
         CaptchaService $captcha_service,
         DataTokenService $data_token_service,
-        LinkRender $link_render,
         PageParamsService $pp,
         MailQueue $mail_queue
     ):Response
@@ -119,7 +117,7 @@ class ContactFormController extends AbstractController
                     de link aan die we je zonden om je
                     bericht te bevestigen.');
 
-                $link_render->redirect('contact_form', $pp->ary(), []);
+                return $this->redirectToRoute('contact_form', $pp->ary());
             }
             else
             {

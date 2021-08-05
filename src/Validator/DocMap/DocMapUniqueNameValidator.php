@@ -11,16 +11,11 @@ use App\Service\PageParamsService;
 
 class DocMapUniqueNameValidator extends ConstraintValidator
 {
-    protected DocRepository $doc_repository;
-    protected PageParamsService $pp;
-
     public function __construct(
-        DocRepository $doc_repository,
-        PageParamsService $pp
+        protected DocRepository $doc_repository,
+        protected PageParamsService $pp
     )
     {
-        $this->doc_repository = $doc_repository;
-        $this->pp = $pp;
     }
 
     public function validate($docs_map_command, Constraint $constraint)

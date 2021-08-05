@@ -3,7 +3,7 @@
         <a href="{{- path(rt|var_route, pp_ary()|merge({'role_short': pp_su_role_short})) -}}">
             <i class="fa fa-{{- dt.fa -}}"></i>
             &nbsp;
-            {{- (rt ~ '.title')|trans -}}
+            {{- (dt.title)|trans(dt.title_trans_params|default({})) -}}
         </a>
     </li>
 {%- endif -%}

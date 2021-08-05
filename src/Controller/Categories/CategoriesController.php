@@ -6,7 +6,6 @@ use App\Command\Categories\CategoriesListCommand;
 use App\Form\Post\Categories\CategoriesListType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use App\Render\LinkRender;
 use App\Repository\CategoryRepository;
 use App\Service\AlertService;
 use App\Service\ConfigService;
@@ -36,7 +35,6 @@ class CategoriesController extends AbstractController
         CategoryRepository $category_repository,
         ConfigService $config_service,
         AlertService $alert_service,
-        LinkRender $link_render,
         PageParamsService $pp
     ):Response
     {
@@ -81,7 +79,7 @@ class CategoriesController extends AbstractController
                 $alert_service->warning('Geen aangepaste plaatsing van categorieën');
             }
 
-            $link_render->redirect('categories', $pp->ary(), []);
+            return $this->redirectToRoute('categories', $pp->ary());
         }
 
         return $this->render('categories/categories_list.html.twig', [

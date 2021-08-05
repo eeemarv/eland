@@ -407,7 +407,7 @@ class TransactionsAddController extends AbstractController
                     $alert_service->error('Gefaalde transactie');
                 }
 
-                $link_render->redirect('transactions', $pp->ary(), []);
+                return $this->redirectToRoute('transactions', $pp->ary());
             }
 
             if (!count($errors) && $group['apimethod'] === 'mail')
@@ -430,7 +430,7 @@ class TransactionsAddController extends AbstractController
                     $alert_service->error('Gefaalde interSysteem transactie');
                 }
 
-                $link_render->redirect('transactions', $pp->ary(), []);
+                return $this->redirectToRoute('transactions', $pp->ary());
             }
 
             if (!count($errors) && $group['apimethod'] !== 'elassoap')
@@ -438,22 +438,25 @@ class TransactionsAddController extends AbstractController
                 $alert_service->error('InterSysteem ' .
                     $group['groupname'] .
                     ' heeft geen geldige Api Methode.' . $contact_admin);
-                $link_render->redirect('transactions', $pp->ary(), []);
+
+                return $this->redirectToRoute('transactions', $pp->ary());
             }
 
             if (!count($errors) && !$group_domain)
             {
                 $alert_service->error('Geen URL ingesteld voor interSysteem ' .
                     $group['groupname'] . '. ' . $contact_admin);
-                $link_render->redirect('transactions', $pp->ary(), []);
+
+                return $this->redirectToRoute('transactions', $pp->ary());
             }
 
             if (!count($errors) && !$systems_service->get_schema_from_legacy_eland_origin($group['url']))
             {
                 // Previously eLAS intersystem
 
-                $alert_service->error('Geen verbinding met interSysteem ' . $group['groupname']).
-                $link_render->redirect('transactions', $pp->ary(), []);
+                $alert_service->error('Geen verbinding met interSysteem ' . $group['groupname']);
+
+                return $this->redirectToRoute('transactions', $pp->ary());
             }
 
             if (!count($errors))
@@ -724,7 +727,8 @@ class TransactionsAddController extends AbstractController
                     $auto_deactivate_service->process($from_remote_id, $remote_schema);
 
                     $alert_service->success('InterSysteem transactie uitgevoerd.');
-                    $link_render->redirect('transactions', $pp->ary(), []);
+
+                    return $this->redirectToRoute('transactions', $pp->ary());
                 }
             }
 

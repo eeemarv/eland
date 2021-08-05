@@ -52,7 +52,8 @@ class IntersystemsShowController extends AbstractController
         if (!$group)
         {
             $alert_service->error('Systeem niet gevonden.');
-            $link_render->redirect('intersystems', $pp->ary(), []);
+
+            return $this->redirectToRoute('intersystems', $pp->ary());
         }
 
         if ($group['localletscode'] === '')

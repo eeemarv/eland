@@ -13,16 +13,11 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class DocsEditType extends AbstractType
 {
-    protected AccessFieldSubscriber $access_field_subscriber;
-    protected TypeaheadService $typeahead_service;
-
     public function __construct(
-        AccessFieldSubscriber $access_field_subscriber,
-        TypeaheadService $typeahead_service
+        protected AccessFieldSubscriber $access_field_subscriber,
+        protected TypeaheadService $typeahead_service
     )
     {
-        $this->access_field_subscriber = $access_field_subscriber;
-        $this->typeahead_service = $typeahead_service;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)

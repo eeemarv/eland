@@ -1,47 +1,39 @@
 {%- extends 'forum/base/forum_base.html.twig' -%}
 
-{%- block content -%}
+{%- block content -%}{%- endblock -%}
 
-{%- block before_form -%}{%- endblock -%}
+{%- block form_a -%}
+    {%- if form.subject is defined -%}
+        {{- form_row(form.subject, {
+            'label': false,
+            'attr': {
+                'placeholder': 'label.subject'
+            }
+        }) -}}
+    {%- endif -%}
+{%- endblock form_a -%}
 
-{%- block form -%}
-    {%- embed 'embed/form.html.twig' -%}
-        {%- block form_a -%}
-            {%- if form.subject is defined -%}
-                {{- form_row(form.subject, {
-                    'label': false,
-                    'attr': {
-                        'placeholder': 'label.subject'
-                    }
-                }) -}}
-            {%- endif -%}
-        {%- endblock form_a -%}
+{%- block form_b -%}
+    {%- if form.content is defined -%}
+        {{- form_row(form.content, {
+            'label': false,
+            'attr': {
+                'rows': 5,
+                'minlength': 10,
+                'maxlength': 5000
+            }
+        }) -}}
+    {%- endif -%}
+{%- endblock form_b -%}
 
-        {%- block form_b -%}
-            {{- form_row(form.content, {
-                'label': false,
-                'attr': {
-                    'rows': 5,
-                    'minlength': 10,
-                    'maxlength': 5000
-                }
-            }) -}}
-        {%- endblock form_b -%}
-
-        {%- block form_access -%}
-            {%- if form.access is defined -%}
-                {{- form_row(form.access, {
-                    'label': 'access.visible_for',
-                    'choice_attr': {'access.admin': {'class': 'btn btn-primary'}}
-                }) -}}
-            {%- endif -%}
-        {%- endblock form_access -%}
-    {%- endembed -%}
-{%- endblock form -%}
-
-{%- block after_form -%}{%- endblock -%}
-
-{%- endblock content -%}
+{%- block form_access -%}
+    {%- if form.access is defined -%}
+        {{- form_row(form.access, {
+            'label': 'access.visible_for',
+            'choice_attr': {'access.admin': {'class': 'btn btn-primary'}}
+        }) -}}
+    {%- endif -%}
+{%- endblock form_access -%}
 
 {%- block css -%}
     {{- parent() -}}

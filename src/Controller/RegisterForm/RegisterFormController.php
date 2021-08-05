@@ -147,7 +147,7 @@ class RegisterFormController extends AbstractController
                     bevestigingslink in de E-mail die we naar je gestuurd
                     hebben om je inschrijving te voltooien.');
 
-                $link_render->redirect('login', $pp->ary(), []);
+                return $this->redirectToRoute('login', $pp->ary());
             }
 
             $alert_service->error($errors);

@@ -162,7 +162,7 @@ class ContactsController extends AbstractController
                     $alert_service->success('Het contact is aangepast.');
                 }
 
-                $link_render->redirect('contacts', $pp->ary(), []);
+                return $this->redirectToRoute('contacts', $pp->ary());
             }
 
             $alert_service->error($errors);

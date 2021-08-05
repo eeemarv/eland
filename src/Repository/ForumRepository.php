@@ -2,6 +2,8 @@
 
 namespace App\Repository;
 
+use App\Command\Forum\ForumPostCommand;
+use App\Command\Forum\ForumTopicCommand;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -34,7 +36,7 @@ class ForumRepository
                 Db::PARAM_STR_ARRAY,
             ]);
 
-        return $stmt_next->fetchColumn() ?: 0;
+        return $stmt_next->fetchOne() ?: 0;
 	}
 
 	public function get_prev_topic_id(
@@ -58,14 +60,14 @@ class ForumRepository
                 Db::PARAM_STR_ARRAY,
             ]);
 
-		return $stmt_prev->fetchColumn() ?: 0;
+		return $stmt_prev->fetchOne() ?: 0;
 	}
 
 	public function get_topic(int $topic_id, string $schema):array
 	{
-        $forum_topic = $this->db->fetchAssoc('select *
+        $forum_topic = $this->db->fetchAssociative('select *
             from ' . $schema . '.forum_topics
-            where id = ?', [$topic_id]);
+            where id = ?', [$topic_id], [\PDO::PARAM_INT]);
 
         if (!isset($forum_topic) || !$forum_topic)
         {
@@ -87,22 +89,22 @@ class ForumRepository
             [$visible_ary],
             [Db::PARAM_STR_ARRAY]);
 
-        return $stmt->fetchAll();
+        return $stmt->fetchAllAssociative();
 	}
 
 	public function get_topic_posts(int $topic_id, string $schema):array
 	{
-        return $this->db->fetchAll('select *
+        return $this->db->fetchAllAssociative('select *
             from ' . $schema . '.forum_posts
             where topic_id = ?
-            order by created_at asc', [$topic_id]);
+            order by created_at asc', [$topic_id], [\PDO::PARAM_INT]);
 	}
 
 	public function get_post(int $post_id, string $schema):array
 	{
-        $post = $this->db->fetchAssoc('select *
+        $post = $this->db->fetchAssociative('select *
             from ' . $schema . '.forum_posts
-            where id = ?', [$post_id]);
+            where id = ?', [$post_id], [\PDO::PARAM_INT]);
 
         if (!isset($post) || !$post)
         {
@@ -114,27 +116,27 @@ class ForumRepository
 
 	public function get_first_post_id(int $topic_id, string $schema):int
 	{
-        return $this->db->fetchColumn('select id
+        return $this->db->fetchOne('select id
             from ' . $schema . '.forum_posts
             where topic_id = ?
             order by created_at asc
-            limit 1', [$topic_id]);
+            limit 1', [$topic_id], [\PDO::PARAM_INT]);
 	}
 
 	public function get_first_post(int $topic_id, string $schema):array
 	{
-        return $this->db->fetchAssoc('select *
+        return $this->db->fetchAssociative('select *
             from ' . $schema . '.forum_posts
             where topic_id = ?
             order by created_at asc
-            limit 1', [$topic_id]);
+            limit 1', [$topic_id], [\PDO::PARAM_INT]);
 	}
 
 	public function get_post_count(int $topic_id, string $schema):int
 	{
-        return $this->db->fetchColumn('select count(*)
+        return $this->db->fetchOne('select count(*)
             from ' . $schema . '.forum_posts
-            where topic_id = ?', [$topic_id]);
+            where topic_id = ?', [$topic_id], [\PDO::PARAM_INT]);
 	}
 
 	public function del_post(int $post_id, string $schema):bool
@@ -145,76 +147,88 @@ class ForumRepository
 
 	public function del_topic(int $topic_id, string $schema):bool
 	{
+		$this->db->beginTransaction();
 		$this->db->delete($schema . '.forum_posts',
 			['topic_id' => $topic_id]);
-		return $this->db->delete($schema . '.forum_topics',
-			['id' => $topic_id]) ? true : false;
+		$this->db->delete($schema . '.forum_topics',
+			['id' => $topic_id]);
+		return $this->db->commit();
 	}
 
 	public function insert_topic(
-		string $subject,
-		string $content,
-		string $access,
+		ForumTopicCommand $command,
 		int $user_id,
 		string $schema
 	):int
 	{
 		$forum_topic_insert = [
-			'subject'   => $subject,
-			'access'    => $access,
+			'subject'   => $command->subject,
+			'access'    => $command->access,
 			'user_id'   => $user_id,
 		];
 
-		$this->db->insert($schema . '.forum_topics', $forum_topic_insert);
+		$types = [\PDO::PARAM_STR, \PDO::PARAM_STR, \PDO::PARAM_INT];
+
+		$this->db->insert($schema . '.forum_topics', $forum_topic_insert, $types);
 
 		$id = (int) $this->db->lastInsertId($schema . '.forum_topics_id_seq');
 
 		$forum_post_insert = [
-			'content'   => $content,
+			'content'   => $command->content,
 			'topic_id'  => $id,
 			'user_id'   => $user_id,
 		];
 
-		$this->db->insert($schema . '.forum_posts', $forum_post_insert);
+		$types = [\PDO::PARAM_STR, \PDO::PARAM_INT, \PDO::PARAM_INT];
+
+		$this->db->insert($schema . '.forum_posts', $forum_post_insert, $types);
 
 		return $id;
 	}
 
 	public function insert_post(
-		string $content,
+		ForumPostCommand $command,
 		int $user_id,
 		int $topic_id,
 		string $schema
 	):bool
 	{
 		return $this->db->insert($schema . '.forum_posts', [
-			'content'		=> $content,
+			'content'		=> $command->content,
 			'user_id'		=> $user_id,
 			'topic_id'		=> $topic_id,
-		]) ? true : false;
+		], [\PDO::PARAM_STR, \PDO::PARAM_INT, \PDO::PARAM_INT]) ? true : false;
 	}
 
 	public function update_post(
-		string $content,
+		ForumPostCommand $command,
 		int $post_id,
 		string $schema
 	):bool
 	{
 		return $this->db->update($schema . '.forum_posts', [
-			'content'		=> $content,
+			'content'	=> $command->content,
 		], ['id' => $post_id]) ? true : false;
 	}
 
 	public function update_topic(
-		string $subject,
-		string $access,
+		ForumTopicCommand $command,
 		int $topic_id,
 		string $schema
 	):bool
 	{
-		return $this->db->update($schema . '.forum_topics', [
-			'subject'       => $subject,
-			'access'        => $access,
-		], ['id' => $topic_id]) ? true : false;
+		$post_id = $this->get_first_post_id($topic_id, $schema);
+
+		$this->db->beginTransaction();
+
+		$this->db->update($schema . '.forum_topics', [
+			'subject'       => $command->subject,
+			'access'        => $command->access,
+		], ['id' => $topic_id]);
+		$this->db->update($schema . '.forum_posts', [
+			'content'	=> $command->content,
+		], ['id' => $post_id]);
+
+		return $this->db->commit();
 	}
 }

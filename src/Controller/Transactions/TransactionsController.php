@@ -265,7 +265,7 @@ class TransactionsController extends AbstractController
                     $alert_service->success('De transactie is aangepast.');
                 }
 
-                $link_render->redirect($vr_route, $pp->ary(), []);
+                return $this->redirectToRoute($vr_route, $pp->ary());
             }
 
             $alert_service->error($errors);

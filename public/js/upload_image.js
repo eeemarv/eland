@@ -39,14 +39,13 @@ jQuery(function(){
 			no_img.css('display', 'none');
 			btn_remove.css('display', 'inherit');
 
-			if (img.is('[data-replace-logo]')){
+			if (img.data('replace-logo')){
 				$('a.logo').remove();
 				var html_logo = '<a href="#" class="navbar-left hidden-xs logo">';
 				html_logo += '<img height="50" src="';
 				html_logo += img_filename;
 				html_logo += '"></a>';
 				$('div.navbar-header').prepend(html_logo);
-				location.reload();
 			}
 		}
 	});

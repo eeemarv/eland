@@ -451,7 +451,7 @@ class TransactionsMassController extends AbstractController
                     $alert_service->success('Notificatie mails verzonden.');
                 }
 
-                $link_render->redirect('transactions_mass', $pp->ary(), []);
+                return $this->redirectToRoute('transactions_mass', $pp->ary());
             }
         }
 

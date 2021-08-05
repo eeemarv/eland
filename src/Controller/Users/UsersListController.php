@@ -541,7 +541,7 @@ class UsersListController extends AbstractController
 
             if ($redirect)
             {
-                $link_render->redirect($vr->get('users'), $pp->ary(), []);
+                return $this->redirectToRoute($vr->get('users'), $pp->ary());
             }
         }
 

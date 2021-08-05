@@ -152,10 +152,10 @@ class UsersPasswordEditController extends AbstractController
 
                     if ($is_self)
                     {
-                        $link_render->redirect('users_show_self', $pp->ary(), []);
+                        return $this->redirectToRoute('users_show_self', $pp->ary());
                     }
 
-                    $link_render->redirect('users_show', $pp->ary(), ['id' => $id]);
+                    return $this->redirectToRoute('users_show', array_merge($pp->ary(), ['id' => $id]));
                 }
                 else
                 {

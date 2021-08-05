@@ -3,15 +3,13 @@
 namespace App\Controller\Config;
 
 use App\Command\Config\ConfigExtUrlCommand;
+use App\Form\Post\Config\ConfigExtUrlType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
-use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ConfigExtUrlController extends AbstractController
@@ -32,34 +30,31 @@ class ConfigExtUrlController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        LinkRender $link_render,
         ConfigService $config_service,
         PageParamsService $pp
     ):Response
     {
-        $config_ext_url_command = new ConfigExtUrlCommand();
-        $config_ext_url_command->url = $config_service->get_str('system.website_url', $pp->schema());
+        $command = new ConfigExtUrlCommand();
+        $config_service->load_command($command, $pp->schema());
 
-        $builder = $this->createFormBuilder($config_ext_url_command);
-        $builder->add('url', UrlType::class)
-            ->add('submit', SubmitType::class);
+        $form = $this->createForm(ConfigExtUrlType::class,
+                $command);
 
-        $form = $builder->getForm();
         $form->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $config_ext_url_command = $form->getData();
+            $command = $form->getData();
 
-            $config_service->set_str('system.website_url', $config_ext_url_command->url ?? '', $pp->schema());
+            $config_service->store_command($command, $pp->schema());
 
             $alert_service->success('Externe URL aangepast.');
-            $link_render->redirect('config_ext_url', $pp->ary(), []);
+            return $this->redirectToRoute('config_ext_url', $pp->ary());
         }
 
         return $this->render('config/config_ext_url.html.twig', [
-            'form'          => $form->createView(),
+            'form'  => $form->createView(),
         ]);
     }
 }

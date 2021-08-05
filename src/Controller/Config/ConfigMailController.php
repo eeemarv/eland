@@ -3,11 +3,11 @@
 namespace App\Controller\Config;
 
 use App\Command\Config\ConfigMailCommand;
+use App\Form\Post\Config\ConfigMailType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
-use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -33,35 +33,27 @@ class ConfigMailController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        LinkRender $link_render,
         ConfigService $config_service,
         PageParamsService $pp
     ):Response
     {
-        $config_mail_command = new ConfigMailCommand();
+        $command = new ConfigMailCommand();
 
-        $config_mail_command->enabled = $config_service->get_bool('mail.enabled', $pp->schema());
-        $config_mail_command->tag = $config_service->get_str('mail.tag', $pp->schema());
+        $config_service->load_command($command, $pp->schema());
 
-        $builder = $this->createFormBuilder($config_mail_command);
-        $builder->add('enabled', CheckboxType::class)
-            ->add('tag', TextType::class)
-            ->add('submit', SubmitType::class);
-
-        $form = $builder->getForm();
+        $form = $this->createForm(ConfigMailType::class, $command);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $config_mail_command = $form->getData();
+            $command = $form->getData();
 
-            $config_service->set_bool('mail.enabled', $config_mail_command->enabled, $pp->schema());
-            $config_service->set_str('mail.tag', $config_mail_command->tag, $pp->schema());
+            $config_service->store_command($command, $pp->schema());
 
             $alert_service->success('E-mail instellingen aangepast.');
-            $link_render->redirect('config_mail', $pp->ary(), []);
+            return $this->redirectToRoute('config_mail', $pp->ary());
         }
 
         return $this->render('config/config_mail.html.twig', [

@@ -2,6 +2,7 @@
 
 namespace App\Command\Register;
 
+use App\Command\CommandInterface;
 use App\Validator\EmailNotRegisteredYet;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Length;
@@ -9,7 +10,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
-class RegisterCommand
+class RegisterCommand implements CommandInterface
 {
     public $email;
     public $first_name;

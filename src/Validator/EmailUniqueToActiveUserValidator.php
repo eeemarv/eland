@@ -10,16 +10,11 @@ use App\Service\PageParamsService;
 
 class EmailUniqueToActiveUserValidator extends ConstraintValidator
 {
-    protected UserRepository $user_repository;
-    protected PageParamsService $pp;
-
     public function __construct(
-        UserRepository $user_repository,
-        PageParamsService $pp
+        protected UserRepository $user_repository,
+        protected PageParamsService $pp
     )
     {
-        $this->user_repository = $user_repository;
-        $this->pp = $pp;
     }
 
     public function validate($email, Constraint $constraint)

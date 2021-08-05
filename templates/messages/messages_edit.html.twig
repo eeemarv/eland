@@ -1,13 +1,11 @@
 {%- extends 'messages/base/messages_edit_form.html.twig' -%}
 
 {%- block heading_title -%}
-    {%- set heading_title_trans_key = 'messages_edit.title.'
-        ~ message.offer_want ~ '.'
-        ~ (su_is_owner(message.user_id) ? 'personal' : 'admin') -%}
-
-    {{- heading_title_trans_key|trans({
-        '%subject%': message.subject,
-        '%user%': account(message.user_id, schema)
+    {{- 'messages_edit.title'|trans({
+        'offer_want': message.offer_want,
+        'self':su_is_owner(message.user_id) ? 'self' : 'some_user',
+        'subject': message.subject,
+        'user': account(message.user_id, schema)
     }) -}}
 {%- endblock heading_title -%}
 

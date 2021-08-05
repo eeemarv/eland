@@ -1,4 +1,4 @@
-{%- extends 'messages/base/messages_base.html.twig' -%}
+{%- extends 'messages/base/messages_form.html.twig' -%}
 
 {%- block assets_add -%}
     {{- parent() -}}
@@ -12,6 +12,58 @@
 {%- block heading_title -%}
     {{- 'messages_cleanup.title'|trans -}}
 {%- endblock heading_title -%}
+
+{%- block form_a -%}
+    {{- form_row(form.expires_at_days_default, {
+        'label': 'messages_cleanup.expires_at_days_default.label',
+        'help': 'messages_cleanup.expires_at_days_default.help',
+        'pre_addon': {
+            'text': 'label.days'|trans
+        },
+        'attr': {
+            'data-expires-at-days-default': ''
+        }
+    }) -}}
+
+    {{- form_row(form.expires_at_required, {
+        'label': 'messages_cleanup.expires_at_required.label',
+        'required': false,
+        'attr': {
+            'data-expires-at-required': ''
+        }
+    }) -}}
+
+    {{- form_row(form.expires_at_switch_enabled, {
+        'label': 'messages_cleanup.expires_at_switch_enabled.label',
+        'required': false,
+        'attr': {
+            'data-expires-at-switch-enabled': ''
+        }
+    }) -}}
+
+    {{- form_row(form.cleanup_enabled, {
+        'label': 'messages_cleanup.cleanup_enabled.label',
+        'required': false,
+        'attr': {
+            'data-cleanup-enabled': ''
+        }
+    }) -}}
+
+    {{- form_row(form.cleanup_after_days, {
+        'label': 'messages_cleanup.cleanup_after_days.label',
+        'pre_addon': {
+            'text': 'label.days'|trans
+        },
+        'attr': {
+            'data-cleanup-after-days': ''
+        }
+    }) -}}
+
+    {{- form_row(form.expire_notify, {
+        'label': 'messages_cleanup.expire_notify.label',
+        'required': false
+    }) -}}
+{%- endblock form_a -%}
 
 {%- block css -%}
     {{- parent() -}}

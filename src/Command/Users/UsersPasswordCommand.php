@@ -2,13 +2,14 @@
 
 namespace App\Command\Users;
 
+use App\Command\CommandInterface;
 use App\Validator\PasswordStrength;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
-class UsersPasswordCommand
+class UsersPasswordCommand Implements CommandInterface
 {
     public $password;
     public $notify;

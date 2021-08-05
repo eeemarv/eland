@@ -9,9 +9,11 @@
     {%- if pp_role('admin') or su_is_owner(forum_topic.user_id) -%}
         {%- include 'include/btn_top/edit.html.twig' with {
             'btn_route': 'forum_edit_topic',
-            'btn_title': 'forum_edit_topic.title.' ~ (su_is_owner(forum_topic.user_id) ? 'personal' : 'admin'),
+            'btn_title': 'forum_edit_topic.title',
             'btn_title_trans_params': {
-                '%topic_subject%': forum_topic.subject
+                'self': su_is_owner(forum_topic.user_id) ? 'self' : 'some_user',
+                'topic_subject': forum_topic.subject,
+                'user': account(forum_topic.user_id, schema)
             }
         } -%}
     {%- endif -%}
@@ -21,9 +23,11 @@
     {%- if pp_role('admin') or su_is_owner(forum_topic.user_id) -%}
         {%- include 'include/btn_top/del.html.twig' with {
             'btn_route': 'forum_del_topic',
-            'btn_title': 'forum_del_topic.title.' ~ (su_is_owner(forum_topic.user_id) ? 'personal' : 'admin'),
+            'btn_title': 'forum_del_topic.title',
             'btn_title_trans_params': {
-                '%topic_subject%': forum_topic.subject
+                'self': su_is_owner(forum_topic.user_id) ? 'self' : 'some_user',
+                'topic_subject': forum_topic.subject,
+                'user': account(forum_topic.user_id, schema)
             }
         } -%}
     {%- endif -%}
@@ -40,6 +44,6 @@
 
 {%- block heading_title -%}
     {{- 'forum_topic.title'|trans({
-        '%topic_subject%': forum_topic.subject,
+        'topic_subject': forum_topic.subject,
     }) -}}
 {%- endblock heading_title -%}

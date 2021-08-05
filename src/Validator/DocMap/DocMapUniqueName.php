@@ -4,9 +4,6 @@ namespace App\Validator\DocMap;
 
 use Symfony\Component\Validator\Constraint;
 
-/**
- * @Annotation
- */
 class DocMapUniqueName extends Constraint
 {
     public function getTargets():string

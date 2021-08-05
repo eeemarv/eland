@@ -3,7 +3,6 @@
 namespace App\Controller\Init;
 
 use App\Queue\GeocodeQueue;
-use App\Render\LinkRender;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,7 +32,6 @@ class InitQueueGeocodingController extends AbstractController
         Db $db,
         GeocodeQueue $geocode_queue,
         PageParamsService $pp,
-        LinkRender $link_render,
         string $env_app_init_enabled
     ):Response
     {
@@ -73,13 +71,11 @@ class InitQueueGeocodingController extends AbstractController
         {
             $start += 50;
 
-            $link_render->redirect('init_queue_geocoding', $pp->ary(),
-                ['start' => $start]);
+            return $this->redirectToRoute('init_queue_geocoding', array_merge($pp->ary(),
+                ['start' => $start]));
         }
 
-        $link_render->redirect('init', $pp->ary(),
-            ['ok' => $request->attributes->get('_route')]);
-
-        return new Response('');
+        return $this->redirectToRoute('init', array_merge($pp->ary(),
+            ['ok' => $request->attributes->get('_route')]));
     }
 }

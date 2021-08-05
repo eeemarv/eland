@@ -90,8 +90,8 @@ class IntersystemsEditController extends AbstractController
 
                     $intersystems_service->clear_cache();
 
-                    $link_render->redirect('intersystems_show', $pp->ary(),
-                        ['id'	=> $id]);
+                    return $this->redirectToRoute('intersystems_show', array_merge($pp->ary(),
+                        ['id'	=> $id]));
                 }
 
                 $alert_service->error('InterSysteem niet aangepast.');
@@ -111,7 +111,8 @@ class IntersystemsEditController extends AbstractController
             if (!$group)
             {
                 $alert_service->error('Systeem niet gevonden.');
-                $link_render->redirect('intersystems', $pp->ary(), []);
+
+                return $this->redirectToRoute('intersystems', $pp->ary());
             }
         }
 
