@@ -2,15 +2,11 @@
 
 namespace App\Command\Users;
 
+use App\Command\CommandInterface;
 use Symfony\Component\Validator\Constraints\IsTrue;
-use Symfony\Component\Validator\Mapping\ClassMetadata;
 
-class UsersDelCommand
+class UsersDelCommand implements CommandInterface
 {
+    #[IsTrue()]
     public $verify;
-
-    public static function loadValidatorMetadata(ClassMetadata $metadata)
-    {
-        $metadata->addPropertyConstraint('verify', new IsTrue());
-    }
 }

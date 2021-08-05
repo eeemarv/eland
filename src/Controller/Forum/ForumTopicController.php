@@ -5,6 +5,7 @@ namespace App\Controller\Forum;
 use App\HtmlProcess\HtmlPurifier;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
+use App\Repository\ForumRepository;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
@@ -103,8 +104,9 @@ class ForumTopicController extends AbstractController
                 $db->insert($pp->schema() . '.forum_posts', $forum_post);
 
                 $alert_service->success('Reactie toegevoegd.');
-                $link_render->redirect('forum_topic', $pp->ary(),
-                    ['id' => $id]);
+
+                return $this->redirectToRoute('forum_topic', array_merge($pp->ary(),
+                    ['id' => $id]));
             }
 
             $alert_service->error($errors);

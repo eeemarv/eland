@@ -2,15 +2,14 @@
 
 namespace App\Controller\Users;
 
+use App\Command\Users\UsersFullNameCommand;
+use App\Form\Post\Users\UsersFullNameType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -32,7 +31,6 @@ class UsersFullNameController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        LinkRender $link_render,
         ConfigService $config_service,
         PageParamsService $pp
     ):Response
@@ -42,27 +40,21 @@ class UsersFullNameController extends AbstractController
             throw new AccessDeniedHttpException('Full name module not enabled.');
         }
 
-        $form_data = [
-            'self_edit' => $config_service->get_bool('users.fields.full_name.self_edit', $pp->schema()),
-        ];
+        $command = new UsersFullNameCommand();
+        $config_service->load_command($command, $pp->schema());
 
-        $builder = $this->createFormBuilder($form_data);
-        $builder->add('self_edit', CheckboxType::class);
-        $builder->add('submit', SubmitType::class);
-        $form = $builder->getForm();
-
+        $form = $this->createForm(UsersFullNameType::class, $command);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $form_data = $form->getData();
-            $self_edit = $form_data['self_edit'];
+            $command = $form->getData();
 
-            $config_service->set_bool('users.fields.full_name.self_edit', $self_edit, $pp->schema());
+            $config_service->store_command($command, $pp->schema());
 
             $alert_service->success('Volledige naam configuratie aangepast');
-            $link_render->redirect('users_full_name', $pp->ary(), []);
+            return $this->redirectToRoute('users_full_name', $pp->ary());
         }
 
         return $this->render('users/users_full_name.html.twig', [

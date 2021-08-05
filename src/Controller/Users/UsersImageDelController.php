@@ -12,6 +12,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 class UsersImageDelController extends AbstractController
@@ -69,16 +70,14 @@ class UsersImageDelController extends AbstractController
 
         if (!$user)
         {
-            $alert_service->error('De gebruiker bestaat niet.');
-            $link_render->redirect($vr->get('users'), $pp->ary(), []);
+            throw new NotFoundHttpException('User with id ' . $id . ' not found.');
         }
 
         $file = $user['image_file'];
 
         if ($file == '' || !$file)
         {
-            $alert_service->error('De gebruiker heeft geen foto.');
-            $link_render->redirect('users_show', $pp->ary(), ['id' => $id]);
+            throw new NotFoundHttpException('No image file found for user with id ' . $id);
         }
 
         if ($request->isMethod('POST'))
@@ -90,7 +89,8 @@ class UsersImageDelController extends AbstractController
             $user_cache_service->clear($id, $pp->schema());
 
             $alert_service->success('Profielfoto/afbeelding verwijderd.');
-            $link_render->redirect('users_show', $pp->ary(), ['id' => $id]);
+
+            return $this->redirectToRoute('users_show', array_merge($pp->ary(), ['id' => $id]));
         }
 
         $out = '<div class="row">';

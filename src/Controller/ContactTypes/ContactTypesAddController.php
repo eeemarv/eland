@@ -43,7 +43,7 @@ class ContactTypesAddController extends AbstractController
             {
                 $alert_service->error($error_token);
 
-                $link_render->redirect('contact_types', $pp->ary(), []);
+                return $this->redirectToRoute('contact_types', $pp->ary());
             }
 
             $tc = [];
@@ -64,7 +64,7 @@ class ContactTypesAddController extends AbstractController
                     $alert_service->error('Fout bij het opslaan');
                 }
 
-                $link_render->redirect('contact_types', $pp->ary(), []);
+                return $this->redirectToRoute('contact_types', $pp->ary());
             }
 
             $alert_service->error('Corrigeer één of meerdere velden.');

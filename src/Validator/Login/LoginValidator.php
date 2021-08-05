@@ -13,22 +13,13 @@ use App\Security\User;
 
 class LoginValidator extends ConstraintValidator
 {
-    protected EncoderFactoryInterface $encoder_factory;
-    protected UserRepository $user_repository;
-    protected PageParamsService $pp;
-    protected string $env_master_password;
-
     public function __construct(
-        EncoderFactoryInterface $encoder_factory,
-        UserRepository $user_repository,
-        PageParamsService $pp,
-        string $env_master_password
+        protected EncoderFactoryInterface $encoder_factory,
+        protected UserRepository $user_repository,
+        protected PageParamsService $pp,
+        protected string $env_master_password
     )
     {
-        $this->encoder_factory = $encoder_factory;
-        $this->user_repository = $user_repository;
-        $this->pp = $pp;
-        $this->env_master_password = $env_master_password;
     }
 
     public function validate($login_command, Constraint $constraint)

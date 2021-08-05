@@ -6,7 +6,7 @@
             'btn_route': 'news_edit',
             'btn_title': 'news_edit.title',
             'btn_title_trans_params': {
-                '%subject%': news_item.subject
+                'subject': news_item.subject
             }
         } -%}
     {%- endif -%}
@@ -18,7 +18,7 @@
             'btn_route': 'news_del',
             'btn_title': 'news_del.title',
             'btn_title_trans_params': {
-                '%subject%': news_item.subject
+                'subject': news_item.subject
             }
         } -%}
     {%- endif -%}
@@ -35,7 +35,7 @@
 
 {%- block heading_title -%}
     {{- 'news_show.title'|trans({
-        '%subject%': news_item.subject
+        'subject': news_item.subject
     }) -}}
 {%- endblock heading_title -%}
 

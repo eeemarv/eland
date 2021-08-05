@@ -5,42 +5,42 @@
 {%- endblock heading_title -%}
 
 {%- block form_a -%}
-    {{- form_row(form.users_fields_full_name_enabled, {
+    {{- form_row(form.full_name_enabled, {
         'label': 'label.full_name',
         'required': false
     }) -}}
 
-    {{- form_row(form.users_fields_postcode_enabled, {
+    {{- form_row(form.postcode_enabled, {
         'label': 'label.postcode',
         'required': false
     }) -}}
 
-    {{- form_row(form.users_fields_birthday_enabled, {
+    {{- form_row(form.birthday_enabled, {
         'label': 'label.date_of_birth',
         'required': false
     }) -}}
 
-    {{- form_row(form.users_fields_hobbies_enabled, {
+    {{- form_row(form.hobbies_enabled, {
         'label': 'label.hobbies_interests',
         'required': false
     }) -}}
 
-    {{- form_row(form.users_fields_comments_enabled, {
+    {{- form_row(form.comments_enabled, {
         'label': 'label.comment',
         'required': false
     }) -}}
 
-    {{- form_row(form.users_fields_admin_comments_enabled, {
+    {{- form_row(form.admin_comments_enabled, {
         'label': 'label.admin_comment',
         'required': false
     }) -}}
 
-    {{- form_row(form.users_new_enabled, {
+    {{- form_row(form.new_enabled, {
         'label': 'label.new_users',
         'required': false
     }) -}}
 
-    {{- form_row(form.users_leaving_enabled, {
+    {{- form_row(form.leaving_enabled, {
         'label': 'label.leaving_users',
         'required': false
     }) -}}

@@ -2,11 +2,12 @@
 
 namespace App\Controller\Config;
 
+use App\Command\Config\ConfigMailAddrCommand;
+use App\Form\Post\Config\ConfigMailAddrType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
-use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -32,52 +33,31 @@ class ConfigMailAddrController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        LinkRender $link_render,
         ConfigService $config_service,
         PageParamsService $pp
     ):Response
     {
-        $admin = $config_service->get_ary('mail.addresses.admin', $pp->schema());
-        $support = $config_service->get_ary('mail.addresses.support', $pp->schema());
+        $command = new ConfigMailAddrCommand();
+        $config_service->load_command($command, $pp->schema());
 
-        $form_data = [
-            'admin'         => $admin,
-            'support'       => $support,
-        ];
+        $form = $this->createForm(ConfigMailAddrType::class, $command);
 
-        $builder = $this->createFormBuilder($form_data);
-        $builder->add('admin', CollectionType::class, [
-                'entry_type'        => EmailType::class,
-                'allow_add'         => true,
-                'allow_delete'      => true,
-                'delete_empty'      => true,
-                'prototype'         => true,
-            ])
-            ->add('support', CollectionType::class, [
-                'entry_type'        => EmailType::class,
-                'allow_add'         => true,
-                'allow_delete'      => true,
-                'delete_empty'      => true,
-                'prototype'         => true,
-            ])
-            ->add('submit', SubmitType::class);
-
-        $form = $builder->getForm();
         $form->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $form_data = $form->getData();
+            $command = $form->getData();
 
-            $admin = array_values($form_data['admin']);
-            $support = array_values($form_data['support']);
+            error_log(var_export($command, true));
 
-            $config_service->set_ary('mail.addresses.admin', $admin, $pp->schema());
-            $config_service->set_ary('mail.addresses.support', $support, $pp->schema());
+            error_log(var_export(array_values($command->support), true));
+            error_log(var_export($command->support, true));
+
+            $config_service->store_command($command, $pp->schema());
 
             $alert_service->success('E-mail adressen aangepast.');
-            $link_render->redirect('config_mail_addr', $pp->ary(), []);
+            return $this->redirectToRoute('config_mail_addr', $pp->ary());
         }
 
         return $this->render('config/config_mail_addr.html.twig', [

@@ -6,18 +6,16 @@
 {%- endblock assets_add -%}
 
 {%- block heading_title -%}
-    {%- set heading_title_trans_key = 'messages_images_del.title.'
-        ~ message.offer_want -%}
-
-    {{- heading_title_trans_key|trans({
-        '%subject%': message.subject
+    {{- 'messages_images_del.title'|trans({
+        'offer_want': message.offer_want,
+        'subject': message.subject
     }) -}}
 {%- endblock heading_title -%}
 
 {%- block heading_sub -%}
     <h2>
     {{- 'messages_images_del.user'|trans({
-        '%user%': account(message.user_id, schema)|link('users_show', {'id': message.user_id})
+        'user': account(message.user_id, schema)|link('users_show', {'id': message.user_id})
     })|raw -}}
     </h2>
 {%- endblock heading_sub -%}

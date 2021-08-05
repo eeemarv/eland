@@ -2,12 +2,13 @@
 
 namespace App\Command\Docs;
 
+use App\Command\CommandInterface;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
-class DocsCommand
+class DocsCommand implements CommandInterface
 {
     public $file_location;
     public $original_filename;

@@ -127,8 +127,10 @@ class NewsEditController extends AbstractController
                 }
 
                 $db->update($pp->schema() . '.news', $news_item, ['id' => $id]);
+
                 $alert_service->success('Nieuwsbericht aangepast.');
-                $link_render->redirect('news_show', $pp->ary(), ['id' => $id]);
+
+                return $this->redirectToRoute('news_show', array_merge($pp->ary(), ['id' => $id]));
             }
 
             $alert_service->error($errors);

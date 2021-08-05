@@ -82,7 +82,10 @@
 				<li{%- if r == active_menu %} class="active"{%- endif -%}>
 					<a href="{{- path(r|var_route, pp_ary()) -}}">
 					<i class="fa fa-{{- m.fa -}}"></i>&nbsp;
-						{{- (r ~ '.title')|trans -}}
+						{{- (r ~ '.title')|trans({
+							'self': 'all_users',
+							'with_without_category': 'all_categories'
+						}) -}}
 					</a>
 				</li>
 			{%- endif -%}
@@ -188,7 +191,7 @@
 				{%- block form_header -%}{%- endblock -%}
 				<div class="panel-heading">
 					{%- block form_start -%}
-						{{- form_start(form) -}}
+						{{- form_start(form, {'attr': {'novalidate': 'novalidate'}}) -}}
 						{{- form_errors(form) -}}
 					{%- endblock form_start -%}
 					{%- block form_content -%}

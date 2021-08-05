@@ -7,13 +7,10 @@ use Symfony\Component\Form\DataTransformerInterface;
 
 class HtmlPurifyTransformer implements DataTransformerInterface
 {
-    protected $html_purifier;
-
     public function __construct(
-        HtmlPurifier $html_purifier
+        protected HtmlPurifier $html_purifier
     )
     {
-        $this->html_purifier = $html_purifier;
     }
 
     public function transform($content)

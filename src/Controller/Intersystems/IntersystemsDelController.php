@@ -56,7 +56,8 @@ class IntersystemsDelController extends AbstractController
         if (!$group)
         {
             $alert_service->error('Systeem niet gevonden.');
-            $link_render->redirect('intersystems', $pp->ary(), []);
+
+            return $this->redirectToRoute('intersystems', $pp->ary());
         }
 
         if ($request->isMethod('POST'))
@@ -64,7 +65,8 @@ class IntersystemsDelController extends AbstractController
             if ($error_token = $form_token_service->get_error())
             {
                 $alert_service->error($error_token);
-                $link_render->redirect('intersystems', $pp->ary(), []);
+
+                return $this->redirectToRoute('intersystems', $pp->ary());
             }
 
             if($db->delete($pp->schema() . '.letsgroups', ['id' => $id]))
@@ -73,7 +75,7 @@ class IntersystemsDelController extends AbstractController
 
                 $intersystems_service->clear_cache();
 
-                $link_render->redirect('intersystems', $pp->ary(), []);
+                return $this->redirectToRoute('intersystems', $pp->ary());
             }
 
             $alert_service->error('InterSysteem niet verwijderd.');

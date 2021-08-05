@@ -5,7 +5,7 @@
         {{- 'users_edit_self.title'|trans -}}
     {%- else -%}
         {{- 'users_edit.title'|trans({
-            '%user%': account(id, schema)|link('users_show', {'id': id})
+            'user': account(id, schema)|link('users_show', {'id': id})
         })|raw -}}
     {%- endif -%}
 {%- endblock heading_title -%}

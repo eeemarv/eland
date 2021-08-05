@@ -102,8 +102,8 @@ class DocsMapEditController extends AbstractController
                 $typeahead_service->delete_thumbprint('doc_map_names',
                     $pp->ary(), []);
 
-                $link_render->redirect('docs_map', $pp->ary(),
-                    ['id' => $id]);
+                return $this->redirectToRoute('docs_map', array_merge($pp->ary(),
+                    ['id' => $id]));
             }
 
             $alert_service->error($errors);

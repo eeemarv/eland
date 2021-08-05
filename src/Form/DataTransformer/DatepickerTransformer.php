@@ -8,16 +8,11 @@ use Symfony\Component\Form\DataTransformerInterface;
 
 class DatepickerTransformer implements DataTransformerInterface
 {
-    protected $date_format_service;
-    protected $pp;
-
     public function __construct(
-        DateFormatService $date_format_service,
-        PageParamsService $pp
+        protected DateFormatService $date_format_service,
+        protected PageParamsService $pp
     )
     {
-        $this->date_format_service = $date_format_service;
-        $this->pp = $pp;
     }
 
     public function transform($date)

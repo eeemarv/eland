@@ -4,7 +4,6 @@ namespace App\Controller\PasswordReset;
 
 use App\Cnst\PagesCnst;
 use App\Queue\MailQueue;
-use App\Render\LinkRender;
 use App\Security\User;
 use App\Service\AlertService;
 use App\Service\DataTokenService;
@@ -46,7 +45,6 @@ class PasswordResetConfirmController extends AbstractController
         DataTokenService $data_token_service,
         FormTokenService $form_token_service,
         AlertService $alert_service,
-        LinkRender $link_render,
         MailAddrUserService $mail_addr_user_service,
         MailQueue $mail_queue,
         PasswordStrengthService $password_strength_service,
@@ -70,7 +68,8 @@ class PasswordResetConfirmController extends AbstractController
             if (!$data)
             {
                 $alert_service->error('Het reset-token is niet meer geldig.');
-                $link_render->redirect('password_reset', $pp->ary(), []);
+
+                return $this->redirectToRoute('password_reset', $pp->ary());
             }
 
             $user_id = $data['user_id'];
@@ -105,7 +104,8 @@ class PasswordResetConfirmController extends AbstractController
                 ], 10000);
 
                 $data = $data_token_service->del($token, 'password_reset', $pp->schema());
-                $link_render->redirect('login', $pp->ary(), []);
+
+                return $this->redirectToRoute('login', $pp->ary());
             }
             else
             {

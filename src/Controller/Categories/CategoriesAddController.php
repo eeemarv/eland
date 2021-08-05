@@ -8,7 +8,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
-use App\Render\LinkRender;
 use App\Repository\CategoryRepository;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -37,7 +36,6 @@ class CategoriesAddController extends AbstractController
         CategoryRepository $category_repository,
         ConfigService $config_service,
         AlertService $alert_service,
-        LinkRender $link_render,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
@@ -68,7 +66,7 @@ class CategoriesAddController extends AbstractController
             $category_repository->insert($name, $su, $pp->schema());
 
             $alert_service->success('Categorie "' . $name . '" toegevoegd.');
-            $link_render->redirect('categories', $pp->ary(), []);
+            return $this->redirectToRoute('categories', $pp->ary());
         }
 
         return $this->render('categories/categories_add.html.twig', [

@@ -459,7 +459,8 @@ class MessagesEditController extends AbstractController
                 }
 
                 $alert_service->success('Nieuw vraag of aanbod toegevoegd.');
-                $link_render->redirect('messages_show', $pp->ary(), ['id' => $id]);
+
+                return $this->redirectToRoute('messages_show', array_merge($pp->ary(), ['id' => $id]));
             }
             else if ($edit_mode && !count($errors))
             {
@@ -467,7 +468,8 @@ class MessagesEditController extends AbstractController
                 $logger->debug('#msg update message with id ' . $id . ' ' . json_encode($post_message), ['schema' => $pp->schema()]);
 
                 $alert_service->success('Vraag/aanbod aangepast');
-                $link_render->redirect('messages_show', $pp->ary(), ['id' => $id]);
+
+                return $this->redirectToRoute('messages_show', array_merge($pp->ary(), ['id' => $id]));
             }
             else if (!count($errors))
             {

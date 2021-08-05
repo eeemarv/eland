@@ -7,7 +7,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
-use App\Render\LinkRender;
 use App\Repository\CategoryRepository;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -38,7 +37,6 @@ class CategoriesDelController extends AbstractController
         CategoryRepository $category_repository,
         ConfigService $config_service,
         AlertService $alert_service,
-        LinkRender $link_render,
         PageParamsService $pp
     ):Response
     {
@@ -73,7 +71,8 @@ class CategoriesDelController extends AbstractController
             $category_repository->del($id, $pp->schema());
 
             $alert_service->success('Categorie "' . $category['name'] . '" verwijderd.');
-            $link_render->redirect('categories', $pp->ary(), []);
+
+            return $this->redirectToRoute('categories', $pp->ary());
         }
 
         return $this->render('categories/categories_del.html.twig', [

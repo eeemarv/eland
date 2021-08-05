@@ -2,13 +2,14 @@
 
 namespace App\Command\Login;
 
+use App\Command\CommandInterface;
 use App\Validator\Login\Login;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
-class LoginCommand
+class LoginCommand implements CommandInterface
 {
     public $login;
     public $password;

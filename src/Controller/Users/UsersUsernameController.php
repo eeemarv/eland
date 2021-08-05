@@ -2,15 +2,14 @@
 
 namespace App\Controller\Users;
 
+use App\Command\Users\UsersUsernameCommand;
+use App\Form\Post\Users\UsersUsernameType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Routing\Annotation\Route;
 
 class UsersUsernameController extends AbstractController
@@ -31,32 +30,24 @@ class UsersUsernameController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        LinkRender $link_render,
         ConfigService $config_service,
         PageParamsService $pp
     ):Response
     {
-        $form_data = [
-            'self_edit' => $config_service->get_bool('users.fields.username.self_edit', $pp->schema()),
-        ];
+        $command = new UsersUsernameCommand();
+        $config_service->load_command($command, $pp->schema());
 
-        $builder = $this->createFormBuilder($form_data);
-        $builder->add('self_edit', CheckboxType::class);
-        $builder->add('submit', SubmitType::class);
-        $form = $builder->getForm();
-
+        $form = $this->createForm(UsersUsernameType::class, $command);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $form_data = $form->getData();
-            $self_edit = $form_data['self_edit'];
-
-            $config_service->set_bool('users.fields.username.self_edit', $self_edit, $pp->schema());
+            $command = $form->getData();
+            $config_service->store_command($command, $pp->schema());
 
             $alert_service->success('Gebruikersnaam configuratie aangepast');
-            $link_render->redirect('users_username', $pp->ary(), []);
+            return $this->redirectToRoute('users_username', $pp->ary());
         }
 
         return $this->render('users/users_username.html.twig', [

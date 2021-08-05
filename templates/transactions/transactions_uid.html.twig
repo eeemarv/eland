@@ -13,22 +13,12 @@
                     'btn_route_params': {'tuid': uid},
                     'btn_title': 'transactions_add.btn_add_to_user',
                     'btn_title_trans_params': {
-                        '%user%': account(uid, schema)
+                        'user': account(uid, schema)
                     }
             } -%}
         {%- endif -%}
     {%- endif -%}
 {%- endblock btn_top_add -%}
-
-{%- block heading_title -%}
-    {%- if is_self -%}
-        {{- 'transactions_self.title'|trans -}}
-    {%- else -%}
-        {{- 'transactions_uid.title'|trans({
-            '%account%': account(uid, schema)|link('users_show', {'id': uid})
-        })|raw -}}
-    {%- endif -%}
-{%- endblock heading_title -%}
 
 {%- block heading_sub -%}
     <h2>

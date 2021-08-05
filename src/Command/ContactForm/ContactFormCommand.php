@@ -2,13 +2,14 @@
 
 namespace App\Command\ContactForm;
 
+use App\Command\CommandInterface;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
-class ContactFormCommand
+class ContactFormCommand implements CommandInterface
 {
     public $email;
     public $message;

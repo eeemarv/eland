@@ -68,7 +68,8 @@ class MollieConfigController extends AbstractController
                 $config_service->set_str('mollie.apikey', $posted_apikey, $pp->schema());
 
                 $alert_service->success('De Mollie Apikey is aangepast.');
-                $link_render->redirect('mollie_payments', $pp->ary(), []);
+
+                return $this->redirectToRoute('mollie_payments', $pp->ary());
             }
 
             $alert_service->error($errors);

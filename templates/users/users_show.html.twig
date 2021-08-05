@@ -28,7 +28,7 @@
             'btn_route': 'users_del',
             'btn_title': 'users_del.title',
             'btn_title_trans_params': {
-                '%user%': account(id, schema)
+                'user': account(id, schema)
             }
         } -%}
     {%- endif -%}
@@ -40,7 +40,7 @@
             'btn_route': 'users_password_edit',
             'btn_title': 'users_password_edit.title',
             'btn_title_trans_params': {
-                '%user%': account(id, schema)
+                'user': account(id, schema)
             }
         } -%}
     {%- elseif su_is_owner(id) -%}
@@ -76,12 +76,11 @@
 {%- endblock btn_item_nav -%}
 
 {%- block heading_title -%}
-    {%- if is_self -%}
-        {{- 'users_show.my_profile'|trans -}}:
-        &nbsp;
-    {%- endif -%}
-    {{- account(id, schema)|link('users_show', {'id': id})|raw -}}
-    {{- account_status(id, schema)|raw -}}
+    {{- 'users_show.title'|trans({
+        'self': is_self ? 'self' : 'other',
+        'user': account(id, schema)|link('users_show', {'id': id}),
+    })|raw -}}
+    {{- account_status(id, schema) -}}
     {%- if pp_role('admin') -%}
         {%- if intersystem_missing -%}
             &nbsp;
@@ -101,7 +100,6 @@
             </a>
         {%- endif -%}
     {%- endif -%}
-
 {%- endblock heading_title -%}
 
 {%- block css -%}

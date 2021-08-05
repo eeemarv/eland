@@ -98,7 +98,7 @@ class LoginController extends AbstractController
                     'role_short'    => 'a',
                 ];
 
-                $link_render->redirect($vr->get('default'), $pp_ary, []);
+                return $this->redirectToRoute($vr->get('default'), $pp_ary);
             }
 
             $user_id = false;
@@ -278,11 +278,10 @@ class LoginController extends AbstractController
 
                 if ($location)
                 {
-                    header('Location: ' . $location);
-                    exit;
+                    return $this->redirect($location);
                 }
 
-                $link_render->redirect($vr->get('default'), $su->ary(), []);
+                return $this->redirectToRoute($vr->get('default'), $su->ary());
             }
 
             $alert_service->error($errors);
@@ -302,12 +301,11 @@ class LoginController extends AbstractController
                 {
                     if (stripos($location, $pp->system() . '/a/') === false)
                     {
-                        header('Location: ' . $location);
-                        exit;
+                        return $this->redirect($location);
                     }
                 }
 
-                $link_render->redirect($vr->get('default'), $su->ary(), []);
+                return $this->redirectToRoute($vr->get('default'), $su->ary());
             }
 
             $login = $request->query->get('login', '');

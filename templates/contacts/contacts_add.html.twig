@@ -10,7 +10,7 @@
         {{- 'contacts_add_self.title'|trans -}}
     {%- else -%}
         {{- 'contacts_add.title'|trans({
-            '%user%': account(user_id, schema)|link('users_show', {'id': user_id})
+            'user': account(user_id, schema)|link('users_show', {'id': user_id})
         })|raw -}}
     {%- endif -%}
 {%- endblock heading_title -%}

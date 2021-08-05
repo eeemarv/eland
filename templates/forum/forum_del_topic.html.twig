@@ -1,19 +1,24 @@
-{%- extends 'forum/base/forum_base.html.twig' -%}
+{%- extends 'forum/base/forum_form.html.twig' -%}
 
 {%- block heading_title -%}
-    {%- set heading_title_trans_key = 'forum_del_topic.title.'
-        ~ (su_is_owner(forum_topic.user_id) ? 'personal' : 'admin') -%}
-
-    {{- heading_title_trans_key|trans({
-        '%topic_subject%': forum_topic.subject,
-        '%user%': account(forum_topic.user_id, schema)
+    {{- 'forum_del_topic.title'|trans({
+        'self': su_is_owner(forum_topic.user_id) ? 'self' : 'some_user',
+        'topic_subject': forum_topic.subject,
+        'user': account(forum_topic.user_id, schema)
     }) -}}
 {%- endblock -%}
 
-{%- block css -%}
-    {{- parent() -}}
-{%- endblock css -%}
+{%- block pre_form -%}
+    {%- embed 'embed/post.html.twig' with {
+        'post': forum_first_post
+    } -%}
+        {%- block actions -%}{%- endblock -%}
+    {%- endembed -%}
+{%- endblock pre_form -%}
 
-{%- block js -%}
-    {{- parent() -}}
-{%- endblock js -%}
+{%- set cancel_route = 'forum_topic' -%}
+{%- set cancel_route_params = {'id': forum_topic.id} -%}
+
+{%- block form_submit_btn -%}
+    {%- include 'form/submit_del_btn.html.twig' -%}
+{%- endblock form_submit_btn -%}

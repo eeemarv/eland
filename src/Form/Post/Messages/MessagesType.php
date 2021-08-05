@@ -20,19 +20,12 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 class MessagesType extends AbstractType
 {
-    protected AccessFieldSubscriber $access_field_subscriber;
-    protected CategoryFieldSubscriber $category_field_subscriber;
-    protected ValidityDaysTransformer $validity_days_transformer;
-
     public function __construct(
-        AccessFieldSubscriber $access_field_subscriber,
-        CategoryFieldSubscriber $category_field_subscriber,
-        ValidityDaysTransformer $validity_days_transformer
+        protected AccessFieldSubscriber $access_field_subscriber,
+        protected CategoryFieldSubscriber $category_field_subscriber,
+        protected ValidityDaysTransformer $validity_days_transformer
     )
     {
-        $this->access_field_subscriber = $access_field_subscriber;
-        $this->category_field_subscriber = $category_field_subscriber;
-        $this->validity_days_transformer = $validity_days_transformer;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -96,7 +89,7 @@ class MessagesType extends AbstractType
         $builder->add('image_files', HiddenType::class);
         $builder->add('submit', SubmitType::class);
 
-        $this->access_field_subscriber->set_object_access_options(['user', 'guest']);
+        $this->access_field_subscriber->add('access', ['user', 'guest']);
         $builder->addEventSubscriber($this->access_field_subscriber);
     }
 

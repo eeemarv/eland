@@ -2,7 +2,6 @@
 
 namespace App\Controller\Index;
 
-use App\Render\LinkRender;
 use App\Service\CaptchaService;
 use App\Service\FormTokenService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,7 +25,6 @@ class IndexContactController extends AbstractController
         SessionInterface $session,
         FormTokenService $form_token_service,
         CaptchaService $captcha_service,
-        LinkRender $link_render,
         string $env_mail_hoster_address,
         string $env_mail_from_address,
         string $env_smtp_host,
@@ -94,7 +92,7 @@ class IndexContactController extends AbstractController
 
                 $mailer->send($message);
 
-                $link_render->redirect('index_contact', [], ['form_ok' => '1']);
+                return $this->redirectToRoute('index_contact', ['form_ok' => '1']);
             }
 
             foreach ($errors as $error)

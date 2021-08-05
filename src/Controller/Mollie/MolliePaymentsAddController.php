@@ -248,7 +248,8 @@ class MolliePaymentsAddController extends AbstractController
                 }
 
                 $alert_service->success($success);
-                $link_render->redirect('mollie_payments', $pp->ary(), []);
+
+                return $this->redirectToRoute('mollie_payments', $pp->ary());
             }
 
             $alert_service->error($errors);

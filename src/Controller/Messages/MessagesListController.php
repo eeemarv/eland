@@ -261,7 +261,7 @@ class MessagesListController extends AbstractController
                     $alert_service->success('Het bericht is verlengd.');
                 }
 
-                $link_render->redirect($vr_route, $pp->ary(), []);
+                return $this->redirectToRoute($vr_route, $pp->ary());
             }
 
             if ($bulk_submit_action === 'service_stuff' && !count($errors))
@@ -299,7 +299,7 @@ class MessagesListController extends AbstractController
                     $alert_service->success('Het bericht is aangepast.');
                 }
 
-                $link_render->redirect($vr_route, $pp->ary(), []);
+                return $this->redirectToRoute($vr_route, $pp->ary());
             }
 
             if ($bulk_submit_action === 'category' && !count($errors))
@@ -345,7 +345,7 @@ class MessagesListController extends AbstractController
                     $alert_service->success('De categorie van het bericht is aangepast.');
                 }
 
-                $link_render->redirect($vr_route, $pp->ary(), []);
+                return $this->redirectToRoute($vr_route, $pp->ary());
             }
 
             if ($bulk_submit_action === 'access' && !count($errors))
@@ -373,7 +373,7 @@ class MessagesListController extends AbstractController
                     $alert_service->success('De zichtbaarheid van het bericht is aangepast.');
                 }
 
-                $link_render->redirect($vr_route, $pp->ary(), []);
+                return $this->redirectToRoute($vr_route, $pp->ary());
             }
 
             $alert_service->error($errors);

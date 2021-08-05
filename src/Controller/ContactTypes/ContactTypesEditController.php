@@ -46,7 +46,7 @@ class ContactTypesEditController extends AbstractController
         if (in_array($tc_prefetch['abbrev'], ContactTypesController::PROTECTED))
         {
             $alert_service->warning('Beschermd contact type.');
-            $link_render->redirect('contact_types', $pp->ary(), []);
+            return $this->redirectToRoute('contact_types', $pp->ary());
         }
 
         if($request->isMethod('POST'))
@@ -54,7 +54,7 @@ class ContactTypesEditController extends AbstractController
             if ($error_token = $form_token_service->get_error())
             {
                 $alert_service->error($error_token);
-                $link_render->redirect('contact_types', $pp->ary(), []);
+                return $this->redirectToRoute('contact_types', $pp->ary());
             }
 
             $tc = [
@@ -73,7 +73,7 @@ class ContactTypesEditController extends AbstractController
                     ['id' => $id]))
                 {
                     $alert_service->success('Contact type aangepast.');
-                    $link_render->redirect('contact_types', $pp->ary(), []);
+                    return $this->redirectToRoute('contact_types', $pp->ary());
                 }
                 else
                 {

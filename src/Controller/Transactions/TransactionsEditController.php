@@ -102,7 +102,8 @@ class TransactionsEditController extends AbstractController
             $alert_service->error('De omschrijving van een transactie
                 naar een interSysteem dat draait op eLAS kan
                 niet aangepast worden.');
-            $link_render->redirect('transactions_show', $pp->ary(), ['id' => $id]);
+
+            return $this->redirectToRoute('transactions_show', array_merge($pp->ary(), ['id' => $id]));
         }
 
         if ($request->isMethod('POST'))
@@ -168,7 +169,8 @@ class TransactionsEditController extends AbstractController
                     ['schema' => $pp->schema()]);
 
                 $alert_service->success('Transactie aangepast.');
-                $link_render->redirect('transactions_show', $pp->ary(), ['id' => $id]);
+
+                return $this->redirectToRoute('transactions_show', array_merge($pp->ary(), ['id' => $id]));
             }
 
             $alert_service->error($errors);

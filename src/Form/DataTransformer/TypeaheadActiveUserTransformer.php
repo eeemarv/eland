@@ -9,16 +9,11 @@ use Symfony\Component\Form\Exception\TransformationFailedException;
 
 class TypeaheadActiveUserTransformer implements DataTransformerInterface
 {
-    protected UserRepository $user_repository;
-    protected PageParamsService $pp;
-
     public function __construct(
-        UserRepository $user_repository,
-        PageParamsService $pp
+        protected UserRepository $user_repository,
+        protected PageParamsService $pp
     )
     {
-        $this->user_repository = $user_repository;
-        $this->pp = $pp;
     }
 
     public function transform($id)

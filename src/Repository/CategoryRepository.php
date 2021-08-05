@@ -48,18 +48,6 @@ class CategoryRepository
 				where id = ?)', [$id], [\PDO::PARAM_INT]);
 		$this->db->delete($schema . '.categories', ['id' => $id]);
 		return $this->db->commit();
-
-		/*
-		$db->beginTransaction();
-		$db->executeStatement('update ' . $pp->schema() . '.categories
-			set left_id = left_id - 2
-			where left_id > ?', [$left_id], [\PDO::PARAM_INT]);
-		$db->executeStatement('update ' . $pp->schema() . '.categories
-			set right_id = right_id - 2
-			where right_id > ?', [$right_id], [\PDO::PARAM_INT]);
-		$db->delete($pp->schema() . '.categories', ['id' => $id]);
-		$db->commit();
-		*/
 	}
 
 	public function is_unique_name_except_id(

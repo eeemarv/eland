@@ -4,9 +4,6 @@ namespace App\Validator;
 
 use Symfony\Component\Validator\Constraint;
 
-/**
- * @Annotation
- */
 class PasswordStrength extends Constraint
 {
 }

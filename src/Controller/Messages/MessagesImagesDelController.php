@@ -64,7 +64,8 @@ class MessagesImagesDelController extends AbstractController
         if (!count($images))
         {
             $alert_service->error(ucfirst($message['label']['offer_want_the']) . ' heeft geen afbeeldingen.');
-            $link_render->redirect('messages_show', $pp->ary(), ['id' => $id]);
+
+            return $this->redirectToRoute('messages_show', array_merge($pp->ary(), ['id' => $id]));
         }
 
         if ($request->isMethod('POST'))
@@ -81,7 +82,7 @@ class MessagesImagesDelController extends AbstractController
                 $alert_service->success('De afbeeldingen voor ' . $message['label']['offer_want_this'] .
                     ' zijn verwijderd.');
 
-                $link_render->redirect('messages_show', $pp->ary(), ['id' => $id]);
+                return $this->redirectToRoute('messages_show', array_merge($pp->ary(), ['id' => $id]));
             }
 
             $alert_service->error($errors);
