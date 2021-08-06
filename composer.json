@@ -15,6 +15,7 @@
 		"ext-mbstring": "*",
 		"ext-redis": "*",
 		"ext-zip": "*",
+		"ext-intl": "*",
 		"aws/aws-sdk-php": "^3",
 		"bramus/monolog-colored-line-formatter": "^2.0",
 		"composer/package-versions-deprecated": "1.11.99.1",
