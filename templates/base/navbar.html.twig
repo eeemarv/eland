@@ -94,7 +94,7 @@
 				{%- block label -%}{{- account_name -}}{%- endblock label -%}
 				{%- block menu_items -%}
 					{%- set pp_su_role_short = pp_ary().role_short is defined and pp_ary().role_short != 'g' ? pp_ary().role_short : su_role_short -%}
-					{%- if su_is_system_self() -%}
+					{%- if su_is_system_self() and not su_is_master() -%}
 						{%- for rt, dt in user_menu_self -%}
 							{%- include 'include/menu_item_self.html.twig' -%}
 						{%- endfor -%}
