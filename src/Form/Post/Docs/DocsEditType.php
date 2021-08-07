@@ -4,11 +4,11 @@ namespace App\Form\Post\Docs;
 
 use App\Command\Docs\DocsCommand;
 use App\Form\EventSubscriber\AccessFieldSubscriber;
-use App\Form\Input\TextAddonType;
 use App\Service\TypeaheadService;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class DocsEditType extends AbstractType
@@ -27,14 +27,14 @@ class DocsEditType extends AbstractType
             ->str();
 
         $builder
-            ->add('file_location', TextAddonType::class, [
+            ->add('file_location', TextType::class, [
                 'disabled'  => true,
             ])
-            ->add('original_filename', TextAddonType::class, [
+            ->add('original_filename', TextType::class, [
                 'disabled'  => true,
             ])
-            ->add('name', TextAddonType::class)
-            ->add('map_name', TextAddonType::class, [
+            ->add('name', TextType::class)
+            ->add('map_name', TextType::class, [
                 'attr'  => [
                     'data-typeahead'    => $data_typeahead,
                 ],

@@ -42,6 +42,7 @@ btn:
   send: Verzenden
   show: Toon
   show_columns: Toon Kolommen
+  store: Opslaan
   transaction: Transactie
   transaction_to: Transactie naar {user}
   try_again: Opnieuw proberen
@@ -342,8 +343,22 @@ categories_del:
   title: >-
     Categorie "{name}" verwijderen?
 
-cms_edit_modus:
+cms_edit:
   title: CMS edit modus
+  explain: Editing van content blokken.
+  editor_style:
+    title: Editor stijl
+    inline: Inline
+    full: Volledig
+  block_type:
+    title: Blok type
+    local:
+      label: Lokaal
+      title: Blokken die eigen zijn aan een pagina
+    global:
+      label: Globaal
+      title: Blokken die op alle pagina's getoond worden.
+  related_pages: Verwante pagina's
 
 config:
   title: Instellingen
