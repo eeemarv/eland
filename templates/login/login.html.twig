@@ -1,6 +1,42 @@
 {%- extends 'base/navbar.html.twig' -%}
+{%- import 'macro/anchor.html.twig' as a -%}
 
 {%- set active_menu = 'login' -%}
+
+{%- block content -%}
+{%- endblock content -%}
+
+{%- block form_a -%}
+    {{- form_row(form.login, {
+        'label': 'login.login.label',
+        'help': 'login.login.help',
+        'pre_addon': {
+            'fa': 'user'
+        }
+    }) -}}
+
+    {{- form_row(form.password, {
+        'label': 'label.password',
+        'help': 'login.password_reset_link',
+        'help_translation_parameters': {
+            'open_link': a.open_context_path('password_reset'),
+            'close_link': a.close()
+        },
+        'help_html': true,
+        'pre_addon': {
+            'fa': 'key'
+        }
+    }) -}}
+{%- endblock form_a -%}
+
+{%- block form_cancel_btn -%}
+{%- endblock form_cancel_btn -%}
+
+{%- block form_submit_btn -%}
+    {%- include 'form/submit_send_btn.html.twig' with {
+        'label': 'btn.login'
+    } -%}
+{%- endblock form_submit_btn -%}
 
 {%- block css -%}
     {{- parent() -}}

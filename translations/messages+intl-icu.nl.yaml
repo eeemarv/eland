@@ -35,6 +35,7 @@ btn:
   generate: Genereer
   generate_password_title: >-
     Genereer automatisch een paswoord
+  login: Inloggen
   password: Paswoord
   password_reset: Reset Paswoord
   register: Inschrijven
@@ -650,11 +651,11 @@ index:
 
 login:
   title: Login
-  login: Login
-  login_explain: E-mail, Gebruikersnaam of Account Code
-  btn: Inloggen
-  password_reset_request_link: >-
-    Klik hier als je je paswoord vergeten bent.
+  login:
+    label: Login
+    help: E-mail, Gebruikersnaam of Account Code
+  password_reset_link: >-
+    {open_link}Klik hier als je je paswoord vergeten bent.{close_link}
 
 logout:
   title: Uitloggen

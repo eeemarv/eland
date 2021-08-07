@@ -20,12 +20,20 @@ form:
       Het formulier bevat geen geldig token.
 
 login:
+  maintenance: >-
+    De website is in onderhoud, probeer het later opnieuw.
   login:
     email_not_unique: >-
       Je kan dit E-mail adres niet gebruiken
       om in te loggen want het is niet
       uniek aanwezig in dit Systeem. Gebruik
       je Account Code of Gebruikersnaam.
+    guest_no_rights: >-
+      Geen inlogrechten voor dit account.
+    guest_not_allowed: >-
+      Het account is een interSysteem-gast account,
+      maar interSysteem functionaliteit is
+      niet ingeschakeld in dit systeem.
     name_not_unique: >-
       Je kan deze gebruikersnaam niet gebruiken
       om in te loggen want deze is niet

@@ -20,9 +20,9 @@ class UserRepository
 
 	public function get_account_str(int $id, string $schema):string
 	{
-        $account_str = $this->db->fetchColumn('select trim(concat(coalesce(code,\'\'), \' \', coalesce(name, \'\')))
+        $account_str = $this->db->fetchOne('select trim(concat(coalesce(code,\'\'), \' \', coalesce(name, \'\')))
             from ' . $schema . '.users
-			where id = ?', [$id]);
+			where id = ?', [$id], [\PDO::PARAM_INT]);
 
 		if (!$account_str)
 		{
@@ -32,6 +32,20 @@ class UserRepository
 		return $account_str;
 	}
 
+	public function insert_login(
+		int $user_id,
+		string $agent,
+		string $ip,
+		string $schema
+	):void
+	{
+		$this->db->insert($schema . '.login', [
+			'user_id'       => $user_id,
+			'agent'         => $agent,
+			'ip'            => $ip,
+		]);
+	}
+
 	public function count_email(
 		string $email,
 		string $schema
@@ -39,12 +53,12 @@ class UserRepository
 	{
 		$email_lowercase = strtolower($email);
 
-		return $this->db->fetchColumn('select count(c.*)
+		return $this->db->fetchOne('select count(c.*)
 			from ' . $schema . '.contact c, ' .
 				$schema . '.type_contact tc
 			where c.id_type_contact = tc.id
 				and tc.abbrev = \'mail\'
-				and lower(c.value) = ?', [$email_lowercase]);
+				and lower(c.value) = ?', [$email_lowercase], [\PDO::PARAM_STR]);
 	}
 
 	public function count_active_by_email(
@@ -54,7 +68,7 @@ class UserRepository
 	{
 		$email_lowercase = strtolower($email);
 
-		return $this->db->fetchColumn('select count(c.*)
+		return $this->db->fetchOne('select count(c.*)
 			from ' . $schema . '.contact c, ' .
 				$schema . '.type_contact tc, ' .
 				$schema . '.users u
@@ -62,7 +76,7 @@ class UserRepository
 				and tc.abbrev = \'mail\'
 				and c.user_id = u.id
 				and u.status in (1, 2)
-				and lower(c.value) = ?', [$email_lowercase]);
+				and lower(c.value) = ?', [$email_lowercase], [\PDO::PARAM_STR]);
 	}
 
 	public function get_active_id_by_eamil(
@@ -72,7 +86,7 @@ class UserRepository
 	{
 		$email_lowercase = strtolower($email);
 
-		$id = $this->db->fetchColumn('select u.id
+		$id = $this->db->fetchOne('select u.id
 			from ' . $schema . '.contact c, ' .
 				$schema . '.type_contact tc, ' .
 				$schema . '.users u
@@ -80,7 +94,9 @@ class UserRepository
 				and tc.abbrev = \'mail\'
 				and c.user_id = u.id
 				and u.status in (1, 2)
-				and lower(c.value) = ?', [$email_lowercase]);
+				and lower(c.value) = ?',
+				[$email_lowercase],
+				[\PDO::PARAM_STR]);
 
 		if (!$id)
 		{
@@ -97,29 +113,38 @@ class UserRepository
 	{
 		$name_lowercase = strtolower($name);
 
-		return $this->db->fetchColumn('select count(u.*)
+		return $this->db->fetchOne('select count(u.*)
                 from ' . $schema . '.users u
-                where lower(u.name) = ?', [$name_lowercase]);
+                where lower(u.name) = ?',
+				[$name_lowercase],
+				[\PDO::PARAM_STR]
+			);
 	}
 
 	public function count_active_by_name(string $name, string $schema):int
 	{
 		$name_lowercase = strtolower($name);
 
-		return $this->db->fetchColumn('select count(u.*)
+		return $this->db->fetchOne('select count(u.*)
 			from ' . $schema . '.users u
 			where u.status in (1, 2)
-				and lower(u.name) = ?', [$name_lowercase]);
+				and lower(u.name) = ?',
+				[$name_lowercase],
+				[\PDO::PARAM_STR]
+			);
 	}
 
 	public function get_active_id_by_name(string $name, string $schema):int
 	{
 		$name_lowercase = strtolower($name);
 
-		$id = $this->db->fetchColumn('select u.id
+		$id = $this->db->fetchOne('select u.id
 			from ' . $schema . '.users u
 			where u.status in (1, 2)
-				and lower(u.name) = ?', [$name_lowercase]);
+				and lower(u.name) = ?',
+				[$name_lowercase],
+				[\PDO::PARAM_STR]
+			);
 
 		if (!$id)
 		{
@@ -133,19 +158,25 @@ class UserRepository
 	{
 		$code_lowercase = strtolower($code);
 
-		return $this->db->fetchColumn('select count(u.*)
+		return $this->db->fetchOne('select count(u.*)
 			from ' . $schema . '.users u
 			where u.status in (1, 2)
-				and lower(u.code) = ?', [$code_lowercase]);
+				and lower(u.code) = ?',
+				[$code_lowercase],
+				[\PDO::PARAM_STR]
+			);
 	}
 
 	public function get_by_code(string $code, string $schema):int
 	{
 		$code_lowercase = strtolower($code);
 
-		$id = $this->db->fetchColumn('select u.id
+		$id = $this->db->fetchOne('select u.id
 			from ' . $schema . '.users u
-			where lower(u.code) = ?', [$code_lowercase]);
+			where lower(u.code) = ?',
+			[$code_lowercase],
+			[\PDO::PARAM_STR]
+		);
 
 		if (!$id)
 		{
@@ -159,10 +190,13 @@ class UserRepository
 	{
 		$code_lowercase = strtolower($code);
 
-		$id = $this->db->fetchColumn('select u.id
+		$id = $this->db->fetchOne('select u.id
 			from ' . $schema . '.users u
 			where u.status in (1, 2)
-				and lower(u.code) = ?', [$code_lowercase]);
+				and lower(u.code) = ?',
+				[$code_lowercase],
+				[\PDO::PARAM_STR]
+			);
 
 		if (!$id)
 		{
@@ -174,9 +208,12 @@ class UserRepository
 
 	public function get(int $id, string $schema):array
 	{
-		$user = $this->db->fetchAssoc('select u.*
+		$user = $this->db->fetchAssociative('select u.*
 			from ' . $schema . '.users u
-			where u.id = ?', [$id]);
+			where u.id = ?',
+			[$id],
+			[\PDO::PARAM_INT]
+		);
 
 		if (!$user)
 		{
@@ -271,14 +308,14 @@ class UserRepository
 
 	public function is_active(int $id, string $schema):bool
 	{
-		return $this->db->fetchColumn('select id
+		return $this->db->fetchOne('select id
 			from ' . $schema . '.users
 			where status in (1, 2)
-				and id = ?', [$id]) ? true : false;
+				and id = ?', [$id], [\PDO::PARAM_INT]) ? true : false;
 	}
 
 	/********************* */
-
+	/*
 	public function getFiltered(string $schema, FilterQuery $filterQuery, Sort $sort, Pagination $pagination):array
 	{
 		$query = 'select u.* from ' . $schema . '.users u';
@@ -301,12 +338,13 @@ class UserRepository
 	public function getFilteredRowCount(string $schema, FilterQuery $filterQuery):int
 	{
 		$query = 'select count(u.*) from ' . $schema . '.users u' . $filterQuery->getWhereQueryString();
-		return $this->db->fetchColumn($query, $filterQuery->getParams());
+		return $this->db->fetchOne($query, $filterQuery->getParams());
 	}
 
 	public function getFilteredBalanceSum(string $schema, FilterQuery $filterQuery):int
 	{
 		$query = 'select sum(u.saldo) from ' . $schema . '.users u' . $filterQuery->getWhereQueryString();
-		return $this->db->fetchColumn($query, $filterQuery->getParams()) ?? 0;
+		return $this->db->fetchOne($query, $filterQuery->getParams()) ?? 0;
 	}
+	*/
 }

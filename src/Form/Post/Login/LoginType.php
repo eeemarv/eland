@@ -1,23 +1,22 @@
 <?php declare(strict_types=1);
 
-namespace App\Form\Post\Auth;
+namespace App\Form\Post\Login;
 
-use App\Command\Auth\LoginCommand;
+use App\Command\Login\LoginCommand;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-
-use App\Form\Input\TextAddonType;
-use App\Form\Input\PasswordAddonType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 class LoginType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('login', TextAddonType::class)
-            ->add('password', PasswordAddonType::class)
+            ->add('login', TextType::class)
+            ->add('password', PasswordType::class)
             ->add('submit', SubmitType::class);
     }
 
@@ -30,6 +29,6 @@ class LoginType extends AbstractType
 
     public function getBlockPrefix()
     {
-        return 'login_form';
+        return '';
     }
 }

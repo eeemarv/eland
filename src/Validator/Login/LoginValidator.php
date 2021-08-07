@@ -10,39 +10,41 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use App\Service\PageParamsService;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use App\Security\User;
+use App\Service\ConfigService;
 
 class LoginValidator extends ConstraintValidator
 {
     public function __construct(
         protected EncoderFactoryInterface $encoder_factory,
         protected UserRepository $user_repository,
+        protected ConfigService $config_service,
         protected PageParamsService $pp,
         protected string $env_master_password
     )
     {
     }
 
-    public function validate($login_command, Constraint $constraint)
+    public function validate($command, Constraint $constraint)
     {
         if (!$constraint instanceof Login)
         {
             throw new UnexpectedTypeException($constraint, Login::class);
         }
 
-        if (!$login_command instanceof LoginCommand)
+        if (!$command instanceof LoginCommand)
         {
-            throw new UnexpectedTypeException($login_command, LoginCommand::class);
+            throw new UnexpectedTypeException($command, LoginCommand::class);
         }
 
-        $login_lowercase = strtolower($login_command->login);
-        $password = $login_command->password;
+        $login_lowercase = strtolower($command->login);
+        $password = $command->password;
         $encoder = $this->encoder_factory->getEncoder(new User());
 
         if ($login_lowercase === 'master'
             && $this->env_master_password
             && $encoder->isPasswordValid($this->env_master_password, $password, null))
         {
-            $login_command->is_master = true;
+            $command->is_master = true;
             return;
         }
 
@@ -60,11 +62,11 @@ class LoginValidator extends ConstraintValidator
 
             if ($count_by_email === 1)
             {
-                $login_command->id = $this->user_repository->get_active_id_by_eamil($login_lowercase, $this->pp->schema());
+                $command->id = $this->user_repository->get_active_id_by_eamil($login_lowercase, $this->pp->schema());
             }
         }
 
-        if (!isset($login_command->id))
+        if (!isset($command->id))
         {
             $count_by_name = $this->user_repository->count_active_by_name($login_lowercase, $this->pp->schema());
 
@@ -78,11 +80,11 @@ class LoginValidator extends ConstraintValidator
 
             if ($count_by_name === 1)
             {
-                $login_command->id = $this->user_repository->get_active_id_by_name($login_lowercase, $this->pp->schema());
+                $command->id = $this->user_repository->get_active_id_by_name($login_lowercase, $this->pp->schema());
             }
         }
 
-        if (!isset($login_command->id))
+        if (!isset($command->id))
         {
             $count_by_code = $this->user_repository->count_active_by_code($login_lowercase, $this->pp->schema());
 
@@ -96,11 +98,11 @@ class LoginValidator extends ConstraintValidator
 
             if ($count_by_code === 1)
             {
-                $login_command->id = $this->user_repository->get_active_id_by_code($login_lowercase, $this->pp->schema());
+                $command->id = $this->user_repository->get_active_id_by_code($login_lowercase, $this->pp->schema());
             }
         }
 
-        if (!isset($login_command->id) || !$login_command->id)
+        if (!isset($command->id) || !$command->id)
         {
             $this->context->buildViolation('login.login.not_known')
                 ->atPath('login')
@@ -108,7 +110,7 @@ class LoginValidator extends ConstraintValidator
             return;
         }
 
-        $user = $this->user_repository->get($login_command->id, $this->pp->schema());
+        $user = $this->user_repository->get($command->id, $this->pp->schema());
 
         if (!$user)
         {
@@ -128,17 +130,46 @@ class LoginValidator extends ConstraintValidator
             return;
         }
 
+        $maintenance_en = $this->config_service->get_bool('system.maintenance_en', $this->pp->schema());
+
+        if ($maintenance_en && $user['role'] !== 'admin')
+        {
+            $this->context->buildViolation('login.maintenance')
+                ->addViolation();
+            return;
+        }
+
+        if (!in_array($user['role'], ['admin', 'user']))
+        {
+            // no guest logins yet
+            $this->context->buildViolation('login.login.guest_no_rights')
+                ->atPath('login')
+                ->addViolation();
+            return;
+        }
+
+        $intersystem_en = $this->config_service->get_intersystem_en($this->pp->schema());
+
+        if (!$intersystem_en && !in_array($user['role'], ['admin', 'user']))
+        {
+            // should never happen (see above)
+            $this->context->buildViolation('login.login.guest_not_allowed')
+                ->atPath('login')
+                ->addViolation();
+            return;
+        }
+
         if ($user['password'] === hash('sha512', $password))
         {
             $hashed_password = $encoder->encodePassword($password, null);
 
             $this->user_repository->set_password(
-                $login_command->id,
+                $command->id,
                 $hashed_password,
                 $this->pp->schema()
             );
 
-            $login_command->password_hashing_updated = true;
+            $command->password_hashing_updated = true;
 
             return;
         }

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller\Auth;
+namespace App\Controller\Logout;
 
 use App\Service\AlertService;
 use App\Service\PageParamsService;
