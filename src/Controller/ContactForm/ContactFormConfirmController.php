@@ -17,7 +17,7 @@ class ContactFormConfirmController extends AbstractController
 {
     #[Route(
         '/{system}/contact/{token}',
-        name: 'config_form_confirm',
+        name: 'contact_form_confirm',
         methods: ['GET'],
         priority: 10,
         requirements: [

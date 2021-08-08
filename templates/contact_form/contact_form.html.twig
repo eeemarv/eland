@@ -2,6 +2,35 @@
 
 {%- set active_menu = 'contact_form' -%}
 
+{%- block content -%}
+{%- endblock content -%}
+
+{%- block form_a -%}
+    {{- form_row(form.email, {
+        'label': 'label.your_email',
+        'help': 'contact_form.email.help',
+        'pre_addon': {
+            'fa': 'envelope-o'
+        }
+    }) -}}
+
+    {{- form_row(form.message, {
+        'label': 'label.your_message',
+        'attr': {
+            'rows': 5
+        }
+    }) -}}
+
+    {%- include 'include/captcha.html.twig' -%}
+{%- endblock form_a -%}
+
+{%- block form_cancel_btn -%}
+{%- endblock form_cancel_btn -%}
+
+{%- block form_submit_btn -%}
+    {%- include 'form/submit_send_btn.html.twig' -%}
+{%- endblock form_submit_btn -%}
+
 {%- block css -%}
     {{- parent() -}}
 {%- endblock css -%}

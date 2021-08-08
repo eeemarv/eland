@@ -112,3 +112,14 @@
         {{- block('form_label') -}}
     </div>
 {% endblock %}
+
+{%- block captcha_widget -%}
+    {{- block('form_widget') -}}
+{%- endblock captcha_widget -%}
+
+{%- block captcha_row -%}
+    <div class="form-group">
+    {{- block('form_row') -}}
+    <img src="{{- captcha_code -}}" title="captcha" width="{{- captcha_width -}}" height="{{- captcha_height -}}">
+    </div>
+{%- endblock captcha_row -%}

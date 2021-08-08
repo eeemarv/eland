@@ -8,16 +8,15 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-
-use App\Form\Input\EmailAddonType;
 use Gregwar\CaptchaBundle\Type\CaptchaType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 
 class ContactFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('email', EmailAddonType::class)
+            ->add('email', EmailType::class)
             ->add('message', TextareaType::class)
             ->add('captcha', CaptchaType::class)
             ->add('submit', SubmitType::class);

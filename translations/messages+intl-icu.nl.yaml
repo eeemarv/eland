@@ -48,6 +48,10 @@ btn:
   transaction_to: Transactie naar {user}
   try_again: Opnieuw proberen
 
+captcha:
+  label: Anti-spam verificatiecode
+  help: Typ de code die hieronder getoond wordt.
+
 date_format:
   technical:
     day: '%Y-%m-%d'
@@ -470,6 +474,10 @@ config_name:
 
 contact_form:
   title: Contact
+  email:
+    help: >-
+      Er wordt een validatielink die je moet
+      aanklikken naar je E-mailbox verstuurd.
 
 contact_types:
   title: Contact types
