@@ -79,7 +79,7 @@ class UserRepository
 				and lower(c.value) = ?', [$email_lowercase], [\PDO::PARAM_STR]);
 	}
 
-	public function get_active_id_by_eamil(
+	public function get_active_id_by_email(
 		string $email,
 		string $schema
 	):int

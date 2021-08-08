@@ -863,10 +863,11 @@ news_sort:
 
 password_reset:
   title: Paswoord vergeten
-  email_explain: >-
-    Vul hier het E-mail adres in waarmee je geregistreerd
-    staat in het Systeem. Een link om je paswoord te
-    resetten wordt naar je E-mailbox gestuurd.
+  email:
+    help: >-
+      Vul hier het E-mail adres in waarmee je geregistreerd
+      staat in het Systeem. Een link om je paswoord te
+      resetten wordt naar je E-mailbox gestuurd.
   btn: Zend paswoord reset link
 
 password_reset_confirm:

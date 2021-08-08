@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
-class PasswordResetSetCommand implements CommandInterface
+class PasswordResetConfirmCommand implements CommandInterface
 {
     public $password;
 
