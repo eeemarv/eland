@@ -2,26 +2,26 @@
 
 namespace App\Form\Post\PasswordReset;
 
-use App\Command\PasswordReset\PasswordResetSetCommand;
-use App\Form\Input\PasswordResetAddonType;
+use App\Command\PasswordReset\PasswordResetCommand;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 
-class PasswordResetSetType extends AbstractType
+class PasswordResetType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-			->add('password', PasswordResetAddonType::class)
-			->add('submit', SubmitType::class);
+            ->add('email', EmailType::class)
+            ->add('submit', SubmitType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class'    => PasswordResetSetCommand::class,
+            'data_class'    => PasswordResetCommand::class,
         ]);
     }
 }
