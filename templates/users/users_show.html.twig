@@ -80,7 +80,7 @@
         'self': is_self ? 'self' : 'other',
         'user': account(id, schema)|link('users_show', {'id': id}),
     })|raw -}}
-    {{- account_status(id, schema) -}}
+    {{- account_status(id, schema)|raw -}}
     {%- if pp_role('admin') -%}
         {%- if intersystem_missing -%}
             &nbsp;
