@@ -130,6 +130,19 @@ class LoginController extends AbstractController
                 wegens onderhoudswerken.  Enkel admins kunnen inloggen', false);
         }
 
+        if ($request->isMethod('GET') && $su->is_user())
+        {
+            if ($location)
+            {
+                if (stripos($location, $pp->system() . '/a/') === false)
+                {
+                    return $this->redirect($location);
+                }
+            }
+
+            return $this->redirectToRoute($vr->get('default'), $su->ary());
+        }
+
         return $this->render('login/login.html.twig', [
             'form'      => $form->createView(),
         ]);

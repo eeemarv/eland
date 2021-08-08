@@ -100,10 +100,13 @@
 						{%- endfor -%}
 						<li class="divider"></li>
 					{%- endif -%}
-					{%- include 'include/menu_item_self.html.twig' with {
-						'rt': 'logout',
-						'dt': {'fa': 'sign-out', 'title': 'logout.title'}
-					} -%}
+					<li>
+						<a href="{{- path('logout', su_ary()) -}}">
+							<i class="fa fa-sign-out"></i>
+							&nbsp;
+							{{- 'logout.title'|trans -}}
+						</a>
+					</li>
 				{%- endblock menu_items -%}
 			{%- endembed -%}
 		{%- endif -%}

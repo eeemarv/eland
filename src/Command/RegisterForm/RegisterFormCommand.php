@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Command\Register;
+namespace App\Command\RegisterForm;
 
 use App\Command\CommandInterface;
 use App\Validator\EmailNotRegisteredYet;
@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
-class RegisterCommand implements CommandInterface
+class RegisterFormCommand implements CommandInterface
 {
     public $email;
     public $first_name;

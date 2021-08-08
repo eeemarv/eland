@@ -14,6 +14,6 @@ class ContactFormCommand implements CommandInterface
     public $email;
 
     #[NotBlank()]
-    #[Length(min: 10, max: 10000)]
+    #[Length(max: 10000)]
     public $message;
 }

@@ -78,7 +78,5 @@ class ContactFormConfirmController extends AbstractController
 
         $alert_service->success('Je bericht werd succesvol verzonden.');
         return $this->redirectToRoute('contact_form', $pp->ary());
-
-        return new Response();
     }
 }

@@ -1,1 +1,64 @@
 {%- extends 'register_form/base/register_form_base.html.twig' -%}
+
+{%- block content -%}
+{%- endblock content -%}
+
+{%- block form_a -%}
+    {{- form_row(form.email, {
+        'label': 'label.your_email',
+        'help': 'help.email_validation_link',
+        'pre_addon': {
+            'fa': 'envelope-o'
+        }
+    }) -}}
+
+    {{- form_row(form.first_name, {
+        'label': 'label.first_name',
+        'pre_addon': {
+            'fa': 'user'
+        }
+    }) -}}
+
+    {{- form_row(form.last_name, {
+        'label': 'label.last_name',
+        'pre_addon': {
+            'fa': 'user'
+        }
+    }) -}}
+
+    {{- form_row(form.postcode, {
+        'label': 'label.postcode',
+        'pre_addon': {
+            'fa': 'map-marker'
+        }
+    }) -}}
+
+    {{- form_row(form.mobile, {
+        'label': 'label.mobile',
+        'sub_label': 'label.optional',
+        'pre_addon': {
+            'fa': 'mobile'
+        },
+        'required': false
+    }) -}}
+
+    {{- form_row(form.phone, {
+        'label': 'label.phone',
+        'sub_label': 'label.optional',
+        'pre_addon': {
+            'fa': 'phone'
+        },
+        'required': false
+    }) -}}
+
+    {%- include 'include/captcha.html.twig' -%}
+{%- endblock form_a -%}
+
+{%- block form_cancel_btn -%}
+{%- endblock form_cancel_btn -%}
+
+{%- block form_submit_btn -%}
+    {%- include 'form/submit_edit_btn.html.twig' with {
+        'label': 'btn.register'
+    } -%}
+{%- endblock form_submit_btn -%}
