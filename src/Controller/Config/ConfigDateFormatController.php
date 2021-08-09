@@ -37,9 +37,7 @@ class ConfigDateFormatController extends AbstractController
         $command = new ConfigDateFormatCommand();
         $config_service->load_command($command, $pp->schema());
 
-        $form = $this->createForm(ConfigDateFormatType::class,
-                $command);
-
+        $form = $this->createForm(ConfigDateFormatType::class, $command);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()

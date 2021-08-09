@@ -44,7 +44,6 @@ class ConfigLandingPageController extends AbstractController
             && $form->isValid())
         {
             $command = $form->getData();
-
             $config_service->store_command($command, $pp->schema());
 
             $alert_service->success('Landingspagina aangepast.');
@@ -52,7 +51,7 @@ class ConfigLandingPageController extends AbstractController
         }
 
         return $this->render('config/config_landing_page.html.twig', [
-            'form'          => $form->createView(),
+            'form'  => $form->createView(),
         ]);
     }
 }

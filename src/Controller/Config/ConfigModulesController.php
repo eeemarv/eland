@@ -35,7 +35,6 @@ class ConfigModulesController extends AbstractController
     ):Response
     {
         $command = new ConfigModulesCommand();
-
         $config_service->load_command($command, $pp->schema());
 
         $form = $this->createForm(ConfigModulesType::class, $command);
@@ -45,7 +44,6 @@ class ConfigModulesController extends AbstractController
             && $form->isValid())
         {
             $command = $form->getData();
-
             $config_service->store_command($command, $pp->schema());
 
             $alert_service->success('Modules aangepast.');

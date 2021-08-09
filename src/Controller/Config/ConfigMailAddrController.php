@@ -41,19 +41,12 @@ class ConfigMailAddrController extends AbstractController
         $config_service->load_command($command, $pp->schema());
 
         $form = $this->createForm(ConfigMailAddrType::class, $command);
-
         $form->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
             $command = $form->getData();
-
-            error_log(var_export($command, true));
-
-            error_log(var_export(array_values($command->support), true));
-            error_log(var_export($command->support, true));
-
             $config_service->store_command($command, $pp->schema());
 
             $alert_service->success('E-mail adressen aangepast.');
