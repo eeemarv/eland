@@ -38,8 +38,6 @@ class CategoriesController extends AbstractController
         PageParamsService $pp
     ):Response
     {
-        $errors = [];
-
         if (!$config_service->get_bool('messages.fields.category.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Categories module not enabled.');
@@ -54,18 +52,18 @@ class CategoriesController extends AbstractController
         $categories = $fetch['categories'];
         $input_ary = $fetch['input_ary'];
 
-        $categories_list_command = new CategoriesListCommand();
+        $command = new CategoriesListCommand();
 
-        $categories_list_command->categories = json_encode($input_ary);
+        $command->categories = json_encode($input_ary);
 
-        $form = $this->createForm(CategoriesListType::class, $categories_list_command)
+        $form = $this->createForm(CategoriesListType::class, $command)
             ->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $categories_list_command = $form->getData();
-            $categories_json = $categories_list_command->categories;
+            $command = $form->getData();
+            $categories_json = $command->categories;
             $posted_categories = json_decode($categories_json, true);
 
             $update_count = $category_repository->update_list($posted_categories, $pp->schema());

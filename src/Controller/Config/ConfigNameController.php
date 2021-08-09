@@ -38,14 +38,12 @@ class ConfigNameController extends AbstractController
         $config_service->load_command($command, $pp->schema());
 
         $form = $this->createForm(ConfigNameType::class, $command);
-
         $form->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
             $command = $form->getData();
-
             $config_service->store_command($command, $pp->schema());
 
             $alert_service->success('Naam systeem aangepast.');

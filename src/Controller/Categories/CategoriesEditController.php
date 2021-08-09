@@ -52,19 +52,18 @@ class CategoriesEditController extends AbstractController
 
         $category = $category_repository->get($id, $pp->schema());
 
-        $categories_name_command = new CategoriesNameCommand();
-        $categories_name_command->id = $id;
-        $categories_name_command->name = $category['name'];
+        $command = new CategoriesNameCommand();
+        $command->id = $id;
+        $command->name = $category['name'];
 
-        $form = $this->createForm(CategoriesNameType::class,
-                $categories_name_command)
-            ->handleRequest($request);
+        $form = $this->createForm(CategoriesNameType::class, $command);
+        $form->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $categories_name_command = $form->getData();
-            $name= $categories_name_command->name;
+            $command = $form->getData();
+            $name= $command->name;
 
             $category_repository->update_name($id, $name, $pp->schema());
 

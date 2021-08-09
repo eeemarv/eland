@@ -10,9 +10,6 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ConfigMailController extends AbstractController
@@ -38,18 +35,15 @@ class ConfigMailController extends AbstractController
     ):Response
     {
         $command = new ConfigMailCommand();
-
         $config_service->load_command($command, $pp->schema());
 
         $form = $this->createForm(ConfigMailType::class, $command);
-
         $form->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
             $command = $form->getData();
-
             $config_service->store_command($command, $pp->schema());
 
             $alert_service->success('E-mail instellingen aangepast.');
@@ -57,7 +51,7 @@ class ConfigMailController extends AbstractController
         }
 
         return $this->render('config/config_mail.html.twig', [
-            'form'          => $form->createView(),
+            'form'  => $form->createView(),
         ]);
     }
 }

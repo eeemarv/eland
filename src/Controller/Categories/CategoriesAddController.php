@@ -50,18 +50,17 @@ class CategoriesAddController extends AbstractController
             throw new NotFoundHttpException('Categories module not enabled.');
         }
 
-        $categories_name_command = new CategoriesNameCommand();
-        $categories_name_command->id = 0;
+        $command = new CategoriesNameCommand();
+        $command->id = 0;
 
-        $form = $this->createForm(CategoriesNameType::class,
-                $categories_name_command)
-            ->handleRequest($request);
+        $form = $this->createForm(CategoriesNameType::class, $command);
+        $form->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $categories_name_command = $form->getData();
-            $name= $categories_name_command->name;
+            $command = $form->getData();
+            $name= $command->name;
 
             $category_repository->insert($name, $su, $pp->schema());
 

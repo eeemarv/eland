@@ -38,14 +38,12 @@ class ConfigMaintenanceController extends AbstractController
         $config_service->load_command($command, $pp->schema());
 
         $form = $this->createForm(ConfigMaintenanceType::class, $command);
-
         $form->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
             $command = $form->getData();
-
             $config_service->store_command($command, $pp->schema());
 
             $alert_service->success('Onderhouds modus aangepast.');

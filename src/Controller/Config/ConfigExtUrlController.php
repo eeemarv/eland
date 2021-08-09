@@ -37,16 +37,13 @@ class ConfigExtUrlController extends AbstractController
         $command = new ConfigExtUrlCommand();
         $config_service->load_command($command, $pp->schema());
 
-        $form = $this->createForm(ConfigExtUrlType::class,
-                $command);
-
+        $form = $this->createForm(ConfigExtUrlType::class, $command);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
             $command = $form->getData();
-
             $config_service->store_command($command, $pp->schema());
 
             $alert_service->success('Externe URL aangepast.');
