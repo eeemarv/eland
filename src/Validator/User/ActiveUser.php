@@ -4,6 +4,7 @@ namespace App\Validator\User;
 
 use Symfony\Component\Validator\Constraint;
 
+#[\Attribute]
 class ActiveUser extends Constraint
 {
 }

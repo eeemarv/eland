@@ -4,6 +4,7 @@ namespace App\Validator\Category;
 
 use Symfony\Component\Validator\Constraint;
 
+#[\Attribute]
 class CategoryIsLeaf extends Constraint
 {
 }

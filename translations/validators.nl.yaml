@@ -63,6 +63,11 @@ email_not_registered_yet:
     Er bestaat reeds een inschrijving met
     dit E-mail adres.
 
+mollie:
+  not_live_nor_test: >-
+    De Mollie apikey moet beginnen met
+    live_ of test_
+
 password_strength:
   Het paswoord is niet sterk genoeg.
 

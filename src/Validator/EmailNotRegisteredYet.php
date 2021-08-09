@@ -4,6 +4,7 @@ namespace App\Validator;
 
 use Symfony\Component\Validator\Constraint;
 
+#[\Attribute]
 class EmailNotRegisteredYet extends Constraint
 {
 }

@@ -1,4 +1,3 @@
-{# {%- if pp_ary().edit.en is defined and su_role('admin') and su_is_system_self() -%} #}
 {%- if cms_edit_form is defined -%}
 	{%- set cms_token = constant('App\\Cnst\\PagesCnst::CMS_TOKEN') -%}
 
@@ -147,6 +146,7 @@
 						}
 					}) -}}
 					{%- include 'form/cancel_btn.html.twig' with {
+						'cancel_route': route,
 						'cancel_route_params': {'edit': {'en': '0'}}
 					} -%}
 					{%- include 'form/submit_edit_btn.html.twig' with {

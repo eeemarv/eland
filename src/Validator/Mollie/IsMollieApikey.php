@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace App\Validator;
+namespace App\Validator\Mollie;
 
 use Symfony\Component\Validator\Constraint;
 
 #[\Attribute]
-class EmailUniqueToActiveUser extends Constraint
+class IsMollieApikey extends Constraint
 {
 }

@@ -1,8 +1,37 @@
 {%- extends 'mollie/base/mollie_base.html.twig' -%}
+{%- import 'macro/anchor.html.twig' as a -%}
 
 {%- block heading_title -%}
     {{- 'mollie_config.title'|trans -}}
 {%- endblock heading_title -%}
+
+{%- block content -%}
+{%- endblock content -%}
+
+{%- block form_a -%}
+    <p>
+        {{- 'mollie_config.explain'|trans({
+            'link_open': a.open('https://www.mollie.com/nl/'),
+            'link_close': a.close()
+        })|raw -}}
+    </p>
+
+    {{- form_row(form.apikey, {
+        'label': 'mollie_config.apikey.label',
+        'pre_addon': {
+            'fa': 'key',
+        },
+        'help_html': true,
+        'help': 'mollie_config.apikey.help',
+        'help_translation_parameters': {
+            'link_open': a.open('https://www.mollie.com/nl/'),
+            'link_close': a.close()
+        },
+        'required': false
+    }) -}}
+{%- endblock form_a -%}
+
+{%- set cancel_route = 'mollie_payments' -%}
 
 {%- block css -%}
     {{- parent() -}}

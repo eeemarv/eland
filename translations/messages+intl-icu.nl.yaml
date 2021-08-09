@@ -833,6 +833,21 @@ mollie_checkout:
 
 mollie_config:
   title: Mollie configuratie
+  explain: >-
+    Om betalingen met {link_open}Mollie{link_close}
+    te ontvangen moet je op de
+    {link_open}Mollie-website{link_close} een account
+    aanmaken voor je organisatie. Dit kan enkel
+    voor organisaties met handelsregisternummer
+    en zakelijk bankaccount.
+  apikey:
+    label: Mollie apikey
+    help: >-
+      Kopiëer de apikey die je bekomt van
+      de {link_open}Mollie website{link_close}.
+      Ze moet beginnen met live_ of test_.
+      (Met test_ kan je enkel testen en geen
+      betalingen ontvangen.)
 
 mollie_payments:
   title: Mollie betaalverzoeken
