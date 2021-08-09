@@ -362,6 +362,8 @@ cms_edit:
       label: Globaal
       title: Blokken die op alle pagina's getoond worden.
   related_pages: Verwante pagina's
+  form_disabled: >-
+    Dit formulier is niet actief in CMS Edit Mdous.
 
 config:
   title: Instellingen
@@ -872,6 +874,12 @@ password_reset:
 
 password_reset_confirm:
   title: Nieuw paswoord ingeven
+  password:
+    help: >-
+      Voor de veiligheid verzin een paswoord voor
+      je account dat je alleen op deze site gebruikt.
+      Gebruik eventueel de "Genereer" knop om automatisch
+      een random paswoord aan te maken.
 
 register_form:
   title: Inschrijven
