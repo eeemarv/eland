@@ -75,8 +75,7 @@ class UsersDelController extends AbstractController
 
         if (!$user)
         {
-            throw new NotFoundHttpException(
-                'De gebruiker met id ' . $id . ' bestaat niet.');
+            throw new NotFoundHttpException('The user with id ' . $id . ' does not exist.');
         }
 
         if ($request->isMethod('POST'))

@@ -17,7 +17,7 @@ class PasswordStrengthValidator extends ConstraintValidator
 
         if (!is_string($password))
         {
-            throw new UnexpectedTypeException($password, 'string');
+			return;
         }
 
         $strength = $this->get_strength($password);

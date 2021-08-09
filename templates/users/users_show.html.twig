@@ -35,18 +35,14 @@
 {%- endblock btn_top_del -%}
 
 {%- block btn_top_password_edit -%}
-    {%- if pp_role('admin') -%}
+    {%- if pp_role('admin') or su_is_owner(id) -%}
         {%- include 'include/btn_top/password_edit.html.twig' with {
-            'btn_route': 'users_password_edit',
+            'btn_route': 'users_password_edit' ~ (is_self ? '_self' : ''),
             'btn_title': 'users_password_edit.title',
             'btn_title_trans_params': {
-                'user': account(id, schema)
+                'user': account(id, schema),
+                'self': is_self ? 'self' : 'some_user'
             }
-        } -%}
-    {%- elseif su_is_owner(id) -%}
-        {%- include 'include/btn_top/password_edit.html.twig' with {
-            'btn_route': 'users_password_edit_self',
-            'btn_title': 'users_password_edit_self.title'
         } -%}
     {%- endif -%}
 {%- endblock btn_top_password_edit -%}
@@ -60,7 +56,7 @@
             'btn_route_params': su_ary()|merge({'tuid': id, 'tus': schema}),
             'btn_title': 'btn.transaction_to',
             'btn_title_trans_params': {
-                '%user%': account(id, schema)
+                'user': account(id, schema)
             }
         } -%}
     {%- endif -%}

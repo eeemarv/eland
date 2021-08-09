@@ -1165,11 +1165,28 @@ users_modules:
 
 users_password_edit:
   title: >-
-    Nieuw paswoord ingeven voor {user}
-
-users_password_edit_self:
-  title: >-
-    Nieuw paswoord ingeven voor je gebruikersaccount
+    {self, select,
+      self {Nieuw paswoord ingeven voor je gebruikersaccount}
+      other{Nieuw paswoord ingeven voor {user}}
+    }
+  password:
+    help: >-
+      Verzin voor de veiligheid een orgineel
+      paswoord. Gebruik eventueel de "Genereer"
+      knop om automatisch een paswoord aan te maken.
+  notify:
+    label: >-
+      {notify, select,
+        enabled {Stuur een notificatie e-mail met
+          het nieuwe paswoord}
+        inactive {Een notificatie e-mail versturen
+          is niet mogelijk wegens inactieve status van de
+          gebruiker}
+        no_email {Een notificatie e-mail versturen is
+          niet mogelijk wegens het ontbreken van een e-mail
+          adres}
+        other {}
+      }
 
 users_periodic_mail:
   title: >-

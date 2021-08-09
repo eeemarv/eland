@@ -2,22 +2,20 @@
 
 namespace App\Controller\Users;
 
-use App\Cnst\BulkCnst;
+use App\Command\Users\UsersPasswordEditCommand;
+use App\Form\Post\Users\UsersPasswordEditType;
 use App\Queue\MailQueue;
-use App\Render\LinkRender;
+use App\Repository\UserRepository;
 use App\Security\User;
 use App\Service\AlertService;
-use App\Service\FormTokenService;
 use App\Service\MailAddrSystemService;
 use App\Service\MailAddrUserService;
 use App\Service\PageParamsService;
-use App\Service\PasswordStrengthService;
 use App\Service\SessionUserService;
 use App\Service\UserCacheService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
@@ -58,179 +56,91 @@ class UsersPasswordEditController extends AbstractController
         EncoderFactoryInterface $encoder_factory,
         int $id,
         bool $is_self,
-        Db $db,
+        UserRepository $user_repository,
         AlertService $alert_service,
-        FormTokenService $form_token_service,
-        LinkRender $link_render,
         MailAddrSystemService $mail_addr_system_service,
         MailAddrUserService $mail_addr_user_service,
         MailQueue $mail_queue,
-        PasswordStrengthService $password_strength_service,
         UserCacheService $user_cache_service,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
     {
-        $errors = [];
-
-        $password = trim($request->request->get('password', ''));
-        $notify = $request->request->get('notify', '');
-
         if ($is_self)
         {
             $id = $su->id();
         }
 
-        if($request->isMethod('POST'))
+        $user = $user_cache_service->get($id, $pp->schema());
+        $is_active = $user['status'] === 1 || $user['status'] === 2;
+
+        $to_mail_addr = $mail_addr_user_service->get_active($id, $pp->schema());
+        $has_email = count($to_mail_addr) > 0;
+
+        $form_options = [
+            'validation_groups' => [$pp->role()],
+        ];
+
+        $command = new UsersPasswordEditCommand();
+        $command->notify = true;
+        $form = $this->createForm(UsersPasswordEditType::class,
+            $command, $form_options);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()
+            && $form->isValid())
         {
-            if ($password === '')
+            $command = $form->getData();
+            $encoder = $encoder_factory->getEncoder(new User());
+            $hashed_password = $encoder->encodePassword($command->password, null);
+            $user_repository->set_password($id, $hashed_password, $pp->schema());
+
+            $alert_service->success('Paswoord opgeslagen.');
+
+            if ($command->notify)
             {
-                $errors[] = 'Vul paswoord in!';
-            }
-
-            if (!$pp->is_admin()
-                && $password_strength_service->get($password) < 50)
-            {
-                $errors[] = 'Te zwak paswoord.';
-            }
-
-            if ($error_token = $form_token_service->get_error())
-            {
-                $errors[] = $error_token;
-            }
-
-            if (!count($errors))
-            {
-                $encoder = $encoder_factory->getEncoder(new User());
-                $hashed_password = $encoder->encodePassword($password, null);
-
-                $update = [
-                    'password'	=> $hashed_password,
-                ];
-
-                if ($db->update($pp->schema() . '.users',
-                    $update,
-                    ['id' => $id]))
+                if ($is_active && $has_email)
                 {
-                    $user_cache_service->clear($id, $pp->schema());
-                    $user = $user_cache_service->get($id, $pp->schema());
-                    $alert_service->success('Paswoord opgeslagen.');
+                    $vars = [
+                        'user_id'		=> $id,
+                        'password'		=> $command->password,
+                    ];
 
-                    if (($user['status'] === 1 || $user['status'] === 2)
-                        && $notify)
-                    {
-                        $to = $db->fetchOne('select c.value
-                            from ' . $pp->schema() . '.contact c, ' .
-                                $pp->schema() . '.type_contact tc
-                            where tc.id = c.id_type_contact
-                                and tc.abbrev = \'mail\'
-                                and c.user_id = ?',
-                                [$id], [\PDO::PARAM_INT]);
+                    $mail_queue->queue([
+                        'schema'	=> $pp->schema(),
+                        'to' 		=> $to_mail_addr,
+                        'reply_to'	=> $mail_addr_system_service->get_support($pp->schema()),
+                        'template'	=> 'password_reset/user',
+                        'vars'		=> $vars,
+                    ], 8000);
 
-                        if ($to)
-                        {
-                            $vars = [
-                                'user_id'		=> $id,
-                                'password'		=> $password,
-                            ];
-
-                            $mail_queue->queue([
-                                'schema'	=> $pp->schema(),
-                                'to' 		=> $mail_addr_user_service->get_active($id, $pp->schema()),
-                                'reply_to'	=> $mail_addr_system_service->get_support($pp->schema()),
-                                'template'	=> 'password_reset/user',
-                                'vars'		=> $vars,
-                            ], 8000);
-
-                            $alert_service->success('Notificatie mail verzonden');
-                        }
-                        else
-                        {
-                            $alert_service->warning('Geen E-mail adres bekend voor deze gebruiker, stuur het paswoord op een andere manier door!');
-                        }
-                    }
-
-                    if ($is_self)
-                    {
-                        return $this->redirectToRoute('users_show_self', $pp->ary());
-                    }
-
-                    return $this->redirectToRoute('users_show', array_merge($pp->ary(), ['id' => $id]));
+                    $alert_service->success('Notificatie mail verzonden');
+                }
+                else if (!$has_email)
+                {
+                    $alert_service->warning('Geen E-mail adres bekend voor deze gebruiker, stuur het paswoord op een andere manier door!');
                 }
                 else
                 {
-                    $alert_service->error('Paswoord niet opgeslagen.');
+                    $alert_service->warning('Er werd geen notificatie email verstuurd want het account is niet actief.');
                 }
             }
-            else
+
+            if ($is_self)
             {
-                $alert_service->error($errors);
+                return $this->redirectToRoute('users_show_self', $pp->ary());
             }
 
+            return $this->redirectToRoute('users_show', array_merge($pp->ary(), ['id' => $id]));
         }
-
-        $user = $user_cache_service->get($id, $pp->schema());
-
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
-
-        $out .= '<form method="post">';
-
-        $out .= '<div class="form-group">';
-        $out .= '<label for="password" class="control-label">';
-        $out .= 'Paswoord</label>';
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<span class="fa fa-key"></span></span>';
-        $out .= '<input type="text" class="form-control" ';
-        $out .= 'id="password" name="password" ';
-        $out .= 'value="';
-        $out .= $password;
-        $out .= '" required>';
-        $out .= '<span class="input-group-btn">';
-        $out .= '<button class="btn btn-default" type="button" ';
-        $out .= 'data-generate-password>Genereer</button>';
-        $out .= '</span>';
-        $out .= '</div>';
-        $out .= '</div>';
-
-        $notify_lbl = ' Verzend notificatie E-mail met nieuw paswoord. ';
-
-        if ($pp->is_admin())
-        {
-            $notify_lbl .= 'Dit is enkel mogelijk wanneer de Status ';
-            $notify_lbl .= 'actief is en E-mail adres ingesteld.';
-        }
-
-        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
-            '%name%'        => 'notify',
-            '%label%'       => $notify_lbl,
-            '%attr%'        => $user['status'] == 1 || $user['status'] == 2 ? ' checked' : ' readonly',
-        ]);
-
-        if ($is_self)
-        {
-            $out .= $link_render->btn_cancel('users_show_self', $pp->ary(), []);
-        }
-        else
-        {
-            $out .= $link_render->btn_cancel('users_show', $pp->ary(), ['id' => $id]);
-        }
-
-        $out .= '&nbsp;';
-        $out .= '<input type="submit" value="Opslaan" name="zend" ';
-        $out .= 'class="btn btn-primary btn-lg">';
-        $out .= $form_token_service->get_hidden_input();
-
-        $out .= '</form>';
-
-        $out .= '</div>';
-        $out .= '</div>';
 
         return $this->render('users/users_password_edit.html.twig', [
-            'content'   => $out,
-            'is_self'   => $is_self,
-            'id'        => $id,
+            'form'              => $form->createView(),
+            'is_self'           => $is_self,
+            'id'                => $id,
+            'is_active'         => $is_active,
+            'has_email'         => $has_email,
+            'notify_enabled'    => $is_active && $has_email,
         ]);
     }
 }
