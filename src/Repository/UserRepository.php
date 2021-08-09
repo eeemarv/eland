@@ -223,11 +223,17 @@ class UserRepository
 		return $user;
 	}
 
-	public function set_password(int $id, string $password, string $schema):void
+	public function set_password(
+		int $id,
+		string $password,
+		string $schema
+	):void
 	{
 		$this->db->update($schema . '.users',
 			['password' => $password],
-			['id' => $id]);
+			['id' => $id],
+			['password' => \PDO::PARAM_STR]
+		);
 		$this->user_cache_service->clear($id, $schema);
 	}
 

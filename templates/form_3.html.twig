@@ -18,11 +18,17 @@
             {% endif %}
             {{- parent() -}}
             {%- if post_addon is defined -%}
-                <span class="input-group-addon">
-                {%- if post_addon.text is defined -%}
-                    {{- post_addon.text -}}
+                {%- if post_addon.btn is defined -%}
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default"{%- for k, v in post_addon.btn.attr|default({}) %} {{ k -}}="{{- v -}}"{%- endfor -%}{%- if disabled %} disabled{%- endif -%}>
+                            {{- post_addon.btn.label -}}
+                        </button>
+                    </span>
+                {%- elseif post_addon.text is defined -%}
+                    <span class="input-group-addon">
+                        {{- post_addon.text -}}
+                    </span>
                 {%- endif -%}
-                </span>
             {%- endif -%}
         </div>
     {%- else -%}
@@ -48,11 +54,17 @@
             {% endif %}
             {{- parent() -}}
             {%- if post_addon is defined -%}
-                <span class="input-group-addon">
-                {%- if post_addon.text is defined -%}
-                    {{- post_addon.text -}}
+                {%- if post_addon.btn is defined -%}
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default"{%- for k, v in post_addon.btn.attr|default({}) %} {{ k -}}="{{- v -}}"{%- endfor -%}{%- if disabled %} disabled{%- endif -%}>
+                            {{- post_addon.btn.label -}}
+                        </button>
+                    </span>
+                {%- elseif post_addon.text is defined -%}
+                    <span class="input-group-addon">
+                        {{- post_addon.text -}}
+                    </span>
                 {%- endif -%}
-                </span>
             {%- endif -%}
         </div>
     {%- else -%}
