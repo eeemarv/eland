@@ -3,7 +3,7 @@
 namespace App\Command\PasswordReset;
 
 use App\Command\CommandInterface;
-use App\Validator\PasswordStrength;
+use App\Validator\Password\PasswordStrength;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Sequentially;

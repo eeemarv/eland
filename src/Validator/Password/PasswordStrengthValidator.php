@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Validator;
+namespace App\Validator\Password;
 
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;

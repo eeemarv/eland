@@ -3,7 +3,7 @@
 namespace App\Command\PasswordReset;
 
 use App\Command\CommandInterface;
-use App\Validator\EmailUniqueToActiveUser;
+use App\Validator\Email\EmailUniqueToActiveUser;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Sequentially;

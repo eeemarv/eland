@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Validator;
+namespace App\Validator\Email;
 
 use App\Repository\UserRepository;
 use Symfony\Component\Validator\Constraint;

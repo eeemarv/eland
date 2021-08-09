@@ -3,7 +3,7 @@
 namespace App\Command\RegisterForm;
 
 use App\Command\CommandInterface;
-use App\Validator\EmailNotRegisteredYet;
+use App\Validator\Email\EmailNotRegisteredYet;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;

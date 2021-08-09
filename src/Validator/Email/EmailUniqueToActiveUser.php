@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace App\Validator;
+namespace App\Validator\Email;
 
 use Symfony\Component\Validator\Constraint;
 
 #[\Attribute]
-class EmailNotRegisteredYet extends Constraint
+class EmailUniqueToActiveUser extends Constraint
 {
 }
