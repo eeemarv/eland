@@ -49,6 +49,17 @@ class TypeaheadElandIntersystemAccountsController extends AbstractController
             return $this->json([], 404);
         }
 
+        $params = [
+            'remote_schema' => $remote_schema,
+        ];
+
+        $cached = $typeahead_service->get_cached_data($thumbprint, $pp, $params);
+
+        if ($cached !== false)
+        {
+            return new Response($cached, 200, ['Content-Type' => 'application/json']);
+        }
+
         $fetched_users = $db->fetchAllAssociative(
             'select code as c,
                 name as n,
@@ -66,15 +77,8 @@ class TypeaheadElandIntersystemAccountsController extends AbstractController
             $accounts[] = $account;
         }
 
-        $params = [
-            'remote_schema' => $remote_schema,
-        ];
-
-        $crc = (string) crc32(json_encode($accounts));
-
-        $typeahead_service->set_thumbprint(
-            'eland_intersystem_accounts', $pp->ary(), $params, $crc);
-
-        return $this->json($accounts);
+        $data = json_encode($accounts);
+        $typeahead_service->set_thumbprint($thumbprint, $data, $pp, $params);
+        return new Response($data, 200, ['Content-Type' => 'application/json']);
     }
 }

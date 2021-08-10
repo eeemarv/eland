@@ -32,6 +32,13 @@ class TypeaheadLogTypesController extends AbstractController
         PageParamsService $pp
     ):Response
     {
+        $cached = $typeahead_service->get_cached_data($thumbprint, $pp, []);
+
+        if ($cached !== false)
+        {
+            return new Response($cached, 200, ['Content-Type' => 'application/json']);
+        }
+
         $log_types = [];
 
         $st = $db->prepare('select distinct type
@@ -48,10 +55,8 @@ class TypeaheadLogTypesController extends AbstractController
             $log_types[] = $row['type'];
         }
 
-        $crc = (string) crc32(json_encode($log_types));
-
-        $typeahead_service->set_thumbprint('log_types', $pp->ary(), [], $crc);
-
-        return $this->json($log_types);
+        $data = json_encode($log_types);
+        $typeahead_service->set_thumbprint($thumbprint, $data, $pp, []);
+        return new Response($data, 200, ['Content-Type' => 'application/json']);
     }
 }

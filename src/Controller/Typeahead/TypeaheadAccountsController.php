@@ -44,6 +44,17 @@ class TypeaheadAccountsController extends AbstractController
             return $this->json(['error' => 'No access.'], 403);
         }
 
+        $params = [
+            'status' => $status,
+        ];
+
+        $cached = $typeahead_service->get_cached_data($thumbprint, $pp, $params);
+
+        if ($cached !== false)
+        {
+            return new Response($cached, 200, ['Content-Type' => 'application/json']);
+        }
+
         switch($status)
         {
             case 'extern':
@@ -85,14 +96,8 @@ class TypeaheadAccountsController extends AbstractController
             $accounts[] = $account;
         }
 
-        $params = [
-            'status'	=> $status,
-        ];
-
-        $crc = (string) crc32(json_encode($accounts));
-
-        $typeahead_service->set_thumbprint('accounts', $pp->ary(), $params, $crc);
-
-        return $this->json($accounts);
+        $data = json_encode($accounts);
+        $typeahead_service->set_thumbprint($thumbprint, $data, $pp, $params);
+        return new Response($data, 200, ['Content-Type' => 'application/json']);
     }
 }

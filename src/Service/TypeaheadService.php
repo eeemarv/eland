@@ -11,7 +11,7 @@ class TypeaheadService
 	const ROUTE_PREFIX = 'typeahead_';
 	const STORE_KEY = 'typeahead_%schema%';
 	const TTL_STORE = 5184000; // 60 days
-	const TTL_CLIENT = 169200; // 2 days
+	const TTL_CLIENT = 172800; // 2 days
 
 	protected PageParamsService $pp;
 	protected array $fetch_ary;
@@ -80,6 +80,7 @@ class TypeaheadService
 
 		$this->fetch_ary[] = [
 			'path'			=> $path,
+			'thumbprint'	=> $thumbprint,
 			'ttl_client'	=> $ttl_client,
 		];
 
@@ -90,7 +91,7 @@ class TypeaheadService
 	{
 		$return_ary = array_merge(['fetch' => $this->fetch_ary], $process_ary);
 		unset($fetch_ary);
-		return json_encode($return_ary);
+		return htmlspecialchars(json_encode($return_ary));
 	}
 
 	/**
@@ -127,7 +128,7 @@ class TypeaheadService
 	public function get_cached_data(
 		string $thumbprint,
 		PageParamsService $pp,
-		$params
+		array $params
 	):string|bool
 	{
 		$store_key = strtr(self::STORE_KEY, [
@@ -182,5 +183,9 @@ class TypeaheadService
 
 		$this->predis->hset($store_key, $thumbprint_field, $new_thumbprint);
 		$this->predis->expire($store_key, self::TTL_STORE);
+
+		$this->logger->debug('typeahead NEW thumbprint SET (calculated) ' .
+			$new_thumbprint . ' for ' .
+			$thumbprint_field, ['schema' => $schema]);
 	}
 }

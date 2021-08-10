@@ -32,6 +32,13 @@ class TypeaheadDocMapNamesController extends AbstractController
         PageParamsService $pp
     ):Response
     {
+        $cached = $typeahead_service->get_cached_data($thumbprint, $pp, []);
+
+        if ($cached !== false)
+        {
+            return new Response($cached, 200, ['Content-Type' => 'application/json']);
+        }
+
         $map_names = [];
 
         $stmt = $db->prepare('select name
@@ -44,10 +51,8 @@ class TypeaheadDocMapNamesController extends AbstractController
             $map_names[] = $name;
         }
 
-        $crc = (string) crc32(json_encode($map_names));
-
-        $typeahead_service->set_thumbprint('doc_map_names', $pp->ary(), [], $crc);
-
-        return $this->json($map_names);
+        $data = json_encode($map_names);
+        $typeahead_service->set_thumbprint($thumbprint, $data, $pp, []);
+        return new Response($data, 200, ['Content-Type' => 'application/json']);
     }
 }

@@ -60,8 +60,7 @@ jQuery(function(){
 					prefetch: {
 						url: rec.path,
 						cache: true,
-						cacheKey: rec.cacheKey,
-						ttl: 172800000, // 2 days
+						ttl: rec.ttl_client * 1000,
 						thumbprint: rec.thumbprint,
 						filter: filter
 					},
@@ -212,8 +211,7 @@ jQuery(function(){
 					prefetch: {
 						url: rec.path,
 						cache: true,
-						cacheKey: rec.cacheKey,
-						ttl: 172800000,	// 2 days
+						ttl: rec.ttl_client * 1000,
 						thumbprint: rec.thumbprint + filter_thumb + '_a',
 						filter: filter
 					},

@@ -32,9 +32,11 @@ class TypeaheadIntersystemMailAccountsController extends AbstractController
         PageParamsService $pp
     ):Response
     {
-        if(!$pp->is_admin())
+        $cached = $typeahead_service->get_cached_data($thumbprint, $pp, []);
+
+        if ($cached !== false)
         {
-            return $this->json(['error' => 'No access.'], 403);
+            return new Response($cached, 200, ['Content-Type' => 'application/json']);
         }
 
         $accounts = $db->fetchAllAssociative(
@@ -51,10 +53,8 @@ class TypeaheadIntersystemMailAccountsController extends AbstractController
             order by u.id asc', [], []
         );
 
-        $crc = (string) crc32(json_encode($accounts));
-
-        $typeahead_service->set_thumbprint('intersystem_mail_accounts', $pp->ary(), [], $crc);
-
-        return $this->json($accounts);
+        $data = json_encode($accounts);
+        $typeahead_service->set_thumbprint($thumbprint, $data, $pp, []);
+        return new Response($data, 200, ['Content-Type' => 'application/json']);
     }
 }
