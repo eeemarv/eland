@@ -24,7 +24,6 @@ use App\Service\ItemAccessService;
 use App\Service\MailAddrUserService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\ThumbprintAccountsService;
 use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
@@ -73,7 +72,6 @@ class UsersListController extends AbstractController
         MailAddrUserService $mail_addr_user_service,
         MailQueue $mail_queue,
         SelectRender $select_render,
-        ThumbprintAccountsService $thumbprint_accounts_service,
         TypeaheadService $typeahead_service,
         UserCacheService $user_cache_service,
         PageParamsService $pp,
@@ -371,7 +369,7 @@ class UsersListController extends AbstractController
 
                 if ($bulk_field == 'status')
                 {
-                    $thumbprint_accounts_service->delete($pp->ary(), $pp->schema());
+                    $typeahead_service->clear_cache($pp->schema());
                 }
 
                 $logger->info('bulk: Set ' . $bulk_submit_action .
@@ -1205,7 +1203,7 @@ class UsersListController extends AbstractController
                 $fc3 .= '</div>';
                 $fc3 .= '</div>';
 
-                $typeahead_service->ini($pp->ary())
+                $typeahead_service->ini($pp)
                     ->add('accounts', ['status' => 'active']);
 
                 if (!$pp->is_guest())

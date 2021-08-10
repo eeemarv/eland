@@ -99,8 +99,7 @@ class DocsMapEditController extends AbstractController
 
                 $alert_service->success('Map naam aangepast.');
 
-                $typeahead_service->delete_thumbprint('doc_map_names',
-                    $pp->ary(), []);
+                $typeahead_service->clear_cache($pp->schema());
 
                 return $this->redirectToRoute('docs_map', array_merge($pp->ary(),
                     ['id' => $id]));
@@ -126,7 +125,7 @@ class DocsMapEditController extends AbstractController
         $out .= 'id="name" name="name" ';
         $out .= 'data-typeahead="';
 
-        $out .= $typeahead_service->ini($pp->ary())
+        $out .= $typeahead_service->ini($pp)
             ->add('doc_map_names', [])
             ->str([
                 'render'    => [

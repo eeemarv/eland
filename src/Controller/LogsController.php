@@ -267,7 +267,7 @@ class LogsController extends AbstractController
         $flt .= 'aria-describedby="type_addon" ';
         $flt .= 'data-typeahead="';
 
-        $flt .= $typeahead_service->ini($pp->ary())
+        $flt .= $typeahead_service->ini($pp)
             ->add('log_types', [])
             ->str();
 
@@ -288,7 +288,7 @@ class LogsController extends AbstractController
         $flt .= 'aria-describedby="code_addon" ';
 
         $flt .= 'data-typeahead="';
-        $flt .= $typeahead_service->ini($pp->ary())
+        $flt .= $typeahead_service->ini($pp)
             ->add('accounts', ['status' => 'active'])
             ->add('accounts', ['status' => 'inactive'])
             ->add('accounts', ['status' => 'ip'])

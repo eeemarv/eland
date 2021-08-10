@@ -12,12 +12,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class TypeaheadUsernamesController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/typeahead-usernames',
+        '/{system}/{role_short}/typeahead-usernames/{thumbprint}',
         name: 'typeahead_usernames',
         methods: ['GET'],
         requirements: [
             'system'        => '%assert.system%',
             'role_short'    => '%assert.role_short.user%',
+            'thumbprint'    => '%assert.thumbprint%',
         ],
         defaults: [
             'module'        => 'users',
@@ -25,11 +26,19 @@ class TypeaheadUsernamesController extends AbstractController
     )]
 
     public function __invoke(
+        string $thumbprint,
         Db $db,
         TypeaheadService $typeahead_service,
         PageParamsService $pp
     ):Response
     {
+        $cached = $typeahead_service->get_cached_data($thumbprint, $pp, []);
+
+        if ($cached !== false)
+        {
+            return new Response($cached, 200, ['Content-Type' => 'application/json']);
+        }
+
         $usernames = [];
 
         $st = $db->prepare('select name
@@ -48,10 +57,8 @@ class TypeaheadUsernamesController extends AbstractController
             $usernames[] = $row['name'];
         }
 
-        $crc = (string) crc32(json_encode($usernames));
-
-        $typeahead_service->set_thumbprint('usernames', $pp->ary(), [], $crc);
-
-        return $this->json($usernames);
+        $data = json_encode($usernames);
+        $typeahead_service->set_thumbprint($thumbprint, $data, $pp, []);
+        return new Response($data, 200, ['Content-Type' => 'application/json']);
     }
 }

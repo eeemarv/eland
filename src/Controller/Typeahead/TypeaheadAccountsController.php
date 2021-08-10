@@ -12,13 +12,14 @@ use Symfony\Component\Routing\Annotation\Route;
 class TypeaheadAccountsController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/typeahead-accounts/{status}',
+        '/{system}/{role_short}/typeahead-accounts/{status}/{thumbprint}',
         name: 'typeahead_accounts',
         methods: ['GET'],
         requirements: [
             'status'        => '%assert.account_status.primary%',
             'system'        => '%assert.system%',
             'role_short'    => '%assert.role_short.guest%',
+            'thumbprint'    => '%assert.thumbprint%',
         ],
         defaults: [
             'module'        => 'users',
@@ -27,6 +28,7 @@ class TypeaheadAccountsController extends AbstractController
 
     public function __invoke(
         string $status,
+        string $thumbprint,
         Db $db,
         TypeaheadService $typeahead_service,
         PageParamsService $pp
@@ -40,6 +42,17 @@ class TypeaheadAccountsController extends AbstractController
         if(!$pp->is_admin() && !in_array($status, ['active', 'extern']))
         {
             return $this->json(['error' => 'No access.'], 403);
+        }
+
+        $params = [
+            'status' => $status,
+        ];
+
+        $cached = $typeahead_service->get_cached_data($thumbprint, $pp, $params);
+
+        if ($cached !== false)
+        {
+            return new Response($cached, 200, ['Content-Type' => 'application/json']);
         }
 
         switch($status)
@@ -83,14 +96,8 @@ class TypeaheadAccountsController extends AbstractController
             $accounts[] = $account;
         }
 
-        $params = [
-            'status'	=> $status,
-        ];
-
-        $crc = (string) crc32(json_encode($accounts));
-
-        $typeahead_service->set_thumbprint('accounts', $pp->ary(), $params, $crc);
-
-        return $this->json($accounts);
+        $data = json_encode($accounts);
+        $typeahead_service->set_thumbprint($thumbprint, $data, $pp, $params);
+        return new Response($data, 200, ['Content-Type' => 'application/json']);
     }
 }

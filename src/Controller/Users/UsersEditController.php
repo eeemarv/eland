@@ -27,7 +27,6 @@ use App\Service\PageParamsService;
 use App\Service\PasswordStrengthService;
 use App\Service\SessionUserService;
 use App\Service\SystemsService;
-use App\Service\ThumbprintAccountsService;
 use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
@@ -108,7 +107,6 @@ class UsersEditController extends AbstractController
         SystemsService $systems_service,
         TypeaheadService $typeahead_service,
         UserCacheService $user_cache_service,
-        ThumbprintAccountsService $thumbprint_accounts_service,
         MailAddrUserService $mail_addr_user_service,
         MailAddrSystemService $mail_addr_system_service,
         MailQueue $mail_queue,
@@ -712,10 +710,7 @@ class UsersEditController extends AbstractController
                     }
                 }
 
-                $thumbprint_accounts_service->delete($pp->ary(), $pp->schema());
-                $typeahead_service->delete_thumbprint('account_codes', $pp->ary(), []);
-                $typeahead_service->delete_thumbprint('usernames', $pp->ary(), []);
-                $typeahead_service->delete_thumbprint('postcodes', $pp->ary(), []);
+                $typeahead_service->clear_cache($pp->schema());
 
                 $intersystems_service->clear_cache();
 
@@ -861,7 +856,7 @@ class UsersEditController extends AbstractController
             $out .= '" required maxlength="20" ';
             $out .= 'data-typeahead="';
 
-            $out .= $typeahead_service->ini($pp->ary())
+            $out .= $typeahead_service->ini($pp)
                 ->add('account_codes', [])
                 ->str([
                     'render'	=> [
@@ -898,7 +893,7 @@ class UsersEditController extends AbstractController
             $out .= '" required maxlength="50" ';
             $out .= 'data-typeahead="';
 
-            $out .= $typeahead_service->ini($pp->ary())
+            $out .= $typeahead_service->ini($pp)
                 ->add('usernames', [])
                 ->str([
                     'render'	=> [
@@ -967,7 +962,7 @@ class UsersEditController extends AbstractController
             $out .= 'maxlength="6" ';
             $out .= 'data-typeahead="';
 
-            $out .= $typeahead_service->ini($pp->ary())
+            $out .= $typeahead_service->ini($pp)
                 ->add('postcodes', [])
                 ->str();
 

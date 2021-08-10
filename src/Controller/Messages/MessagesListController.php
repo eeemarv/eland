@@ -1601,7 +1601,7 @@ class MessagesListController extends AbstractController
         $out .= 'aria-describedby="fcode_addon" ';
         $out .= 'data-typeahead="';
 
-        $out .= $typeahead_service->ini($pp->ary())
+        $out .= $typeahead_service->ini($pp)
             ->add('accounts', ['status'	=> 'active'])
             ->str([
                 'filter'		=> 'accounts',

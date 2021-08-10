@@ -23,8 +23,7 @@ class AutoDeactivateService
 		protected MailAddrUserService $mail_addr_user_service,
 		protected ConfigService $config_service,
 		protected SessionUserService $su,
-		protected ThumbprintAccountsService $thumbprint_accounts_service,
-		protected SystemsService $systems_service,
+		protected TypeaheadService $typeahead_service,
 		protected AccountRender $account_render
 	)
 	{
@@ -60,11 +59,9 @@ class AutoDeactivateService
 			return;
 		}
 
-		$system = $this->systems_service->get_system($schema);
-
 		$this->db->update($schema . '.users', ['status'	=> 0], ['id' => $user_id]);
 		$this->user_cache_service->clear($user_id, $schema);
-		$this->thumbprint_accounts_service->delete(['system' => $system], $schema);
+		$this->typeahead_service->clear_cache($schema);
 
 		$this->logger->info('Auto-deactivated: user ' .
 			$this->account_render->str($user_id, $schema),

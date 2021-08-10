@@ -14,13 +14,14 @@ use Symfony\Component\Routing\Annotation\Route;
 class TypeaheadElandIntersystemAccountsController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/typeahead-eland-intersystem-accounts/{remote_schema}',
+        '/{system}/{role_short}/typeahead-eland-intersystem-accounts/{remote_schema}/{thumbprint}',
         name: 'typeahead_eland_intersystem_accounts',
         methods: ['GET'],
         requirements: [
             'remote_schema' => '%assert.schema%',
             'system'        => '%assert.system%',
             'role_short'    => '%assert.role_short.user%',
+            'thumbprint'    => '%assert.thumbprint%',
         ],
         defaults: [
             'module'        => 'users',
@@ -29,6 +30,7 @@ class TypeaheadElandIntersystemAccountsController extends AbstractController
 
     public function __invoke(
         string $remote_schema,
+        string $thumbprint,
         Db $db,
         LoggerInterface $logger,
         IntersystemsService $intersystems_service,
@@ -45,6 +47,17 @@ class TypeaheadElandIntersystemAccountsController extends AbstractController
                 ['schema' => $pp->schema()]);
 
             return $this->json([], 404);
+        }
+
+        $params = [
+            'remote_schema' => $remote_schema,
+        ];
+
+        $cached = $typeahead_service->get_cached_data($thumbprint, $pp, $params);
+
+        if ($cached !== false)
+        {
+            return new Response($cached, 200, ['Content-Type' => 'application/json']);
         }
 
         $fetched_users = $db->fetchAllAssociative(
@@ -64,15 +77,8 @@ class TypeaheadElandIntersystemAccountsController extends AbstractController
             $accounts[] = $account;
         }
 
-        $params = [
-            'remote_schema' => $remote_schema,
-        ];
-
-        $crc = (string) crc32(json_encode($accounts));
-
-        $typeahead_service->set_thumbprint(
-            'eland_intersystem_accounts', $pp->ary(), $params, $crc);
-
-        return $this->json($accounts);
+        $data = json_encode($accounts);
+        $typeahead_service->set_thumbprint($thumbprint, $data, $pp, $params);
+        return new Response($data, 200, ['Content-Type' => 'application/json']);
     }
 }

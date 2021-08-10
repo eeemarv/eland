@@ -12,12 +12,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class TypeaheadIntersystemMailAccountsController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/typeahead-intersystem-mail-accounts',
+        '/{system}/{role_short}/typeahead-intersystem-mail-accounts/{thumbprint}',
         name: 'typeahead_intersystem_mail_accounts',
         methods: ['GET'],
         requirements: [
             'system'        => '%assert.system%',
             'role_short'    => '%assert.role_short.admin%',
+            'thumbprint'    => '%assert.thumbprint%',
         ],
         defaults: [
             'module'        => 'transactions',
@@ -25,14 +26,17 @@ class TypeaheadIntersystemMailAccountsController extends AbstractController
     )]
 
     public function __invoke(
+        string $thumbprint,
         Db $db,
         TypeaheadService $typeahead_service,
         PageParamsService $pp
     ):Response
     {
-        if(!$pp->is_admin())
+        $cached = $typeahead_service->get_cached_data($thumbprint, $pp, []);
+
+        if ($cached !== false)
         {
-            return $this->json(['error' => 'No access.'], 403);
+            return new Response($cached, 200, ['Content-Type' => 'application/json']);
         }
 
         $accounts = $db->fetchAllAssociative(
@@ -49,10 +53,8 @@ class TypeaheadIntersystemMailAccountsController extends AbstractController
             order by u.id asc', [], []
         );
 
-        $crc = (string) crc32(json_encode($accounts));
-
-        $typeahead_service->set_thumbprint('intersystem_mail_accounts', $pp->ary(), [], $crc);
-
-        return $this->json($accounts);
+        $data = json_encode($accounts);
+        $typeahead_service->set_thumbprint($thumbprint, $data, $pp, []);
+        return new Response($data, 200, ['Content-Type' => 'application/json']);
     }
 }
