@@ -141,8 +141,7 @@ class DocsEditController extends AbstractController
 
                 if (isset($delete_thumbprint) && $delete_thumbprint)
                 {
-                    $typeahead_service->delete_thumbprint('doc_map_names',
-                        $pp->ary(), []);
+                    $typeahead_service->clear_cache($pp->schema());
                 }
 
                 $db->update($pp->schema() . '.docs', $update, ['id' => $id]);
@@ -235,7 +234,7 @@ class DocsEditController extends AbstractController
         $out .= '" ';
         $out .= 'data-typeahead="';
 
-        $out .= $typeahead_service->ini($pp->ary())
+        $out .= $typeahead_service->ini($pp)
             ->add('doc_map_names', [])
             ->str();
 

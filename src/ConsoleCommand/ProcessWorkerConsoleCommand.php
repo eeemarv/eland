@@ -34,6 +34,10 @@ class ProcessWorkerConsoleCommand extends Command
         $clear_redis_cache_input = new ArrayInput([]);
         $clear_redis_cache_command->run($clear_redis_cache_input, $output);
 
+        error_log('+------------------------+');
+        error_log('| Redis cache cleared    |');
+        error_log('+------------------------+');
+
         $this->monitor_process_service->boot('worker');
 
         $this->assets_service->write_file_hash_ary();

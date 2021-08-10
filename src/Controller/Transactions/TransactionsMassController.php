@@ -799,7 +799,7 @@ class TransactionsMassController extends AbstractController
         $out .= '" ';
 
         $out .= 'data-typeahead="';
-        $out .= $typeahead_service->ini($pp->ary())
+        $out .= $typeahead_service->ini($pp)
             ->add('accounts', ['status' => 'active'])
             ->add('accounts', ['status' => 'inactive'])
             ->add('accounts', ['status' => 'ip'])

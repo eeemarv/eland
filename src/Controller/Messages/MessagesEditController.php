@@ -597,7 +597,7 @@ class MessagesEditController extends AbstractController
             $out .= 'id="account_code" name="account_code" ';
 
             $out .= 'data-typeahead="';
-            $out .= $typeahead_service->ini($pp->ary())
+            $out .= $typeahead_service->ini($pp)
                 ->add('accounts', ['status' => 'active'])
                 ->str([
                     'filter'        => 'accounts',

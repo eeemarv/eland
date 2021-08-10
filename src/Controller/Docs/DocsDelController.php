@@ -92,8 +92,7 @@ class DocsDelController extends AbstractController
                     {
                         $db->delete($pp->schema() . '.doc_maps', ['id' => $doc['map_id']]);
 
-                        $typeahead_service->delete_thumbprint('doc_map_names',
-                            $pp->ary(), []);
+                        $typeahead_service->clear_cache($pp->schema());
 
                         unset($doc['map_id']);
                     }

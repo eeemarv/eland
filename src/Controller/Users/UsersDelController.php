@@ -16,7 +16,7 @@ use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\ThumbprintAccountsService;
+use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
@@ -42,11 +42,11 @@ class UsersDelController extends AbstractController
         Request $request,
         int $id,
         Db $db,
+        TypeaheadService $typeahead_service,
         FormTokenService $form_token_service,
         AlertService $alert_service,
         AccountRender $account_render,
         LinkRender $link_render,
-        ThumbprintAccountsService $thumbprint_accounts_service,
         UserCacheService $user_cache_service,
         IntersystemsService $intersystems_service,
         PageParamsService $pp,
@@ -104,7 +104,7 @@ class UsersDelController extends AbstractController
                     $db,
                     $alert_service,
                     $intersystems_service,
-                    $thumbprint_accounts_service,
+                    $typeahead_service,
                     $user_cache_service,
                     $pp
                 );
@@ -159,7 +159,7 @@ class UsersDelController extends AbstractController
         Db $db,
         AlertService $alert_service,
         IntersystemsService $intersystems_service,
-        ThumbprintAccountsService $thumbprint_accounts_service,
+        TypeaheadService $typeahead_service,
         UserCacheService $user_cache_service,
         PageParamsService $pp
     ):void
@@ -178,7 +178,8 @@ class UsersDelController extends AbstractController
 
         $alert_service->success('De gebruiker is verwijderd.');
 
-        $thumbprint_accounts_service->delete($pp->ary(), $pp->schema());
+        $typeahead_service->clear_cache($pp->schema());
+
         $intersystems_service->clear_cache();
     }
 }

@@ -753,7 +753,7 @@ class MolliePaymentsController extends AbstractController
 
         $flt .= 'data-typeahead="';
 
-        $flt .= $typeahead_service->ini($pp->ary())
+        $flt .= $typeahead_service->ini($pp)
             ->add('accounts', ['status' => 'active'])
             ->add('accounts', ['status' => 'extern'])
             ->add('accounts', ['status' => 'inactive'])

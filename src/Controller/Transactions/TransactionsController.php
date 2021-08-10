@@ -673,7 +673,7 @@ class TransactionsController extends AbstractController
         $flt .= '<span class="input-group-addon" id="fcode_addon">Van ';
         $flt .= '<span class="fa fa-user"></span></span>';
 
-        $typeahead_service->ini($pp->ary())
+        $typeahead_service->ini($pp)
             ->add('accounts', ['status' => 'active']);
 
         if (!$pp->is_guest())
