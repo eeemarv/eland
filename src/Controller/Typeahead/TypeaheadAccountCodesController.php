@@ -12,12 +12,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class TypeaheadAccountCodesController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/typeahead-account-codes',
+        '/{system}/{role_short}/typeahead-account-codes/{thumbprint}',
         name: 'typeahead_account_codes',
         methods: ['GET'],
         requirements: [
             'system'        => '%assert.system%',
             'role_short'    => '%assert.role_short.user%',
+            'thumbprint'    => '%assert.thumbprint%',
         ],
         defaults: [
             'module'        => 'users',
@@ -25,11 +26,15 @@ class TypeaheadAccountCodesController extends AbstractController
     )]
 
     public function __invoke(
+        string $thumbprint,
         Db $db,
         TypeaheadService $typeahead_service,
         PageParamsService $pp
     ):Response
     {
+
+
+
         $account_codes = [];
 
         $st = $db->prepare('select code

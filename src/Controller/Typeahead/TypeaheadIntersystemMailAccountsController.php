@@ -12,12 +12,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class TypeaheadIntersystemMailAccountsController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/typeahead-intersystem-mail-accounts',
+        '/{system}/{role_short}/typeahead-intersystem-mail-accounts/{thumbprint}',
         name: 'typeahead_intersystem_mail_accounts',
         methods: ['GET'],
         requirements: [
             'system'        => '%assert.system%',
             'role_short'    => '%assert.role_short.admin%',
+            'thumbprint'    => '%assert.thumbprint%',
         ],
         defaults: [
             'module'        => 'transactions',
@@ -25,6 +26,7 @@ class TypeaheadIntersystemMailAccountsController extends AbstractController
     )]
 
     public function __invoke(
+        string $thumbprint,
         Db $db,
         TypeaheadService $typeahead_service,
         PageParamsService $pp

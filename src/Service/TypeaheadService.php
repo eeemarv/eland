@@ -9,9 +9,20 @@ use App\Service\SystemsService;
 
 class TypeaheadService
 {
-	const TTL = 5184000; // 60 days
+	const ROUTE_PREFIX = 'typeahead_';
+	const STORE_THUMBPRINT_PREFIX = 'typeahead_thumbprint_';
+	const STORE_DATA_PREFIX = 'typeahead_data_';
+	const TTL_THUMBPRINT = 5184000; // 60 days
+	const TTL_DATA = 5184000; // 60 days
+	const TTL_CLIENT = 169200; // 2 days
+	const GROUP_USERS = 'users';
+	const GROUP_ACCOUNTS = 'accounts';
+	const GROUP_LOG_TYPES = 'log-types';
+	const GROUP_DOC_MAP_NAMES = 'doc-map-names';
 
 	protected array $build_ary;
+	protected array $pp_ary;
+	protected array $fetch_ary;
 
 	public function __construct(
 		protected Predis $predis,
@@ -25,12 +36,27 @@ class TypeaheadService
 	public function ini(array $pp_ary):self
 	{
 		$this->build_ary = ['pp_ary' => $pp_ary];
+		$this->pp_ary = $pp_ary;
+		$this->fetch_ary = [];
 		return $this;
 	}
 
-	public function add(string $route, array $params):self
+	public function add(
+		string $typeahead_route,
+		array $params
+	):self
 	{
 		if (!isset($this->build_ary))
+		{
+			return $this;
+		}
+
+		if (!isset($this->fetch_ary))
+		{
+			return $this;
+		}
+
+		if (!isset($this->pp_ary))
 		{
 			return $this;
 		}
@@ -38,8 +64,15 @@ class TypeaheadService
 		$this->build_ary['paths'] ??= [];
 
 		$this->build_ary['paths'][] = [
-			'route'		=> $route,
+			'route'		=> $typeahead_route,
 			'params'	=> $params,
+		];
+
+		$route = self::ROUTE_PREFIX . $typeahead_route;
+		$path = $this->url_generator->generate($route, array_merge($this->pp_ary, $params), UrlGeneratorInterface::ABSOLUTE_PATH);
+
+		$this->fetch_ary[] = [
+			'path'	=> $path,
 		];
 
 		return $this;
@@ -86,7 +119,7 @@ class TypeaheadService
 	):string
 	{
 		return $this->url_generator->generate(
-			'typeahead_' . $typeahead_route,
+			self::ROUTE_PREFIX . $typeahead_route,
 			array_merge($params_context, $params),
 			UrlGeneratorInterface::ABSOLUTE_PATH);
 	}
@@ -226,7 +259,7 @@ class TypeaheadService
 			);
 		}
 
-		$this->predis->expire($key, self::TTL);
+		$this->predis->expire($key, self::TTL_DATA);
 	}
 
 	public function set_thumbprint(

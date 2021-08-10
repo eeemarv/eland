@@ -12,12 +12,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class TypeaheadPostcodesController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/typeahead-postcodes',
+        '/{system}/{role_short}/typeahead-postcodes/{thumbprint}',
         name: 'typeahead_postcodes',
         methods: ['GET'],
         requirements: [
             'system'        => '%assert.system%',
             'role_short'    => '%assert.role_short.user%',
+            'thumbprint'    => '%assert.thumbprint%',
         ],
         defaults: [
             'module'        => 'users',
@@ -25,6 +26,7 @@ class TypeaheadPostcodesController extends AbstractController
     )]
 
     public function __invoke(
+        string $thumbprint,
         Db $db,
         TypeaheadService $typeahead_service,
         PageParamsService $pp

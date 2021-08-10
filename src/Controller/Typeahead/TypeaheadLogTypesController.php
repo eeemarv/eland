@@ -12,12 +12,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class TypeaheadLogTypesController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/typeahead-log-types',
+        '/{system}/{role_short}/typeahead-log-types/{thumbprint}',
         name: 'typeahead_log_types',
         methods: ['GET'],
         requirements: [
             'system'        => '%assert.system%',
             'role_short'    => '%assert.role_short.admin%',
+            'thumbprint'    => '%assert.thumbprint%',
         ],
         defaults: [
             'module'        => 'logs',
@@ -25,6 +26,7 @@ class TypeaheadLogTypesController extends AbstractController
     )]
 
     public function __invoke(
+        string $thumbprint,
         Db $db,
         TypeaheadService $typeahead_service,
         PageParamsService $pp
