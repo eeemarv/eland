@@ -1,9 +1,9 @@
 {%- extends 'contacts/base/contacts_base.html.twig' -%}
 
-{%- block asssets_add -%}
+{%- block assets_add -%}
     {{- parent() -}}
     {{- assets_add(['contacts_edit.js']) -}}
-{%- endblock asssets_add -%}
+{%- endblock assets_add -%}
 
 {%- block heading_title -%}
     {%- if is_self -%}
