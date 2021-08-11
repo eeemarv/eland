@@ -15,7 +15,7 @@ class DocRepository
 
 	public function get(int $id, string $schema):array
 	{
-		$doc = $this->db->fetchAssoc('select *
+		$doc = $this->db->fetchAssociative('select *
 			from ' . $schema . '.docs
 			where id = ?', [$id]);
 
@@ -29,7 +29,7 @@ class DocRepository
 
 	public function get_map(int $map_id, string $schema):array
 	{
-		$map =  $this->db->fetchAssoc('select *
+		$map =  $this->db->fetchAssociative('select *
 			from ' . $schema . '.doc_maps
 			where id = ?', [$map_id]);
 
@@ -47,11 +47,10 @@ class DocRepository
 	{
 		$lowercase_name = trim(strtolower($name));
 
-		return $this->db->fetchColumn('select id
+		return $this->db->fetchOne('select id
 			from ' . $schema . '.doc_maps
 			where id <> ? and lower(name) = ?',
 			[$map_id, $lowercase_name],
-			0,
 			[\PDO::PARAM_INT, \PDO::PARAM_STR]) ? false : true;
 	}
 
@@ -73,9 +72,11 @@ class DocRepository
 		string $schema
 	):int
 	{
-		return $this->db->fetchColumn('select count(*)
+		return $this->db->fetchOne('select count(*)
 			from ' . $schema . '.docs
-			where map_id = ?', [$map_id]);
+			where map_id = ?',
+			[$map_id],
+			[\PDO::PARAM_INT]);
 	}
 
 	public function del(int $id, string $schema):bool
@@ -101,7 +102,7 @@ class DocRepository
             [$visible_ary],
             [Db::PARAM_STR_ARRAY]);
 
-        return $stmt->fetchAll();
+        return $stmt->fetchAllAssociative();
 	}
 
 	public function get_unmapped_docs(array $visible_ary, string $schema):array
@@ -115,7 +116,7 @@ class DocRepository
             [$visible_ary],
             [Db::PARAM_STR_ARRAY]);
 
-        return $stmt->fetchAll();
+        return $stmt->fetchAllAssociative();
 	}
 
 	public function get_prev_map_id(
@@ -135,7 +136,7 @@ class DocRepository
 		[$visible_ary, $ref_map_name],
 		[Db::PARAM_STR_ARRAY, \PDO::PARAM_STR]);
 
-		return $stmt_prev->fetchColumn() ?: 0;
+		return $stmt_prev->fetchOne() ?: 0;
 	}
 
 	public function get_next_map_id(
@@ -155,7 +156,7 @@ class DocRepository
 		[$visible_ary, $ref_map_name],
 		[Db::PARAM_STR_ARRAY, \PDO::PARAM_STR]);
 
-		return $stmt_next->fetchColumn() ?: 0;
+		return $stmt_next->fetchOne() ?: 0;
 	}
 
 	public function get_docs_for_map_id(
@@ -176,7 +177,7 @@ class DocRepository
 			[$visible_ary, $map_id],
 			[Db::PARAM_STR_ARRAY, \PDO::PARAM_INT]);
 
-		while ($row = $stmt->fetch())
+		while ($row = $stmt->fetchAssociative())
 		{
 			$docs[] = $row;
 		}
@@ -190,11 +191,10 @@ class DocRepository
 	):int
 	{
 		$lowercase_map_name = strtolower($map_name);
-		$map_id = $this->db->fetchColumn('select id
+		$map_id = $this->db->fetchOne('select id
 			from ' . $schema . '.doc_maps
 			where lower(name) = ?',
 			[$lowercase_map_name],
-			0,
 			[\PDO::PARAM_STR]);
 
 		return $map_id ?: 0;

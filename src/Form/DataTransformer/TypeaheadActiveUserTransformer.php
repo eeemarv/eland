@@ -5,7 +5,6 @@ namespace App\Form\DataTransformer;
 use App\Repository\UserRepository;
 use App\Service\PageParamsService;
 use Symfony\Component\Form\DataTransformerInterface;
-use Symfony\Component\Form\Exception\TransformationFailedException;
 
 class TypeaheadActiveUserTransformer implements DataTransformerInterface
 {

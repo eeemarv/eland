@@ -20,7 +20,7 @@ class ContactRepository
 
 	public function get(int $id, string $schema):array
 	{
-		$contact = $this->db->fetchAssoc('select *
+		$contact = $this->db->fetchAssociative('select *
 			from ' . $schema . '.contact
 			where id = ?', [$id]);
 
@@ -47,7 +47,7 @@ class ContactRepository
 				[\PDO::PARAM_INT]
 		);
 
-		return $stmt->fetchAll();
+		return $stmt->fetchAllAssociative();
 	}
 
 }

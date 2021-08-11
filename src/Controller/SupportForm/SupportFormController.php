@@ -121,56 +121,6 @@ class SupportFormController extends AbstractController
             $alert_service->warning('Er is geen Support E-mail adres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
         }
 
-        /*
-
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
-
-        $out .= '<form method="post">';
-
-        $out .= '<div class="form-group">';
-        $out .= '<label for="message">Je Bericht</label>';
-        $out .= '<textarea name="message" ';
-        $out .= 'class="form-control" id="message" rows="4"';
-        $out .= $su->is_master() ? ' disabled' : '';
-        $out .= '>';
-        $out .= $message;
-        $out .= '</textarea>';
-        $out .= '</div>';
-
-        if ($can_reply)
-        {
-            $cc_lbl = 'Stuur een kopie naar mijzelf.';
-        }
-        else
-        {
-            $cc_lbl = 'Een kopie van je bericht naar ';
-            $cc_lbl .= 'jezelf sturen is ';
-            $cc_lbl .= 'niet mogelijk want er is ';
-            $cc_lbl .= 'geen E-mail adres ingesteld voor ';
-            $cc_lbl .= 'je account.';
-        }
-
-        $cc_attr = $can_reply ? '' : ' disabled';
-        $cc_attr .= $cc ? ' checked' : '';
-
-        $out .= strtr(BulkCnst::TPL_CHECKBOX_DIV_ATTR, [
-            '%div_attr%'    => $can_reply ? '' : ' checkbox disabled has-warning',
-            '%name%'        => 'cc',
-            '%label%'       => $cc_lbl,
-            '%attr%'        => $cc_attr,
-        ]);
-
-        $out .= '<input type="submit" name="zend" value="Verzenden" class="btn btn-info btn-lg">';
-        $out .= $form_token_service->get_hidden_input();
-
-        $out .= '</form>';
-
-        $out .= '</div>';
-        $out .= '</div>';
-
-        */
-
         return $this->render('support_form/support_form.html.twig', [
             'form'      => $form->createView(),
             'can_reply' => $can_reply,
