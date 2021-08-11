@@ -918,6 +918,15 @@ support_form:
   explain: >-
     Stuur een bericht naar de
     administratie van {system_name}.
+  cc:
+    label: >-
+      {can_reply, select,
+        can_reply {Stuur een kopie naar
+          je eigen e-mail box}
+        other {Omdat geen e-mail adres ingesteld
+          is voor je account kan je geen kopie
+          naar je eigen e-mail box sturen}
+      }
 
 transactions:
   title: >-

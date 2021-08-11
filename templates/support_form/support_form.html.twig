@@ -10,6 +10,33 @@
     </p>
 {%- endblock heading_sub -%}
 
+{%- block content -%}
+{%- endblock content -%}
+
+{%- block form_a -%}
+    {{- form_row(form.message, {
+        'label': 'label.your_message',
+        'attr': {
+            'rows': 5
+        }
+    }) -}}
+
+    {{- form_row(form.cc, {
+        'label': 'support_form.cc.label',
+        'label_translation_parameters': {
+            'can_reply': can_reply ? 'can_reply' : 'can_not_reply',
+        },
+        'disabled': not can_reply
+    }) -}}
+{%- endblock form_a -%}
+
+{%- block form_cancel_btn -%}
+{%- endblock form_cancel_btn -%}
+
+{%- block form_submit_btn -%}
+    {%- include 'form/submit_send_btn.html.twig' -%}
+{%- endblock form_submit_btn -%}
+
 {%- block css -%}
     {{- parent() -}}
 {%- endblock css -%}

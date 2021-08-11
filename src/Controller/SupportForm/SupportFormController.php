@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\SupportForm;
 
-use App\Cnst\BulkCnst;
+use App\Command\SupportForm\SupportFormCommand;
+use App\Form\Post\SupportForm\SupportFormType;
 use App\Queue\MailQueue;
 use App\Service\AlertService;
 use App\Service\ConfigService;
-use App\Service\FormTokenService;
 use App\Service\MailAddrSystemService;
 use App\Service\MailAddrUserService;
 use App\Service\PageParamsService;
@@ -38,7 +38,6 @@ class SupportFormController extends AbstractController
         Request $request,
         AlertService $alert_service,
         ConfigService $config_service,
-        FormTokenService $form_token_service,
         MailQueue $mail_queue,
         MailAddrUserService $mail_addr_user_service,
         PageParamsService $pp,
@@ -52,112 +51,77 @@ class SupportFormController extends AbstractController
             throw new NotFoundHttpException('Support form not enabled.');
         }
 
-        $errors = [];
+        $is_master = $su->is_master();
+        $mail_enabled = $config_service->get_bool('mail.enabled', $pp->schema());
+        $support_addr = $mail_addr_system_service->get_support($pp->schema());
+        $form_disabled = !$mail_enabled || count($support_addr) < 1 || $is_master;
 
-        if ($su->is_master())
+        $user_email_ary = $is_master ? [] : $mail_addr_user_service->get_active($su->id(), $pp->schema());
+        $can_reply = count($user_email_ary) > 0;
+
+        $command = new SupportFormCommand();
+        $command->cc = true;
+        $form = $this->createForm(SupportFormType::class, $command, [
+            'disabled'  => $form_disabled,
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()
+            && $form->isValid()
+            && !$form_disabled)
         {
-            $user_email_ary = [];
-        }
-        else
-        {
-            $user_email_ary = $mail_addr_user_service->get_active($su->id(), $pp->schema());
-        }
+            $command = $form->getData();
 
-        $can_reply = count($user_email_ary) ? true : false;
+            $vars = [
+                'user_id'	=> $su->id(),
+                'can_reply'	=> $can_reply,
+                'message'	=> $command->message,
+            ];
 
-        if ($request->isMethod('POST'))
-        {
-            $cc = $request->request->get('cc');
-            $cc = isset($cc);
-            $message = $request->request->get('message', '');
-            $message = trim($message);
-
-            if(empty($message) || strip_tags($message) == '' || $message === false)
+            if ($command->cc && $can_reply)
             {
-                $errors[] = 'Het bericht is leeg.';
-            }
-
-            if (!$config_service->get_ary('mail.addresses.support', $pp->schema()))
-            {
-                $errors[] = 'Het Support E-mail adres is niet ingesteld op dit Systeem';
-            }
-
-            if ($su->is_master())
-            {
-                $errors[] = 'Het master account kan geen E-mail berichten versturen.';
-            }
-
-            if ($token_error = $form_token_service->get_error())
-            {
-                $errors[] = $token_error;
-            }
-
-            if(!count($errors))
-            {
-                $vars = [
-                    'user_id'	=> $su->id(),
-                    'can_reply'	=> $can_reply,
-                    'message'	=> $message,
-                ];
-
-                if ($cc && $can_reply)
-                {
-                    $mail_queue->queue([
-                        'schema'	=> $pp->schema(),
-                        'template'	=> 'support/copy',
-                        'vars'		=> $vars,
-                        'to'		=> $user_email_ary,
-                    ], 8500);
-                }
-
                 $mail_queue->queue([
                     'schema'	=> $pp->schema(),
-                    'template'	=> 'support/support',
+                    'template'	=> 'support/copy',
                     'vars'		=> $vars,
-                    'to'		=> $mail_addr_system_service->get_support($pp->schema()),
-                    'reply_to'	=> $user_email_ary,
-                ], 8000);
+                    'to'		=> $user_email_ary,
+                ], 8500);
+            }
 
-                $alert_service->success('De Support E-mail is verzonden.');
-                return $this->redirectToRoute($vr->get('default'), $pp->ary());
-            }
-            else
-            {
-                $alert_service->error($errors);
-            }
+            $mail_queue->queue([
+                'schema'	=> $pp->schema(),
+                'template'	=> 'support/support',
+                'vars'		=> $vars,
+                'to'		=> $support_addr,
+                'reply_to'	=> $user_email_ary,
+            ], 8000);
+
+            $alert_service->success('De Support E-mail is verzonden.');
+            return $this->redirectToRoute($vr->get('default'), $pp->ary());
+        }
+
+        if ($is_master)
+        {
+            $alert_service->warning('Het master account kan geen E-mail berichten versturen.');
         }
         else
         {
-            $message = '';
-
-            if ($su->is_master())
+            if (!$can_reply)
             {
-                $alert_service->warning('Het master account kan geen E-mail berichten versturen.');
+                $alert_service->warning('Je hebt geen E-mail adres ingesteld voor je account. ');
             }
-            else
-            {
-                if (!$can_reply)
-                {
-                    $alert_service->warning('Je hebt geen E-mail adres ingesteld voor je account. ');
-                }
-            }
-
-            $cc = true;
         }
 
-        if (!$can_reply)
-        {
-            $cc = false;
-        }
-
-        if (!$config_service->get_bool('mail.enabled', $pp->schema()))
+        if (!$mail_enabled)
         {
             $alert_service->warning('De E-mail functies zijn uitgeschakeld door de beheerder. Je kan dit formulier niet gebruiken');
         }
-        else if (!$config_service->get_ary('mail.addresses.support', $pp->schema()))
+        else if (count($support_addr) < 1)
         {
             $alert_service->warning('Er is geen Support E-mail adres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
         }
+
+        /*
 
         $out = '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
@@ -205,8 +169,11 @@ class SupportFormController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
+        */
+
         return $this->render('support_form/support_form.html.twig', [
-            'content'   => $out,
+            'form'      => $form->createView(),
+            'can_reply' => $can_reply,
         ]);
     }
 }
