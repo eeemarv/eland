@@ -49,7 +49,7 @@ class UniqueContactTypeValidator extends ConstraintValidator
         {
             if (!isset($command->$prop))
             {
-                throw new UnexpectedValueException('non existing field ' . $prop . ' for ' . ContactTypesCommand::class);
+                continue;
             }
 
             $value_lowercase = strtolower($command->$prop);
