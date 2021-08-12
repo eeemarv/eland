@@ -3,6 +3,7 @@
 namespace App\Controller\ContactTypes;
 
 use App\Render\LinkRender;
+use App\Repository\ContactRepository;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,12 +30,12 @@ class ContactTypesController extends AbstractController
 
     public function __invoke(
         Db $db,
+        ContactRepository $contact_repository,
         LinkRender $link_render,
         PageParamsService $pp
     ):Response
     {
-        $types = $db->fetchAllAssociative('select *
-            from ' . $pp->schema() . '.type_contact tc', [], []);
+        $types = $contact_repository->get_all_contact_types($pp->schema());
 
         $contact_count = [];
 

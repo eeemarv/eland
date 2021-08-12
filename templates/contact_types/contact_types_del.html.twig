@@ -1,10 +1,20 @@
-{%- extends 'contact_types/base/contact_types_base.html.twig' -%}
+{%- extends 'contact_types/base/contact_types_form.html.twig' -%}
 
 {%- block heading_title -%}
     {{- 'contact_types_del.title'|trans({
-        'name': name
+        'name': contact_type.name
     }) -}}
 {%- endblock heading_title -%}
+
+{%- block form_a -%}
+    <p>
+        {{- 'contact_types_del.confirm'|trans -}}
+    </p>
+{%- endblock form_a -%}
+
+{%- block form_submit_btn -%}
+    {%- include 'form/submit_del_btn.html.twig' -%}
+{%- endblock form_submit_btn -%}
 
 {%- block css -%}
     {{- parent() -}}

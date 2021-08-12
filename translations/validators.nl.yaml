@@ -5,6 +5,9 @@ category:
     daarom geen berichten bevatten.
   name_not_unique: Deze naam is niet uniek.
 
+contact_types:
+  not_unique: Deze waarde is niet uniek
+
 doc_map:
   name_not_unique: Deze map naam bestaat reeds.
 

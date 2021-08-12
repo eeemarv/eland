@@ -2,14 +2,15 @@
 
 namespace App\Controller\ContactTypes;
 
-use App\Render\LinkRender;
+use App\Command\ContactTypes\ContactTypesCommand;
+use App\Form\Post\ContactTypes\ContactTypesType;
+use App\Repository\ContactRepository;
 use App\Service\AlertService;
-use App\Service\FormTokenService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ContactTypesEditController extends AbstractController
@@ -32,103 +33,37 @@ class ContactTypesEditController extends AbstractController
     public function __invoke(
         Request $request,
         int $id,
-        Db $db,
-        FormTokenService $form_token_service,
+        ContactRepository $contact_repository,
         AlertService $alert_service,
-        LinkRender $link_render,
         PageParamsService $pp
     ):Response
     {
-        $tc_prefetch = $db->fetchAssociative('select *
-            from ' . $pp->schema() . '.type_contact
-            where id = ?', [$id]);
+        $contact_type = $contact_repository->get_contact_type($id, $pp->schema());
 
-        if (in_array($tc_prefetch['abbrev'], ContactTypesController::PROTECTED))
+        if (in_array($contact_type['abbrev'], ContactTypesController::PROTECTED))
         {
-            $alert_service->warning('Beschermd contact type.');
+            throw new BadRequestException('Protected contact type.');
+        }
+
+        $command = new ContactTypesCommand();
+        $command->id = $id;
+        $command->name = $contact_type['name'];
+        $command->abbrev = $contact_type['abbrev'];
+        $form = $this->createForm(ContactTypesType::class, $command);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()
+            && $form->isValid())
+        {
+            $command = $form->getData();
+            $contact_repository->update_contact_type($command, $pp->schema());
+
+            $alert_service->success('Contact type aangepast.');
             return $this->redirectToRoute('contact_types', $pp->ary());
         }
 
-        if($request->isMethod('POST'))
-        {
-            if ($error_token = $form_token_service->get_error())
-            {
-                $alert_service->error($error_token);
-                return $this->redirectToRoute('contact_types', $pp->ary());
-            }
-
-            $tc = [
-                'name'		=> $request->request->get('name', ''),
-                'abbrev'	=> $request->request->get('abbrev', ''),
-                'id'		=> $id,
-            ];
-
-            $error = empty($tc['name']) ? 'Geen naam ingevuld! ' : '';
-            $error .= empty($tc['abbrev']) ? 'Geen afkorting ingevuld! ' : $error;
-
-            if (!$error)
-            {
-                if ($db->update($pp->schema() . '.type_contact',
-                    $tc,
-                    ['id' => $id]))
-                {
-                    $alert_service->success('Contact type aangepast.');
-                    return $this->redirectToRoute('contact_types', $pp->ary());
-                }
-                else
-                {
-                    $alert_service->error('Fout bij het opslaan.');
-                }
-            }
-            else
-            {
-                $alert_service->error('Fout in één of meer velden. ' . $error);
-            }
-        }
-        else
-        {
-            $tc = $tc_prefetch;
-        }
-
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
-        $out .= '<form method="post">';
-
-        $out .= '<div class="form-group">';
-        $out .= '<label for="name" class="control-label">Naam</label>';
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon" id="name_addon">';
-        $out .= '<span class="fa fa-circle-o-notch"></span></span>';
-        $out .= '<input type="text" class="form-control" id="name" ';
-        $out .= 'name="name" maxlength="20" ';
-        $out .= 'value="';
-        $out .= $tc['name'];
-        $out .= '" required>';
-        $out .= '</div>';
-        $out .= '</div>';
-
-        $out .= '<div class="form-group">';
-        $out .= '<label for="abbrev" class="control-label">Afkorting</label>';
-        $out .= '<input type="text" class="form-control" id="abbrev" ';
-        $out .= 'name="abbrev" maxlength="11" ';
-        $out .= 'value="';
-        $out .= $tc['abbrev'];
-        $out .= '" required>';
-        $out .= '</div>';
-
-        $out .= $link_render->btn_cancel('contact_types', $pp->ary(), []);
-
-        $out .= '&nbsp;';
-        $out .= '<input type="submit" name="zend" ';
-        $out .= 'value="Opslaan" class="btn btn-primary btn-lg">';
-        $out .= $form_token_service->get_hidden_input();
-
-        $out .= '</form>';
-        $out .= '</div>';
-        $out .= '</div>';
-
         return $this->render('contact_types/contact_types_edit.html.twig', [
-            'content'   => $out,
+            'form'   => $form->createView(),
         ]);
     }
 }

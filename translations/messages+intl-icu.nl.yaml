@@ -117,6 +117,7 @@ help:
     Enkel in admin modus
 
 label:
+  abbrev: Afkorting
   accept: Akkoord
   access: Toegang
   access_explain: Wie kan dit zien?
@@ -477,11 +478,16 @@ contact_form:
 
 contact_types:
   title: Contact types
+
 contact_types_add:
   title: Contact type toevoegen
+
 contact_types_del:
   title: >-
     Contact type verwijderen: {name}
+  confirm: >-
+    Ben je zeker dat dit contact type verwijderd mag worden?
+
 contact_types_edit:
   title: Contact type aanpassen
 
