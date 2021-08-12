@@ -503,11 +503,11 @@ contacts:
 
 contacts_add:
   title: >-
-    Contact voor {user} toevoegen
+    {self, select,
+      self {Contact toevoegen}
+      other {Contact voor {user} toevoegen}
+    }
   btn_add: Contact toevoegen
-
-contacts_add_self:
-  title: Contact toevoegen
 
 contacts_edit:
   title: >-
