@@ -84,7 +84,7 @@ class ForumEditTopicController extends AbstractController
         {
             $command = $form->getData();
 
-            $forum_repository->update_topic($command, $id, $pp->schema());
+            $forum_repository->update_topic($id, $command, $pp->schema());
 
             if ($su->is_owner($forum_topic['user_id']))
             {

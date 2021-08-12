@@ -191,18 +191,19 @@ class ForumRepository
 		int $user_id,
 		int $topic_id,
 		string $schema
-	):bool
+	):int
 	{
-		return $this->db->insert($schema . '.forum_posts', [
+		$this->db->insert($schema . '.forum_posts', [
 			'content'		=> $command->content,
 			'user_id'		=> $user_id,
 			'topic_id'		=> $topic_id,
-		], [\PDO::PARAM_STR, \PDO::PARAM_INT, \PDO::PARAM_INT]) ? true : false;
+		], [\PDO::PARAM_STR, \PDO::PARAM_INT, \PDO::PARAM_INT]);
+		return (int) $this->db->lastInsertId($schema . '.forum_posts_id_seq');
 	}
 
 	public function update_post(
-		ForumPostCommand $command,
 		int $post_id,
+		ForumPostCommand $command,
 		string $schema
 	):bool
 	{
@@ -212,8 +213,8 @@ class ForumRepository
 	}
 
 	public function update_topic(
-		ForumTopicCommand $command,
 		int $topic_id,
+		ForumTopicCommand $command,
 		string $schema
 	):bool
 	{

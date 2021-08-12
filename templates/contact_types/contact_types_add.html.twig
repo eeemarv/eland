@@ -1,8 +1,12 @@
-{%- extends 'contact_types/base/contact_types_base.html.twig' -%}
+{%- extends 'contact_types/base/contact_types_form.html.twig' -%}
 
 {%- block heading_title -%}
     {{- 'contact_types_add.title'|trans -}}
 {%- endblock heading_title -%}
+
+{%- block form_submit_btn -%}
+    {%- include 'form/submit_add_btn.html.twig' -%}
+{%- endblock form_submit_btn -%}
 
 {%- block css -%}
     {{- parent() -}}

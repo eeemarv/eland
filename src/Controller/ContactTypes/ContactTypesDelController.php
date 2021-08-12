@@ -2,14 +2,14 @@
 
 namespace App\Controller\ContactTypes;
 
-use App\Render\LinkRender;
+use App\Form\Post\DelType;
+use App\Repository\ContactRepository;
 use App\Service\AlertService;
-use App\Service\FormTokenService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\PageParamsService;
-use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ContactTypesDelController extends AbstractController
@@ -32,76 +32,39 @@ class ContactTypesDelController extends AbstractController
     public function __invoke(
         Request $request,
         int $id,
-        Db $db,
+        ContactRepository $contact_repository,
         AlertService $alert_service,
-        FormTokenService $form_token_service,
-        LinkRender $link_render,
         PageParamsService $pp
     ):Response
     {
-        $ct = $db->fetchAssociative('select *
-            from ' . $pp->schema() . '.type_contact
-            where id = ?',
-            [$id], [\PDO::PARAM_INT]);
+        $contact_type = $contact_repository->get_contact_type($id, $pp->schema());
 
-        if (in_array($ct['abbrev'], ContactTypesController::PROTECTED))
+        if (in_array($contact_type['abbrev'], ContactTypesController::PROTECTED))
         {
-            $alert_service->warning('Beschermd contact type.');
-            return $this->redirectToRoute('contact_types', $pp->ary());
+            throw new BadRequestException('Protected contact type.');
         }
 
-        $hos_contact = $db->fetchOne('select id
-            from ' . $pp->schema() . '.contact
-            where id_type_contact = ?',
-            [$id], [\PDO::PARAM_INT]) !== false;
+        $count_contacts = $contact_repository->get_count_for_contact_type($id, $pp->schema());
 
-        if ($hos_contact)
+        if ($count_contacts > 0)
         {
-            $alert_service->warning('Er is ten minste één contact
-                van dit contact type, dus kan het contact type
-                niet verwijderd worden.');
-            return $this->redirectToRoute('contact_types', $pp->ary());
+            throw new BadRequestException('A contact type with contacts can not be deleted.');
         }
 
-        if($request->isMethod('POST'))
+        $form = $this->createForm(DelType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()
+            && $form->isValid())
         {
-            if ($error_token = $form_token_service->get_error())
-            {
-                $alert_service->error($error_token);
-                return $this->redirectToRoute('contact_types', $pp->ary());
-            }
-
-            if ($db->delete($pp->schema() . '.type_contact', ['id' => $id]))
-            {
-                $alert_service->success('Contact type verwijderd.');
-            }
-            else
-            {
-                $alert_service->error('Fout bij het verwijderen.');
-            }
-
+            $contact_repository->del_contact_type($id, $pp->schema());
+            $alert_service->success('Contact type "' . $contact_type['name'] . '" verwijderd.');
             return $this->redirectToRoute('contact_types', $pp->ary());
         }
-
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
-        $out .= '<p>Ben je zeker dat dit contact type verwijderd mag worden?</p>';
-        $out .= '<form method="post">';
-
-        $out .= $link_render->btn_cancel('contact_types', $pp->ary(), []);
-
-        $out .= '&nbsp;';
-        $out .= '<input type="submit" value="Verwijderen" ';
-        $out .= 'name="zend" class="btn btn-danger btn-lg">';
-        $out .= $form_token_service->get_hidden_input();
-
-        $out .= '</form>';
-        $out .= '</div>';
-        $out .= '</div>';
 
         return $this->render('contact_types/contact_types_del.html.twig', [
-            'content'   => $out,
-            'name'      => $ct['name'],
+            'form'          => $form->createView(),
+            'contact_type'  => $contact_type,
         ]);
     }
 }

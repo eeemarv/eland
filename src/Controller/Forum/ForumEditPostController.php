@@ -79,7 +79,7 @@ class ForumEditPostController extends AbstractController
             && $form->isValid())
         {
             $command = $form->getData();
-            $forum_repository->update_post($command, $id, $pp->schema());
+            $forum_repository->update_post($id, $command, $pp->schema());
 
             $alert_service->success('Reactie aangepast.');
             return $this->redirectToRoute('forum_topic', array_merge($pp->ary(),
