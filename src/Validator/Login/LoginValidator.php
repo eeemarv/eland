@@ -62,7 +62,7 @@ class LoginValidator extends ConstraintValidator
 
             if ($count_by_email === 1)
             {
-                $command->id = $this->user_repository->get_active_id_by_eamil($login_lowercase, $this->pp->schema());
+                $command->id = $this->user_repository->get_active_id_by_email($login_lowercase, $this->pp->schema());
             }
         }
 
