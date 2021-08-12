@@ -2,7 +2,7 @@
 
 namespace App\Form\Input;
 
-use App\Form\DataTransformer\TypeaheadActiveUserTransformer;
+use App\Form\DataTransformer\TypeaheadUserTransformer;
 use App\Form\Input\TextAddonType;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -15,22 +15,13 @@ use Symfony\Component\Form\FormInterface;
 
 class TypeaheadActiveUserType extends AbstractType
 {
-    protected PageParamsService $pp;
-    protected TypeaheadService $typeahead_service;
-    protected ConfigService $config_service;
-    protected TypeaheadActiveUserTransformer $typeahead_active_user_transformer;
-
     public function __construct(
-        PageParamsService $pp,
-        TypeaheadService $typeahead_service,
-        ConfigService $config_service,
-        TypeaheadActiveUserTransformer $typeahead_active_user_transformer
+        protected PageParamsService $pp,
+        protected TypeaheadService $typeahead_service,
+        protected ConfigService $config_service,
+        protected TypeaheadUserTransformer $typeahead_user_transformer
     )
     {
-        $this->pp = $pp;
-        $this->typeahead_service = $typeahead_service;
-        $this->config_service = $config_service;
-        $this->typeahead_active_user_transformer = $typeahead_active_user_transformer;
     }
 
     public function buildForm(

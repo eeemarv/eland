@@ -1,9 +1,4 @@
-{%- extends 'contacts/base/contacts_base.html.twig' -%}
-
-{%- block asssets_add -%}
-    {{- parent() -}}
-    {{- assets_add(['contacts_edit.js']) -}}
-{%- endblock asssets_add -%}
+{%- extends 'contacts/base/contacts_form.html.twig' -%}
 
 {%- block heading_title -%}
     {%- if is_self or not user_id -%}
@@ -14,6 +9,10 @@
         })|raw -}}
     {%- endif -%}
 {%- endblock heading_title -%}
+
+{%- block form_submit_btn -%}
+    {%- include 'form/submit_add_btn.html.twig' -%}
+{%- endblock form_submit_btn -%}
 
 {%- block css -%}
     {{- parent() -}}

@@ -100,6 +100,8 @@ error_fileupload:
     Fout bij het opladen van de afbeelding.
 
 help:
+  address: >-
+    Voorbeeldstraat 23, 4520 Voorbeeldgemeente
   mail_tag: >-
     Deze prefix wordt tussen haken [tag] toegevoegd
     aan het onderwerp van alle E-mail-berichten die
@@ -129,6 +131,7 @@ label:
   admin: Admin
   admin_comment: Admin commentaar
   admin_functions: Admin functies
+  address: Adres
   amount: Bedrag
   approved: Goedgekeurd
   balance: Saldo
@@ -230,9 +233,11 @@ label:
   upload: Opladen
   user: Gebruiker
   username: Gebruikersnaam
+  value: Waarde
   validity: Geldigheid
   want: Vraag
   wants: Vraag
+  website: Website
   your_account: Je Account
   your_email: Je E-Mail adres
   your_message: Je Bericht
@@ -493,21 +498,29 @@ contact_types_edit:
 
 contacts:
   title: Contacten
+  type:
+    label: Contact type
+
 contacts_add:
   title: >-
     Contact voor {user} toevoegen
   btn_add: Contact toevoegen
+
 contacts_add_self:
   title: Contact toevoegen
+
 contacts_edit:
   title: >-
     Contact van {user} aanpassen
+
 contacts_edit_self:
   title: >-
     Contact aanpassen
+
 contacts_del:
   title: >-
     Contact van {user} verwijderen
+
 contacts_del_self:
   title: >-
     Contact verwijderen

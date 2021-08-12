@@ -5,8 +5,9 @@ namespace App\Form\DataTransformer;
 use App\Repository\UserRepository;
 use App\Service\PageParamsService;
 use Symfony\Component\Form\DataTransformerInterface;
+use Symfony\Component\Form\Exception\TransformationFailedException;
 
-class TypeaheadActiveUserTransformer implements DataTransformerInterface
+class TypeaheadUserTransformer implements DataTransformerInterface
 {
     public function __construct(
         protected UserRepository $user_repository,
@@ -36,11 +37,11 @@ class TypeaheadActiveUserTransformer implements DataTransformerInterface
 
         list($code) = explode(' ', $account_str);
 
-        $id = $this->user_repository->get_by_code($code, $this->pp->schema());
+        $id = $this->user_repository->get_by_typeahead_code($code, $this->pp->schema());
 
         if (!$id)
         {
-            return;
+            throw new TransformationFailedException('user account with code ' . $code . ' does not exist.');
         }
 
         return $id;

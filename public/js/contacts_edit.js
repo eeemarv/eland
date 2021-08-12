@@ -4,21 +4,20 @@ jQuery(function(){
 	});
 
 	var $form = $('form');
-	var $input = $form.find('input#value');
-	var $select = $form.find('select');
+	var $input = $form.find('[data-contacts-format]');
+	var $select = $form.find('select[data-contact-type]');
 	var contacts_format = $input.data('contacts-format');
-	var $addon = $form.find('span#value_addon');
-	var $contact_explain = $form.find('p#contact-explain');
+	var $input_div = $input.parent();
+	var $addon = $input_div.find('span');
+	var $contact_help = $input_div.parent().find('.help-block');
 	var $fa = $addon.find('i');
 
-	console.log(contacts_format);
+	$contact_help.text('');
 
 	function select_change(){
 		var $selected = $select.find('option:selected');
 		var abbrev = $selected.data('abbrev');
 		var format = contacts_format[abbrev];
-
-		console.log(format);
 
 		$fa.removeClass();
 
@@ -33,14 +32,14 @@ jQuery(function(){
 				$input.attr('type', 'text');
 			}
 
-			if (format.hasOwnProperty('explain')){
-				$contact_explain.text(format.explain);
+			if (format.hasOwnProperty('help')){
+				$contact_help.text(format.help);
 			} else {
-				$contact_explain.text('');
+				$contact_help.text('');
 			}
 		} else {
 			$input.attr('type', 'text');
-			$contact_explain.text('');
+			$contact_help.text('');
 		}
 	}
 

@@ -4,13 +4,16 @@ namespace App\Command\Contacts;
 
 use App\Command\CommandInterface;
 use Symfony\Component\Validator\Constraints\Choice;
+use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Type;
 
-class ContactsAddCommand implements CommandInterface
+class ContactsCommand implements CommandInterface
 {
+    public $id;
+
     #[NotBlank()]
-    public $account_code;
+    public $user_id;
 
     #[NotBlank()]
     #[Type('int')]
@@ -18,9 +21,11 @@ class ContactsAddCommand implements CommandInterface
 
     #[NotBlank()]
     #[Type('string')]
+    #[Length(max: 120)]
     public $value;
 
     #[Type('string')]
+    #[Length(max: 60)]
     public $comments;
 
     #[Type('string')]

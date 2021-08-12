@@ -6,12 +6,15 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Cnst\AccessCnst;
+use App\Command\Contacts\ContactsCommand;
+use App\Form\Post\Contacts\ContactsType;
 use App\Queue\GeocodeQueue;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\DBAL\Connection as Db;
 use App\Service\AlertService;
 use App\Service\FormTokenService;
 use App\Render\LinkRender;
+use App\Repository\ContactRepository;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
@@ -77,14 +80,9 @@ class ContactsAddController extends AbstractController
         int $user_id,
         bool $is_self,
         bool $redirect_contacts,
-        Db $db,
+        ContactRepository $contact_repository,
         AlertService $alert_service,
-        FormTokenService $form_token_service,
-        ConfigService $config_service,
-        LinkRender $link_render,
         GeocodeQueue $geocode_queue,
-        ItemAccessService $item_access_service,
-        TypeaheadService $typeahead_service,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
@@ -95,6 +93,78 @@ class ContactsAddController extends AbstractController
         {
             $user_id = $su->id();
         }
+
+        $command = new ContactsCommand();
+
+        if ($user_id)
+        {
+            $command->user_id = $user_id;
+        }
+
+        $form = $this->createForm(ContactsType::class, $command);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()
+            && $form->isValid())
+        {
+            $command = $form->getData();
+            $created_by = $su->is_master() ? null : $su->id();
+            $contact_repository->insert($command, $created_by, $pp->schema());
+
+            $user_id = $command->user_id;
+            $value = $command->value;
+
+            $contact_type = $contact_repository->get_contact_type($command->contact_type_id, $pp->schema());
+
+            if ($contact_type['abbrev'] === 'adr')
+            {
+                $geocode_queue->cond_queue([
+                    'adr'		=> $command->value,
+                    'uid'		=> $user_id,
+                    'schema'	=> $pp->schema(),
+                ], 0);
+            }
+
+            if ($contact_type['abbrev'] === 'mail')
+            {
+                $mail_count = $contact_repository->get_mail_count_except_for_user($value, $user_id, $pp->schema());
+
+                if ($mail_count && $pp->is_admin())
+                {
+                    $warning = 'Omdat deze gebruikers niet meer ';
+                    $warning .= 'een uniek E-mail adres hebben zullen zij ';
+                    $warning .= 'niet meer zelf hun paswoord kunnnen resetten ';
+                    $warning .= 'of kunnen inloggen met ';
+                    $warning .= 'E-mail adres.';
+
+                    if ($mail_count == 1)
+                    {
+                        $warning_2 = 'Waarschuwing: E-mail adres ' . $value;
+                        $warning_2 .= ' bestaat al onder de actieve gebruikers.';
+                    }
+                    else if ($mail_count > 1)
+                    {
+                        $warning_2 = 'Waarschuwing: E-mail adres ' . $value;
+                        $warning_2 .= ' bestaat al ' . $mail_count;
+                        $warning_2 .= ' maal onder de actieve gebruikers.';
+                    }
+
+                    $alert_service->warning($warning_2 . ' ' . $warning);
+                }
+            }
+
+            $alert_service->success('Contact opgeslagen.');
+
+            if ($redirect_contacts)
+            {
+                return $this->redirectToRoute('contacts', $pp->ary());
+            }
+
+            return $this->redirectToRoute('users_show', array_merge($pp->ary(),
+                ['id' => $user_id]));
+        }
+
+        /*
 
         $new_users_days = $config_service->get_int('users.new.days', $pp->schema());
         $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
@@ -422,9 +492,10 @@ class ContactsAddController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
+        */
 
         return $this->render('contacts/contacts_add.html.twig', [
-            'content'   => $out,
+            'form'      => $form->createView(),
             'is_self'   => $is_self,
             'user_id'   => $user_id,
         ]);

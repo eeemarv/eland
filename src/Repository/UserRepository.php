@@ -22,7 +22,9 @@ class UserRepository
 	{
         $account_str = $this->db->fetchOne('select trim(concat(coalesce(code,\'\'), \' \', coalesce(name, \'\')))
             from ' . $schema . '.users
-			where id = ?', [$id], [\PDO::PARAM_INT]);
+			where id = ?',
+			[$id],
+			[\PDO::PARAM_INT]);
 
 		if (!$account_str)
 		{
@@ -167,7 +169,8 @@ class UserRepository
 			);
 	}
 
-	public function get_by_code(string $code, string $schema):int
+
+	public function get_by_typeahead_code(string $code, string $schema):int
 	{
 		$code_lowercase = strtolower($code);
 
@@ -180,7 +183,7 @@ class UserRepository
 
 		if (!$id)
 		{
-			throw new NotFoundHttpException('User with code ' . $code . ' not found.');
+			return 0;
 		}
 
 		return $id;

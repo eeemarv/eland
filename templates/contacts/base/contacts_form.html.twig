@@ -1,0 +1,61 @@
+{%- extends 'contacts/base/contacts_base.html.twig' -%}
+
+{%- block content -%}
+{%- endblock content -%}
+
+{%- block assets_add -%}
+    {{- parent() -}}
+    {{- assets_add(['contacts_edit.js']) -}}
+{%- endblock assets_add -%}
+
+{%- block form_a -%}
+    {%- if form.user_id is defined -%}
+        {{- form_row(form.user_id, {
+            'label': 'label.user',
+            'pre_addon': {
+                'fa': 'user'
+            },
+            'attr': {
+                'placeholder': 'label.account_code'
+            }
+        }) -}}
+    {%- endif -%}
+
+    {%- if form.contact_type_id is defined -%}
+        {{- form_row(form.contact_type_id, {
+            'label': 'contacts.type.label',
+            'pre_addon': {
+                'fa': 'circle-o-notch'
+            },
+            'attr': {
+                'data-contact-type': ''
+            }
+        }) -}}
+    {%- endif -%}
+
+    {%- if form.value is defined -%}
+        {{- form_row(form.value, {
+            'label': 'label.value',
+            'help': 'label.value',
+            'pre_addon': {
+                'fa': 'phone'
+            },
+            'disabled': true
+        }) -}}
+    {%- endif -%}
+
+    {%- if form.comments is defined -%}
+        {{- form_row(form.comments, {
+            'label': 'label.comment',
+            'pre_addon': {
+                'fa': 'comment-o'
+            }
+        }) -}}
+    {%- endif -%}
+
+    {%- if form.access is defined -%}
+        {{- form_row(form.access, {
+            'label': 'access.visible_for'
+        }) -}}
+    {%- endif -%}
+{%- endblock form_a -%}
