@@ -37,7 +37,7 @@
 {%- block btn_top_password_edit -%}
     {%- if pp_role('admin') or su_is_owner(id) -%}
         {%- include 'include/btn_top/password_edit.html.twig' with {
-            'btn_route': 'users_password_edit' ~ (is_self ? '_self' : ''),
+            'btn_route': 'users_password_edit' ~ (su_is_owner(id) ? '_self' : ''),
             'btn_title': 'users_password_edit.title',
             'btn_title_trans_params': {
                 'user': account(id, schema),
