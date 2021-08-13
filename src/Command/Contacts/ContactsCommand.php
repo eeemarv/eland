@@ -4,6 +4,7 @@ namespace App\Command\Contacts;
 
 use App\Command\CommandInterface;
 use App\Validator\Contact\UniqueEmailContact;
+use App\Validator\Contact\UrlContact;
 use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -11,6 +12,7 @@ use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\Constraints\Type;
 
 #[UniqueEmailContact()]
+#[UrlContact()]
 class ContactsCommand implements CommandInterface
 {
     public $id;

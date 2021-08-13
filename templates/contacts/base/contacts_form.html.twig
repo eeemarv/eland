@@ -3,6 +3,11 @@
 {%- block content -%}
 {%- endblock content -%}
 
+{%- set cancel_route = is_self ? 'users_show_self' : (user_id ? 'users_show' : 'contacts') -%}
+{%- if user_id -%}
+    {%- set cancel_route_params = {'id': user_id} -%}
+{%- endif -%}
+
 {%- block assets_add -%}
     {{- parent() -}}
     {{- assets_add(['contacts_edit.js']) -}}
