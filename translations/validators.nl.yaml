@@ -55,6 +55,11 @@ login:
     not_correct: >-
       Het paswoord is niet correct.
 
+email:
+  not_unique_for_active_users: >-
+    Dit E-mail adres komt reeds
+    voor onder de actieve gebruikers.
+
 email_unique_to_active_user:
   not_unique: >-
     Het E-mail adres is niet uniek in dit Systeem.

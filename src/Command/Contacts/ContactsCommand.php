@@ -3,11 +3,14 @@
 namespace App\Command\Contacts;
 
 use App\Command\CommandInterface;
+use App\Validator\Contact\UniqueEmailContact;
 use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\Constraints\Type;
 
+#[UniqueEmailContact()]
 class ContactsCommand implements CommandInterface
 {
     public $id;
@@ -29,6 +32,7 @@ class ContactsCommand implements CommandInterface
     public $comments;
 
     #[Type('string')]
+    #[NotNull()]
     #[Choice(['admin', 'user', 'guest'])]
     public $access;
 }

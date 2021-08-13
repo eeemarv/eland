@@ -162,6 +162,7 @@ label:
   filtered: Gefilterd
   filters: Filters
   first_name: Voornaam
+  for_user: Voor gebruiker
   from: Van
   from_date: Vanaf
   full_name: Volledige naam

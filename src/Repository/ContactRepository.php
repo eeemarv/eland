@@ -74,6 +74,25 @@ class ContactRepository
 		return $contact_type;
 	}
 
+	public function get_contact_type_by_abbrev(
+		string $abbrev,
+		string $schema
+	):array
+	{
+		$contact_type =  $this->db->fetchAssociative('select *
+            from ' . $schema . '.type_contact
+            where abbrev = ?',
+			[$abbrev],
+			[\PDO::PARAM_STR]);
+
+		if ($contact_type === false)
+		{
+			throw new NotFoundHttpException('Contact type with abbrev ' . $abbrev . ' not found.');
+		}
+
+		return $contact_type;
+	}
+
 	public function get_count_for_contact_type(
 		int $contact_type_id,
 		string $schema

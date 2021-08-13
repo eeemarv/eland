@@ -9,7 +9,7 @@ jQuery(function(){
 	var contacts_format = $input.data('contacts-format');
 	var $input_div = $input.parent();
 	var $addon = $input_div.find('span');
-	var $contact_help = $input_div.parent().find('.help-block');
+	var $contact_help = $input_div.parent().find('span#contacts_value_help');
 	var $fa = $addon.find('i');
 
 	$contact_help.text('');
