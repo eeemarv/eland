@@ -61,6 +61,8 @@ class ContactsType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $user_id_enabled = $options['user_id_enabled'];
+
         $contact_types = $this->contact_repository->get_all_contact_types($this->pp->schema());
 
         $choices = [];
@@ -72,38 +74,41 @@ class ContactsType extends AbstractType
             $choice_attr[$row['name']] = ['data-abbrev' => $row['abbrev']];
         }
 
-        $new_users_days = $this->config_service->get_int('users.new.days', $this->pp->schema());
-        $new_users_enabled = $this->config_service->get_bool('users.new.enabled', $this->pp->schema());
-        $leaving_users_enabled = $this->config_service->get_bool('users.leaving.enabled', $this->pp->schema());
-
-        $show_new_status = $new_users_enabled;
-
-        if ($show_new_status)
+        if ($user_id_enabled)
         {
-            $new_users_access = $this->config_service->get_str('users.new.access', $this->pp->schema());
-            $show_new_status = $this->item_access_service->is_visible($new_users_access);
+            $new_users_days = $this->config_service->get_int('users.new.days', $this->pp->schema());
+            $new_users_enabled = $this->config_service->get_bool('users.new.enabled', $this->pp->schema());
+            $leaving_users_enabled = $this->config_service->get_bool('users.leaving.enabled', $this->pp->schema());
+
+            $show_new_status = $new_users_enabled;
+
+            if ($show_new_status)
+            {
+                $new_users_access = $this->config_service->get_str('users.new.access', $this->pp->schema());
+                $show_new_status = $this->item_access_service->is_visible($new_users_access);
+            }
+
+            $show_leaving_status = $leaving_users_enabled;
+
+            if ($show_leaving_status)
+            {
+                $leaving_users_access = $this->config_service->get_str('users.leaving.access', $this->pp->schema());
+                $show_leaving_status = $this->item_access_service->is_visible($leaving_users_access);
+            }
+
+            $data_typeahead = $this->typeahead_service->ini($this->pp)
+                ->add('accounts', ['status' => 'active'])
+                ->add('accounts', ['status' => 'inactive'])
+                ->add('accounts', ['status' => 'ip'])
+                ->add('accounts', ['status' => 'im'])
+                ->add('accounts', ['status' => 'extern'])
+                ->str_raw([
+                    'filter'        => 'accounts',
+                    'new_users_days'        => $new_users_days,
+                    'show_new_status'       => $show_new_status,
+                    'show_leaving_status'   => $show_leaving_status,
+                ]);
         }
-
-        $show_leaving_status = $leaving_users_enabled;
-
-        if ($show_leaving_status)
-        {
-            $leaving_users_access = $this->config_service->get_str('users.leaving.access', $this->pp->schema());
-            $show_leaving_status = $this->item_access_service->is_visible($leaving_users_access);
-        }
-
-        $data_typeahead = $this->typeahead_service->ini($this->pp)
-            ->add('accounts', ['status' => 'active'])
-            ->add('accounts', ['status' => 'inactive'])
-            ->add('accounts', ['status' => 'ip'])
-            ->add('accounts', ['status' => 'im'])
-            ->add('accounts', ['status' => 'extern'])
-            ->str_raw([
-                'filter'        => 'accounts',
-                'new_users_days'        => $new_users_days,
-                'show_new_status'       => $show_new_status,
-                'show_leaving_status'   => $show_leaving_status,
-            ]);
 
         $contacts_format = [];
 
@@ -125,14 +130,20 @@ class ContactsType extends AbstractType
             }
         }
 
-        $builder->add('user_id', TextType::class, [
-            'attr'  => [
-                'data-typeahead' => $data_typeahead,
-            ],
-            'invalid_message' => 'user.code_not_exists',
-        ]);
-        $builder->get('user_id')
-            ->addModelTransformer($this->typeahead_user_transformer);
+        if ($user_id_enabled)
+        {
+            $builder->add('user_id', TextType::class, [
+                'attr'  => [
+                    'data-typeahead' => $data_typeahead,
+                ],
+                'invalid_message' => 'user.code_not_exists',
+            ]);
+
+            $builder->get('user_id')
+                ->addModelTransformer($this->typeahead_user_transformer);
+        }
+
+
         $builder->add('contact_type_id', ChoiceType::class, [
             'choices'       => $choices,
             'choice_attr'   => $choice_attr,
@@ -153,7 +164,8 @@ class ContactsType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class'    => ContactsCommand::class,
+            'user_id_enabled'   => false,
+            'data_class'        => ContactsCommand::class,
         ]);
     }
 }
