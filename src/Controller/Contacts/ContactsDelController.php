@@ -11,6 +11,7 @@ use Doctrine\DBAL\Connection as Db;
 use App\Service\AlertService;
 use App\Service\FormTokenService;
 use App\Render\LinkRender;
+use App\Repository\ContactRepository;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -84,6 +85,7 @@ class ContactsDelController extends AbstractController
         bool $redirect_contacts,
         bool $is_self,
         Db $db,
+        ContactRepository $contact_repository,
         AlertService $alert_service,
         UserCacheService $user_cache_service,
         FormTokenService $form_token_service,
@@ -98,7 +100,8 @@ class ContactsDelController extends AbstractController
 
         $id = $contact_id ?: $id;
 
-        $contact = ContactsEditController::get_contact($db, $id,  $pp->schema());
+        $contact = $contact_repository->get($id, $pp->schema());
+        $contact_type = $contact_repository->get_contact_type($contact['id_type_contact'], $pp->schema());
 
         if ($is_self)
         {
@@ -122,7 +125,7 @@ class ContactsDelController extends AbstractController
 
         if ($request->isMethod('GET'))
         {
-            if ($contact['abbrev'] === 'mail'
+            if ($contact_type['abbrev'] === 'mail'
                 && $user_cache_service->is_active_user($user_id, $pp->schema()))
             {
                 $count_mail = $db->fetchOne('select count(c.*)
@@ -191,7 +194,7 @@ class ContactsDelController extends AbstractController
 
         $out .= '<dt>Type</dt>';
         $out .= '<dd>';
-        $out .= $contact['abbrev'];
+        $out .= $contact_type['abbrev'];
         $out .= '</dd>';
         $out .= '<dt>Waarde</dt>';
         $out .= '<dd>';

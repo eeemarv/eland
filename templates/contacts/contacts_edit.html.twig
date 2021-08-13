@@ -1,13 +1,10 @@
-{%- extends 'contacts/base/contacts_base.html.twig' -%}
+{%- extends 'contacts/base/contacts_form.html.twig' -%}
 
 {%- block heading_title -%}
-    {%- if is_self -%}
-        {{- 'contacts_edit_self.title'|trans -}}
-    {%- else -%}
-        {{- 'contacts_edit.title'|trans({
-            'user': account(user_id, schema)|link('users_show', {'id': user_id})
-        })|raw -}}
-    {%- endif -%}
+    {{- 'contacts_edit.title'|trans({
+        'self': is_self or not user_id ? 'self' : 'some_user',
+        'user': user_id ? account(user_id, schema)|link('users_show', {'id': user_id}) : ''
+    })|raw -}}
 {%- endblock heading_title -%}
 
 {%- block css -%}

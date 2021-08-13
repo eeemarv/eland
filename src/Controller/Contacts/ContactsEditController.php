@@ -2,6 +2,8 @@
 
 namespace App\Controller\Contacts;
 
+use App\Command\Contacts\ContactsCommand;
+use App\Form\Post\Contacts\ContactsType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,9 +12,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\DBAL\Connection as Db;
 use App\Queue\GeocodeQueue;
 use App\Service\AlertService;
-use App\Service\FormTokenService;
-use App\Render\LinkRender;
-use App\Service\ItemAccessService;
+use App\Repository\ContactRepository;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\Routing\Annotation\Route;
@@ -109,21 +109,16 @@ class ContactsEditController extends AbstractController
         int $id,
         bool $redirect_contacts,
         bool $is_self,
-        Db $db,
-        FormTokenService $form_token_service,
+        ContactRepository $contact_repository,
         AlertService $alert_service,
-        ItemAccessService $item_access_service,
-        LinkRender $link_render,
         PageParamsService $pp,
         SessionUserService $su,
         GeocodeQueue $geocode_queue
     ):Response
     {
-        $errors = [];
-
         $id = $contact_id ?: $id;
 
-        $contact = self::get_contact($db, $id, $pp->schema());
+        $contact = $contact_repository->get($id, $pp->schema());
 
         if ($is_self)
         {
@@ -134,16 +129,89 @@ class ContactsEditController extends AbstractController
             $user_id = $contact['user_id'];
         }
 
+        if (!$user_id)
+        {
+            throw new BadRequestHttpException('No user_id');
+        }
+
         if ($user_id !== $contact['user_id'])
         {
             throw new BadRequestHttpException(
                 'Contact ' . $id . ' does not belong to user ' . $user_id);
         }
 
-        if (!$user_id)
+        $command = new ContactsCommand();
+        $command->id = $id;
+        $command->user_id = $contact['user_id'];
+        $command->contact_type_id = $contact['id_type_contact'];
+        $command->value = $contact['value'];
+        $command->comments = $contact['comments'];
+        $command->access = $contact['access'];
+
+        $form = $this->createForm(ContactsType::class, $command);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()
+            && $form->isValid())
         {
-            throw new BadRequestHttpException('No user_id');
+            $command = $form->getData();
+            $contact_repository->update($command, $pp->schema());
+
+            $user_id = $command->user_id;
+            $value = $command->value;
+
+            $contact_type = $contact_repository->get_contact_type($command->contact_type_id, $pp->schema());
+
+            if ($contact_type['abbrev'] === 'adr')
+            {
+                $geocode_queue->cond_queue([
+                    'adr'		=> $command->value,
+                    'uid'		=> $user_id,
+                    'schema'	=> $pp->schema(),
+                ], 0);
+            }
+
+            if ($contact_type['abbrev'] === 'mail')
+            {
+                $mail_count = $contact_repository->get_mail_count_except_for_user($value, $user_id, $pp->schema());
+
+                if ($mail_count && $pp->is_admin())
+                {
+                    $warning = 'Omdat deze gebruikers niet meer ';
+                    $warning .= 'een uniek E-mail adres hebben zullen zij ';
+                    $warning .= 'niet meer zelf hun paswoord kunnnen resetten ';
+                    $warning .= 'of kunnen inloggen met ';
+                    $warning .= 'E-mail adres.';
+
+                    if ($mail_count == 1)
+                    {
+                        $warning_2 = 'Waarschuwing: E-mail adres ' . $value;
+                        $warning_2 .= ' bestaat al onder de actieve gebruikers.';
+                    }
+                    else if ($mail_count > 1)
+                    {
+                        $warning_2 = 'Waarschuwing: E-mail adres ' . $value;
+                        $warning_2 .= ' bestaat al ' . $mail_count;
+                        $warning_2 .= ' maal onder de actieve gebruikers.';
+                    }
+
+                    $alert_service->warning($warning_2 . ' ' . $warning);
+                }
+            }
+
+            $alert_service->success('Contact aangepast.');
+
+            if ($redirect_contacts)
+            {
+                return $this->redirectToRoute('contacts', $pp->ary());
+            }
+
+            return $this->redirectToRoute('users_show', array_merge($pp->ary(),
+                ['id' => $user_id]));
         }
+
+        /*
+
 
         $id_type_contact = $contact['id_type_contact'];
         $value = $contact['value'];
@@ -410,33 +478,13 @@ class ContactsEditController extends AbstractController
 
         $out .= '</div>';
         $out .= '</div>';
+        */
 
         return $this->render('contacts/contacts_edit.html.twig', [
-            'content'   => $out,
+            'form'      => $form->createView(),
+            'contact'   => $contact,
             'is_self'   => $is_self,
             'user_id'   => $user_id,
         ]);
-    }
-
-    public static function get_contact(
-        Db $db,
-        int $contact_id,
-        string $schema
-    ):array
-    {
-        $contact = $db->fetchAssociative('select c.*, tc.abbrev
-            from ' . $schema . '.contact c,
-                ' . $schema . '.type_contact tc
-            where c.id = ?
-                and tc.id = c.id_type_contact',
-            [$contact_id], [\PDO::PARAM_INT]);
-
-        if (!$contact)
-        {
-            throw new NotFoundHttpException(
-                'Het contact met id ' . $contact_id . ' bestaat niet.');
-        }
-
-        return $contact;
     }
 }

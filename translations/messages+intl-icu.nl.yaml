@@ -512,11 +512,10 @@ contacts_add:
 
 contacts_edit:
   title: >-
-    Contact van {user} aanpassen
-
-contacts_edit_self:
-  title: >-
-    Contact aanpassen
+    {self, select,
+      self {Contact aanpassen}
+      other {Contact van {user} aanpassen}
+    }
 
 contacts_del:
   title: >-

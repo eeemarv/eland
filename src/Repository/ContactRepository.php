@@ -157,6 +157,29 @@ class ContactRepository
 		return (int) $this->db->lastInsertId($schema . '.contact_id_seq');
 	}
 
+	public function update(
+		ContactsCommand $command,
+		$schema
+	):bool
+	{
+		$update_ary = [
+			'id_type_contact'	=> $command->contact_type_id,
+			'value'				=> $command->value,
+			'comments'			=> $command->comments,
+			'access'			=> $command->access,
+		];
+
+		$id = $command->id;
+
+		if (!$id)
+		{
+			return false;
+		}
+
+		return $this->db->update($schema . '.contact',
+			$update_ary, ['id' => $id]) ? true : false;
+	}
+
 	public function get(int $id, string $schema):array
 	{
 		$contact = $this->db->fetchAssociative('select *

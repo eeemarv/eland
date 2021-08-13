@@ -5,21 +5,13 @@ namespace App\Controller\Contacts;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Cnst\AccessCnst;
 use App\Command\Contacts\ContactsCommand;
 use App\Form\Post\Contacts\ContactsType;
 use App\Queue\GeocodeQueue;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Doctrine\DBAL\Connection as Db;
 use App\Service\AlertService;
-use App\Service\FormTokenService;
-use App\Render\LinkRender;
 use App\Repository\ContactRepository;
-use App\Service\ConfigService;
-use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\TypeaheadService;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ContactsAddController extends AbstractController
@@ -87,8 +79,6 @@ class ContactsAddController extends AbstractController
         SessionUserService $su
     ):Response
     {
-        $errors = [];
-
         if ($is_self)
         {
             $user_id = $su->id();
