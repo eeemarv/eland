@@ -2,17 +2,13 @@
 
 namespace App\Controller\Contacts;
 
+use App\Form\Post\DelType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use App\Render\AccountRender;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Doctrine\DBAL\Connection as Db;
 use App\Service\AlertService;
-use App\Service\FormTokenService;
-use App\Render\LinkRender;
 use App\Repository\ContactRepository;
-use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\UserCacheService;
@@ -84,16 +80,11 @@ class ContactsDelController extends AbstractController
         int $id,
         bool $redirect_contacts,
         bool $is_self,
-        Db $db,
         ContactRepository $contact_repository,
         AlertService $alert_service,
         UserCacheService $user_cache_service,
-        FormTokenService $form_token_service,
-        ItemAccessService $item_access_service,
-        AccountRender $account_render,
         PageParamsService $pp,
-        SessionUserService $su,
-        LinkRender $link_render
+        SessionUserService $su
     ):Response
     {
         $errors = [];
@@ -123,120 +114,53 @@ class ContactsDelController extends AbstractController
             throw new BadRequestHttpException('No user_id');
         }
 
-        if ($request->isMethod('GET'))
-        {
-            if ($contact_type['abbrev'] === 'mail'
-                && $user_cache_service->is_active_user($user_id, $pp->schema()))
-            {
-                $count_mail = $db->fetchOne('select count(c.*)
-                    from ' . $pp->schema() . '.contact c
-                    where c.id_type_contact = ?
-                        and c.user_id = ?', [
-                            $contact['id_type_contact'],
-                            $user_id],
-                            [\PDO::PARAM_INT, \PDO::PARAM_INT]);
+        $form = $this->createForm(DelType::class);
+        $form->handleRequest($request);
 
-                if ($count_mail === 1)
-                {
-                    if ($pp->is_admin())
-                    {
-                        $alert_service->warning(
-                            'Waarschuwing: dit is het enige E-mail adres
-                            van een actieve gebruiker');
-                    }
-                    else
-                    {
-                        $alert_service->warning(
-                            'Waarschuwing: dit is je enige E-mail adres.');
-                    }
-                }
+        if ($form->isSubmitted()
+            && $form->isValid())
+        {
+            $contact_repository->del($id, $pp->schema());
+
+            $alert_service->success('Contact verwijderd.');
+
+            if ($redirect_contacts)
+            {
+                return $this->redirectToRoute('contacts', $pp->ary());
             }
+
+            return $this->redirectToRoute('users_show', array_merge($pp->ary(),
+                ['id' => $user_id]));
         }
 
-        if ($request->isMethod('POST'))
+        if ($contact_type['abbrev'] === 'mail'
+            && $user_cache_service->is_active_user($user_id, $pp->schema()))
         {
-            if ($error_token = $form_token_service->get_error())
+            $mail_count = $contact_repository->get_mail_count_for_user($user_id, $pp->schema());
+
+            if ($mail_count === 1)
             {
-                $errors[] = $error_token;
-            }
-
-            if (!count($errors))
-            {
-                $db->delete($pp->schema() . '.contact', ['id' => $id]);
-
-                $alert_service->success('Contact verwijderd.');
-
-                if ($redirect_contacts)
+                if ($pp->is_admin())
                 {
-                    return $this->redirectToRoute('contacts', $pp->ary());
+                    $alert_service->warning(
+                        'Waarschuwing: dit is het enige E-mail adres
+                        van een actieve gebruiker');
                 }
                 else
                 {
-                    return $this->redirectToRoute('users_show', array_merge($pp->ary(),
-                        ['id' => $user_id]));
+                    $alert_service->warning(
+                        'Waarschuwing: dit is je enige E-mail adres.');
                 }
             }
-
-            $alert_service->error($error_token);
         }
-
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
-
-        $out .= '<dl>';
-
-        $out .= '<dt>Gebruiker</dt>';
-        $out .= '<dd>';
-
-        $out .= $account_render->link($user_id, $pp->ary());
-
-        $out .= '</dd>';
-
-        $out .= '<dt>Type</dt>';
-        $out .= '<dd>';
-        $out .= $contact_type['abbrev'];
-        $out .= '</dd>';
-        $out .= '<dt>Waarde</dt>';
-        $out .= '<dd>';
-        $out .= $contact['value'];
-        $out .= '</dd>';
-        $out .= '<dt>Commentaar</dt>';
-        $out .= '<dd>';
-        $out .= $contact['comments'] ?: '<i class="fa fa-times"></i>';
-        $out .= '</dd>';
-        $out .= '<dt>Zichtbaarheid</dt>';
-        $out .= '<dd>';
-
-        $out .= $item_access_service->get_label($contact['access']);
-
-        $out .= '</dd>';
-        $out .= '</dl>';
-
-        $out .= '<form method="post" class="form-horizontal">';
-
-        if ($redirect_contacts)
-        {
-            $out .= $link_render->btn_cancel('contacts', $pp->ary(), []);
-        }
-        else
-        {
-            $out .= $link_render->btn_cancel('users_show', $pp->ary(),
-                ['id' => $user_id]);
-        }
-
-        $out .= '&nbsp;';
-        $out .= '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger btn-lg">';
-        $out .= $form_token_service->get_hidden_input();
-
-        $out .= '</form>';
-
-        $out .= '</div>';
-        $out .= '</div>';
 
         return $this->render('contacts/contacts_del.html.twig', [
-            'content'   => $out,
-            'is_self'   => $is_self,
-            'user_id'   => $user_id,
+            'form'              => $form->createView(),
+            'contact'           => $contact,
+            'contact_type'      => $contact_type,
+            'is_self'           => $is_self,
+            'user_id'           => $user_id,
+            'redirect_contacts' => $redirect_contacts
         ]);
     }
 }

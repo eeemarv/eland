@@ -142,7 +142,7 @@ label:
   code: Code
   columns: Kolommen
   comment: Commentaar
-  contact_details: Contacten
+  contact_type: Contact type
   content: Inhoud
   created: Gecreëerd
   current_balance: Huidig saldo
@@ -519,11 +519,10 @@ contacts_edit:
 
 contacts_del:
   title: >-
-    Contact van {user} verwijderen
-
-contacts_del_self:
-  title: >-
-    Contact verwijderen
+    {self, select,
+      self {Contact verwijderen}
+      other {Contact van {user} verwijderen}
+    }
 
 docs:
   title: Documenten

@@ -4,7 +4,6 @@ namespace App\Repository;
 
 use App\Command\Contacts\ContactsCommand;
 use App\Command\ContactTypes\ContactTypesCommand;
-use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
 use Exception;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -129,6 +128,25 @@ class ContactRepository
 		return $mail_count;
 	}
 
+	public function get_mail_count_for_user(
+		int $user_id,
+		string $schema
+	)
+	{
+		$mail_count = $this->db->fetchOne('select count(c.*)
+			from ' . $schema . '.contact c, ' .
+				$schema . '.type_contact tc, ' .
+				$schema . '.users u
+			where c.id_type_contact = tc.id
+				and tc.abbrev = \'mail\'
+				and c.user_id = u.id
+				and u.id = ?',
+				[$user_id],
+				[\PDO::PARAM_INT]);
+
+		return $mail_count;
+	}
+
 	public function get_all_contact_types(
 		string $schema
 	):array
@@ -178,6 +196,12 @@ class ContactRepository
 
 		return $this->db->update($schema . '.contact',
 			$update_ary, ['id' => $id]) ? true : false;
+	}
+
+	public function del(int $id, string $schema):bool
+	{
+		return $this->db->delete($schema . '.contact',
+			['id' => $id]) ? true : false;
 	}
 
 	public function get(int $id, string $schema):array

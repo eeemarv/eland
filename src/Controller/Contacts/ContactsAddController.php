@@ -156,9 +156,10 @@ class ContactsAddController extends AbstractController
         }
 
         return $this->render('contacts/contacts_add.html.twig', [
-            'form'      => $form->createView(),
-            'is_self'   => $is_self,
-            'user_id'   => $user_id,
+            'form'              => $form->createView(),
+            'is_self'           => $is_self,
+            'user_id'           => $user_id,
+            'redirect_contacts' => $redirect_contacts,
         ]);
     }
 }

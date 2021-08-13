@@ -187,6 +187,7 @@ class ContactsEditController extends AbstractController
             'contact'   => $contact,
             'is_self'   => $is_self,
             'user_id'   => $user_id,
+            'redirect_contacts' => $redirect_contacts,
         ]);
     }
 }
