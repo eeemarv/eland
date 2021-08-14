@@ -191,7 +191,7 @@
 				{%- block form_header -%}{%- endblock -%}
 				<div class="panel-heading">
 					{%- block form_disabled_cms_edit_notice -%}
-						{%- if form.vars.disabled and pp_ary().edit is defined -%}
+						{%- if form.vars is defined and form.vars.disabled and pp_ary().edit is defined -%}
 							<p class="text-danger">
 								{{- 'cms_edit.form_disabled'|trans -}}
 							</p>
