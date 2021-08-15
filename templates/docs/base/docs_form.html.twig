@@ -4,6 +4,25 @@
 {%- endblock content -%}
 
 {%- block form_a -%}
+    {%- if form.file_location is defined -%}
+        {{- form_row(form.file_location, {
+            'label': 'label.file_location',
+            'pre_addon': {
+                'fa': 'file-o'
+            }
+        }) -}}
+    {%- endif -%}
+
+    {%- if form.original_filename is defined -%}
+        {{- form_row(form.original_filename, {
+            'label': 'label.original_filename',
+            'pre_addon': {
+                'fa': 'file-o'
+            }
+        }) -}}
+    {%- endif -%}
+
+
     {%- if form.file is defined -%}
         {{- form_row(form.file, {
             'label': 'label.file',

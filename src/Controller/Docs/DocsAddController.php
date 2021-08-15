@@ -87,8 +87,10 @@ class DocsAddController extends AbstractController
                     ['schema' => $pp->schema()]);
 
                 $alert_service->error('Fout bij het opladen van het document');
-                $this->redirectToRoute('docs_add', $pp->ary());
+                return $this->redirectToRoute('docs_add', $pp->ary());
             }
+
+            $alert_success_msg = [];
 
             $doc = [
                 'filename'		    => $filename,
@@ -109,30 +111,27 @@ class DocsAddController extends AbstractController
                 if (!$map_id)
                 {
                     $map_id = $doc_repository->insert_map($map_name, $su->id(), $pp->schema());
-                    $typeahead_service->clear_cache($pp->schema);
-                    $new_map_created = true;
+                    $alert_success_msg[] = 'Nieuwe map "' . $map_name . '" gecreëerd.';
+                    $typeahead_service->clear_cache($pp->schema());
                 }
 
                 $doc['map_id'] = $map_id;
+                $alert_success_msg[] = 'Document opgeladen in map "' . $map_name . '"';
+            }
+            else
+            {
+                $alert_success_msg[] = 'Document opgeladen.';
             }
 
             $doc_repository->insert_doc($doc, $pp->schema());
 
+            $alert_service->success($alert_success_msg);
+
             if (isset($doc['map_id']))
             {
-                if (isset($new_map_created) && $new_map_created)
-                {
-                    $alert_service->success('Document opgeladen in nieuwe map "' . $map_name . '"');
-                }
-                else
-                {
-                    $alert_service->success('Document opgeladen in map "' . $map_name . '"');
-                }
-
                 return $this->redirectToRoute('docs_map', array_merge($pp->ary(), ['id' => $map_id]));
             }
 
-            $alert_service->success('Document opgeladen.');
             return $this->redirectToRoute('docs', $pp->ary());
         }
 
