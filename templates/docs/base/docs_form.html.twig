@@ -35,7 +35,7 @@
     {%- if form.name is defined -%}
         {{- form_row(form.name, {
             'label': 'label.name',
-            'help': 'label.optional',
+            'help': is_del_form is defined ? '' : 'label.optional',
             'pre_addon': {
                 'fa': 'file-o'
             },
@@ -43,16 +43,18 @@
         }) -}}
     {%- endif -%}
 
-    {%- if form.access is defined -%}
-        {{- form_row(form.access, {
-            'label': 'access.visible_for'
-        }) -}}
-    {%- endif -%}
+    {%- block form_access -%}
+        {%- if form.access is defined -%}
+            {{- form_row(form.access, {
+                'label': 'access.visible_for'
+            }) -}}
+        {%- endif -%}
+    {%- endblock form_access -%}
 
     {%- if form.map_name -%}
         {{- form_row(form.map_name, {
             'label': 'label.map_name',
-            'help': 'docs_add.map_name.help',
+            'help': is_del_form is defined ? '' : 'docs_add.map_name.help',
             'pre_addon': {
                 'fa': 'folder-o'
             },

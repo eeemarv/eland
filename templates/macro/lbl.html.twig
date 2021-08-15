@@ -8,6 +8,24 @@
     {{- s.span(id, 'btn') -}}
 {%- endmacro btn -%}
 
+{%- macro btn_dl(id, label) -%}
+    {%- import _self as s -%}
+    <dl>
+    </dl>
+{%- endmacro btn_dl -%}
+
+{%- macro dl(id, type, label) -%}
+    {%- import _self as s -%}
+    <dl>
+        <dt>
+            {{- label|trans -}}
+        </dt>
+        <dd>
+            {{- s.span(id, type) -}}
+        </dd>
+    </dl>
+{%- endmacro dl -%}
+
 {%- macro span(id, type) -%}
     {%- set render = {
         'anonymous': {
