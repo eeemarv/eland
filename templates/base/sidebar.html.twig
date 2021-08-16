@@ -171,7 +171,28 @@
 
 	{%- block columns_form -%}{%- endblock -%}
 
-	{%- block filter_form -%}{%- endblock -%}
+	{%- block filter_form -%}
+		{%- if filter_form is defined -%}
+			<div class="panel panel-info">
+				{%- block filter_form_header -%}{%- endblock -%}
+				<div class="panel-heading">
+					{%- block filter_form_start -%}
+						{{- form_start(filter_form, {'attr': {'novalidate': 'novalidate'}}) -}}
+						{{- form_errors(filter_form) -}}
+					{%- endblock filter_form_start -%}
+					{%- block filter_form_content -%}
+						<div class="custom-checkbox">
+							{%- block filter_form_a -%}{{- filter_form_a|default('') -}}{%- endblock -%}
+						</div>
+					{%- endblock filter_form_content -%}
+					{%- block filter_form_end -%}
+						{{- form_end(filter_form) -}}
+					{%- endblock filter_form_end -%}
+				</div>
+				{%- block filter_form_footer -%}{%- endblock -%}
+			</div>
+		{%- endif -%}
+	{%- endblock filter_form -%}
 
 	{%- block pane_select -%}{%- endblock -%}
 

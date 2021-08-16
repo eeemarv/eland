@@ -60,7 +60,9 @@ class UserRepository
 				$schema . '.type_contact tc
 			where c.id_type_contact = tc.id
 				and tc.abbrev = \'mail\'
-				and lower(c.value) = ?', [$email_lowercase], [\PDO::PARAM_STR]);
+				and lower(c.value) = ?',
+				[$email_lowercase],
+				[\PDO::PARAM_STR]);
 	}
 
 	public function count_active_by_email(
@@ -78,7 +80,9 @@ class UserRepository
 				and tc.abbrev = \'mail\'
 				and c.user_id = u.id
 				and u.status in (1, 2)
-				and lower(c.value) = ?', [$email_lowercase], [\PDO::PARAM_STR]);
+				and lower(c.value) = ?',
+				[$email_lowercase],
+				[\PDO::PARAM_STR]);
 	}
 
 	public function get_active_id_by_email(

@@ -2,10 +2,12 @@
 
 namespace App\Controller\Docs;
 
+use App\Form\Filter\QTextSearchType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Render\LinkRender;
+use App\Repository\DocRepository;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\ItemAccessService;
@@ -33,6 +35,7 @@ class DocsController extends AbstractController
     public function __invoke(
         Request $request,
         Db $db,
+        DocRepository $doc_repository,
         DateFormatService $date_format_service,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
@@ -46,9 +49,22 @@ class DocsController extends AbstractController
             throw new NotFoundHttpException('Documents module not enabled.');
         }
 
-        $q = $request->query->get('q', '');
+        $visible_ary = $item_access_service->get_visible_ary_for_page();
+        $maps = $doc_repository->get_maps($visible_ary, $pp->schema());
+        $docs = $doc_repository->get_unmapped_docs($visible_ary, $pp->schema());
 
-        $maps = $docs = [];
+        error_log(var_export($maps, true));
+        error_log(var_export($docs, true));
+
+        $filter_form = $this->createForm(QTextSearchType::class);
+        $filter_form->handleRequest($request);
+
+        $show_access = ($pp->is_user()
+                && $config_service->get_intersystem_en($pp->schema()))
+            || $pp->is_admin();
+
+        /*
+        $maps = [];
 
         $stmt = $db->executeQuery('select id, name
             from ' . $pp->schema() . '.doc_maps
@@ -238,9 +254,14 @@ class DocsController extends AbstractController
             $out .= '<p>Er zijn nog geen documenten opgeladen.</p>';
             $out .= '</div></div>';
         }
+        */
 
         return $this->render('docs/docs.html.twig', [
-            'content'   => $out,
+//            'content'   => $out,
+            'maps'          => $maps,
+            'docs'          => $docs,
+            'show_access'   => $show_access,
+            'filter_form'   => $filter_form->createView(),
         ]);
     }
 }

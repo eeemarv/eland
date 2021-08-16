@@ -8,13 +8,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
-use App\Service\FormTokenService;
-use App\Render\LinkRender;
 use App\Repository\DocRepository;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\TypeaheadService;
-use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -37,13 +34,10 @@ class DocsMapEditController extends AbstractController
     public function __invoke(
         Request $request,
         int $id,
-        Db $db,
         DocRepository $doc_repository,
         ConfigService $config_service,
         AlertService $alert_service,
-        LinkRender $link_render,
         TypeaheadService $typeahead_service,
-        FormTokenService $form_token_service,
         PageParamsService $pp
     ):Response
     {
