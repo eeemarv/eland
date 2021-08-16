@@ -1,10 +1,25 @@
 {%- extends 'docs/base/docs_base.html.twig' -%}
 
+{%- block content -%}
+{%- endblock content -%}
+
 {%- block heading_title -%}
     {{- 'docs_map_edit.title'|trans({
         'name': doc_map.name
     }) -}}
 {%- endblock heading_title -%}
+
+{%- block form_a -%}
+    {{- form_row(form.name,{
+        'label': 'label.map_name',
+        'pre_addon': {
+            'fa': 'folder-o'
+        }
+    }) -}}
+{%- endblock form_a -%}
+
+{%- set cancel_route = 'docs_map' -%}
+{%- set cancel_route_params = {'id': doc_map.id} -%}
 
 {%- block css -%}
     {{- parent() -}}

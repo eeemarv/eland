@@ -132,6 +132,7 @@ label:
   admin_comment: Admin commentaar
   admin_functions: Admin functies
   address: Adres
+  already_exists: Bestaat reeds
   amount: Bedrag
   approved: Goedgekeurd
   balance: Saldo
@@ -183,7 +184,7 @@ label:
   login: Login
   intersystem: InterSysteem
   map: Map
-  map_name: Map
+  map_name: Map naam
   max: Max
   maximum_limit: Maximum Limiet
   menu: Menu

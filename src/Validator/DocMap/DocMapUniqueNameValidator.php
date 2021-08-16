@@ -18,20 +18,20 @@ class DocMapUniqueNameValidator extends ConstraintValidator
     {
     }
 
-    public function validate($docs_map_command, Constraint $constraint)
+    public function validate($command, Constraint $constraint)
     {
         if (!$constraint instanceof DocMapUniqueName)
         {
             throw new UnexpectedTypeException($constraint, DocMapUniqueName::class);
         }
 
-        if (!$docs_map_command instanceof DocsMapCommand)
+        if (!$command instanceof DocsMapCommand)
         {
-            throw new UnexpectedTypeException($docs_map_command, DocsMapCommand::class);
+            throw new UnexpectedTypeException($command, DocsMapCommand::class);
         }
 
-        $name = $docs_map_command->name;
-        $id = $docs_map_command->id;
+        $name = $command->name;
+        $id = $command->id;
 
         $is_unique = $this->doc_repository->is_unique_map_name_except_id($name, $id, $this->pp->schema());
 

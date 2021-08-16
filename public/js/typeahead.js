@@ -49,6 +49,7 @@ jQuery(function(){
 				var $exists_msg = $input_container.find('span.exists_msg');
 				var $exists_query_results = $input_container.find('span.exists_query_results');
 				var $query_results = $exists_query_results.find('span.query_results');
+				var $server_error_msg = $input_container.find('span.help-block ul.list-unstyled');
 
 				if (data.render.hasOwnProperty('omit')){
 					var exists_omit = data.render.omit.toLowerCase();
@@ -105,11 +106,11 @@ jQuery(function(){
 							$input_container.removeClass('has-error');
 						}
 					});
+
+					$server_error_msg.html('');
 				}
 
 				$this_input.on('keyup', render_exists);
-
-				window.setTimeout(render_exists, 800);
 
 				continue;
 			}

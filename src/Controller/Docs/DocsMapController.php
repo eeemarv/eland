@@ -72,7 +72,7 @@ class DocsMapController extends AbstractController
             [$item_access_service->get_visible_ary_for_page(), $id],
             [Db::PARAM_STR_ARRAY, \PDO::PARAM_INT]);
 
-        while ($row = $stmt->fetch())
+        while ($row = $stmt->fetchAssociative())
         {
             $docs[] = $row;
         }
