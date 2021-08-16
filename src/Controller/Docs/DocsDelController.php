@@ -3,7 +3,7 @@
 namespace App\Controller\Docs;
 
 use App\Command\Docs\DocsCommand;
-use App\Form\Post\Docs\DocsEditType;
+use App\Form\Post\Docs\DocsDelType;
 use App\Repository\DocRepository;
 use App\Service\AlertService;
 use App\Service\ConfigService;
@@ -66,7 +66,7 @@ class DocsDelController extends AbstractController
             $command->map_name = $doc_map['name'];
         }
 
-        $form = $this->createForm(DocsEditType::class, $command);
+        $form = $this->createForm(DocsDelType::class, $command);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()

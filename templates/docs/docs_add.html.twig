@@ -1,5 +1,7 @@
 {%- extends 'docs/base/docs_form.html.twig' -%}
 
+{%- set map_id = app.request.query.get('map_id') -%}
+
 {%- block heading_title -%}
     {{- 'docs_add.title'|trans -}}
 {%- endblock heading_title -%}

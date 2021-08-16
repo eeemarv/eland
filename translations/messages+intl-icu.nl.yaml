@@ -159,6 +159,7 @@ label:
   expires_at: Vervaldatum
   file: Bestand
   file_location: Bestandslocatie
+  file_location_link: Bestandslocatie ({open_link}link{close_link})
   filtered: Gefilterd
   filters: Filters
   first_name: Voornaam
