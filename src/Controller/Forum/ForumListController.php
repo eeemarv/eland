@@ -2,13 +2,11 @@
 
 namespace App\Controller\Forum;
 
-use App\Render\AccountRender;
-use App\Render\LinkRender;
+use App\Form\Filter\QTextSearchType;
+use App\Repository\ForumRepository;
 use App\Service\ConfigService;
-use App\Service\DateFormatService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
-use Doctrine\DBAL\Connection as Db;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,12 +31,9 @@ class ForumListController extends AbstractController
 
     public function __invoke(
         Request $request,
-        Db $db,
-        AccountRender $account_render,
+        ForumRepository $forum_repository,
         ConfigService $config_service,
-        DateFormatService $date_format_service,
         ItemAccessService $item_access_service,
-        LinkRender $link_render,
         PageParamsService $pp,
     ):Response
     {
@@ -47,105 +42,20 @@ class ForumListController extends AbstractController
             throw new NotFoundHttpException('Forum module not enabled.');
         }
 
-        // to do: filter after page loaded
-        $q = $request->query->get('q', '');
+        $filter_form = $this->createForm(QTextSearchType::class);
+        $filter_form->handleRequest($request);
 
-        // to do: order by last post edit desc
-        $stmt = $db->executeQuery('select t.*, count(p.*) - 1 as reply_count
-            from ' . $pp->schema() . '.forum_topics t
-            inner join ' . $pp->schema() . '.forum_posts p on p.topic_id = t.id
-            where t.access in (?)
-            group by t.id
-            order by t.last_edit_at desc',
-            [$item_access_service->get_visible_ary_for_page()],
-            [Db::PARAM_STR_ARRAY]);
-
-        $forum_topics = $stmt->fetchAll();
+        $visible_ary = $item_access_service->get_visible_ary_for_page($pp->schema());
+        $topics = $forum_repository->get_topics_with_reply_count($visible_ary, $pp->schema());
 
         $show_access = (!$pp->is_guest()
                 && $config_service->get_intersystem_en($pp->schema()))
             || $pp->is_admin();
 
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
-
-        $out .= '<form method="get">';
-        $out .= '<div class="row">';
-        $out .= '<div class="col-xs-12">';
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<i class="fa fa-search"></i>';
-        $out .= '</span>';
-        $out .= '<input type="text" class="form-control" id="q" name="q" value="';
-        $out .= $q . '" ';
-        $out .= 'placeholder="Zoeken">';
-        $out .= '</div>';
-        $out .= '</div>';
-        $out .= '</div>';
-        $out .= '</form>';
-
-        $out .= '</div>';
-        $out .= '</div>';
-
-        if (!count($forum_topics))
-        {
-            $out .= '<div class="panel panel-default">';
-            $out .= '<div class="panel-heading">';
-            $out .= '<p>Er zijn nog geen forum onderwerpen.</p>';
-            $out .= '</div></div>';
-
-            return $this->render('forum/forum_list.html.twig', [
-                'content'   => $out,
-            ]);
-        }
-
-        $out .= '<div class="panel panel-default printview">';
-
-        $out .= '<div class="table-responsive">';
-        $out .= '<table class="table table-bordered table-striped table-hover footable csv"';
-        $out .= ' data-filter="#q" data-filter-minimum="1">';
-        $out .= '<thead>';
-
-        $out .= '<tr>';
-        $out .= '<th>Onderwerp</th>';
-        $out .= '<th>Reacties</th>';
-        $out .= '<th data-hide="phone, tablet">Gebruiker</th>';
-        $out .= '<th data-hide="phone, tablet" data-sort-initial="descending" ';
-        $out .= 'data-type="numeric">Aanmaak</th>';
-        $out .= $show_access ? '<th data-hide="phone, tablet">Toegang</th>' : '';
-        $out .= '</tr>';
-
-        $out .= '</thead>';
-        $out .= '<tbody>';
-
-        foreach($forum_topics as $topic)
-        {
-            $id = $topic['id'];
-            $td = [];
-
-            $td[] = $link_render->link_no_attr('forum_topic', $pp->ary(),
-                ['id' => $id], $topic['subject']);
-            $td[] = $topic['reply_count'];
-            $td[] = $account_render->link((int) $topic['user_id'], $pp->ary());
-            $td[] = $date_format_service->get($topic['created_at'], 'min', $pp->schema());
-
-            if ($show_access)
-            {
-                $td[] = $item_access_service->get_label($topic['access']);
-            }
-
-            $out .= '<tr><td>';
-            $out .= implode('</td><td>', $td);
-            $out .= '</td></tr>';
-        }
-
-        $out .= '</tbody>';
-        $out .= '</table>';
-        $out .= '</div>';
-        $out .= '</div>';
-
         return $this->render('forum/forum_list.html.twig', [
-            'content'   => $out,
+            'topics'        => $topics,
+            'show_access'   => $show_access,
+            'filter_form'   => $filter_form->createView(),
         ]);
     }
 }

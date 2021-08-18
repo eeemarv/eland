@@ -11,6 +11,20 @@
 
 {%- set csv_en = true -%}
 
+{%- block filter_form_a -%}
+    {%- include 'form/q_filter.html.twig' -%}
+{%- endblock filter_form_a -%}
+
+{%- block data_list -%}
+    {%- if topics -%}
+        {%- include 'forum/include/topics_list.html.twig' -%}
+    {%- else -%}
+        {%- include 'include/no_results.html.twig' with {
+            'message': 'forum.no_topics'
+        } -%}
+    {%- endif -%}
+{%- endblock data_list -%}
+
 {%- block css -%}
     {{- parent() -}}
     {{- encore_entry_link_tags('footable') -}}

@@ -1,0 +1,47 @@
+{%- embed 'embed/table.html.twig' -%}
+    {%- import 'macro/lbl.html.twig' as lbl -%}
+
+    {%- block thead -%}
+        <th>
+            {{- 'label.subject'|trans -}}
+        </th>
+        <th>
+            {{- 'label.replies'|trans -}}
+        </th>
+        <th data-hide="phone, tablet">
+            {{- 'label.user'|trans -}}
+        </th>
+        <th data-hide="phone, tablet" data-sort-initial="descending" data-type="numeric">
+            {{- 'label.created'|trans -}}
+        </th>
+        {%- if show_access -%}
+            <th data-hide="phone">
+                {{- 'access.visible_for'|trans -}}
+            </th>
+        {%- endif -%}
+    {%- endblock thead -%}
+
+    {%- block tbody -%}
+        {%- for t in topics -%}
+            <tr>
+                <td>
+                    {{- t.subject|link('forum_topic', {'id': t.id})|raw -}}
+                </td>
+                <td>
+                    {{- t.reply_count -}}
+                </td>
+                <td>
+                    {{- account(t.user_id, schema)|link('users_show', {'id': t.user_id})|raw -}}
+                </td>
+                <td>
+                    {{- t.created_at|date_format('min', schema) -}}
+                </td>
+                {%- if show_access -%}
+                    <td>
+                        {{- lbl.btn(t.access) -}}
+                    </td>
+                {%- endif -%}
+            </tr>
+        {%- endfor -%}
+    {%- endblock tbody -%}
+{%- endembed -%}
