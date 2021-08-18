@@ -80,6 +80,12 @@
     {%- endfor -%}
 {%- endblock data_list -%}
 
+{%- block pre_form -%}
+    <h3>
+        {{- 'forum_topic.add_post'|trans -}}
+    </h3>
+{%- endblock pre_form -%}
+
 {%- block form_submit_btn -%}
     {%- include 'form/submit_add_btn.html.twig' with {
         'label': 'forum_topic.add_post'
