@@ -96,7 +96,7 @@
 					{%- set pp_su_role_short = pp_ary().role_short is defined and pp_ary().role_short != 'g' ? pp_ary().role_short : su_role_short -%}
 					{%- if su_is_system_self() and not su_is_master() -%}
 						{%- for rt, dt in user_menu_self -%}
-							{%- include 'include/menu_item_self.html.twig' -%}
+							{%- include 'include/menu/menu_item_self.html.twig' -%}
 						{%- endfor -%}
 						<li class="divider"></li>
 					{%- endif -%}
@@ -117,20 +117,20 @@
 				{%- block fa -%}cog{%- endblock fa -%}
 				{%- block label -%}{{- 'label.admin'|trans -}}{%- endblock label -%}
 				{%- block menu_items -%}
-					{%- include 'include/menu_item_role_modus.html.twig' with {
+					{%- include 'include/menu/menu_item_role_modus.html.twig' with {
 						'rt': route,
 						'rl_shrt': 'a',
 						'fa': 'cog',
 						'lbl': 'modus.admin'
 					} -%}
-					{%- include 'include/menu_item_role_modus.html.twig' with {
+					{%- include 'include/menu/menu_item_role_modus.html.twig' with {
 						'rt': route|fallback_route(schema),
 						'rl_shrt': 'u',
 						'fa': 'user',
 						'lbl': 'modus.user'
 					} -%}
 					{%- if config_bool('intersystem.enabled', schema) -%}
-						{%- include 'include/menu_item_role_modus.html.twig' with {
+						{%- include 'include/menu/menu_item_role_modus.html.twig' with {
 							'rt': route|fallback_route(schema),
 							'rl_shrt': 'g',
 							'fa': 'share-alt',
@@ -151,16 +151,16 @@
 							</a>
 						</li>
 					<li class="divider"></li>
-					{%- include 'include/menu_item_admin.html.twig' with {
+					{%- include 'include/menu/menu_item_admin.html.twig' with {
 						'menu': 'config',
 						'rt': 'config_name',
 						'fa': 'cogs'
 					} -%}
-					{%- include 'include/menu_item_admin.html.twig' with {
+					{%- include 'include/menu/menu_item_admin.html.twig' with {
 						'rt': 'export',
 						'fa': 'download'
 					} -%}
-					{%- include 'include/menu_item_admin.html.twig' with {
+					{%- include 'include/menu/menu_item_admin.html.twig' with {
 						'rt': 'logs',
 						'fa': 'history'
 					} -%}

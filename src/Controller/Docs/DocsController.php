@@ -34,14 +34,10 @@ class DocsController extends AbstractController
 
     public function __invoke(
         Request $request,
-        Db $db,
         DocRepository $doc_repository,
-        DateFormatService $date_format_service,
         ItemAccessService $item_access_service,
-        LinkRender $link_render,
         ConfigService $config_service,
-        PageParamsService $pp,
-        string $env_s3_url
+        PageParamsService $pp
     ):Response
     {
         if (!$config_service->get_bool('docs.enabled', $pp->schema()))

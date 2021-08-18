@@ -27,7 +27,7 @@
 } -%}
 
 {%- block btn_view -%}
-    {%- include 'include/view_btn_group.html.twig' with {'btns': messages_view_btns} -%}
+    {%- include 'include/nav/view_btn_group.html.twig' with {'btns': messages_view_btns} -%}
 {%- endblock btn_view -%}
 
 {%- block heading_title -%}
@@ -40,7 +40,7 @@
 {%- endblock heading_title -%}
 
 {%- block heading_append -%}
-    {%- include 'include/heading_filter.html.twig' -%}
+    {%- include 'include/filter/heading_filter.html.twig' -%}
 {%- endblock heading_append -%}
 
 {%- block filter_form -%}
@@ -48,7 +48,7 @@
 {%- endblock filter_form -%}
 
 {%- block pagination -%}
-    {%- include 'include/pagination.html.twig' -%}
+    {%- include 'include/pagination/pagination.html.twig' -%}
 {%- endblock pagination -%}
 
 {%- block content -%}{%- endblock -%}
