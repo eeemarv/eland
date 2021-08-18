@@ -571,14 +571,16 @@ forum_del_post:
   title: >-
     {self, select,
       self {Je reactie verwijderen uit forum onderwerp "{topic_subject}"?}
-      other {Reactie van "{user}" verwijderen uit forum onderwerp "{topic_subject}"?}
+      some_user {Reactie van "{user}" verwijderen uit forum onderwerp "{topic_subject}"?}
+      other {Reactie verwijeren}
     }
 
 forum_del_topic:
   title: >-
     {self, select,
       self {Je forum onderwerp "{topic_subject}" verwijderen?}
-      other {Forum onderwerp "{topic_subject}" van "{user}" verwijderen?}
+      some_user {Forum onderwerp "{topic_subject}" van "{user}" verwijderen?}
+      other {Forum onderwerp verwijderen}
     }
   posts_warning:
     0: >-
@@ -592,14 +594,16 @@ forum_edit_post:
   title: >-
     {self, select,
       self {Je reactie in forum onderwerp "{topic_subject}" aanpassen.}
-      other {Reactie van {user} in forum onderwerp "{topic_subject}" aanpassen.}
+      some_user {Reactie van {user} in forum onderwerp "{topic_subject}" aanpassen.}
+      other {Reactie aanpassen}
     }
 
 forum_edit_topic:
   title: >-
     {self, select,
       self {Je forum onderwerp "{topic_subject}" aanpassen.}
-      other {Forum onderwerp "{topic_subject}" van "{user}" aanpassen.}
+      some_user {Forum onderwerp "{topic_subject}" van "{user}" aanpassen.}
+      other {Forum onderwerp aanpassen}
     }
 
 forum_topic:

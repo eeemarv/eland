@@ -97,7 +97,9 @@ class ForumRepository
         return $this->db->fetchAllAssociative('select *
             from ' . $schema . '.forum_posts
             where topic_id = ?
-            order by created_at asc', [$topic_id], [\PDO::PARAM_INT]);
+            order by created_at asc',
+			[$topic_id],
+			[\PDO::PARAM_INT]);
 	}
 
 	public function get_post(int $post_id, string $schema):array

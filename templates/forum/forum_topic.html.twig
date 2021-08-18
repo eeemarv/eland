@@ -1,4 +1,5 @@
-{%- extends 'forum/base/forum_base.html.twig' -%}
+{%- extends 'forum/base/forum_form.html.twig' -%}
+{%- import 'macro/lbl.html.twig' as lbl -%}
 
 {%- block assets_add -%}
     {{- parent() -}}
@@ -6,28 +7,28 @@
 {%- endblock assets_add -%}
 
 {%- block btn_top_edit -%}
-    {%- if pp_role('admin') or su_is_owner(forum_topic.user_id) -%}
+    {%- if pp_role('admin') or su_is_owner(topic.user_id) -%}
         {%- include 'include/btn_top/edit.html.twig' with {
             'btn_route': 'forum_edit_topic',
             'btn_title': 'forum_edit_topic.title',
             'btn_title_trans_params': {
-                'self': su_is_owner(forum_topic.user_id) ? 'self' : 'some_user',
-                'topic_subject': forum_topic.subject,
-                'user': account(forum_topic.user_id, schema)
+                'self': su_is_owner(topic.user_id) ? 'self' : 'some_user',
+                'topic_subject': topic.subject,
+                'user': account(topic.user_id, schema)
             }
         } -%}
     {%- endif -%}
 {%- endblock btn_top_edit -%}
 
 {%- block btn_top_del -%}
-    {%- if pp_role('admin') or su_is_owner(forum_topic.user_id) -%}
+    {%- if pp_role('admin') or su_is_owner(topic.user_id) -%}
         {%- include 'include/btn_top/del.html.twig' with {
             'btn_route': 'forum_del_topic',
             'btn_title': 'forum_del_topic.title',
             'btn_title_trans_params': {
-                'self': su_is_owner(forum_topic.user_id) ? 'self' : 'some_user',
-                'topic_subject': forum_topic.subject,
-                'user': account(forum_topic.user_id, schema)
+                'self': su_is_owner(topic.user_id) ? 'self' : 'some_user',
+                'topic_subject': topic.subject,
+                'user': account(topic.user_id, schema)
             }
         } -%}
     {%- endif -%}
@@ -44,6 +45,43 @@
 
 {%- block heading_title -%}
     {{- 'forum_topic.title'|trans({
-        'topic_subject': forum_topic.subject,
+        'topic_subject': topic.subject,
     }) -}}
 {%- endblock heading_title -%}
+
+{%- block heading_sub -%}
+    {%- if show_access -%}
+        <p>
+            {{- 'access.visible_for'|trans -}}: {{ lbl.btn(topic.access) -}}
+        </p>
+    {%- endif -%}
+{%- endblock heading_sub -%}
+
+{%- block data_list -%}
+    {%- for post in posts -%}
+        {%- embed 'embed/post.html.twig' -%}
+            {%- block edit_btn -%}
+                {%- include 'include/btn/edit.html.twig' with {
+                    'btn_route': loop.first ? 'forum_edit_topic' : 'forum_edit_post',
+                    'id': loop.first ? id : post.id,
+                    'btn_title': loop.first ? 'forum_edit_topic.title' : 'forum_edit_post.title',
+                    'btn_title_trans_params': {'self': 'other'}
+                } -%}
+            {%- endblock edit_btn -%}
+            {%- block del_btn -%}
+                {%- include 'include/btn/del.html.twig' with {
+                    'btn_route': loop.first ? 'forum_del_topic' : 'forum_del_post',
+                    'id': loop.first ? id : post.id,
+                    'btn_title': loop.first ? 'forum_del_topic.title' : 'forum_del_post.title',
+                    'btn_title_trans_params': {'self': 'other'}
+                } -%}
+            {%- endblock del_btn -%}
+        {%- endembed -%}
+    {%- endfor -%}
+{%- endblock data_list -%}
+
+{%- block form_submit_btn -%}
+    {%- include 'form/submit_add_btn.html.twig' with {
+        'label': 'forum_topic.add_post'
+    } -%}
+{%- endblock form_submit_btn -%}
