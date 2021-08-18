@@ -528,7 +528,7 @@ contacts_del:
 
 docs:
   title: Documenten
-  no_maps: Geen mappen.
+  no_results: Er zijn nog geen documenten opgeladen.
 
 docs_add:
   title: >-

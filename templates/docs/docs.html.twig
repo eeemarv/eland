@@ -1,8 +1,4 @@
 {%- extends 'docs/base/docs_base.html.twig' -%}
-{%- import 'macro/lbl.html.twig' as lbl -%}
-
-{%- block content -%}
-{%- endblock content -%}
 
 {%- block btn_top_add -%}
     {%- if pp_role('admin') -%}
@@ -21,106 +17,19 @@
 
 {%- block data_list -%}
     {%- if maps -%}
-        <div class="panel panel-default printview">
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped table-hover footable" data-filter="#q" data-filter-minimum="1">
-                    <thead>
-                        <tr>
-                            <th data-sort-initial="true">
-                                {{- 'label.map'|trans -}}
-                            </th>
-                            {%- if pp_role('admin') -%}
-                                <th data-sort-ignore="true">
-                                    &nbsp;
-                                </th>
-                            {%- endif -%}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {%- for m in maps -%}
-                            <tr class="info">
-                                <td>
-                                    <a href="{{- path('docs_map', pp_ary()|merge({'id': m.id})) -}}">
-                                        {{- m.name }} ({{- m.doc_count -}})
-                                    </a>
-                                </td>
-                                {%- if pp_role('admin') -%}
-                                    <td>
-                                        {%- include 'include/btn/edit.html.twig' with {
-                                            'btn_route': 'docs_map_edit',
-                                            'id': m.id
-                                        } -%}
-                                    </td>
-                                {%- endif -%}
-                            </tr>
-                        {%- endfor -%}
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        {%- include 'docs/include/maps_list.html.twig' -%}
     {%- endif -%}
 
     {%- if docs -%}
-        <div class="panel panel-default printview">
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped table-hover footable csv" data-filter="#q" data-filter-minimum="1">
-                    <thead>
-                        <tr>
-                            <th data-sort-initial="true">
-                                {{- 'label.name'|trans -}}
-                            </th>
-                            <th data-hide="phone, tablet">
-                                Tijdstip
-                            </th>
-                            {%- if show_access -%}
-                                <th data-hide="phone, tablet">
-                                    Zichtbaar voor
-                                </th>
-                            {%- endif -%}
-                            {%- if pp_role('admin') -%}
-                                <th data-hide="phone, tablet" data-sort-ignore="true">
-                                    &nbsp;
-                                </th>
-                            {%- endif -%}
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {%- for d in docs -%}
-                        <tr>
-                            <td>
-                                {{- d.name|s3(d.filename)|raw -}}
-                            </td>
-                            <td>
-                                {{- d.created_at|date_format('min', schema) -}}
-                            </td>
-                            {%- if show_access -%}
-                                <td>
-                                    {{- lbl.btn(d.access) -}}
-                                </td>
-                            {%- endif -%}
-                            {%- if pp_role('admin') -%}
-                                <td>
-                                    {%- include 'include/btn/edit.html.twig' with {
-                                        'btn_route': 'docs_edit',
-                                        'id': d.id
-                                    } -%}
-                                    {%- include 'include/btn/del.html.twig' with {
-                                        'btn_route': 'docs_del',
-                                        'id': d.id
-                                    } -%}
-                                </td>
-                            {%- endif -%}
-                        </td>
-                    {%- endfor -%}
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        {%- include 'docs/include/docs_list.html.twig' -%}
     {%- elseif not maps -%}
+        {%- include 'include/no_results.html.twig' with {
+            'message': 'docs.no_results'
+        } -%}
         <div class="panel panel-default">
             <div class="panel-heading">
                 <p>
-                    Er zijn nog geen documenten opgeladen.
+
                 </p>
             </div>
         </div>

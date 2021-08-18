@@ -1,0 +1,31 @@
+{%- embed 'embed/table.html.twig' -%}
+    {%- block thead -%}
+        <th data-sort-initial="true">
+            {{- 'label.map'|trans -}}
+        </th>
+        {%- if pp_role('admin') -%}
+            <th data-sort-ignore="true">
+                &nbsp;
+            </th>
+        {%- endif -%}
+    {%- endblock thead -%}
+    {%- block tbody -%}
+        {%- for m in maps -%}
+            <tr class="info">
+                <td>
+                    <a href="{{- path('docs_map', pp_ary()|merge({'id': m.id})) -}}">
+                        {{- m.name }} ({{- m.doc_count -}})
+                    </a>
+                </td>
+                {%- if pp_role('admin') -%}
+                    <td>
+                        {%- include 'include/btn/edit.html.twig' with {
+                            'btn_route': 'docs_map_edit',
+                            'id': m.id
+                        } -%}
+                    </td>
+                {%- endif -%}
+            </tr>
+        {%- endfor -%}
+    {%- endblock tbody -%}
+{%- endembed -%}

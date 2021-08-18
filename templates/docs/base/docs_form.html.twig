@@ -1,9 +1,6 @@
 {%- extends 'docs/base/docs_base.html.twig' -%}
 {%- import 'macro/anchor.html.twig' as a -%}
 
-{%- block content -%}
-{%- endblock content -%}
-
 {%- block form_a -%}
     {%- if form.file_location is defined -%}
         {{- form_row(form.file_location, {

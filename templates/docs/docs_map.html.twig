@@ -39,6 +39,16 @@
     }) -}}
 {%- endblock heading_title -%}
 
+{%- set csv_en = true -%}
+
+{%- block filter_form_a -%}
+    {%- include 'form/q_filter.html.twig' -%}
+{%- endblock filter_form_a -%}
+
+{%- block data_list -%}
+    {%- include 'docs/include/docs_list.html.twig' -%}
+{%- endblock data_list -%}
+
 {%- block css -%}
     {{- parent() -}}
 {%- endblock css -%}
