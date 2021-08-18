@@ -132,7 +132,7 @@
 						{%- if pp_role('admin') and block('local_admin_menu') -%}
 							<div class="btn-group" role="group">
 								{%- block local_admin_menu -%}
-									{%- include 'include/local_admin_menu.html.twig' -%}
+									{%- include 'include/menu/local_admin_menu.html.twig' -%}
 								{%- endblock local_admin_menu -%}
 							</div>
 						{%- endif -%}
@@ -171,7 +171,28 @@
 
 	{%- block columns_form -%}{%- endblock -%}
 
-	{%- block filter_form -%}{%- endblock -%}
+	{%- block filter_form -%}
+		{%- if filter_form is defined -%}
+			<div class="panel panel-info">
+				{%- block filter_form_header -%}{%- endblock -%}
+				<div class="panel-heading">
+					{%- block filter_form_start -%}
+						{{- form_start(filter_form, {'attr': {'novalidate': 'novalidate'}}) -}}
+						{{- form_errors(filter_form) -}}
+					{%- endblock filter_form_start -%}
+					{%- block filter_form_content -%}
+						<div class="custom-checkbox">
+							{%- block filter_form_a -%}{{- filter_form_a|default('') -}}{%- endblock -%}
+						</div>
+					{%- endblock filter_form_content -%}
+					{%- block filter_form_end -%}
+						{{- form_end(filter_form) -}}
+					{%- endblock filter_form_end -%}
+				</div>
+				{%- block filter_form_footer -%}{%- endblock -%}
+			</div>
+		{%- endif -%}
+	{%- endblock filter_form -%}
 
 	{%- block pane_select -%}{%- endblock -%}
 
@@ -206,11 +227,6 @@
 							{%- block form_a -%}{{- form_a|default('') -}}{%- endblock -%}
 							{%- block form_b -%}{{- form_b|default('') -}}{%- endblock -%}
 							{%- block form_c -%}{{- form_c|default('') -}}{%- endblock -%}
-							{%- block form_d -%}{{- form_d|default('') -}}{%- endblock -%}
-							{%- block form_e -%}{{- form_e|default('') -}}{%- endblock -%}
-							{%- block form_f -%}{{- form_f|default('') -}}{%- endblock -%}
-							{%- block form_g -%}{{- form_g|default('') -}}{%- endblock -%}
-							{%- block form_access -%}{%- endblock -%}
 						</div>
 						{%- block form_cancel_btn -%}
 							{%- include 'form/cancel_btn.html.twig' -%}

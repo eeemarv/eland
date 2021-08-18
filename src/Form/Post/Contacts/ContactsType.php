@@ -3,13 +3,10 @@
 namespace App\Form\Post\Contacts;
 
 use App\Command\Contacts\ContactsCommand;
-use App\Form\DataTransformer\TypeaheadUserTransformer;
 use App\Form\EventSubscriber\AccessFieldSubscriber;
+use App\Form\Type\TypeaheadType;
 use App\Repository\ContactRepository;
-use App\Service\ConfigService;
-use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
-use App\Service\TypeaheadService;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -49,10 +46,6 @@ class ContactsType extends AbstractType
     public function __construct(
         protected TranslatorInterface $translator,
         protected AccessFieldSubscriber $access_field_subscriber,
-        protected TypeaheadUserTransformer $typeahead_user_transformer,
-        protected ItemAccessService $item_access_service,
-        protected TypeaheadService $typeahead_service,
-        protected ConfigService $config_service,
         protected ContactRepository $contact_repository,
         protected PageParamsService $pp
     )
@@ -72,42 +65,6 @@ class ContactsType extends AbstractType
         {
             $choices[$row['name']] = $row['id'];
             $choice_attr[$row['name']] = ['data-abbrev' => $row['abbrev']];
-        }
-
-        if ($user_id_enabled)
-        {
-            $new_users_days = $this->config_service->get_int('users.new.days', $this->pp->schema());
-            $new_users_enabled = $this->config_service->get_bool('users.new.enabled', $this->pp->schema());
-            $leaving_users_enabled = $this->config_service->get_bool('users.leaving.enabled', $this->pp->schema());
-
-            $show_new_status = $new_users_enabled;
-
-            if ($show_new_status)
-            {
-                $new_users_access = $this->config_service->get_str('users.new.access', $this->pp->schema());
-                $show_new_status = $this->item_access_service->is_visible($new_users_access);
-            }
-
-            $show_leaving_status = $leaving_users_enabled;
-
-            if ($show_leaving_status)
-            {
-                $leaving_users_access = $this->config_service->get_str('users.leaving.access', $this->pp->schema());
-                $show_leaving_status = $this->item_access_service->is_visible($leaving_users_access);
-            }
-
-            $data_typeahead = $this->typeahead_service->ini($this->pp)
-                ->add('accounts', ['status' => 'active'])
-                ->add('accounts', ['status' => 'inactive'])
-                ->add('accounts', ['status' => 'ip'])
-                ->add('accounts', ['status' => 'im'])
-                ->add('accounts', ['status' => 'extern'])
-                ->str_raw([
-                    'filter'        => 'accounts',
-                    'new_users_days'        => $new_users_days,
-                    'show_new_status'       => $show_new_status,
-                    'show_leaving_status'   => $show_leaving_status,
-                ]);
         }
 
         $contacts_format = [];
@@ -132,17 +89,17 @@ class ContactsType extends AbstractType
 
         if ($user_id_enabled)
         {
-            $builder->add('user_id', TextType::class, [
-                'attr'  => [
-                    'data-typeahead' => $data_typeahead,
+            $builder->add('user_id', TypeaheadType::class, [
+                'add'   => [
+                    ['accounts', ['status' => 'active']],
+                    ['accounts', ['status' => 'inactive']],
+                    ['accounts', ['status' => 'ip']],
+                    ['accounts', ['status' => 'im']],
+                    ['accounts', ['status' => 'extern']],
                 ],
-                'invalid_message' => 'user.code_not_exists',
+                'filter'    => 'accounts',
             ]);
-
-            $builder->get('user_id')
-                ->addModelTransformer($this->typeahead_user_transformer);
         }
-
 
         $builder->add('contact_type_id', ChoiceType::class, [
             'choices'       => $choices,

@@ -1,8 +1,14 @@
-{%- extends 'docs/base/docs_base.html.twig' -%}
+{%- extends 'docs/base/docs_form.html.twig' -%}
+
+{%- set map_id = app.request.query.get('map_id') -%}
 
 {%- block heading_title -%}
     {{- 'docs_add.title'|trans -}}
 {%- endblock heading_title -%}
+
+{%- block form_submit_btn -%}
+    {%- include 'form/submit_add_btn.html.twig' -%}
+{%- endblock form_submit_btn -%}
 
 {%- block css -%}
     {{- parent() -}}

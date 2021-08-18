@@ -25,7 +25,7 @@
 {%- endblock btn_top_edit -%}
 
 {%- block btn_item_nav -%}
-    {%- include 'include/nav_btn_group.html.twig' with {
+    {%- include 'include/nav/nav_btn_group.html.twig' with {
         'nav_route': 'docs_map',
         'overview_route': 'docs',
         'fa': 'files-o',
@@ -35,9 +35,19 @@
 
 {%- block heading_title -%}
     {{- 'docs_map.title'|trans({
-        '%name%': doc_map.name
+        'name': doc_map.name
     }) -}}
 {%- endblock heading_title -%}
+
+{%- set csv_en = true -%}
+
+{%- block filter_form_a -%}
+    {%- include 'form/q_filter.html.twig' -%}
+{%- endblock filter_form_a -%}
+
+{%- block data_list -%}
+    {%- include 'docs/include/docs_list.html.twig' -%}
+{%- endblock data_list -%}
 
 {%- block css -%}
     {{- parent() -}}

@@ -132,6 +132,7 @@ label:
   admin_comment: Admin commentaar
   admin_functions: Admin functies
   address: Adres
+  already_exists: Bestaat reeds
   amount: Bedrag
   approved: Goedgekeurd
   balance: Saldo
@@ -159,6 +160,7 @@ label:
   expires_at: Vervaldatum
   file: Bestand
   file_location: Bestandslocatie
+  file_location_link: Bestandslocatie ({open_link}link{close_link})
   filtered: Gefilterd
   filters: Filters
   first_name: Voornaam
@@ -182,7 +184,7 @@ label:
   login: Login
   intersystem: InterSysteem
   map: Map
-  map_name: Map
+  map_name: Map naam
   max: Max
   maximum_limit: Maximum Limiet
   menu: Menu
@@ -526,7 +528,7 @@ contacts_del:
 
 docs:
   title: Documenten
-  no_maps: Geen mappen.
+  no_results: Er zijn nog geen documenten opgeladen.
 
 docs_add:
   title: >-

@@ -17,13 +17,13 @@
 	<div class="col-md-12">
 		<ul class="pagination">
 			{%- if min_adj -%}
-				{%- include 'include/pagination_link.html.twig' with {'p': 0} -%}
+				{%- include 'include/pagination/pagination_link.html.twig' with {'p': 0} -%}
 			{%- endif -%}
 			{%- for p in min_adj..max_adj -%}
-				{%- include 'include/pagination_link.html.twig' with {'p': p} -%}
+				{%- include 'include/pagination/pagination_link.html.twig' with {'p': p} -%}
 			{%- endfor -%}
 			{%- if max_adj != (page_num - 1) -%}
-				{%- include 'include/pagination_link.html.twig' with {'p': page_num - 1} -%}
+				{%- include 'include/pagination/pagination_link.html.twig' with {'p': page_num - 1} -%}
 			{%- endif -%}
 		</ul>
 		<div class="pull-right hidden-xs">

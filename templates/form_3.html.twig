@@ -135,3 +135,13 @@
     <img src="{{- captcha_code -}}" title="captcha" width="{{- captcha_width -}}" height="{{- captcha_height -}}">
     </div>
 {%- endblock captcha_row -%}
+
+{%- block typeahead_help -%}
+    {%- if render_omit is defined -%}
+        <span class="help-block hidden exists_query_results">
+            {{- 'label.already_exists'|trans -}}:
+            <span class="query_results"></span>
+        </span>
+    {%- endif -%}
+    {{- block('form_help') -}}
+{%- endblock typeahead_help -%}

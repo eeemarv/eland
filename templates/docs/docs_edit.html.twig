@@ -1,4 +1,6 @@
-{%- extends 'docs/base/docs_base.html.twig' -%}
+{%- extends 'docs/base/docs_form.html.twig' -%}
+
+{%- set map_id = doc.map_id -%}
 
 {%- block heading_title -%}
     {{- 'docs_edit.title'|trans({

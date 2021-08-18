@@ -4,6 +4,7 @@ namespace App\Form\Post\Docs;
 
 use App\Command\Docs\DocsCommand;
 use App\Form\EventSubscriber\AccessFieldSubscriber;
+use App\Service\PageParamsService;
 use App\Service\TypeaheadService;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -16,16 +17,17 @@ class DocsAddType extends AbstractType
 {
     public function __construct(
         protected AccessFieldSubscriber $access_field_subscriber,
-        protected TypeaheadService $typeahead_service
+        protected TypeaheadService $typeahead_service,
+        protected PageParamsService $pp
     )
     {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $data_typeahead = $this->typeahead_service->ini()
+        $data_typeahead = $this->typeahead_service->ini($this->pp)
             ->add('doc_map_names', [])
-            ->str();
+            ->str_raw();
 
         $builder
             ->add('file', FileType::class)

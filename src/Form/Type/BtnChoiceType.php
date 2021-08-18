@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Form\Type\Simple;
+namespace App\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -10,15 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class BtnChoiceType extends AbstractType
 {
-    public function __construct()
-    {
-    }
-
-    public function buildView(FormView $view, FormInterface $form, array $options)
-    {
-    }
-
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver):void
     {
         $resolver->setDefaults([
             'expanded'          => true,
@@ -29,12 +21,12 @@ class BtnChoiceType extends AbstractType
         ]);
     }
 
-    public function getParent()
+    public function getParent():string
     {
         return ChoiceType::class;
     }
 
-    public function getBlockPrefix()
+    public function getBlockPrefix():string
     {
         return 'btn_choice';
     }

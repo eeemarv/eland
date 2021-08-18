@@ -1,0 +1,50 @@
+{%- embed 'embed/table.html.twig' -%}
+    {%- import 'macro/lbl.html.twig' as lbl -%}
+    {%- block thead -%}
+        <th data-sort-initial="true">
+            {{- 'label.name'|trans -}}
+        </th>
+        <th data-hide="phone, tablet">
+            {{- 'label.time'|trans -}}
+        </th>
+        {%- if show_access -%}
+            <th data-hide="phone">
+                {{- 'access.visible_for'|trans -}}
+            </th>
+        {%- endif -%}
+        {%- if pp_role('admin') -%}
+            <th data-hide="phone" data-sort-ignore="true">
+                &nbsp;
+            </th>
+        {%- endif -%}
+    {%- endblock thead -%}
+    {%- block tbody -%}
+        {%- for d in docs -%}
+            <tr>
+                <td>
+                    {{- d.name|s3(d.filename)|raw -}}
+                </td>
+                <td>
+                    {{- d.created_at|date_format('min', schema) -}}
+                </td>
+                {%- if show_access -%}
+                    <td>
+                        {{- lbl.btn(d.access) -}}
+                    </td>
+                {%- endif -%}
+                {%- if pp_role('admin') -%}
+                    <td>
+                        {%- include 'include/btn/edit.html.twig' with {
+                            'btn_route': 'docs_edit',
+                            'id': d.id
+                        } -%}
+                        {%- include 'include/btn/del.html.twig' with {
+                            'btn_route': 'docs_del',
+                            'id': d.id
+                        } -%}
+                    </td>
+                {%- endif -%}
+            </td>
+        {%- endfor -%}
+    {%- endblock tbody -%}
+{%- endembed -%}

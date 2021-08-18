@@ -47,7 +47,7 @@ class AccountRepository
 
         $rs->execute();
 
-        while ($row = $rs->fetch())
+        while ($row = $rs->fetchAssociative())
         {
             $min_limit_ary[$row['account_id']] = $row['min_limit'];
         }
@@ -87,7 +87,7 @@ class AccountRepository
 
         $rs->execute();
 
-        while ($row = $rs->fetch())
+        while ($row = $rs->fetchAssociative())
         {
             $max_limit_ary[$row['account_id']] = $row['max_limit'];
         }

@@ -11,6 +11,31 @@
 
 {%- set csv_en = true -%}
 
+{%- block filter_form_a -%}
+    {%- include 'form/q_filter.html.twig' -%}
+{%- endblock filter_form_a -%}
+
+{%- block data_list -%}
+    {%- if maps -%}
+        {%- include 'docs/include/maps_list.html.twig' -%}
+    {%- endif -%}
+
+    {%- if docs -%}
+        {%- include 'docs/include/docs_list.html.twig' -%}
+    {%- elseif not maps -%}
+        {%- include 'include/no_results.html.twig' with {
+            'message': 'docs.no_results'
+        } -%}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <p>
+
+                </p>
+            </div>
+        </div>
+    {%- endif -%}
+{%- endblock data_list -%}
+
 {%- block css -%}
     {{- parent() -}}
 {%- endblock css -%}

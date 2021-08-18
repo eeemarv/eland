@@ -1,10 +1,22 @@
-{%- extends 'docs/base/docs_base.html.twig' -%}
+{%- extends 'docs/base/docs_form.html.twig' -%}
+{%- import 'macro/lbl.html.twig' as lbl -%}
+
+{%- set is_del_form = true -%}
+{%- set map_id = doc.map_id -%}
 
 {%- block heading_title -%}
     {{ 'docs_del.title'|trans({
-        '%name%': doc.name
+        'name': doc.name
     }) -}}
 {%- endblock -%}
+
+{%- block form_access -%}
+    {{- lbl.dl(doc.access, 'btn', 'access.visible_for') -}}
+{%- endblock form_access -%}
+
+{%- block form_submit_btn -%}
+    {%- include 'form/submit_del_btn.html.twig' -%}
+{%- endblock form_submit_btn -%}
 
 {%- block css -%}
     {{- parent() -}}

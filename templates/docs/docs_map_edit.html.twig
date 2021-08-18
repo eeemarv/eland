@@ -6,6 +6,18 @@
     }) -}}
 {%- endblock heading_title -%}
 
+{%- block form_a -%}
+    {{- form_row(form.name,{
+        'label': 'label.map_name',
+        'pre_addon': {
+            'fa': 'folder-o'
+        }
+    }) -}}
+{%- endblock form_a -%}
+
+{%- set cancel_route = 'docs_map' -%}
+{%- set cancel_route_params = {'id': doc_map.id} -%}
+
 {%- block css -%}
     {{- parent() -}}
 {%- endblock css -%}
