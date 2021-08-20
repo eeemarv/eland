@@ -2,6 +2,8 @@
 
 namespace App\Controller\Contacts;
 
+use App\Command\Contacts\ContactsCommand;
+use App\Form\Post\Contacts\ContactsDelType;
 use App\Form\Post\DelType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -87,8 +89,7 @@ class ContactsDelController extends AbstractController
         SessionUserService $su
     ):Response
     {
-        $errors = [];
-
+        /*
         $id = $contact_id ?: $id;
 
         $contact = $contact_repository->get($id, $pp->schema());
@@ -113,8 +114,44 @@ class ContactsDelController extends AbstractController
         {
             throw new BadRequestHttpException('No user_id');
         }
+        */
 
-        $form = $this->createForm(DelType::class);
+        $id = $contact_id ?: $id;
+
+        $contact = $contact_repository->get($id, $pp->schema());
+        $contact_type = $contact_repository->get_contact_type($contact['id_type_contact'], $pp->schema());
+
+        if ($is_self)
+        {
+            $user_id = $su->id();
+        }
+        else if ($redirect_contacts)
+        {
+            $user_id = $contact['user_id'];
+        }
+
+        if (!$user_id)
+        {
+            throw new BadRequestHttpException('No user_id');
+        }
+
+        if ($user_id !== $contact['user_id'])
+        {
+            throw new BadRequestHttpException(
+                'Contact ' . $id . ' does not belong to user ' . $user_id);
+        }
+
+        $command = new ContactsCommand();
+        $command->id = $id;
+        $command->user_id = $contact['user_id'];
+        $command->contact_type_id = $contact_type['name'];
+        $command->value = $contact['value'];
+        $command->comments = $contact['comments'];
+        $command->access = $contact['access'];
+
+        $form = $this->createForm(ContactsDelType::class, $command, [
+            'contact_type_abbrev'   => $contact_type['abbrev'],
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()

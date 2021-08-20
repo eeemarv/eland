@@ -1,55 +1,17 @@
 {%- extends 'contacts/base/contacts_form.html.twig' -%}
 {%- import 'macro/lbl.html.twig' as lbl -%}
 
+{%- block assets_add -%}
+    {{- parent() -}}
+    {{- assets_add(['contacts_del.js']) -}}
+{%- endblock assets_add -%}
+
 {%- block heading_title -%}
     {{- 'contacts_del.title'|trans({
         'self': is_self or not user_id ? 'self' : 'some_user',
         'user': user_id ? account(user_id, schema)|link('users_show', {'id': user_id}) : ''
     })|raw -}}
 {%- endblock heading_title -%}
-
-{%- block pre_form -%}
-<div class="panel panel-info">
-    <div class="panel-heading">
-        <dl>
-            <dt>
-                {{- 'label.user'|trans -}}
-            </dt>
-            <dd>
-                {{- account(user_id, schema)|link('users_show', {'id': user_id})|raw -}}
-            </dd>
-            <dt>
-                {{- 'label.contact_type'|trans -}}
-            </dt>
-            <dd>
-                {{- contact_type.abbrev -}}
-            </dd>
-            <dt>
-                {{- 'label.value'|trans -}}
-            </dt>
-            <dd>
-                {{- contact.value -}}
-            </dd>
-            <dt>
-                {{- 'label.comment'|trans -}}
-            </dt>
-            <dd>
-                {%- if contact.comments -%}
-                    {{- contact.comments -}}
-                {%- else -%}
-                    <i class="fa fa-times"></i>
-                {%- endif -%}
-            </dd>
-            <dt>
-                {{- 'access.visible_for'|trans -}}
-            </dt>
-            <dd>
-                {{- lbl.btn(contact.access) -}}
-            </dd>
-        </dl>
-    </div>
-</div>
-{%- endblock pre_form -%}
 
 {%- block form_submit_btn -%}
     {%- include 'form/submit_del_btn.html.twig' -%}

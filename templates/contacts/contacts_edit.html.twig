@@ -1,5 +1,10 @@
 {%- extends 'contacts/base/contacts_form.html.twig' -%}
 
+{%- block assets_add -%}
+    {{- parent() -}}
+    {{- assets_add(['contacts_edit.js']) -}}
+{%- endblock assets_add -%}
+
 {%- block heading_title -%}
     {{- 'contacts_edit.title'|trans({
         'self': is_self or not user_id ? 'self' : 'some_user',

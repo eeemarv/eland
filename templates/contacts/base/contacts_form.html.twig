@@ -10,11 +10,6 @@
     {%- set cancel_route_params = is_self ? {} : {'id': user_id} -%}
 {%- endif -%}
 
-{%- block assets_add -%}
-    {{- parent() -}}
-    {{- assets_add(['contacts_edit.js']) -}}
-{%- endblock assets_add -%}
-
 {%- block form_a -%}
     {%- if form.user_id is defined -%}
         {{- form_row(form.user_id, {
@@ -45,7 +40,7 @@
             'label': 'label.value',
             'help': 'label.value',
             'pre_addon': {
-                'fa': 'phone'
+                'fa': 'chevron-right'
             },
             'disabled': true
         }) -}}

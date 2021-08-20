@@ -1,8 +1,4 @@
 jQuery(function(){
-	$('body').delay(100, function(){
-		$('input').prop('disabled', false);
-	});
-
 	var $form = $('form');
 	var $input = $form.find('[data-contacts-format]');
 	var $select = $form.find('select[data-contact-type]');
@@ -11,6 +7,10 @@ jQuery(function(){
 	var $addon = $input_div.find('span');
 	var $contact_help = $input_div.parent().find('span#contacts_value_help');
 	var $fa = $addon.find('i');
+
+	$form.delay(100, function(){
+		$('input').prop('disabled', false);
+	});
 
 	$contact_help.text('');
 
@@ -24,6 +24,8 @@ jQuery(function(){
 		if (typeof(format) != 'undefined' && format !== null){
 			if (format.hasOwnProperty('fa')){
 				$fa.addClass('fa fa-' + format.fa);
+			} else {
+				$fa.addClass('fa fa-chevron-right');
 			}
 
 			if (format.hasOwnProperty('type')){
@@ -40,6 +42,7 @@ jQuery(function(){
 		} else {
 			$input.attr('type', 'text');
 			$contact_help.text('');
+			$fa.addClass('fa fa-chevron-right');
 		}
 	}
 
