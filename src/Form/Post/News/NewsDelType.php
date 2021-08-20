@@ -1,16 +1,19 @@
 <?php declare(strict_types=1);
 
-namespace App\Form\Post\Docs;
+namespace App\Form\Post\News;
 
-use App\Command\Docs\DocsCommand;
+use App\Command\News\NewsCommand;
 use App\Form\EventSubscriber\AccessFieldSubscriber;
+use App\Form\Input\DatepickerType;
+use App\Form\Input\SummernoteType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class DocsDelType extends AbstractType
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+
+class NewsDelType extends AbstractType
 {
     public function __construct(
         protected AccessFieldSubscriber $access_field_subscriber
@@ -21,16 +24,16 @@ class DocsDelType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('file_location', TextType::class, [
+            ->add('subject', TextType::class, [
                 'disabled'  => true,
             ])
-            ->add('original_filename', TextType::class, [
+            ->add('location', TextType::class, [
                 'disabled'  => true,
             ])
-            ->add('name', TextType::class, [
+            ->add('event_at', DatepickerType::class, [
                 'disabled'  => true,
             ])
-            ->add('map_name', TextType::class, [
+            ->add('content', SummernoteType::class, [
                 'disabled'  => true,
             ])
             ->add('submit', SubmitType::class);
@@ -43,7 +46,7 @@ class DocsDelType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class'    => DocsCommand::class,
+            'data_class'    => NewsCommand::class,
         ]);
     }
 }

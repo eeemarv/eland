@@ -1,5 +1,7 @@
 {%- extends 'news/base/news_form.html.twig' -%}
 
+{%- set cancel_route = 'news_show' -%}
+
 {%- block heading_title -%}
     {{- 'news_edit.title'|trans({
         'subject': news_item.subject

@@ -18,6 +18,7 @@ class AccessFieldSubscriber implements EventSubscriberInterface
     protected array $access_options = [];
     protected string $name = 'access';
     protected array $fields_options = [];
+    protected array $type_options = [];
 
     public function __construct(
         protected ItemAccessService $item_access_service,
@@ -35,7 +36,11 @@ class AccessFieldSubscriber implements EventSubscriberInterface
         ];
     }
 
-    public function add(string $name, array $access_options):void
+    public function add(
+        string $name,
+        array $access_options,
+        array $type_options = []
+    ):void
     {
         $access_options = array_combine($access_options, $access_options);
 
@@ -66,6 +71,8 @@ class AccessFieldSubscriber implements EventSubscriberInterface
 
             $this->fields_options[$name][$access] = $access;
         }
+
+        $this->type_options = $type_options;
     }
 
     public function pre_set_data(FormEvent $event)
@@ -107,6 +114,8 @@ class AccessFieldSubscriber implements EventSubscriberInterface
                     $options['data'] = 'user';
                 }
             }
+
+            $options = array_merge($options, $this->type_options);
 
             $form->add($name, BtnChoiceType::class, $options);
         }

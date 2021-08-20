@@ -1,5 +1,4 @@
 {%- extends 'docs/base/docs_form.html.twig' -%}
-{%- import 'macro/lbl.html.twig' as lbl -%}
 
 {%- set is_del_form = true -%}
 {%- set map_id = doc.map_id -%}
@@ -9,10 +8,6 @@
         'name': doc.name
     }) -}}
 {%- endblock -%}
-
-{%- block form_access -%}
-    {{- lbl.dl(doc.access, 'btn', 'access.visible_for') -}}
-{%- endblock form_access -%}
 
 {%- block form_submit_btn -%}
     {%- include 'form/submit_del_btn.html.twig' -%}

@@ -18,6 +18,10 @@ jQuery(function(){
 			fontSizes: ['12', '14', '16', '18', '24']
 		});
 
+		if ($self.prop('disabled')){
+			$self.summernote('disable');
+		}
+
 		$('form').on('submit', function(){
 			$self.html($self.summernote('code'));
 		});

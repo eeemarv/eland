@@ -57,6 +57,10 @@ jQuery(function(){
 			}
 		});
 
+		if ($self.prop('disabled')){
+			$self.summernote('disable');
+		}
+
 		$('form').on('submit', function(){
 			$self.html($self.summernote('code'));
 		});

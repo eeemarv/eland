@@ -46,13 +46,11 @@
         }) -}}
     {%- endif -%}
 
-    {%- block form_access -%}
-        {%- if form.access is defined -%}
-            {{- form_row(form.access, {
-                'label': 'access.visible_for'
-            }) -}}
-        {%- endif -%}
-    {%- endblock form_access -%}
+    {%- if form.access is defined -%}
+        {{- form_row(form.access, {
+            'label': 'access.visible_for'
+        }) -}}
+    {%- endif -%}
 
     {%- if form.map_name -%}
         {{- form_row(form.map_name, {
