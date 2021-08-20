@@ -147,6 +147,7 @@ label:
   code: Code
   columns: Kolommen
   comment: Commentaar
+  contacts: Contacten
   contact_type: Contact type
   content: Inhoud
   created: Aanmaak
@@ -489,6 +490,10 @@ contact_form:
 
 contact_types:
   title: Contact types
+  explain_protected: >-
+    Kunnen niet verwijderd worden: contact
+    types waarvan contacten bestaan en
+    beschermde contact types.
 
 contact_types_add:
   title: Contact type toevoegen

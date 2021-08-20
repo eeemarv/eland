@@ -2,12 +2,10 @@
 
 namespace App\Controller\ContactTypes;
 
-use App\Render\LinkRender;
 use App\Repository\ContactRepository;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ContactTypesController extends AbstractController
@@ -29,121 +27,22 @@ class ContactTypesController extends AbstractController
     )]
 
     public function __invoke(
-        Db $db,
         ContactRepository $contact_repository,
-        LinkRender $link_render,
         PageParamsService $pp
     ):Response
     {
-        $types = $contact_repository->get_all_contact_types($pp->schema());
+        $contact_types = $contact_repository->get_all_contact_types_with_count($pp->schema());
 
-        $contact_count = [];
-
-        $rs = $db->prepare('select distinct id_type_contact, count(id)
-            from ' . $pp->schema() . '.contact
-            group by id_type_contact');
-        $rs->execute();
-
-        while($row = $rs->fetch())
+        foreach ($contact_types as &$ct)
         {
-            $contact_count[$row['id_type_contact']] = $row['count'];
+            if (in_array($ct['abbrev'], self::PROTECTED))
+            {
+                $ct['protected'] = true;
+            }
         }
-
-        $out = '<div class="panel panel-default printview">';
-
-        $out .= '<div class="table-responsive">';
-        $out .= '<table class="table table-striped table-hover ';
-        $out .= 'table-bordered footable" data-sort="false">';
-        $out .= '<tr>';
-        $out .= '<thead>';
-        $out .= '<th>Afk.</th>';
-        $out .= '<th>Naam</th>';
-        $out .= '<th data-hide="phone">Verwijderen</th>';
-        $out .= '<th data-hide="phone">Contacten</th>';
-        $out .= '</tr>';
-        $out .= '</thead>';
-
-        $out .= '<tbody>';
-
-        foreach($types as $t)
-        {
-            $count = $contact_count[$t['id']] ?? 0;
-
-            $protected = in_array($t['abbrev'], self::PROTECTED);
-
-            $out .= '<tr>';
-
-            $out .= '<td>';
-
-            if ($protected)
-            {
-                $out .= htmlspecialchars($t['abbrev'],ENT_QUOTES) . '*';
-            }
-            else
-            {
-                $out .= $link_render->link_no_attr('contact_types_edit', $pp->ary(),
-                    ['id' => $t['id']], $t['abbrev']);
-            }
-
-            $out .= '</td>';
-
-            $out .= '<td>';
-
-            if ($protected)
-            {
-                $out .= htmlspecialchars($t['name'],ENT_QUOTES) . '*';
-            }
-            else
-            {
-                $out .= $link_render->link_no_attr('contact_types_edit', $pp->ary(),
-                    ['id' => $t['id']], $t['name']);
-            }
-
-            $out .= '</td>';
-
-            $out .= '<td>';
-
-            if ($protected || $count)
-            {
-                $out .= '&nbsp;';
-            }
-            else
-            {
-                $out .= $link_render->link_fa('contact_types_del', $pp->ary(),
-                    ['id' => $t['id']], 'Verwijderen',
-                    ['class' => 'btn btn-danger'],
-                    'times');
-            }
-
-            $out .= '</td>';
-
-            $out .= '<td>';
-
-            if ($count)
-            {
-                $out .= $link_render->link_no_attr('contacts', $pp->ary(),
-                    ['f' => ['abbrev' => $t['abbrev']]], (string) $count);
-            }
-            else
-            {
-                $out .= '&nbsp;';
-            }
-
-            $out .= '</td>';
-
-            $out .= '</tr>';
-        }
-
-        $out .= '</tbody>';
-        $out .= '</table>';
-        $out .= '</div></div>';
-
-        $out .= '<p>Kunnen niet verwijderd worden: ';
-        $out .= 'contact types waarvan contacten ';
-        $out .= 'bestaan en beschermde contact types (*).</p>';
 
         return $this->render('contact_types/contact_types.html.twig', [
-            'content'   => $out,
+            'contact_types' => $contact_types,
         ]);
     }
 }

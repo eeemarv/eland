@@ -1,0 +1,54 @@
+{%- embed 'embed/table.html.twig' -%}
+    {%- block thead -%}
+        <th data-sort-ignore="true">
+            {{- 'label.abbrev'|trans -}}
+        </th>
+        <th data-sort-ignore="true">
+            {{- 'label.name'|trans -}}
+        </th>
+        <th data-sort-ignore="true">
+            {{- 'btn.del'|trans -}}
+        </th>
+        <th data-sort-ignore="true">
+            {{- 'label.contacts'|trans -}}
+        </th>
+    {%- endblock thead -%}
+    {%- block tbody -%}
+        {%- for ct in contact_types -%}
+            {%- set protected = ct.protected is defined and ct.protected -%}
+            <tr>
+                <td>
+                    {%- if protected -%}
+                        {{- ct.abbrev -}}*
+                    {%- else -%}
+                        {{- ct.abbrev|link('contact_types_edit', {'id': ct.id})|raw -}}
+                    {%- endif -%}
+                </td>
+                <td>
+                    {%- if protected -%}
+                        {{- ct.name -}}*
+                    {%- else -%}
+                        {{- ct.name|link('contact_types_edit', {'id': ct.id})|raw -}}
+                    {%- endif -%}
+                </td>
+                <td>
+                    {%- if ct.count or protected -%}
+                        &nbsp;
+                    {%- else -%}
+                        {%- include 'include/btn/del.html.twig' with {
+                            'btn_route': 'contact_types_del',
+                            'id': ct.id
+                        } -%}
+                    {%- endif -%}
+                </td>
+                <td>
+                    {%- if ct.count -%}
+                        {{- ct.count|link('contacts', {'f': {'abbrev': ct.abbrev}})|raw -}}
+                    {%- else -%}
+                        {{- ct.count -}}
+                    {%- endif -%}
+                </td>
+            </tr>
+        {%- endfor -%}
+    {%- endblock tbody -%}
+{%- endembed -%}
