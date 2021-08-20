@@ -496,8 +496,6 @@ contact_types_add:
 contact_types_del:
   title: >-
     Contact type verwijderen: {name}
-  confirm: >-
-    Ben je zeker dat dit contact type verwijderd mag worden?
 
 contact_types_edit:
   title: Contact type aanpassen

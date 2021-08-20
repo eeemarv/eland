@@ -2,7 +2,8 @@
 
 namespace App\Controller\ContactTypes;
 
-use App\Form\Post\DelType;
+use App\Command\ContactTypes\ContactTypesCommand;
+use App\Form\Post\ContactTypes\ContactTypesDelType;
 use App\Repository\ContactRepository;
 use App\Service\AlertService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -51,7 +52,12 @@ class ContactTypesDelController extends AbstractController
             throw new BadRequestException('A contact type with contacts can not be deleted.');
         }
 
-        $form = $this->createForm(DelType::class);
+        $command = new ContactTypesCommand();
+        $command->id = $id;
+        $command->name = $contact_type['name'];
+        $command->abbrev = $contact_type['abbrev'];
+
+        $form = $this->createForm(ContactTypesDelType::class, $command);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()
