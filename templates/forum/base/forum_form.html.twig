@@ -1,9 +1,17 @@
 {%- extends 'forum/base/forum_base.html.twig' -%}
 
+{%- block assets_add -%}
+    {{- parent() -}}
+    {{- assets_add(['summernote', 'summernote_forum_post.js']) -}}
+{%- endblock assets_add -%}
+
 {%- block form_a -%}
     {%- if form.subject is defined -%}
         {{- form_row(form.subject, {
             'label': false,
+            'pre_addon': {
+                'fa': 'chevron-right'
+            },
             'attr': {
                 'placeholder': 'label.subject'
             }

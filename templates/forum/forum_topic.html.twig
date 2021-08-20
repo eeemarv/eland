@@ -1,11 +1,6 @@
 {%- extends 'forum/base/forum_form.html.twig' -%}
 {%- import 'macro/lbl.html.twig' as lbl -%}
 
-{%- block assets_add -%}
-    {{- parent() -}}
-    {{- assets_add(['summernote', 'summernote_forum_post.js']) -}}
-{%- endblock assets_add -%}
-
 {%- block btn_top_edit -%}
     {%- if pp_role('admin') or su_is_owner(topic.user_id) -%}
         {%- include 'include/btn_top/edit.html.twig' with {

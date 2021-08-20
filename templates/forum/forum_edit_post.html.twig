@@ -1,10 +1,5 @@
 {%- extends 'forum/base/forum_form.html.twig' -%}
 
-{%- block assets_add -%}
-    {{- parent() -}}
-    {{- assets_add(['summernote', 'summernote_forum_post.js']) -}}
-{%- endblock assets_add -%}
-
 {%- block heading_title -%}
     {{- 'forum_edit_post.title'|trans({
         'self': su_is_owner(forum_post.user_id) ? 'self' : 'some_user',

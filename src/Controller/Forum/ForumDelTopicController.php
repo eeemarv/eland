@@ -2,7 +2,9 @@
 
 namespace App\Controller\Forum;
 
+use App\Command\Forum\ForumTopicCommand;
 use App\Form\Post\DelType;
+use App\Form\Post\Forum\ForumTopicDelType;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Repository\ForumRepository;
@@ -40,6 +42,7 @@ class ForumDelTopicController extends AbstractController
         Request $request,
         int $id,
         ForumRepository $forum_repository,
+        ItemAccessService $item_access_service,
         AccountRender $account_render,
         ConfigService $config_service,
         AlertService $alert_service,
@@ -53,14 +56,31 @@ class ForumDelTopicController extends AbstractController
         }
 
         $forum_topic = $forum_repository->get_topic($id, $pp->schema());
-        $forum_first_post = $forum_repository->get_first_post($id, $pp->schema());
 
-        if (!($pp->is_admin() || $su->is_owner($forum_topic['user_id'])))
+        if (!$item_access_service->is_visible($forum_topic['access']))
         {
-            throw new AccessDeniedHttpException('No rights for this action.');
+            throw new AccessDeniedHttpException('Access denied (1) for forum topic with id ' . $id);
         }
 
-        $form = $this->createForm(DelType::class);
+        if (!($su->is_owner($forum_topic['user_id']) || $pp->is_admin()))
+        {
+            throw new AccessDeniedHttpException('Access Denied (2) for forum topic with id ' . $id);
+        }
+
+        $forum_post = $forum_repository->get_first_post($id, $pp->schema());
+
+        if (!($su->is_owner($forum_post['user_id']) || $pp->is_admin()))
+        {
+            throw new AccessDeniedHttpException('Access denied (3) forum forum post');
+        }
+
+        $command = new ForumTopicCommand();
+
+        $command->subject = $forum_topic['subject'];
+        $command->content = $forum_post['content'];
+        $command->access = $forum_topic['access'];
+
+        $form = $this->createForm(ForumTopicDelType::class, $command);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()
@@ -86,7 +106,6 @@ class ForumDelTopicController extends AbstractController
         return $this->render('forum/forum_del_topic.html.twig', [
             'form'              => $form->createView(),
             'forum_topic'       => $forum_topic,
-            'forum_first_post'  => $forum_first_post,
         ]);
     }
 }
