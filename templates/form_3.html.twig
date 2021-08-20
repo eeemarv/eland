@@ -145,3 +145,18 @@
     {%- endif -%}
     {{- block('form_help') -}}
 {%- endblock typeahead_help -%}
+
+{% block datepicker_widget -%}
+    {%- set attr = attr|merge({
+        'data-provide': 'datepicker',
+        'data-date-language': app.request.locale,
+        'data-date-today-highlight': 'true',
+        'data-date-autoclose': 'true',
+        'data-date-immediate-updates': 'true',
+        'data-date-orientation': 'bottom',
+    }) -%}
+    {%- set pre_addon = pre_addon|default({})|merge({
+        'fa': 'calendar',
+    }) -%}
+    {{- block('form_widget') -}}
+{%- endblock datepicker_widget %}

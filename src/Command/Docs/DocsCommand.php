@@ -7,6 +7,7 @@ use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\NotNull;
 
 class DocsCommand implements CommandInterface
 {
@@ -24,7 +25,7 @@ class DocsCommand implements CommandInterface
     #[Length(max: 60, groups: ['add', 'edit'])]
     public $map_name;
 
-    #[NotBlank(groups: ['add', 'edit'])]
+    #[NotNull(groups: ['add', 'edit'])]
     #[Choice(['admin', 'user', 'guest'], groups: ['add', 'edit'])]
     public $access;
 }

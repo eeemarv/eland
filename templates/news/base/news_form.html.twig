@@ -2,6 +2,60 @@
 
 {%- block content -%}{%- endblock -%}
 
+{%- block assets_add -%}
+    {{- parent() -}}
+    {{- assets_add([
+        'datepicker',
+        'summernote',
+        'summernote_forum_post.js'
+    ]) -}}
+{%- endblock assets_add -%}
+
+{%- block form_a -%}
+    {%- if form.subject is defined -%}
+        {{- form_row(form.subject, {
+            'label': 'label.title',
+            'pre_addon': {
+                'fa': 'chevron-right'
+            }
+        }) -}}
+    {%- endif -%}
+
+    {%- if form.event_at is defined -%}
+        {{- form_row(form.event_at, {
+            'label': 'label.event_date',
+            'help': 'help.event_date',
+        }) -}}
+    {%- endif -%}
+
+    {%- if form.location is defined -%}
+        {{- form_row(form.location, {
+            'label': 'label.location',
+            'help': 'help.location',
+            'pre_addon': {
+                'fa': 'map-marker',
+            },
+        }) -}}
+    {%- endif -%}
+
+    {%- if form.content is defined -%}
+        {{- form_row(form.content, {
+            'label': 'label.message',
+            'attr': {
+                'rows': 5,
+                'minlength': 10,
+                'maxlength': 5000
+            }
+        }) -}}
+    {%- endif -%}
+
+    {%- if form.access is defined -%}
+        {{- form_row(form.access, {
+            'label': 'access.visible_for'
+        }) -}}
+    {%- endif -%}
+{%- endblock form_a -%}
+
 {%- block css -%}
     {{- parent() -}}
     {{- encore_entry_link_tags('datepicker') -}}

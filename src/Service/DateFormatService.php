@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Service\ConfigService;
+use Symfony\Component\Form\Exception\TransformationFailedException;
 
 class DateFormatService
 {
@@ -177,7 +178,14 @@ class DateFormatService
 		$time = mktime(12, 0, 0,
 			(int) $parts['%m'], (int) $parts['%d'], (int) $parts['%Y']);
 
-		return gmdate('Y-m-d H:i:s', $time);
+		$str = gmdate('Y-m-d H:i:s', $time);
+
+		if ($str === false)
+		{
+			throw new TransformationFailedException('Wrong date format.');
+		}
+
+		return $str;
 	}
 
 	public function get_choices():array

@@ -3,10 +3,10 @@
 namespace App\Form\Input;
 
 use App\Form\DataTransformer\DatepickerTransformer;
-use App\Form\Input\TextAddonType;
 use App\Service\DateFormatService;
 use App\Service\PageParamsService;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\FormView;
@@ -42,7 +42,7 @@ class DatepickerType extends AbstractType
         parent::buildView($view, $form, $options);
 
         $view->vars['attr_translation_parameters'] = array_merge([
-            '%var%' => $this->date_format_service->datepicker_placeholder($this->pp->schema()),
+            'var' => $this->date_format_service->datepicker_placeholder($this->pp->schema()),
         ], $options['attr_translation_parameters']);
 
         $view->vars['attr'] = array_merge([
@@ -59,7 +59,7 @@ class DatepickerType extends AbstractType
 
     public function getParent()
     {
-        return TextAddonType::class;
+        return TextType::class;
     }
 
     public function getBlockPrefix()

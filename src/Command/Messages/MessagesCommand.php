@@ -9,6 +9,7 @@ use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\Json;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 
@@ -38,14 +39,14 @@ class MessagesCommand implements CommandInterface
         ]));
         $metadata->addPropertyConstraint('offer_want', new Sequentially([
             'constraints'   => [
-                new NotBlank(),
+                new NotNull(),
                 new Choice(['offer', 'want']),
             ],
             'groups' => ['common'],
         ]));
         $metadata->addPropertyConstraint('service_stuff', new Sequentially([
             'constraints'   => [
-                new NotBlank(),
+                new NotNull(),
                 new Choice(['service', 'stuff']),
             ],
             'groups' => ['service_stuff'],
@@ -99,7 +100,7 @@ class MessagesCommand implements CommandInterface
         ]));
         $metadata->addPropertyConstraint('access', new Sequentially([
             'constraints'   => [
-                new NotBlank(),
+                new NotNull(),
                 new Choice(['admin', 'user', 'guest']),
             ],
             'groups' => ['common'],

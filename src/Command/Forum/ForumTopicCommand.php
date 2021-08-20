@@ -6,6 +6,7 @@ use App\Command\CommandInterface;
 use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\NotNull;
 
 class ForumTopicCommand implements CommandInterface
 {
@@ -17,7 +18,7 @@ class ForumTopicCommand implements CommandInterface
     #[Length(max: 10000)]
     public $content;
 
-    #[NotBlank()]
+    #[NotNull()]
     #[Choice(['admin', 'user', 'guest'])]
     public $access;
 }

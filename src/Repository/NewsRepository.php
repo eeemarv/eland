@@ -2,7 +2,9 @@
 
 namespace App\Repository;
 
+use App\Command\News\NewsCommand;
 use Doctrine\DBAL\Connection as Db;
+use LogicException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class NewsRepository
@@ -13,9 +15,12 @@ class NewsRepository
 	{
 	}
 
-	public function get(int $id, string $schema):array
+	public function get(
+		int $id,
+		string $schema
+	):array
 	{
-        $news = $this->db->fetchAssoc('select *
+        $news = $this->db->fetchAssociative('select *
             from ' . $schema . '.news
             where id = ?', [$id]);
 
@@ -48,7 +53,7 @@ class NewsRepository
 			[$visible_ary],
 			[Db::PARAM_STR_ARRAY]);
 
-		return $stmt->fetchAll();
+		return $stmt->fetchAllAssociative();
 	}
 
 	public function get_prev_and_next_id(
@@ -72,7 +77,7 @@ class NewsRepository
 
 		$current = false;
 
-		while($id = $stmt->fetchColumn())
+		while($id = $stmt->fetchOne())
 		{
             if ($current)
             {
@@ -95,15 +100,58 @@ class NewsRepository
 		];
 	}
 
-	public function insert(array $news_item, string $schema):int
+	public function insert(
+		NewsCommand $command,
+		int $user_id,
+		string $schema
+	):int
 	{
-		$this->db->insert($schema . '.news', $news_item);
+		$news = [
+			'user_id'       => $user_id,
+			'content'	    => $command->content,
+			'subject'	    => $command->subject,
+			'access'        => $command->access,
+			'location'		=> $command->location,
+			'event_at'		=> $command->event_at,
+		];
+
+		/*
+		if ($command->location)
+		{
+			$news['location'] = $command->location;
+		}
+
+		if ($command->event_at)
+		{
+			$news['event_at'] = $command->event_at;
+		}
+		*/
+
+		$this->db->insert($schema . '.news', $news);
 		return (int) $this->db->lastInsertId($schema . '.news_id_seq');
 	}
 
-	public function update(array $news_item, int $id, string $schema):bool
+	public function update(
+		NewsCommand $command,
+		string $schema
+	):bool
 	{
-		return $this->db->update($schema . '.news', $news_item,
+		$news = [
+			'content'	    => $command->content,
+			'subject'	    => $command->subject,
+			'access'        => $command->access,
+			'location'		=> $command->location,
+			'event_at'		=> $command->event_at,
+		];
+
+		$id = $command->id;
+
+		if (!$id)
+		{
+			throw new LogicException('no id set');
+		}
+
+		return $this->db->update($schema . '.news', $news,
 			['id' => $id]) ? true : false;
 	}
 

@@ -106,6 +106,10 @@ help:
     Deze prefix wordt tussen haken [tag] toegevoegd
     aan het onderwerp van alle E-mail-berichten die
     het systeem verzendt.
+  event_date: >-
+    Wanneer gaat dit door?
+  location: >-
+    Waar gaat het door?
   new_password_safety: >-
     Tip: Gebruik voor de veiligheid nooit
     hetzelfde paswoord in verschillende toepassingen.
@@ -154,7 +158,6 @@ label:
   email: E-mail
   email_tag: E-mail tag
   event_date: Agendadatum
-  event_date_explain: Wanneer gaat dit door?
   exclude_counterparties: Exclusief tegenpartijen
   expired: Vervallen
   expires_at: Vervaldatum

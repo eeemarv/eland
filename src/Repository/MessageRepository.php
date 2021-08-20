@@ -16,9 +16,11 @@ class MessageRepository
 
 	public function get(int $id, string $schema):array
 	{
-        $message = $this->db->fetchAssoc('select *
+        $message = $this->db->fetchAssociative('select *
             from ' . $schema . '.messages
-            where id = ?', [$id], [\PDO::PARAM_INT]);
+            where id = ?',
+			[$id],
+			[\PDO::PARAM_INT]);
 
 		if (!$message)
 		{
@@ -45,7 +47,7 @@ class MessageRepository
 			[$ref_id, $visible_ary],
 			[\PDO::PARAM_INT, Db::PARAM_STR_ARRAY]);
 
-		return $stmt->fetchColumn() ?: 0;
+		return $stmt->fetchOne() ?: 0;
 	}
 
 	public function get_next_id(
@@ -65,7 +67,7 @@ class MessageRepository
 			[$ref_id, $visible_ary],
 			[\PDO::PARAM_INT, Db::PARAM_STR_ARRAY]);
 
-		return $stmt->fetchColumn() ?: 0;
+		return $stmt->fetchOne() ?: 0;
 	}
 
 	public function del(int $id, string $schema):bool
@@ -85,28 +87,44 @@ class MessageRepository
 		return $this->db->update($schema . '.messages', $message, ['id' => $id]) ? true : false;
 	}
 
-	public function get_count_for_user_id(int $user_id, string $schema):int
+	public function get_count_for_user_id(
+		int $user_id,
+		string $schema
+	):int
 	{
-        return $this->db->fetchColumn('select count(*)
+        return $this->db->fetchOne('select count(*)
             from ' . $schema . '.messages
-            where user_id = ?', [$user_id], 0, [\PDO::PARAM_INT]);
+            where user_id = ?',
+			[$user_id],
+			[\PDO::PARAM_INT]);
 	}
 
-	public function del_for_user_id(int $user_id, string $schema):void
+	public function del_for_user_id(
+		int $user_id,
+		string $schema
+	):void
 	{
 		$this->db->delete($schema . '.messages', ['user_id' => $user_id]);
 	}
 
-	public function add_image_file(string $image_filename, int $id, string $schema):void
+	public function add_image_file(
+		string $image_filename,
+		int $id,
+		string $schema
+	):void
 	{
-		$this->db->executeUpdate('update ' . $schema . '.messages
+		$this->db->executeStatement('update ' . $schema . '.messages
 			set image_files = coalesce(image_files, \'[]\') || ?::jsonb
 			where id = ?',
 			[$image_filename, $id],
 			[Types::JSON, \PDO::PARAM_INT]);
 	}
 
-	public function update_image_files(array $image_files, int $id, string $schema):void
+	public function update_image_files(
+		array $image_files,
+		int $id,
+		string $schema
+	):void
 	{
         $image_files = json_encode(array_values($image_files));
 
@@ -117,7 +135,7 @@ class MessageRepository
 
 	public function get_max_id(string $schema):int
 	{
-		return $this->db->fetchColumn('select max(id)
+		return $this->db->fetchOne('select max(id)
 			from ' . $schema . '.messages') ?: 0;
 	}
 }
