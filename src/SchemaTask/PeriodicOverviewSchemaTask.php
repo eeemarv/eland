@@ -141,7 +141,8 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				u.code, u.postcode,
 				u.periodic_overview_en
 			from ' . $schema . '.users u
-			where u.status in (1, 2)');
+			where u.status in (1, 2)
+				and u.role in (\'user\', \'admin\')');
 
 		$rs->execute();
 
@@ -169,7 +170,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 			$mail = $row['value'];
 			$mailaddr[$user_id][] = $mail;
 
-			if (!$users[$user_id] || !$users[$user_id]['periodic_overview_en'])
+			if (!isset($users[$user_id]) || !$users[$user_id]['periodic_overview_en'])
 			{
 				continue;
 			}
@@ -316,9 +317,9 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				where n.access in (\'user\', \'guest\', \'anonymous\') ';
 
 			$query .= $block_options['news'] == 'recent' ? 'and n.created_at > ? ' : '';
-			$query .= 'order by n.event_at ';
-			$query .= $this->config_service->get_bool('news.sort.asc', $schema) ? 'asc' : 'desc';
-			$query .= ' nulls last';
+			$query .= 'order by ';
+			$query .= $this->config_service->get_bool('news.sort.asc', $schema) ? 'n.event_at asc, ' : '';
+			$query .= 'n.created_at desc';
 
 			$rs = $this->db->prepare($query);
 
