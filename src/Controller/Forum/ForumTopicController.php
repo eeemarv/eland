@@ -13,7 +13,6 @@ use App\Service\SessionUserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -50,12 +49,8 @@ class ForumTopicController extends AbstractController
             throw new NotFoundHttpException('Forum module not enabled.');
         }
 
-        $topic = $forum_repository->get_topic($id, $pp->schema());
-
-        if (!$item_access_service->is_visible($topic['access']))
-        {
-            throw new AccessDeniedHttpException('Access denied for topic id ' . $id);
-        }
+        $visible_ary = $item_access_service->get_visible_ary_for_page();
+        $topic = $forum_repository->get_topic_with_prev_next($id, $visible_ary, $pp->schema());
 
         $command = new ForumPostCommand();
         $form = $this->createForm(ForumPostType::class, $command);
@@ -72,10 +67,7 @@ class ForumTopicController extends AbstractController
                 ['id' => $id]));
         }
 
-        $visible_ary = $item_access_service->get_visible_ary_for_page();
         $posts = $forum_repository->get_topic_posts($id, $pp->schema());
-        $prev_id = $forum_repository->get_prev_topic_id($id, $visible_ary, $pp->schema());
-        $next_id = $forum_repository->get_next_topic_id($id, $visible_ary, $pp->schema());
 
         $show_access = ($pp->is_user()
                 && $config_service->get_intersystem_en($pp->schema()))
@@ -86,8 +78,8 @@ class ForumTopicController extends AbstractController
             'show_access'   => $show_access,
             'posts'         => $posts,
             'id'            => $id,
-            'prev_id'       => $prev_id,
-            'next_id'       => $next_id,
+            'prev_id'       => $topic['prev_id'] ?? 0,
+            'next_id'       => $topic['next_id'] ?? 0,
             'form'          => $form->createView(),
         ]);
     }

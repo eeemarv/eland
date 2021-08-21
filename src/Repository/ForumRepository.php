@@ -15,77 +15,54 @@ class ForumRepository
 	{
 	}
 
-	public function get_next_topic_id(
-		int $ref_topic_id,
-		array $visible_ary,
-		string $schema
-	):int
-	{
-        $stmt_next = $this->db->executeQuery('select t1.id
-			from ' . $schema . '.forum_topics t1,
-				' . $schema . '.forum_topics t2
-			where t1.last_edit_at < t2.last_edit_at
-				and t2.id = ?
-				and t1.access in (?)
-            order by t1.last_edit_at desc
-            limit 1', [
-                $ref_topic_id,
-                $visible_ary
-            ], [
-                \PDO::PARAM_INT,
-                Db::PARAM_STR_ARRAY,
-            ]);
-
-        return $stmt_next->fetchOne() ?: 0;
-	}
-
-	public function get_prev_topic_id(
-		int $ref_topic_id,
-		array $visible_ary,
-		string $schema
-	):int
-	{
-        $stmt_prev = $this->db->executeQuery('select t1.id
-			from ' . $schema . '.forum_topics t1,
-				' . $schema . '.forum_topics t2
-			where t1.last_edit_at > t2.last_edit_at
-				and t2.id = ?
-				and t1.access in (?)
-            order by t1.last_edit_at asc
-            limit 1', [
-                $ref_topic_id,
-                $visible_ary
-            ], [
-                \PDO::PARAM_INT,
-                Db::PARAM_STR_ARRAY,
-            ]);
-
-		return $stmt_prev->fetchOne() ?: 0;
-	}
-
 	public function get_topic(int $topic_id, string $schema):array
 	{
-        $forum_topic = $this->db->fetchAssociative('select *
+        $topic = $this->db->fetchAssociative('select *
             from ' . $schema . '.forum_topics
             where id = ?', [$topic_id], [\PDO::PARAM_INT]);
 
-        if (!isset($forum_topic) || !$forum_topic)
+        if ($topic === false)
         {
             throw new NotFoundHttpException('Forum topic ' . $topic_id . ' not found.');
 		}
 
-		return $forum_topic;
+		return $topic;
+	}
+
+	public function get_topic_with_prev_next(
+		int $topic_id,
+		array $visible_ary,
+		string $schema
+	):array
+	{
+        $topic = $this->db->fetchAssociative('select s.*
+			from (select t.*, count(p.*) - 1 as reply_count,
+				lag(t.id) over (order by max(p.last_edit_at) desc) as prev_id,
+				lead(t.id) over (order by max(p.last_edit_at) desc) as next_id
+				from ' . $schema . '.forum_topics t
+				inner join ' . $schema . '.forum_posts p on p.topic_id = t.id
+				where t.access in (?)
+				group by t.id) s
+			where s.id = ?',
+            [$visible_ary, $topic_id],
+            [Db::PARAM_STR_ARRAY, \PDO::PARAM_INT]);
+
+		if ($topic === false)
+		{
+			throw new NotFoundHttpException('Forum topic ' . $topic_id . ' not found.');
+		}
+
+		return $topic;
 	}
 
 	public function get_topics_with_reply_count(array $visible_ary, string $schema):array
 	{
-        // to do: order by last post edit desc
         $stmt = $this->db->executeQuery('select t.*, count(p.*) - 1 as reply_count
             from ' . $schema . '.forum_topics t
             inner join ' . $schema . '.forum_posts p on p.topic_id = t.id
             where t.access in (?)
             group by t.id
-            order by t.last_edit_at desc',
+            order by max(p.last_edit_at) desc',
             [$visible_ary],
             [Db::PARAM_STR_ARRAY]);
 
@@ -122,7 +99,9 @@ class ForumRepository
             from ' . $schema . '.forum_posts
             where topic_id = ?
             order by created_at asc
-            limit 1', [$topic_id], [\PDO::PARAM_INT]);
+            limit 1',
+			[$topic_id],
+			[\PDO::PARAM_INT]);
 	}
 
 	public function get_first_post(int $topic_id, string $schema):array
@@ -131,14 +110,18 @@ class ForumRepository
             from ' . $schema . '.forum_posts
             where topic_id = ?
             order by created_at asc
-            limit 1', [$topic_id], [\PDO::PARAM_INT]);
+            limit 1',
+			[$topic_id],
+			[\PDO::PARAM_INT]);
 	}
 
 	public function get_post_count(int $topic_id, string $schema):int
 	{
         return $this->db->fetchOne('select count(*)
             from ' . $schema . '.forum_posts
-            where topic_id = ?', [$topic_id], [\PDO::PARAM_INT]);
+            where topic_id = ?',
+			[$topic_id],
+			[\PDO::PARAM_INT]);
 	}
 
 	public function del_post(int $post_id, string $schema):bool

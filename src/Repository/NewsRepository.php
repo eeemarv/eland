@@ -55,7 +55,7 @@ class NewsRepository
 			[Db::PARAM_STR_ARRAY, \PDO::PARAM_INT]
 		);
 
-		if (!$news)
+		if ($news === false)
 		{
 			throw new NotFoundHttpException('News with id ' . $id . ' not found');
 		}
