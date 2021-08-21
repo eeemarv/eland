@@ -1,46 +1,56 @@
 {%- embed 'embed/post.html.twig' -%}
-    {%- import 'macro/object_info.html.twig' as io -%}
-    {%- import 'macro/btn_link.html.twig' as bl -%}
     {%- import 'macro/lbl.html.twig' as lbl -%}
-
-    {%- block post_content -%}
-        {{- item.content|raw -}}
-    {%- endblock post_content -%}
-
-    {%- block post_footer_prepend -%}
+    {%- block media_heading -%}
+        {%- if show_subject -%}
+            <h2 class="media-heading">
+                {{- post.subject|link('news_show', {'id': post.id})|raw -}}
+            </h2>
+        {%- endif -%}
+    {%- endblock media_heading -%}
+    {%- block footer_top -%}
         <dl>
-        {%- if item.event_at -%}
-            <dt>{{- 'label.event_date'|trans -}}</dt>
-            <dd>
-                {{- item.event_at|date_format('day', schema) -}}
-            </dd>
-        {%- endif -%}
-        {%- if item.location -%}
-            <dt>{{- 'label.location'|trans -}}</dt>
-            <dd>
-                {{- item.location -}}
-            </dd>
-        {%- endif -%}
-        {%- if show_access -%}
-            <dt>{{- 'access.visible_for'|trans -}}</dt>
-            <dd>
-                {{- lbl.lbl(item.access) -}}
-            </dd>
-        {%- endif -%}
+            {%- if post.event_at is defined and post.event_at is not empty -%}
+                <dt>
+                    {{- 'label.event_date'|trans -}}
+                </dt>
+                <dd>
+                    {{- post.event_at|date_format('day', schema) -}}
+                </dd>
+            {%- endif -%}
+            {%- if post.location is defined and post.location is not empty -%}
+                <dt>
+                    {{- 'label.location'|trans -}}
+                </dt>
+                <dd>
+                    {{- post.location -}}
+                </dd>
+            {%- endif -%}
+            {%- if show_access -%}
+                <dt>
+                    {{- 'access.visible_for'|trans -}}
+                </dt>
+                <dd>
+                    {{- lbl.btn(post.access) -}}
+                </dd>
+            {%- endif -%}
         </dl>
-    {%- endblock post_footer_prepend -%}
-
-    {%- block post_info -%}
-        {{- io.post_info(item, schema) -}}
-    {%- endblock post_info -%}
-
-    {%- block post_buttons -%}
-        {%- if pp_role('admin') -%}
-            <span class="pull-right">
-                {{- bl.edit('news_edit', {'id': item.id}) -}}
-                {{- bl.del('news_del', {'id': item.id}) -}}
-            </span>
-        {%- endif -%}
-    {%- endblock post_buttons -%}
-
+    {%- endblock footer_top -%}
+    {%- block edit_btn -%}
+        {%- include 'include/btn/edit.html.twig' with {
+            'btn_route': 'news_edit',
+            'btn_title': 'news_edit.title',
+            'btn_title_trans_params': {
+                'subject': post.subject
+            }
+        } -%}
+    {%- endblock edit_btn -%}
+    {%- block del_btn -%}
+        {%- include 'include/btn/del.html.twig' with {
+            'btn_route': 'news_del',
+            'btn_title': 'news_del.title',
+            'btn_title_trans_params': {
+                'subject': post.subject
+            }
+        } -%}
+    {%- endblock del_btn -%}
 {%- endembed -%}

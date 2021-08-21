@@ -1,10 +1,22 @@
 <div class="panel panel-default printview">
     <div class="panel-body">
-        {%- block content -%}
-            {{- post.content|raw -}}
-        {%- endblock content -%}
+        {%- block media -%}
+            <div class="media">
+                {%- block media_left -%}
+                {%- endblock media_left -%}
+                <div class="media-body">
+                    {%- block media_heading -%}
+                    {%- endblock media_heading -%}
+                    {%- block content -%}
+                        {{- post.content|raw -}}
+                    {%- endblock content -%}
+                </div>
+            </div>
+        {%- endblock media -%}
     </div>
     <div class="panel-footer">
+        {%- block footer_top -%}
+        {%- endblock footer_top -%}
         <p>
             {%- block info -%}
                 {{- 'post.info'|trans({

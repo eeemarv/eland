@@ -2,16 +2,13 @@
 
 namespace App\Controller\News;
 
-use App\Render\AccountRender;
-use App\Render\LinkRender;
+use App\Repository\NewsRepository;
 use App\Service\ConfigService;
-use App\Service\DateFormatService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\Routing\Annotation\Route;
 
 class NewsShowController extends AbstractController
@@ -33,12 +30,9 @@ class NewsShowController extends AbstractController
 
     public function __invoke(
         int $id,
-        Db $db,
-        AccountRender $account_render,
+        NewsRepository $news_repository,
         ConfigService $config_service,
-        DateFormatService $date_format_service,
         ItemAccessService $item_access_service,
-        LinkRender $link_render,
         PageParamsService $pp
     ):Response
     {
@@ -51,57 +45,16 @@ class NewsShowController extends AbstractController
                 && $config_service->get_intersystem_en($pp->schema()))
             || $pp->is_admin();
 
-        $news = NewsListController::get_data(
-            $db,
-            $config_service,
-            $item_access_service,
-            $pp
-        );
-
-        if (!isset($news[$id]))
-        {
-            throw new NotFoundHttpException('Dit nieuwsbericht bestaat niet of je hebt er geen toegang toe.');
-        }
-
-        $news_item = $news[$id];
-
-        $next_id = $prev_id = $current_news = false;
-
-        foreach($news as $nid => $ndata)
-        {
-            if ($current_news)
-            {
-                $next_id = $nid;
-                break;
-            }
-
-            if ($id == $nid)
-            {
-                $current_news = true;
-                continue;
-            }
-
-            $prev_id = $nid;
-        }
-
-        $out = NewsExtendedController::render_news_item(
-            $news_item,
-            $show_access,
-            false,
-            false,
-            $pp,
-            $link_render,
-            $account_render,
-            $date_format_service,
-            $item_access_service
-        );
+        $sort_asc = $config_service->get_bool('news.sort.asc', $pp->schema());
+        $visible_ary = $item_access_service->get_visible_ary_for_page();
+        $news_item = $news_repository->get_with_prev_next($id, $sort_asc, $visible_ary, $pp->schema());
 
         return $this->render('news/news_show.html.twig', [
-            'content'   => $out,
-            'news_item' => $news_item,
-            'id'        => $id,
-            'prev_id'   => $prev_id,
-            'next_id'   => $next_id,
+            'news_item'     => $news_item,
+            'show_access'   => $show_access,
+            'id'            => $id,
+            'prev_id'       => $news_item['prev_id'] ?? 0,
+            'next_id'       => $news_item['next_id'] ?? 0,
         ]);
     }
 }

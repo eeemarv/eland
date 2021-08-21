@@ -1,5 +1,22 @@
 {%- extends 'news/base/news_overview.html.twig' -%}
 
+{%- block content -%}
+{%- endblock content -%}
+
+{%- block data -%}
+    {%- if news_items -%}
+        {%- for post in news_items -%}
+            {%- include 'news/include/news_item.html.twig' with {
+                'show_subject': true
+            } -%}
+        {%- endfor -%}
+    {%- else -%}
+        {%- include 'include/no_results.html.twig' with {
+            'message': 'news.no_items'
+        } -%}
+    {%- endif -%}
+{%- endblock data -%}
+
 {%- block css -%}
     {{- parent() -}}
 {%- endblock css -%}

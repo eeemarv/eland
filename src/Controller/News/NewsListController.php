@@ -3,6 +3,7 @@
 namespace App\Controller\News;
 
 use App\Render\LinkRender;
+use App\Repository\NewsRepository;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\ItemAccessService;
@@ -31,6 +32,7 @@ class NewsListController extends AbstractController
 
     public function __invoke(
         Db $db,
+        NewsRepository $news_repository,
         ConfigService $config_service,
         ItemAccessService $item_access_service,
         DateFormatService $date_format_service,
@@ -42,6 +44,15 @@ class NewsListController extends AbstractController
         {
             throw new NotFoundHttpException('News module not enabled.');
         }
+
+        $show_access = ($pp->is_user()
+                && $config_service->get_intersystem_en($pp->schema()))
+            || $pp->is_admin();
+
+        $sort_asc = $config_service->get_bool('news.sort.asc', $pp->schema());
+        $visible_ary = $item_access_service->get_visible_ary_for_page();
+        $news_items = $news_repository->get_all($sort_asc, $visible_ary, $pp->schema());
+
 
         $news = self::get_data(
             $db,
@@ -117,7 +128,9 @@ class NewsListController extends AbstractController
         $out .= '</table></div></div>';
 
         return $this->render('news/news_list.html.twig', [
-            'content'   => $out,
+            'content'       => $out,
+            'news_items'    => $news_items,
+            'show_access'   => $show_access,
         ]);
     }
 

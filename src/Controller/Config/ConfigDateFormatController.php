@@ -44,11 +44,9 @@ class ConfigDateFormatController extends AbstractController
             && $form->isValid())
         {
             $command = $form->getData();
-
             $config_service->store_command($command, $pp->schema());
 
             $alert_service->success('Datum- en tijdweergave aangepast.');
-
             return $this->redirectToRoute('config_date_format', $pp->ary());
         }
 

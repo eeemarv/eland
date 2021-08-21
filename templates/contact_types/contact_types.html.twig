@@ -11,13 +11,13 @@
     {{- 'contact_types.title'|trans -}}
 {%- endblock heading_title -%}
 
-{%- block data_list -%}
+{%- block data -%}
     {%- include 'contact_types/include/contact_types_list.html.twig' -%}
 
     <p>
         (*) {{ 'contact_types.explain_protected'|trans -}}
     </p>
-{%- endblock data_list -%}
+{%- endblock data -%}
 
 {%- block css -%}
     {{- parent() -}}

@@ -15,7 +15,7 @@
     {%- include 'form/q_filter.html.twig' -%}
 {%- endblock filter_form_a -%}
 
-{%- block data_list -%}
+{%- block data -%}
     {%- if maps -%}
         {%- include 'docs/include/maps_list.html.twig' -%}
     {%- endif -%}
@@ -27,7 +27,7 @@
             'message': 'docs.no_results'
         } -%}
     {%- endif -%}
-{%- endblock data_list -%}
+{%- endblock data -%}
 
 {%- block css -%}
     {{- parent() -}}

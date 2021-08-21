@@ -22,7 +22,38 @@ class NewsRepository
 	{
         $news = $this->db->fetchAssociative('select *
             from ' . $schema . '.news
-            where id = ?', [$id]);
+            where id = ?',
+			[$id],
+			[\PDO::PARAM_INT]
+		);
+
+		if (!$news)
+		{
+			throw new NotFoundHttpException('News with id ' . $id . ' not found');
+		}
+
+		return $news;
+	}
+
+	public function get_with_prev_next(
+		int $id,
+		bool $sort_event_at_asc,
+		array $visible_ary,
+		string $schema
+	):array
+	{
+		$order = $sort_event_at_asc ? 'event_at asc, ' : '';
+
+        $news = $this->db->fetchAssociative('select n.*
+			from (select *,
+				lag(id) over (order by ' . $order . 'created_at asc) as prev_id,
+				lead(id) over (order by ' . $order . 'created_at asc) as next_id
+            	from ' . $schema . '.news
+				where access in (?)) n
+            where n.id = ?',
+			[$visible_ary, $id],
+			[Db::PARAM_STR_ARRAY, \PDO::PARAM_INT]
+		);
 
 		if (!$news)
 		{
@@ -44,60 +75,16 @@ class NewsRepository
 		string $schema
 	):array
 	{
-		$order = $event_at_asc_en ? 'asc' : 'desc';
+		$order = $event_at_asc_en ? 'event_at asc, ' : '';
 
 		$stmt = $this->db->executeQuery('select *
 			from ' . $schema . '.news
 			where access in (?)
-			order by event_at ' . $order . ',created_at desc',
+			order by ' . $order . 'created_at desc',
 			[$visible_ary],
 			[Db::PARAM_STR_ARRAY]);
 
 		return $stmt->fetchAllAssociative();
-	}
-
-	public function get_prev_and_next_id(
-		int $ref_news_id,
-		bool $event_at_asc_en,
-		array $visible_ary,
-		string $schema
-	):array
-	{
-		$prev_id = 0;
-		$next_id = 0;
-
-		$order = $event_at_asc_en ? 'asc' : 'desc';
-
-		$stmt = $this->db->executeQuery('select id
-			from ' . $schema . '.news
-			where access in (?)
-			order by event_at ' . $order . ',created_at desc',
-			[$visible_ary],
-			[Db::PARAM_STR_ARRAY]);
-
-		$current = false;
-
-		while($id = $stmt->fetchOne())
-		{
-            if ($current)
-            {
-                $next_id = $id;
-                break;
-			}
-
-			if ($id === $ref_news_id)
-			{
-				$current = true;
-				continue;
-			}
-
-			$prev_id = $id;
-		}
-
-		return [
-			'prev_id'	=> $prev_id,
-			'next_id'	=> $next_id,
-		];
 	}
 
 	public function insert(
@@ -114,18 +101,6 @@ class NewsRepository
 			'location'		=> $command->location,
 			'event_at'		=> $command->event_at,
 		];
-
-		/*
-		if ($command->location)
-		{
-			$news['location'] = $command->location;
-		}
-
-		if ($command->event_at)
-		{
-			$news['event_at'] = $command->event_at;
-		}
-		*/
 
 		$this->db->insert($schema . '.news', $news);
 		return (int) $this->db->lastInsertId($schema . '.news_id_seq');
@@ -154,5 +129,4 @@ class NewsRepository
 		return $this->db->update($schema . '.news', $news,
 			['id' => $id]) ? true : false;
 	}
-
 }

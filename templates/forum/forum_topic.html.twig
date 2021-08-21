@@ -52,7 +52,7 @@
     {%- endif -%}
 {%- endblock heading_sub -%}
 
-{%- block data_list -%}
+{%- block data -%}
     {%- for post in posts -%}
         {%- embed 'embed/post.html.twig' -%}
             {%- block edit_btn -%}
@@ -73,7 +73,7 @@
             {%- endblock del_btn -%}
         {%- endembed -%}
     {%- endfor -%}
-{%- endblock data_list -%}
+{%- endblock data -%}
 
 {%- block pre_form -%}
     <h3>

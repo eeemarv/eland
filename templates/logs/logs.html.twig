@@ -25,13 +25,13 @@
 
 {%- block content -%}{%- endblock -%}
 
-{%- block data_list -%}
+{%- block data -%}
     {%- if row_count -%}
         {{- data_list_raw|raw -}}
     {%- else -%}
         {%- include 'include/no_results.html.twig' -%}
     {%- endif -%}
-{%- endblock data_list -%}
+{%- endblock data -%}
 
 {%- block css -%}
     {{- parent() -}}

@@ -1,5 +1,8 @@
 {%- extends 'news/base/news_base.html.twig' -%}
 
+{%- block content -%}
+{%- endblock content -%}
+
 {%- block btn_top_edit -%}
     {%- if pp_role('admin') -%}
         {%- include 'include/btn_top/edit.html.twig' with {
@@ -38,6 +41,13 @@
         'subject': news_item.subject
     }) -}}
 {%- endblock heading_title -%}
+
+{%- block data -%}
+    {%- include 'news/include/news_item.html.twig' with {
+        'post': news_item,
+        'show_subject': false
+    } -%}
+{%- endblock data -%}
 
 {%- block css -%}
     {{- parent() -}}

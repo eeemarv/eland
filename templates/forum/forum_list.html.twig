@@ -15,7 +15,7 @@
     {%- include 'form/q_filter.html.twig' -%}
 {%- endblock filter_form_a -%}
 
-{%- block data_list -%}
+{%- block data -%}
     {%- if topics -%}
         {%- include 'forum/include/topics_list.html.twig' -%}
     {%- else -%}
@@ -23,7 +23,7 @@
             'message': 'forum.no_topics'
         } -%}
     {%- endif -%}
-{%- endblock data_list -%}
+{%- endblock data -%}
 
 {%- block css -%}
     {{- parent() -}}
