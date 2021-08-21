@@ -1,0 +1,37 @@
+{%- embed 'embed/table.html.twig' -%}
+    {%- import 'macro/lbl.html.twig' as lbl -%}
+    {%- block thead -%}
+        <th>
+            {{- 'label.title'|trans -}}
+        </th>
+        <th>
+            {{- 'label.event_date'|trans -}}
+        </th>
+        {%- if show_access -%}
+            <th data-hide="phone">
+                {{- 'access.visible_for'|trans -}}
+            </th>
+        {%- endif -%}
+    {%- endblock thead -%}
+    {%- block tbody -%}
+        {%- for n in news_items -%}
+            <tr>
+                <td>
+                    {{- n.subject|link('news_show', {'id': n.id})|raw -}}
+                </td>
+                <td>
+                    {%- if n.event_at is defined and n.event_at is not empty -%}
+                        {{- n.event_at|date_format('day', schema) -}}
+                    {%- else -%}
+                        &nbsp;
+                    {%- endif -%}
+                </td>
+                {%- if show_access -%}
+                    <td>
+                        {{- lbl.btn(n.access) -}}
+                    </td>
+                {%- endif -%}
+            </tr>
+        {%- endfor -%}
+    {%- endblock tbody -%}
+{%- endembed -%}

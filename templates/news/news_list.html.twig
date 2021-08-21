@@ -2,6 +2,16 @@
 
 {%- set csv_en = true -%}
 
+{%- block data -%}
+    {%- if news_items -%}
+        {%- include 'news/include/news_list.html.twig' -%}
+    {%- else -%}
+        {%- include 'include/no_results.html.twig' with {
+            'message': 'news.no_items'
+        } -%}
+    {%- endif -%}
+{%- endblock data -%}
+
 {%- block css -%}
     {{- parent() -}}
     {{- encore_entry_link_tags('footable') -}}
