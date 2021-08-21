@@ -45,13 +45,8 @@ class DocsMapController extends AbstractController
         }
 
         $visible_ary = $item_access_service->get_visible_ary_for_page();
-        $doc_map = $doc_repository->get_map($id, $pp->schema());
+        $doc_map = $doc_repository->get_map_with_prev_next($id, $visible_ary, $pp->schema());
         $docs = $doc_repository->get_docs_for_map_id($id, $visible_ary, $pp->schema());
-
-        $name = $doc_map['name'];
-
-        $prev_id = $doc_repository->get_prev_map_id($name, $visible_ary, $pp->schema());
-        $next_id = $doc_repository->get_next_map_id($name, $visible_ary, $pp->schema());
 
         $filter_form = $this->createForm(QTextSearchType::class);
         $filter_form->handleRequest($request);
@@ -65,8 +60,8 @@ class DocsMapController extends AbstractController
             'docs'          => $docs,
             'doc_map'       => $doc_map,
             'id'            => $id,
-            'prev_id'       => $prev_id,
-            'next_id'       => $next_id,
+            'prev_id'       => $doc_map['prev_id'],
+            'next_id'       => $doc_map['next_id'],
             'show_access'   => $show_access,
         ]);
     }

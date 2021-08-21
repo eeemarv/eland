@@ -78,8 +78,8 @@ class ForumTopicController extends AbstractController
             'show_access'   => $show_access,
             'posts'         => $posts,
             'id'            => $id,
-            'prev_id'       => $topic['prev_id'] ?? 0,
-            'next_id'       => $topic['next_id'] ?? 0,
+            'prev_id'       => $topic['prev_id'],
+            'next_id'       => $topic['next_id'],
             'form'          => $form->createView(),
         ]);
     }

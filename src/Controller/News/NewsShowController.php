@@ -53,8 +53,8 @@ class NewsShowController extends AbstractController
             'news_item'     => $news_item,
             'show_access'   => $show_access,
             'id'            => $id,
-            'prev_id'       => $news_item['prev_id'] ?? 0,
-            'next_id'       => $news_item['next_id'] ?? 0,
+            'prev_id'       => $news_item['prev_id'],
+            'next_id'       => $news_item['next_id'],
         ]);
     }
 }

@@ -33,12 +33,35 @@ class DocRepository
 			from ' . $schema . '.doc_maps
 			where id = ?', [$map_id]);
 
-		if (!$map)
+		if ($map === false)
 		{
 			throw new NotFoundHttpException('Document map ' . $map_id . ' not found.');
 		}
 
 		return $map;
+	}
+
+	public function get_map_with_prev_next(int $map_id, array $visible_ary, string $schema):array
+	{
+        $map = $this->db->fetchAssociative('select s.*
+			from (select dm.*, count(d.*) as doc_count,
+				lag(dm.id) over (order by dm.name asc) as prev_id,
+				lead(dm.id) over (order by dm.name asc) as next_id
+				from ' . $schema . '.doc_maps dm
+				inner join ' . $schema . '.docs d
+					on d.map_id = dm.id
+				where d.access in (?)
+				group by dm.name, dm.id) s
+			where s.id = ?',
+            [$visible_ary, $map_id],
+            [Db::PARAM_STR_ARRAY, \PDO::PARAM_INT]);
+
+		if ($map === false)
+		{
+			throw new NotFoundHttpException('Document map ' . $map_id . ' not found.');
+		}
+
+        return $map;
 	}
 
 	public function is_unique_map_name_except_id(
@@ -117,46 +140,6 @@ class DocRepository
             [Db::PARAM_STR_ARRAY]);
 
         return $stmt->fetchAllAssociative();
-	}
-
-	public function get_prev_map_id(
-		string $ref_map_name,
-		array $visible_ary,
-		string $schema
-	):int
-	{
-		$stmt_prev = $this->db->executeQuery('select m.id
-			from ' . $schema . '.doc_maps m
-			inner join ' . $schema . '.docs d
-				on d.map_id = m.id
-			where d.access in (?)
-				and m.name < ?
-			order by m.name desc
-			limit 1',
-		[$visible_ary, $ref_map_name],
-		[Db::PARAM_STR_ARRAY, \PDO::PARAM_STR]);
-
-		return $stmt_prev->fetchOne() ?: 0;
-	}
-
-	public function get_next_map_id(
-		string $ref_map_name,
-		array $visible_ary,
-		string $schema
-	):int
-	{
-		$stmt_next = $this->db->executeQuery('select m.id
-			from ' . $schema . '.doc_maps m
-			inner join ' . $schema . '.docs d
-				on d.map_id = m.id
-			where d.access in (?)
-				and m.name > ?
-			order by m.name asc
-			limit 1',
-		[$visible_ary, $ref_map_name],
-		[Db::PARAM_STR_ARRAY, \PDO::PARAM_STR]);
-
-		return $stmt_next->fetchOne() ?: 0;
 	}
 
 	public function get_docs_for_map_id(
