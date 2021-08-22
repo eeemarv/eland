@@ -2,14 +2,15 @@
 
 namespace App\Controller;
 
+use App\Repository\SchemaRepository;
 use App\Service\FormTokenService;
 
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
@@ -32,43 +33,45 @@ class ExportController extends AbstractController
 
     public function __invoke(
         Request $request,
-        Db $db,
+        SchemaRepository $schema_repository,
         LoggerInterface $logger,
         PageParamsService $pp,
-        FormTokenService $form_token_service,
         string $cache_dir,
         string $env_database_url
     ):Response
     {
-        $table_ary = [];
-
         set_time_limit(300);
-
         exec('echo "Throw exception when php exec() function is not available" > /dev/null');
 
-        $download_sql = $request->request->has('_sql');
-        $download_zip_csv = $request->request->has('_zip_csv');
+        $table_ary = $schema_repository->get_tables($pp->schema());
+        $builder = $this->createFormBuilder(null, [
+            'form_token_prevent_double' => false,
+        ]);
 
-        $stmt = $db->prepare('select table_name from information_schema.tables
-            where table_schema = ?
-            order by table_name asc');
-        $stmt->bindValue(1, $pp->schema());
-        $stmt->execute();
+        $builder->add('sql', SubmitType::class);
 
-        while($table_name = $stmt->fetchOne())
+        foreach($table_ary as $table)
         {
-            $table_ary[] = $table_name;
-
-            if ($request->request->has($table_name))
-            {
-                $download_table_csv = $table_name;
-            }
+            $builder->add('csv__' . $table, SubmitType::class);
         }
 
-        $download_en = $download_sql || isset($download_table_csv) || $download_zip_csv;
+        $builder->add('csv_zip', SubmitType::class);
+        $download_form = $builder->getForm();
+        $download_form->handleRequest($request);
 
-        if ($download_en)
+        if ($download_form->isSubmitted()
+            && $download_form->isValid())
         {
+            $btn = $download_form->getClickedButton()->getName();
+
+            $download_sql = $btn === 'sql';
+            $download_zip_csv = $btn === 'csv_zip';
+
+            if (str_starts_with($btn, 'csv__'))
+            {
+                $download_table_csv = strtr($btn, ['csv__' => '']);
+            }
+
             $download_id = $download_sql ? 'db' : '';
             $download_id = $download_zip_csv ? 'db-csv' : '';
             $download_id = isset($download_table_csv) ? $download_table_csv : $download_id;
@@ -84,11 +87,7 @@ class ExportController extends AbstractController
 
             $file_path = $cache_dir . '/' . $filename;
 
-            if ($token_error = $form_token_service->get_error(false))
-            {
-                $error_message = 'Form token error: ' . $token_error;
-            }
-            else if ($download_sql)
+            if ($download_sql)
             {
                 $process_ary = [
                     'pg_dump',
@@ -149,7 +148,7 @@ class ExportController extends AbstractController
                 }
                 else
                 {
-                    $error_message = 'ZIP kon niet gecreëerd worden';
+                    $error_message = 'ZIP could not be created';
                 }
             }
             else if (isset($download_table_csv))
@@ -173,7 +172,7 @@ class ExportController extends AbstractController
             }
             else
             {
-                $error_message = 'Interne fout';
+                $error_message = 'Internal error';
             }
 
             if (isset($error_message))
@@ -211,44 +210,8 @@ class ExportController extends AbstractController
             return $response;
         }
 
-        $out = '<form method="post">';
-
-        $out .= '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
-        $out .= '<h3>Database download (SQL)';
-        $out .= '</h3>';
-        $out .= '</div>';
-        $out .= '<div class="panel-heading">';
-        $out .= '<input type="submit" value="Download" name="_sql" class="btn btn-default btn-lg margin-bottom">';
-        $out .= '</div></div>';
-
-        $out .= '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
-        $out .= '<h3>CSV export</h3>';
-        $out .= '<p>Per database tabel</p>';
-        $out .= '</div>';
-        $out .= '<div class="panel-heading">';
-
-        foreach ($table_ary as $table)
-        {
-            $out .= '<input type="submit" value="';
-            $out .= $table;
-            $out .= '" name="';
-            $out .= $table;
-            $out .= '" class="btn btn-default btn-lg margin-bottom">&nbsp;';
-        }
-
-        $out .= '</div>';
-        $out .= '<div class="panel-heading">';
-        $out .= '<input type="submit" value="ZIP van alle tabellen als CSV" ';
-        $out .= 'name="_zip_csv" class="btn btn-default btn-lg margin-bottom">';
-        $out .= '<p><i>De creatie van het ZIP-bestand kan wat tijd in beslag nemen.</i></p>';
-        $out .= '</div></div>';
-        $out .= $form_token_service->get_hidden_input();
-        $out .= '</form>';
-
         return $this->render('export/export.html.twig', [
-            'content'   => $out,
+            'download_form' => $download_form->createView(),
         ]);
     }
 }

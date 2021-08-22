@@ -29,6 +29,7 @@ btn:
   cancel: Annuleren
   config: Configuratie
   del: Verwijderen
+  download: Download
   download_csv: Download CSV
   edit: Aanpassen
   filter: Filter
@@ -156,6 +157,7 @@ label:
   description: Omschrijving
   date: Datum
   date_of_birth: Geboortedatum
+  download: Download
   email: E-mail
   email_tag: E-mail tag
   event_date: Agendadatum
@@ -563,6 +565,17 @@ docs_map_edit:
 
 export:
   title: Export
+  sql:
+    title: >-
+      Database download (SQL)
+  csv:
+    title: CSV export
+    explain: Per database tabel
+  csv_zip:
+    label: ZIP van alle tabellen als CSV
+    help: >-
+      De creatie van het ZIP-bestand kan
+      wat tijd in beslag nemen.
 
 forum:
   title: Forum

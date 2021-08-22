@@ -33,7 +33,10 @@ class FormTokenManager implements FormTokenManagerInterface
         return $this->token;
     }
 
-    public function get_error_message(string $value):string
+    public function get_error_message(
+        string $value,
+        bool $prevent_double
+    ):string
     {
         if (strlen($value) !== 12)
         {
@@ -50,6 +53,11 @@ class FormTokenManager implements FormTokenManagerInterface
 
         if ($count === 2)
         {
+            if (!$prevent_double)
+            {
+                $this->predis->decr($key);
+            }
+
             return '';
         }
 

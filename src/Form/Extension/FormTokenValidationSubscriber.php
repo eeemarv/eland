@@ -32,8 +32,9 @@ class FormTokenValidationSubscriber implements EventSubscriberInterface
         if ($form->isRoot() && $form->getConfig()->getOption('compound'))
         {
             $data = $event->getData();
+            $prevent_double = $form->getConfig()->getOption(FormTokenManagerInterface::OPTION_PREVENT_DOUBLE);
 
-            $error_message = $this->form_token_manager->get_error_message($data[FormTokenManagerInterface::NAME] ?? '');
+            $error_message = $this->form_token_manager->get_error_message($data[FormTokenManagerInterface::NAME] ?? '', $prevent_double);
 
             if ($error_message)
             {
