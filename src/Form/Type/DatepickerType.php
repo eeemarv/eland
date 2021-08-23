@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Form\Input;
+namespace App\Form\Type;
 
 use App\Form\DataTransformer\DatepickerTransformer;
 use App\Service\DateFormatService;

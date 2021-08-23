@@ -2,16 +2,14 @@
 
 namespace App\Controller;
 
+use App\Form\Filter\LogsFilterType;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
-use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\IntersystemsService;
-use App\Service\ItemAccessService;
 use App\Service\LogDbService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\TypeaheadService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -38,40 +36,20 @@ class LogsController extends AbstractController
         Request $request,
         Db $db,
         LinkRender $link_render,
-        ItemAccessService $item_access_service,
         LogDbService $log_db_service,
         IntersystemsService $intersystems_service,
-        TypeaheadService $typeahead_service,
         AccountRender $account_render,
-        ConfigService $config_service,
         PageParamsService $pp,
         SessionUserService $su,
         DateFormatService $date_format_service
     ):Response
     {
-        $new_users_days = $config_service->get_int('users.new.days', $pp->schema());
-        $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
-        $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
-
-        $show_new_status = $new_users_enabled;
-
-        if ($show_new_status)
-        {
-            $new_users_access = $config_service->get_str('users.new.access', $pp->schema());
-            $show_new_status = $item_access_service->is_visible($new_users_access);
-        }
-
-        $show_leaving_status = $leaving_users_enabled;
-
-        if ($show_leaving_status)
-        {
-            $leaving_users_access = $config_service->get_str('users.leaving.access', $pp->schema());
-            $show_leaving_status = $item_access_service->is_visible($leaving_users_access);
-        }
-
         $su_intersystem_ary = $intersystems_service->get_eland($su->schema());
 
-        $filter = $request->query->get('f', []);
+        $filter_form = $this->createForm(LogsFilterType::class);
+        $filter_form->handleRequest($request);
+        $filter = $filter_form->getData() ?? [];
+
         $pag = $request->query->get('p', []);
         $sort = $request->query->get('s', []);
 
@@ -101,30 +79,18 @@ class LogsController extends AbstractController
         $sql['schema']['params'][] = $pp->schema();
         $sql['schema']['types'][] = \PDO::PARAM_STR;
 
-        if (isset($filter['code'])
-            && $filter['code'])
+        if (isset($filter['user']))
         {
-            [$filter_code] = explode(' ', $filter['code']);
-
-            $filter_user_id = $db->fetchOne('select id
-                from ' . $pp->schema() . '.users
-                where code = ?',
-                [$filter_code], [\PDO::PARAM_STR]);
-
-            if ($filter_user_id)
-            {
-                $sql['code'] = $sql_map;
-                $sql['code']['where'][] = 'user_id = ? and user_schema = ?';
-                $sql['code']['params'][] = $filter_user_id;
-                $sql['code']['params'][] = $pp->schema();
-                $sql['code']['types'][] = \PDO::PARAM_INT;
-                $sql['code']['types'][] = \PDO::PARAM_STR;
-                $params['f']['code'] = $filter['code'];
-            }
+            $sql['code'] = $sql_map;
+            $sql['code']['where'][] = 'user_id = ? and user_schema = ?';
+            $sql['code']['params'][] = $filter['user'];
+            $sql['code']['params'][] = $pp->schema();
+            $sql['code']['types'][] = \PDO::PARAM_INT;
+            $sql['code']['types'][] = \PDO::PARAM_STR;
+            $params['f']['user'] = $filter['user'];
         }
 
-        if (isset($filter['type'])
-            && $filter['type'])
+        if (isset($filter['type']))
         {
             $sql['type'] = $sql_map;
             $sql['type']['where'][] = 'type ilike ?';
@@ -133,8 +99,7 @@ class LogsController extends AbstractController
             $params['f']['type'] = $filter['type'];
         }
 
-        if (isset($filter['q'])
-            && $filter['q'])
+        if (isset($filter['q']))
         {
             $sql['q'] = $sql_map;
             $sql['q']['where'][] = 'event ilike ?';
@@ -143,8 +108,7 @@ class LogsController extends AbstractController
             $params['f']['q'] = $filter['q'];
         }
 
-        if (isset($filter['fdate'])
-            && $filter['fdate'])
+        if (isset($filter['fdate']))
         {
             $sql['fdate'] = $sql_map;
             $fdate = \DateTimeImmutable::createFromFormat('U', (string) strtotime($filter['fdate'] . ' UTC'));
@@ -155,8 +119,7 @@ class LogsController extends AbstractController
             $params['f']['fdate'] = $filter['fdate'];
         }
 
-        if (isset($filter['tdate'])
-            && $filter['tdate'])
+        if (isset($filter['tdate']))
         {
             $sql['tdate'] = $sql_map;
             $tdate = \DateTimeImmutable::createFromFormat('U', (string) strtotime($filter['tdate'] . ' UTC'));
@@ -188,7 +151,7 @@ class LogsController extends AbstractController
             array_merge(...array_column($sql, 'params')),
             array_merge(...array_column($sql, 'types')));
 
-        while ($row = $stmt->fetch())
+        while ($row = $stmt->fetchAssociative())
         {
             $rows[] = $row;
         }
@@ -231,120 +194,11 @@ class LogsController extends AbstractController
         $tableheader_ary[$params['s']['orderby']]['asc'] = $params['s']['asc'] ? 0 : 1;
         $tableheader_ary[$params['s']['orderby']]['indicator'] = $params['s']['asc'] ? '-asc' : '-desc';
 
-        $filtered = (isset($filter['q']) && $filter['q'] !== '')
-            || (isset($filter['type']) && $filter['type'] !== '')
-            || (isset($filter['code']) && $filter['code'] !== '')
-            || (isset($filter['fdate']) && $filter['fdate'] !== '')
-            || (isset($filter['tdate']) && $filter['tdate'] !== '');
-
-        $flt = '<div class="panel panel-info">';
-        $flt .= '<div class="panel-heading">';
-
-        $flt .= '<form method="get" class="form-horizontal">';
-
-        $flt .= '<div class="row">';
-
-        $flt .= '<div class="col-sm-4">';
-        $flt .= '<div class="input-group margin-bottom">';
-        $flt .= '<span class="input-group-addon" id="q_addon">';
-        $flt .= '<i class="fa fa-search"></i></span>';
-
-        $flt .= '<input type="text" class="form-control" ';
-        $flt .= 'aria-describedby="q_addon" ';
-        $flt .= 'name="f[q]" id="q" placeholder="Zoek Event" ';
-        $flt .= 'value="';
-        $flt .= $filter['q'] ?? '';
-        $flt .= '">';
-        $flt .= '</div>';
-        $flt .= '</div>';
-
-        $flt .= '<div class="col-sm-3">';
-        $flt .= '<div class="input-group margin-bottom">';
-        $flt .= '<span class="input-group-addon" id="type_addon">';
-        $flt .= 'Type</span>';
-
-        $flt .= '<input type="text" class="form-control" ';
-        $flt .= 'aria-describedby="type_addon" ';
-        $flt .= 'data-typeahead="';
-
-        $flt .= $typeahead_service->ini($pp)
-            ->add('log_types', [])
-            ->str();
-
-        $flt .= '" ';
-        $flt .= 'name="f[type]" id="type" placeholder="Type" ';
-        $flt .= 'value="';
-        $flt .= $filter['type'] ?? '';
-        $flt .= '">';
-        $flt .= '</div>';
-        $flt .= '</div>';
-
-        $flt .= '<div class="col-sm-3">';
-        $flt .= '<div class="input-group margin-bottom">';
-        $flt .= '<span class="input-group-addon" id="code_addon">';
-        $flt .= '<span class="fa fa-user"></span></span>';
-
-        $flt .= '<input type="text" class="form-control" ';
-        $flt .= 'aria-describedby="code_addon" ';
-
-        $flt .= 'data-typeahead="';
-        $flt .= $typeahead_service->ini($pp)
-            ->add('accounts', ['status' => 'active'])
-            ->add('accounts', ['status' => 'inactive'])
-            ->add('accounts', ['status' => 'ip'])
-            ->add('accounts', ['status' => 'im'])
-            ->add('accounts', ['status' => 'extern'])
-            ->str([
-                'filter'        => 'accounts',
-                'new_users_days'        => $new_users_days,
-                'show_new_status'       => $show_new_status,
-                'show_leaving_status'   => $show_leaving_status,
-            ]);
-        $flt .= '" ';
-
-        $flt .= 'name="f[code]" id="code" placeholder="Account Code" ';
-        $flt .= 'value="';
-        $flt .= $filter['code'] ?? '';
-        $flt .= '">';
-        $flt .= '</div>';
-        $flt .= '</div>';
-
-        $flt .= '<div class="col-sm-2">';
-        $flt .= '<input type="submit" value="Toon" ';
-        $flt .= 'class="btn btn-default btn-block" name="zend">';
-        $flt .= '</div>';
-
-        $flt .= '</div>';
-
-        $params_form = $params;
-        unset($params_form['f']);
-        unset($params_form['uid']);
-        unset($params_form['p']['start']);
-
-        $params_form['r'] = 'admin';
-        $params_form['u'] = $su->id();
-
-        $params_form = http_build_query($params_form, 'prefix', '&');
-        $params_form = urldecode($params_form);
-        $params_form = explode('&', $params_form);
-
-        foreach ($params_form as $param)
-        {
-            [$name, $value] = explode('=', $param);
-
-            if (!isset($value) || $value === '')
-            {
-                continue;
-            }
-
-            $flt .= '<input name="' . $name . '" ';
-            $flt .= 'value="' . $value . '" type="hidden">';
-        }
-
-        $flt .= '</form>';
-
-        $flt .= '</div>';
-        $flt .= '</div>';
+        $filtered = isset($filter['q'])
+            || isset($filter['type'])
+            || isset($filter['user'])
+            || isset($filter['fdate'])
+            || isset($filter['tdate']);
 
         $out = '<div class="panel panel-default printview">';
 
@@ -441,9 +295,9 @@ class LogsController extends AbstractController
 
         return $this->render('logs/logs.html.twig', [
             'data_list_raw'     => $out,
-            'filter_form_raw'   => $flt,
             'row_count'         => $row_count,
-            'filtered'  => $filtered,
+            'filter_form'       => $filter_form->createView(),
+            'filtered'          => $filtered,
         ]);
     }
 }

@@ -32,7 +32,7 @@ class TypeaheadUserTransformer implements DataTransformerInterface
     {
         if (!$account_str)
         {
-            return;
+            return null;
         }
 
         list($code) = explode(' ', $account_str);

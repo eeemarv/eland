@@ -8,9 +8,10 @@ use App\Form\EventSubscriber\AccessFieldSubscriber;
 use App\Form\EventSubscriber\CategoryFieldSubscriber;
 use App\Form\Input\LblChoiceType;
 use App\Form\Input\NumberAddonType;
-use App\Form\Input\Summernote\SummernoteType;
 use App\Form\Input\TextAddonType;
 use App\Form\Input\Typeahead\TypeaheadActiveUserType;
+use App\Form\Type\SummernoteType;
+use App\Form\Type\TypeaheadType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -32,7 +33,7 @@ class MessagesType extends AbstractType
     {
         if ($options['user_id_field_enabled'])
         {
-            $builder->add('user_id', TypeaheadActiveUserType::class);
+            $builder->add('user_id', TypeaheadType::class);
         }
 
         if ($options['offer_want_switch_enabled'])

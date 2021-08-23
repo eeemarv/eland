@@ -4,8 +4,8 @@ namespace App\Form\Post\News;
 
 use App\Command\News\NewsCommand;
 use App\Form\EventSubscriber\AccessFieldSubscriber;
-use App\Form\Input\DatepickerType;
-use App\Form\Input\SummernoteType;
+use App\Form\Type\DatepickerType;
+use App\Form\Type\SummernoteType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;

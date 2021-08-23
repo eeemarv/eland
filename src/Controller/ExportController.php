@@ -3,8 +3,6 @@
 namespace App\Controller;
 
 use App\Repository\SchemaRepository;
-use App\Service\FormTokenService;
-
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -81,7 +79,7 @@ class ExportController extends AbstractController
             $filename = $pp->schema() . '-';
             $filename .= $download_id;
             $filename .= gmdate('-Y-m-d-H-i-s-');
-            $filename .= substr(sha1(microtime()), 0, 4);
+            $filename .= substr(sha1(random_bytes(4)), 0, 4);
             $filename .= '.';
             $filename .= $download_ext;
 

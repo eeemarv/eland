@@ -160,3 +160,38 @@
     }) -%}
     {{- block('form_widget') -}}
 {%- endblock datepicker_widget %}
+
+{% block form_row -%}
+    {%- if col is not defined -%}
+        {%- set widget_attr = {} -%}
+        {%- if help is not empty -%}
+            {%- set widget_attr = {attr: {'aria-describedby': id ~"_help"}} -%}
+        {%- endif -%}
+        <div{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' form-group' ~ ((not compound or force_error|default(false)) and not valid ? ' has-error'))|trim})} %}{{ block('attributes') }}{% endwith %}>
+            {{- form_label(form) }} {# -#}
+            {{ form_widget(form, widget_attr) }} {# -#}
+            {{- form_help(form) -}}
+            {{ form_errors(form) }} {# -#}
+        </div> {# -#}
+    {%- else -%}
+        {%- set widget_attr = {} -%}
+        {%- if help is not empty -%}
+            {%- set widget_attr = {attr: {'aria-describedby': id ~"_help"}} -%}
+        {%- endif -%}
+        <div{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' col-' ~ col ~ ((not compound or force_error|default(false)) and not valid ? ' has-error'))|trim})} %}{{ block('attributes') }}{% endwith %}>
+            {{ form_widget(form, widget_attr) }} {# -#}
+            {{- form_help(form) -}}
+            {{ form_errors(form) }} {# -#}
+        </div> {# -#}
+    {%- endif -%}
+{%- endblock form_row %}
+
+{%- block button_row -%}
+    {%- if col is defined -%}
+        <div class="col-{{- col -}}">
+            {{- form_widget(form) -}}
+        </div>
+    {%- else -%}
+        {{- parent() -}}
+    {%- endif -%}
+{%- endblock button_row -%}

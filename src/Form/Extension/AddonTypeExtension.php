@@ -19,10 +19,10 @@ class AddonTypeExtension extends AbstractTypeExtension
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefined([
-            'pre_addon',
-            'post_addon',
-        ]);
+        $resolver->setDefault('pre_addon', null);
+        $resolver->setAllowedTypes('pre_addon', ['null', 'array']);
+        $resolver->setDefault('post_addon', null);
+        $resolver->setAllowedTypes('post_addon', ['null', 'array']);
     }
 
     public function buildView(FormView $view, FormFormInterface $form, array $options): void

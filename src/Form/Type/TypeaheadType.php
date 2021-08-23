@@ -101,7 +101,7 @@ class TypeaheadType extends AbstractType
             ];
         }
 
-        if (isset($options['filter']))
+        if (isset($options['filter']) && $options['filter'] === 'accounts')
         {
             if (count($process_ary))
             {

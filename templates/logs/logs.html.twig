@@ -15,9 +15,9 @@
     {%- include 'include/filter/heading_filter.html.twig' -%}
 {%- endblock heading_append -%}
 
-{%- block filter_form -%}
-    {{- filter_form_raw|raw -}}
-{%- endblock filter_form -%}
+{%- block filter_form_a -%}
+    {%- include 'logs/include/logs_filter_form.html.twig' -%}
+{%- endblock filter_form_a -%}
 
 {%- block pagination -%}
     {%- include 'include/pagination/pagination.html.twig' -%}

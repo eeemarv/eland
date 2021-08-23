@@ -2,7 +2,7 @@
 
 namespace App\Controller\Docs;
 
-use App\Form\Filter\QTextSearchType;
+use App\Form\Filter\QTextSearchFilterType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -46,7 +46,7 @@ class DocsController extends AbstractController
         $maps = $doc_repository->get_maps($visible_ary, $pp->schema());
         $docs = $doc_repository->get_unmapped_docs($visible_ary, $pp->schema());
 
-        $filter_form = $this->createForm(QTextSearchType::class);
+        $filter_form = $this->createForm(QTextSearchFilterType::class);
         $filter_form->handleRequest($request);
 
         $show_access = ($pp->is_user()

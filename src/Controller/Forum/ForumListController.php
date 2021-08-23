@@ -2,7 +2,7 @@
 
 namespace App\Controller\Forum;
 
-use App\Form\Filter\QTextSearchType;
+use App\Form\Filter\QTextSearchFilterType;
 use App\Repository\ForumRepository;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
@@ -42,7 +42,7 @@ class ForumListController extends AbstractController
             throw new NotFoundHttpException('Forum module not enabled.');
         }
 
-        $filter_form = $this->createForm(QTextSearchType::class);
+        $filter_form = $this->createForm(QTextSearchFilterType::class);
         $filter_form->handleRequest($request);
 
         $visible_ary = $item_access_service->get_visible_ary_for_page($pp->schema());

@@ -3,32 +3,33 @@
 namespace App\Form\Extension;
 
 use Symfony\Component\Form\AbstractTypeExtension;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\ButtonType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormInterface as FormFormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class LabelBtnChoiceTypeExtension extends AbstractTypeExtension
+class FilterColTypeExtension extends AbstractTypeExtension
 {
     public static function getExtendedTypes(): iterable
     {
         return [
-            ChoiceType::class,
+            TextType::class,
+            ButtonType::class,
         ];
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefined([
-            'label_btn',
-        ]);
+        $resolver->setDefault('col', null);
+        $resolver->setAllowedTypes('col', ['null', 'string']);
     }
 
     public function buildView(FormView $view, FormFormInterface $form, array $options): void
     {
-        if (isset($options['label_btn']))
+        if (isset($options['col']))
         {
-            $view->vars['label_btn'] = $options['label_btn'];
+            $view->vars['col'] = $options['col'];
         }
     }
 }

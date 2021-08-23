@@ -4,11 +4,10 @@ namespace App\Form\Filter;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 
-class QTextSearchType extends AbstractType
+class QTextSearchFilterType extends AbstractType
 {
     public function __construct()
     {
@@ -21,7 +20,6 @@ class QTextSearchType extends AbstractType
 			->add('q', TextType::class, [
                 'required' => false,
             ]);
-			//->add('submit', SubmitType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver)

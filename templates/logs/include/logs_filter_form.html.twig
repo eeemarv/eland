@@ -1,0 +1,45 @@
+<div class="row">
+    {{- form_row(filter_form.q, {
+        'label': false,
+        'col': 'sm-4',
+        'pre_addon': {
+            'fa': 'search'
+        },
+        'attr': {
+            'placeholder': 'label.search'
+        },
+        'id': 'q',
+        'required': false
+    }) -}}
+
+
+    {{- form_row(filter_form.type, {
+        'label': false,
+        'col': 'sm-3',
+        'pre_addon': {
+            'text': 'label.type'|trans
+        },
+        'required': false
+    }) -}}
+
+
+    {{- form_row(filter_form.user, {
+        'label': false,
+        'col': 'sm-3',
+        'pre_addon': {
+            'fa': 'user'
+        },
+        'attr': {
+            'placeholder': 'label.account_code'
+        },
+        'required': false
+    }) -}}
+
+    {{- form_row(filter_form.show, {
+        'label': 'btn.show',
+        'col': 'sm-2',
+        'attr': {
+            'class': 'btn btn-default btn-block'
+        }
+    }) -}}
+</div>

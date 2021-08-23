@@ -237,7 +237,8 @@ label:
   to: Naar
   total: Totaal
   to_date: Tot
-  nsns: Transacties
+  type: Type
+  transactions: Transacties
   transaction_id: Transactie Id
   upload: Opladen
   user: Gebruiker

@@ -2,18 +2,14 @@
 
 namespace App\Form\Filter;
 
+use App\Form\Type\DatepickerType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-
-use App\Form\Input\TextAddonType;
-use App\Form\Typeahead\TypeaheadUserType;
-use App\Form\Input\DatepickerType;
+use App\Form\Type\TypeaheadType;
 
 class TransactionFilterType extends AbstractType
 {
@@ -25,19 +21,16 @@ class TransactionFilterType extends AbstractType
     {
         $builder
             ->setMethod('GET')
-			->add('q', TextAddonType::class, [
+			->add('q', TextType::class, [
                 'required' => false,
             ])
-			->add('from_user', TypeaheadUserType::class, [
-				'required' 		=> false,
-				'source_id'		=> 'f_to_user',
+			->add('from_user', TypeaheadType::class, [
+				'filter'		=> 'accounts',
+                'required'      => false,
 			])
-			->add('to_user', TypeaheadUserType::class, [
+			->add('to_user', TypeaheadType::class, [
+                'filter'        => 'accounts',
 				'required' 		=> false,
-                'source_route'  => 'user_typeahead',
-                'source_params' => [
-                    'user_type'     => 'direct',
-                ],
 			])
 			->add('andor', ChoiceType::class, [
 				'required' 	=> true,
@@ -55,10 +48,10 @@ class TransactionFilterType extends AbstractType
                 ],
             ])
 			->add('to_date', DatepickerType::class, [
-                'required' => false,
                 'attr'  => [
                     'data-date-end-date'            => '0d',
                 ],
+                'required'  => false,
             ])
 			->add('submit', SubmitType::class);
     }
