@@ -22,10 +22,6 @@ class IndexController extends AbstractController
         SystemsService $systems_service
     ):Response
     {
-
-        error_log('SCRIPT_NAME: ' . $request->getScriptName());
-        error_log('HOST: ' . $request->getHost());
-
         $schemas = $systems_service->get_schemas();
 
         asort($schemas);

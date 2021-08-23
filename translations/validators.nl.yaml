@@ -79,7 +79,13 @@ mollie:
 password_strength:
   Het paswoord is niet sterk genoeg.
 
+type:
+  not_an_integer: >-
+    De waarde is geen integer.
+
 user:
+  no_access: >-
+    Geen toegang tot deze gebruiker
   not_active: >-
     Gebruiker niet actief.
   code_not_exists: >-

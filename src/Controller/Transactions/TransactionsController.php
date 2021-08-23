@@ -4,6 +4,8 @@ namespace App\Controller\Transactions;
 
 use App\Cnst\BulkCnst;
 use App\Cnst\MessageTypeCnst;
+use App\Command\Transactions\TransactionsFilterCommand;
+use App\Form\Filter\TransactionsFilterType;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Render\SelectRender;
@@ -113,16 +115,42 @@ class TransactionsController extends AbstractController
         $service_stuff_enabled = $config_service->get_bool('transactions.fields.service_stuff.enabled', $pp->schema());
         $bulk_actions_enabled = $service_stuff_enabled;
 
+        $filter_command = new TransactionsFilterCommand();
+
         $filter = $request->query->get('f', []);
-        $pag = $request->query->get('p', []);
-        $sort = $request->query->get('s', []);
+
+        $uid = $request->query->get('uid');
+
+        error_log(' --- UID --- ');
+        error_log(var_export($uid, true));
 
         if ($is_self)
         {
-            $filter['uid'] = $su->id();
+            $uid = $su->id();
         }
 
-        $vr_route = 'transactions' . ($is_self ? '_self' : '');
+        if (isset($uid))
+        {
+            error_log('--- UID ---');
+            error_log((string) $uid);
+            $filter_command->from_account = (int) $uid;
+            $filter_command->to_account = (int) $uid;
+            $filter_command->account_logic = 'or';
+        }
+
+        $filter_form = $this->createForm(TransactionsFilterType::class, $filter_command);
+        $filter_form->handleRequest($request);
+
+        $filter_command = $filter_form->getData();
+
+        error_log('FILTER_COMMAND');
+        error_log(var_export($filter_command, true));
+
+        error_log('FILTER');
+        error_log(var_export($filter, true));
+
+        $pag = $request->query->get('p', []);
+        $sort = $request->query->get('s', []);
 
         $selected_transactions = $request->request->get('sel', []);
         $bulk_field = $request->request->get('bulk_field', []);
@@ -265,19 +293,13 @@ class TransactionsController extends AbstractController
                     $alert_service->success('De transactie is aangepast.');
                 }
 
-                return $this->redirectToRoute($vr_route, $pp->ary());
+                $redirect_route = 'transactions' . ($is_self ? '_self' : '');
+
+                return $this->redirectToRoute($redirect_route, $pp->ary());
             }
 
             $alert_service->error($errors);
         }
-
-        if (isset($filter['uid']))
-        {
-            $filter['uid'] = (int) $filter['uid'];
-        }
-
-        $is_owner = isset($filter['uid'])
-            && $su->is_owner((int) $filter['uid']);
 
         $params = [
             's'	=> [
@@ -303,146 +325,84 @@ class TransactionsController extends AbstractController
 
         $sql['common']['where'][] = '1 = 1';
 
-        $filter_uid = isset($filter['uid']) && $filter['uid'];
-
-        if ($filter_uid)
+        /*
+        if (isset($uid))
         {
-            $filter['fcode'] = $account_render->str((int) $filter['uid'], $pp->schema());
-            $filter['tcode'] = $filter['fcode'];
-            $filter['andor'] = 'or';
-            $params['f']['uid'] = $filter['uid'];
+            $params['uid'] = $uid;
         }
+        */
 
-        $filter_q = isset($filter['q']) && $filter['q'] !== '';
-
-        if ($filter_q)
+        if (isset($filter_command->q))
         {
             $sql['q'] = $sql_map;
             $sql['q']['where'][] = 't.description ilike ?';
-            $sql['q']['params'][] = '%' . $filter['q'] . '%';
+            $sql['q']['params'][] = '%' . $filter_command->q . '%';
             $sql['q']['types'][] = \PDO::PARAM_STR;
-            $params['f']['q'] = $filter['q'];
+            $params['f']['q'] = $filter_command->q;
         }
 
         $key_code_where_or = 'where';
-        $key_code_where_or .= isset($filter['andor']) && $filter['andor'] === 'or' ? '_or' : '';
-        $sql['code'] = $sql_map;
+        $key_code_where_or .= isset($filter_command->account_logic) && $filter_command->account_logic === 'or' ? '_or' : '';
+        $sql['account'] = $sql_map;
 
-        $filter_fcode = isset($filter['fcode']) && $filter['fcode'];
-
-        if ($filter_fcode)
+        if (isset($filter_command->from_account))
         {
-            [$fcode] = explode(' ', trim($filter['fcode']));
-            $fcode = trim($fcode);
+            $fuid_sql = 't.id_from ';
+            $fuid_sql .= $filter_command->account_logic === 'nor' ? '<>' : '=';
+            $fuid_sql .= ' ?';
 
-            $fuid = $db->fetchOne('select id
-                from ' . $pp->schema() . '.users
-                where code = ?', [$fcode], [\PDO::PARAM_STR]);
+            $sql['account'][$key_code_where_or][] = $fuid_sql;
+            $sql['account']['params'][] = $filter_command->from_account;
+            $sql['account']['types'][] = \PDO::PARAM_STR;
 
-            if ($fuid)
-            {
-                $fuid_sql = 't.id_from ';
-                $fuid_sql .= $filter['andor'] === 'nor' ? '<>' : '=';
-                $fuid_sql .= ' ?';
-
-                $sql['code'][$key_code_where_or][] = $fuid_sql;
-                $sql['code']['params'][] = $fuid;
-                $sql['code']['types'][] = \PDO::PARAM_STR;
-
-                $fcode = $account_render->str($fuid, $pp->schema());
-            }
-            else if ($filter['andor'] !== 'nor')
-            {
-                $sql['code'][$key_code_where_or][] = '1 = 2';
-            }
-
-            $params['f']['fcode'] = $fcode;
+            $params['f']['from_account'] = $account_render->get_str($filter_command->from_account, $pp->schema());
         }
 
-        $filter_tcode = isset($filter['tcode']) && $filter['tcode'];
-
-        if ($filter_tcode)
+        if (isset($filter_command->to_account))
         {
-            [$tcode] = explode(' ', trim($filter['tcode']));
+            $tuid_sql = 't.id_to ';
+            $tuid_sql .= $filter_command->account_logic === 'nor' ? '<>' : '=';
+            $tuid_sql .= ' ?';
 
-            $tuid = $db->fetchOne('select id
-                from ' . $pp->schema() . '.users
-                where code = ?',
-                [$tcode], [\PDO::PARAM_STR]);
+            $sql['account'][$key_code_where_or][] = $tuid_sql;
+            $sql['account']['params'][] = $filter_command->to_account;
+            $sql['account']['types'][] = \PDO::PARAM_STR;
 
-            if ($tuid)
-            {
-                $tuid_sql = 't.id_to ';
-                $tuid_sql .= $filter['andor'] === 'nor' ? '<>' : '=';
-                $tuid_sql .= ' ?';
-                $sql['code'][$key_code_where_or][] = $tuid_sql;
-                $sql['code']['params'][] = $tuid;
-                $sql['code']['types'][] = \PDO::PARAM_STR;
-
-                $tcode = $account_render->str($tuid, $pp->schema());
-            }
-            else if ($filter['andor'] !== 'nor')
-            {
-                $sql['code'][$key_code_where_or][] = '1 = 2';
-            }
-
-            $params['f']['tcode'] = $tcode;
+            $params['f']['to_account'] = $account_render->str($filter_command->to_account, $pp->schema());
         }
 
-        if ($filter_fcode || $filter_tcode)
+        if (isset($filter_command->from_account) || isset($filter_command->to_account))
         {
-            $params['f']['andor'] = $filter['andor'];
+            $params['f']['account_logic'] = $filter_command->account_logic;
         }
 
-        if (count($sql['code']['where_or']))
+        if (count($sql['account']['where_or']))
         {
-            $sql['code']['where'] = [' ( ' . implode(' or ', $sql['code']['where_or']) . ' ) '];
+            $sql['code']['where'] = [' ( ' . implode(' or ', $sql['account']['where_or']) . ' ) '];
         }
 
-        $filter_fdate = isset($filter['fdate']) && $filter['fdate'];
-
-        if ($filter_fdate)
+        if (isset($filter_command->from_date))
         {
-            $fdate_sql = $date_format_service->reverse($filter['fdate'], $pp->schema());
+            $sql['from_date'] = $sql_map;
 
-            if ($fdate_sql === '')
-            {
-                $alert_service->warning('De begindatum is fout geformateerd.');
-            }
-            else
-            {
-                $sql['fdate'] = $sql_map;
+            $from_date_immutable = \DateTimeImmutable::createFromFormat('U', (string) strtotime($filter_command->from_date . ' UTC'));
 
-                $fdate_immutable = \DateTimeImmutable::createFromFormat('U', (string) strtotime($fdate_sql . ' UTC'));
-
-                $sql['fdate']['where'][] = 't.created_at >= ?';
-                $sql['fdate']['params'][] = $fdate_immutable;
-                $sql['fdate']['types'][] = Types::DATETIME_IMMUTABLE;
-                $params['f']['fdate'] = $fdate = $filter['fdate'];
-            }
+            $sql['from_date']['where'][] = 't.created_at >= ?';
+            $sql['from_date']['params'][] = $from_date_immutable;
+            $sql['from_date']['types'][] = Types::DATETIME_IMMUTABLE;
+            $params['f']['from_date'] = $filter['from_date'];
         }
 
-        $filter_tdate = isset($filter['tdate']) && $filter['tdate'];
-
-        if ($filter_tdate)
+        if (isset($filter_command->to_date))
         {
-            $tdate_sql = $date_format_service->reverse($filter['tdate'], $pp->schema());
+            $sql['to_date'] = $sql_map;
 
-            if ($tdate_sql === '')
-            {
-                $alert_service->warning('De einddatum is fout geformateerd.');
-            }
-            else
-            {
-                $sql['tdate'] = $sql_map;
+            $to_date_immutable = \DateTimeImmutable::createFromFormat('U', (string) strtotime($filter_command->to_date . ' UTC'));
 
-                $tdate_immutable = \DateTimeImmutable::createFromFormat('U', (string) strtotime($tdate_sql . ' UTC'));
-
-                $sql['tdate']['where'][] = 't.created_at <= ?';
-                $sql['tdate']['params'][] = $tdate_immutable;
-                $sql['tdate']['types'][] = Types::DATETIME_IMMUTABLE;
-                $params['f']['tdate'] = $tdate = $filter['tdate'];
-            }
+            $sql['to_date']['where'][] = 't.created_at <= ?';
+            $sql['to_date']['params'][] = $to_date_immutable;
+            $sql['to_date']['types'][] = Types::DATETIME_IMMUTABLE;
+            $params['f']['to_date'] = $filter['to_date'];
         }
 
         $filter_service_stuff = $service_stuff_enabled
@@ -596,7 +556,7 @@ class TransactionsController extends AbstractController
             ])
         ];
 
-        if ($filter_uid)
+        if (isset($uid))
         {
             $tableheader_ary['user'] = array_merge($asc_preset_ary, [
                 'lbl'			=> 'Tegenpartij',
@@ -625,17 +585,19 @@ class TransactionsController extends AbstractController
         $tableheader_ary[$params['s']['orderby']]['fa']
             = $params['s']['asc'] ? 'sort-asc' : 'sort-desc';
 
-        $filtered = !$filter_uid && (
-            $filter_q
-            || $filter_fcode
-            || $filter_tcode
-            || $filter_fdate
-            || $filter_tdate
-            || $filter_service_stuff
+        $filtered = !isset($uid) && (
+            isset($filter_command->q)
+            || isset($filter_command->from_account)
+            || isset($filter_command->to_account)
+            || isset($filter_command->from_date)
+            || isset($filter_command->to_date)
+            || isset($filter_command->service)
+            || isset($filter_command->stuff)
+            || isset($filter_command->null_service_stuff)
         );
 
         $template = 'transactions/transactions_';
-        $template .= $filter_uid ? 'uid' : 'list';
+        $template .= isset($uid) ? 'uid' : 'list';
         $template .= '.html.twig';
 
         $flt = '';
@@ -645,11 +607,7 @@ class TransactionsController extends AbstractController
         $flt .= '" id="filter">';
         $flt .= '<div class="panel-heading">';
 
-        $flt .= '<form method="get" ';
-        $flt .= 'class="form-horizontal" ';
-        $flt .= 'action="';
-        $flt .= $link_render->context_path('transactions', $pp->ary(), []);
-        $flt .= '">';
+        $flt .= '<form method="get">';
 
         $flt .= '<div class="row">';
 
@@ -919,7 +877,7 @@ class TransactionsController extends AbstractController
         $out .= '</thead>';
         $out .= '<tbody>';
 
-        if ($filter_uid)
+        if (isset($uid))
         {
             foreach($transactions as $t)
             {
@@ -954,7 +912,7 @@ class TransactionsController extends AbstractController
                 $out .= '<td>';
                 $out .= '<span class="text-';
 
-                if ($t['id_from'] === $filter['uid'])
+                if ($t['id_from'] === $uid)
                 {
                     $out .= 'danger">-';
                 }
@@ -972,7 +930,7 @@ class TransactionsController extends AbstractController
 
                 $out .= '<td>';
 
-                if ($t['id_from'] === $filter['uid'])
+                if ($t['id_from'] === $uid)
                 {
                     if ($t['real_to'])
                     {
@@ -1231,13 +1189,14 @@ class TransactionsController extends AbstractController
         return $this->render($template, [
             'data_list_raw'         => $out,
             'filter_form_raw'       => $flt,
+            'filter_form'           => $filter_form->createView(),
             'bulk_actions_raw'      => $blk ?? '',
             'row_count'             => $row_count,
             'amount_sum'            => $amount_sum,
             'filtered'              => $filtered,
             'is_self'               => $is_self,
             'bulk_actions_enabled'  => $bulk_actions_enabled,
-            'uid'                   => $filter['uid'] ?? 0,
+            'uid'                   => $uid,
         ]);
     }
 }

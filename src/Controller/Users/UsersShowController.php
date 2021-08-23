@@ -717,7 +717,7 @@ class UsersShowController extends AbstractController
             {
                 $out .= $link_render->link_fa('transactions',
                     $pp->ary(),
-                    ['f' => ['uid' => $id]],
+                    ['uid' => $id],
                     'Transacties van ' . $account_str .
                     ' (' . $count_transactions . ')',
                     $attr_link_transactions,

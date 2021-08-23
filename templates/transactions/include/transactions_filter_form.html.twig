@@ -1,0 +1,75 @@
+<div class="row mb-5p">
+
+    {{- form_row(filter_form.q, {
+        'label': false,
+        'col': 'sm-12',
+        'pre_addon': {
+            'fa': 'search'
+        },
+        'attr': {
+            'placeholder': 'label.search'
+        },
+        'id': 'q'
+    }) -}}
+
+</div>
+<div class="row mb-5p">
+
+    {{- form_row(filter_form.from_account, {
+        'label': false,
+        'col': 'sm-5',
+        'pre_addon': {
+            'text': 'label.from'|trans,
+            'fa': 'user'
+        },
+        'attr': {
+            'placeholder': 'label.account_code'
+        }
+    }) -}}
+
+    {{- form_row(filter_form.account_logic, {
+        'label': false,
+        'col': 'sm-2'
+    }) -}}
+
+    {{- form_row(filter_form.to_account, {
+        'label': false,
+        'col': 'sm-5',
+        'pre_addon': {
+            'text': 'label.to'|trans,
+            'fa': 'user'
+        },
+        'attr': {
+            'placeholder': 'label.account_code'
+        }
+    }) -}}
+
+</div>
+<div class="row">
+
+    {{- form_row(filter_form.from_date, {
+        'label': false,
+        'col': 'sm-5',
+        'pre_addon': {
+            'text': 'label.from_date'|trans,
+        }
+    }) -}}
+
+    {{- form_row(filter_form.to_date, {
+        'label': false,
+        'col': 'sm-5',
+        'pre_addon': {
+            'text': 'label.to_date'|trans,
+        }
+    }) -}}
+
+
+    {{- form_row(filter_form.show, {
+        'label': 'btn.show',
+        'col': 'sm-2',
+        'attr': {
+            'class': 'btn btn-default btn-block'
+        }
+    }) -}}
+
+</div>

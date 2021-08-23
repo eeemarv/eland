@@ -1834,10 +1834,10 @@ class UsersListController extends AbstractController
                                 $out .= $link_render->link_no_attr('transactions', $pp->ary(),
                                     [
                                         'f' => [
-                                            'fcode'	=> $key === 'in' ? '' : $u['code'],
-                                            'tcode'	=> $key === 'out' ? '' : $u['code'],
-                                            'andor'	=> $key === 'total' ? 'or' : 'and',
-                                            'fdate' => $from_date,
+                                            'from_account'	=> $key === 'in' ? '' : $u['code'] . ' ' . $u['name'],
+                                            'to_account'	=> $key === 'out' ? '' : $u['code'] . ' ' . $u['name'],
+                                            'account_logic'	=> $key === 'total' ? 'or' : 'and',
+                                            'from_date' => $from_date,
                                         ],
                                     ],
                                     (string) $activity[$id][$a_key][$key]);

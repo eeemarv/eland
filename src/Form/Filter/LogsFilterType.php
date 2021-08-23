@@ -1,10 +1,13 @@
 <?php declare(strict_types=1);
 
 namespace App\Form\Filter;
+
+use App\Command\Logs\LogsFilterCommand;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use App\Form\Type\TypeaheadType;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class LogsFilterType extends AbstractType
 {
@@ -47,5 +50,12 @@ class LogsFilterType extends AbstractType
     public function getBlockPrefix():string
     {
         return 'f';
+    }
+
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults([
+            'data_class'    => LogsFilterCommand::class,
+        ]);
     }
 }

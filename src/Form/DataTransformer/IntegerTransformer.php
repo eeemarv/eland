@@ -7,7 +7,7 @@ use App\Service\PageParamsService;
 use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 
-class TypeaheadUserTransformer implements DataTransformerInterface
+class IntegerTransformer implements DataTransformerInterface
 {
     public function __construct(
         protected UserRepository $user_repository,
@@ -18,32 +18,28 @@ class TypeaheadUserTransformer implements DataTransformerInterface
 
     public function transform($id)
     {
+        /*
         if (null === $id)
         {
             return '';
         }
+        */
 
-        $account_str = $this->user_repository->get_account_str($id, $this->pp->schema());
-
-        return $account_str;
+        return $id;
     }
 
-    public function reverseTransform($account_str)
+    public function reverseTransform($value)
     {
-        if (!$account_str)
+        if (!isset($value) || $value === '')
         {
             return null;
         }
 
-        [$code] = explode(' ', $account_str);
-
-        $id = $this->user_repository->get_by_typeahead_code($code, $this->pp->schema());
-
-        if (!$id)
+        if (!ctype_digit(ltrim($value, '-')))
         {
-            throw new TransformationFailedException('user account with code ' . $code . ' does not exist.');
+            throw new TransformationFailedException('The value ' . $value . ' is not an integer.');
         }
 
-        return $id;
+        return (int) $value;
     }
 }

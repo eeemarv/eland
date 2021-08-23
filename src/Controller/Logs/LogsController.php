@@ -1,7 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Logs;
 
+use App\Command\Logs\LogsFilterCommand;
 use App\Form\Filter\LogsFilterType;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
@@ -46,9 +47,10 @@ class LogsController extends AbstractController
     {
         $su_intersystem_ary = $intersystems_service->get_eland($su->schema());
 
-        $filter_form = $this->createForm(LogsFilterType::class);
+        $filter_command = new LogsFilterCommand();
+        $filter_form = $this->createForm(LogsFilterType::class, $filter_command);
         $filter_form->handleRequest($request);
-        $filter = $filter_form->getData() ?? [];
+        $filter_command = $filter_form->getData();
 
         $pag = $request->query->get('p', []);
         $sort = $request->query->get('s', []);
@@ -79,55 +81,55 @@ class LogsController extends AbstractController
         $sql['schema']['params'][] = $pp->schema();
         $sql['schema']['types'][] = \PDO::PARAM_STR;
 
-        if (isset($filter['user']))
+        if (isset($filter_command->user))
         {
             $sql['code'] = $sql_map;
             $sql['code']['where'][] = 'user_id = ? and user_schema = ?';
-            $sql['code']['params'][] = $filter['user'];
+            $sql['code']['params'][] = $filter_command->user;
             $sql['code']['params'][] = $pp->schema();
             $sql['code']['types'][] = \PDO::PARAM_INT;
             $sql['code']['types'][] = \PDO::PARAM_STR;
-            $params['f']['user'] = $filter['user'];
+            $params['f']['user'] = $filter_command->user;
         }
 
-        if (isset($filter['type']))
+        if (isset($filter_command->type))
         {
             $sql['type'] = $sql_map;
             $sql['type']['where'][] = 'type ilike ?';
-            $sql['type']['params'][] = strtolower($filter['type']);
+            $sql['type']['params'][] = strtolower($filter_command->type);
             $sql['type']['types'][] = \PDO::PARAM_STR;
-            $params['f']['type'] = $filter['type'];
+            $params['f']['type'] = $filter_command->type;
         }
 
-        if (isset($filter['q']))
+        if (isset($filter_command->q))
         {
             $sql['q'] = $sql_map;
             $sql['q']['where'][] = 'event ilike ?';
-            $sql['q']['params'][] = '%' . $filter['q'] . '%';
+            $sql['q']['params'][] = '%' . $filter_command->q . '%';
             $sql['q']['types'][] = \PDO::PARAM_STR;
-            $params['f']['q'] = $filter['q'];
+            $params['f']['q'] = $filter_command->q;
         }
 
-        if (isset($filter['fdate']))
+        if (isset($filter_command->fdate))
         {
             $sql['fdate'] = $sql_map;
-            $fdate = \DateTimeImmutable::createFromFormat('U', (string) strtotime($filter['fdate'] . ' UTC'));
+            $fdate = \DateTimeImmutable::createFromFormat('U', (string) strtotime($filter_command->fdate . ' UTC'));
 
             $sql['fdate']['where'][] = 'ts >= ?';
             $sql['fdate']['params'][] = $fdate;
             $sql['fdate']['types'][] = Types::DATETIME_IMMUTABLE;
-            $params['f']['fdate'] = $filter['fdate'];
+            $params['f']['fdate'] = $filter_command->fdate;
         }
 
-        if (isset($filter['tdate']))
+        if (isset($filter_command->tdate))
         {
             $sql['tdate'] = $sql_map;
-            $tdate = \DateTimeImmutable::createFromFormat('U', (string) strtotime($filter['tdate'] . ' UTC'));
+            $tdate = \DateTimeImmutable::createFromFormat('U', (string) strtotime($filter_command->tdate . ' UTC'));
 
             $sql['tdate']['where'][] = 'ts <= ?';
             $sql['tdate']['params'][] = $tdate;
             $sql['tdate']['types'][] = Types::DATETIME_IMMUTABLE;
-            $params['f']['tdate'] = $filter['tdate'];
+            $params['f']['tdate'] = $filter_command->tdate;
         }
 
         $sql['pagination'] = $sql_map;
@@ -194,11 +196,11 @@ class LogsController extends AbstractController
         $tableheader_ary[$params['s']['orderby']]['asc'] = $params['s']['asc'] ? 0 : 1;
         $tableheader_ary[$params['s']['orderby']]['indicator'] = $params['s']['asc'] ? '-asc' : '-desc';
 
-        $filtered = isset($filter['q'])
-            || isset($filter['type'])
-            || isset($filter['user'])
-            || isset($filter['fdate'])
-            || isset($filter['tdate']);
+        $filtered = isset($filter_command->q)
+            || isset($filter_command->type)
+            || isset($filter_command->user)
+            || isset($filter_command->fdate)
+            || isset($filter_command->tdate);
 
         $out = '<div class="panel panel-default printview">';
 

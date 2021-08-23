@@ -109,7 +109,6 @@ class LoginController extends AbstractController
             )
             {
                 $logger->info('Password hashing updated', $log_ary);
-                error_log('Password hashing updated');
             }
 
             $user_repository->insert_login($command->id, $agent, $ip, $pp->schema());

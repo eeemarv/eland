@@ -177,7 +177,7 @@
 
 	{%- block filter_form -%}
 		{%- if filter_form is defined -%}
-			<div class="panel panel-info">
+			<div class="panel panel-info{%- if filtered is defined and not filtered %} collapse{%- endif -%}" id="filter">
 				{%- block filter_form_header -%}{%- endblock -%}
 				<div class="panel-heading">
 					{%- block filter_form_start -%}
@@ -190,7 +190,7 @@
 						</div>
 					{%- endblock filter_form_content -%}
 					{%- block filter_form_context -%}
-						{%- set hidden_ary = query_params|filter((v, k) => k != 'f')|flatten|filter((v, k) => k != 'p[start]') -%}
+						{%- set hidden_ary = query_params|filter((v, k) => k != 'f' and k != 'uid')|flatten|filter((v, k) => k != 'p[start]') -%}
 						{%- for n, v in hidden_ary -%}
 							<input name="{{- n -}}" value="{{- v -}}" type="hidden">
 						{%- endfor -%}

@@ -252,6 +252,11 @@ label:
   your_email: Je E-Mail adres
   your_message: Je Bericht
 
+logic:
+  and: en
+  nor: noch
+  or: of
+
 mail_form:
   mail_disabled: >-
     De E-mail functies zijn uitgeschakeld in dit Systeem.
