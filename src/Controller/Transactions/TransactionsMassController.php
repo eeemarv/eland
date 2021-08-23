@@ -3,6 +3,7 @@
 namespace App\Controller\Transactions;
 
 use App\Cnst\BulkCnst;
+use App\Form\Filter\QTextSearchFilterType;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
@@ -152,6 +153,9 @@ class TransactionsMassController extends AbstractController
             $leaving_users_access = $config_service->get_str('users.leaving.access', $pp->schema());
             $show_leaving_status = $item_access_service->is_visible($leaving_users_access);
         }
+
+        $filter_form = $this->createForm(QTextSearchFilterType::class);
+        $filter_form->handleRequest($request);
 
         $q = $request->get('q', '');
         $hsh = $request->get('hsh', '58d267');
@@ -477,195 +481,195 @@ class TransactionsMassController extends AbstractController
             }
         }
 
-        $out = '<div class="panel panel-warning">';
-        $out .= '<div class="panel-heading">';
-        $out .= '<button class="btn btn-default btn-lg" ';
-        $out .= 'title="Toon invul-hulp" data-toggle="collapse" ';
-        $out .= 'data-target="#help" type="button">';
-        $out .= '<i class="fa fa-question"></i>';
-        $out .= ' Invul-hulp</button>';
-        $out .= '</div>';
-        $out .= '<div class="panel-heading collapse" id="help">';
+        $hfr = '<div class="panel panel-warning">';
+        $hfr .= '<div class="panel-heading">';
+        $hfr .= '<button class="btn btn-default btn-lg" ';
+        $hfr .= 'title="Toon invul-hulp" data-toggle="collapse" ';
+        $hfr .= 'data-target="#help" type="button">';
+        $hfr .= '<i class="fa fa-question"></i>';
+        $hfr .= ' Invul-hulp</button>';
+        $hfr .= '</div>';
+        $hfr .= '<div class="panel-heading collapse" id="help">';
 
-        $out .= '<p>Met deze invul-hulp kan je snel alle ';
-        $out .= 'bedragen van de massa-transactie invullen. ';
-        $out .= 'De bedragen kan je nadien nog individueel ';
-        $out .= 'aanpassen alvorens de massa transactie uit te voeren. ';
-        $out .= '</p>';
+        $hfr .= '<p>Met deze invul-hulp kan je snel alle ';
+        $hfr .= 'bedragen van de massa-transactie invullen. ';
+        $hfr .= 'De bedragen kan je nadien nog individueel ';
+        $hfr .= 'aanpassen alvorens de massa transactie uit te voeren. ';
+        $hfr .= '</p>';
 
-        $out .= '<form class="form" data-fill-in ';
+        $hfr .= '<form class="form" data-fill-in ';
 
-        $out .= 'data-transactions-sum-in="';
-        $out .= htmlspecialchars($link_render->context_path('transactions_sum_in',
+        $hfr .= 'data-transactions-sum-in="';
+        $hfr .= htmlspecialchars($link_render->context_path('transactions_sum_in',
             $pp->ary(), ['days' => 365]));
-        $out .= '" ';
+        $hfr .= '" ';
 
-        $out .= 'data-transactions-sum-out="';
-        $out .= htmlspecialchars($link_render->context_path('transactions_sum_out',
+        $hfr .= 'data-transactions-sum-out="';
+        $hfr .= htmlspecialchars($link_render->context_path('transactions_sum_out',
             $pp->ary(), ['days' => 365]));
-        $out .= '" ';
+        $hfr .= '" ';
 
-        $out .= 'data-weighted-balances="';
-        $out .= htmlspecialchars($link_render->context_path('weighted_balances',
+        $hfr .= 'data-weighted-balances="';
+        $hfr .= htmlspecialchars($link_render->context_path('weighted_balances',
             $pp->ary(), ['days' => 365]));
-        $out .= '"';
+        $hfr .= '"';
 
-        $out .= '>';
+        $hfr .= '>';
 
-        $out .= '<div class="pan-sub bg-warning">';
+        $hfr .= '<div class="pan-sub bg-warning">';
 
-        $out .= '<div class="form-group">';
-        $out .= '<label for="fixed" class="control-label">';
-        $out .= 'Vast bedrag</label>';
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= $currency;
-        $out .= '</span>';
-        $out .= '<input type="number" class="form-control margin-bottom" id="fixed" ';
-        $out .= 'min="0">';
-        $out .= '</div>';
-        $out .= '</div>';
+        $hfr .= '<div class="form-group">';
+        $hfr .= '<label for="fixed" class="control-label">';
+        $hfr .= 'Vast bedrag</label>';
+        $hfr .= '<div class="input-group">';
+        $hfr .= '<span class="input-group-addon">';
+        $hfr .= $currency;
+        $hfr .= '</span>';
+        $hfr .= '<input type="number" class="form-control margin-bottom" id="fixed" ';
+        $hfr .= 'min="0">';
+        $hfr .= '</div>';
+        $hfr .= '</div>';
 
-        $out .= '</div>';
+        $hfr .= '</div>';
 
         /**/
-        $out .= '<div class="pan-sub bg-warning">';
+        $hfr .= '<div class="pan-sub bg-warning">';
 
-        $out .= '<h4>Variabel deel</h4>';
+        $hfr .= '<h4>Variabel deel</h4>';
 
-        $out .= '<div class="form-group">';
-        $out .= '<label for="fixed" class="control-label">';
-        $out .= 'Over periode</label>';
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= 'dagen</span>';
-        $out .= '<input type="number" ';
-        $out .= 'class="form-control margin-bottom" id="var_days" ';
-        $out .= 'min="0">';
-        $out .= '</div>';
-        $out .= '</div>';
-
-        //
-        $out .= '<div class="form-group">';
-        $out .= '<label for="var_balance" class="control-label">';
-        $out .= 'Promille op saldo</label>';
-        $out .= '<div class="row">';
-        $out .= '<div class="col-sm-6">';
-
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">&permil;</span>';
-        $out .= '<input type="number" ';
-        $out .= 'class="form-control margin-bottom" id="var_balance">';
-        $out .= '</div>';
-        $out .= '<p>Berekend op gewogen gemiddelde van saldo. ';
-        $out .= 'Kan ook negatief zijn!</p>';
-        $out .= '</div>';
-
-        $out .= '<div class="col-sm-6">';
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= $currency;
-        $out .= ': basis';
-        $out .= '</span>';
-        $out .= '<input type="number" class="form-control" id="var_base">';
-        $out .= '</div>';
-        $out .= '<p>De basis waartegenover berekend wordt. ';
-        $out .= 'Kan ook afwijkend van nul zijn.</p>';
-        $out .= '</div>';
-        $out .= '</div>';
-        $out .= '</div>';
+        $hfr .= '<div class="form-group">';
+        $hfr .= '<label for="fixed" class="control-label">';
+        $hfr .= 'Over periode</label>';
+        $hfr .= '<div class="input-group">';
+        $hfr .= '<span class="input-group-addon">';
+        $hfr .= 'dagen</span>';
+        $hfr .= '<input type="number" ';
+        $hfr .= 'class="form-control margin-bottom" id="var_days" ';
+        $hfr .= 'min="0">';
+        $hfr .= '</div>';
+        $hfr .= '</div>';
 
         //
-        $out .= '<div class="form-group">';
-        $out .= '<label for="var_trans_in" class="control-label">';
-        $out .= 'Promille op transacties in</label>';
-        $out .= '<div class="row">';
-        $out .= '<div class="col-sm-6">';
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">&permil;</span>';
-        $out .= '<input type="number" class="form-control" id="var_trans_in">';
-        $out .= '</div>';
-        $out .= '</div>';
+        $hfr .= '<div class="form-group">';
+        $hfr .= '<label for="var_balance" class="control-label">';
+        $hfr .= 'Promille op saldo</label>';
+        $hfr .= '<div class="row">';
+        $hfr .= '<div class="col-sm-6">';
 
-        $out .= '<div class="col-sm-6">';
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= 'excl. ';
-        $out .= '<i class="fa fa-user"></i>';
-        $out .= '</span>';
-        $out .= '<input type="text" class="form-control" ';
-        $out .= 'id="var_ex_code_in" ';
-        $out .= 'placeholder="Account Codes">';
-        $out .= '</div>';
-        $out .= '<p>Exclusief tegenpartijen: ';
-        $out .= 'Account Codes gescheiden door komma\'s</p>';
-        $out .= '</div>';
-        $out .= '</div>';
-        $out .= '</div>';
+        $hfr .= '<div class="input-group">';
+        $hfr .= '<span class="input-group-addon">&permil;</span>';
+        $hfr .= '<input type="number" ';
+        $hfr .= 'class="form-control margin-bottom" id="var_balance">';
+        $hfr .= '</div>';
+        $hfr .= '<p>Berekend op gewogen gemiddelde van saldo. ';
+        $hfr .= 'Kan ook negatief zijn!</p>';
+        $hfr .= '</div>';
 
-        //
-        $out .= '<div class="form-group">';
-        $out .= '<label for="var_trans_out" class="control-label">';
-        $out .= 'Promille op transacties uit</label>';
-        $out .= '<div class="row">';
-        $out .= '<div class="col-sm-6">';
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">&permil;</span>';
-        $out .= '<input type="number" class="form-control" id="var_trans_out">';
-        $out .= '</div>';
-        $out .= '</div>';
-
-        $out .= '<div class="col-sm-6">';
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= 'excl. ';
-        $out .= '<i class="fa fa-user"></i>';
-        $out .= '</span>';
-        $out .= '<input type="text" class="form-control" ';
-        $out .= 'id="var_ex_code_out" ';
-        $out .= 'placeholder="Account Codes">';
-        $out .= '</div>';
-        $out .= '<p>Exclusief tegenpartijen: ';
-        $out .= 'Account Codes gescheiden door komma\'s</p>';
-        $out .= '</div>';
-        $out .= '</div>';
-        $out .= '</div>';
+        $hfr .= '<div class="col-sm-6">';
+        $hfr .= '<div class="input-group">';
+        $hfr .= '<span class="input-group-addon">';
+        $hfr .= $currency;
+        $hfr .= ': basis';
+        $hfr .= '</span>';
+        $hfr .= '<input type="number" class="form-control" id="var_base">';
+        $hfr .= '</div>';
+        $hfr .= '<p>De basis waartegenover berekend wordt. ';
+        $hfr .= 'Kan ook afwijkend van nul zijn.</p>';
+        $hfr .= '</div>';
+        $hfr .= '</div>';
+        $hfr .= '</div>';
 
         //
-        $out .= '<div class="form-group">';
-        $out .= '<label for="var_minimum" class="control-label">';
-        $out .= 'Minimum - maximum</label>';
-        $out .= '<div class="row">';
-        $out .= '<div class="col-sm-6">';
+        $hfr .= '<div class="form-group">';
+        $hfr .= '<label for="var_trans_in" class="control-label">';
+        $hfr .= 'Promille op transacties in</label>';
+        $hfr .= '<div class="row">';
+        $hfr .= '<div class="col-sm-6">';
+        $hfr .= '<div class="input-group">';
+        $hfr .= '<span class="input-group-addon">&permil;</span>';
+        $hfr .= '<input type="number" class="form-control" id="var_trans_in">';
+        $hfr .= '</div>';
+        $hfr .= '</div>';
 
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= $currency;
-        $out .= ': min';
-        $out .= '</span>';
+        $hfr .= '<div class="col-sm-6">';
+        $hfr .= '<div class="input-group">';
+        $hfr .= '<span class="input-group-addon">';
+        $hfr .= 'excl. ';
+        $hfr .= '<i class="fa fa-user"></i>';
+        $hfr .= '</span>';
+        $hfr .= '<input type="text" class="form-control" ';
+        $hfr .= 'id="var_ex_code_in" ';
+        $hfr .= 'placeholder="Account Codes">';
+        $hfr .= '</div>';
+        $hfr .= '<p>Exclusief tegenpartijen: ';
+        $hfr .= 'Account Codes gescheiden door komma\'s</p>';
+        $hfr .= '</div>';
+        $hfr .= '</div>';
+        $hfr .= '</div>';
 
-        $out .= '<input type="number" ';
-        $out .= 'class="form-control margin-bottom" id="var_min">';
-        $out .= '</div>';
-        $out .= '</div>';
+        //
+        $hfr .= '<div class="form-group">';
+        $hfr .= '<label for="var_trans_out" class="control-label">';
+        $hfr .= 'Promille op transacties uit</label>';
+        $hfr .= '<div class="row">';
+        $hfr .= '<div class="col-sm-6">';
+        $hfr .= '<div class="input-group">';
+        $hfr .= '<span class="input-group-addon">&permil;</span>';
+        $hfr .= '<input type="number" class="form-control" id="var_trans_out">';
+        $hfr .= '</div>';
+        $hfr .= '</div>';
 
-        $out .= '<div class="col-sm-6">';
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= $currency;
-        $out .= ': max';
-        $out .= '</span>';
-        $out .= '<input type="number" class="form-control" id="var_max">';
-        $out .= '</div>';
-        $out .= '</div>';
-        $out .= '</div>';
-        $out .= '</div>';
+        $hfr .= '<div class="col-sm-6">';
+        $hfr .= '<div class="input-group">';
+        $hfr .= '<span class="input-group-addon">';
+        $hfr .= 'excl. ';
+        $hfr .= '<i class="fa fa-user"></i>';
+        $hfr .= '</span>';
+        $hfr .= '<input type="text" class="form-control" ';
+        $hfr .= 'id="var_ex_code_out" ';
+        $hfr .= 'placeholder="Account Codes">';
+        $hfr .= '</div>';
+        $hfr .= '<p>Exclusief tegenpartijen: ';
+        $hfr .= 'Account Codes gescheiden door komma\'s</p>';
+        $hfr .= '</div>';
+        $hfr .= '</div>';
+        $hfr .= '</div>';
 
-        $out .= '</div>';
+        //
+        $hfr .= '<div class="form-group">';
+        $hfr .= '<label for="var_minimum" class="control-label">';
+        $hfr .= 'Minimum - maximum</label>';
+        $hfr .= '<div class="row">';
+        $hfr .= '<div class="col-sm-6">';
+
+        $hfr .= '<div class="input-group">';
+        $hfr .= '<span class="input-group-addon">';
+        $hfr .= $currency;
+        $hfr .= ': min';
+        $hfr .= '</span>';
+
+        $hfr .= '<input type="number" ';
+        $hfr .= 'class="form-control margin-bottom" id="var_min">';
+        $hfr .= '</div>';
+        $hfr .= '</div>';
+
+        $hfr .= '<div class="col-sm-6">';
+        $hfr .= '<div class="input-group">';
+        $hfr .= '<span class="input-group-addon">';
+        $hfr .= $currency;
+        $hfr .= ': max';
+        $hfr .= '</span>';
+        $hfr .= '<input type="number" class="form-control" id="var_max">';
+        $hfr .= '</div>';
+        $hfr .= '</div>';
+        $hfr .= '</div>';
+        $hfr .= '</div>';
+
+        $hfr .= '</div>';
 
         if ($limits_enabled)
         {
-            $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+            $hfr .= strtr(BulkCnst::TPL_CHECKBOX, [
                 '%name%'        => 'respect_minlimit',
                 '%label%'       => 'Respecteer minimum limieten',
                 '%attr%'        => ' checked',
@@ -673,39 +677,39 @@ class TransactionsMassController extends AbstractController
 
             if (isset($system_min_limit) || isset($system_max_limit))
             {
-                $out .= '<ul>';
+                $hfr .= '<ul>';
 
                 if (isset($system_min_limit))
                 {
-                    $out .= '<li>Minimum Systeemslimiet: ';
-                    $out .= '<span class="label label-default">';
-                    $out .= $system_min_limit;
-                    $out .= '</span> ';
-                    $out .= $currency;
-                    $out .= '</li>';
+                    $hfr .= '<li>Minimum Systeemslimiet: ';
+                    $hfr .= '<span class="label label-default">';
+                    $hfr .= $system_min_limit;
+                    $hfr .= '</span> ';
+                    $hfr .= $currency;
+                    $hfr .= '</li>';
                 }
 
                 if (isset($system_max_limit))
                 {
-                    $out .= '<li>Maximum Systeemslimiet: ';
-                    $out .= '<span class="label label-default">';
-                    $out .= $system_max_limit;
-                    $out .= '</span> ';
-                    $out .= $currency;
-                    $out .= '</li>';
+                    $hfr .= '<li>Maximum Systeemslimiet: ';
+                    $hfr .= '<span class="label label-default">';
+                    $hfr .= $system_max_limit;
+                    $hfr .= '</span> ';
+                    $hfr .= $currency;
+                    $hfr .= '</li>';
                 }
 
-                $out .= '<li>De Systeemslimieten gelden voor alle Accounts behalve de ';
-                $out .= 'Accounts waarbij individuele limieten ingesteld zijn.</li>';
+                $hfr .= '<li>De Systeemslimieten gelden voor alle Accounts behalve de ';
+                $hfr .= 'Accounts waarbij individuele limieten ingesteld zijn.</li>';
 
-                $out .= '</ul>';
+                $hfr .= '</ul>';
             }
         }
 
 
         if ($new_users_enabled)
         {
-            $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+            $hfr .= strtr(BulkCnst::TPL_CHECKBOX, [
                 '%name%'    => 'omit_new',
                 '%label%'   => 'Sla <span class="bg-success text-success">instappers</span> over.',
             ]);
@@ -713,43 +717,21 @@ class TransactionsMassController extends AbstractController
 
         if ($leaving_users_enabled)
         {
-            $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+            $hfr .= strtr(BulkCnst::TPL_CHECKBOX, [
                 '%name%'    => 'omit_leaving',
                 '%label%'   => 'Sla <span class="bg-danger text-danger">uitstappers</span> over.',
             ]);
         }
 
-        $out .= '<button class="btn btn-default btn-lg" id="fill-in">';
-        $out .= 'Vul in</button>';
+        $hfr .= '<button class="btn btn-default btn-lg" id="fill-in">';
+        $hfr .= 'Vul in</button>';
 
-        $out .= '</form>';
+        $hfr .= '</form>';
 
-        $out .= '</div>';
-        $out .= '</div>';
+        $hfr .= '</div>';
+        $hfr .= '</div>';
 
-        $out .= '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
-
-        $out .= '<form method="get">';
-        $out .= '<div class="row">';
-        $out .= '<div class="col-xs-12">';
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<i class="fa fa-search"></i>';
-        $out .= '</span>';
-        $out .= '<input type="text" class="form-control" ';
-        $out .= 'id="q" name="q" value="';
-        $out .= $q;
-        $out .= '">';
-        $out .= '</div>';
-        $out .= '</div>';
-        $out .= '</div>';
-        $out .= '</form>';
-
-        $out .= '</div>';
-        $out .= '</div>';
-
-        $out .= '<ul class="nav nav-tabs" id="nav-tabs">';
+        $out = '<ul class="nav nav-tabs" id="nav-tabs">';
 
         foreach (self::STATUS_RENDER as $k => $s)
         {
@@ -1016,7 +998,9 @@ class TransactionsMassController extends AbstractController
         $out .= '</form>';
 
         return $this->render('transactions/transactions_mass.html.twig', [
-            'content'   => $out,
+            'content'       => $out,
+            'help_form_raw' => $hfr,
+            'filter_form'   => $filter_form->createView(),
         ]);
     }
 }

@@ -12,6 +12,14 @@
     {{- 'transactions_mass.title'|trans -}}
 {%- endblock heading_title -%}
 
+{%- block help_form -%}
+    {{- help_form_raw|raw -}}
+{%- endblock help_form -%}
+
+{%- block filter_form_a -%}
+    {%- include 'form/q_filter.html.twig' -%}
+{%- endblock filter_form_a -%}
+
 {%- block css -%}
     {{- parent() -}}
 {%- endblock css -%}

@@ -4,7 +4,6 @@ namespace App\Form\Filter;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 class QTextSearchFilterType extends AbstractType
@@ -15,19 +14,15 @@ class QTextSearchFilterType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder
-			->setMethod('GET')
-			->add('q', TextType::class, [
-                'required' => false,
-            ]);
+        $builder->add('q', TextType::class, [
+            'required' => false,
+        ]);
+        $builder->remove('show');
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function getParent():string
     {
-        $resolver->setDefaults([
-            'csrf_protection'       => false,
-            'form_token_enabled'    => false,
-        ]);
+        return FilterType::class;
     }
 
     public function getBlockPrefix():string
