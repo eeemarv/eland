@@ -9,6 +9,7 @@ use App\Render\LinkRender;
 use App\Cnst\StatusCnst;
 use App\Cnst\RoleCnst;
 use App\Cnst\BulkCnst;
+use App\Form\Filter\QTextSearchFilterType;
 use App\HtmlProcess\HtmlPurifier;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
@@ -123,7 +124,9 @@ class UsersListController extends AbstractController
 
         $errors = [];
 
-        $q = $request->get('q', '');
+        $filter_form = $this->createForm(QTextSearchFilterType::class);
+        $filter_form->handleRequest($request);
+
         $show_columns = $request->query->get('sh', []);
 
         $selected_users = $request->request->get('sel', []);
@@ -1144,6 +1147,18 @@ class UsersListController extends AbstractController
             }
         }
 
+        $f_col = '<form method="get">';
+
+        foreach ($params as $k => $v)
+        {
+            $f_col .= '<input type="hidden" name="' . $k . '" value="' . $v . '">';
+        }
+
+        if ($pp->is_guest() && $pp->org_system())
+        {
+            $f_col .= '<input type="hidden" name="os" value="' . $pp->org_system() . '">';
+        }
+
         $f_col = '';
 
         $f_col .= '<div class="panel panel-info collapse" ';
@@ -1372,10 +1387,10 @@ class UsersListController extends AbstractController
         $f_col .= '</div>';
         $f_col .= '</div>';
 
-        $out = self::get_filter_and_tab_selector(
+        $f_col .= '</form>';
+
+        $out = self::get_tab_selector(
             $params,
-            $f_col,
-            $q,
             $link_render,
             $item_access_service,
             $config_service,
@@ -1989,7 +2004,9 @@ class UsersListController extends AbstractController
         }
 
         return $this->render('users/users_list.html.twig', [
-            'content'   => $out,
+            'content'           => $out,
+            'columns_form_raw'  => $f_col,
+            'filter_form'       => $filter_form->createView(),
         ]);
     }
 
@@ -2094,10 +2111,8 @@ class UsersListController extends AbstractController
         return $status_def_ary;
     }
 
-    static public function get_filter_and_tab_selector(
+    static public function get_tab_selector(
         array $params,
-        string $before,
-        string $q,
         LinkRender $link_render,
         ItemAccessService $item_access_service,
         ConfigService $config_service,
@@ -2107,6 +2122,7 @@ class UsersListController extends AbstractController
     {
         $status_def_ary = self::get_status_def_ary($config_service, $item_access_service, $pp);
 
+        /*
         $out = '';
 
         $out .= '<form method="get">';
@@ -2122,6 +2138,7 @@ class UsersListController extends AbstractController
         }
 
         $out .= $before;
+
 
         $out .= '<br>';
 
@@ -2145,8 +2162,9 @@ class UsersListController extends AbstractController
         $out .= '</div>';
 
         $out .= '</form>';
+        */
 
-        $out .= '<div class="pull-right hidden-xs hidden-sm print-hide">';
+        $out = '<div class="pull-right hidden-xs hidden-sm print-hide">';
         $out .= 'Totaal: <span id="total"></span>';
         $out .= '</div>';
 

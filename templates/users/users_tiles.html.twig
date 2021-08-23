@@ -5,6 +5,10 @@
     {{- assets_add(['isotope', 'users_tiles.js']) -}}
 {%- endblock assets_add -%}
 
+{%- block filter_form_a -%}
+    {%- include 'form/q_filter.html.twig' -%}
+{%- endblock filter_form_a -%}
+
 {%- block css -%}
     {{- parent() -}}
     {{- encore_entry_link_tags('footable') -}}

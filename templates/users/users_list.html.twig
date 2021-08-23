@@ -29,6 +29,14 @@
     {%- endif -%}
 {%- endblock btn_top_bulk -%}
 
+{%- block columns_form -%}
+    {{- columns_form_raw|raw -}}
+{%- endblock columns_form -%}
+
+{%- block filter_form_a -%}
+    {%- include 'form/q_filter.html.twig' -%}
+{%- endblock filter_form_a -%}
+
 {%- block css -%}
     {{- parent() -}}
     {{- encore_entry_link_tags('footable') -}}

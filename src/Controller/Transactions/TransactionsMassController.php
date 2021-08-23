@@ -157,7 +157,6 @@ class TransactionsMassController extends AbstractController
         $filter_form = $this->createForm(QTextSearchFilterType::class);
         $filter_form->handleRequest($request);
 
-        $q = $request->get('q', '');
         $hsh = $request->get('hsh', '58d267');
 
         $selected_users = $request->request->get('selected_users', '');

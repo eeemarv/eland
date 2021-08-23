@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Cnst\StatusCnst;
+use App\Form\Filter\QTextSearchFilterType;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
@@ -56,7 +57,8 @@ class UsersTilesController extends AbstractController
 
         $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
 
-        $q = $request->get('q', '');
+        $filter_form = $this->createForm(QTextSearchFilterType::class);
+        $filter_form->handleRequest($request);
 
         $params = ['status'	=> $status];
 
@@ -84,10 +86,8 @@ class UsersTilesController extends AbstractController
             order by u.code asc',
             $sql['params'], $sql['types']);
 
-        $out = UsersListController::get_filter_and_tab_selector(
+        $out = UsersListController::get_tab_selector(
             $params,
-            '',
-            $q,
             $link_render,
             $item_access_service,
             $config_service,
@@ -183,7 +183,8 @@ class UsersTilesController extends AbstractController
         $out .= '</div>';
 
         return $this->render('users/users_tiles.html.twig', [
-            'content'   => $out,
+            'content'       => $out,
+            'filter_form'   => $filter_form->createView(),
         ]);
     }
 }
