@@ -124,6 +124,8 @@ class UsersListController extends AbstractController
 
         $errors = [];
 
+        $query_params = $request->query->all();
+
         $filter_form = $this->createForm(QTextSearchFilterType::class);
         $filter_form->handleRequest($request);
 
@@ -1149,17 +1151,27 @@ class UsersListController extends AbstractController
 
         $f_col = '<form method="get">';
 
-        foreach ($params as $k => $v)
-        {
-            $f_col .= '<input type="hidden" name="' . $k . '" value="' . $v . '">';
-        }
+        $hidden_ary = $query_params;
+        unset($hidden_ary['sh']);
 
-        if ($pp->is_guest() && $pp->org_system())
+        if (count($hidden_ary))
         {
-            $f_col .= '<input type="hidden" name="os" value="' . $pp->org_system() . '">';
-        }
+            $hidden_ary = http_build_query($hidden_ary, 'prefix', '&');
+            $hidden_ary = urldecode($hidden_ary);
+            $hidden_ary = explode('&', $hidden_ary);
 
-        $f_col = '<form>';
+            foreach ($hidden_ary as $hidden_key_value)
+            {
+                [$name, $value] = explode('=', $hidden_key_value);
+
+                if (!isset($value) || $value === '')
+                {
+                    continue;
+                }
+
+                $f_col .= '<input type="hidden" name="' . $name . '" value="' . $value . '">';
+            }
+        }
 
         $f_col .= '<div class="panel panel-info collapse" ';
         $f_col .= 'id="show_columns">';
