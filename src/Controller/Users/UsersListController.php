@@ -127,7 +127,7 @@ class UsersListController extends AbstractController
         $filter_form = $this->createForm(QTextSearchFilterType::class);
         $filter_form->handleRequest($request);
 
-        $show_columns = $request->query->get('sh', []);
+        $show_columns = $request->query->get('sh') ?? [];
 
         $selected_users = $request->request->get('sel', []);
         $bulk_mail_subject = $request->request->get('bulk_mail_subject', '');
@@ -1159,7 +1159,7 @@ class UsersListController extends AbstractController
             $f_col .= '<input type="hidden" name="os" value="' . $pp->org_system() . '">';
         }
 
-        $f_col = '';
+        $f_col = '<form>';
 
         $f_col .= '<div class="panel panel-info collapse" ';
         $f_col .= 'id="show_columns">';
@@ -1379,7 +1379,7 @@ class UsersListController extends AbstractController
         $f_col .= '</div>';
         $f_col .= '<div class="row">';
         $f_col .= '<div class="col-md-12">';
-        $f_col .= '<input type="submit" name="show" ';
+        $f_col .= '<input type="submit" ';
         $f_col .= 'class="btn btn-default" ';
         $f_col .= 'value="Pas weergave kolommen aan">';
         $f_col .= '</div>';
