@@ -2,7 +2,7 @@
 
 namespace App\Controller\Docs;
 
-use App\Form\Filter\QTextSearchFilterType;
+use App\Form\Type\QTextSearchFilterType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\DocRepository;

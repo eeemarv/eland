@@ -2,7 +2,7 @@
 
 namespace App\Controller\Forum;
 
-use App\Form\Filter\QTextSearchFilterType;
+use App\Form\Type\QTextSearchFilterType;
 use App\Repository\ForumRepository;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;

@@ -5,7 +5,7 @@ namespace App\Controller\Transactions;
 use App\Cnst\BulkCnst;
 use App\Cnst\MessageTypeCnst;
 use App\Command\Transactions\TransactionsFilterCommand;
-use App\Form\Filter\TransactionsFilterType;
+use App\Form\Type\Transactions\TransactionsFilterType;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;

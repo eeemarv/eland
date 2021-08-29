@@ -3,7 +3,7 @@
 namespace App\Controller\Logs;
 
 use App\Command\Logs\LogsFilterCommand;
-use App\Form\Filter\LogsFilterType;
+use App\Form\Type\Logs\LogsFilterType;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Service\DateFormatService;

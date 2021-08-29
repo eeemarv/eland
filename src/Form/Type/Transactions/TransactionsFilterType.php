@@ -1,10 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace App\Form\Filter;
+namespace App\Form\Type\Transactions;
 
 use App\Command\Transactions\TransactionsFilterCommand;
 use App\Form\Type\BtnChoiceType;
 use App\Form\Type\DatepickerType;
+use App\Form\Type\FilterType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
