@@ -177,7 +177,7 @@
 
 	{%- block filter_form -%}
 		{%- if filter_form is defined -%}
-			<div class="panel panel-info{%- if filtered is defined and not filtered %} collapse{%- endif -%}" id="filter">
+			<div class="panel panel-info{%- if filter_collapse is defined and filter_collapse %} collapse{%- endif -%}" id="filter">
 				{%- block filter_form_header -%}{%- endblock -%}
 				<div class="panel-heading">
 					{%- block filter_form_start -%}

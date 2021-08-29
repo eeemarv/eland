@@ -90,7 +90,7 @@ class TypeaheadService
 	public function str(array $process_ary = []):string
 	{
 		$return_ary = array_merge(['fetch' => $this->fetch_ary], $process_ary);
-		unset($fetch_ary);
+		unset($this->fetch_ary);
 		return htmlspecialchars(json_encode($return_ary));
 	}
 
@@ -98,7 +98,7 @@ class TypeaheadService
 	public function str_raw(array $process_ary = []):string
 	{
 		$return_ary = array_merge(['fetch' => $this->fetch_ary], $process_ary);
-		unset($fetch_ary);
+		unset($this->fetch_ary);
 		return json_encode($return_ary);
 	}
 

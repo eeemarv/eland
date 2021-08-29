@@ -8,7 +8,6 @@ use App\Command\Transactions\TransactionsFilterCommand;
 use App\Form\Filter\TransactionsFilterType;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
-use App\Render\SelectRender;
 use App\Service\AlertService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,7 +19,6 @@ use App\Service\IntersystemsService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\TypeaheadService;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
@@ -72,8 +70,6 @@ class TransactionsController extends AbstractController
         DateFormatService $date_format_service,
         IntersystemsService $intersystems_service,
         LinkRender $link_render,
-        SelectRender $select_render,
-        TypeaheadService $typeahead_service,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
@@ -117,12 +113,7 @@ class TransactionsController extends AbstractController
 
         $filter_command = new TransactionsFilterCommand();
 
-        $filter = $request->query->get('f', []);
-
         $uid = $request->query->get('uid');
-
-        error_log(' --- UID --- ');
-        error_log(var_export($uid, true));
 
         if ($is_self)
         {
@@ -131,8 +122,6 @@ class TransactionsController extends AbstractController
 
         if (isset($uid))
         {
-            error_log('--- UID ---');
-            error_log((string) $uid);
             $filter_command->from_account = (int) $uid;
             $filter_command->to_account = (int) $uid;
             $filter_command->account_logic = 'or';
@@ -140,14 +129,22 @@ class TransactionsController extends AbstractController
 
         $filter_form = $this->createForm(TransactionsFilterType::class, $filter_command);
         $filter_form->handleRequest($request);
-
         $filter_command = $filter_form->getData();
 
         error_log('FILTER_COMMAND');
         error_log(var_export($filter_command, true));
 
-        error_log('FILTER');
-        error_log(var_export($filter, true));
+        /*
+        error_log('FILTER VALID');
+        error_log(var_export($filter_valid, true));
+        */
+
+        $f_params = $request->query->get('f', []);
+        $filter_form_error = (isset($f_params['from_account']) && !isset($filter_command->from_account))
+            || (isset($f_params['to_account']) && !isset($filter_command->to_account));
+
+        error_log('F_PARAMS');
+        error_log(var_export($f_params, true));
 
         $pag = $request->query->get('p', []);
         $sort = $request->query->get('s', []);
@@ -390,7 +387,7 @@ class TransactionsController extends AbstractController
             $sql['from_date']['where'][] = 't.created_at >= ?';
             $sql['from_date']['params'][] = $from_date_immutable;
             $sql['from_date']['types'][] = Types::DATETIME_IMMUTABLE;
-            $params['f']['from_date'] = $filter['from_date'];
+            $params['f']['from_date'] = $filter_command->from_date;
         }
 
         if (isset($filter_command->to_date))
@@ -402,32 +399,31 @@ class TransactionsController extends AbstractController
             $sql['to_date']['where'][] = 't.created_at <= ?';
             $sql['to_date']['params'][] = $to_date_immutable;
             $sql['to_date']['types'][] = Types::DATETIME_IMMUTABLE;
-            $params['f']['to_date'] = $filter['to_date'];
+            $params['f']['to_date'] = $filter_command->to_date;
         }
 
         $filter_service_stuff = $service_stuff_enabled
-            && (isset($filter['service'])
-                || isset($filter['stuff'])
-                || isset($filter['null-service-stuff'])
-            );
+            && (isset($filter_command->srvc)
+            && $filter_command->srvc
+        );
 
         if ($filter_service_stuff)
         {
             $sql['service_stuff'] = $sql_map;
 
-            if (isset($filter['service']))
+            if (in_array('srvc', $filter_command->srvc))
             {
                 $sql['service_stuff']['where_or'][] = 't.service_stuff = \'service\'';
                 $params['f']['service'] = '1';
             }
 
-            if (isset($filter['stuff']))
+            if (in_array('stff', $filter_command->srvc))
             {
                 $sql['service_stuff']['where_or'][] = 't.service_stuff = \'stuff\'';
                 $params['f']['stuff'] = '1';
             }
 
-            if (isset($filter['null-service-stuff']))
+            if (in_array('null', $filter_command->srvc))
             {
                 $sql['service_stuff']['where_or'][] = 't.service_stuff is null';
                 $params['f']['null-service-stuff'] = '1';
@@ -513,7 +509,7 @@ class TransactionsController extends AbstractController
         $count_ary = [
             'service'               => 0,
             'stuff'                 => 0,
-            'null-service-stuff'    => 0,
+            'null_service_stuff'    => 0,
         ];
 
         if ($service_stuff_enabled)
@@ -534,7 +530,7 @@ class TransactionsController extends AbstractController
 
             while($row = $stmt->fetch())
             {
-                $count_ary[$row['service_stuff'] ?? 'null-service-stuff'] = $row['count'];
+                $count_ary[$row['service_stuff'] ?? 'null_service_stuff'] = $row['count'];
             }
         }
 
@@ -591,244 +587,14 @@ class TransactionsController extends AbstractController
             || isset($filter_command->to_account)
             || isset($filter_command->from_date)
             || isset($filter_command->to_date)
-            || isset($filter_command->service)
-            || isset($filter_command->stuff)
-            || isset($filter_command->null_service_stuff)
+            || $filter_service_stuff
         );
+
+        $filter_collapse = !($filtered || $filter_form_error);
 
         $template = 'transactions/transactions_';
         $template .= isset($uid) ? 'uid' : 'list';
         $template .= '.html.twig';
-
-        $flt = '';
-
-        $flt .= '<div class="panel panel-info';
-        $flt .= $filtered ? '' : ' collapse';
-        $flt .= '" id="filter">';
-        $flt .= '<div class="panel-heading">';
-
-        $flt .= '<form method="get">';
-
-        $flt .= '<div class="row">';
-
-        $flt .= '<div class="col-sm-12">';
-        $flt .= '<div class="input-group margin-bottom">';
-        $flt .= '<span class="input-group-addon">';
-        $flt .= '<i class="fa fa-search"></i>';
-        $flt .= '</span>';
-        $flt .= '<input type="text" class="form-control" id="q" value="';
-        $flt .= $filter['q'] ?? '';
-        $flt .= '" name="f[q]" placeholder="Zoekterm">';
-        $flt .= '</div>';
-        $flt .= '</div>';
-
-        $flt .= '</div>';
-
-        $flt .= '<div class="row">';
-
-        $flt .= '<div class="col-sm-5">';
-        $flt .= '<div class="input-group margin-bottom">';
-        $flt .= '<span class="input-group-addon" id="fcode_addon">Van ';
-        $flt .= '<span class="fa fa-user"></span></span>';
-
-        $typeahead_service->ini($pp)
-            ->add('accounts', ['status' => 'active']);
-
-        if (!$pp->is_guest())
-        {
-            $typeahead_service->add('accounts', ['status' => 'extern']);
-        }
-
-        if ($pp->is_admin())
-        {
-            $typeahead_service->add('accounts', ['status' => 'inactive']);
-            $typeahead_service->add('accounts', ['status' => 'ip']);
-            $typeahead_service->add('accounts', ['status' => 'im']);
-        }
-
-        $flt .= '<input type="text" class="form-control" ';
-        $flt .= 'aria-describedby="fcode_addon" ';
-
-        $flt .= 'data-typeahead="';
-
-        $flt .= $typeahead_service->str([
-            'filter'		=> 'accounts',
-            'new_users_days'        => $new_users_days,
-            'show_new_status'       => $show_new_status,
-            'show_leaving_status'   => $show_leaving_status,
-        ]);
-
-        $flt .= '" ';
-
-        $flt .= 'name="f[fcode]" id="fcode" placeholder="Account Code" ';
-        $flt .= 'value="';
-        $flt .= $fcode ?? '';
-        $flt .= '">';
-
-        $flt .= '</div>';
-        $flt .= '</div>';
-
-        $andor_options = [
-            'and'	=> 'EN',
-            'or'	=> 'OF',
-            'nor'	=> 'NOCH',
-        ];
-
-        $flt .= '<div class="col-sm-2">';
-        $flt .= '<select class="form-control margin-bottom" name="f[andor]">';
-        $flt .= $select_render->get_options($andor_options, $filter['andor'] ?? 'and');
-        $flt .= '</select>';
-        $flt .= '</div>';
-
-        $flt .= '<div class="col-sm-5">';
-        $flt .= '<div class="input-group margin-bottom">';
-        $flt .= '<span class="input-group-addon" id="tcode_addon">Naar ';
-        $flt .= '<span class="fa fa-user"></span></span>';
-        $flt .= '<input type="text" class="form-control margin-bottom" ';
-        $flt .= 'data-typeahead-source="fcode" ';
-        $flt .= 'placeholder="Account Code" ';
-        $flt .= 'aria-describedby="tcode_addon" ';
-        $flt .= 'name="f[tcode]" value="';
-        $flt .= $tcode ?? '';
-        $flt .= '">';
-        $flt .= '</div>';
-        $flt .= '</div>';
-
-        $flt .= '</div>';
-
-        $flt .= '<div class="row">';
-
-        $date_col_width = $service_stuff_enabled ? '6' : '5';
-
-        $flt .= '<div class="col-sm-' . $date_col_width . '">';
-        $flt .= '<div class="input-group margin-bottom">';
-        $flt .= '<span class="input-group-addon" id="fdate_addon">Vanaf ';
-        $flt .= '<span class="fa fa-calendar"></span></span>';
-        $flt .= '<input type="text" class="form-control margin-bottom" ';
-        $flt .= 'aria-describedby="fdate_addon" ';
-
-        $flt .= 'id="fdate" name="f[fdate]" ';
-        $flt .= 'value="';
-        $flt .= $fdate ?? '';
-        $flt .= '" ';
-        $flt .= 'data-provide="datepicker" ';
-        $flt .= 'data-date-format="';
-        $flt .= $date_format_service->datepicker_format($pp->schema());
-        $flt .= '" ';
-        $flt .= 'data-date-default-view-date="-1y" ';
-        $flt .= 'data-date-end-date="0d" ';
-        $flt .= 'data-date-language="nl" ';
-        $flt .= 'data-date-today-highlight="true" ';
-        $flt .= 'data-date-autoclose="true" ';
-        $flt .= 'data-date-immediate-updates="true" ';
-        $flt .= 'data-date-orientation="bottom" ';
-        $flt .= 'placeholder="';
-        $flt .= $date_format_service->datepicker_placeholder($pp->schema());
-        $flt .= '">';
-
-        $flt .= '</div>';
-        $flt .= '</div>';
-
-        $flt .= '<div class="col-sm-' . $date_col_width . '">';
-        $flt .= '<div class="input-group margin-bottom">';
-        $flt .= '<span class="input-group-addon" id="tdate_addon">Tot ';
-        $flt .= '<span class="fa fa-calendar"></span></span>';
-        $flt .= '<input type="text" class="form-control margin-bottom" ';
-        $flt .= 'aria-describedby="tdate_addon" ';
-
-        $flt .= 'id="tdate" name="f[tdate]" ';
-        $flt .= 'value="';
-        $flt .= $tdate ?? '';
-        $flt .= '" ';
-        $flt .= 'data-provide="datepicker" ';
-        $flt .= 'data-date-format="';
-        $flt .= $date_format_service->datepicker_format($pp->schema());
-        $flt .= '" ';
-        $flt .= 'data-date-end-date="0d" ';
-        $flt .= 'data-date-language="nl" ';
-        $flt .= 'data-date-today-highlight="true" ';
-        $flt .= 'data-date-autoclose="true" ';
-        $flt .= 'data-date-immediate-updates="true" ';
-        $flt .= 'data-date-orientation="bottom" ';
-        $flt .= 'placeholder="';
-        $flt .= $date_format_service->datepicker_placeholder($pp->schema());
-        $flt .= '">';
-
-        $flt .= '</div>';
-        $flt .= '</div>';
-
-        if ($service_stuff_enabled)
-        {
-            $flt .= '<div class="col-sm-10">';
-            $flt .= '<div class="input-group margin-bottom custom-checkbox">';
-
-            foreach (MessageTypeCnst::SERVICE_STUFF_TPL_ARY as $key => $d)
-            {
-                if ($key === 'null-service-stuff' && !$count_ary['null-service-stuff'])
-                {
-                    continue;
-                }
-
-                $label = '<span class="btn btn-';
-                $label .= $d['btn_class'];
-                $label .= '"';
-
-                if (isset($d['title']))
-                {
-                    $label .= ' title="' . $d['title'] . '"';
-                }
-
-                $label .= '>';
-                $label .= $d['label'];
-                $label .= ' (';
-                $label .= $count_ary[$key];
-                $label .= ')</span>';
-
-                $flt .= strtr(BulkCnst::TPL_CHECKBOX_INLINE, [
-                    '%name%'        => 'f[' . $key . ']',
-                    '%attr%'        => isset($filter[$key]) ? ' checked' : '',
-                    '%label%'       => $label,
-                ]);
-            }
-
-            $flt .= '</div>';
-            $flt .= '</div>';
-        }
-
-        $flt .= '<div class="col-sm-2">';
-        $flt .= '<input type="submit" value="Toon" ';
-        $flt .= 'class="btn btn-default btn-block">';
-        $flt .= '</div>';
-
-        $flt .= '</div>';
-
-        $params_form = array_merge($params, $pp->ary());
-        unset($params_form['role_short']);
-        unset($params_form['system']);
-        unset($params_form['f']);
-        unset($params_form['p']['start']);
-
-        $params_form = http_build_query($params_form, 'prefix', '&');
-        $params_form = urldecode($params_form);
-        $params_form = explode('&', $params_form);
-
-        foreach ($params_form as $param)
-        {
-            [$name, $value] = explode('=', $param);
-
-            if (!isset($value) || $value === '')
-            {
-                continue;
-            }
-
-            $flt .= '<input name="' . $name . '" ';
-            $flt .= 'value="' . $value . '" type="hidden">';
-        }
-
-        $flt .= '</form>';
-
-        $flt .= '</div>';
-        $flt .= '</div>';
 
         $out = '';
 
@@ -1188,12 +954,13 @@ class TransactionsController extends AbstractController
 
         return $this->render($template, [
             'data_list_raw'         => $out,
-            'filter_form_raw'       => $flt,
             'filter_form'           => $filter_form->createView(),
+            'filtered'              => $filtered,
+            'filter_collapse'       => $filter_collapse,
+            'count_ary'             => $count_ary,
             'bulk_actions_raw'      => $blk ?? '',
             'row_count'             => $row_count,
             'amount_sum'            => $amount_sum,
-            'filtered'              => $filtered,
             'is_self'               => $is_self,
             'bulk_actions_enabled'  => $bulk_actions_enabled,
             'uid'                   => $uid,

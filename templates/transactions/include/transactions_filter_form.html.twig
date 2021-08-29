@@ -45,11 +45,11 @@
     }) -}}
 
 </div>
-<div class="row">
+<div class="row{%- if filter_form.srvc is defined %} mb-5p{%- endif -%}">
 
     {{- form_row(filter_form.from_date, {
         'label': false,
-        'col': 'sm-5',
+        'col': filter_form.srvc is defined ? 'sm-6' : 'sm-5',
         'pre_addon': {
             'text': 'label.from_date'|trans,
         }
@@ -57,12 +57,24 @@
 
     {{- form_row(filter_form.to_date, {
         'label': false,
-        'col': 'sm-5',
+        'col': filter_form.srvc is defined ? 'sm-6' : 'sm-5',
         'pre_addon': {
             'text': 'label.to_date'|trans,
         }
     }) -}}
 
+{%- if filter_form.srvc is defined -%}
+</div>
+<div class="row">
+
+    {{- form_row(filter_form.srvc, {
+        'label': false,
+        'col': 'sm-10',
+        'choice_translation_parameters': count_ary,
+        'count_ary': count_ary
+    }) -}}
+
+{%- endif -%}
 
     {{- form_row(filter_form.show, {
         'label': 'btn.show',
@@ -71,5 +83,4 @@
             'class': 'btn btn-default btn-block'
         }
     }) -}}
-
 </div>

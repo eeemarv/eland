@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Transactions;
 
 use App\Render\LinkRender;
 use App\Repository\AccountRepository;
@@ -14,11 +14,11 @@ use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
 use Symfony\Component\Routing\Annotation\Route;
 
-class PlotUserTransactionsController extends AbstractController
+class TransactionsPlotUserController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/plot-user-transactions/{user_id}/{days}',
-        name: 'plot_user_transactions',
+        '/{system}/{role_short}/transactions/plot-user/{user_id}/{days}',
+        name: 'transactions_plot_user',
         methods: ['GET'],
         requirements: [
             'user_id'       => '%assert.id%',

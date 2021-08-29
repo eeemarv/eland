@@ -3,9 +3,9 @@ jQuery(function(){
 	var $chart = $('#chartdiv');
 	var $donut = $('#donutdiv');
 
-	var path_plot_users_transactions = $chart.data('plot-user-transactions');
+	var path_transactions_plot_user = $chart.data('transactions-plot-user');
 
-	$.get(path_plot_users_transactions)
+	$.get(path_transactions_plot_user)
 	.done(function(data){
 
 		var transactions = data.transactions;

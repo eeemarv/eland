@@ -98,7 +98,7 @@
             <span class="label-text"></span>
             {%- if label is not same as(false) -%}
                 {%- if 'btn_choice' in form.parent.vars.block_prefixes -%}
-                    {{- lbl.btn(label) -}}
+                    {{- lbl.btn(label, label_count_suffix) -}}
                 {%- elseif translation_domain is same as(false) -%}
                     {%- if label_html is same as(false) -%}
                         {{- label -}}
@@ -117,13 +117,13 @@
     {%- endif -%}
 {%- endblock checkbox_radio_label %}
 
-{% block choice_label -%}
+{%- block choice_label -%}
     {# remove the checkbox-inline and radio-inline class, it's only useful for embed labels #}
     {%- set label_attr = label_attr|merge({class: label_attr.class|default('')|replace({'checkbox-inline': '', 'radio-inline': ''})|trim}) -%}
     <div>
         {{- block('form_label') -}}
     </div>
-{% endblock %}
+{%- endblock choice_label -%}
 
 {%- block captcha_widget -%}
     {{- block('form_widget') -}}
@@ -146,7 +146,7 @@
     {{- block('form_help') -}}
 {%- endblock typeahead_help -%}
 
-{% block datepicker_widget -%}
+{%- block datepicker_widget -%}
     {%- set attr = attr|merge({
         'data-provide': 'datepicker',
         'data-date-language': app.request.locale,
@@ -159,10 +159,21 @@
         'fa': 'calendar',
     }) -%}
     {{- block('form_widget') -}}
-{%- endblock datepicker_widget %}
+{%- endblock datepicker_widget -%}
 
-{% block form_row -%}
-    {%- if col is not defined -%}
+{%- block form_row -%}
+    {%- if col is defined -%}
+        {%- set widget_attr = {} -%}
+        {%- if help is not empty -%}
+            {%- set widget_attr = {attr: {'aria-describedby': id ~"_help"}} -%}
+        {%- endif -%}
+        <div{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' col-' ~ col ~ ((not compound or force_error|default(false)) and not valid ? ' has-error'))|trim})} %}{{ block('attributes') }}{% endwith %}>
+            {{- form_label(form) }}
+            {{ form_widget(form, widget_attr) }} {# -#}
+            {{- form_help(form) -}}
+            {{ form_errors(form) }} {# -#}
+        </div> {# -#}
+    {%- else -%}
         {%- set widget_attr = {} -%}
         {%- if help is not empty -%}
             {%- set widget_attr = {attr: {'aria-describedby': id ~"_help"}} -%}
@@ -173,18 +184,30 @@
             {{- form_help(form) -}}
             {{ form_errors(form) }} {# -#}
         </div> {# -#}
-    {%- else -%}
-        {%- set widget_attr = {} -%}
-        {%- if help is not empty -%}
-            {%- set widget_attr = {attr: {'aria-describedby': id ~"_help"}} -%}
-        {%- endif -%}
-        <div{% with {attr: row_attr|merge({class: (row_attr.class|default('') ~ ' col-' ~ col ~ ((not compound or force_error|default(false)) and not valid ? ' has-error'))|trim})} %}{{ block('attributes') }}{% endwith %}>
-            {{ form_widget(form, widget_attr) }} {# -#}
-            {{- form_help(form) -}}
-            {{ form_errors(form) }} {# -#}
-        </div> {# -#}
     {%- endif -%}
-{%- endblock form_row %}
+{%- endblock form_row -%}
+
+{% block choice_widget_expanded -%}
+    {%- if '-inline' in label_attr.class|default('') -%}
+        {%- for child in form %}
+            {{- form_widget(child, {
+                parent_label_class: label_attr.class|default(''),
+                translation_domain: choice_translation_domain,
+                'label_count_suffix': count_ary is defined ? (count_ary[child.vars.label ?: ''] ?? null) : null,
+            }) -}}
+        {% endfor -%}
+    {%- else -%}
+        <div {{ block('widget_container_attributes') }}>
+            {%- for child in form %}
+                {{- form_widget(child, {
+                    parent_label_class: label_attr.class|default(''),
+                    translation_domain: choice_translation_domain,
+                    'label_count_suffix': count_ary is defined ? (count_ary[child.vars.label ?: ''] ?? null) : null,
+                }) -}}
+            {%- endfor -%}
+        </div>
+    {%- endif -%}
+{%- endblock choice_widget_expanded %}
 
 {%- block button_row -%}
     {%- if col is defined -%}

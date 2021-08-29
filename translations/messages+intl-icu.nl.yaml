@@ -308,6 +308,15 @@ view:
   map: Kaart
   extended: Lijst met omschrijvingen
 
+service_stuff:
+  service:
+    label: Diensten
+  stuff:
+    label: Spullen
+  null_service_stuff:
+    label: D/S onbepaald
+    title: Diensten of spullen onbepaald
+
 system_menu:
   linked_intersystem: Gekoppeld interSysteem
   linked_intersystems: Gekoppelde interSystemen

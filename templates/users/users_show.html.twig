@@ -3,7 +3,7 @@
 {%- block assets_add -%}
     {{- parent() -}}
     {{- assets_add(['leaflet', 'contacts_user_map.js']) -}}
-    {{- assets_add(['jqplot', 'plot_user_transactions.js']) -}}
+    {{- assets_add(['jqplot', 'transactions_plot_user.js']) -}}
     {%- if pp_role('admin') or su_is_owner(id) -%}
         {{- assets_add(['fileupload', 'upload_image.js']) -}}
     {%- endif -%}
@@ -74,8 +74,8 @@
 {%- block heading_title -%}
     {{- 'users_show.title'|trans({
         'self': is_self ? 'self' : 'other',
-        'user': account(id, schema)|link('users_show', {'id': id}),
-    })|raw -}}
+        'user': account(id, schema),
+    }) -}}
     {{- account_status(id, schema)|raw -}}
     {%- if pp_role('admin') -%}
         {%- if intersystem_missing -%}

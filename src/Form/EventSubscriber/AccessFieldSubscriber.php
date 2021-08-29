@@ -103,6 +103,7 @@ class AccessFieldSubscriber implements EventSubscriberInterface
 
             $options = [
                 'choices'   => $access_options,
+                'multiple'  => false,
             ];
 
             if (isset($data->$name))

@@ -23,25 +23,25 @@ class AccountRuntime implements RuntimeExtensionInterface
 		$user = $this->user_cache_service->get($id, $schema);
 		$code = $user['code'] ?? '***';
 		$name = $user['name'] ?? '***';
-		return htmlspecialchars($code . ' ' . $name);
+		return $code . ' ' . $name;
 	}
 
 	public function get_full_name(int $id, string $schema):string
 	{
 		$user = $this->user_cache_service->get($id, $schema);
-		return htmlspecialchars($user['full_name']);
+		return $user['full_name'];
 	}
 
 	public function get_name(int $id, string $schema):string
 	{
 		$user = $this->user_cache_service->get($id, $schema);
-		return htmlspecialchars($user['name']);
+		return $user['name'];
 	}
 
 	public function get_code(int $id, string $schema):string
 	{
 		$user = $this->user_cache_service->get($id, $schema);
-		return htmlspecialchars($user['code']);
+		return $user['code'];
 	}
 
 	public function get_balance(int $id, string $schema):int

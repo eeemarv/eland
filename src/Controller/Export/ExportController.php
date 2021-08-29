@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Export;
 
 use App\Repository\SchemaRepository;
 use App\Service\PageParamsService;

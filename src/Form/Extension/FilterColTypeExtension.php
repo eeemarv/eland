@@ -13,10 +13,8 @@ class FilterColTypeExtension extends AbstractTypeExtension
 {
     public static function getExtendedTypes(): iterable
     {
-        return [
-            TextType::class,
-            ButtonType::class,
-        ];
+        yield TextType::class;
+        yield ButtonType::class;
     }
 
     public function configureOptions(OptionsResolver $resolver): void

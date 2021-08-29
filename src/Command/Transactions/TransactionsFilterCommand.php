@@ -25,4 +25,7 @@ class TransactionsFilterCommand implements CommandInterface
 
     #[Type('string')]
     public $to_date;
+
+    #[Choice(choices:['srvc', 'stff', 'null'], multiple: true)]
+    public $srvc;
 }

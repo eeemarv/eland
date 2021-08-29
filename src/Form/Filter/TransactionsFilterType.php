@@ -3,21 +3,22 @@
 namespace App\Form\Filter;
 
 use App\Command\Transactions\TransactionsFilterCommand;
+use App\Form\Type\BtnChoiceType;
 use App\Form\Type\DatepickerType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use App\Form\Type\TypeaheadType;
+use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class TransactionsFilterType extends AbstractType
 {
-    const ADMIN_USERS_STATUS = ['inactive', 'ip', 'im', 'extern'];
-
     public function __construct(
+        protected ConfigService $config_service,
         protected PageParamsService $pp,
         protected UrlGeneratorInterface $url_generator
     )
@@ -29,14 +30,22 @@ class TransactionsFilterType extends AbstractType
         array $options
     ):void
     {
-        $typeahead_add = [['accounts', ['status' => 'active']]];
+        $service_stuff_enabled = $this->config_service->get_bool('transactions.fields.service_stuff.enabled', $this->pp->schema());
+
+        $typeahead_add = [];
+
+        $typeahead_add[] = ['accounts', ['status' => 'active']];
+
+        if (!$this->pp->is_guest())
+        {
+            $typeahead_add[] = ['accounts', ['status' => 'extern']];
+        }
 
         if ($this->pp->is_admin())
         {
-            foreach (self::ADMIN_USERS_STATUS as $status)
-            {
-                $typeadhead_add[] = ['accounts', ['status' => $status]];
-            }
+            $typeahead_add[] = ['accounts', ['status' => 'inactive']];
+            $typeahead_add[] = ['accounts', ['status' => 'im']];
+            $typeahead_add[] = ['accounts', ['status' => 'ip']];
         }
 
         $builder->add('q', TextType::class, [
@@ -79,6 +88,21 @@ class TransactionsFilterType extends AbstractType
             'required'  => false,
         ]);
 
+        if ($service_stuff_enabled)
+        {
+            $choices = [
+                'service'               => 'srvc',
+                'stuff'                 => 'stff',
+                'null_service_stuff'    => 'null',
+            ];
+
+            $builder->add('srvc', BtnChoiceType::class, [
+                'choices'       => $choices,
+                'multiple'      => true,
+                'required'      => false,
+            ]);
+        }
+
         $action = $this->url_generator->generate('transactions', $this->pp->ary(), UrlGeneratorInterface::ABSOLUTE_PATH);
 
         $builder->setAction($action);
@@ -97,7 +121,7 @@ class TransactionsFilterType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class'    => TransactionsFilterCommand::class,
+            'data_class'                => TransactionsFilterCommand::class,
         ]);
     }
 }

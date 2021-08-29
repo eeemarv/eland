@@ -1,32 +1,16 @@
-{%- macro lbl(id) -%}
-    {%- import _self as s -%}
-    {{- s.span(id, 'lbl') -}}
-{%- endmacro lbl -%}
-
-{%- macro btn(id) -%}
-    {%- import _self as s -%}
-    {{- s.span(id, 'btn') -}}
-{%- endmacro btn -%}
-
-{%- macro btn_dl(id, label) -%}
-    {%- import _self as s -%}
-    <dl>
-    </dl>
-{%- endmacro btn_dl -%}
-
-{%- macro dl(id, type, label) -%}
+{%- macro dl(id, label) -%}
     {%- import _self as s -%}
     <dl>
         <dt>
             {{- label|trans -}}
         </dt>
         <dd>
-            {{- s.span(id, type) -}}
+            {{- s.btn(id) -}}
         </dd>
     </dl>
 {%- endmacro dl -%}
 
-{%- macro span(id, type) -%}
+{%- macro btn(id, count) -%}
     {%- set render = {
         'anonymous': {
             'class': 'danger',
@@ -53,27 +37,33 @@
             'label': 'label.offer',
         },
         'want': {
-            'class': 'secondary',
+            'class': 'default-2',
             'label': 'label.want'
         },
         'temporal': {
-            'class': 'default border border-secondary-li',
+            'class': 'default',
             'label': 'label.temporal'
         },
         'permanent': {
-            'class': 'secondary',
+            'class': 'default-2',
             'label': 'label.permanent'
         },
         'service': {
-            'class': 'default border border-secondary-li',
-            'label': 'label.services'
+            'class': 'default',
+            'label': 'service_stuff.service.label'
         },
         'stuff': {
-            'class': 'secondary',
-            'label': 'label.stuff'
+            'class': 'default-2',
+            'label': 'service_stuff.stuff.label'
+        },
+        'null_service_stuff': {
+            'class': 'danger',
+            'label': 'service_stuff.null_service_stuff.label',
+            'title': 'service_stuff.null_service_stuff.title'
         }
     } -%}
-    <span class="{{- type }} {{ type -}}-{{- render[id].class -}}"{%- if render[id].title is defined %} title="{{- render[id].title|trans -}}"{%- endif -%}>
-        {{- render[id].label|trans -}}
+
+    <span class="btn btn-{{- render[id].class -}}"{%- if render[id].title is defined %} title="{{- render[id].title|trans -}}"{%- endif -%}>
+        {{- render[id].label|trans -}}{%- if count %} ({{- count -}}){%- endif -%}
     </span>
-{%- endmacro span -%}
+{%- endmacro btn -%}

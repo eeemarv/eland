@@ -5,18 +5,48 @@ namespace App\Form\Type;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormView;
+use Symfony\Component\OptionsResolver\Options;
 
 class BtnChoiceType extends AbstractType
 {
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+
+    }
+
+    public function buildView(FormView $view, FormInterface $form, array $options)
+    {
+        parent::buildView($view, $form, $options);
+
+        if (isset($options['count_ary']))
+        {
+            $view->vars['count_ary'] = $options['count_ary'];
+        }
+    }
+
     public function configureOptions(OptionsResolver $resolver):void
     {
-        $resolver->setDefaults([
-            'expanded'          => true,
-            'multiple'          => false,
-            'label_attr'        => [
-                'class'     => 'radio-inline radio-custom',
-            ],
-        ]);
+        $resolver->setDefault('expanded', true);
+        $resolver->setDefault('multiple', false);
+        $resolver->setDefault('label_attr', function (Options $options) {
+            if (isset($options['multiple']) && $options['multiple'] === true)
+            {
+                return [
+                    'class' => 'checkbox-inline checkbox-custom',
+                ];
+            }
+
+            return [
+                'class' => 'radio-inline radio-custom',
+            ];
+        });
+        /*
+        $resolver->setDefault('count_ary', []);
+        $resolver->setAllowedTypes('count_ary', ['array']);
+        */
     }
 
     public function getParent():string

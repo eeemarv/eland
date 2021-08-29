@@ -661,8 +661,8 @@ class UsersShowController extends AbstractController
             $out .= '<div class="col-md-6">';
             $out .= '<div id="chartdiv" data-height="480px" data-width="960px" ';
 
-            $out .= 'data-plot-user-transactions="';
-            $out .= htmlspecialchars($link_render->context_path('plot_user_transactions',
+            $out .= 'data-transactions-plot-user="';
+            $out .= htmlspecialchars($link_render->context_path('transactions_plot_user',
                 $pp->ary(), ['user_id' => $id, 'days' => $tdays]));
 
             $out .= '">';
