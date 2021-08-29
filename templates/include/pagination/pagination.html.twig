@@ -15,17 +15,19 @@
 
 <div class="row print-hide">
 	<div class="col-md-12">
-		<ul class="pagination">
-			{%- if min_adj -%}
-				{%- include 'include/pagination/pagination_link.html.twig' with {'p': 0} -%}
-			{%- endif -%}
-			{%- for p in min_adj..max_adj -%}
-				{%- include 'include/pagination/pagination_link.html.twig' with {'p': p} -%}
-			{%- endfor -%}
-			{%- if max_adj != (page_num - 1) -%}
-				{%- include 'include/pagination/pagination_link.html.twig' with {'p': page_num - 1} -%}
-			{%- endif -%}
-		</ul>
+		{%- if row_count -%}
+			<ul class="pagination">
+				{%- if min_adj -%}
+					{%- include 'include/pagination/pagination_link.html.twig' with {'p': 0} -%}
+				{%- endif -%}
+				{%- for p in min_adj..max_adj -%}
+					{%- include 'include/pagination/pagination_link.html.twig' with {'p': p} -%}
+				{%- endfor -%}
+				{%- if max_adj != (page_num - 1) -%}
+					{%- include 'include/pagination/pagination_link.html.twig' with {'p': page_num - 1} -%}
+				{%- endif -%}
+			</ul>
+		{%- endif -%}
 		<div class="pull-right hidden-xs">
 			<div>
 				{{- 'pagination.row_count_and_page_pos'|trans({
