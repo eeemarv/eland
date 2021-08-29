@@ -16,7 +16,6 @@ class FlattenRuntime implements RuntimeExtensionInterface
 		$out_ary = [];
 
         $params = http_build_query($params, 'prefix', '&');
-        $params = urldecode($params);
         $params = explode('&', $params);
 
         foreach ($params as $param)
@@ -28,7 +27,7 @@ class FlattenRuntime implements RuntimeExtensionInterface
                 continue;
             }
 
-			$out_ary[$name] = $value;
+			$out_ary[$name] = urldecode($value);
         }
 
 		return $out_ary;
