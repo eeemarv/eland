@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Form\Post\Categories;
+namespace App\Form\Type\Categories;
 
 use App\Command\Categories\CategoriesNameCommand;
 use Symfony\Component\Form\AbstractType;

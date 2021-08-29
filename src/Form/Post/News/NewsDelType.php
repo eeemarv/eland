@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Form\Post\News;
+namespace App\Form\Type\News;
 
 use App\Command\News\NewsCommand;
 use App\Form\EventSubscriber\AccessFieldSubscriber;

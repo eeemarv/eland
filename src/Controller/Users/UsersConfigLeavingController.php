@@ -3,7 +3,7 @@
 namespace App\Controller\Users;
 
 use App\Command\Users\UsersConfigLeavingCommand;
-use App\Form\Post\Users\UsersConfigLeavingType;
+use App\Form\Type\Users\UsersConfigLeavingType;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;

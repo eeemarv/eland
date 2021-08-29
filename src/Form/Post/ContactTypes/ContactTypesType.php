@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Form\Post\ContactTypes;
+namespace App\Form\Type\ContactTypes;
 
 use App\Command\ContactTypes\ContactTypesCommand;
 use Symfony\Component\Form\AbstractType;

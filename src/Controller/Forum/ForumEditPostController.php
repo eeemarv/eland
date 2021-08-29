@@ -3,7 +3,7 @@
 namespace App\Controller\Forum;
 
 use App\Command\Forum\ForumPostCommand;
-use App\Form\Post\Forum\ForumPostType;
+use App\Form\Type\Forum\ForumPostType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

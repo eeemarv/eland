@@ -3,7 +3,7 @@
 namespace App\Controller\Categories;
 
 use App\Command\Categories\CategoriesNameCommand;
-use App\Form\Post\Categories\CategoriesNameType;
+use App\Form\Type\Categories\CategoriesNameType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

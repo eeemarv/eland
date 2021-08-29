@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Form\Post\Users;
+namespace App\Form\Type\Users;
 
 use App\Command\Users\UsersPeriodicMailCommand;
 use Symfony\Component\Form\AbstractType;

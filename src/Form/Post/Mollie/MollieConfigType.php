@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Form\Post\Mollie;
+namespace App\Form\Type\Mollie;
 
 use App\Command\Mollie\MollieConfigCommand;
 use Symfony\Component\Form\AbstractType;

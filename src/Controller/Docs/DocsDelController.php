@@ -3,7 +3,7 @@
 namespace App\Controller\Docs;
 
 use App\Command\Docs\DocsCommand;
-use App\Form\Post\Docs\DocsDelType;
+use App\Form\Type\Docs\DocsDelType;
 use App\Repository\DocRepository;
 use App\Service\AlertService;
 use App\Service\ConfigService;

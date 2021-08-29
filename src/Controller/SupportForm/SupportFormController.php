@@ -3,7 +3,7 @@
 namespace App\Controller\SupportForm;
 
 use App\Command\SupportForm\SupportFormCommand;
-use App\Form\Post\SupportForm\SupportFormType;
+use App\Form\Type\SupportForm\SupportFormType;
 use App\Queue\MailQueue;
 use App\Service\AlertService;
 use App\Service\ConfigService;

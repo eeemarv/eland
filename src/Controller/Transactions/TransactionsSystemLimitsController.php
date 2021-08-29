@@ -3,7 +3,7 @@
 namespace App\Controller\Transactions;
 
 use App\Command\Transactions\TransactionsSystemLimitsCommand;
-use App\Form\Post\Transactions\TransactionsSystemLimitsType;
+use App\Form\Type\Transactions\TransactionsSystemLimitsType;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;

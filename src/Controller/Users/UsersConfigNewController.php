@@ -3,7 +3,7 @@
 namespace App\Controller\Users;
 
 use App\Command\Users\UsersConfigNewCommand;
-use App\Form\Post\Users\UsersConfigNewType;
+use App\Form\Type\Users\UsersConfigNewType;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;

@@ -3,7 +3,7 @@
 namespace App\Controller\Config;
 
 use App\Command\Config\ConfigMailAddrCommand;
-use App\Form\Post\Config\ConfigMailAddrType;
+use App\Form\Type\Config\ConfigMailAddrType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

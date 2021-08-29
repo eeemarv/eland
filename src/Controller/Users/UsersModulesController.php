@@ -3,7 +3,7 @@
 namespace App\Controller\Users;
 
 use App\Command\Users\UsersModulesCommand;
-use App\Form\Post\Users\UsersModulesType;
+use App\Form\Type\Users\UsersModulesType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

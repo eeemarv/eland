@@ -3,7 +3,7 @@
 namespace App\EventSubscriber;
 
 use App\Command\Cms\CmsEditCommand;
-use App\Form\Post\Cms\CmsEditType;
+use App\Form\Type\Cms\CmsEditType;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;

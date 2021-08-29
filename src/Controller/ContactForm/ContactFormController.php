@@ -3,7 +3,7 @@
 namespace App\Controller\ContactForm;
 
 use App\Command\ContactForm\ContactFormCommand;
-use App\Form\Post\ContactForm\ContactFormType;
+use App\Form\Type\ContactForm\ContactFormType;
 use App\Queue\MailQueue;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

@@ -3,7 +3,7 @@
 namespace App\Controller\News;
 
 use App\Command\News\NewsCommand;
-use App\Form\Post\News\NewsDelType;
+use App\Form\Type\News\NewsDelType;
 use App\Repository\NewsRepository;
 use App\Service\AlertService;
 use App\Service\ConfigService;

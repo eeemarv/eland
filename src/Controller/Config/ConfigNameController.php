@@ -3,7 +3,7 @@
 namespace App\Controller\Config;
 
 use App\Command\Config\ConfigNameCommand;
-use App\Form\Post\Config\ConfigNameType;
+use App\Form\Type\Config\ConfigNameType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

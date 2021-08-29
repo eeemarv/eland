@@ -3,7 +3,7 @@
 namespace App\Controller\Forum;
 
 use App\Command\Forum\ForumPostCommand;
-use App\Form\Post\Forum\ForumPostType;
+use App\Form\Type\Forum\ForumPostType;
 use App\Repository\ForumRepository;
 use App\Service\AlertService;
 use App\Service\ConfigService;

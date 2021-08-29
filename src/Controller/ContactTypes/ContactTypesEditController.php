@@ -3,7 +3,7 @@
 namespace App\Controller\ContactTypes;
 
 use App\Command\ContactTypes\ContactTypesCommand;
-use App\Form\Post\ContactTypes\ContactTypesType;
+use App\Form\Type\ContactTypes\ContactTypesType;
 use App\Repository\ContactRepository;
 use App\Service\AlertService;
 use App\Service\PageParamsService;

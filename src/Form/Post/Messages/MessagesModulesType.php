@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Form\Post\Messages;
+namespace App\Form\Type\Messages;
 
 use App\Command\Messages\MessagesModulesCommand;
 use Symfony\Component\Form\AbstractType;

@@ -3,7 +3,7 @@
 namespace App\Controller\Transactions;
 
 use App\Command\Transactions\TransactionsCurrencyCommand;
-use App\Form\Post\Transactions\TransactionsCurrencyType;
+use App\Form\Type\Transactions\TransactionsCurrencyType;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;

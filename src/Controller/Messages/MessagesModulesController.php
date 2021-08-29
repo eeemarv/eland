@@ -3,7 +3,7 @@
 namespace App\Controller\Messages;
 
 use App\Command\Messages\MessagesModulesCommand;
-use App\Form\Post\Messages\MessagesModulesType;
+use App\Form\Type\Messages\MessagesModulesType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

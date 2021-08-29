@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Form\Post\Forum;
+namespace App\Form\Type\Forum;
 
 use App\Command\Forum\ForumTopicCommand;
 use App\Form\EventSubscriber\AccessFieldSubscriber;

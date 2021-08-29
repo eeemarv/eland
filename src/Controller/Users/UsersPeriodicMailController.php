@@ -4,7 +4,7 @@ namespace App\Controller\Users;
 
 use App\Cnst\ConfigCnst;
 use App\Command\Users\UsersPeriodicMailCommand;
-use App\Form\Post\Users\UsersPeriodicMailType;
+use App\Form\Type\Users\UsersPeriodicMailType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

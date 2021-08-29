@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Form\Post\Contacts;
+namespace App\Form\Type\Contacts;
 
 use App\Command\Contacts\ContactsCommand;
 use App\Form\EventSubscriber\AccessFieldSubscriber;

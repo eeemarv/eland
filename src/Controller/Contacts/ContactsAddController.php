@@ -6,7 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Command\Contacts\ContactsCommand;
-use App\Form\Post\Contacts\ContactsType;
+use App\Form\Type\Contacts\ContactsType;
 use App\Queue\GeocodeQueue;
 use App\Service\AlertService;
 use App\Repository\ContactRepository;

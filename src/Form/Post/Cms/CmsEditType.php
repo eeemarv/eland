@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Form\Post\Cms;
+namespace App\Form\Type\Cms;
 
 use App\Command\Cms\CmsEditCommand;
 use Symfony\Component\Form\AbstractType;

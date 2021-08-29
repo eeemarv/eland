@@ -3,7 +3,7 @@
 namespace App\Controller\PasswordReset;
 
 use App\Command\PasswordReset\PasswordResetCommand;
-use App\Form\Post\PasswordReset\PasswordResetType;
+use App\Form\Type\PasswordReset\PasswordResetType;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
 use App\Repository\UserRepository;

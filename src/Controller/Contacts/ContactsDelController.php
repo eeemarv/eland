@@ -3,8 +3,7 @@
 namespace App\Controller\Contacts;
 
 use App\Command\Contacts\ContactsCommand;
-use App\Form\Post\Contacts\ContactsDelType;
-use App\Form\Post\DelType;
+use App\Form\Type\Contacts\ContactsDelType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

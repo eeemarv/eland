@@ -3,7 +3,7 @@
 namespace App\Controller\Config;
 
 use App\Command\Config\ConfigExtUrlCommand;
-use App\Form\Post\Config\ConfigExtUrlType;
+use App\Form\Type\Config\ConfigExtUrlType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Form\Post\PasswordReset;
+namespace App\Form\Type\PasswordReset;
 
 use App\Command\PasswordReset\PasswordResetConfirmCommand;
 use Symfony\Component\Form\AbstractType;

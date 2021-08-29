@@ -3,7 +3,7 @@
 namespace App\Controller\RegisterForm;
 
 use App\Command\RegisterForm\RegisterFormCommand;
-use App\Form\Post\RegisterForm\RegisterFormType;
+use App\Form\Type\RegisterForm\RegisterFormType;
 use App\Queue\MailQueue;
 use App\Service\AlertService;
 use App\Service\ConfigService;

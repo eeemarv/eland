@@ -3,7 +3,7 @@
 namespace App\Controller\Users;
 
 use App\Command\Users\UsersUsernameCommand;
-use App\Form\Post\Users\UsersUsernameType;
+use App\Form\Type\Users\UsersUsernameType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

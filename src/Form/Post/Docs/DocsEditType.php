@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Form\Post\Docs;
+namespace App\Form\Type\Docs;
 
 use App\Command\Docs\DocsCommand;
 use App\Form\EventSubscriber\AccessFieldSubscriber;

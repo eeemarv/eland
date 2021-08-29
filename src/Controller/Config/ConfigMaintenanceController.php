@@ -3,7 +3,7 @@
 namespace App\Controller\Config;
 
 use App\Command\Config\ConfigMaintenanceCommand;
-use App\Form\Post\Config\ConfigMaintenanceType;
+use App\Form\Type\Config\ConfigMaintenanceType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

@@ -3,7 +3,7 @@
 namespace App\Controller\Config;
 
 use App\Command\Config\ConfigDateFormatCommand;
-use App\Form\Post\Config\ConfigDateFormatType;
+use App\Form\Type\Config\ConfigDateFormatType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

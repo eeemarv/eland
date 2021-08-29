@@ -3,7 +3,7 @@
 namespace App\Controller\Categories;
 
 use App\Command\Categories\CategoriesListCommand;
-use App\Form\Post\Categories\CategoriesListType;
+use App\Form\Type\Categories\CategoriesListType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\CategoryRepository;

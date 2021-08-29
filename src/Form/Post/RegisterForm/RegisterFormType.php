@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Form\Post\RegisterForm;
+namespace App\Form\Type\RegisterForm;
 
 use App\Command\RegisterForm\RegisterFormCommand;
 use App\Service\ConfigService;

@@ -3,7 +3,7 @@
 namespace App\Controller\Mollie;
 
 use App\Command\Mollie\MollieConfigCommand;
-use App\Form\Post\Mollie\MollieConfigType;
+use App\Form\Type\Mollie\MollieConfigType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Form\Post\Login;
+namespace App\Form\Type\Login;
 
 use App\Command\Login\LoginCommand;
 use Symfony\Component\Form\AbstractType;

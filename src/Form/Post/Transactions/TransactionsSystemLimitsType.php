@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Form\Post\Transactions;
+namespace App\Form\Type\Transactions;
 
 use App\Command\Transactions\TransactionsSystemLimitsCommand;
 use Symfony\Component\Form\AbstractType;

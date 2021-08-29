@@ -3,7 +3,7 @@
 namespace App\Controller\Users;
 
 use App\Command\Users\UsersPasswordEditCommand;
-use App\Form\Post\Users\UsersPasswordEditType;
+use App\Form\Type\Users\UsersPasswordEditType;
 use App\Queue\MailQueue;
 use App\Repository\UserRepository;
 use App\Security\User;

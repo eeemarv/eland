@@ -3,18 +3,14 @@
 namespace App\Controller\Forum;
 
 use App\Command\Forum\ForumTopicCommand;
-use App\Form\Post\DelType;
-use App\Form\Post\Forum\ForumTopicDelType;
+use App\Form\Type\Forum\ForumTopicDelType;
 use App\Render\AccountRender;
-use App\Render\LinkRender;
 use App\Repository\ForumRepository;
 use App\Service\AlertService;
 use App\Service\ConfigService;
-use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use Doctrine\DBAL\Connection as Db;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

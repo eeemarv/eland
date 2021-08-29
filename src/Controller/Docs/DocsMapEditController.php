@@ -3,7 +3,7 @@
 namespace App\Controller\Docs;
 
 use App\Command\Docs\DocsMapCommand;
-use App\Form\Post\Docs\DocsMapType;
+use App\Form\Type\Docs\DocsMapType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

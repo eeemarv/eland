@@ -3,7 +3,7 @@
 namespace App\Controller\News;
 
 use App\Command\News\NewsCommand;
-use App\Form\Post\News\NewsType;
+use App\Form\Type\News\NewsType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

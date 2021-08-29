@@ -3,7 +3,7 @@
 namespace App\Controller\Messages;
 
 use App\Command\Messages\MessagesCleanupCommand;
-use App\Form\Post\Messages\MessagesCleanupType;
+use App\Form\Type\Messages\MessagesCleanupType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

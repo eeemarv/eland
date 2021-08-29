@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Form\Post\Config;
+namespace App\Form\Type\Config;
 
 use App\Command\Config\ConfigMailAddrCommand;
 use Symfony\Component\Form\AbstractType;

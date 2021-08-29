@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Form\Post\Config;
+namespace App\Form\Type\Config;
 
 use App\Cnst\ConfigCnst;
 use App\Command\Config\ConfigLandingPageCommand;

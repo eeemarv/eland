@@ -3,7 +3,7 @@
 namespace App\Controller\Transactions;
 
 use App\Command\Transactions\TransactionsAutoMinLimitCommand;
-use App\Form\Post\Transactions\TransactionsAutoMinLimitType;
+use App\Form\Type\Transactions\TransactionsAutoMinLimitType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

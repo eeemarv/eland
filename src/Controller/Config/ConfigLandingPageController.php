@@ -3,7 +3,7 @@
 namespace App\Controller\Config;
 
 use App\Command\Config\ConfigLandingPageCommand;
-use App\Form\Post\Config\ConfigLandingPageType;
+use App\Form\Type\Config\ConfigLandingPageType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

@@ -4,7 +4,7 @@ namespace App\Controller\Cms;
 
 use App\Cnst\RoleCnst;
 use App\Command\Cms\CmsEditCommand;
-use App\Form\Post\Cms\CmsEditType;
+use App\Form\Type\Cms\CmsEditType;
 use App\HtmlProcess\HtmlPurifier;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;

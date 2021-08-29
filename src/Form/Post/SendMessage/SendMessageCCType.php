@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Form\Post\SendMessage;
+namespace App\Form\Type\SendMessage;
 
 use App\Command\SendMessage\SendMessageCCCommand;
 use Symfony\Component\Form\AbstractType;

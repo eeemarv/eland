@@ -3,7 +3,7 @@
 namespace App\Controller\News;
 
 use App\Command\News\NewsSortCommand;
-use App\Form\Post\News\NewsSortType;
+use App\Form\Type\News\NewsSortType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

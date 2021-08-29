@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Form\Post\SupportForm;
+namespace App\Form\Type\SupportForm;
 
 use App\Command\SupportForm\SupportFormCommand;
 use Symfony\Component\Form\AbstractType;

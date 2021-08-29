@@ -3,7 +3,7 @@
 namespace App\Controller\Docs;
 
 use App\Command\Docs\DocsCommand;
-use App\Form\Post\Docs\DocsEditType;
+use App\Form\Type\Docs\DocsEditType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

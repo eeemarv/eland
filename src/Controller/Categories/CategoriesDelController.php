@@ -2,7 +2,7 @@
 
 namespace App\Controller\Categories;
 
-use App\Form\Post\DelType;
+use App\Form\Type\DelType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

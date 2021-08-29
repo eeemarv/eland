@@ -3,7 +3,7 @@
 namespace App\Controller\Transactions;
 
 use App\Command\Transactions\TransactionsModulesCommand;
-use App\Form\Post\Transactions\TransactionsModulesType;
+use App\Form\Type\Transactions\TransactionsModulesType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

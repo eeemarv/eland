@@ -4,7 +4,7 @@ namespace App\Controller\PasswordReset;
 
 use App\Cnst\PagesCnst;
 use App\Command\PasswordReset\PasswordResetConfirmCommand;
-use App\Form\Post\PasswordReset\PasswordResetConfirmType;
+use App\Form\Type\PasswordReset\PasswordResetConfirmType;
 use App\Queue\MailQueue;
 use App\Repository\UserRepository;
 use App\Security\User;
