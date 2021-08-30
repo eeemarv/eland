@@ -16,7 +16,6 @@ use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
-use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
@@ -64,7 +63,6 @@ class TransactionsController extends AbstractController
         bool $is_self,
         AccountRender $account_render,
         AlertService $alert_service,
-        ItemAccessService $item_access_service,
         FormTokenService $form_token_service,
         ConfigService $config_service,
         DateFormatService $date_format_service,
@@ -82,26 +80,6 @@ class TransactionsController extends AbstractController
         if (!$request->isMethod('GET') && !$pp->is_admin())
         {
             throw new BadRequestException('POST not allowed');
-        }
-
-        $new_users_days = $config_service->get_int('users.new.days', $pp->schema());
-        $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
-        $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
-
-        $show_new_status = $new_users_enabled;
-
-        if ($show_new_status)
-        {
-            $new_users_access = $config_service->get_str('users.new.access', $pp->schema());
-            $show_new_status = $item_access_service->is_visible($new_users_access);
-        }
-
-        $show_leaving_status = $leaving_users_enabled;
-
-        if ($show_leaving_status)
-        {
-            $leaving_users_access = $config_service->get_str('users.leaving.access', $pp->schema());
-            $show_leaving_status = $item_access_service->is_visible($leaving_users_access);
         }
 
         $intersystem_account_schemas = $intersystems_service->get_eland_accounts_schemas($pp->schema());
@@ -131,20 +109,9 @@ class TransactionsController extends AbstractController
         $filter_form->handleRequest($request);
         $filter_command = $filter_form->getData();
 
-        error_log('FILTER_COMMAND');
-        error_log(var_export($filter_command, true));
-
-        /*
-        error_log('FILTER VALID');
-        error_log(var_export($filter_valid, true));
-        */
-
         $f_params = $request->query->get('f', []);
         $filter_form_error = (isset($f_params['from_account']) && !isset($filter_command->from_account))
             || (isset($f_params['to_account']) && !isset($filter_command->to_account));
-
-        error_log('F_PARAMS');
-        error_log(var_export($f_params, true));
 
         $pag = $request->query->get('p', []);
         $sort = $request->query->get('s', []);
@@ -321,13 +288,6 @@ class TransactionsController extends AbstractController
         ];
 
         $sql['common']['where'][] = '1 = 1';
-
-        /*
-        if (isset($uid))
-        {
-            $params['uid'] = $uid;
-        }
-        */
 
         if (isset($filter_command->q))
         {

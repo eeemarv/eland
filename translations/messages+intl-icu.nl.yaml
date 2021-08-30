@@ -227,6 +227,7 @@ label:
   send_notification_email: Stuur een notificatie E-mail
   services: Diensten
   split_by_char: Split door Teken
+  status: Status
   stuff: Spullen
   subject: Onderwerp
   suggested_price: Richtprijs
@@ -316,6 +317,20 @@ service_stuff:
   null_service_stuff:
     label: D/S onbepaald
     title: Diensten of spullen onbepaald
+
+status:
+  all: Alle
+  active: Actief
+  extern: Extern
+  leaving: Uitstappers
+  leaving_only: Enkel uitstappers
+  im: Instap-moment
+  inactive: Inactief
+  ip: Instap-pakket
+  new: Instappers
+  new_only: Enkel instappers
+
+
 
 system_menu:
   linked_intersystem: Gekoppeld interSysteem

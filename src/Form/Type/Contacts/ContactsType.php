@@ -106,11 +106,13 @@ class ContactsType extends AbstractType
             'choice_attr'   => $choice_attr,
             'choice_translation_domain' => false,
         ]);
+
         $builder->add('value', TextType::class, [
             'attr' => [
                 'data-contacts-format' => json_encode($contacts_format),
             ],
         ]);
+
         $builder->add('comments', TextType::class);
         $builder->add('submit', SubmitType::class);
 

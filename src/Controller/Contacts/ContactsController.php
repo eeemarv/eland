@@ -2,19 +2,18 @@
 
 namespace App\Controller\Contacts;
 
-use App\Cnst\AccessCnst;
 use App\Cnst\BulkCnst;
+use App\Command\Contacts\ContactsFilterCommand;
+use App\Form\Type\Contacts\ContactsFilterType;
 use App\Render\AccountRender;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use App\Render\LinkRender;
-use App\Render\SelectRender;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
-use App\Service\TypeaheadService;
 use App\Service\AlertService;
 use App\Service\FormTokenService;
 use Doctrine\DBAL\Types\Types;
@@ -41,36 +40,31 @@ class ContactsController extends AbstractController
         Request $request,
         Db $db,
         AlertService $alert_service,
-        SelectRender $select_render,
         LinkRender $link_render,
         FormTokenService $form_token_service,
-        TypeaheadService $typeahead_service,
         ConfigService $config_service,
         AccountRender $account_render,
         PageParamsService $pp,
         ItemAccessService $item_access_service
     ):Response
     {
+        $filter_command = new ContactsFilterCommand();
+
+        $uid = $request->query->get('uid');
+
+        if (isset($uid))
+        {
+            $filter_command->user = (int) $uid;
+        }
+
+        $filter_form = $this->createForm(ContactsFilterType::class, $filter_command);
+        $filter_form->handleRequest($request);
+        $filter_command = $filter_form->getData();
+
+        $f_params = $request->query->get('f', []);
+        $filter_form_error = isset($f_params['user']) && !isset($filter_command->user);
+
         $intersystem_enabled = $config_service->get_bool('intersystem.enabled', $pp->schema());
-        $new_users_days = $config_service->get_int('users.new.days', $pp->schema());
-        $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
-        $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
-
-        $show_new_status = $new_users_enabled;
-
-        if ($show_new_status)
-        {
-            $new_users_access = $config_service->get_str('users.new.access', $pp->schema());
-            $show_new_status = $item_access_service->is_visible($new_users_access);
-        }
-
-        $show_leaving_status = $leaving_users_enabled;
-
-        if ($show_leaving_status)
-        {
-            $leaving_users_access = $config_service->get_str('users.leaving.access', $pp->schema());
-            $show_leaving_status = $item_access_service->is_visible($leaving_users_access);
-        }
 
         $selected_contacts = $request->request->get('sel', []);
         $bulk_field = $request->request->get('bulk_field', []);
@@ -194,76 +188,45 @@ class ContactsController extends AbstractController
         $sql['common'] = $sql_map;
         $sql['common']['where'][] = '1 = 1';
 
-        if (isset($filter['uid']))
+        if (isset($filter_command->user))
         {
-            $params['f']['uid'] = $filter['uid'];
-            $filter['code'] = $account_render->str((int) $filter['uid'], $pp->schema());
+            $sql['code']['where'][]= 'c.user_id = ?';
+            $sql['code']['params'][]= $filter_command->user;
+            $sql['code']['types'][]= \PDO::PARAM_INT;
+            $params['f']['user'] = $filter_command->user;
         }
 
-        $filter_code = isset($filter['code']) && $filter['code'];
-
-        if ($filter_code)
-        {
-            [$code] = explode(' ', trim($filter['code']));
-
-            $fuid = $db->fetchOne('select id
-                from ' . $pp->schema() . '.users
-                where code = ?', [$code], [\PDO::PARAM_STR]);
-
-            $sql['code'] = $sql_map;
-
-            if ($fuid)
-            {
-                $sql['code']['where'][]= 'c.user_id = ?';
-                $sql['code']['params'][]= $fuid;
-                $sql['code']['types'][]= \PDO::PARAM_INT;
-                $params['f']['code'] = $account_render->str($fuid, $pp->schema());
-            }
-            else
-            {
-                $sql['code']['where'][]= '1 = 2';
-            }
-        }
-
-        $filter_q = isset($filter['q']) && $filter['q'];
-
-        if ($filter_q)
+        if (isset($filter_command->q))
         {
             $sql['q'] = $sql_map;
             $sql['q']['where'][]= '(c.value ilike ? or c.comments ilike ?)';
-            $sql['q']['params'][]= '%' . $filter['q'] . '%';
-            $sql['q']['params'][]= '%' . $filter['q'] . '%';
+            $sql['q']['params'][]= '%' . $filter_command->q . '%';
+            $sql['q']['params'][]= '%' . $filter_command->q . '%';
             $sql['q']['types'][]= \PDO::PARAM_STR;
             $sql['q']['types'][]= \PDO::PARAM_STR;
-            $params['f']['q'] = $filter['q'];
+            $params['f']['q'] = $filter_command->q;
         }
 
-        $filter_abbrev = isset($filter['abbrev']) && $filter['abbrev'];
-
-        if ($filter_abbrev)
+        if (isset($filter_command->type))
         {
-            $sql['abbrev'] = $sql_map;
-            $sql['abbrev']['where'][]= 'tc.abbrev = ?';
-            $sql['abbrev']['params'][]= $filter['abbrev'];
-            $sql['abbrev']['types'][]= \PDO::PARAM_STR;
-            $params['f']['abbrev'] = $filter['abbrev'];
+            $sql['type'] = $sql_map;
+            $sql['type']['where'][]= 'c.id_type_contact = ?';
+            $sql['type']['params'][]= $filter_command->type;
+            $sql['type']['types'][]= \PDO::PARAM_INT;
+            $params['f']['type'] = $filter_command->type;
         }
 
-        $filter_access = isset($filter['admin'])
-            || isset($filter['user'])
-            || isset($filter['guest']);
-
-        if ($filter_access)
+        if (isset($filter_command->access))
         {
             $sql['access'] = $sql_map;
 
-            if (isset($filter['admin']))
+            if (in_array('admin', $filter_command->access))
             {
                 $sql['access']['where_or'][] = 'c.access = \'admin\'';
                 $params['f']['admin'] = '1';
             }
 
-            if (isset($filter['user']))
+            if (in_array('user', $filter_command->access))
             {
                 $sql['access']['where_or'][] = 'c.access = \'user\'';
 
@@ -275,7 +238,7 @@ class ContactsController extends AbstractController
                 $params['f']['user'] = '1';
             }
 
-            if (isset($filter['guest']) && $intersystem_enabled)
+            if (in_array('guest', $filter_command->access) && $intersystem_enabled)
             {
                 $sql['access']['where_or'][] = 'c.access = \'guest\'';
                 $params['f']['guest'] = '1';
@@ -287,13 +250,11 @@ class ContactsController extends AbstractController
             }
         }
 
-        $filter_ustatus = isset($filter['ustatus']) && $filter['ustatus'] && $filter['ustatus'] !== 'all';
-
-        if ($filter_ustatus)
+        if (isset($filter_command->ustatus))
         {
             $sql['ustatus'] = $sql_map;
 
-            switch ($filter['ustatus'])
+            switch ($filter_command->ustatus)
             {
                 case 'new':
                     $sql['ustatus']['where'][]= 'u.adate > ? and u.status = 1';
@@ -368,8 +329,6 @@ class ContactsController extends AbstractController
 
         $row_count = $db->fetchOne('select count(c.*)
             from ' . $pp->schema() . '.contact c
-            inner join ' . $pp->schema() . '.type_contact tc
-                on c.id_type_contact = tc.id
             inner join ' . $pp->schema() . '.users u
                 on c.user_id = u.id
             where ' . $sql_omit_pagination_where,
@@ -390,8 +349,6 @@ class ContactsController extends AbstractController
 
         $count_access_query = 'select count(c.*), c.access
             from ' . $pp->schema() . '.contact c
-            inner join ' . $pp->schema() . '.type_contact tc
-                on c.id_type_contact = tc.id
             inner join ' . $pp->schema() . '.users u
                 on c.user_id = u.id
             where ' . $sql_omit_access_where . '
@@ -454,172 +411,15 @@ class ContactsController extends AbstractController
             $abbrev_ary[$row['abbrev']] = $row['abbrev'];
         }
 
-        $filtered = !isset($filter['uid']) && (
-            $filter_q
-            || $filter_abbrev
-            || $filter_code
-            || $filter_ustatus
-            || $filter_access
+        $filtered = !isset($uid) && (
+            isset($filter_command->q)
+            || isset($filter_command->type)
+            || isset($filter_command->user)
+            || isset($filter_command->ustatus)
+            || (isset($filter_command->access) && $filter_command->access)
         );
 
-        $panel_collapse = !$filtered;
-
-        $flt = '<div id="filter" class="panel panel-info';
-        $flt .= $panel_collapse ? ' collapse' : '';
-        $flt .= '">';
-
-        $flt .= '<div class="panel-heading">';
-
-        $flt .= '<form method="get" class="form-horizontal">';
-
-        $flt .= '<div class="row">';
-
-        $flt .= '<div class="col-sm-6">';
-        $flt .= '<div class="input-group margin-bottom">';
-        $flt .= '<span class="input-group-addon">';
-        $flt .= '<i class="fa fa-search"></i>';
-        $flt .= '</span>';
-        $flt .= '<input type="text" class="form-control" id="q" value="';
-        $flt .= $filter['q'] ?? '';
-        $flt .= '" name="f[q]" placeholder="Zoeken">';
-        $flt .= '</div>';
-        $flt .= '</div>';
-
-        $flt .= '<div class="col-sm-6">';
-        $flt .= '<div class="input-group margin-bottom">';
-        $flt .= '<span class="input-group-addon">';
-        $flt .= 'Type';
-        $flt .= '</span>';
-        $flt .= '<select class="form-control" id="abbrev" name="f[abbrev]">';
-        $flt .= $select_render->get_options(array_merge(['' => ''], $abbrev_ary), $filter['abbrev'] ?? '');
-        $flt .= '</select>';
-        $flt .= '</div>';
-        $flt .= '</div>';
-
-        $flt .= '</div>';
-
-        $flt .= '<div class="row">';
-
-        $user_status_options = [
-            'all'		=> 'Alle',
-            'active'	=> 'Actief',
-            'new'		=> 'Enkel instappers',
-            'leaving'	=> 'Enkel uitstappers',
-            'inactive'	=> 'Inactief',
-            'ip'		=> 'Info-pakket',
-            'im'		=> 'Info-moment',
-            'extern'	=> 'Extern',
-        ];
-
-        $flt .= '<div class="col-sm-6">';
-        $flt .= '<div class="input-group margin-bottom">';
-        $flt .= '<span class="input-group-addon">';
-        $flt .= 'Status ';
-        $flt .= '<i class="fa fa-user"></i>';
-        $flt .= '</span>';
-        $flt .= '<select class="form-control" ';
-        $flt .= 'id="ustatus" name="f[ustatus]">';
-
-        $flt .= $select_render->get_options($user_status_options, $filter['ustatus'] ?? 'all');
-
-        $flt .= '</select>';
-        $flt .= '</div>';
-        $flt .= '</div>';
-
-        $flt .= '<div class="col-sm-6">';
-        $flt .= '<div class="input-group margin-bottom">';
-        $flt .= '<span class="input-group-addon" id="code_addon">Van ';
-        $flt .= '<span class="fa fa-user"></span></span>';
-        $flt .= '<input type="text" class="form-control" ';
-        $flt .= 'aria-describedby="code_addon" ';
-
-        $flt .= 'data-typeahead="';
-        $flt .= $typeahead_service->ini($pp)
-            ->add('accounts', ['status' => 'active'])
-            ->add('accounts', ['status' => 'inactive'])
-            ->add('accounts', ['status' => 'ip'])
-            ->add('accounts', ['status' => 'im'])
-            ->add('accounts', ['status' => 'extern'])
-            ->str([
-                'filter'        => 'accounts',
-                'new_users_days'        => $new_users_days,
-                'show_new_status'       => $show_new_status,
-                'show_leaving_status'   => $show_leaving_status,
-            ]);
-        $flt .= '" ';
-
-        $flt .= 'name="f[code]" id="code" placeholder="Account Code" ';
-        $flt .= 'value="';
-        $flt .= $filter['code'] ?? '';
-        $flt .= '">';
-        $flt .= '</div>';
-        $flt .= '</div>';
-
-        $flt .= '</div>';
-
-        $flt .= '<div class="row">';
-        $flt .= '<div class="col-sm-10">';
-        $flt .= '<div class="input-group margin-bottom custom-checkbox">';
-
-        foreach (AccessCnst::LABEL as $key => $d)
-        {
-            if ($key === 'guest' && !$intersystem_enabled)
-            {
-                continue;
-            }
-
-            $label = '<span class="btn btn-';
-            $label .= $d['class'];
-            $label .= '"';
-            $label .= ' title="' . $d['title'] . '"';
-            $label .= '>';
-            $label .= $d['lbl'];
-            $label .= ' (';
-            $label .= $count_ary[$key];
-            $label .= ')</span>';
-
-            $flt .= strtr(BulkCnst::TPL_CHECKBOX_INLINE, [
-                '%name%'        => 'f[' . $key . ']',
-                '%attr%'        => isset($filter[$key]) ? ' checked' : '',
-                '%label%'       => $label,
-            ]);
-        }
-
-        $flt .= '</div>';
-        $flt .= '</div>';
-
-        $flt .= '<div class="col-sm-2">';
-        $flt .= '<input type="submit" value="Toon" ';
-        $flt .= 'class="btn btn-default btn-block">';
-        $flt .= '</div>';
-
-        $flt .= '</div>';
-
-        $params_form = $params;
-        unset($params_form['f']);
-        unset($params_form['p']['start']);
-
-        $params_form = http_build_query($params_form, 'prefix', '&');
-        $params_form = urldecode($params_form);
-        $params_form = explode('&', $params_form);
-
-        foreach ($params_form as $param)
-        {
-            [$name, $value] = explode('=', $param);
-
-            if (!isset($value) || $value === '')
-            {
-                continue;
-            }
-
-            $flt .= '<input name="' . $name . '" ';
-            $flt .= 'value="' . $value . '" type="hidden">';
-        }
-
-        $flt .= '</form>';
-
-        $flt .= '</div>';
-        $flt .= '</div>';
+        $filter_collapse = !($filtered || $filter_form_error);
 
         $out = '<div class="panel panel-danger">';
         $out .= '<div class="table-responsive">';
@@ -756,10 +556,12 @@ class ContactsController extends AbstractController
 
         return $this->render('contacts/contacts.html.twig', [
             'data_list_raw'     => $out,
-            'filter_form_raw'   => $flt,
             'bulk_actions_raw'  => $blk,
             'row_count'         => $row_count,
-            'filtered' => $filtered,
+            'filtered'          => $filtered,
+            'filter_collapse'   => $filter_collapse,
+            'filter_form'       => $filter_form->createView(),
+            'count_ary'         => $count_ary,
         ]);
     }
 }

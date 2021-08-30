@@ -43,7 +43,7 @@
                 </td>
                 <td>
                     {%- if ct.count -%}
-                        {{- ct.count|link('contacts', {'f': {'abbrev': ct.abbrev}})|raw -}}
+                        {{- ct.count|link('contacts', {'f': {'type': ct.id}})|raw -}}
                     {%- else -%}
                         {{- ct.count -}}
                     {%- endif -%}

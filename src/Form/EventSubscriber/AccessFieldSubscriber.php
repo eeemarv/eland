@@ -72,7 +72,7 @@ class AccessFieldSubscriber implements EventSubscriberInterface
             $this->fields_options[$name][$access] = $access;
         }
 
-        $this->type_options = $type_options;
+        $this->type_options[$name] = $type_options;
     }
 
     public function pre_set_data(FormEvent $event)
@@ -116,7 +116,7 @@ class AccessFieldSubscriber implements EventSubscriberInterface
                 }
             }
 
-            $options = array_merge($options, $this->type_options);
+            $options = array_merge($options, $this->type_options[$name]);
 
             $form->add($name, BtnChoiceType::class, $options);
         }
@@ -130,20 +130,39 @@ class AccessFieldSubscriber implements EventSubscriberInterface
 
         foreach ($this->fields_options as $name => $access_options)
         {
-            if (isset($data[$name]))
+            if (isset($this->type_options[$name]['multiple'])
+                && $this->type_options[$name]['multiple'])
             {
-                if (!in_array($data[$name], $access_options))
+                if (!isset($data[$name]))
                 {
-                    throw new UnexpectedTypeException('Unexpected type in ' . __CLASS__, 'access');
+                    continue;
                 }
 
-                continue;
+                foreach ($data[$name] as $access_option)
+                {
+                    if (!in_array($access_option, $access_options))
+                    {
+                        throw new UnexpectedTypeException($access_option, 'access');
+                    }
+                }
             }
-
-            if (count($access_options) === 1)
+            else
             {
-                $data[$name] = reset($access_options);
-                $update = true;
+                if (isset($data[$name]))
+                {
+                    if (!in_array($data[$name], $access_options))
+                    {
+                        throw new UnexpectedTypeException($data[$name], 'access');
+                    }
+
+                    continue;
+                }
+
+                if (count($access_options) === 1)
+                {
+                    $data[$name] = reset($access_options);
+                    $update = true;
+                }
             }
         }
 
