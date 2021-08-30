@@ -116,6 +116,13 @@ class TransactionsController extends AbstractController
         $pag = $request->query->get('p', []);
         $sort = $request->query->get('s', []);
 
+        $pag_start = $pag['start'] ?? 0;
+        $pag_limit = $pag['limit'] ?? 25;
+        $sort_orderby = $sort['orderby'] ?? 'created_at';
+        $sort_asc = isset($sort['asc']) && $sort['asc'] ? true : false;
+
+        $all_params = $request->query->all();
+
         $selected_transactions = $request->request->get('sel', []);
         $bulk_field = $request->request->get('bulk_field', []);
         $bulk_verify = $request->request->get('bulk_verify', []);
@@ -265,17 +272,6 @@ class TransactionsController extends AbstractController
             $alert_service->error($errors);
         }
 
-        $params = [
-            's'	=> [
-                'orderby'	=> $sort['orderby'] ?? 'created_at',
-                'asc'		=> $sort['asc'] ?? 0,
-            ],
-            'p'	=> [
-                'start'		=> $pag['start'] ?? 0,
-                'limit'		=> $pag['limit'] ?? 25,
-            ],
-        ];
-
         $sql_map = [
             'where'     => [],
             'where_or'  => [],
@@ -295,7 +291,6 @@ class TransactionsController extends AbstractController
             $sql['q']['where'][] = 't.description ilike ?';
             $sql['q']['params'][] = '%' . $filter_command->q . '%';
             $sql['q']['types'][] = \PDO::PARAM_STR;
-            $params['f']['q'] = $filter_command->q;
         }
 
         $key_code_where_or = 'where';
@@ -311,8 +306,6 @@ class TransactionsController extends AbstractController
             $sql['account'][$key_code_where_or][] = $fuid_sql;
             $sql['account']['params'][] = $filter_command->from_account;
             $sql['account']['types'][] = \PDO::PARAM_STR;
-
-            $params['f']['from_account'] = $account_render->get_str($filter_command->from_account, $pp->schema());
         }
 
         if (isset($filter_command->to_account))
@@ -324,13 +317,6 @@ class TransactionsController extends AbstractController
             $sql['account'][$key_code_where_or][] = $tuid_sql;
             $sql['account']['params'][] = $filter_command->to_account;
             $sql['account']['types'][] = \PDO::PARAM_STR;
-
-            $params['f']['to_account'] = $account_render->str($filter_command->to_account, $pp->schema());
-        }
-
-        if (isset($filter_command->from_account) || isset($filter_command->to_account))
-        {
-            $params['f']['account_logic'] = $filter_command->account_logic;
         }
 
         if (count($sql['account']['where_or']))
@@ -347,7 +333,6 @@ class TransactionsController extends AbstractController
             $sql['from_date']['where'][] = 't.created_at >= ?';
             $sql['from_date']['params'][] = $from_date_immutable;
             $sql['from_date']['types'][] = Types::DATETIME_IMMUTABLE;
-            $params['f']['from_date'] = $filter_command->from_date;
         }
 
         if (isset($filter_command->to_date))
@@ -359,7 +344,6 @@ class TransactionsController extends AbstractController
             $sql['to_date']['where'][] = 't.created_at <= ?';
             $sql['to_date']['params'][] = $to_date_immutable;
             $sql['to_date']['types'][] = Types::DATETIME_IMMUTABLE;
-            $params['f']['to_date'] = $filter_command->to_date;
         }
 
         $filter_service_stuff = $service_stuff_enabled
@@ -374,19 +358,16 @@ class TransactionsController extends AbstractController
             if (in_array('srvc', $filter_command->srvc))
             {
                 $sql['service_stuff']['where_or'][] = 't.service_stuff = \'service\'';
-                $params['f']['service'] = '1';
             }
 
             if (in_array('stff', $filter_command->srvc))
             {
                 $sql['service_stuff']['where_or'][] = 't.service_stuff = \'stuff\'';
-                $params['f']['stuff'] = '1';
             }
 
             if (in_array('null', $filter_command->srvc))
             {
                 $sql['service_stuff']['where_or'][] = 't.service_stuff is null';
-                $params['f']['null-service-stuff'] = '1';
             }
 
             if (count($sql['service_stuff']['where_or']))
@@ -396,9 +377,9 @@ class TransactionsController extends AbstractController
         }
 
         $sql['pagination'] = $sql_map;
-        $sql['pagination']['params'][] = $params['p']['limit'];
+        $sql['pagination']['params'][] = $pag_limit;
         $sql['pagination']['types'][] = \PDO::PARAM_INT;
-        $sql['pagination']['params'][] = $params['p']['start'];
+        $sql['pagination']['params'][] = $pag_start;
         $sql['pagination']['types'][] = \PDO::PARAM_INT;
 
         $sql_where = implode(' and ', array_merge(...array_column($sql, 'where')));
@@ -406,8 +387,8 @@ class TransactionsController extends AbstractController
         $query = 'select t.*
             from ' . $pp->schema() . '.transactions t
             where ' . $sql_where . '
-            order by t.' . $params['s']['orderby'] . ' ';
-        $query .= $params['s']['asc'] ? 'asc ' : 'desc ';
+            order by t.' . $sort_orderby . ' ';
+        $query .= $sort_asc ? 'asc ' : 'desc ';
         $query .= 'limit ? offset ?';
 
         $stmt = $db->executeQuery($query,
@@ -536,10 +517,10 @@ class TransactionsController extends AbstractController
             ];
         }
 
-        $tableheader_ary[$params['s']['orderby']]['asc']
-            = $params['s']['asc'] ? 0 : 1;
-        $tableheader_ary[$params['s']['orderby']]['fa']
-            = $params['s']['asc'] ? 'sort-asc' : 'sort-desc';
+        $tableheader_ary[$sort_orderby]['asc']
+            = $sort_asc ? 0 : 1;
+        $tableheader_ary[$sort_orderby]['fa']
+            = $sort_asc ? 'sort-asc' : 'sort-desc';
 
         $filtered = !isset($uid) && (
             isset($filter_command->q)
@@ -566,6 +547,9 @@ class TransactionsController extends AbstractController
         $out .= '<thead>';
         $out .= '<tr>';
 
+        $th_params = $all_params;
+        unset($th_params['p']['start']);
+
         foreach ($tableheader_ary as $key_orderby => $data)
         {
             $out .= '<th';
@@ -585,15 +569,13 @@ class TransactionsController extends AbstractController
             }
             else
             {
-                $h_params = $params;
-
-                $h_params['s'] = [
+                $th_params['s'] = [
                     'orderby' 	=> $key_orderby,
                     'asc'		=> $data['asc'],
                 ];
 
                 $out .= $link_render->link_fa('transactions', $pp->ary(),
-                    $h_params, $data['lbl'], [], $data['fa']);
+                    $th_params, $data['lbl'], [], $data['fa']);
             }
 
             $out .= '</th>';

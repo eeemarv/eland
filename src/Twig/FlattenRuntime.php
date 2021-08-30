@@ -27,7 +27,7 @@ class FlattenRuntime implements RuntimeExtensionInterface
                 continue;
             }
 
-			$out_ary[$name] = urldecode($value);
+			$out_ary[urldecode($name)] = urldecode($value);
         }
 
 		return $out_ary;

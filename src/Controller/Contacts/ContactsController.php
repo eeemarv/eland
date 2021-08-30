@@ -162,20 +162,15 @@ class ContactsController extends AbstractController
             $alert_service->error($errors);
         }
 
-        $filter = $request->query->get('f', []);
         $pag = $request->query->get('p', []);
         $sort = $request->query->get('s', []);
 
-        $params = [
-            's'	=> [
-                'orderby'	=> $sort['orderby'] ?? 'c.id',
-                'asc'		=> $sort['asc'] ?? 0,
-            ],
-            'p'	=> [
-                'start'		=> $pag['start'] ?? 0,
-                'limit'		=> $pag['limit'] ?? 25,
-            ],
-        ];
+        $pag_start = $pag['start'] ?? 0;
+        $pag_limit = $pag['limit'] ?? 25;
+        $sort_orderby = $sort['orderby'] ?? 'c.id';
+        $sort_asc = isset($sort['asc']) && $sort['asc'] ? true : false;
+
+        $all_params = $request->query->all();
 
         $sql_map = [
             'where'     => [],
@@ -190,10 +185,9 @@ class ContactsController extends AbstractController
 
         if (isset($filter_command->user))
         {
-            $sql['code']['where'][]= 'c.user_id = ?';
-            $sql['code']['params'][]= $filter_command->user;
-            $sql['code']['types'][]= \PDO::PARAM_INT;
-            $params['f']['user'] = $filter_command->user;
+            $sql['user']['where'][]= 'c.user_id = ?';
+            $sql['user']['params'][]= $filter_command->user;
+            $sql['user']['types'][]= \PDO::PARAM_INT;
         }
 
         if (isset($filter_command->q))
@@ -204,7 +198,6 @@ class ContactsController extends AbstractController
             $sql['q']['params'][]= '%' . $filter_command->q . '%';
             $sql['q']['types'][]= \PDO::PARAM_STR;
             $sql['q']['types'][]= \PDO::PARAM_STR;
-            $params['f']['q'] = $filter_command->q;
         }
 
         if (isset($filter_command->type))
@@ -213,7 +206,6 @@ class ContactsController extends AbstractController
             $sql['type']['where'][]= 'c.id_type_contact = ?';
             $sql['type']['params'][]= $filter_command->type;
             $sql['type']['types'][]= \PDO::PARAM_INT;
-            $params['f']['type'] = $filter_command->type;
         }
 
         if (isset($filter_command->access))
@@ -223,7 +215,6 @@ class ContactsController extends AbstractController
             if (in_array('admin', $filter_command->access))
             {
                 $sql['access']['where_or'][] = 'c.access = \'admin\'';
-                $params['f']['admin'] = '1';
             }
 
             if (in_array('user', $filter_command->access))
@@ -234,14 +225,11 @@ class ContactsController extends AbstractController
                 {
                     $sql['access']['where_or'][] = 'c.access = \'guest\'';
                 }
-
-                $params['f']['user'] = '1';
             }
 
             if (in_array('guest', $filter_command->access) && $intersystem_enabled)
             {
                 $sql['access']['where_or'][] = 'c.access = \'guest\'';
-                $params['f']['guest'] = '1';
             }
 
             if (count($sql['access']['where_or']))
@@ -280,21 +268,14 @@ class ContactsController extends AbstractController
                     $sql['ustatus']['where'][]= 'u.status = 7';
                     break;
                 default:
-                    $filter['ustatus'] = 'all';
                     break;
-
-                $params['f']['ustatus'] = $filter['ustatus'];
             }
-        }
-        else
-        {
-            $params['f']['ustatus'] = 'all';
         }
 
         $sql['pagination'] = $sql_map;
-        $sql['pagination']['params'][] = $params['p']['limit'];
+        $sql['pagination']['params'][] = $pag_limit;
         $sql['pagination']['types'][] = \PDO::PARAM_INT;
-        $sql['pagination']['params'][] = $params['p']['start'];
+        $sql['pagination']['params'][] = $pag_start;
         $sql['pagination']['types'][] = \PDO::PARAM_INT;
 
         $contacts = [];
@@ -310,8 +291,8 @@ class ContactsController extends AbstractController
             inner join ' . $pp->schema() . '.users u
                 on c.user_id = u.id
             where ' . $sql_where . '
-            order by ' . $params['s']['orderby'] . ' ' .
-            ($params['s']['asc'] ? 'asc' : 'desc') . '
+            order by ' . $sort_orderby . ' ' .
+            ($sort_asc ? 'asc' : 'desc') . '
             limit ? offset ?';
 
         $stmt = $db->executeQuery($query, $sql_params, $sql_types);
@@ -392,10 +373,10 @@ class ContactsController extends AbstractController
                 'no_sort'	=> true]),
         ];
 
-        $tableheader_ary[$params['s']['orderby']]['asc']
-            = $params['s']['asc'] ? 0 : 1;
-        $tableheader_ary[$params['s']['orderby']]['fa']
-            = $params['s']['asc'] ? 'sort-asc' : 'sort-desc';
+        $tableheader_ary[$sort_orderby]['asc']
+            = $sort_asc ? 0 : 1;
+        $tableheader_ary[$sort_orderby]['fa']
+            = $sort_asc ? 'sort-asc' : 'sort-desc';
 
         unset($tableheader_ary['c.id']);
 
@@ -430,7 +411,8 @@ class ContactsController extends AbstractController
         $out .= '<thead>';
         $out .= '<tr>';
 
-        $th_params = $params;
+        $th_params = $all_params;
+        unset($th_params['p']['start']);
 
         foreach ($tableheader_ary as $key_orderby => $data)
         {
