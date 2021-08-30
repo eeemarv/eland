@@ -4,10 +4,7 @@ namespace App\Repository;
 
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use App\Filter\FilterQuery;
 use App\Service\UserCacheService;
-use App\Util\Sort;
-use App\Util\Pagination;
 
 class UserRepository
 {
@@ -326,38 +323,4 @@ class UserRepository
 			where status in (1, 2)
 				and id = ?', [$id], [\PDO::PARAM_INT]) ? true : false;
 	}
-
-	/********************* */
-	/*
-	public function getFiltered(string $schema, FilterQuery $filterQuery, Sort $sort, Pagination $pagination):array
-	{
-		$query = 'select u.* from ' . $schema . '.users u';
-		$query .= $filterQuery->getWhereQueryString();
-		$query .= $sort->query();
-		$query .= $pagination->query();
-
-		$users = [];
-
-		$rs = $this->db->executeQuery($query, $filterQuery->getParams());
-
-		while ($row = $rs->fetch())
-		{
-			$users[] = $row;
-		}
-
-		return $users;
-	}
-
-	public function getFilteredRowCount(string $schema, FilterQuery $filterQuery):int
-	{
-		$query = 'select count(u.*) from ' . $schema . '.users u' . $filterQuery->getWhereQueryString();
-		return $this->db->fetchOne($query, $filterQuery->getParams());
-	}
-
-	public function getFilteredBalanceSum(string $schema, FilterQuery $filterQuery):int
-	{
-		$query = 'select sum(u.saldo) from ' . $schema . '.users u' . $filterQuery->getWhereQueryString();
-		return $this->db->fetchOne($query, $filterQuery->getParams()) ?? 0;
-	}
-	*/
 }
