@@ -44,7 +44,6 @@
 		"symfony/config": "^5",
 		"symfony/console": "^5",
 		"symfony/contracts": "^2",
-		"symfony/debug-pack": "^1.0",
 		"symfony/dotenv": "^5",
 		"symfony/finder": "^5",
 		"symfony/flex": "^1.3.1",
@@ -54,7 +53,6 @@
 		"symfony/monolog-bridge": "^5",
 		"symfony/monolog-bundle": "^3",
 		"symfony/process": "^5",
-		"symfony/profiler-pack": "^1.0",
 		"symfony/proxy-manager-bridge": "^5",
 		"symfony/requirements-checker": "^2.0",
 		"symfony/security-bundle": "^5",
@@ -62,16 +60,19 @@
 		"symfony/translation": "^5",
 		"symfony/twig-bridge": "^5",
 		"symfony/twig-bundle": "^5",
-		"symfony/twig-pack": "^1.0",
 		"symfony/validator": "^5",
 		"symfony/var-dumper": "^5",
 		"symfony/yaml": "^5",
+		"twig/extra-bundle": "^2.12|^3.0",
 		"twig/twig": "^3",
 		"xemlock/htmlpurifier-html5": "^0.1.11"
 	},
 
     "require-dev": {
-		"symfony/maker-bundle": "^1.13"
+		"symfony/debug-bundle": "^5",
+		"symfony/maker-bundle": "^1.13",
+		"symfony/stopwatch": "^5",
+		"symfony/web-profiler-bundle": "^5"
 	},
 
     "config": {
