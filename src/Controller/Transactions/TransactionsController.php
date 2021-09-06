@@ -91,7 +91,7 @@ class TransactionsController extends AbstractController
 
         $filter_command = new TransactionsFilterCommand();
 
-        $uid = $request->query->get('uid');
+        $uid = (int) $request->query->get('uid');
 
         if ($is_self)
         {
@@ -100,8 +100,8 @@ class TransactionsController extends AbstractController
 
         if (isset($uid))
         {
-            $filter_command->from_account = (int) $uid;
-            $filter_command->to_account = (int) $uid;
+            $filter_command->from_account = $uid;
+            $filter_command->to_account = $uid;
             $filter_command->account_logic = 'or';
         }
 
