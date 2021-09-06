@@ -54,6 +54,7 @@ class MessagesExtendedController extends AbstractController
         Request $request,
         Db $db,
         bool $is_self,
+        MessagesListController $messages_list_controller,
         AccountRender $account_render,
         ConfigService $config_service,
         ItemAccessService $item_access_service,
@@ -73,7 +74,7 @@ class MessagesExtendedController extends AbstractController
 
         $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
 
-        $fetch_and_filter = MessagesListController::fetch_and_filter(
+        $fetch_and_filter = $messages_list_controller->fetch_and_filter(
             $request,
             $db,
             $is_self,
@@ -96,7 +97,6 @@ class MessagesExtendedController extends AbstractController
         $filter_cid = $fetch_and_filter['filter_cid'];
         $cid = $fetch_and_filter['cid'];
         $filtered = $fetch_and_filter['filtered'];
-        $params = $fetch_and_filter['params'];
         $flt = $fetch_and_filter['out'];
 
         $time = time();

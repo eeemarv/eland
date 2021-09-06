@@ -3,7 +3,7 @@
 namespace App\Form\Type\Docs;
 
 use App\Command\Docs\DocsMapCommand;
-use App\Form\Type\TypeaheadType;
+use App\Form\Type\Field\TypeaheadType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;

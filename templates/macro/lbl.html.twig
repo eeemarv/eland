@@ -48,6 +48,14 @@
             'class': 'default-2',
             'label': 'label.permanent'
         },
+        'valid': {
+            'class': 'default',
+            'label': 'label.valid'
+        },
+        'expired': {
+            'class': 'danger',
+            'label': 'label.expired'
+        },
         'service': {
             'class': 'default',
             'label': 'service_stuff.service.label'
@@ -60,7 +68,19 @@
             'class': 'danger',
             'label': 'service_stuff.null_service_stuff.label',
             'title': 'service_stuff.null_service_stuff.title'
-        }
+        },
+        'active': {
+            'class': 'default',
+            'label': 'label.active'
+        },
+        'new': {
+            'class': 'success',
+            'label': 'label.new'
+        },
+        'leaving': {
+            'class': 'danger',
+            'label': 'label.leaving'
+        },
     } -%}
 
     <span class="btn btn-{{- render[id].class -}}"{%- if render[id].title is defined %} title="{{- render[id].title|trans -}}"{%- endif -%}>

@@ -2,7 +2,7 @@
 
 namespace App\Controller\Config;
 
-use App\Form\Type\DelType;
+use App\Form\Type\Del\DelType;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;

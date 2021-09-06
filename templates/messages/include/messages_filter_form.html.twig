@@ -1,0 +1,107 @@
+<div class="row mb-5p">
+
+    {{- form_row(filter_form.q, {
+        'label': false,
+        'col': filter_form.cat is defined ? 'sm-5' : 'sm-10',
+        'pre_addon': {
+            'fa': 'search'
+        },
+        'attr': {
+            'placeholder': 'label.search'
+        },
+        'id': 'q'
+    }) -}}
+
+    {%- if filter_form.cat is defined -%}
+        {{- form_row(filter_form.cat, {
+            'label': false,
+            'col': 'sm-5',
+            'pre_addon': {
+                'fa': 'clone'
+            }
+        }) -}}
+    {%- endif -%}
+
+    {{- form_row(filter_form.open_panel, {
+        'label': '<i class="fa fa-chevron-down"></i>',
+        'label_html': true,
+        'col': 'sm-2',
+        'attr': {
+            'class': 'btn-default btn-block'
+        }
+    }) -}}
+
+</div>
+<div class="row mb-5p">
+
+    {{- form_row(filter_form.ow, {
+        'label': false,
+        'col': 'sm-12',
+        'count_ary': count_ary
+    }) -}}
+
+</div>
+
+{%- if filter_form.srvc is defined -%}
+    <div class="row mb-5p">
+
+        {{- form_row(filter_form.srvc, {
+            'label': false,
+            'col': 'sm-12',
+            'count_ary': count_ary
+        }) -}}
+
+    </div>
+{%- endif -%}
+
+{%- if filter_form.ve is defined -%}
+    <div class="row mb-5p">
+        {{- form_row(filter_form.ve, {
+            'label': false,
+            'col': 'sm-12',
+            'count_ary': count_ary
+        }) -}}
+    </div>
+{%- endif -%}
+
+{%- if filter_form.us is defined -%}
+    <div class="row mb-5p">
+        {{- form_row(filter_form.us, {
+            'label': false,
+            'col': 'sm-12',
+            'count_ary': count_ary
+        }) -}}
+    </div>
+{%- endif -%}
+
+{%- if filter_form.access is defined -%}
+    <div class="row mb-5p">
+        {{- form_row(filter_form.access, {
+            'label': false,
+            'col': 'sm-12',
+            'count_ary': count_ary
+        }) -}}
+    </div>
+{%- endif -%}
+
+<div class="row">
+
+    {{- form_row(filter_form.user, {
+        'label': false,
+        'col': 'sm-10',
+        'pre_addon': {
+            'fa': 'user'
+        },
+        'attr': {
+            'placeholder': 'label.account_code'
+        }
+    }) -}}
+
+    {{- form_row(filter_form.show, {
+        'label': 'btn.show',
+        'col': 'sm-2',
+        'attr': {
+            'class': 'btn btn-default btn-block'
+        }
+    }) -}}
+</div>

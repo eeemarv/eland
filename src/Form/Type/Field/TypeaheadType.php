@@ -1,35 +1,44 @@
 <?php declare(strict_types=1);
 
-namespace App\Form\Type;
+namespace App\Form\Type\Field;
 
-use App\Form\DataTransformer\IntegerTransformer;
+use App\Form\DataTransformer\TypeaheadUserTransformer;
+use App\Service\ConfigService;
+use App\Service\ItemAccessService;
+use App\Service\PageParamsService;
+use App\Service\TypeaheadService;
 use Symfony\Component\Form\Exception\InvalidConfigurationException;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\Options;
 
-class HiddenIntegerType extends AbstractType
+class TypeaheadType extends AbstractType
 {
     public function __construct(
-        protected IntegerTransformer $integer_transformer
+        protected TypeaheadService $typeahead_service,
+        protected PageParamsService $pp,
+        protected ConfigService $config_service,
+        protected ItemAccessService $item_access_service,
+        protected TypeaheadUserTransformer $typeahead_user_transformer
     )
     {
     }
 
-    public function buildForm(
-        FormBuilderInterface $builder,
-        array $options
-    ):void
+    public function buildForm(FormBuilderInterface $builder, array $options):void
     {
         parent::buildForm($builder, $options);
-        $builder->addModelTransformer($this->integer_transformer);
+
+        if (isset($options['filter']) && $options['filter'] === 'accounts')
+        {
+            $builder->addModelTransformer($this->typeahead_user_transformer);
+        }
     }
 
-    /*
     public function buildView(FormView $view, FormInterface $form, array $options):void
     {
         $add = $options['add'];
@@ -141,15 +150,35 @@ class HiddenIntegerType extends AbstractType
             $view->vars['render_omit'] = true;
         }
     }
-    */
 
     public function configureOptions(OptionsResolver $resolver):void
     {
-        $resolver->setDefault('invalid_message', 'type.not_an_integer');
+        $resolver->setDefault('add', null);
+        $resolver->setDefault('filter', null);
+        $resolver->setDefault('render_omit', null);
+        $resolver->setRequired('add');
+        $resolver->setAllowedTypes('add', ['string', 'array']);
+        $resolver->setAllowedTypes('filter', ['null', 'string']);
+        $resolver->setAllowedTypes('render_omit', ['null', 'string']);
+        $resolver->setAllowedValues('filter', [null, 'accounts']);
+
+        $resolver->setDefault('invalid_message', function (Options $options) {
+            if (isset($options['filter']) && $options['filter'] === 'accounts')
+            {
+                return 'user.code_not_exists';
+            }
+
+            return 'This value is not valid.';
+        });
     }
 
     public function getParent():string
     {
-        return HiddenType::class;
+        return TextType::class;
+    }
+
+    public function getBlockPrefix():string
+    {
+        return 'typeahead';
     }
 }

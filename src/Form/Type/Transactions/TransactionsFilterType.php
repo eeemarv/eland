@@ -3,14 +3,14 @@
 namespace App\Form\Type\Transactions;
 
 use App\Command\Transactions\TransactionsFilterCommand;
-use App\Form\Type\BtnChoiceType;
-use App\Form\Type\DatepickerType;
-use App\Form\Type\FilterType;
+use App\Form\Type\Field\BtnChoiceType;
+use App\Form\Type\Field\DatepickerType;
+use App\Form\Type\Filter\FilterType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use App\Form\Type\TypeaheadType;
+use App\Form\Type\Field\TypeaheadType;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\OptionsResolver\OptionsResolver;

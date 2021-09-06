@@ -3,7 +3,7 @@
 namespace App\Form\EventSubscriber;
 
 use App\Cnst\AccessCnst;
-use App\Form\Type\BtnChoiceType;
+use App\Form\Type\Field\BtnChoiceType;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;

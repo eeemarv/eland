@@ -4,7 +4,7 @@ namespace App\Form\Type\Contacts;
 
 use App\Command\Contacts\ContactsCommand;
 use App\Form\EventSubscriber\AccessFieldSubscriber;
-use App\Form\Type\TypeaheadType;
+use App\Form\Type\Field\TypeaheadType;
 use App\Repository\ContactRepository;
 use App\Service\PageParamsService;
 use Symfony\Component\Form\AbstractType;

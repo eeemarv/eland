@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Form\Type;
+namespace App\Form\Type\Filter;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;

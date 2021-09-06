@@ -4,12 +4,12 @@ namespace App\Form\Type\Contacts;
 
 use App\Command\Contacts\ContactsFilterCommand;
 use App\Form\EventSubscriber\AccessFieldSubscriber;
-use App\Form\Type\FilterType;
+use App\Form\Type\Filter\FilterType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use App\Form\Type\TypeaheadType;
+use App\Form\Type\Field\TypeaheadType;
 use App\Repository\ContactRepository;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;

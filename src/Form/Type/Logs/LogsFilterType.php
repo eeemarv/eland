@@ -3,11 +3,11 @@
 namespace App\Form\Type\Logs;
 
 use App\Command\Logs\LogsFilterCommand;
-use App\Form\Type\FilterType;
+use App\Form\Type\Filter\FilterType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use App\Form\Type\TypeaheadType;
+use App\Form\Type\Field\TypeaheadType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class LogsFilterType extends AbstractType

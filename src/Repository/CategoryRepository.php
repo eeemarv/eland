@@ -247,7 +247,7 @@ class CategoryRepository
 			group by c.id
 			order by c.left_id asc');
 
-        while ($row = $st->fetch())
+        while ($row = $st->fetchAssociative())
         {
 			$parent_id = $row['parent_id'];
 			$count = $row['count'];
@@ -275,6 +275,13 @@ class CategoryRepository
 		}
 
 		return $choices;
+	}
+
+	function get_all(string $schema):array
+	{
+		return $this->db->fetchAllAssociative('select *
+			from ' . $schema . '.categories
+			order by left_id asc');
 	}
 
     public function get(int $id, string $schema):array

@@ -2,25 +2,163 @@
 
 namespace App\Form\Type\Messages;
 
+use App\Form\EventSubscriber\AccessFieldSubscriber;
+use App\Form\Type\Field\BtnChoiceType;
+use App\Form\Type\Field\CategorySelectType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use App\Form\Input\TextAddonType;
-use App\Form\Input\Typeahead\TypeaheadActiveUserType;
-use App\Form\Type\FilterType;
+use App\Form\Type\Filter\FilterType;
+use App\Form\Type\Field\TypeaheadType;
+use App\Service\ConfigService;
+use App\Service\ItemAccessService;
+use App\Service\PageParamsService;
+use App\Service\VarRouteService;
+use Symfony\Component\Form\Extension\Core\Type\ButtonType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class MessagesFilterType extends AbstractType
 {
+    public function __construct(
+        protected ConfigService $config_service,
+        protected ItemAccessService $item_access_service,
+        protected UrlGeneratorInterface $url_generator,
+        protected AccessFieldSubscriber $access_field_subscriber,
+        protected PageParamsService $pp,
+        protected VarRouteService $vr
+    )
+    {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->setMethod('GET');
-		$builder->add('q', TextAddonType::class, [
+        $service_stuff_enabled = $this->config_service->get_bool('transactions.fields.service_stuff.enabled', $this->pp->schema());
+        $category_enabled = $this->config_service->get_bool('messages.fields.category.enabled', $this->pp->schema());
+        $expires_at_enabled = $this->config_service->get_bool('messages.fields.expires_at.enabled', $this->pp->schema());
+
+        $new_users_enabled = $this->config_service->get_bool('users.new.enabled', $this->pp->schema());
+        $leaving_users_enabled = $this->config_service->get_bool('users.leaving.enabled', $this->pp->schema());
+
+        $show_new_status = $new_users_enabled;
+
+        if ($show_new_status)
+        {
+            $new_users_access = $this->config_service->get_str('users.new.access', $this->pp->schema());
+            $show_new_status = $this->item_access_service->is_visible($new_users_access);
+        }
+
+        $show_leaving_status = $leaving_users_enabled;
+
+        if ($show_leaving_status)
+        {
+            $leaving_users_access = $this->config_service->get_str('users.leaving.access', $this->pp->schema());
+            $show_leaving_status = $this->item_access_service->is_visible($leaving_users_access);
+        }
+
+        $user_status_choices = [];
+        $user_status_choices['active'] = 'active';
+
+        if ($show_new_status)
+        {
+            $user_status_choices['new'] = 'new';
+        }
+
+        if ($show_leaving_status)
+        {
+            $user_status_choices['leaving'] = 'leaving';
+        }
+
+        $typeahead_add = [];
+
+        $typeahead_add[] = ['accounts', ['status' => 'active']];
+
+        if ($this->pp->is_user() || $this->pp->is_admin())
+        {
+            $typeahead_add[] = ['accounts', ['status' => 'extern']];
+        }
+
+        if ($this->pp->is_admin())
+        {
+            $typeahead_add[] = ['accounts', ['status' => 'inactive']];
+            $typeahead_add[] = ['accounts', ['status' => 'im']];
+            $typeahead_add[] = ['accounts', ['status' => 'ip']];
+        }
+
+        $builder->add('q', TextType::class, [
             'required' => false,
         ]);
-        $builder->add('uid', TypeaheadActiveUserType::class, [
+
+        if ($category_enabled)
+        {
+            $builder->add('cat', CategorySelectType::class, [
+                'parent_selectable' => true,
+                'required'          => false,
+            ]);
+        }
+
+        $builder->add('open_panel', ButtonType::class, [
+        ]);
+
+        $builder->add('ow', BtnChoiceType::class, [
+            'choices'       => [
+                'offer' => 'offer',
+                'want'  => 'want',
+            ],
+            'multiple'      => true,
+            'required'      => false,
+        ]);
+
+        if ($service_stuff_enabled)
+        {
+            $srvc_choices = [
+                'service'               => 'srvc',
+                'stuff'                 => 'stff',
+                'null_service_stuff'    => 'null',
+            ];
+
+            $builder->add('srvc', BtnChoiceType::class, [
+                'choices'       => $srvc_choices,
+                'multiple'      => true,
+                'required'      => false,
+            ]);
+        }
+
+        if ($expires_at_enabled)
+        {
+            $builder->add('ve', BtnChoiceType::class, [
+                'choices'       => [
+                    'valid' => 'valid',
+                    'expired'  => 'expired',
+                ],
+                'multiple'      => true,
+                'required'      => false,
+            ]);
+        }
+
+        if (count($user_status_choices) > 1)
+        {
+            $builder->add('us', BtnChoiceType::class, [
+                'choices'       => $user_status_choices,
+                'multiple'      => true,
+                'required'      => false,
+            ]);
+        }
+
+        $builder->add('user', TypeaheadType::class, [
+            'add'       => $typeahead_add,
+            'filter'    => 'accounts',
             'required'  => false,
         ]);
-        $builder->add('submit', SubmitType::class);
+
+        $this->access_field_subscriber->add('access', ['admin', 'user', 'guest'], [
+            'multiple' => true,
+            'required' => false,
+        ]);
+
+        $builder->addEventSubscriber($this->access_field_subscriber);
+
+        $action = $this->url_generator->generate($this->vr->get('messages'), $this->pp->ary(), UrlGeneratorInterface::ABSOLUTE_PATH);
+        $builder->setAction($action);
     }
 
     public function getBlockPrefix():string

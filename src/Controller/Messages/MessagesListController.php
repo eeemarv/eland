@@ -10,6 +10,8 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use App\Cnst\BulkCnst;
 use App\Cnst\MessageTypeCnst;
+use App\Command\Messages\MessagesFilterCommand;
+use App\Form\Type\Messages\MessagesFilterType;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Render\SelectRender;
@@ -379,34 +381,81 @@ class MessagesListController extends AbstractController
             $alert_service->error($errors);
         }
 
-        $fetch_and_filter = self::fetch_and_filter(
+        $fetch_and_filter = $this->fetch_and_filter(
             $request,
             $db,
             $is_self,
-            $account_render,
             $config_service,
-            $item_access_service,
-            $link_render,
-            $select_render,
             $pp,
-            $su,
-            $vr,
-            $typeahead_service
+            $su
         );
 
         $messages = $fetch_and_filter['messages'];
         $row_count = $fetch_and_filter['row_count'];
-        $filter_uid = $fetch_and_filter['filter_uid'];
-        $cid = $fetch_and_filter['cid'];
-        $filter_cid = $fetch_and_filter['filter_cid'];
+        $filter_form = $fetch_and_filter['filter_form'];
+        $filter_command = $fetch_and_filter['filter_command'];
         $uid = $fetch_and_filter['uid'];
         $filtered = $fetch_and_filter['filtered'];
-        $params = $fetch_and_filter['params'];
-        $categories = $fetch_and_filter['categories'];
-        $categories_move_options = $fetch_and_filter['categories_move_options'];
-        $cat_params = $fetch_and_filter['cat_params'];
+        $filter_collapse = $fetch_and_filter['filter_collapse'];
         $is_owner = $fetch_and_filter['is_owner'];
-        $flt = $fetch_and_filter['out'];
+        $count_ary = $fetch_and_filter['count_ary'];
+        $cat_count_ary = $fetch_and_filter['cat_count_ary'];
+        $sort_dir = $fetch_and_filter['sort_dir'];
+        $sort_col = $fetch_and_filter['sort_col'];
+
+        $all_params = $request->query->all();
+
+        if ($category_enabled)
+        {
+            $categories_move_options = ['' => ['name' => '']];
+
+            $categories = [];
+            $cat_params  = [];
+
+            if (isset($cat_count_ary['null']))
+            {
+                $categories['null'] = '** zonder categorie **';
+                $cat_params['null'] = $all_params;
+                $cat_params['null']['f']['cat'] = 'null';
+            }
+
+            $parent_name = '***';
+
+            $st = $db->executeQuery('select *
+                from ' . $pp->schema() . '.categories
+                order by left_id asc');
+
+            while ($row = $st->fetchAssociative())
+            {
+                $name = $row['name'];
+                $cat_id = $row['id'];
+                $parent_id = $row['parent_id'];
+
+                $cat_params[$cat_id] = $all_params;
+                $cat_params[$cat_id]['f']['cat'] = $cat_id;
+
+                $count_str = isset($cat_count_ary[$cat_id]) ? ' (' . $cat_count_ary[$cat_id] . ')' : '';
+
+                if (isset($parent_id))
+                {
+                    $categories[$cat_id] = $parent_name . ' > ' . $name;
+
+                    $categories_move_options[$parent_id]['children'][$cat_id] = [
+                        'name'  => $name . $count_str,
+                    ];
+                }
+                else
+                {
+                    $parent_name = $name;
+                    $categories[$cat_id] = $parent_name;
+
+                    $categories_move_options[$cat_id] = [
+                        'name'          => $name . $count_str,
+                        'children'      => [],
+                    ];
+                }
+            }
+        }
 
         $out = '<div class="panel panel-info printview">';
 
@@ -418,11 +467,11 @@ class MessagesListController extends AbstractController
         $out .= '<thead>';
         $out .= '<tr>';
 
-        $th_params = $params;
+        $th_params = $all_params;
 
         $column_ary = self::COLUMNS_DEF_ARY;
 
-        if (isset($params['f']['uid']))
+        if (isset($uid))
         {
             unset($column_ary['user']);
             unset($column_ary['postcode']);
@@ -433,7 +482,7 @@ class MessagesListController extends AbstractController
             unset($column_ary['postcode']);
         }
 
-        if (isset($params['f']['cid']) || !$category_enabled)
+        if (isset($filter_command->cat) || !$category_enabled)
         {
             unset($column_ary['category']);
         }
@@ -482,10 +531,10 @@ class MessagesListController extends AbstractController
                 $fa = 'sort';
                 $dir = $data['sort']['dir'];
 
-                if ($col === $params['s']['col'])
+                if ($col === $sort_col)
                 {
-                    $dir = $params['s']['dir'] === 'asc' ? 'desc' : 'asc';
-                    $fa = $params['s']['dir'] === 'asc' ? 'sort-asc' : 'sort-desc';
+                    $dir = $sort_dir === 'asc' ? 'desc' : 'asc';
+                    $fa = $sort_dir === 'asc' ? 'sort-asc' : 'sort-desc';
                 }
 
                 $th_params['s'] = [
@@ -540,21 +589,21 @@ class MessagesListController extends AbstractController
 
             $out .= '</td>';
 
-            if (!isset($params['f']['uid']))
+            if (!isset($uid))
             {
                 $out .= '<td>';
                 $out .= $account_render->link($msg['user_id'], $pp->ary());
                 $out .= '</td>';
             }
 
-            if ($postcode_enabled && !isset($params['f']['uid']))
+            if ($postcode_enabled && !isset($uid))
             {
                 $out .= '<td>';
                 $out .= $msg['postcode'] ?? '';
                 $out .= '</td>';
             }
 
-            if ($category_enabled && !($params['f']['cid'] ?? false))
+            if ($category_enabled && !($uid ?? false))
             {
                 $out .= '<td>';
 
@@ -815,32 +864,29 @@ class MessagesListController extends AbstractController
 
         return $this->render('messages/messages_list.html.twig', [
             'data_list_raw'     => $out,
-            'filter_form_raw'   => $flt,
+            'filter_form_raw'   => '',
             'bulk_actions_raw'  => $blk ?? '',
             'categories'    => $categories,
             'row_count'     => $row_count,
             'is_self'       => $is_self,
-            'filter_uid'    => $filter_uid,
+            'filter_uid'    => isset($uid),
             'uid'           => $uid,
-            'filter_cid'    => $filter_cid,
-            'cid'           => $cid,
+            'cat_id'        => $filter_command->cat,
+            'filter_cid'    => isset($filter_command->cat),
+            'cid'           => $filter_command->cat,
+            'filter_form'   => $filter_form,
             'filtered'      => $filtered,
+            'count_ary'     => $count_ary,
         ]);
     }
 
-    public static function fetch_and_filter(
+    public function fetch_and_filter(
         Request $request,
         Db $db,
         bool $is_self,
-        AccountRender $account_render,
         ConfigService $config_service,
-        ItemAccessService $item_access_service,
-        LinkRender $link_render,
-        SelectRender $select_render,
         PageParamsService $pp,
-        SessionUserService $su,
-        VarRouteService $vr,
-        TypeaheadService $typeahead_service
+        SessionUserService $su
     ):array
     {
         $service_stuff_enabled = $config_service->get_bool('messages.fields.service_stuff.enabled', $pp->schema());
@@ -848,36 +894,32 @@ class MessagesListController extends AbstractController
         $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
 
         $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
-        $new_users_days = $config_service->get_int('users.new.days', $pp->schema());
-        $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
-        $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
 
-        $show_new_status = $new_users_enabled;
-
-        if ($show_new_status)
-        {
-            $new_users_access = $config_service->get_str('users.new.access', $pp->schema());
-            $show_new_status = $item_access_service->is_visible($new_users_access);
-        }
-
-        $show_leaving_status = $leaving_users_enabled;
-
-        if ($show_leaving_status)
-        {
-            $leaving_users_access = $config_service->get_str('users.leaving.access', $pp->schema());
-            $show_leaving_status = $item_access_service->is_visible($leaving_users_access);
-        }
-
-        $filter = $request->query->get('f', []);
-        $pag = $request->query->get('p', []);
-        $sort = $request->query->get('s', []);
+        $filter_command = new MessagesFilterCommand();
 
         if ($is_self)
         {
-            $filter['uid'] = $su->id();
+            $uid = $su->id();
+        }
+        else
+        {
+            $uid = $request->query->get('uid');
         }
 
-        $vr_route = $vr->get('messages' . ($is_self ? '_self' : ''));
+        if (isset($uid))
+        {
+            $filter_command->user = (int) $uid;
+        }
+
+        $filter_form = $this->createForm(MessagesFilterType::class, $filter_command);
+        $filter_form->handleRequest($request);
+        $filter_command = $filter_form->getData();
+
+        $f_params = $request->query->get('f', []);
+        $filter_form_error = isset($f_params['user']) && !isset($filter_command->user);
+
+        $pag = $request->query->get('p', []);
+        $sort = $request->query->get('s', []);
 
         $sort_col = $sort['col'] ?? 'created';
         $sort_col = isset(self::COLUMNS_DEF_ARY[$sort_col]) ? $sort_col : 'created';
@@ -887,17 +929,6 @@ class MessagesListController extends AbstractController
 
         $pag_start = $pag['start'] ?? 0;
         $pag_limit = $pag['limit'] ?? 25;
-
-        $params = [
-            's'	=> [
-                'col'	    => $sort_col,
-                'dir'		=> $sort_dir,
-            ],
-            'p'	=> [
-                'start'		=> $pag_start,
-                'limit'		=> $pag_limit,
-            ],
-        ];
 
         $sql_map = [
             'where'     => [],
@@ -912,78 +943,40 @@ class MessagesListController extends AbstractController
 
         $sql['common']['where'][] = '1 = 1';
 
-        $is_owner = isset($filter['uid'])
-            && $su->is_owner((int) $filter['uid']);
+        $is_owner = isset($filter_command->user)
+            && $su->is_owner($filter_command->user);
 
-        $filter_uid = isset($filter['uid']) && $filter['uid'];
-
-        if ($filter_uid && !isset($filter['s']))
-        {
-            $filter['fcode'] = $account_render->str((int) $filter['uid'], $pp->schema());
-        }
-
-        if ($filter_uid)
-        {
-            $params['f']['uid'] = $filter['uid'];
-        }
-
-        $filter_q = isset($filter['q']) && $filter['q'];
-
-        if ($filter_q)
+        if (isset($filter_command->q))
         {
             $sql['q'] = $sql_map;
             $sql['q']['where'][] = '(m.subject ilike ? or m.content ilike ?)';
-            $sql['q']['params'][] = '%' . $filter['q'] . '%';
-            $sql['q']['params'][] = '%' . $filter['q'] . '%';
+            $sql['q']['params'][] = '%' . $filter_command->q . '%';
+            $sql['q']['params'][] = '%' . $filter_command->q . '%';
             $sql['q']['types'][] = \PDO::PARAM_INT;
             $sql['q']['types'][] = \PDO::PARAM_INT;
-            $params['f']['q'] = $filter['q'];
         }
 
-        $filter_fcode = isset($filter['fcode'])
-            && $filter['fcode'] !== '';
-
-        if ($filter_fcode)
+        if (isset($filter_command->user))
         {
-            [$fcode] = explode(' ', trim($filter['fcode']));
-            $fcode = trim($fcode);
-
-            $fuid = $db->fetchOne('select id
-                from ' . $pp->schema() . '.users
-                where code = ?',
-                [$fcode], [\PDO::PARAM_STR]);
-
-            $sql['fcode'] = $sql_map;
-
-            if ($fuid)
-            {
-                $sql['fcode']['where'][] = 'u.id = ?';
-                $sql['fcode']['params'][] = $fuid;
-                $sql['fcode']['types'][] = \PDO::PARAM_INT;
-
-                $fcode = $account_render->str((int) $fuid, $pp->schema());
-                $params['f']['fcode'] = $fcode;
-            }
-            else
-            {
-                $sql['fcode']['where'][] = '1 = 2';
-            }
+            $sql['user']['where'][] = 'u.id = ?';
+            $sql['user']['params'][] = $filter_command->user;
+            $sql['user']['types'][] = \PDO::PARAM_INT;
         }
 
         $filter_valid_expired = $expires_at_enabled
-            && (isset($filter['valid']) xor isset($filter['expired']));
+            && isset($filter_command->ve)
+            && $filter_command->ve;
 
         if ($filter_valid_expired)
         {
             $sql['valid_expired'] = $sql_map;
 
-            if (isset($filter['valid']))
+            if (in_array('valid', $filter_command->ve))
             {
                 $sql['valid_expired']['where_or'][] = '(m.expires_at >= timezone(\'utc\', now()) or m.expires_at is null)';
-                $params['f']['valid'] = '1';
             }
 
-            if (isset($filter['expired']))
+            if (in_array('expired', $filter_command->ve))
             {
                 $sql['valid_expired']['where_or'][] = 'm.expires_at < timezone(\'utc\', now())';
                 $params['f']['expired'] = '1';
@@ -995,22 +988,20 @@ class MessagesListController extends AbstractController
             }
         }
 
-        $filter_offer_want = isset($filter['want']) || isset($filter['offer']);
+        $filter_offer_want = isset($filter_command->ow) && $filter_command->ow;
 
         if ($filter_offer_want)
         {
             $sql['offer_want'] = $sql_map;
 
-            if (isset($filter['want']))
+            if (in_array('want', $filter_command->ow))
             {
                 $sql['offer_want']['where_or'][] = 'm.offer_want = \'want\'';
-                $params['f']['want'] = '1';
             }
 
-            if (isset($filter['offer']))
+            if (in_array('offer', $filter_command->ow))
             {
                 $sql['offer_want']['where_or'][] = 'm.offer_want = \'offer\'';
-                $params['f']['offer'] = '1';
             }
 
             if (count($sql['offer_want']['where_or']))
@@ -1020,31 +1011,27 @@ class MessagesListController extends AbstractController
         }
 
         $filter_service_stuff = $service_stuff_enabled
-            && (isset($filter['service'])
-                || isset($filter['stuff'])
-                || isset($filter['null-service-stuff'])
-            );
+            && (isset($filter_command->srvc)
+            && $filter_command->srvc
+        );
 
         if ($filter_service_stuff)
         {
             $sql['service_stuff'] = $sql_map;
 
-            if (isset($filter['service']))
+            if (in_array('srvc', $filter_command->srvc))
             {
                 $sql['service_stuff']['where_or'][] = 'm.service_stuff = \'service\'';
-                $params['f']['service'] = '1';
             }
 
-            if (isset($filter['stuff']))
+            if (in_array('stff', $filter_command->srvc))
             {
                 $sql['service_stuff']['where_or'][] = 'm.service_stuff = \'stuff\'';
-                $params['f']['stuff'] = '1';
             }
 
-            if (isset($filter['null-service-stuff']))
+            if (in_array('null', $filter_command->srvc))
             {
                 $sql['service_stuff']['where_or'][] = 'm.service_stuff is null';
-                $params['f']['null-service-stuff'] = '1';
             }
 
             if (count($sql['service_stuff']['where_or']))
@@ -1053,35 +1040,31 @@ class MessagesListController extends AbstractController
             }
         }
 
-        $filter_user_status = isset($filter['u-new'])
-            || isset($filter['u-leaving'])
-            || isset($filter['u-active']);
+        $filter_user_status = isset($filter_command->us)
+            && $filter_command->us;
 
         if ($filter_user_status)
         {
             $sql_user_status_where = [];
             $sql['user_status'] = $sql_map;
 
-            if (isset($filter['u-new']))
+            if (in_array('new', $filter_command->us))
             {
                 $sql_user_status_where[] = '(u.adate > ? and u.status = 1)';
                 $sql['user_status']['params'][] = $new_user_treshold;
                 $sql['user_status']['types'][] = Types::DATETIME_IMMUTABLE;
-                $params['f']['u-new'] = '1';
             }
 
-            if (isset($filter['u-leaving']))
+            if (in_array('leaving', $filter_command->us))
             {
                 $sql_user_status_where[] = 'u.status = 2';
-                $params['f']['u-leaving'] = '1';
             }
 
-            if (isset($filter['u-active']))
+            if (in_array('active', $filter_command->us))
             {
                 $sql_user_status_where[] = '(u.adate <= ? and u.status = 1)';
                 $sql['user_status']['params'][] = $new_user_treshold;
                 $sql['user_status']['types'][] = Types::DATETIME_IMMUTABLE;
-                $params['f']['u-active'] = '1';
             }
 
             if (count($sql_user_status_where))
@@ -1098,15 +1081,14 @@ class MessagesListController extends AbstractController
 
         $sql['common']['where'][] = 'u.status in (1, 2)';
 
-        $filter_cid = isset($filter['cid'])
-            && $filter['cid']
+        $filter_category = isset($filter_command->cat)
             && $category_enabled;
 
-        if ($filter_cid)
+        if ($filter_category)
         {
             $sql['category'] = $sql_map;
 
-            if ($filter['cid'] === 'null')
+            if ($filter_command->cat === 'null')
             {
                 $sql['category']['where'][] = 'm.category_id is null';
             }
@@ -1115,12 +1097,12 @@ class MessagesListController extends AbstractController
                 $cat_lr = $db->fetchAssociative('select left_id, right_id
                     from ' . $pp->schema() . '.categories
                     where id = ?',
-                    [$filter['cid']],
+                    [$filter_command->cat],
                     [\PDO::PARAM_INT]);
 
                 if (!$cat_lr)
                 {
-                    throw new BadRequestHttpException('Category not found, id:' . $filter['cid']);
+                    throw new BadRequestHttpException('Category not found, id:' . $filter_command->cat);
                 }
 
                 $sql['category']['where'][] = 'c.left_id >= ? and c.right_id <= ?';
@@ -1129,23 +1111,23 @@ class MessagesListController extends AbstractController
                 $sql['category']['types'][] = \PDO::PARAM_INT;
                 $sql['category']['types'][] = \PDO::PARAM_INT;
             }
-
-            $params['f']['cid'] = $filter['cid'];
         }
 
         $sql['pagination'] = $sql_map;
-        $sql['pagination']['params'][] = $params['p']['limit'];
+        $sql['pagination']['params'][] = $pag_limit;
         $sql['pagination']['types'][] = \PDO::PARAM_INT;
-        $sql['pagination']['params'][] = $params['p']['start'];
+        $sql['pagination']['params'][] = $pag_start;
         $sql['pagination']['types'][] = \PDO::PARAM_INT;
 
         $sql_where = implode(' and ', array_merge(...array_column($sql, 'where')));
 
-        $sort_ary = self::COLUMNS_DEF_ARY[$params['s']['col']]['sort'];
+        $sort_ary = self::COLUMNS_DEF_ARY[$sort_col]['sort'];
+
         $order_query = [];
+
         foreach ($sort_ary['col'] as $col)
         {
-            $order_query[] = $col . ' ' . $params['s']['dir'];
+            $order_query[] = $col . ' ' . $sort_dir;
         }
 
         $query = 'select m.*, u.postcode
@@ -1166,7 +1148,7 @@ class MessagesListController extends AbstractController
             array_merge(...array_column($sql, 'params')),
             array_merge(...array_column($sql, 'types')));
 
-        while ($msg = $stmt->fetch())
+        while ($msg = $stmt->fetchAssociative())
         {
             $msg['label'] = MessagesShowController::get_label($msg['offer_want']);
             $messages[] = $msg;
@@ -1177,12 +1159,12 @@ class MessagesListController extends AbstractController
             'want'                  => 0,
             'service'               => 0,
             'stuff'                 => 0,
-            'null-service-stuff'    => 0,
+            'null_service_stuff'    => 0,
             'valid'                 => 0,
             'expired'               => 0,
-            'u-active'              => 0,
-            'u-new'                 => 0,
-            'u-leaving'             => 0,
+            'active'                => 0,
+            'new'                   => 0,
+            'leaving'               => 0,
         ];
 
         $sql_omit_pagination = $sql;
@@ -1206,7 +1188,7 @@ class MessagesListController extends AbstractController
             array_merge(...array_column($sql_omit_offer_want, 'params')),
             array_merge(...array_column($sql_omit_offer_want, 'types')));
 
-        while($row = $stmt->fetch())
+        while($row = $stmt->fetchAssociative())
         {
             $count_ary[$row['offer_want']] = $row['count'];
         }
@@ -1231,9 +1213,9 @@ class MessagesListController extends AbstractController
                 array_merge(...array_column($sql_omit_service_stuff, 'params')),
                 array_merge(...array_column($sql_omit_service_stuff, 'types')));
 
-            while($row = $stmt->fetch())
+            while($row = $stmt->fetchAssociative())
             {
-                $count_ary[$row['service_stuff'] ?? 'null-service-stuff'] = $row['count'];
+                $count_ary[$row['service_stuff'] ?? 'null_service_stuff'] = $row['count'];
             }
         }
 
@@ -1258,7 +1240,7 @@ class MessagesListController extends AbstractController
                 array_merge(...array_column($sql_omit_valid_expired, 'params')),
                 array_merge(...array_column($sql_omit_valid_expired, 'types')));
 
-            while($row = $stmt->fetch())
+            while($row = $stmt->fetchAssociative())
             {
                 $count_ary[$row['valid'] ? 'valid' : 'expired'] = $row['count'];
             }
@@ -1271,9 +1253,9 @@ class MessagesListController extends AbstractController
 
         $count_user_status_query = 'select count(m.*),
                 (case
-                    when u.status = 2 then \'u-leaving\'
-                    when u.status = 1 and u.adate > ? then \'u-new\'
-                    when u.status = 1 then \'u-active\'
+                    when u.status = 2 then \'leaving\'
+                    when u.status = 1 and u.adate > ? then \'new\'
+                    when u.status = 1 then \'active\'
                     else \'inactive\'
                 end) as u_status
             from ' . $pp->schema() . '.messages m
@@ -1288,7 +1270,7 @@ class MessagesListController extends AbstractController
             array_merge([$new_user_treshold], ...array_column($sql_omit_user_status, 'params')),
             array_merge([Types::DATETIME_IMMUTABLE], ...array_column($sql_omit_user_status, 'types')));
 
-        while($row = $stmt->fetch())
+        while($row = $stmt->fetchAssociative())
         {
             $count_ary[$row['u_status']] = $row['count'];
         }
@@ -1312,7 +1294,7 @@ class MessagesListController extends AbstractController
             array_merge(...array_column($sql_omit_category, 'params')),
             array_merge(...array_column($sql_omit_category, 'types')));
 
-        while($row = $stmt->fetch())
+        while($row = $stmt->fetchAssociative())
         {
             if (isset($row['category_id']))
             {
@@ -1320,11 +1302,10 @@ class MessagesListController extends AbstractController
                 continue;
             }
 
-            $no_cat_count = $row['count'];
+            $cat_count_ary['null'] = $row['count'];
         }
 
-        if (isset($filter['cid'])
-            && $filter['cid']
+        if (isset($filter_command->cat)
             && $category_enabled)
         {
             $row_count = $db->fetchOne('select count(m.*)
@@ -1343,332 +1324,29 @@ class MessagesListController extends AbstractController
             $row_count += $no_cat_count;
         }
 
-        $categories_filter_options = [];
-        $categories_filter_options[''] = '-- alle categorieën --';
-
-        if ($no_cat_count)
-        {
-            $categories_filter_options['null'] = '-- zonder categorie (' . $no_cat_count . ')-- ';
-        }
-
-        $categories_move_options = ['' => ['name' => '']];
-
-        $categories = [];
-        $cat_params  = [];
-        $cat_params_sort = $params;
-
-        if ($no_cat_count)
-        {
-            $categories['null'] = '** zonder categorie **';
-            $cat_params['null'] = $cat_params_sort;
-            $cat_params['null']['f']['cid'] = 'null';
-        }
-
-        if ($params['s']['col'] === 'category')
-        {
-            unset($cat_params_sort['s']);
-        }
-
-        $parent_name = '***';
-
-        $st = $db->executeQuery('select *
-            from ' . $pp->schema() . '.categories
-            order by left_id asc');
-
-        while ($row = $st->fetch())
-        {
-            $cat_id = $row['id'];
-            $parent_id = $row['parent_id'];
-            $name = $row['name'];
-            $parent_name = isset($parent_id) ? $parent_name : $name;
-            $cat_ident = isset($parent_id) ? ' . > . ' : '';
-            $count_str = isset($cat_count_ary[$cat_id]) ? ' (' . $cat_count_ary[$cat_id] . ')' : '';
-            $categories_filter_options[$cat_id] = $cat_ident . $name . $count_str;
-            $full_name = isset($parent_id) ? $parent_name . ' > ' : '';
-            $full_name .= $name;
-            $categories[$cat_id] = $full_name;
-
-            $cat_params[$cat_id] = $cat_params_sort;
-            $cat_params[$cat_id]['f']['cid'] = $cat_id;
-
-            if (isset($parent_id))
-            {
-                $categories_move_options[$parent_id]['children'][$cat_id] = [
-                    'name'  => $name . $count_str,
-                ];
-            }
-            else
-            {
-                $categories_move_options[$cat_id] = [
-                    'name'          => $name . $count_str,
-                    'children'      => [],
-                ];
-            }
-        }
-
-        $filter_panel_open = ($filter_fcode && !isset($filter['uid']))
+        $filter_panel_open = ($filter_command->user && !isset($uid))
             || $filter_offer_want
             || $filter_valid_expired
             || $filter_service_stuff
             || $filter_user_status;
 
-        $filtered = $filter_q || $filter_panel_open;
+        $filtered = isset($filter_command->q) || $filter_panel_open;
 
-        $out = '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
-
-        $out .= '<form method="get" ';
-        $out .= 'class="form-horizontal" ';
-        $out .= 'action="';
-        $out .= $link_render->context_path($vr->get('messages'), $pp->ary(), []);
-        $out .= '">';
-
-        $out .= '<div class="row">';
-
-        $out .= '<div class="col-sm-';
-        $out .= $category_enabled ? '5' : '10';
-        $out .= '">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<i class="fa fa-search"></i>';
-        $out .= '</span>';
-        $out .= '<input type="text" class="form-control" id="q" value="';
-        $out .= $filter['q'] ?? '';
-        $out .= '" name="f[q]" placeholder="Zoeken">';
-        $out .= '</div>';
-        $out .= '</div>';
-
-        if ($category_enabled)
-        {
-            $out .= '<div class="col-sm-5 col-xs-10">';
-            $out .= '<div class="input-group margin-bottom">';
-            $out .= '<span class="input-group-addon">';
-            $out .= '<i class="fa fa-clone"></i>';
-            $out .= '</span>';
-            $out .= '<select class="form-control" id="cid" name="f[cid]">';
-
-            $cid = (string) ($filter['cid'] ?? '');
-
-            $out .= $select_render->get_options($categories_filter_options, $cid);
-
-            $out .= '</select>';
-            $out .= '</div>';
-            $out .= '</div>';
-        }
-
-        $out .= '<div class="col-sm-2 col-xs-2">';
-        $out .= '<button class="btn btn-default btn-block" title="Meer filters" ';
-        $out .= 'type="button" ';
-        $out .= 'data-toggle="collapse" data-target="#filters">';
-        $out .= '<i class="fa fa-caret-down"></i><span class="hidden-xs hidden-sm"> ';
-        $out .= 'Meer</span></button>';
-        $out .= '</div>';
-
-        $out .= '</div>';
-
-        $out .= '<div id="filters"';
-        $out .= $filter_panel_open ? '' : ' class="collapse"';
-        $out .= '>';
-
-        $col_w = 12;
-
-        if ($service_stuff_enabled || $expires_at_enabled)
-        {
-            $col_w = 6;
-
-            if ($service_stuff_enabled && $expires_at_enabled)
-            {
-                $col_w = 4;
-            }
-        }
-
-        $out .= '<div class="row">';
-        $out .= '<div class="col-sm-' . $col_w . '">';
-        $out .= '<div class="input-group margin-bottom custom-checkbox">';
-
-        foreach (MessageTypeCnst::OFFER_WANT_TPL_ARY as $key => $d)
-        {
-            $out .= strtr(BulkCnst::TPL_CHECKBOX_BTN_INLINE, [
-                '%name%'        => 'f[' . $key . ']',
-                '%attr%'        => isset($filter[$key]) ? ' checked' : '',
-                '%label%'       => $d['label'] . ' (' . $count_ary[$key] . ')',
-                '%btn_class%'   => $d['btn_class']
-            ]);
-        }
-
-        $out .= '</div>';
-        $out .= '</div>';
-
-        if ($service_stuff_enabled)
-        {
-            $out .= '<div class="col-sm-' . $col_w . '">';
-            $out .= '<div class="input-group margin-bottom custom-checkbox">';
-
-            foreach (MessageTypeCnst::SERVICE_STUFF_TPL_ARY as $key => $d)
-            {
-                if ($key === 'null-service-stuff' && !$count_ary['null-service-stuff'])
-                {
-                    continue;
-                }
-
-                $label = '<span class="btn btn-';
-                $label .= $d['btn_class'];
-                $label .= '"';
-
-                if (isset($d['title']))
-                {
-                    $label .= ' title="' . $d['title'] . '"';
-                }
-
-                $label .= '>';
-                $label .= $d['label'];
-                $label .= ' (';
-                $label .= $count_ary[$key];
-                $label .= ')</span>';
-
-                $out .= strtr(BulkCnst::TPL_CHECKBOX_INLINE, [
-                    '%name%'        => 'f[' . $key . ']',
-                    '%attr%'        => isset($filter[$key]) ? ' checked' : '',
-                    '%label%'       => $label,
-                ]);
-            }
-
-            $out .= '</div>';
-            $out .= '</div>';
-        }
-
-        if ($expires_at_enabled)
-        {
-            $out .= '<div class="col-sm-' . $col_w . '">';
-            $out .= '<div class="input-group margin-bottom custom-checkbox">';
-
-            foreach (MessageTypeCnst::VALID_EXPIRED_TPL_ARY as $key => $d)
-            {
-                $out .= strtr(BulkCnst::TPL_CHECKBOX_BTN_INLINE, [
-                    '%name%'        => 'f[' . $key . ']',
-                    '%attr%'        => isset($filter[$key]) ? ' checked' : '',
-                    '%label%'       => $d['label'] . ' (' . $count_ary[$key] . ')',
-                    '%btn_class%'   => $d['btn_class'],
-                ]);
-            }
-
-            $out .= '</div>';
-            $out .= '</div>';
-        }
-
-        $out .= '</div>';
-
-        $out .= '<div class="row">';
-        $out .= '<div class="col-sm-12">';
-        $out .= '<div class="input-group margin-bottom custom-checkbox">';
-
-        foreach (MessageTypeCnst::USERS_TPL_ARY as $key => $d)
-        {
-            $label = '<span class="btn btn-';
-            $label .= $d['btn_class'];
-            $label .= '"';
-
-            if (isset($d['title']))
-            {
-                $label .= ' title="' . $d['title'] . '"';
-            }
-
-            $label .= '>';
-            $label .= $d['label'];
-            $label .= ' (';
-            $label .= $count_ary[$key];
-            $label .= ')</span>';
-
-            $out .= strtr(BulkCnst::TPL_CHECKBOX_INLINE, [
-                '%name%'        => 'f[' . $key . ']',
-                '%attr%'        => isset($filter[$key]) ? ' checked' : '',
-                '%label%'       => $label,
-            ]);
-        }
-
-        $out .= '</div>';
-        $out .= '</div>';
-        $out .= '</div>';
-
-        $out .= '<div class="row">';
-
-        $out .= '<div class="col-sm-10">';
-        $out .= '<div class="input-group margin-bottom">';
-        $out .= '<span class="input-group-addon" id="fcode_addon">Van ';
-        $out .= '<span class="fa fa-user"></span></span>';
-
-        $out .= '<input type="text" class="form-control" ';
-        $out .= 'aria-describedby="fcode_addon" ';
-        $out .= 'data-typeahead="';
-
-        $out .= $typeahead_service->ini($pp)
-            ->add('accounts', ['status'	=> 'active'])
-            ->str([
-                'filter'		=> 'accounts',
-                'new_users_days'        => $new_users_days,
-                'show_new_status'       => $show_new_status,
-                'show_leaving_status'   => $show_leaving_status,
-            ]);
-
-        $out .= '" ';
-        $out .= 'name="f[fcode]" id="fcode" placeholder="Account" ';
-        $out .= 'value="';
-        $out .= $filter['fcode'] ?? '';
-        $out .= '">';
-        $out .= '</div>';
-        $out .= '</div>';
-
-        $out .= '<div class="col-sm-2">';
-        $out .= '<input type="submit" id="filter_submit" ';
-        $out .= 'value="Toon" class="btn btn-default btn-block" ';
-        $out .= 'name="f[s]">';
-        $out .= '</div>';
-
-        $out .= '</div>';
-        $out .= '</div>';
-
-        $params_form = array_merge($params, $pp->ary());
-        unset($params_form['role_short']);
-        unset($params_form['system']);
-        unset($params_form['f']);
-        unset($params_form['p']['start']);
-
-        $params_form = http_build_query($params_form, 'prefix', '&');
-        $params_form = urldecode($params_form);
-        $params_form = explode('&', $params_form);
-
-        foreach ($params_form as $param)
-        {
-            [$name, $value] = explode('=', $param);
-
-            if (!isset($value) || $value === '')
-            {
-                continue;
-            }
-
-            $out .= '<input name="' . $name . '" ';
-            $out .= 'value="' . $value . '" type="hidden">';
-        }
-
-        $out .= '</form>';
-
-        $out .= '</div>';
-        $out .= '</div>';
+        $filter_collapse = !($filter_panel_open || $filter_form_error);
 
         return [
             'messages'                  => $messages,
             'row_count'                 => $row_count,
-            'params'                    => $params,
+            'filter_form'               => $filter_form->createView(),
+            'filter_command'            => $filter_command,
             'filtered'                  => $filtered,
-            'filter_uid'                => $filter_uid,
-            'uid'                       => $filter['uid'] ?? 0,
-            'filter_cid'                => $filter_cid,
-            'cid'                       => $filter['cid'] ?? 0,
-            'categories'                => $categories,
-            'cat_params'                => $cat_params,
-            'categories_move_options'   => $categories_move_options,
+            'filter_collapse'           => $filter_collapse,
+            'uid'                       => $uid,
             'is_owner'                  => $is_owner,
-            'out'                       => $out,
+            'count_ary'                 => $count_ary,
+            'cat_count_ary'             => $cat_count_ary,
+            'sort_col'                  => $sort_col,
+            'sort_dir'                  => $sort_dir,
         ];
     }
 }

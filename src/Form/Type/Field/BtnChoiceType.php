@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Form\Type;
+namespace App\Form\Type\Field;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -12,11 +12,6 @@ use Symfony\Component\OptionsResolver\Options;
 
 class BtnChoiceType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options): void
-    {
-
-    }
-
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
         parent::buildView($view, $form, $options);
@@ -43,10 +38,6 @@ class BtnChoiceType extends AbstractType
                 'class' => 'radio-inline radio-custom',
             ];
         });
-        /*
-        $resolver->setDefault('count_ary', []);
-        $resolver->setAllowedTypes('count_ary', ['array']);
-        */
     }
 
     public function getParent():string

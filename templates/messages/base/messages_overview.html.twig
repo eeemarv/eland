@@ -2,8 +2,7 @@
 
 {%- block btn_top_add -%}
     {%- if pp_role('admin')
-        and filter_uid
-        and uid
+        and uid is not empty
         and not su_is_owner(uid) -%}
         {%- include 'include/btn_top/add.html.twig' with {
             'btn_route': 'messages_add',
@@ -32,10 +31,10 @@
 
 {%- block heading_title -%}
     {{- 'messages.title'|trans({
-        'self': filter_uid ? (is_self ? 'self' : 'some_user') : 'all_users',
-        'with_without_category': filter_cid ? (cid == 'null' ? 'without' : 'with') : 'all_categories',
-        'user': account(uid, schema)|link('users_show', {'id': uid}),
-        'category_name': categories[cid] ?? ''
+        'self': uid is empty ? 'all_users' : (is_self ? 'self' : 'some_user'),
+        'with_without_category': cat_id is null ? 'all_categories' : (cat_id == 'null' ? 'without' : 'with'),
+        'user': uid is empty ? '*** ***' : account(uid, schema)|link('users_show', {'id': uid}),
+        'category_name': categories[cat_id] ?? ''
     })|raw -}}
 {%- endblock heading_title -%}
 
@@ -43,9 +42,15 @@
     {%- include 'include/filter/heading_filter.html.twig' -%}
 {%- endblock heading_append -%}
 
+{#}
 {%- block filter_form -%}
     {{- filter_form_raw|raw -}}
 {%- endblock filter_form -%}
+#}
+
+{%- block filter_form_a -%}
+    {%- include 'messages/include/messages_filter_form.html.twig' -%}
+{%- endblock filter_form_a -%}
 
 {%- block pagination -%}
     {%- include 'include/pagination/pagination.html.twig' -%}

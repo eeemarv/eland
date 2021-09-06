@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Form\Type;
+namespace App\Form\Type\Field;
 
 use App\Form\DataTransformer\DatepickerTransformer;
 use App\Service\DateFormatService;
@@ -14,19 +14,12 @@ use Symfony\Component\Form\FormInterface;
 
 class DatepickerType extends AbstractType
 {
-    protected DateFormatService $date_format_service;
-    protected PageParamsService $pp;
-    protected DatepickerTransformer $datepicker_transformer;
-
     public function __construct(
-        DatepickerTransformer $datepicker_transformer,
-        DateFormatService $date_format_service,
-        PageParamsService $pp
+        protected DatepickerTransformer $datepicker_transformer,
+        protected DateFormatService $date_format_service,
+        protected PageParamsService $pp
     )
     {
-        $this->datepicker_transformer = $datepicker_transformer;
-        $this->date_format_service = $date_format_service;
-        $this->pp = $pp;
     }
 
     public function buildForm(
@@ -49,12 +42,6 @@ class DatepickerType extends AbstractType
             'data-date-format'  => $this->date_format_service->datepicker_format($this->pp->schema()),
             'placeholder'       => 'var',
         ], $options['attr']);
-    }
-
-    public function configureOptions(OptionsResolver $resolver)
-    {
-        $resolver->setDefaults([
-        ]);
     }
 
     public function getParent()

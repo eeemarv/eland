@@ -3,7 +3,7 @@
 namespace App\Controller\Transactions;
 
 use App\Cnst\BulkCnst;
-use App\Form\Type\QTextSearchFilterType;
+use App\Form\Type\Filter\QTextSearchFilterType;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
 use App\Render\LinkRender;

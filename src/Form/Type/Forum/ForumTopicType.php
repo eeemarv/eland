@@ -4,7 +4,7 @@ namespace App\Form\Type\Forum;
 
 use App\Command\Forum\ForumTopicCommand;
 use App\Form\EventSubscriber\AccessFieldSubscriber;
-use App\Form\Type\SummernoteType;
+use App\Form\Type\Field\SummernoteType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
