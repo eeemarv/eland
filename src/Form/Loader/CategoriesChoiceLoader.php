@@ -4,8 +4,6 @@ namespace App\Form\Loader;
 
 use App\Repository\CategoryRepository;
 use App\Service\PageParamsService;
-use Symfony\Component\Form\ChoiceList\ArrayChoiceList;
-use Symfony\Component\Form\ChoiceList\ChoiceListInterface;
 use Symfony\Component\Form\ChoiceList\Loader\AbstractChoiceLoader;
 use Symfony\Component\Form\ChoiceList\Loader\ChoiceLoaderInterface;
 

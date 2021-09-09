@@ -23,7 +23,6 @@ use App\Service\IntersystemsService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\TypeaheadService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -123,7 +122,6 @@ class MessagesListController extends AbstractController
         LinkRender $link_render,
         SelectRender $select_render,
         ConfigService $config_service,
-        TypeaheadService $typeahead_service,
         PageParamsService $pp,
         SessionUserService $su,
         VarRouteService $vr
@@ -897,18 +895,19 @@ class MessagesListController extends AbstractController
 
         $filter_command = new MessagesFilterCommand();
 
+        if ($request->query->has('uid'))
+        {
+            $uid = (int) $request->query->get('uid');
+        }
+
         if ($is_self)
         {
             $uid = $su->id();
         }
-        else
-        {
-            $uid = $request->query->get('uid');
-        }
 
         if (isset($uid))
         {
-            $filter_command->user = (int) $uid;
+            $filter_command->user = $uid;
         }
 
         $filter_form = $this->createForm(MessagesFilterType::class, $filter_command);
@@ -1341,7 +1340,7 @@ class MessagesListController extends AbstractController
             'filter_command'            => $filter_command,
             'filtered'                  => $filtered,
             'filter_collapse'           => $filter_collapse,
-            'uid'                       => $uid,
+            'uid'                       => $uid ?? null,
             'is_owner'                  => $is_owner,
             'count_ary'                 => $count_ary,
             'cat_count_ary'             => $cat_count_ary,

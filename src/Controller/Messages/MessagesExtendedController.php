@@ -7,13 +7,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
-use App\Render\SelectRender;
 use App\Service\ConfigService;
-use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\TypeaheadService;
-use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
@@ -57,13 +53,9 @@ class MessagesExtendedController extends AbstractController
         MessagesListController $messages_list_controller,
         AccountRender $account_render,
         ConfigService $config_service,
-        ItemAccessService $item_access_service,
-        SelectRender $select_render,
-        TypeaheadService $typeahead_service,
         LinkRender $link_render,
         PageParamsService $pp,
         SessionUserService $su,
-        VarRouteService $vr,
         string $env_s3_url
     ):Response
     {
@@ -78,15 +70,9 @@ class MessagesExtendedController extends AbstractController
             $request,
             $db,
             $is_self,
-            $account_render,
             $config_service,
-            $item_access_service,
-            $link_render,
-            $select_render,
             $pp,
-            $su,
-            $vr,
-            $typeahead_service
+            $su
         );
 
         $messages = $fetch_and_filter['messages'];
