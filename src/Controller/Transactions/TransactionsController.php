@@ -91,7 +91,10 @@ class TransactionsController extends AbstractController
 
         $filter_command = new TransactionsFilterCommand();
 
-        $uid = (int) $request->query->get('uid');
+        if ($request->query->has('uid'))
+        {
+            $uid = (int) $request->query->get('uid');
+        }
 
         if ($is_self)
         {
@@ -905,7 +908,7 @@ class TransactionsController extends AbstractController
             'amount_sum'            => $amount_sum,
             'is_self'               => $is_self,
             'bulk_actions_enabled'  => $bulk_actions_enabled,
-            'uid'                   => $uid,
+            'uid'                   => $uid ?? null,
         ]);
     }
 }
