@@ -6,9 +6,10 @@ use App\Repository\CategoryRepository;
 use App\Service\PageParamsService;
 use Symfony\Component\Form\ChoiceList\ArrayChoiceList;
 use Symfony\Component\Form\ChoiceList\ChoiceListInterface;
+use Symfony\Component\Form\ChoiceList\Loader\AbstractChoiceLoader;
 use Symfony\Component\Form\ChoiceList\Loader\ChoiceLoaderInterface;
 
-class CategoriesChoiceLoader implements ChoiceLoaderInterface
+class CategoriesChoiceLoader extends AbstractChoiceLoader implements ChoiceLoaderInterface
 {
     protected $choice_list;
 
@@ -20,13 +21,8 @@ class CategoriesChoiceLoader implements ChoiceLoaderInterface
     {
     }
 
-    public function loadChoiceList(?callable $value = null)
+    public function loadChoices():iterable
     {
-        if ($this->choice_list instanceof ChoiceListInterface)
-        {
-            return $this->choice_list;
-        }
-
         $categories = $this->category_repository->get_all($this->pp->schema());
         $choices = [];
 
@@ -66,36 +62,6 @@ class CategoriesChoiceLoader implements ChoiceLoaderInterface
             }
         }
 
-        $this->choice_list = new ArrayChoiceList($choices);
-
-        return $this->choice_list;
-    }
-
-    public function loadChoicesForValues(array $values, ?callable $value = null)
-    {
-
-    }
-
-    public function loadValuesForChoices(array $choices, ?callable $value = null):array
-    {
-        // is called on form creat with $choices containing the preset of the bound entity
-        $values = [];
-
-        foreach ($choices as $key => $choice)
-        {
-            // DataTransformer
-            if (is_callable($value))
-            {
-                $values[$key] = (string)call_user_func($value, $choice, $key);
-            }
-            else
-            {
-                $values[$key] = $choice;
-            }
-        }
-
-        $this->choice_list = new ArrayChoiceList($values, $value);
-
-        return $values;
+        return $choices;
     }
 }
