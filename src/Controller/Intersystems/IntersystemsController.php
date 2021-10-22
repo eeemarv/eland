@@ -248,6 +248,9 @@ class IntersystemsController extends AbstractController
         LinkRender $link_render
     ):string
     {
+        // disable for now
+        return '';
+
         $out = '<div class="panel panel-default">';
         $out .= '<div class="panel-heading">';
         $out .= '<h3>Een interSysteem Verbinding aanmaken met een ander Systeem op deze eLAND server.</h3>';

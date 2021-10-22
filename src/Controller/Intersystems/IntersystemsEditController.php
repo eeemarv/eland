@@ -192,8 +192,7 @@ class IntersystemsEditController extends AbstractController
         ConfigService $config_service,
         LinkRender $link_render,
         SystemsService $systems_service,
-        PageParamsService $pp,
-        VarRouteService $vr
+        PageParamsService $pp
     ):string
     {
         $out = '<div class="panel panel-info">';
