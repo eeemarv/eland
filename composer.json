@@ -57,6 +57,7 @@
 		"symfony/requirements-checker": "^2.0",
 		"symfony/security-bundle": "^5",
 		"symfony/security-csrf": "^5",
+		"symfony/stopwatch": "^5",
 		"symfony/translation": "^5",
 		"symfony/twig-bridge": "^5",
 		"symfony/twig-bundle": "^5",
@@ -71,7 +72,6 @@
     "require-dev": {
 		"symfony/debug-bundle": "^5",
 		"symfony/maker-bundle": "^1.13",
-		"symfony/stopwatch": "^5",
 		"symfony/web-profiler-bundle": "^5"
 	},
 

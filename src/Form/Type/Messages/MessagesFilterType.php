@@ -150,7 +150,7 @@ class MessagesFilterType extends AbstractType
             'required'  => false,
         ]);
 
-        $this->access_field_subscriber->add('access', ['admin', 'user', 'guest'], [
+        $this->access_field_subscriber->add('access', ['user', 'guest'], [
             'multiple' => true,
             'required' => false,
         ]);

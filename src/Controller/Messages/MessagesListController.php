@@ -862,7 +862,6 @@ class MessagesListController extends AbstractController
 
         return $this->render('messages/messages_list.html.twig', [
             'data_list_raw'     => $out,
-            'filter_form_raw'   => '',
             'bulk_actions_raw'  => $blk ?? '',
             'categories'    => $categories,
             'row_count'     => $row_count,
@@ -1072,6 +1071,34 @@ class MessagesListController extends AbstractController
             }
         }
 
+        $filter_access = isset($filter_command->access);
+
+        if ($filter_access)
+        {
+            $sql_access_where = [];
+            $sql['access'] = $sql_map;
+
+            if (in_array('admin', $filter_command->access))
+            {
+                $sql_access_where[] = 'm.access = \'admin\'';
+            }
+
+            if (in_array('user', $filter_command->access))
+            {
+                $sql_access_where[] = 'm.access = \'user\'';
+            }
+
+            if (in_array('guest', $filter_command->access))
+            {
+                $sql_access_where[] = 'm.access = \'guest\'';
+            }
+
+            if (count($sql_access_where))
+            {
+                $sql['access']['where'][] = '(' . implode(' or ', $sql_access_where) . ')';
+            }
+        }
+
         if ($pp->is_guest())
         {
             $sql['is_guest'] = $sql_map;
@@ -1164,6 +1191,9 @@ class MessagesListController extends AbstractController
             'active'                => 0,
             'new'                   => 0,
             'leaving'               => 0,
+            'admin'                 => 0,
+            'user'                  => 0,
+            'guest'                 => 0,
         ];
 
         $sql_omit_pagination = $sql;
@@ -1274,6 +1304,29 @@ class MessagesListController extends AbstractController
             $count_ary[$row['u_status']] = $row['count'];
         }
 
+        $sql_omit_access = $sql_omit_pagination;
+        unset($sql_omit_access['access']);
+
+        $sql_omit_access_where = implode(' and ', array_merge(...array_column($sql_omit_access, 'where')));
+
+        $count_access_query = 'select count(m.*), m.access
+            from ' . $pp->schema() . '.messages m
+            inner join ' . $pp->schema() . '.users u
+                on m.user_id = u.id
+            left join ' . $pp->schema() . '.categories c
+                on c.id = m.category_id
+            where ' . $sql_omit_access_where . '
+            group by m.access';
+
+        $stmt = $db->executeQuery($count_access_query,
+            array_merge(...array_column($sql_omit_access, 'params')),
+            array_merge(...array_column($sql_omit_access, 'types')));
+
+        while($row = $stmt->fetchAssociative())
+        {
+            $count_ary[$row['access']] = $row['count'];
+        }
+
         $sql_omit_category = $sql_omit_pagination;
         unset($sql_omit_category['category']);
 
@@ -1327,7 +1380,8 @@ class MessagesListController extends AbstractController
             || $filter_offer_want
             || $filter_valid_expired
             || $filter_service_stuff
-            || $filter_user_status;
+            || $filter_user_status
+            || $filter_access;
 
         $filtered = isset($filter_command->q) || $filter_panel_open;
 

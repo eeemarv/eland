@@ -9,7 +9,6 @@ use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 
@@ -54,6 +53,11 @@ class AccessFieldSubscriber implements EventSubscriberInterface
             unset($access_options['admin']);
         }
 
+        if ($this->pp->is_guest())
+        {
+            unset($access_options['user']);
+        }
+
         foreach(AccessCnst::ACCESS as $access => $access_ary)
         {
             if (!isset($access_options[$access]))
@@ -94,10 +98,6 @@ class AccessFieldSubscriber implements EventSubscriberInterface
 
             if (count($access_options) === 1)
             {
-                $form->add($name, HiddenType::class, [
-                    'data'  => reset($access_options),
-                ]);
-
                 continue;
             }
 
@@ -135,6 +135,20 @@ class AccessFieldSubscriber implements EventSubscriberInterface
             {
                 if (!isset($data[$name]))
                 {
+                    continue;
+                }
+
+                error_log(var_export($data, true));
+
+                if (is_string($data[$name]))
+                {
+                    if (!in_array($data[$name], $access_options))
+                    {
+                        throw new UnexpectedTypeException($data[$name], 'access');
+                    }
+
+                    $update = true;
+
                     continue;
                 }
 
