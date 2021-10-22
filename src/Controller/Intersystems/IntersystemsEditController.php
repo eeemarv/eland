@@ -304,16 +304,13 @@ class IntersystemsEditController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-/*
         $out .= IntersystemsController::get_schemas_groups(
             $db,
             $config_service,
             $systems_service,
             $pp,
-            $vr,
             $link_render
         );
-*/
 
         return $out;
     }

@@ -176,16 +176,13 @@ class IntersystemsShowController extends AbstractController
 
         $out .= '</div></div>';
 
-/*
         $out .= IntersystemsController::get_schemas_groups(
             $db,
             $config_service,
             $systems_service,
             $pp,
-            $vr,
             $link_render
         );
-*/
 
         return $this->render('intersystems/intersystems_show.html.twig', [
             'content'   => $out,

@@ -227,7 +227,6 @@ class IntersystemsController extends AbstractController
             $out .= '</div></div>';
         }
 
-/*
         $out .= self::get_schemas_groups(
             $db,
             $config_service,
@@ -235,7 +234,6 @@ class IntersystemsController extends AbstractController
             $pp,
             $link_render
         );
-*/
 
         return $this->render('intersystems/intersystems.html.twig', [
             'content'   => $out,
