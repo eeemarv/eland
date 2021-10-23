@@ -152,7 +152,6 @@ class IntersystemsEditController extends AbstractController
             'groupname' 		=> $request->request->get('groupname', ''),
             'apimethod' 		=> $request->request->get('apimethod', ''),
             'localletscode' 	=> $request->request->get('localletscode', ''),
-            'myremoteletscode'	=> '',
         ];
 
         if (strlen($group['groupname']) > 128)

@@ -106,7 +106,6 @@ class IntersystemsAddController extends AbstractController
                 'groupname' 		=> '',
                 'apimethod'			=> 'elassoap',
                 'localletscode'		=> '',
-                'myremoteletscode'	=> '',
                 'url'				=> '',
             ];
 
