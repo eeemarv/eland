@@ -76,7 +76,7 @@ class IntersystemsAddController extends AbstractController
                 from ' . $pp->schema() . '.letsgroups
                 where localletscode = ?', [$group['localletscode']], [\PDO::PARAM_STR]))
             {
-                $errors[] = 'Er bestaat al een interSysteem met deze Lokale Account Code.';
+                $errors[] = 'Er bestaat al een interSysteem met deze Account Code.';
             }
 
             if (!count($errors))

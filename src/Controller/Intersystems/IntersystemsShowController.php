@@ -115,7 +115,7 @@ class IntersystemsShowController extends AbstractController
         $out .= $group['apimethod'];
         $out .= '</dd>';
 
-        $out .= '<dt>Lokale Account Code</dt>';
+        $out .= '<dt>Account Code</dt>';
         $out .= '<dd>';
 
         if ($user)
@@ -162,11 +162,6 @@ class IntersystemsShowController extends AbstractController
             }
         }
 
-        $out .= '</dd>';
-
-        $out .= '<dt>Remote Account Code</dt>';
-        $out .= '<dd>';
-        $out .= $group['myremoteletscode'];
         $out .= '</dd>';
 
         $out .= '<dt>URL</dt>';
