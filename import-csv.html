@@ -1,0 +1,371 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Import CSV · eLAND</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.2">
+        
+        
+        
+    
+    <link rel="stylesheet" href="gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="using-gitbook.html" />
+    
+    
+    <link rel="prev" href="migrate-from-elas-3.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    eLAND
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="dokku.html">
+            
+                <a href="dokku.html">
+            
+                    
+                    Dokku
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="dokku-backups.html">
+            
+                <a href="dokku-backups.html">
+            
+                    
+                    Backups
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="migrate-from-elas-2.html">
+            
+                <a href="migrate-from-elas-2.html">
+            
+                    
+                    Migrate from eLAS 2.x
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5" data-path="migrate-from-elas-3.html">
+            
+                <a href="migrate-from-elas-3.html">
+            
+                    
+                    Migrate from eLAS 3.x
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.6" data-path="import-csv.html">
+            
+                <a href="import-csv.html">
+            
+                    
+                    Import CSV
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7" data-path="using-gitbook.html">
+            
+                <a href="using-gitbook.html">
+            
+                    
+                    Using Gitbook
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="." >Import CSV</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="import-csv">Import CSV</h1>
+<p>This is only an emergency method to import .csv files that were exported from eLAS.
+To import directly in the database is far superior (also more easy) and should always be considered
+first. With cvs import a lot of data is lost.</p>
+<p>Beforehand, load an empty template in a schema the database. (See <a href="https://github.com/eeemarv/eland/setup/full_schema_30000.sql" target="_blank">setup</a>)</p>
+<p>In psql:</p>
+<pre><code class="lang-sql"><span class="hljs-keyword">create</span> <span class="hljs-keyword">schema</span> <span class="hljs-keyword">public</span>;
+\i template.sql
+<span class="hljs-keyword">alter</span> <span class="hljs-keyword">schema</span> <span class="hljs-keyword">public</span> <span class="hljs-keyword">rename</span> <span class="hljs-keyword">to</span> yourschemaname;
+</code></pre>
+<h2 id="import-users">Import users</h2>
+<p>Set a default and remove the not null constraint on several columns.</p>
+<p>Do this for columns code, hobbies, lang, postcode, name, login, maxlimit</p>
+<p>In psql:</p>
+<pre><code class="lang-sql"><span class="hljs-keyword">alter</span> <span class="hljs-keyword">table</span> yourschemaname.<span class="hljs-keyword">users</span> <span class="hljs-keyword">alter</span> <span class="hljs-keyword">column</span> code <span class="hljs-keyword">set</span> <span class="hljs-keyword">default</span> <span class="hljs-string">&apos;&apos;</span>;
+<span class="hljs-keyword">alter</span> <span class="hljs-keyword">table</span> yourschemaname.<span class="hljs-keyword">users</span> <span class="hljs-keyword">alter</span> <span class="hljs-keyword">column</span> code <span class="hljs-keyword">drop</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">null</span>;
+</code></pre>
+<p>Delete the &quot;mailinglist&quot; column from the csv file with a spreadsheet program (like Open Office)
+Then import the users csv file.
+Check the order of the columns.</p>
+<pre><code class="lang-sql">\copy yourschemaname.users(code, cdate, comments, hobbies, name, postcode, login, password, role, status, lastlogin, minlimit, full_name, admin_comments, adate) from &apos;users.csv&apos; delimiter &apos;,&apos; csv header;
+</code></pre>
+<p>(replace users.cvs with your actual filename and location)</p>
+<h2 id="import-contacts">Import contacts</h2>
+<p>The cvs export from eLAS does not contain user ids.
+We have to use the code (Account Code) to link the contacts to the users.</p>
+<p>Add a column to the contact table to store the code (Account Code):</p>
+<pre><code class="lang-sql"><span class="hljs-keyword">alter</span> <span class="hljs-keyword">table</span> yourschemaname.contact <span class="hljs-keyword">add</span> <span class="hljs-keyword">column</span> code <span class="hljs-built_in">character</span> <span class="hljs-built_in">varying</span>(<span class="hljs-number">20</span>) <span class="hljs-keyword">default</span> <span class="hljs-string">&apos;&apos;</span>;
+</code></pre>
+<p>Also add a column to the contact table to store the contact type abbreviation.
+The contact cvs export from eLAS does not contain contact type ids.
+The contact type ids need to be linked later.</p>
+<pre><code class="lang-sql"><span class="hljs-keyword">alter</span> <span class="hljs-keyword">table</span> yourschemaname.contact <span class="hljs-keyword">add</span> <span class="hljs-keyword">column</span> abbrev <span class="hljs-built_in">character</span> <span class="hljs-built_in">varying</span>(<span class="hljs-number">20</span>) <span class="hljs-keyword">default</span> <span class="hljs-string">&apos;&apos;</span>;
+</code></pre>
+<p>Set default and allow null values in the &quot;value&quot; column:</p>
+<pre><code class="lang-sql"><span class="hljs-keyword">alter</span> <span class="hljs-keyword">table</span> yourschemaname.contact <span class="hljs-keyword">alter</span> <span class="hljs-keyword">column</span> <span class="hljs-keyword">value</span> <span class="hljs-keyword">set</span> <span class="hljs-keyword">default</span> <span class="hljs-string">&apos;&apos;</span>;
+<span class="hljs-keyword">alter</span> <span class="hljs-keyword">table</span> yourschemaname.contact <span class="hljs-keyword">alter</span> <span class="hljs-keyword">column</span> <span class="hljs-keyword">value</span> <span class="hljs-keyword">drop</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">null</span>;
+</code></pre>
+<p>Delete the &quot;username&quot; column from the csv file with your spreadsheet program.</p>
+<p>Then import the contacts csv file.
+Check the order of the columns.</p>
+<pre><code class="lang-sql">\copy yourschemaname.contact(code, abbrev, comments, value, flag_public) from &apos;contacts.csv&apos; delimiter &apos;,&apos; csv header;
+</code></pre>
+<h2 id="link-users-to-the-contacts">Link users to the contacts</h2>
+<pre><code class="lang-sql"><span class="hljs-keyword">update</span> yourschemaname.contact c <span class="hljs-keyword">set</span> id_user = u.<span class="hljs-keyword">id</span> <span class="hljs-keyword">from</span> yourschemaname.<span class="hljs-keyword">users</span> u <span class="hljs-keyword">where</span> u.code = c.code;
+</code></pre>
+<h2 id="link-contacts-to-the-contacttypes-table">Link contacts to the contact_types table</h2>
+<p>Before linking, check if all contact types are present:</p>
+<pre><code class="lang-sql"><span class="hljs-keyword">select</span> abbrev <span class="hljs-keyword">from</span> yourschemaname.type_contact;
+</code></pre>
+<pre><code class="lang-sql"><span class="hljs-keyword">select</span> <span class="hljs-keyword">distinct</span> abbrev <span class="hljs-keyword">from</span> yourschemaname.contact;
+</code></pre>
+<p>Make sure to add the required contact types with the right abbreviations in the type_contact table.
+This can be done in the eLAND UI.</p>
+<p>When all contact types are present, you can link the contact types:</p>
+<pre><code class="lang-sql"><span class="hljs-keyword">update</span> yourschemaname.contact c <span class="hljs-keyword">set</span> id_type_contact = tc.<span class="hljs-keyword">id</span> <span class="hljs-keyword">from</span> yourschemaname.type_contact tc <span class="hljs-keyword">where</span> c.abbrev = tc.abbrev;
+</code></pre>
+<p>Afterwards, the code (Account Code) and abbrev columns can be removed from the contact table:</p>
+<pre><code class="lang-sql"><span class="hljs-keyword">alter</span> <span class="hljs-keyword">table</span> yourschemaname.contact <span class="hljs-keyword">drop</span> <span class="hljs-keyword">column</span> abbrev;
+<span class="hljs-keyword">alter</span> <span class="hljs-keyword">table</span> yourschemaname.contact <span class="hljs-keyword">drop</span> <span class="hljs-keyword">column</span> code;
+</code></pre>
+<p>Records that were not linked to users or types can be removed:</p>
+<pre><code class="lang-sql"><span class="hljs-keyword">delete</span> <span class="hljs-keyword">from</span> yourschemaname.contact <span class="hljs-keyword">where</span> id_user = <span class="hljs-number">0</span> <span class="hljs-keyword">or</span> id_type_contact = <span class="hljs-number">0</span>;
+</code></pre>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="migrate-from-elas-3.html" class="navigation navigation-prev " aria-label="Previous page: Migrate from eLAS 3.x">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="using-gitbook.html" class="navigation navigation-next " aria-label="Next page: Using Gitbook">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Import CSV","level":"1.6","depth":1,"next":{"title":"Using Gitbook","level":"1.7","depth":1,"path":"using-gitbook.md","ref":"using-gitbook.md","articles":[]},"previous":{"title":"Migrate from eLAS 3.x","level":"1.5","depth":1,"path":"migrate-from-elas-3.md","ref":"migrate-from-elas-3.md","articles":[]},"dir":"ltr"},"config":{"plugins":[],"root":"./docs","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"eLAND","gitbook":"3.2.2","description":"webtoepassing voor gemeenschapsmunten"},"file":{"path":"import-csv.md","mtime":"2021-03-07T07:31:39.491Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2021-10-24T18:21:14.997Z"},"basePath":".","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="gitbook/gitbook.js"></script>
+    <script src="gitbook/theme.js"></script>
+    
+        
+        <script src="gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+

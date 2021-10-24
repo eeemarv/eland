@@ -1,0 +1,380 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Migrate from eLAS 3.x · eLAND</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.2">
+        
+        
+        
+    
+    <link rel="stylesheet" href="gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="import-csv.html" />
+    
+    
+    <link rel="prev" href="migrate-from-elas-2.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    eLAND
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="dokku.html">
+            
+                <a href="dokku.html">
+            
+                    
+                    Dokku
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="dokku-backups.html">
+            
+                <a href="dokku-backups.html">
+            
+                    
+                    Backups
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="migrate-from-elas-2.html">
+            
+                <a href="migrate-from-elas-2.html">
+            
+                    
+                    Migrate from eLAS 2.x
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.5" data-path="migrate-from-elas-3.html">
+            
+                <a href="migrate-from-elas-3.html">
+            
+                    
+                    Migrate from eLAS 3.x
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6" data-path="import-csv.html">
+            
+                <a href="import-csv.html">
+            
+                    
+                    Import CSV
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7" data-path="using-gitbook.html">
+            
+                <a href="using-gitbook.html">
+            
+                    
+                    Using Gitbook
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="." >Migrate from eLAS 3.x</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="migrating-a-group-from-elas-3x-to-eland">Migrating a group from eLAS 3.x to eLAND</h1>
+<h2 id="database">Database</h2>
+<ul>
+<li>Upload the SQL dump file to the server:</li>
+</ul>
+<pre><code class="lang-shell">scp mysystemdumpfile.sql myusername@app.mydomain.com:mysystemdumpfile.sql
+</code></pre>
+<p>In eLAND all Systems are stored as schemas in one database.
+First create an empty public schema where the dump will be imported into.</p>
+<p>Log into postgres:</p>
+<pre><code class="lang-shell">dokku postgres:connect databasename
+</code></pre>
+<pre><code class="lang-sql"><span class="hljs-keyword">create</span> <span class="hljs-keyword">schema</span> <span class="hljs-keyword">public</span>;
+</code></pre>
+<p>You can import a dump file you made previously with pg_dump with options --no-acl --no-owner (no custom format).</p>
+<pre><code class="lang-sql">\i ./myusername/home/mysystemdumpfile.sql
+</code></pre>
+<p>Or, use on of the <a href="https://github.com/dokku/dokku-postgres" target="_blank">dokku-postgres</a> commands according to the format of the file.</p>
+<p>The tables of the imported System are now in the default schema named public.
+You can truncate the city_distance table which is not used anymore and which is more than a 1M rows big.</p>
+<pre><code class="lang-sql"><span class="hljs-keyword">TRUNCATE</span> <span class="hljs-keyword">TABLE</span> city_distance;
+</code></pre>
+<p>In eLAS there are only 2 levels of access for contacts. Public and private. In eLAND public is further divided in &apos;members&apos; and &apos;interSystem&apos;. To keep consistent the &apos;public&apos; access level of eLAS should be transformed into the &apos;interSystem&apos; access level of eLAND.</p>
+<pre><code class="lang-sql"><span class="hljs-keyword">UPDATE</span> contact <span class="hljs-keyword">SET</span> flag_public = <span class="hljs-number">2</span> <span class="hljs-keyword">where</span> flag_public = <span class="hljs-number">1</span>;
+</code></pre>
+<p>Coming from eLAS +3.6 run also the following to undo some database changes:</p>
+<pre><code class="lang-sql"><span class="hljs-keyword">alter</span> <span class="hljs-keyword">table</span> <span class="hljs-keyword">users</span> <span class="hljs-keyword">add</span> <span class="hljs-keyword">column</span> <span class="hljs-string">&quot;PictureFile&quot;</span> <span class="hljs-built_in">character</span> <span class="hljs-built_in">varying</span>(<span class="hljs-number">128</span>);
+<span class="hljs-keyword">alter</span> <span class="hljs-keyword">table</span> msgpictures <span class="hljs-keyword">add</span> <span class="hljs-keyword">column</span> <span class="hljs-string">&quot;PictureFile&quot;</span> <span class="hljs-built_in">character</span> <span class="hljs-built_in">varying</span>(<span class="hljs-number">128</span>);
+
+<span class="hljs-keyword">update</span> <span class="hljs-keyword">users</span> u <span class="hljs-keyword">set</span> <span class="hljs-string">&quot;PictureFile&quot;</span> = <span class="hljs-keyword">trim</span>(<span class="hljs-keyword">leading</span> <span class="hljs-string">&apos;userpictures/&apos;</span> <span class="hljs-keyword">from</span> f.<span class="hljs-keyword">path</span>) <span class="hljs-keyword">from</span> files f <span class="hljs-keyword">where</span> f.fileid = u.pictureid;
+<span class="hljs-keyword">update</span> msgpictures m <span class="hljs-keyword">set</span> <span class="hljs-string">&quot;PictureFile&quot;</span> = <span class="hljs-keyword">trim</span>(<span class="hljs-keyword">leading</span> <span class="hljs-string">&apos;msgpictures/&apos;</span> <span class="hljs-keyword">from</span> f.<span class="hljs-keyword">path</span>) <span class="hljs-keyword">from</span> files f <span class="hljs-keyword">where</span> f.fileid = m.pictureid;
+
+<span class="hljs-keyword">update</span> <span class="hljs-keyword">parameters</span> <span class="hljs-keyword">set</span> <span class="hljs-keyword">value</span> = <span class="hljs-string">&apos;31000&apos;</span> <span class="hljs-keyword">where</span> parameter = <span class="hljs-string">&apos;schemaversion&apos;</span>;
+</code></pre>
+<p>Rename then the public schema to an obvious name for the system. The schema/system name will also prefix the paths in all urls of the system.</p>
+<pre><code class="lang-sql"><span class="hljs-keyword">ALTER</span> <span class="hljs-keyword">SCHEMA</span> <span class="hljs-keyword">public</span> <span class="hljs-keyword">RENAME</span> <span class="hljs-keyword">TO</span> yourschemaname;
+</code></pre>
+<h2 id="images">Images</h2>
+<ul>
+<li>Resize all image files from folders msgpictures and userpictures (image files in eLAS were up to 2MB) at least down to 200kB, but keep the same filename (the extension may be renamed to one of jpg, JPG, jpeg, JPEG).</li>
+</ul>
+<p>You can use imagemagick for this:</p>
+<pre><code class="lang-shell">cd userpictures
+mogrify -resize 400x400 -quality 100 -path ../imgs *.jpg
+cd ../msgpictures
+mogrify -resize 400x400 -quality 100 -path ../imgs *.jpg
+</code></pre>
+<p>Upload the image files to your S3 bucket (no directory path. The image files are prefixed automatically in the next step).
+Make the image files public. Use the <a href="https://aws.amazon.com/cli/" target="_blank">awscli</a></p>
+<pre><code class="lang-shell">cd ../imgs
+aws s3 sync . s3://yourbucketname
+</code></pre>
+<p>The aws s3 sync command can also be used to take a backup on your local machine:</p>
+<pre><code class="lang-shell">cd destination-directory
+aws s3 sync s3://yourbucketname .
+</code></pre>
+<ul>
+<li>Enable the init routes by setting the environment variable (on the server)</li>
+</ul>
+<pre><code class="lang-shell">dokku config:set your-eland-app APP_INIT_ENABLED=1
+</code></pre>
+<p>Go with your browser to path <code>/yourschemaname/init</code> and run all initialization processes (They are idempotent. So there&apos;s no harm in hitting the buttons multiple times).</p>
+<p>The image files get renamed with a new hash and orphaned files will be cleaned up.</p>
+<p>The files get prefixed with the schema name and the user or message id. All extensions become jpg.
+ie.
+    abc_u_41_c533e0ef9491c7c0b22fdf4a385ab47e1bb49eec.jpg
+    abc_m_71_a84d14fb1bfbd1f9426a2a9ca5f5525d1e46f15e.jpg</p>
+<ul>
+<li>The init procudure copies the images and gives them a new name. The original images, the filename not starting with a schema name but with a number, can be removed manually from the S3 bucket, with the AWS webinterface.</li>
+</ul>
+<p>Unset the environment variable after use</p>
+<pre><code class="lang-shell">dokku config:unset your-eland-app APP_INIT_ENABLED
+</code></pre>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="migrate-from-elas-2.html" class="navigation navigation-prev " aria-label="Previous page: Migrate from eLAS 2.x">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="import-csv.html" class="navigation navigation-next " aria-label="Next page: Import CSV">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Migrate from eLAS 3.x","level":"1.5","depth":1,"next":{"title":"Import CSV","level":"1.6","depth":1,"path":"import-csv.md","ref":"import-csv.md","articles":[]},"previous":{"title":"Migrate from eLAS 2.x","level":"1.4","depth":1,"path":"migrate-from-elas-2.md","ref":"migrate-from-elas-2.md","articles":[]},"dir":"ltr"},"config":{"plugins":[],"root":"./docs","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"eLAND","gitbook":"3.2.2","description":"webtoepassing voor gemeenschapsmunten"},"file":{"path":"migrate-from-elas-3.md","mtime":"2019-10-08T06:51:39.408Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2021-10-24T18:21:14.997Z"},"basePath":".","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="gitbook/gitbook.js"></script>
+    <script src="gitbook/theme.js"></script>
+    
+        
+        <script src="gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+

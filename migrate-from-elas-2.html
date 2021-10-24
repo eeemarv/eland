@@ -1,0 +1,421 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Migrate from eLAS 2.x · eLAND</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.2">
+        
+        
+        
+    
+    <link rel="stylesheet" href="gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="migrate-from-elas-3.html" />
+    
+    
+    <link rel="prev" href="dokku-backups.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    eLAND
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="dokku.html">
+            
+                <a href="dokku.html">
+            
+                    
+                    Dokku
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="dokku-backups.html">
+            
+                <a href="dokku-backups.html">
+            
+                    
+                    Backups
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.4" data-path="migrate-from-elas-2.html">
+            
+                <a href="migrate-from-elas-2.html">
+            
+                    
+                    Migrate from eLAS 2.x
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5" data-path="migrate-from-elas-3.html">
+            
+                <a href="migrate-from-elas-3.html">
+            
+                    
+                    Migrate from eLAS 3.x
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6" data-path="import-csv.html">
+            
+                <a href="import-csv.html">
+            
+                    
+                    Import CSV
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7" data-path="using-gitbook.html">
+            
+                <a href="using-gitbook.html">
+            
+                    
+                    Using Gitbook
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="." >Migrate from eLAS 2.x</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="migrating-from-elas-2x-mysql-to-postgresql-to-eland">Migrating from eLAS 2.x (MySQL to PostgreSQL) to eLAND</h1>
+<pre><code class="lang-shell">shell&gt; mysqldump -u username -p --default-character-set=utf8 --result-file=newgroup.sql database
+</code></pre>
+<p>create a local mysql database (newgroup)</p>
+<pre><code class="lang-shell">shell&gt; mysql -u root -p
+</code></pre>
+<p>(enter password)</p>
+<pre><code class="lang-sql">mysql&gt; create database newgroup;
+mysql&gt; use newgroup;
+mysql&gt; \. newgroup.sql
+mysql&gt; truncate table city_distance;
+mysql&gt; truncate table tokens;
+mysql&gt; truncate table eventlog;
+mysql&gt;
+
+truncate table city_distance;
+truncate table tokens;
+truncate table eventlog;
+
+alter table config change `default` `default` varchar(1);
+update config set `default` = &apos;f&apos; where `default` = &apos;0&apos;;
+update config set `default` = &apos;t&apos; where `default` = &apos;1&apos;;
+
+alter table messages change exp_user_warn exp_user_warn varchar(1);
+update messages set exp_user_warn = &apos;f&apos; where exp_user_warn = &apos;0&apos;;
+update messages set exp_user_warn = &apos;t&apos; where exp_user_warn = &apos;1&apos;;
+
+alter table messages change exp_admin_warn exp_admin_warn varchar(1);
+update messages set exp_admin_warn = &apos;f&apos; where exp_admin_warn = &apos;0&apos;;
+update messages set exp_admin_warn = &apos;t&apos; where exp_admin_warn = &apos;1&apos;;
+
+alter table messages change local local varchar(1);
+update messages set local = &apos;f&apos; where local = &apos;0&apos;;
+update messages set local = &apos;t&apos; where local = &apos;1&apos;;
+
+alter table news change approved approved varchar(1);
+update news set approved = &apos;f&apos; where approved = &apos;0&apos;;
+update news set approved = &apos;t&apos; where approved = &apos;1&apos;;
+
+alter table news change published published varchar(1);
+update news set published = &apos;f&apos; where published = &apos;0&apos;;
+update news set published = &apos;t&apos; where published = &apos;1&apos;;
+
+alter table news change sticky sticky varchar(1);
+update news set sticky = &apos;f&apos; where sticky = &apos;0&apos;;
+update news set sticky = &apos;t&apos; where sticky = &apos;1&apos;;
+
+alter table ostatus_queue change protect protect varchar(1);
+update ostatus_queue set protect = &apos;f&apos; where protect = &apos;0&apos;;
+update ostatus_queue set protect = &apos;t&apos; where protect = &apos;1&apos;;
+
+alter table users change cron_saldo cron_saldo varchar(1);
+update users set cron_saldo = &apos;f&apos; where cron_saldo = &apos;0&apos;;
+update users set cron_saldo = &apos;t&apos; where cron_saldo = &apos;1&apos;;
+
+alter table users change pwchange pwchange varchar(1);
+update users set pwchange = &apos;f&apos; where pwchange = &apos;0&apos;;
+update users set pwchange = &apos;t&apos; where pwchange = &apos;1&apos;;
+
+alter table users change locked locked varchar(1);
+update users set locked = &apos;f&apos; where locked = &apos;0&apos;;
+update users set locked = &apos;t&apos; where locked = &apos;1&apos;;
+
+alter table type_contact change protect protect varchar(1);
+update type_contact set protect = &apos;f&apos; where protect = &apos;0&apos;;
+update type_contact set protect = &apos;t&apos; where protect = &apos;1&apos;;
+</code></pre>
+<p>Dump into a file</p>
+<pre><code class="lang-shell">shell&gt; mysqldump -u root -p --no-create-info --skip-triggers --no-create-db --compact --compatible=postgresql --default-character-set=utf8 --result-file=mysql.sql newgroup
+</code></pre>
+<p>download perl script: <a href="http://pgfoundry.org/frs/download.php/1535/mysql2pgsql.perl" target="_blank">mysql2pgsql</a></p>
+<pre><code class="lang-shell">shell&gt; perl mysql2pgsql.perl mysql.sql data.sql
+</code></pre>
+<p>make a structure-only (tables and colummns) of an existing eLAS 3.1.17, use a test-group for safety (schema name is different than a schema name of a live group)</p>
+<pre><code class="lang-shell">shell&gt; pg_dump -d _database_ -U _user_ -h _hostname_ -p 5432 -W --no-owner --no-acl --schema=_schemaname_ --schema-only &gt; structure.sql
+</code></pre>
+<p>(enter password)</p>
+<p>edit the schema name to &apos;public&apos; in the dump you just made (structure.sql), so from line ~14 it will be:</p>
+<pre><code class="lang-sql"><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">SCHEMA</span> <span class="hljs-keyword">public</span>;
+<span class="hljs-keyword">SET</span> search_path = <span class="hljs-keyword">public</span>, pg_catalog;
+</code></pre>
+<p>log in the postgres database</p>
+<pre><code class="lang-shell">shell&gt; psql -d _database_ -U _user_ -h _hostname_ -p 5432
+</code></pre>
+<p>(enter password)</p>
+<p>The public schema should be empty but doesn&apos;t have to be present as it will be created by importing the structure.</p>
+<pre><code class="lang-sql">psql&gt; \i structure.sql
+</code></pre>
+<p>import data</p>
+<pre><code class="lang-sql">psql&gt; \i data.sql
+</code></pre>
+<p>restore sequence</p>
+<pre><code class="lang-sql">psql&gt;
+
+SELECT setval(&apos;transactions_id_seq&apos;, COALESCE((SELECT MAX(id)+1 FROM transactions), 1), false);
+SELECT setval(&apos;users_id_seq&apos;, COALESCE((SELECT MAX(id)+1 FROM users), 1), false);
+SELECT setval(&apos;messages_id_seq&apos;, COALESCE((SELECT MAX(id)+1 FROM messages), 1), false);
+SELECT setval(&apos;msgpictures_id_seq&apos;, COALESCE((SELECT MAX(id)+1 FROM msgpictures), 1), false);
+SELECT setval(&apos;apikeys_id_seq&apos;, COALESCE((SELECT MAX(id)+1 FROM apikeys), 1), false);
+SELECT setval(&apos;categories_id_seq&apos;, COALESCE((SELECT MAX(id)+1 FROM categories), 1), false);
+SELECT setval(&apos;contact_id_seq&apos;, COALESCE((SELECT MAX(id)+1 FROM contact), 1), false);
+SELECT setval(&apos;letsgroups_id_seq&apos;, COALESCE((SELECT MAX(id)+1 FROM letsgroups), 1), false);
+SELECT setval(&apos;news_id_seq&apos;, COALESCE((SELECT MAX(id)+1 FROM news), 1), false);
+SELECT setval(&apos;openid_id_seq&apos;, COALESCE((SELECT MAX(id)+1 FROM openid), 1), false);
+SELECT setval(&apos;ostatus_queue_id_seq&apos;, COALESCE((SELECT MAX(id)+1 FROM ostatus_queue), 1), false);
+SELECT setval(&apos;regions_id_seq&apos;, COALESCE((SELECT MAX(id)+1 FROM regions), 1), false);
+SELECT setval(&apos;tokens_id_seq&apos;, COALESCE((SELECT MAX(id)+1 FROM tokens), 1), false);
+SELECT setval(&apos;type_contact_id_seq&apos;, COALESCE((SELECT MAX(id)+1 FROM type_contact), 1), false);
+SELECT setval(&apos;users_id_seq&apos;, COALESCE((SELECT MAX(id)+1 FROM users), 1), false);
+</code></pre>
+<p>rename the public schema</p>
+<pre><code class="lang-sql">psql&gt; alter schema public rename to yourschemaname;
+</code></pre>
+<p>Now the database is converted to 3.x and you can continue with <a href="migrate-from-elas-3.html">Migrate from 3.x</a></p>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="dokku-backups.html" class="navigation navigation-prev " aria-label="Previous page: Backups">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="migrate-from-elas-3.html" class="navigation navigation-next " aria-label="Next page: Migrate from eLAS 3.x">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Migrate from eLAS 2.x","level":"1.4","depth":1,"next":{"title":"Migrate from eLAS 3.x","level":"1.5","depth":1,"path":"migrate-from-elas-3.md","ref":"migrate-from-elas-3.md","articles":[]},"previous":{"title":"Backups","level":"1.3","depth":1,"path":"dokku-backups.md","ref":"dokku-backups.md","articles":[]},"dir":"ltr"},"config":{"plugins":[],"root":"./docs","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"eLAND","gitbook":"3.2.2","description":"webtoepassing voor gemeenschapsmunten"},"file":{"path":"migrate-from-elas-2.md","mtime":"2019-10-08T06:51:39.408Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2021-10-24T18:21:14.997Z"},"basePath":".","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="gitbook/gitbook.js"></script>
+    <script src="gitbook/theme.js"></script>
+    
+        
+        <script src="gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+

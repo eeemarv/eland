@@ -1,0 +1,420 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Dokku · eLAND</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.2">
+        
+        
+        
+    
+    <link rel="stylesheet" href="gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="dokku-backups.html" />
+    
+    
+    <link rel="prev" href="./" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    eLAND
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.2" data-path="dokku.html">
+            
+                <a href="dokku.html">
+            
+                    
+                    Dokku
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="dokku-backups.html">
+            
+                <a href="dokku-backups.html">
+            
+                    
+                    Backups
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="migrate-from-elas-2.html">
+            
+                <a href="migrate-from-elas-2.html">
+            
+                    
+                    Migrate from eLAS 2.x
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5" data-path="migrate-from-elas-3.html">
+            
+                <a href="migrate-from-elas-3.html">
+            
+                    
+                    Migrate from eLAS 3.x
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6" data-path="import-csv.html">
+            
+                <a href="import-csv.html">
+            
+                    
+                    Import CSV
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7" data-path="using-gitbook.html">
+            
+                <a href="using-gitbook.html">
+            
+                    
+                    Using Gitbook
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="." >Dokku</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="dokku">Dokku</h1>
+<p>eLAND installs on a VPS with Dokku.</p>
+<p>See the <a href="http://dokku.viewdocs.io/dokku/getting-started/installation" target="_blank">Dokku installation guide</a>.</p>
+<ul>
+<li><p>Install Dokku on a VPS with a fresh Ubuntu 18.04</p>
+</li>
+<li><p>Set a domain with a DNS A record to your VPS.</p>
+</li>
+<li><p>Create app, install postgres and redis plugins and bind them to the app (see Dokku guide).</p>
+</li>
+</ul>
+<p>Tip: use the same name for your postgres and redis instances as your eland-app-name.</p>
+<ul>
+<li>Postgres</li>
+</ul>
+<p><a href="https://github.com/dokku/dokku-postgres" target="_blank">Link a postgres database to the app.</a></p>
+<p>Schemas to be set up can be found in the <a href="https://github.com/eeemarv/eland/tree/master/setup" target="_blank">/setup directory</a>
+See also <a href="migrate-from-elas-3.html">Migrate from eLAS 3.x</a></p>
+<ul>
+<li>Redis</li>
+</ul>
+<p><a href="https://github.com/dokku/dokku-redis" target="_blank">Link a redis instance to the app.</a></p>
+<ul>
+<li>Attach the domain to your dokku eland app.</li>
+</ul>
+<p>(all dokku commands are on the server)</p>
+<pre><code class="lang-shell">
+dokku domains:set your-eland-app your-domain.com
+</code></pre>
+<ul>
+<li>Each currency system on the eLAND server with an interSystem link to eLAS also needs a subdomain where eLAS will connect to:</li>
+</ul>
+<pre><code class="lang-shell">
+dokku domains:set your-eland-app yourschemaname.your-domain.com
+</code></pre>
+<p>Note: this cannot be a wildcard because it&apos;s not supported by the Dokku Letsencrypt plugin.</p>
+<p>Also set (when intersystem connections with eLAS needed) a DNS A record with wildcard to the VPS ip.</p>
+<ul>
+<li><p>Use the <a href="https://github.com/dokku/dokku-letsencrypt" target="_blank">Dokku Letsencrypt</a> plugin to enable https</p>
+</li>
+<li><p>Set the environment varables for links in emails. (emails get sent in a background process that does not have a request context.)</p>
+</li>
+</ul>
+<p>&#xB4;&#xB4;&#xB4;shell
+dokku config:set your-eland-app APP_SCHEME=https APP_HOST=your-domain.com
+&#xB4;&#xB4;&#xB4;</p>
+<h2 id="configure-nginx">Configure nginx</h2>
+<ul>
+<li>Allow bigger uploads (for documents)</li>
+</ul>
+<pre><code class="lang-shell">
+sudo su - dokku
+mkdir /home/dokku/appname/nginx.conf.d/
+echo &apos;client_max_body_size 10M;&apos; &gt; /home/dokku/appname/nginx.conf.d/upload.conf
+exit
+sudo service nginx reload
+</code></pre>
+<ul>
+<li>Block unwanted IPs (optional)</li>
+</ul>
+<pre><code class="lang-shell">
+sudo su - dokku
+mkdir /home/dokku/appname/nginx.conf.d/
+echo &apos;deny x.x.x.x;&apos; &gt; /home/dokku/appname/nginx.conf.d/upload.conf
+exit
+sudo service nginx reload
+</code></pre>
+<h2 id="aws-s3">AWS S3</h2>
+<p>Create a IAM user on AWS with access only to S3.
+Then create a bucket in your region and set the environment variables.</p>
+<pre><code class="lang-shell">dokku config:set AWS_S3_BUCKET=yourbucketname AWS_S3_REGION=eu-central-1
+dokku config:set AWS_ACCESS_KEY_ID=youraccesskeyid AWS_SECRET_ACCESS_KEY=yoursecretaccesskey
+</code></pre>
+<h2 id="email">Email</h2>
+<h3 id="smtp-mailserver-ei-amazon-simple-email-service">SMTP mailserver (e.i. Amazon Simple Email Service)</h3>
+<p>Set the environment variables with &#xB4;dokku config:set your-eland-app&#xB4;</p>
+<ul>
+<li><code>SMTP_HOST</code></li>
+<li><code>SMTP_PORT</code></li>
+<li><code>SMTP_PASSWORD</code></li>
+<li><code>SMTP_USERNAME</code></li>
+</ul>
+<h3 id="from-mail-addresses">From mail addresses</h3>
+<ul>
+<li><code>MAIL_FROM_ADDRESS</code>: a mail address when a reply-to address has been set.</li>
+<li><code>MAIL_NOREPLY_ADDRESS</code>: a notification mail you can not reply to</li>
+<li><code>MAIL_HOSTER_ADDRESS</code>: used for the general contact form on the index page (to contact the hoster).</li>
+</ul>
+<p>Mail is sent only from <code>MAIL_FROM_ADDRESS</code> and <code>MAIL_NOREPLY_ADDRESS</code>.
+These addresses should be set up for DKIM in the mailserver.</p>
+<h2 id="google-geocoding">Google geocoding</h2>
+<p>Coordinates of addresses are looked up and cached from the Google geocoding service in order to show the location on maps. At maximum every 2 minutes a request is sent to the API in order not to hit the daily free limit. You need to get a key from <a href="https://developers.google.com/maps/documentation/geocoding/intro" target="_blank">Google</a>
+and put the key in the environment variable <code>GOOGLE_GEO_API_KEY</code></p>
+<p>The geocoding service can be blocked by setting <code>GEO_BLOCK</code> to 1.</p>
+<h2 id="mapbox-token">MAPBOX token</h2>
+<p>For displaying maps, get a token from <a href="https://www.mapbox.com" target="_blank">Mapbox</a></p>
+<p>and set the environment variable</p>
+<p>&#xB4;&#xB4;&#xB4;shell
+dokku config:set MAPBOX_TOKEN=yourmapboxtoken
+&#xB4;&#xB4;&#xB4;</p>
+<h2 id="other-environment-vars">Other environment vars</h2>
+<ul>
+<li><code>TIMEZONE</code>: defaults to &apos;Europe/Brussels&apos;</li>
+<li><code>MASTER_PASSWORD</code>: sha512 encoded password for &apos;master&apos; -&gt; gives admin access to all Systems.</li>
+</ul>
+<h2 id="permanent-redirects">Permanent redirects</h2>
+<p>Use the <a href="https://github.com/dokku/dokku-redirect" target="_blank">dokku-redirect</a> plugin for redirects.</p>
+<h2 id="local-development-server">Local Development Server</h2>
+<p>The several processes of eLAND (see the <a href="https://github.com/eeemarv/eland/blob/master/Procfile" target="_blank">ProcFile</a>) can be run locally by <a href="https://devcenter.heroku.com/articles/heroku-cli" target="_blank">the Heroku CLI</a></p>
+<pre><code class="lang-shell">heroku local -e .env dev
+</code></pre>
+<p><code>.env</code> is the file that contains the environment parameters.</p>
+<p>The <code>dev</code> process is the server for local only (at localhost:5000) and <code>web</code> is for production only.</p>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="./" class="navigation navigation-prev " aria-label="Previous page: eLAND">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="dokku-backups.html" class="navigation navigation-next " aria-label="Next page: Backups">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Dokku","level":"1.2","depth":1,"next":{"title":"Backups","level":"1.3","depth":1,"path":"dokku-backups.md","ref":"dokku-backups.md","articles":[]},"previous":{"title":"eLAND","level":"1.1","depth":1,"path":"README.md","ref":"README.md","articles":[]},"dir":"ltr"},"config":{"plugins":[],"root":"./docs","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"eLAND","gitbook":"3.2.2","description":"webtoepassing voor gemeenschapsmunten"},"file":{"path":"dokku.md","mtime":"2020-05-03T08:45:19.580Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2021-10-24T18:21:14.997Z"},"basePath":".","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="gitbook/gitbook.js"></script>
+    <script src="gitbook/theme.js"></script>
+    
+        
+        <script src="gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+

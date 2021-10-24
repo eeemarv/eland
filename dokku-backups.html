@@ -1,0 +1,390 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Backups · eLAND</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.2">
+        
+        
+        
+    
+    <link rel="stylesheet" href="gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="migrate-from-elas-2.html" />
+    
+    
+    <link rel="prev" href="dokku.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    eLAND
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="dokku.html">
+            
+                <a href="dokku.html">
+            
+                    
+                    Dokku
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.3" data-path="dokku-backups.html">
+            
+                <a href="dokku-backups.html">
+            
+                    
+                    Backups
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="migrate-from-elas-2.html">
+            
+                <a href="migrate-from-elas-2.html">
+            
+                    
+                    Migrate from eLAS 2.x
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5" data-path="migrate-from-elas-3.html">
+            
+                <a href="migrate-from-elas-3.html">
+            
+                    
+                    Migrate from eLAS 3.x
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6" data-path="import-csv.html">
+            
+                <a href="import-csv.html">
+            
+                    
+                    Import CSV
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7" data-path="using-gitbook.html">
+            
+                <a href="using-gitbook.html">
+            
+                    
+                    Using Gitbook
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="." >Backups</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="dokku">Dokku</h1>
+<h2 id="backups-to-s3-method-1">Backups to S3: method 1</h2>
+<p>Use the <code>dokku postgres:backup-schedule command</code></p>
+<p>See the <a href="https://github.com/dokku/dokku-postgres" target="_blank">Postgres addon</a></p>
+<p>Currently only the us-west-1 region is available with this method</p>
+<h2 id="backups-to-s3-method-2">Backups to S3: method 2</h2>
+<ul>
+<li>Install Awscli (with pip to ensure you have the latest version)</li>
+<li>Create a bucket on AWS S3 with versioning and rules.</li>
+<li>Create a Policy for this bucket:</li>
+</ul>
+<pre><code class="lang-json">
+{
+    <span class="hljs-string">&quot;Version&quot;</span>: <span class="hljs-string">&quot;2012-10-17&quot;</span>,
+    <span class="hljs-string">&quot;Statement&quot;</span>: [
+        {
+            <span class="hljs-string">&quot;Effect&quot;</span>: <span class="hljs-string">&quot;Allow&quot;</span>,
+            <span class="hljs-string">&quot;Action&quot;</span>: [
+                <span class="hljs-string">&quot;s3:GetBucketLocation&quot;</span>,
+                <span class="hljs-string">&quot;s3:ListAllMyBuckets&quot;</span>
+            ],
+            <span class="hljs-string">&quot;Resource&quot;</span>: <span class="hljs-string">&quot;arn:aws:s3:::*&quot;</span>
+        },
+        {
+            <span class="hljs-string">&quot;Effect&quot;</span>: <span class="hljs-string">&quot;Allow&quot;</span>,
+            <span class="hljs-string">&quot;Action&quot;</span>: [
+                <span class="hljs-string">&quot;s3:ListBucket&quot;</span>
+            ],
+            <span class="hljs-string">&quot;Resource&quot;</span>: [
+                <span class="hljs-string">&quot;arn:aws:s3:::backup.letsa.net&quot;</span>
+            ]
+        },
+        {
+            <span class="hljs-string">&quot;Effect&quot;</span>: <span class="hljs-string">&quot;Allow&quot;</span>,
+            <span class="hljs-string">&quot;Action&quot;</span>: [
+                <span class="hljs-string">&quot;s3:PutObject&quot;</span>,
+                <span class="hljs-string">&quot;s3:GetObject&quot;</span>
+            ],
+            <span class="hljs-string">&quot;Resource&quot;</span>: [
+                <span class="hljs-string">&quot;arn:aws:s3:::backup.letsa.net/*&quot;</span>
+            ]
+        }
+    ]
+}
+</code></pre>
+<ul>
+<li>Create a AWS IAM user, store the credentials and attach the created policy.</li>
+<li>On the VPS, create a bash script in the dokku home directory /home/dokku with the dokku user and group: /home/dokku/backup.sh</li>
+</ul>
+<pre><code class="lang-shell">
+#!/bin/bash
+
+PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games
+
+export AWS_ACCESS_KEY_ID=XXXX
+export AWS_SECRET_ACCESS_KEY=XXXX
+export AWS_DEFAULT_REGION=eu-central-1
+
+dokku postgres:export database_name &gt; /home/dokku/eland.sql
+aws s3 cp /home/dokku/eland.sql s3://backup.letsa.net
+</code></pre>
+<p>Copy/past here credentials of the earlier created AWS IAM user.
+The path should be copied from the normal environment variables of the dokku user. This can be found (as the dokku user) with:</p>
+<pre><code class="lang-shell">
+env | grep PATH
+</code></pre>
+<ul>
+<li>Create a crontab for the dokku user (for example twice a day) to run the bash script. (crontab -e)</li>
+</ul>
+<pre><code class="lang-shell">
+0 16,4 * * * /bin/bash /home/dokku/backup.sh
+</code></pre>
+<p>As a result the latest backup is available locally in /home/dokku/eland.sql and remotely in s3 all versions are stored for at least 30 days. The number of days is configurable in the versioning rules of the s3 bucket.</p>
+<h2 id="download-backups">Download backups</h2>
+<p>Make sure you have the latest awscli (install with pip)</p>
+<p>To download the latest backup to your local directory:</p>
+<pre><code class="lang-shell">
+aws s3 sync s3://backup.letsa.net . --region=eu-central-1
+</code></pre>
+<h2 id="how-to-create-a-sql-plain-text-database-dump">How to create a SQL plain text database dump</h2>
+<pre><code class="lang-shell">
+dokku run app-name &apos;pg_dump $DATABASE_URL --no-owner --no-acl&apos; &gt; dev.sql
+</code></pre>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="dokku.html" class="navigation navigation-prev " aria-label="Previous page: Dokku">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="migrate-from-elas-2.html" class="navigation navigation-next " aria-label="Next page: Migrate from eLAS 2.x">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Backups","level":"1.3","depth":1,"next":{"title":"Migrate from eLAS 2.x","level":"1.4","depth":1,"path":"migrate-from-elas-2.md","ref":"migrate-from-elas-2.md","articles":[]},"previous":{"title":"Dokku","level":"1.2","depth":1,"path":"dokku.md","ref":"dokku.md","articles":[]},"dir":"ltr"},"config":{"plugins":[],"root":"./docs","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"eLAND","gitbook":"3.2.2","description":"webtoepassing voor gemeenschapsmunten"},"file":{"path":"dokku-backups.md","mtime":"2019-10-08T06:47:56.320Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2021-10-24T18:21:14.997Z"},"basePath":".","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="gitbook/gitbook.js"></script>
+    <script src="gitbook/theme.js"></script>
+    
+        
+        <script src="gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+
