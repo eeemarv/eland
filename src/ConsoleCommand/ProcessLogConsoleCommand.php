@@ -25,7 +25,7 @@ class ProcessLogConsoleCommand extends Command
         $this->setDescription('Process to pipe logs from Redis to db.');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->monitor_process_service->boot('log');
 

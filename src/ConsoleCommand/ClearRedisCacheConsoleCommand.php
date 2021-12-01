@@ -31,7 +31,7 @@ class ClearRedisCacheConsoleCommand extends Command
         $this->setDescription('Clear Redis cache (no sessions). To be called on deploy.');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $schemas = $this->systems_service->get_schemas();
 

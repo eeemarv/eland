@@ -28,7 +28,7 @@ class ProcessWorkerConsoleCommand extends Command
         $this->setDescription('Several slow background processes and set asset hashes.');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $clear_redis_cache_command = $this->getApplication()->find('app:clear-redis-cache');
         $clear_redis_cache_input = new ArrayInput([]);

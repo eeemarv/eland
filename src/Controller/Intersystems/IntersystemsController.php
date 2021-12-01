@@ -98,8 +98,7 @@ class IntersystemsController extends AbstractController
         $out .= 'Een eLAND interSysteem verbinding laat intertrading toe tussen ';
         $out .= 'je eigen Systeem en een ander Systeem op deze eLAND server.';
         $out .= 'Beide Systemen dienen hiervoor een munteenheid te hebben die gebaseerd is ';
-        $out .= 'op tijd. Ze zijn dus Tijdbanken en dienen zo ';
-        $out .= 'geconfigureerd te zijn (Zie Admin > Instellingen > Systeem). ';
+        $out .= 'op tijd.  (Zie Transacties > Lokaal admin menu > Munteenheid). ';
         $out .= 'Wanneer je deze pagina kan zien is dit reeds het geval.';
         $out .= '</p>';
 
@@ -227,7 +226,6 @@ class IntersystemsController extends AbstractController
             $out .= '</div></div>';
         }
 
-/*
         $out .= self::get_schemas_groups(
             $db,
             $config_service,
@@ -235,7 +233,6 @@ class IntersystemsController extends AbstractController
             $pp,
             $link_render
         );
-*/
 
         return $this->render('intersystems/intersystems.html.twig', [
             'content'   => $out,
@@ -250,6 +247,7 @@ class IntersystemsController extends AbstractController
         LinkRender $link_render
     ):string
     {
+
         $out = '<div class="panel panel-default">';
         $out .= '<div class="panel-heading">';
         $out .= '<h3>Een interSysteem Verbinding aanmaken met een ander Systeem op deze eLAND server.</h3>';
@@ -258,7 +256,8 @@ class IntersystemsController extends AbstractController
         $out .= '<li> ';
         $out .= 'Contacteer altijd eerst vooraf de beheerders van het andere Systeem ';
         $out .= 'waarmee je een interSysteem verbinding wil opzetten. ';
-        $out .= 'En verifiëer of zij ook een Tijdbank-Systeem hebben en of zij geïnteresseerd zijn.</li>';
+        $out .= 'En verifiëer of zij ook een munteenheid gebaseerd ';
+        $out .= 'op tijd hebben en of zij geïnteresseerd zijn.</li>';
         $out .= '<li> Voor het leggen van een InterSysteem-verbinding, kijk in de tabel hieronder. ';
         $out .= 'Maak het interSysteem aan door op \'Creëer\' in ';
         $out .= 'kolom \'lok.interSysteem\' te klikken en vervolgens op Toevoegen. ';
@@ -280,9 +279,14 @@ class IntersystemsController extends AbstractController
             $url_ary[] = $systems_service->get_legacy_eland_origin($sys_schema);
         }
 
-        $loc_group_ary = $loc_account_ary = [];
-        $rem_group_ary =  $rem_account_ary = $group_user_count_ary = [];
+        $loc_group_ary = [];
+        $loc_account_ary = [];
+        $rem_group_ary =  [];
+        $rem_account_ary = [];
+        $group_user_count_ary = [];
         $loc_letscode_ary = [];
+
+        $this_origin = $systems_service->get_legacy_eland_origin($pp->schema());
 
         $groups = $db->executeQuery('select localletscode, url, id
             from ' . $pp->schema() . '.letsgroups
@@ -294,7 +298,8 @@ class IntersystemsController extends AbstractController
         {
             $loc_letscode_ary[] = $group['localletscode'];
             $h = strtolower(parse_url($group['url'], PHP_URL_HOST));
-            $loc_group_ary[$h] = $group;
+            $loc_group_ary['http://' . $h] = $group;
+            $loc_group_ary['https://' . $h] = $group;
         }
 
         $interlets_accounts = $db->executeQuery('select id, code, status, role
@@ -313,7 +318,7 @@ class IntersystemsController extends AbstractController
             $rem_group = $db->fetchAssociative('select localletscode, url, id
                 from ' . $rem_schema . '.letsgroups
                 where url = ?',
-                [$systems_service->get_legacy_eland_origin($rem_schema)],
+                [$this_origin],
                 [\PDO::PARAM_STR]
             );
 
@@ -387,7 +392,7 @@ class IntersystemsController extends AbstractController
             {
                 $out .= ' <span class="label label-danger" ';
                 $out .= 'title="Dit Systeem is niet ';
-                $out .= 'geconfigureerd als Tijdbank.">';
+                $out .= 'geconfigureerd met munt met tijdbasis.">';
                 $out .= '<i class="fa fa-exclamation-triangle">';
                 $out .= '</i></span>';
             }
@@ -451,8 +456,11 @@ class IntersystemsController extends AbstractController
                 {
                     $loc_group = $loc_group_ary[$rem_origin];
 
-                    if (is_array($loc_acc = $loc_account_ary[$loc_group['localletscode']]))
+                    if (isset($loc_account_ary[$loc_group['localletscode']])
+                        && is_array($loc_account_ary[$loc_group['localletscode']]))
                     {
+                        $loc_acc = $loc_account_ary[$loc_group['localletscode']];
+
                         if ($loc_acc['role'] != 'guest')
                         {
                             $out .= $link_render->link('users_show', $pp->ary(),

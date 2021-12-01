@@ -77,7 +77,7 @@ class IntersystemsEditController extends AbstractController
                 where localletscode = ?
                     and id <> ?', [$group['localletscode'], $id], [\PDO::PARAM_STR, \PDO::PARAM_INT]))
             {
-                $errors[] = 'Er bestaat al een interSysteem met deze Lokale Account Code.';
+                $errors[] = 'Er bestaat al een interSysteem met deze Account Code.';
             }
 
             if (!count($errors))
@@ -152,7 +152,6 @@ class IntersystemsEditController extends AbstractController
             'groupname' 		=> $request->request->get('groupname', ''),
             'apimethod' 		=> $request->request->get('apimethod', ''),
             'localletscode' 	=> $request->request->get('localletscode', ''),
-            'myremoteletscode'	=> $request->request->get('myremoteletscode', ''),
         ];
 
         if (strlen($group['groupname']) > 128)
@@ -162,12 +161,7 @@ class IntersystemsEditController extends AbstractController
 
         if (strlen($group['localletscode']) > 20)
         {
-            $errors[] = 'De Lokale Account Code mag maximaal 20 tekens lang zijn.';
-        }
-
-        if (strlen($group['myremoteletscode']) > 20)
-        {
-            $errors[] = 'De Remote Account Code mag maximaal 20 tekens lang zijn.';
+            $errors[] = 'De Account Code mag maximaal 20 tekens lang zijn.';
         }
 
         if (strlen($group['url']) > 256)
@@ -192,8 +186,7 @@ class IntersystemsEditController extends AbstractController
         ConfigService $config_service,
         LinkRender $link_render,
         SystemsService $systems_service,
-        PageParamsService $pp,
-        VarRouteService $vr
+        PageParamsService $pp
     ):string
     {
         $out = '<div class="panel panel-info">';
@@ -239,7 +232,7 @@ class IntersystemsEditController extends AbstractController
 
         $out .= '<div class="form-group">';
         $out .= '<label for="localletscode" class="control-label">';
-        $out .= 'Lokale Account Code</label>';
+        $out .= 'Account Code</label>';
         $out .= '<div class="input-group">';
         $out .= '<span class="input-group-addon">';
         $out .= '<span class="fa fa-user"></span></span>';
@@ -255,25 +248,6 @@ class IntersystemsEditController extends AbstractController
         $out .= '</div>';
 
         $out .= '<div class="form-group">';
-        $out .= '<label for="myremoteletscode" class="control-label">';
-        $out .= 'Remote Account Code';
-        $out .= '</label>';
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<span class="fa fa-user"></span></span>';
-        $out .= '<input type="text" class="form-control" ';
-        $out .= 'id="myremoteletscode" name="myremoteletscode" ';
-        $out .= 'value="';
-        $out .= $group['myremoteletscode'];
-        $out .= '" maxlength="20">';
-        $out .= '</div>';
-        $out .= '<p>';
-        $out .= 'De Account Code waarmee dit Systeem bij het andere Systeem bekend is. ';
-        $out .= 'Enkel in te vullen wanneer het andere Systeem draait op eLAS.';
-        $out .= '</p>';
-        $out .= '</div>';
-
-        $out .= '<div class="form-group">';
         $out .= '<label for="url" class="control-label">';
         $out .= 'URL ';
         $out .= '</label>';
@@ -285,15 +259,15 @@ class IntersystemsEditController extends AbstractController
         $out .= $group['url'];
         $out .= '" maxlength="256">';
         $out .= '</div>';
-        $out .= '<lu>';
+        $out .= '<ul>';
         $out .= '<li>';
         $out .= 'De basis-URL van het andere Systeem, inclusief het protocol, http:// of https://';
         $out .= '</li>';
         $out .= '<li>';
-        $out .= 'Wanneer het een eLAND-systeem betreft, gebruik http://systeemnaam.letsa.net en ';
-        $out .= 'vervang "systeemnaam" door de naam van het systeem.';
+        $out .= '<em>Gebruik http://systeemnaam.letsa.net en ';
+        $out .= 'vervang "systeemnaam" door de naam van het systeem.</em>';
         $out .= '</li>';
-        $out .= '</lu>';
+        $out .= '</ul>';
         $out .= '</div>';
 
         $out .= $btn;
@@ -304,16 +278,13 @@ class IntersystemsEditController extends AbstractController
         $out .= '</div>';
         $out .= '</div>';
 
-/*
         $out .= IntersystemsController::get_schemas_groups(
             $db,
             $config_service,
             $systems_service,
             $pp,
-            $vr,
             $link_render
         );
-*/
 
         return $out;
     }

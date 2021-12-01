@@ -16,7 +16,7 @@ class IntegerTransformer implements DataTransformerInterface
     {
     }
 
-    public function transform($id)
+    public function transform($id): mixed
     {
         /*
         if (null === $id)
@@ -28,7 +28,7 @@ class IntegerTransformer implements DataTransformerInterface
         return $id;
     }
 
-    public function reverseTransform($value)
+    public function reverseTransform($value): mixed
     {
         if (!isset($value) || $value === '')
         {

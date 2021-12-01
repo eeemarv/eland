@@ -115,7 +115,7 @@ class IntersystemsShowController extends AbstractController
         $out .= $group['apimethod'];
         $out .= '</dd>';
 
-        $out .= '<dt>Lokale Account Code</dt>';
+        $out .= '<dt>Account Code</dt>';
         $out .= '<dd>';
 
         if ($user)
@@ -164,11 +164,6 @@ class IntersystemsShowController extends AbstractController
 
         $out .= '</dd>';
 
-        $out .= '<dt>Remote Account Code</dt>';
-        $out .= '<dd>';
-        $out .= $group['myremoteletscode'];
-        $out .= '</dd>';
-
         $out .= '<dt>URL</dt>';
         $out .= '<dd>';
         $out .= $group['url'];
@@ -176,16 +171,13 @@ class IntersystemsShowController extends AbstractController
 
         $out .= '</div></div>';
 
-/*
         $out .= IntersystemsController::get_schemas_groups(
             $db,
             $config_service,
             $systems_service,
             $pp,
-            $vr,
             $link_render
         );
-*/
 
         return $this->render('intersystems/intersystems_show.html.twig', [
             'content'   => $out,

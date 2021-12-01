@@ -80,9 +80,13 @@ class LogDbService
 				$user_id = $extra['logins'][$user_schema];
 			}
 
+			$datetime = new \DateTime($log['datetime']['date'], new \DateTimeZone($log['datetime']['timezone']));
+			$datetime->setTimezone(new \DateTimeZone('UTC'));
+			$ts = $datetime->format("Y-m-d H:i:s");
+
 			$insert = [
 				'schema'		=> $schema,
-				'ts'			=> $log['datetime']['date'],
+				'ts'			=> $ts,
 				'type'			=> $log['level_name'],
 				'event'			=> $log['message'],
 				'data'			=> $log_json,

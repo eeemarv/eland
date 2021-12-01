@@ -13,7 +13,7 @@ class HtmlPurifyTransformer implements DataTransformerInterface
     {
     }
 
-    public function transform($content)
+    public function transform($content): mixed
     {
         if (null === $content)
         {
@@ -23,7 +23,7 @@ class HtmlPurifyTransformer implements DataTransformerInterface
         return $content;
     }
 
-    public function reverseTransform($content)
+    public function reverseTransform($content): mixed
     {
         if (null === $content)
         {
