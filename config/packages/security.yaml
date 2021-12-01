@@ -2,34 +2,36 @@ security:
     encoders:
         App\Security\User:
             algorithm: auto
+    enable_authenticator_manager: true
+    # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+    # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
         # used to reload user from session & other features (e.g. switch_user)
         app_user_provider:
             id: App\Security\UserProvider
     firewalls:
         dev:
-            pattern: ^/(_profiler|_wdt)/
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
-            anonymous: true
             access_denied_handler: App\Security\AccessDeniedHandler
+        # main:
+        #    lazy: true
+        #    provider: users_in_memory
 
-#            guard:
-#                authenticators:
-#                    - App\Security\LoginAuthenticator
-#                    - App\Security\SystemUserAuthenticator
-#                entry_point: App\Security\SystemUserAuthenticator
-#            logout:
-#                path: logout
-                # where to redirect after logout
-                # target: login
+            # activate different ways to authenticate
+            # https://symfony.com/doc/current/security.html#the-firewall
 
+            # https://symfony.com/doc/current/security/impersonating_user.html
+            # switch_user: true
+
+    # Easy way to control access for large sections of your site
+    # Note: Only the *first* access control that matches will be used
     access_control:
          - { path: ^/\w+/a/, roles: admin }
          - { path: ^/\w+/u/, roles: user }
          - { path: ^/\w+/g/, roles: guest }
-
-#    role_hierarchy:
-#        ROLE_MASTER: ROLE_ADMIN
-#        ROLE_ADMIN: [ROLE_USER, ROLE_ALLOWED_TO_SWITCH]
-#        ROLE_USER: ROLE_GUEST
+        # - { path: ^/admin, roles: ROLE_ADMIN }
+        # - { path: ^/profile, roles: ROLE_USER }
