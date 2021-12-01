@@ -1,2 +1,3 @@
-#routes_eland:
-#    resource: routes_eland/index.yaml
+#index:
+#    path: /
+#    controller: App\Controller\DefaultController::index
