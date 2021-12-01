@@ -1,4 +1,5 @@
 monolog:
+    use_microseconds: false
     handlers:
         stream:
             path: "php://stdout"
