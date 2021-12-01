@@ -8,7 +8,6 @@
 
     "require": {
 		"php": "^8.0",
-		"ext-xml": "*",
 		"ext-ctype": "*",
 		"ext-exif": "*",
 		"ext-gd": "*",
@@ -16,6 +15,7 @@
 		"ext-intl": "*",
 		"ext-mbstring": "*",
 		"ext-redis": "*",
+		"ext-xml": "*",
 		"ext-zip": "*",
 		"aws/aws-sdk-php": "^3",
 		"bramus/monolog-colored-line-formatter": "^2",
@@ -56,6 +56,7 @@
 		"symfony/process": "^5",
 		"symfony/proxy-manager-bridge": "^5",
 		"symfony/requirements-checker": "^2.0",
+		"symfony/runtime": "^5",
 		"symfony/security-bundle": "^5",
 		"symfony/security-csrf": "^5",
 		"symfony/translation": "^5",
