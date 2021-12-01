@@ -16,7 +16,7 @@ class TypeaheadUserTransformer implements DataTransformerInterface
     {
     }
 
-    public function transform($id)
+    public function transform($id): mixed
     {
         if (null === $id)
         {
@@ -28,7 +28,7 @@ class TypeaheadUserTransformer implements DataTransformerInterface
         return $account_str;
     }
 
-    public function reverseTransform($account_str)
+    public function reverseTransform($account_str): mixed
     {
         if (!$account_str)
         {

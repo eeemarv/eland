@@ -22,7 +22,7 @@ class CorsSubscriber implements EventSubscriberInterface
         $response->headers->set('Access-Control-Allow-Origin', $allow_origin);
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
            KernelEvents::RESPONSE => 'onKernelResponse',

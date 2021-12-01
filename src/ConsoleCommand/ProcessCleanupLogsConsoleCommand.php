@@ -25,7 +25,7 @@ class ProcessCleanupLogsConsoleCommand extends Command
         $this->setDescription('Process to cleanup old log entries from db.');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->monitor_process_service->boot('cleanup_logs');
 

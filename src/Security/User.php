@@ -46,7 +46,7 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getSalt()
+    public function getSalt(): ?string
     {
         return null;
         // not used
@@ -55,5 +55,11 @@ class User implements UserInterface
     public function eraseCredentials()
     {
         // obsolete, not used
+    }
+
+    public function getUserIdentifier(): string
+    {
+        // dummy
+        return '';
     }
 }

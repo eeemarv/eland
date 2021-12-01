@@ -27,7 +27,7 @@ class ProcessMailConsoleCommand extends Command
         $this->setDescription('Send emails from queue');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->monitor_process_service->boot('mail');
 

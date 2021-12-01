@@ -22,7 +22,7 @@ class AccessDeniedHandler implements AccessDeniedHandlerInterface
         $this->link_render = $link_render;
     }
 
-    public function handle(Request $request, AccessDeniedException $accessDeniedException)
+    public function handle(Request $request, AccessDeniedException $accessDeniedException): ?Response
     {
         $system = $request->attributes->get('system', '');
 

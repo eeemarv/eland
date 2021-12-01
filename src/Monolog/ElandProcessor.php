@@ -22,7 +22,7 @@ class ElandProcessor implements EventSubscriberInterface
 
     public function onKernelController(ControllerEvent $event):void
     {
-        if (!$event->isMasterRequest())
+        if (!$event->isMainRequest())
         {
             return;
         }

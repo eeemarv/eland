@@ -8,6 +8,7 @@
 
     "require": {
 		"php": "^8.0",
+		"ext-xml": "*",
 		"ext-ctype": "*",
 		"ext-exif": "*",
 		"ext-gd": "*",
@@ -37,7 +38,7 @@
 		"php-http/guzzle6-adapter": "^1.1",
 		"php-http/message": "^1.6",
 		"predis/predis": "1.1.4",
-		"sensio/framework-extra-bundle": "^5.4",
+		"sensio/framework-extra-bundle": "^5",
 		"swiftmailer/swiftmailer": "^6",
 		"symfony/asset": "^5",
 		"symfony/cache": "^5",

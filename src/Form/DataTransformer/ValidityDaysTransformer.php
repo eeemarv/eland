@@ -16,11 +16,11 @@ class ValidityDaysTransformer implements DataTransformerInterface
     {
     }
 
-    public function transform($expires_at)
+    public function transform($expires_at): mixed
     {
         if (null === $expires_at)
         {
-            return;
+            return null;
         }
 
         $validity_days = (int) round((strtotime($expires_at . ' UTC') - time()) / 86400);
@@ -29,11 +29,11 @@ class ValidityDaysTransformer implements DataTransformerInterface
         return $validity_days;
     }
 
-    public function reverseTransform($validity_days)
+    public function reverseTransform($validity_days): mixed
     {
         if ($validity_days === null || !$validity_days)
         {
-            return;
+            return null;
         }
 
         $validity_days = (int) $validity_days;

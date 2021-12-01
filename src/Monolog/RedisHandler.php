@@ -2,6 +2,7 @@
 
 namespace App\Monolog;
 
+use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\JsonFormatter;
 use Predis\Client as Predis;
 use Monolog\Handler\AbstractProcessingHandler;
@@ -20,7 +21,7 @@ class RedisHandler extends AbstractProcessingHandler
         parent::__construct($level, $bubble);
     }
 
-    protected function getDefaultFormatter()
+    protected function getDefaultFormatter(): FormatterInterface
     {
         return new JsonFormatter();
     }

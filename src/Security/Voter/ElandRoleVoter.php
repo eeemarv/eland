@@ -35,7 +35,7 @@ class ElandRoleVoter extends Voter
         return isset(RoleCnst::SHORT[$attribute]);
     }
 
-    protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
+    protected function voteOnAttribute($attribute, $subject, TokenInterface $token): bool
     {
         if ($attribute === 'guest' || $attribute === 'user')
         {

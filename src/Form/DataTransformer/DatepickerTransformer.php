@@ -15,7 +15,7 @@ class DatepickerTransformer implements DataTransformerInterface
     {
     }
 
-    public function transform($date)
+    public function transform($date): mixed
     {
         if (null === $date)
         {
@@ -25,11 +25,11 @@ class DatepickerTransformer implements DataTransformerInterface
         return $this->date_format_service->get($date, 'day', $this->pp->schema());
     }
 
-    public function reverseTransform($input)
+    public function reverseTransform($input): mixed
     {
         if ($input === null || !$input)
         {
-            return;
+            return null;
         }
 
         return $this->date_format_service->reverse($input, $this->pp->schema());
