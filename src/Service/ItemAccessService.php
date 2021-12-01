@@ -140,7 +140,7 @@ class ItemAccessService
 		$out .= '" class="control-label">';
 		$out .= $label;
 		$out .= '</label>';
-		$out .= '<div class="custom-radio"';
+		$out .= '<div';
 
 		if ($cache_id)
 		{

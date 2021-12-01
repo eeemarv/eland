@@ -715,7 +715,6 @@ class MessagesListController extends AbstractController
                 $blk .= '<form method="post">';
 
                 $blk .= '<div class="form-group">';
-                $blk .= '<div class="custom-radio">';
 
                 foreach (MessageTypeCnst::SERVICE_STUFF_TPL_ARY as $key => $render_data)
                 {
@@ -740,7 +739,6 @@ class MessagesListController extends AbstractController
                     ]);
                 }
 
-                $blk .= '</div>';
                 $blk .= '</div>';
 
                 $blk .= strtr(BulkCnst::TPL_CHECKBOX, [
@@ -1484,7 +1482,7 @@ class MessagesListController extends AbstractController
 
         $out .= '<div class="row">';
         $out .= '<div class="col-sm-' . $col_w . '">';
-        $out .= '<div class="input-group margin-bottom custom-checkbox">';
+        $out .= '<div class="input-group margin-bottom">';
 
         foreach (MessageTypeCnst::OFFER_WANT_TPL_ARY as $key => $d)
         {
@@ -1502,7 +1500,7 @@ class MessagesListController extends AbstractController
         if ($service_stuff_enabled)
         {
             $out .= '<div class="col-sm-' . $col_w . '">';
-            $out .= '<div class="input-group margin-bottom custom-checkbox">';
+            $out .= '<div class="input-group margin-bottom">';
 
             foreach (MessageTypeCnst::SERVICE_STUFF_TPL_ARY as $key => $d)
             {
@@ -1540,7 +1538,7 @@ class MessagesListController extends AbstractController
         if ($expires_at_enabled)
         {
             $out .= '<div class="col-sm-' . $col_w . '">';
-            $out .= '<div class="input-group margin-bottom custom-checkbox">';
+            $out .= '<div class="input-group margin-bottom">';
 
             foreach (MessageTypeCnst::VALID_EXPIRED_TPL_ARY as $key => $d)
             {
@@ -1560,7 +1558,7 @@ class MessagesListController extends AbstractController
 
         $out .= '<div class="row">';
         $out .= '<div class="col-sm-12">';
-        $out .= '<div class="input-group margin-bottom custom-checkbox">';
+        $out .= '<div class="input-group margin-bottom">';
 
         foreach (MessageTypeCnst::USERS_TPL_ARY as $key => $d)
         {
