@@ -762,7 +762,6 @@ class MessagesListController extends AbstractController
                 $blk .= '<form method="post">';
 
                 $blk .= '<div class="form-group">';
-                $blk .= '<div class="custom-radio">';
 
                 foreach (MessageTypeCnst::SERVICE_STUFF_TPL_ARY as $key => $render_data)
                 {
@@ -787,7 +786,6 @@ class MessagesListController extends AbstractController
                     ]);
                 }
 
-                $blk .= '</div>';
                 $blk .= '</div>';
 
                 $blk .= strtr(BulkCnst::TPL_CHECKBOX, [

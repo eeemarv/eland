@@ -323,7 +323,6 @@ class TransactionsEditController extends AbstractController
         if ($service_stuff_enabled)
         {
             $out .= '<div class="form-group">';
-            $out .= '<div class="custom-radio">';
 
             foreach (MessageTypeCnst::SERVICE_STUFF_TPL_ARY as $key => $render_data)
             {
@@ -335,7 +334,6 @@ class TransactionsEditController extends AbstractController
                 ]);
             }
 
-            $out .= '</div>';
             $out .= '</div>';
         }
 

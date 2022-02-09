@@ -185,9 +185,7 @@
 						{{- form_errors(filter_form) -}}
 					{%- endblock filter_form_start -%}
 					{%- block filter_form_content -%}
-						<div class="custom-checkbox">
-							{%- block filter_form_a -%}{{- filter_form_a|default('') -}}{%- endblock -%}
-						</div>
+						{%- block filter_form_a -%}{{- filter_form_a|default('') -}}{%- endblock -%}
 					{%- endblock filter_form_content -%}
 					{%- block filter_form_context -%}
 						{%- set hidden_ary = query_params|filter((v, k) => k != 'f' and k != 'uid')|flatten|filter((v, k) => k != 'p[start]') -%}
@@ -234,11 +232,9 @@
 						{{- form_errors(form) -}}
 					{%- endblock form_start -%}
 					{%- block form_content -%}
-						<div class="custom-checkbox">
-							{%- block form_a -%}{{- form_a|default('') -}}{%- endblock -%}
-							{%- block form_b -%}{{- form_b|default('') -}}{%- endblock -%}
-							{%- block form_c -%}{{- form_c|default('') -}}{%- endblock -%}
-						</div>
+						{%- block form_a -%}{{- form_a|default('') -}}{%- endblock -%}
+						{%- block form_b -%}{{- form_b|default('') -}}{%- endblock -%}
+						{%- block form_c -%}{{- form_c|default('') -}}{%- endblock -%}
 						{%- block form_cancel_btn -%}
 							{%- include 'form/cancel_btn.html.twig' -%}
 						{%- endblock form_cancel_btn -%}

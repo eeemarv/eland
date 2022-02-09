@@ -615,7 +615,6 @@ class MessagesEditController extends AbstractController
         }
 
         $out .= '<div class="form-group">';
-        $out .= '<div class="custom-radio">';
 
         foreach (MessageTypeCnst::OFFER_WANT_TPL_ARY as $key => $render_data)
         {
@@ -628,12 +627,10 @@ class MessagesEditController extends AbstractController
         }
 
         $out .= '</div>';
-        $out .= '</div>';
 
         if ($service_stuff_enabled)
         {
             $out .= '<div class="form-group">';
-            $out .= '<div class="custom-radio">';
 
             foreach (MessageTypeCnst::SERVICE_STUFF_TPL_ARY as $key => $render_data)
             {
@@ -650,7 +647,6 @@ class MessagesEditController extends AbstractController
                 ]);
             }
 
-            $out .= '</div>';
             $out .= '</div>';
         }
 
@@ -738,7 +734,8 @@ class MessagesEditController extends AbstractController
                 $out .= '<div class="form-group">';
                 $out .= '<label for="expires_at_switch" ';
                 $out .= 'class="control-label">Geldigheid</label>';
-                $out .= '<div class="custom-radio">';
+                $out .= '<div>';
+
                 foreach ($expires_at_switch_tpl_ary as $val => $lbl)
                 {
                     $class = 'btn btn-default';

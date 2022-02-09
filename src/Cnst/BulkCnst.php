@@ -75,7 +75,6 @@ class BulkCnst
     <span class="custom-checkbox">
     <label for="sel[%id%]">
     <input type="checkbox" name="sel[%id%]" id="sel[%id%]" value="1"%attr%>&nbsp;&nbsp;
-    <span class="label-text"></span>
     %label%
     </label>
     </span>
@@ -116,7 +115,7 @@ class BulkCnst
     <div class="custom-checkbox">
     <label for="%name%" class="control-label">
     <input type="checkbox" id="%name%" name="%name%"%attr%>
-    &nbsp;<span class="label-text"></span>%label%</label>
+    &nbsp;%label%</label>
     </div></div>
     TPL;
 
@@ -125,7 +124,7 @@ class BulkCnst
     <div class="custom-checkbox">
     <label for="%name%" class="control-label">
     <input type="checkbox" id="%name%" name="%name%"%attr%>
-    &nbsp;<span class="label-text"></span>%label%</label>
+    &nbsp;%label%</label>
     </div></div>
     TPL;
 
@@ -168,20 +167,20 @@ class BulkCnst
     <label class="radio-inline">
     <input type="radio" name="%name%"
     value="%value%"%attr%>
-    <span class="label-text"></span>&nbsp;%label%</label>
+    &nbsp;%label%</label>
     TPL;
 
     const TPL_CHECKBOX_BTN_INLINE = <<<'TPL'
     <label class="checkbox-inline" for="%name%">
     <input type="checkbox" name="%name%" value="1" id="%name%"%attr%>
-    <span class="label-text"></span>&nbsp;
+    &nbsp;
     <span class="btn btn-%btn_class%">%label%</span></label>
     TPL;
 
     const TPL_CHECKBOX_INLINE = <<<'TPL'
     <label class="checkbox-inline" for="%name%">
     <input type="checkbox" name="%name%" id="%name%"%attr%>
-    <span class="label-text"></span>&nbsp;
+    &nbsp;
     %label%</label>
     TPL;
 }

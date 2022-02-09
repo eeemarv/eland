@@ -95,7 +95,6 @@
         {%- endif -%}
         <label{% with { attr: label_attr } %}{{ block('attributes') }}{% endwith %}>
             {{- widget|raw }}
-            <span class="label-text"></span>
             {%- if label is not same as(false) -%}
                 {%- if 'btn_choice' in form.parent.vars.block_prefixes -%}
                     {{- lbl.btn(label, label_count_suffix) -}}
