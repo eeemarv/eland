@@ -657,33 +657,35 @@ class MessagesListController extends AbstractController
                 '1825'	=> '5 jaar',
             ];
 
-            $cat_options = '';
+            if ($category_enabled){
+                $cat_options = '';
 
-            foreach ($categories_move_options as $cat_id => $cat_data)
-            {
-                if (isset($cat_data['children']) && count($cat_data['children']))
+                foreach ($categories_move_options as $cat_id => $cat_data)
                 {
-                    $cat_options .= '<optgroup label="';
-                    $cat_options .= $cat_data['name'];
-                    $cat_options .= '">';
-
-                    foreach ($cat_data['children'] as $sub_cat_id => $sub_cat_data)
+                    if (isset($cat_data['children']) && count($cat_data['children']))
                     {
-                        $cat_options .= '<option value="';
-                        $cat_options .= $sub_cat_id;
+                        $cat_options .= '<optgroup label="';
+                        $cat_options .= $cat_data['name'];
                         $cat_options .= '">';
-                        $cat_options .= $sub_cat_data['name'];
-                        $cat_options .= '</option>';
-                    }
-                    $cat_options .= '</optgroup>';
-                    continue;
-                }
 
-                $cat_options .= '<option value="';
-                $cat_options .= $cat_id;
-                $cat_options .= '">';
-                $cat_options .= $cat_data['name'];
-                $cat_options .= '</option>';
+                        foreach ($cat_data['children'] as $sub_cat_id => $sub_cat_data)
+                        {
+                            $cat_options .= '<option value="';
+                            $cat_options .= $sub_cat_id;
+                            $cat_options .= '">';
+                            $cat_options .= $sub_cat_data['name'];
+                            $cat_options .= '</option>';
+                        }
+                        $cat_options .= '</optgroup>';
+                        continue;
+                    }
+
+                    $cat_options .= '<option value="';
+                    $cat_options .= $cat_id;
+                    $cat_options .= '">';
+                    $cat_options .= $cat_data['name'];
+                    $cat_options .= '</option>';
+                }
             }
 
             $blk = BulkCnst::TPL_SELECT_BUTTONS;
@@ -859,19 +861,21 @@ class MessagesListController extends AbstractController
         }
 
         return $this->render('messages/messages_list.html.twig', [
-            'data_list_raw'     => $out,
-            'bulk_actions_raw'  => $blk ?? '',
-            'categories'    => $categories,
-            'row_count'     => $row_count,
-            'is_self'       => $is_self,
-            'filter_uid'    => isset($uid),
-            'uid'           => $uid,
-            'cat_id'        => $filter_command->cat,
-            'filter_cid'    => isset($filter_command->cat),
-            'cid'           => $filter_command->cat,
-            'filter_form'   => $filter_form,
-            'filtered'      => $filtered,
-            'count_ary'     => $count_ary,
+            'data_list_raw'         => $out,
+            'bulk_actions_raw'      => $blk ?? '',
+            'categories'            => $categories ?? [],
+            'row_count'             => $row_count,
+            'is_self'               => $is_self,
+            'filter_uid'            => isset($uid),
+            'uid'                   => $uid,
+            'cat_id'                => $filter_command->cat,
+            'filter_cid'            => isset($filter_command->cat),
+            'cid'                   => $filter_command->cat,
+            'filter_form'           => $filter_form,
+            'filtered'              => $filtered,
+            'msgs_filter_collapse'  => $filter_collapse,
+            'count_ary'             => $count_ary,
+            'cat_count_ary'         => $cat_count_ary,
         ]);
     }
 
@@ -1069,7 +1073,8 @@ class MessagesListController extends AbstractController
             }
         }
 
-        $filter_access = isset($filter_command->access);
+        $filter_access = isset($filter_command->access)
+            && $filter_command->access;
 
         if ($filter_access)
         {

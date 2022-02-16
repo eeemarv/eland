@@ -11,7 +11,6 @@ class MessagesFilterCommand implements CommandInterface
     #[Type('string')]
     public $q;
 
-    #[Type('int')]
     public $cat;
 
     #[Choice(choices: ['offer', 'want'], multiple: true)]

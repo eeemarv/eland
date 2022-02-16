@@ -6,6 +6,7 @@ use App\Repository\CategoryRepository;
 use App\Service\PageParamsService;
 use Symfony\Component\Form\ChoiceList\Loader\AbstractChoiceLoader;
 use Symfony\Component\Form\ChoiceList\Loader\ChoiceLoaderInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CategoriesChoiceLoader extends AbstractChoiceLoader implements ChoiceLoaderInterface
 {
@@ -13,8 +14,11 @@ class CategoriesChoiceLoader extends AbstractChoiceLoader implements ChoiceLoade
 
     public function __construct(
         protected bool $parent_selectable,
+        protected bool $null_selectable,
+        protected bool $all_choice,
         protected CategoryRepository $category_repository,
-        protected PageParamsService $pp
+        protected PageParamsService $pp,
+        protected TranslatorInterface $translator
     )
     {
     }
@@ -23,6 +27,14 @@ class CategoriesChoiceLoader extends AbstractChoiceLoader implements ChoiceLoade
     {
         $categories = $this->category_repository->get_all($this->pp->schema());
         $choices = [];
+
+        if ($this->all_choice){
+            $choices[$this->translator->trans('categories_select_type.all_choice')] = '';
+        }
+
+        if ($this->null_selectable){
+            $choices[$this->translator->trans('categories_select_type.null_choice')] = 'null';
+        }
 
         if ($this->parent_selectable)
         {

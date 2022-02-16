@@ -92,6 +92,8 @@ class MessagesFilterType extends AbstractType
         {
             $builder->add('cat', CategorySelectType::class, [
                 'parent_selectable' => true,
+                'null_selectable'   => true,
+                'all_choice'        => true,
                 'required'          => false,
             ]);
         }

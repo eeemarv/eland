@@ -83,6 +83,7 @@ class MessagesExtendedController extends AbstractController
         $filtered = $fetch_and_filter['filtered'];
         $filter_collapse = $fetch_and_filter['filter_collapse'];
         $count_ary = $fetch_and_filter['count_ary'];
+        $cat_count_ary = $fetch_and_filter['cat_count_ary'];
 
         $time = time();
 
@@ -173,19 +174,21 @@ class MessagesExtendedController extends AbstractController
         }
 
         return $this->render('messages/messages_extended.html.twig', [
-            'data_list_raw'     => $out,
-            'bulk_actions_raw'  => '',
-            'categories'    => [],
-            'row_count'     => $row_count,
-            'is_self'       => $is_self,
-            'filter_uid'    => isset($uid),
-            'uid'           => $uid,
-            'cat_id'        => $filter_command->cat,
-            'filter_cid'    => isset($filter_command->cat),
-            'cid'           => $filter_command->cat,
-            'filter_form'   => $filter_form,
-            'filtered'      => $filtered,
-            'count_ary'     => $count_ary,
+            'data_list_raw'         => $out,
+            'bulk_actions_raw'      => '',
+            'categories'            => [],
+            'row_count'             => $row_count,
+            'is_self'               => $is_self,
+            'filter_uid'            => isset($uid),
+            'uid'                   => $uid,
+            'cat_id'                => $filter_command->cat,
+            'filter_cid'            => isset($filter_command->cat),
+            'cid'                   => $filter_command->cat,
+            'filter_form'           => $filter_form,
+            'filtered'              => $filtered,
+            'msgs_filter_collapse'  => $filter_collapse,
+            'count_ary'             => $count_ary,
+            'cat_count_ary'         => $cat_count_ary,
         ]);
     }
 }

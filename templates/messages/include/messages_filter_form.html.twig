@@ -21,7 +21,8 @@
                 'fa': 'clone'
             },
             'attr': {
-                'data-f-cat': ''
+                'data-cat-count-ary': cat_count_ary|json_encode,
+                'data-filter-cat': ''
             }
         }) -}}
     {%- endif -%}
@@ -32,81 +33,85 @@
         'translation_domain': false,
         'col': 'sm-2',
         'attr': {
-            'class': 'btn-default btn-block'
+            'class': 'btn-default btn-block',
+            'data-target': '#msgs_filter',
+            'data-toggle': 'collapse'
         }
     }) -}}
 
 </div>
-<div class="row mb-5p">
-
-    {{- form_row(filter_form.ow, {
-        'label': false,
-        'col': 'sm-12',
-        'count_ary': count_ary
-    }) -}}
-
-</div>
-
-{%- if filter_form.srvc is defined -%}
+<div{%- if msgs_filter_collapse %} class="collapse"{%- endif %} id="msgs_filter">
     <div class="row mb-5p">
 
-        {{- form_row(filter_form.srvc, {
+        {{- form_row(filter_form.ow, {
             'label': false,
             'col': 'sm-12',
             'count_ary': count_ary
         }) -}}
 
     </div>
-{%- endif -%}
 
-{%- if filter_form.ve is defined -%}
-    <div class="row mb-5p">
-        {{- form_row(filter_form.ve, {
+    {%- if filter_form.srvc is defined -%}
+        <div class="row mb-5p">
+
+            {{- form_row(filter_form.srvc, {
+                'label': false,
+                'col': 'sm-12',
+                'count_ary': count_ary
+            }) -}}
+
+        </div>
+    {%- endif -%}
+
+    {%- if filter_form.ve is defined -%}
+        <div class="row mb-5p">
+            {{- form_row(filter_form.ve, {
+                'label': false,
+                'col': 'sm-12',
+                'count_ary': count_ary
+            }) -}}
+        </div>
+    {%- endif -%}
+
+    {%- if filter_form.us is defined -%}
+        <div class="row mb-5p">
+            {{- form_row(filter_form.us, {
+                'label': false,
+                'col': 'sm-12',
+                'count_ary': count_ary
+            }) -}}
+        </div>
+    {%- endif -%}
+
+    {%- if filter_form.access is defined -%}
+        <div class="row mb-5p">
+            {{- form_row(filter_form.access, {
+                'label': false,
+                'col': 'sm-12',
+                'count_ary': count_ary
+            }) -}}
+        </div>
+    {%- endif -%}
+
+    <div class="row">
+
+        {{- form_row(filter_form.user, {
             'label': false,
-            'col': 'sm-12',
-            'count_ary': count_ary
+            'col': 'sm-10',
+            'pre_addon': {
+                'fa': 'user'
+            },
+            'attr': {
+                'placeholder': 'label.account_code'
+            }
+        }) -}}
+
+        {{- form_row(filter_form.show, {
+            'label': 'btn.show',
+            'col': 'sm-2',
+            'attr': {
+                'class': 'btn btn-default btn-block'
+            }
         }) -}}
     </div>
-{%- endif -%}
-
-{%- if filter_form.us is defined -%}
-    <div class="row mb-5p">
-        {{- form_row(filter_form.us, {
-            'label': false,
-            'col': 'sm-12',
-            'count_ary': count_ary
-        }) -}}
-    </div>
-{%- endif -%}
-
-{%- if filter_form.access is defined -%}
-    <div class="row mb-5p">
-        {{- form_row(filter_form.access, {
-            'label': false,
-            'col': 'sm-12',
-            'count_ary': count_ary
-        }) -}}
-    </div>
-{%- endif -%}
-
-<div class="row">
-
-    {{- form_row(filter_form.user, {
-        'label': false,
-        'col': 'sm-10',
-        'pre_addon': {
-            'fa': 'user'
-        },
-        'attr': {
-            'placeholder': 'label.account_code'
-        }
-    }) -}}
-
-    {{- form_row(filter_form.show, {
-        'label': 'btn.show',
-        'col': 'sm-2',
-        'attr': {
-            'class': 'btn btn-default btn-block'
-        }
-    }) -}}
 </div>

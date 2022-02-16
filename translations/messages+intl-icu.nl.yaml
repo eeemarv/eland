@@ -361,6 +361,12 @@ calendar_month:
   title: >-
     {month} {year}
 
+categories_select_type:
+  all_choice: >-
+    -- alle categorieën --
+  null_choice: >-
+    ** zonder categorie **
+
 categories:
   title: Vraag en aanbod categorieën
   explain:
