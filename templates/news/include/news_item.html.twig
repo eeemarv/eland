@@ -36,23 +36,27 @@
         </dl>
     {%- endblock footer_top -%}
     {%- block edit_btn -%}
-        {%- include 'include/btn/edit.html.twig' with {
-            'btn_route': 'news_edit',
-            'id': post.id,
-            'btn_title': 'news_edit.title',
-            'btn_title_trans_params': {
-                'subject': post.subject
-            }
-        } -%}
+        {%- if pp_role('admin') -%}
+            {%- include 'include/btn/edit.html.twig' with {
+                'btn_route': 'news_edit',
+                'id': post.id,
+                'btn_title': 'news_edit.title',
+                'btn_title_trans_params': {
+                    'subject': post.subject
+                }
+            } -%}
+        {%- endif -%}
     {%- endblock edit_btn -%}
     {%- block del_btn -%}
-        {%- include 'include/btn/del.html.twig' with {
-            'btn_route': 'news_del',
-            'id': post.id,
-            'btn_title': 'news_del.title',
-            'btn_title_trans_params': {
-                'subject': post.subject
-            }
-        } -%}
+        {%- if pp_role('admin') -%}
+            {%- include 'include/btn/del.html.twig' with {
+                'btn_route': 'news_del',
+                'id': post.id,
+                'btn_title': 'news_del.title',
+                'btn_title_trans_params': {
+                    'subject': post.subject
+                }
+            } -%}
+        {%- endif -%}
     {%- endblock del_btn -%}
 {%- endembed -%}
