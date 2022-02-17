@@ -867,11 +867,8 @@ class MessagesListController extends AbstractController
             'categories'            => $categories,
             'row_count'             => $row_count,
             'is_self'               => $is_self,
-            'filter_uid'            => isset($uid),
             'uid'                   => $uid,
-            'cat_id'                => $filter_command->cat,
-            'filter_cid'            => isset($filter_command->cat),
-            'cid'                   => $filter_command->cat,
+            'cat_id'                => $filter_command->cat ?: null,
             'filter_form'           => $filter_form,
             'filtered'              => $filtered,
             'msgs_filter_collapse'  => $filter_collapse,
@@ -1112,6 +1109,7 @@ class MessagesListController extends AbstractController
         $sql['common']['where'][] = 'u.status in (1, 2)';
 
         $filter_category = isset($filter_command->cat)
+            && $filter_command->cat
             && $category_enabled;
 
         if ($filter_category)
