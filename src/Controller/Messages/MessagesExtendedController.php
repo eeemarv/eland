@@ -65,6 +65,7 @@ class MessagesExtendedController extends AbstractController
         }
 
         $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
+        $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
 
         $fetch_and_filter = $messages_list_controller->fetch_and_filter(
             $request,
@@ -84,6 +85,34 @@ class MessagesExtendedController extends AbstractController
         $filter_collapse = $fetch_and_filter['filter_collapse'];
         $count_ary = $fetch_and_filter['count_ary'];
         $cat_count_ary = $fetch_and_filter['cat_count_ary'];
+
+        $categories = [];
+
+        if ($category_enabled)
+        {
+            $parent_name = '***';
+
+            $st = $db->executeQuery('select *
+                from ' . $pp->schema() . '.categories
+                order by left_id asc');
+
+            while ($row = $st->fetchAssociative())
+            {
+                $name = $row['name'];
+                $cat_id = $row['id'];
+                $parent_id = $row['parent_id'];
+
+                if (isset($parent_id))
+                {
+                    $categories[$cat_id] = $parent_name . ' > ' . $name;
+                }
+                else
+                {
+                    $parent_name = $name;
+                    $categories[$cat_id] = $parent_name;
+                }
+            }
+        }
 
         $time = time();
 
@@ -176,7 +205,7 @@ class MessagesExtendedController extends AbstractController
         return $this->render('messages/messages_extended.html.twig', [
             'data_list_raw'         => $out,
             'bulk_actions_raw'      => '',
-            'categories'            => [],
+            'categories'            => $categories,
             'row_count'             => $row_count,
             'is_self'               => $is_self,
             'filter_uid'            => isset($uid),

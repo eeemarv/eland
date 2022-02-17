@@ -403,11 +403,12 @@ class MessagesListController extends AbstractController
 
         $all_params = $request->query->all();
 
+        $categories = [];
+
         if ($category_enabled)
         {
             $categories_move_options = ['' => ['name' => '']];
 
-            $categories = [];
             $cat_params  = [];
 
             if (isset($cat_count_ary['null']))
@@ -863,7 +864,7 @@ class MessagesListController extends AbstractController
         return $this->render('messages/messages_list.html.twig', [
             'data_list_raw'         => $out,
             'bulk_actions_raw'      => $blk ?? '',
-            'categories'            => $categories ?? [],
+            'categories'            => $categories,
             'row_count'             => $row_count,
             'is_self'               => $is_self,
             'filter_uid'            => isset($uid),
