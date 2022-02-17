@@ -909,9 +909,17 @@ class MessagesListController extends AbstractController
             $filter_command->user = $uid;
         }
 
+        error_log('FILT PRE');
+        error_log(json_encode($filter_command));
+
         $filter_form = $this->createForm(MessagesFilterType::class, $filter_command);
         $filter_form->handleRequest($request);
         $filter_command = $filter_form->getData();
+
+        if (isset($uid))
+        {
+            $filter_command->user = $uid;
+        }
 
         $f_params = $request->query->get('f', []);
         $filter_form_error = isset($f_params['user']) && !isset($filter_command->user);

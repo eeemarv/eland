@@ -30,4 +30,6 @@ class MessagesFilterCommand implements CommandInterface
 
     #[Type('int')]
     public $user;
+
+    public $uid;
 }

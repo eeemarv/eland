@@ -14,6 +14,7 @@ use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\VarRouteService;
 use Symfony\Component\Form\Extension\Core\Type\ButtonType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -151,6 +152,8 @@ class MessagesFilterType extends AbstractType
             'filter'    => 'accounts',
             'required'  => false,
         ]);
+
+        $builder->add('uid', HiddenType::class);
 
         $this->access_field_subscriber->add('access', ['user', 'guest'], [
             'multiple' => true,

@@ -706,7 +706,7 @@ class UsersShowController extends AbstractController
             {
                 $out .= $link_render->link_fa($vr->get('messages'),
                     $pp->ary(),
-                    ['f' => ['uid' => $id]],
+                    ['uid' => $id],
                     'Vraag en aanbod van ' . $account_str .
                     ' (' . $count_messages . ')',
                     $attr_link_messages,
