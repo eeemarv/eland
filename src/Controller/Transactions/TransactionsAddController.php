@@ -889,14 +889,12 @@ class TransactionsAddController extends AbstractController
                 $map_eland_schema_url[$eland_url] = $remote_eland_schema;
             }
 
-            $eland_systems = $db->executeQuery('select id, url
+            $res = $db->executeQuery('select id, url
                 from ' . $pp->schema() . '.letsgroups
                 where apimethod = \'elassoap\'
-                    and url in (?)',
-                    [$eland_urls],
-                    [Db::PARAM_STR_ARRAY]);
+                    and url in (?)', [$eland_urls], [Db::PARAM_STR_ARRAY]);
 
-            foreach ($eland_systems as $sys)
+            while ($sys = $res->fetchAssociative())
             {
                 $sys['eland'] = true;
                 $sys['remote_schema'] = $map_eland_schema_url[$sys['url']];
