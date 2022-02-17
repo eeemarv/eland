@@ -35,7 +35,7 @@ class MailAddrUserService
 
 		$status_sql = $active_only ? ' and u.status in (1,2)' : '';
 
-		$st = $this->db->prepare('select c.value, u.name, u.code
+		$stmt = $this->db->prepare('select c.value, u.name, u.code
 			from ' . $schema . '.contact c,
 				' . $schema . '.type_contact tc,
 				' . $schema . '.users u
@@ -45,10 +45,10 @@ class MailAddrUserService
 				and tc.abbrev = \'mail\''
 				. $status_sql);
 
-			$st->bindValue(1, $user_id);
-			$st->execute();
+		$stmt->bindValue(1, $user_id);
+		$res = $stmt->executeQuery();
 
-		while ($row = $st->fetch())
+		while ($row = $res->fetchAssociative())
 		{
 			$mail = trim($row['value']);
 

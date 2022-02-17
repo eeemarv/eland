@@ -181,9 +181,9 @@ class TransactionsMassController extends AbstractController
             where status IN (0, 1, 2, 5, 6)
             order by code');
 
-        $stmt->execute();
+        $res = $stmt->executeQuery();
 
-        while ($row = $stmt->fetch())
+        while ($row = $res->fetchAssociative())
         {
             $row['balance'] = $balance_ary[$row['id']] ?? 0;
 

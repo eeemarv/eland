@@ -295,9 +295,9 @@ class ContactsController extends AbstractController
             ($sort_asc ? 'asc' : 'desc') . '
             limit ? offset ?';
 
-        $stmt = $db->executeQuery($query, $sql_params, $sql_types);
+        $res = $db->executeQuery($query, $sql_params, $sql_types);
 
-        while ($row = $stmt->fetch())
+        while ($row = $res->fetchAssociative())
         {
             $contacts[] = $row;
         }
@@ -335,11 +335,11 @@ class ContactsController extends AbstractController
             where ' . $sql_omit_access_where . '
             group by c.access';
 
-        $stmt = $db->executeQuery($count_access_query,
+        $res = $db->executeQuery($count_access_query,
             $sql_omit_access_params,
             $sql_omit_access_types);
 
-        while($row = $stmt->fetch())
+        while($row = $res->fetchAssociative())
         {
             $count_ary[$row['access']] = $row['count'];
         }
@@ -385,9 +385,9 @@ class ContactsController extends AbstractController
         $stmt = $db->prepare('select abbrev
             from ' . $pp->schema() . '.type_contact');
 
-        $stmt->execute();
+        $res = $stmt->executeQuery();
 
-        while($row = $stmt->fetch())
+        while($row = $res->fetchAssociative())
         {
             $abbrev_ary[$row['abbrev']] = $row['abbrev'];
         }

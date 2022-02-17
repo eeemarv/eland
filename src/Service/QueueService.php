@@ -65,9 +65,9 @@ class QueueService
 				order by priority desc, id asc
 				limit 1';
 
-		$stmt = $this->db->executeQuery($query, $sql_params, $sql_types);
+		$res = $this->db->executeQuery($query, $sql_params, $sql_types);
 
-		if ($row = $stmt->fetch())
+		if ($row = $res->fetchAssociative())
 		{
 			$return = [
 				'data'		=> json_decode($row['data'], true),

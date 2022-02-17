@@ -37,7 +37,7 @@ class GeocodeSchemaTask implements SchemaTaskInterface
 
 		$log_ary = [];
 
-		$st = $this->db->prepare('select c.value, c.user_id
+		$stmt = $this->db->prepare('select c.value, c.user_id
 			from ' . $schema . '.contact c, ' .
 				$schema . '.type_contact tc, ' .
 				$schema . '.users u
@@ -46,9 +46,9 @@ class GeocodeSchemaTask implements SchemaTaskInterface
 				and c.user_id = u.id
 				and u.status in (1, 2)');
 
-		$st->execute();
+		$res = $stmt->executeQuery();
 
-		while ($row = $st->fetch())
+		while ($row = $res->fetchAssociative())
 		{
 			$data = [
 				'adr'		=> trim($row['value']),

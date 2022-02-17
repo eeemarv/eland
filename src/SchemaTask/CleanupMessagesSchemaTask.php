@@ -27,14 +27,14 @@ class CleanupMessagesSchemaTask implements SchemaTaskInterface
 		$msgs = '';
 		$testdate = gmdate('Y-m-d H:i:s', time() - ($after_days * 86400));
 
-		$st = $this->db->prepare('select id, subject
+		$stmt = $this->db->prepare('select id, subject
 			from ' . $schema . '.messages
 			where expires_at < ?');
 
-		$st->bindValue(1, $testdate);
-		$st->execute();
+		$stmt->bindValue(1, $testdate);
+		$res = $stmt->executeQuery();
 
-		while ($row = $st->fetch())
+		while ($row = $res->fetchAssociative())
 		{
 			$msgs .= $row['id'] . ': ' . $row['subject'] . ', ';
 		}
@@ -53,15 +53,15 @@ class CleanupMessagesSchemaTask implements SchemaTaskInterface
 		$users = '';
 		$user_ids = [];
 
-		$st = $this->db->prepare('select u.id, u.code, u.name
+		$stmt = $this->db->prepare('select u.id, u.code, u.name
 			from ' . $schema . '.users u,
 				' . $schema . '.messages m
 			where u.status = 0
 				and m.user_id = u.id');
 
-		$st->execute();
+		$res = $stmt->executeQuery();
 
-		while ($row = $st->fetch())
+		while ($row = $res->fetchAssociative())
 		{
 			$user_ids[] = $row['id'];
 			$users .= '(id: ' . $row['id'] . ') ' . $row['code'] . ' ' . $row['name'] . ', ';

@@ -53,13 +53,13 @@ class TransactionsPlotUserController extends AbstractController
         $intersystem_names = [];
         $transactions = [];
 
-        $st = $db->prepare('select url, apimethod,
+        $stmt = $db->prepare('select url, apimethod,
             localletscode as code, groupname as name
             from ' . $pp->schema() . '.letsgroups');
 
-        $st->execute();
+        $res = $stmt->executeQuery();
 
-        while ($row = $st->fetch())
+        while ($row = $res->fetchAssociative())
         {
             if ($row['apimethod'] === 'internal')
             {

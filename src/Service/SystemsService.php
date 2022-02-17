@@ -26,11 +26,12 @@ class SystemsService
 		protected string $env_legacy_eland_origin_pattern
 	)
 	{
-		$rs = $this->db->prepare('select schema_name
+		$stmt = $this->db->prepare('select schema_name
 			from information_schema.schemata');
-		$rs->execute();
 
-		while($row = $rs->fetch())
+		$res = $stmt->executeQuery();
+
+		while($row = $res->fetchAssociative())
 		{
 			$schema = $row['schema_name'];
 

@@ -41,13 +41,13 @@ class TypeaheadPostcodesController extends AbstractController
 
         $postcodes = [];
 
-        $st = $db->prepare('select distinct postcode
+        $stmt = $db->prepare('select distinct postcode
             from ' . $pp->schema() . '.users
             order by postcode asc');
 
-        $st->execute();
+        $res = $stmt->executeQuery();
 
-        while ($row = $st->fetch())
+        while ($row = $res->fetchAssociative())
         {
             if (empty($row['postcode']))
             {

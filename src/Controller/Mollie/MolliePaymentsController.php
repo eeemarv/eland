@@ -295,7 +295,7 @@ class MolliePaymentsController extends AbstractController
 
         $payments = [];
 
-        $stmt = $db->executeQuery('select p.*, r.description,
+        $res = $db->executeQuery('select p.*, r.description,
             u.code, u.name, u.full_name,
             u.status, u.adate,
             c.value as mail
@@ -315,7 +315,7 @@ class MolliePaymentsController extends AbstractController
             limit ? offset ?',
             $sql_params, $sql_types);
 
-        while (($row = $stmt->fetch()) !== false)
+        while (($row = $res->fetchAssociative()) !== false)
         {
             if (!isset($payments[$row['id']]))
             {

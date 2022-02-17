@@ -44,7 +44,7 @@ class InitQueueGeocodingController extends AbstractController
 
         error_log('*** Queue for Geocoding, start: ' . $start . ' ***');
 
-        $rs = $db->prepare('select c.user_id, c.value
+        $stmt = $db->prepare('select c.user_id, c.value
             from ' . $pp->schema() . '.contact c, ' .
                 $pp->schema() . '.type_contact tc
             where c.id_type_contact = tc.id
@@ -52,11 +52,11 @@ class InitQueueGeocodingController extends AbstractController
             order by c.user_id asc
             limit 50 offset ' . $start);
 
-        $rs->execute();
+        $res = $stmt->executeQuery();
 
         $more_geocoding = false;
 
-        while ($row = $rs->fetch())
+        while ($row = $res->fetchAssociative())
         {
             $geocode_queue->cond_queue([
                 'adr'		=> $row['value'],

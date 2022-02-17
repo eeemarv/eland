@@ -19,7 +19,7 @@ class CategoryRepository
 	{
 		$created_by = $su->is_master() ? null : $su->id();
 
-		$this->db->executeUpdate('insert into ' . $schema . '.categories (name, created_by, level, left_id, right_id)
+		$this->db->executeStatement('insert into ' . $schema . '.categories (name, created_by, level, left_id, right_id)
 			select ?, ?, 1, coalesce(max(right_id), 0) + 1, coalesce(max(right_id), 0) + 2
 			from ' . $schema . '.categories',
 			[$name, $created_by],
@@ -36,12 +36,12 @@ class CategoryRepository
 	public function del(int $id, string $schema):bool
 	{
 		$this->db->beginTransaction();
-		$this->db->executeUpdate('update ' . $schema . '.categories
+		$this->db->executeStatement('update ' . $schema . '.categories
 			set left_id = left_id - 2
 			where left_id > (select left_id
 				from ' . $schema . '.categories
 				where id = ?)', [$id], [\PDO::PARAM_INT]);
-		$this->db->executeUpdate('update ' . $schema . '.categories
+		$this->db->executeStatement('update ' . $schema . '.categories
 			set right_id = right_id - 2
 			where right_id > (select right_id
 				from ' . $schema . '.categories
@@ -56,7 +56,7 @@ class CategoryRepository
 	{
 		$lowercase_name = trim(strtolower($name));
 
-		return $this->db->fetchColumn('select id
+		return $this->db->fetchOne('select id
 			from ' . $schema . '.categories
 			where id <> ? and lower(name) = ?',
 			[$id, $lowercase_name],
@@ -75,9 +75,9 @@ class CategoryRepository
             group by c.id
             order by c.left_id asc');
 
-        $stmt->execute();
+        $res = $stmt->executeQuery();
 
-        while ($row = $stmt->fetch())
+        while ($row = $res->fetchAssociative())
         {
             $categories[$row['id']] = $row;
 		}
@@ -204,9 +204,9 @@ class CategoryRepository
             group by c.id
             order by c.left_id asc');
 
-        $stmt->execute();
+        $res = $stmt->executeQuery();
 
-        while ($row = $stmt->fetch())
+        while ($row = $res->fetchAssociative())
         {
             $id = $row['id'];
             $level = $row['level'];
@@ -286,7 +286,7 @@ class CategoryRepository
 
     public function get(int $id, string $schema):array
     {
-        $category = $this->db->fetchAssoc('select c.*, cp.name as parent_name
+        $category = $this->db->fetchAssociative('select c.*, cp.name as parent_name
             from ' . $schema . '.categories c
             left join ' . $schema . '.categories cp
                 on c.parent_id = cp.id
@@ -302,7 +302,7 @@ class CategoryRepository
 
     public function get_with_messages_count(int $id, string $schema):array
     {
-		$category = $this->db->fetchAssoc('select c.*,
+		$category = $this->db->fetchAssociative('select c.*,
 				cp.name as parent_name, count(m.*)
             from ' . $schema . '.categories c
             left join ' . $schema . '.categories cp

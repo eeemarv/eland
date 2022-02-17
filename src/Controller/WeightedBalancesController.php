@@ -41,12 +41,12 @@ class WeightedBalancesController extends AbstractController
 
         $balance = [];
 
-        $rs = $db->prepare('select id
+        $stmt = $db->prepare('select id
             from ' . $pp->schema() . '.users');
 
-        $rs->execute();
+        $res = $stmt->executeQuery();
 
-        while ($row = $rs->fetch())
+        while ($row = $res->fetchAssociative())
         {
             $balance[$row['id']] = $balance_ary[$row['id']] ?? 0;
         }

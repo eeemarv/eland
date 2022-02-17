@@ -87,16 +87,16 @@ class UsersMapController extends AbstractController
 
         $adr_ary = [];
 
-        $rs = $db->prepare('select
+        $stmt = $db->prepare('select
                 c.id, c.user_id as user_id, c.value, c.access
             from ' . $pp->schema() . '.contact c, ' .
                 $pp->schema() . '.type_contact tc
             where tc.id = c.id_type_contact
                 and tc.abbrev = \'adr\'');
 
-        $rs->execute();
+        $res = $stmt->executeQuery();
 
-        while ($row = $rs->fetch())
+        while ($row = $res->fetchAssociative())
         {
             $adr_ary[$row['user_id']] = $row;
         }

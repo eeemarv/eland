@@ -49,7 +49,7 @@ class IntersystemsService
 		$this->eland_intersystems[$schema] = [];
 		$this->eland_accounts_schemas[$schema] = [];
 
-		$st = $this->db->prepare('select g.url, u.id
+		$stmt = $this->db->prepare('select g.url, u.id
 			from ' . $schema . '.letsgroups g, ' . $schema . '.users u
 			where g.apimethod = \'elassoap\'
 				and u.code = g.localletscode
@@ -57,9 +57,9 @@ class IntersystemsService
 				and u.role = \'guest\'
 				and u.status in (1, 2, 7)');
 
-		$st->execute();
+		$res = $stmt->executeQuery();
 
-		while($row = $st->fetch())
+		while($row = $res->fetchAssociative())
 		{
 			$host = parse_url($row['url'], PHP_URL_HOST) ?? '';
 			[$system] = explode('.', $host);

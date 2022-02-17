@@ -213,14 +213,14 @@ class MessagesListController extends AbstractController
 
             $update_msgs_ary  = [];
 
-            $stmt = $db->executeQuery('select user_id, id, expires_at,
+            $res = $db->executeQuery('select user_id, id, expires_at,
                     category_id
                 from ' . $pp->schema() . '.messages
                 where id in (?)',
                 [array_keys($selected_messages)],
                 [Db::PARAM_INT_ARRAY]);
 
-            while ($row = $stmt->fetch())
+            while ($row = $res->fetchAssociative())
             {
                 if (!$pp->is_admin() && !$su->is_owner($row['user_id']))
                 {

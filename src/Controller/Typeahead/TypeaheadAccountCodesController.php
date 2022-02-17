@@ -41,13 +41,13 @@ class TypeaheadAccountCodesController extends AbstractController
 
         $account_codes = [];
 
-        $st = $db->prepare('select code
+        $stmt = $db->prepare('select code
             from ' . $pp->schema() . '.users
             order by code asc');
 
-        $st->execute();
+        $res = $stmt->executeQuery();
 
-        while ($row = $st->fetch())
+        while ($row = $res->fetchAssociative())
         {
             if (empty($row['code']))
             {

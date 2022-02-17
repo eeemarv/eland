@@ -15,13 +15,13 @@ class TypeContactRepository
 
 	public function getAll(string $schema):array
 	{
-		return $this->db->fetchAll('select tc.*
+		return $this->db->fetchAllAssociative('select tc.*
 			from ' . $schema . '.type_contact tc');
 	}
 
 	public function getAllWithCount(string $schema):array
 	{
-		return $this->db->fetchAll('select tc.*, count(c.*)
+		return $this->db->fetchAllAssociative('select tc.*, count(c.*)
 			from ' . $schema . '.type_contact tc, ' . $schema . '.contact c
 			where c.id_type_contact = tc.id
 			group by tc.id');
@@ -31,11 +31,11 @@ class TypeContactRepository
 	{
 		$ary = [];
 
-		$rs = $this->db->prepare('select id, abbrev from ' . $schema . '.type_contact');
+		$stmt = $this->db->prepare('select id, abbrev from ' . $schema . '.type_contact');
 
-		$rs->execute();
+		$res = $stmt->executeQuery();
 
-		while ($row = $rs->fetch())
+		while ($row = $res->fetchAssociative())
 		{
 			$ary[$row['id']] = $row['abbrev'];
 		}
@@ -45,7 +45,7 @@ class TypeContactRepository
 
 	public function get(int $id, string $schema):array
 	{
-		$data = $this->db->fetchAssoc('select *
+		$data = $this->db->fetchAssociative('select *
 			from ' . $schema . '.type_contact
 			where id = ?', [$id]);
 

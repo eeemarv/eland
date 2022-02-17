@@ -136,7 +136,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 	// fetch all active users
 
-		$rs = $this->db->prepare('select u.id,
+		$stmt = $this->db->prepare('select u.id,
 				u.name, u.status,
 				u.code, u.postcode,
 				u.periodic_overview_en
@@ -144,16 +144,16 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 			where u.status in (1, 2)
 				and u.role in (\'user\', \'admin\')');
 
-		$rs->execute();
+		$res = $stmt->executeQuery();
 
-		while ($row = $rs->fetch())
+		while ($row = $res->fetchAssociative())
 		{
 			$users[$row['id']] = $row;
 		}
 
 	// fetch mail addresses & periodic_overview_en
 
-		$st = $this->db->prepare('select u.id, c.value, c.access
+		$stmt = $this->db->prepare('select u.id, c.value, c.access
 			from ' . $schema . '.users u, ' .
 				$schema . '.contact c, ' .
 				$schema . '.type_contact tc
@@ -162,9 +162,9 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				and c.id_type_contact = tc.id
 				and tc.abbrev = \'mail\'');
 
-		$st->execute();
+		$res = $stmt->executeQuery();
 
-		while ($row = $st->fetch())
+		while ($row = $res->fetchAssociative())
 		{
 			$user_id = $row['id'];
 			$mail = $row['value'];
@@ -185,7 +185,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 			$addr = $addr_access = [];
 
-			$rs = $this->db->prepare('select u.id, c.value, c.access
+			$stmt = $this->db->prepare('select u.id, c.value, c.access
 				from ' . $schema . '.users u, ' .
 					$schema . '.contact c, ' .
 					$schema . '.type_contact tc
@@ -194,9 +194,9 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 					and c.id_type_contact = tc.id
 					and tc.abbrev = \'adr\'');
 
-			$rs->execute();
+			$res = $stmt->executeQuery();
 
-			while ($row = $rs->fetch())
+			while ($row = $res->fetchAssociative())
 			{
 				$addr[$row['id']] = $row['value'];
 				$addr_access[$row['id']] = $row['access'];
@@ -205,7 +205,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 		// fetch messages
 
-			$rs = $this->db->prepare('select m.id,
+			$stmt = $this->db->prepare('select m.id,
 					m.subject, m.content,
 					m.user_id,
 					m.offer_want,
@@ -219,11 +219,11 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 						or m.expires_at is null) or not ?)
 				order by m.created_at desc');
 
-			$rs->bindValue(1, $treshold_time, Types::DATETIME_IMMUTABLE);
-			$rs->bindValue(2, $expires_at_enabled, \PDO::PARAM_BOOL);
-			$rs->execute();
+			$stmt->bindValue(1, $treshold_time, Types::DATETIME_IMMUTABLE);
+			$stmt->bindValue(2, $expires_at_enabled, \PDO::PARAM_BOOL);
+			$res = $stmt->executeQuery();
 
-			while ($row = $rs->fetch())
+			while ($row = $res->fetchAssociative())
 			{
 				$uid = $row['user_id'];
 				$adr = isset($addr_access[$uid]) && in_array($addr_access[$uid], ['user', 'guest']) ? $addr[$uid] : '';
@@ -265,7 +265,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 				$expires_at_enabled_intersystem = $this->config_service->get_bool('messages.fields.expires_at.enabled', $sch);
 
-				$rs = $this->db->prepare('select m.id, m.subject,
+				$stmt = $this->db->prepare('select m.id, m.subject,
 						m.content,
 						m.offer_want,
 						m.user_id as user_id,
@@ -280,11 +280,11 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 							or m.expires_at is null) or not ?)
 					order by m.created_at desc');
 
-				$rs->bindValue(1, $treshold_time, Types::DATETIME_IMMUTABLE);
-				$rs->bindValue(2, $expires_at_enabled_intersystem, \PDO::PARAM_BOOL);
-				$rs->execute();
+				$stmt->bindValue(1, $treshold_time, Types::DATETIME_IMMUTABLE);
+				$stmt->bindValue(2, $expires_at_enabled_intersystem, \PDO::PARAM_BOOL);
+				$res = $stmt->executeQuery();
 
-				while ($row = $rs->fetch())
+				while ($row = $res->fetchAssociative())
 				{
 					if (!$intersystem_postcode_enabled)
 					{
@@ -321,16 +321,16 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 			$query .= $this->config_service->get_bool('news.sort.asc', $schema) ? 'n.event_at asc, ' : '';
 			$query .= 'n.created_at desc';
 
-			$rs = $this->db->prepare($query);
+			$stmt = $this->db->prepare($query);
 
 			if ($block_options['news'] == 'recent')
 			{
-				$rs->bindValue(1, $treshold_time, Types::DATETIME_IMMUTABLE);
+				$stmt->bindValue(1, $treshold_time, Types::DATETIME_IMMUTABLE);
 			}
 
-			$rs->execute();
+			$res = $stmt->executeQuery();
 
-			while ($row = $rs->fetch())
+			while ($row = $res->fetchAssociative())
 			{
 				$row['content_plain_text'] = $this->html_to_markdown_converter->convert($row['content']);
 				$news[] = $row;
@@ -342,17 +342,17 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 		if (isset($block_options['new_users']))
 		{
 
-			$rs = $this->db->prepare('select u.id
+			$stmt = $this->db->prepare('select u.id
 				from ' . $schema . '.users u
 				where u.status = 1
 					and u.adate > ?');
 
 			$time = ($block_options['new_users'] === 'recent') ? $treshold_time : $new_user_treshold;
 
-			$rs->bindValue(1, $time, Types::DATETIME_IMMUTABLE);
-			$rs->execute();
+			$stmt->bindValue(1, $time, Types::DATETIME_IMMUTABLE);
+			$res = $stmt->executeQuery();
 
-			while ($row = $rs->fetch())
+			while ($row = $res->fetchAssociative())
 			{
 				$new_users[] = $row['id'];
 			}
@@ -371,16 +371,16 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				$query .= ' and last_edit_at > ?';
 			}
 
-			$rs = $this->db->prepare($query);
+			$stmt = $this->db->prepare($query);
 
 			if ($block_options['leaving_users'] === 'recent')
 			{
-				$rs->bindValue(1, $treshold_time, Types::DATETIME_IMMUTABLE);
+				$stmt->bindValue(1, $treshold_time, Types::DATETIME_IMMUTABLE);
 			}
 
-			$rs->execute();
+			$res = $stmt->executeQuery();
 
-			while ($row = $rs->fetch())
+			while ($row = $res->fetchAssociative())
 			{
 				$leaving_users[] = $row['id'];
 			}
@@ -390,14 +390,14 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 		if (isset($block_options['transactions']))
 		{
-			$rs = $this->db->prepare('select t.*
+			$stmt = $this->db->prepare('select t.*
 				from ' . $schema . '.transactions t
 				where t.created_at > ?');
 
-			$rs->bindValue(1, $treshold_time, Types::DATETIME_IMMUTABLE);
-			$rs->execute();
+			$stmt->bindValue(1, $treshold_time, Types::DATETIME_IMMUTABLE);
+			$res = $stmt->executeQuery();
 
-			while ($row = $rs->fetch())
+			while ($row = $res->fetchAssociative())
 			{
 				$transactions[] = $row;
 			}
@@ -411,26 +411,34 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 		{
 			$all_visible_forum_topics = [];
 
-			$stmt = $this->db->executeQuery('select *
+			$stmt = $this->db->prepare('select *
 				from ' . $schema . '.forum_topics
 				where access in (\'user\', \'guest\', \'anonymous\')
 				order by last_edit_at desc');
 
-			$all_visible_forum_topics = $stmt->fetchAll();
+			$res = $stmt->executeQuery();
+
+			while ($row = $res->fetchAssociative())
+			{
+				$all_visible_forum_topics[] = $row;
+			}
 
 			$new_replies = [];
 
-			$rows = $this->db->executeQuery('select *
+			$stmt = $this->db->prepare('select *
 				from ' . $schema . '.forum_posts
-				where created_at > ?',
-				[$treshold_time], [Types::DATETIME_IMMUTABLE]);
+				where created_at > ?');
 
-			foreach($rows as $row)
+			$stmt->bindValue(1, $treshold_time, Types::DATETIME_IMMUTABLE);
+
+			$res = $stmt->executeQuery();
+
+			while ($row = $res->fetchAssociative())
 			{
 				$new_replies[$row['topic_id']] = true;
 			}
 
-			foreach($all_visible_forum_topics as $forum_topic)
+			foreach ($all_visible_forum_topics as $forum_topic)
 			{
 				$created_at = \DateTimeImmutable::createFromFormat('U', (string) strtotime($forum_topic['created_at'] . ' UTC'));
 
@@ -446,16 +454,25 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 	// docs
 
+		$docs = [];
+
 		if (isset($block_options['docs']))
 		{
-			$stmt = $this->db->executeQuery('select
+			$stmt = $this->db->prepare('select
 					coalesce(name, original_filename) as name,
 					filename, created_at
 				from ' . $schema . '.docs
 				where access in (\'user\', \'guest\')
-					and created_at > ?', [$treshold_time], [Types::DATETIME_IMMUTABLE]);
+					and created_at > ?');
 
-			$docs = $stmt->fetchAll();
+			$stmt->bindValue(1, $treshold_time, Types::DATETIME_IMMUTABLE);
+
+			$res = $stmt->executeQuery();
+
+			while ($row = $res->fetchAssociative())
+			{
+				$docs[] = $row;
+			}
 		}
 
 		//
@@ -498,9 +515,10 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 					order by m.created_at desc');
 
 				$stmt->bindValue(1, $user_id, \PDO::PARAM_INT);
-				$stmt->execute();
 
-				while ($row = $stmt->fetch())
+				$res = $stmt->executeQuery();
+
+				while ($row = $res->fetchAssociative())
 				{
 					$row['is_expired'] = $expires_at_enabled && isset($row['expires_at']) && ($row['expires_at_unix'] < $now_unix);
 					$vars['messages_self'][] = $row;
@@ -522,9 +540,9 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 						and is_paid = \'f\'::bool');
 
 				$stmt->bindValue(1, $user_id, \PDO::PARAM_INT);
-				$stmt->execute();
+				$res = $stmt->executeQuery();
 
-				while ($row = $stmt->fetch())
+				while ($row = $res->fetchAssociative())
 				{
 					$vars['mollie'][] = $row;
 				}

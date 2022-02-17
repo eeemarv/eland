@@ -41,13 +41,13 @@ class TypeaheadUsernamesController extends AbstractController
 
         $usernames = [];
 
-        $st = $db->prepare('select name
+        $stmt = $db->prepare('select name
             from ' . $pp->schema() . '.users
             order by name asc');
 
-        $st->execute();
+        $res = $stmt->executeQuery();
 
-        while ($row = $st->fetch())
+        while ($row = $res->fetchAssociative())
         {
             if (empty($row['name']))
             {

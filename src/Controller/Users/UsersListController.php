@@ -852,9 +852,9 @@ class UsersListController extends AbstractController
             where ' . $sql_where . '
             order by u.code asc';
 
-        $stmt = $db->executeQuery($query, $sql_params, $sql_types);
+        $res = $stmt = $db->executeQuery($query, $sql_params, $sql_types);
 
-        while($row = $stmt->fetch())
+        while($row = $res->fetchAssociative())
         {
             $users[$row['id']] = $row;
         }
@@ -911,11 +911,11 @@ class UsersListController extends AbstractController
 
         if (isset($show_columns['u']['last_login']))
         {
-            $stmt = $db->executeQuery('select user_id, max(created_at) as last_login
+            $res = $db->executeQuery('select user_id, max(created_at) as last_login
                 from ' . $pp->schema() . '.login
                 group by user_id');
 
-            while ($row = $stmt->fetch())
+            while ($row = $res->fetchAssociative())
             {
                 if (!isset($users[$row['user_id']]))
                 {
@@ -938,11 +938,11 @@ class UsersListController extends AbstractController
                     'and c.user_id = u.id
                     and ' . $sql_where;
 
-            $stmt = $db->executeQuery($contacts_query, $sql_params, $sql_types);
+            $res = $db->executeQuery($contacts_query, $sql_params, $sql_types);
 
             $contacts = [];
 
-            while ($row = $stmt->fetch())
+            while ($row = $res->fetchAssociative())
             {
                 $contacts[$row['user_id']][$row['abbrev']][] = [
                     'value'         => $row['value'],
@@ -980,7 +980,7 @@ class UsersListController extends AbstractController
         {
             $mollie_ary = [];
 
-            $stmt = $db->executeQuery('select distinct on (u.id)
+            $res = $db->executeQuery('select distinct on (u.id)
                 u.id, p.is_paid, p.is_canceled,
                 p.created_at, p.amount, r.description
                 from ' . $pp->schema() . '.users u
@@ -992,7 +992,7 @@ class UsersListController extends AbstractController
                 order by u.id asc, p.created_at desc',
                 $sql_params, $sql_types);
 
-            while (($row = $stmt->fetch()) !== false)
+            while (($row = $res->fetchAssociative()) !== false)
             {
                 $mollie_ary[$row['id']] = $row;
             }
@@ -1004,7 +1004,7 @@ class UsersListController extends AbstractController
 
             if (isset($show_columns['m']['offers']))
             {
-                $stmt = $db->executeQuery('select count(m.id), m.user_id
+                $res = $db->executeQuery('select count(m.id), m.user_id
                     from ' . $pp->schema() . '.messages m, ' .
                         $pp->schema() . '.users u
                     where m.offer_want = \'offer\'
@@ -1012,7 +1012,7 @@ class UsersListController extends AbstractController
                         and ' . $sql_where . '
                     group by m.user_id', $sql_params, $sql_types);
 
-                while ($row = $stmt->fetch())
+                while ($row = $res->fetchAssociative())
                 {
                     $msgs_count[$row['user_id']]['offers'] = $row['count'];
                 }
@@ -1020,7 +1020,7 @@ class UsersListController extends AbstractController
 
             if (isset($show_columns['m']['wants']))
             {
-                $stmt = $db->executeQuery('select count(m.id), m.user_id
+                $res = $db->executeQuery('select count(m.id), m.user_id
                     from ' . $pp->schema() . '.messages m, ' .
                         $pp->schema() . '.users u
                     where m.offer_want = \'want\'
@@ -1028,7 +1028,7 @@ class UsersListController extends AbstractController
                         and ' . $sql_where . '
                     group by m.user_id', $sql_params, $sql_types);
 
-                while ($row = $stmt->fetch())
+                while ($row = $res->fetchAssociative())
                 {
                     $msgs_count[$row['user_id']]['wants'] = $row['count'];
                 }
@@ -1036,14 +1036,14 @@ class UsersListController extends AbstractController
 
             if (isset($show_columns['m']['total']))
             {
-                $stmt = $db->executeQuery('select count(m.id), m.user_id
+                $res = $db->executeQuery('select count(m.id), m.user_id
                     from ' . $pp->schema() . '.messages m, ' .
                         $pp->schema() . '.users u
                     where m.user_id = u.id
                         and ' . $sql_where . '
                     group by m.user_id', $sql_params, $sql_types);
 
-                while ($row = $stmt->fetch())
+                while ($row = $res->fetchAssociative())
                 {
                     $msgs_count[$row['user_id']]['total'] = $row['count'];
                 }
@@ -1103,9 +1103,9 @@ class UsersListController extends AbstractController
                 where ' . $sql_a_in_where . '
                 group by t.id_to';
 
-            $stmt = $db->executeQuery($query_in, $sql_a_in_params, $sql_a_in_types);
+            $res = $db->executeQuery($query_in, $sql_a_in_params, $sql_a_in_types);
 
-            while ($row = $stmt->fetch())
+            while ($row = $res->fetchAssociative())
             {
                 $activity[$row['id_to']] ??= [
                     'trans'	    => ['total' => 0],
@@ -1133,9 +1133,9 @@ class UsersListController extends AbstractController
                 where ' . $sql_a_out_where . '
                 group by t.id_from';
 
-            $stmt = $db->executeQuery($query_out, $sql_a_out_params, $sql_a_out_types);
+            $res = $db->executeQuery($query_out, $sql_a_out_params, $sql_a_out_types);
 
-            while ($row = $stmt->fetch())
+            while ($row = $res->fetchAssociative())
             {
                 $activity[$row['id_from']] ??= [
                     'trans'	    => ['total' => 0],

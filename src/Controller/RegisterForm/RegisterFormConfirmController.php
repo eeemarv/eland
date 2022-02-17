@@ -132,12 +132,12 @@ class RegisterFormConfirmController extends AbstractController
 
             $tc = [];
 
-            $rs = $db->prepare('select abbrev, id
+            $stmt = $db->prepare('select abbrev, id
                 from ' . $pp->schema() . '.type_contact');
 
-            $rs->execute();
+            $res = $stmt->executeQuery();
 
-            while($row = $rs->fetch())
+            while($row = $res->fetchAssociative())
             {
                 $tc[$row['abbrev']] = $row['id'];
             }

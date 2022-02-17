@@ -89,11 +89,11 @@ class TransactionsSumController extends AbstractController
 
         $query .= ' group by t.id_' . $res;
 
-        $stmt = $db->executeQuery($query, $sql_params, $sql_types);
+        $res = $db->executeQuery($query, $sql_params, $sql_types);
 
         $ary = [];
 
-        while ($row = $stmt->fetch())
+        while ($row = $res->fetchAssociative())
         {
             $ary[$row['uid']] = $row['sum'];
         }

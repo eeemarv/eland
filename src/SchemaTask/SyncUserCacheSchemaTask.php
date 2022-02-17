@@ -23,12 +23,12 @@ class SyncUserCacheSchemaTask implements SchemaTaskInterface
 	{
 		$user_ids = [];
 
-		$rs = $this->db->prepare('select id
+		$stmt = $this->db->prepare('select id
 			from ' . $schema . '.users');
 
-		$rs->execute();
+		$res = $stmt->executeQuery();
 
-		while ($row = $rs->fetch())
+		while ($row = $res->fetchAssociative())
 		{
 			$user_ids[] = $row['id'];
 		}

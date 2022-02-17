@@ -553,16 +553,16 @@ class MessagesEditController extends AbstractController
                 ],
             ];
 
-            $rs = $db->prepare('select c.*, count(m.*)
+            $stmt = $db->prepare('select c.*, count(m.*)
                 from ' . $pp->schema() . '.categories c
                 left join ' . $pp->schema() . '.messages m
                     on m.category_id = c.id
                 group by c.id
                 order by c.left_id asc');
 
-            $rs->execute();
+            $res = $stmt->executeQuery();
 
-            while ($row = $rs->fetch())
+            while ($row = $res->fetchAssociative())
             {
                 $cat_id = $row['id'];
                 $parent_id = $row['parent_id'];

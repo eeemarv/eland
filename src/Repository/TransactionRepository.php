@@ -15,14 +15,14 @@ class TransactionRepository
 
 	public function get_count_for_user_id(int $user_id, string $schema):int
 	{
-        return $this->db->fetchColumn('select count(*)
+        return $this->db->fetchOne('select count(*)
             from ' . $schema . '.transactions
             where id_to = ? or id_from = ?', [$user_id, $user_id]);
 	}
 
 	public function get(int $id, string $schema):array
 	{
-		$data = $this->db->fetchAssoc('select *
+		$data = $this->db->fetchAssociative('select *
 			from ' . $schema . '.transactions
 			where id = ?', [$id]);
 
@@ -37,7 +37,7 @@ class TransactionRepository
 
 	public function getNext(int $id, string $schema)
 	{
-		return $this->db->fetchColumn('select id
+		return $this->db->fetchOne('select id
 			from ' . $schema . '.transactions
 			where id > ?
 			order by id asc
@@ -46,7 +46,7 @@ class TransactionRepository
 
 	public function getPrev(int $id, string $schema)
 	{
-		return $this->db->fetchColumn('select id
+		return $this->db->fetchOne('select id
 			from ' . $schema . '.transactions
 			where id < ?
 			order by id desc

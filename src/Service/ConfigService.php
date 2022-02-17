@@ -66,9 +66,13 @@ class ConfigService
 	public function build_cache_from_db(string $schema):array
 	{
 		$this->load_ary = [];
-		$stmt = $this->db->executeQuery('select id, data
+
+		$stmt = $this->db->prepare('select id, data
 			from ' . $schema . '.config');
-		while($row = $stmt->fetch())
+
+		$res = $stmt->executeQuery();
+
+		while ($row = $res->fetchAssociative())
 		{
 			$this->flatten_load_ary($row['id'], json_decode($row['data'], true));
 		}

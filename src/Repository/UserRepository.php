@@ -255,11 +255,12 @@ class UserRepository
         $user_id = (int) $this->db->lastInsertId($schema . '.users_id_seq');
 
         $tc = [];
-		$rs = $this->db->prepare('select abbrev, id
+		$stmt = $this->db->prepare('select abbrev, id
             from ' . $schema . '.type_contact');
-		$rs->execute();
 
-		while($row = $rs->fetch())
+		$res = $stmt->executeQuery();
+
+		while($row = $res->fetchAssociative())
 		{
 			$tc[$row['abbrev']] = $row['id'];
 		}

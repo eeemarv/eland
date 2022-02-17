@@ -200,13 +200,13 @@ class TransactionsController extends AbstractController
             {
                 $update_transactions_ary  = [];
 
-                $stmt = $db->executeQuery('select *
+                $res = $db->executeQuery('select *
                     from ' . $pp->schema() . '.transactions
                     where id in (?)',
                     [array_keys($selected_transactions)],
                     [Db::PARAM_INT_ARRAY]);
 
-                while ($row = $stmt->fetch())
+                while ($row = $res->fetchAssociative())
                 {
                     if ($row['real_from'] || $row['real_to'])
                     {
@@ -394,14 +394,14 @@ class TransactionsController extends AbstractController
         $query .= $sort_asc ? 'asc ' : 'desc ';
         $query .= 'limit ? offset ?';
 
-        $stmt = $db->executeQuery($query,
+        $res = $db->executeQuery($query,
             array_merge(...array_column($sql, 'params')),
             array_merge(...array_column($sql, 'types')));
 
         $transactions = [];
         $inter_fetch = [];
 
-        while ($row = $stmt->fetch())
+        while ($row = $res->fetchAssociative())
         {
             if ($row['real_from'] || $row['real_to'])
             {
@@ -468,11 +468,11 @@ class TransactionsController extends AbstractController
                 where ' . $sql_omit_service_stuff_where . '
                 group by t.service_stuff';
 
-            $stmt = $db->executeQuery($count_service_stuff_query,
+            $res = $db->executeQuery($count_service_stuff_query,
                 array_merge(...array_column($sql_omit_service_stuff, 'params')),
                 array_merge(...array_column($sql_omit_service_stuff, 'types')));
 
-            while($row = $stmt->fetch())
+            while($row = $res->fetchAssociative())
             {
                 $count_ary[$row['service_stuff'] ?? 'null_service_stuff'] = $row['count'];
             }

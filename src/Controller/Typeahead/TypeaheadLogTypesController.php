@@ -41,16 +41,16 @@ class TypeaheadLogTypesController extends AbstractController
 
         $log_types = [];
 
-        $st = $db->prepare('select distinct type
+        $stmt = $db->prepare('select distinct type
             from xdb.logs
             where schema = ?
             order by type asc');
 
-        $st->bindValue(1, $pp->schema());
+        $stmt->bindValue(1, $pp->schema());
 
-        $st->execute();
+        $res = $stmt->executeQuery();
 
-        while ($row = $st->fetch())
+        while ($row = $res->fetchAssociative())
         {
             $log_types[] = $row['type'];
         }

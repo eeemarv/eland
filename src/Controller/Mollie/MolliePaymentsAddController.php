@@ -130,7 +130,7 @@ class MolliePaymentsAddController extends AbstractController
         $sql_params = array_merge(...array_column($sql, 'params'));
         $sql_types = array_merge(...array_column($sql, 'types'));
 
-        $stmt = $db->executeQuery('select u.id,
+        $res = $db->executeQuery('select u.id,
                 u.name, u.full_name, u.code,
                 u.role, u.status, u.adate,
                 p1.is_paid, p1.is_canceled,
@@ -148,7 +148,7 @@ class MolliePaymentsAddController extends AbstractController
             where ' . $sql_where . '
             order by u.code asc', $sql_params, $sql_types);
 
-        while(($row = $stmt->fetch()) !== false)
+        while(($row = $res->fetchAssociative()) !== false)
         {
             $users[$row['id']] = $row;
         }

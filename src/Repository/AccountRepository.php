@@ -41,13 +41,13 @@ class AccountRepository
     {
         $min_limit_ary = [];
 
-        $rs = $this->db->prepare('select distinct on(account_id) min_limit, account_id
+        $stmt = $this->db->prepare('select distinct on(account_id) min_limit, account_id
             from ' . $schema . '.min_limit
             order by account_id, id desc');
 
-        $rs->execute();
+        $res = $stmt->executeQuery();
 
-        while ($row = $rs->fetchAssociative())
+        while ($row = $res->fetchAssociative())
         {
             $min_limit_ary[$row['account_id']] = $row['min_limit'];
         }
@@ -81,13 +81,13 @@ class AccountRepository
     {
         $max_limit_ary = [];
 
-        $rs = $this->db->prepare('select distinct on(account_id) max_limit, account_id
+        $stmt = $this->db->prepare('select distinct on(account_id) max_limit, account_id
             from ' . $schema . '.max_limit
             order by account_id, id desc');
 
-        $rs->execute();
+        $res = $stmt->executeQuery();
 
-        while ($row = $rs->fetchAssociative())
+        while ($row = $res->fetchAssociative())
         {
             $max_limit_ary[$row['account_id']] = $row['max_limit'];
         }
@@ -134,13 +134,13 @@ class AccountRepository
     {
         $balance_ary = [];
 
-        $rs = $this->db->prepare('select distinct on(account_id) balance, account_id
+        $stmt = $this->db->prepare('select distinct on(account_id) balance, account_id
             from ' . $schema . '.balance
             order by account_id, id desc');
 
-        $rs->execute();
+        $res = $stmt->executeQuery();
 
-        while ($row = $rs->fetch())
+        while ($row = $res->fetchAssociative())
         {
             $balance_ary[$row['account_id']] = $row['balance'];
         }
@@ -152,16 +152,16 @@ class AccountRepository
     {
         $balance_ary = [];
 
-        $rs = $this->db->prepare('select distinct on(account_id) balance, account_id
+        $stmt = $this->db->prepare('select distinct on(account_id) balance, account_id
             from ' . $schema . '.balance
             where created_at <= ?
             order by account_id, id desc');
 
-        $rs->bindValue(1, $datetime, Types::DATETIME_IMMUTABLE);
+        $stmt->bindValue(1, $datetime, Types::DATETIME_IMMUTABLE);
 
-        $rs->execute();
+        $res = $stmt->executeQuery();
 
-        while ($row = $rs->fetch())
+        while ($row = $res->fetchAssociative())
         {
             $balance_ary[$row['account_id']] = $row['balance'];
         }

@@ -228,7 +228,7 @@ class UsersEditController extends AbstractController
 
                 $mailadr = false;
 
-                $st = $db->prepare($mail_unique_check_sql);
+                $stmt = $db->prepare($mail_unique_check_sql);
 
                 foreach ($contact as $key => $c)
                 {
@@ -252,16 +252,16 @@ class UsersEditController extends AbstractController
                                 $errors[] =  $mailadr . ' is geen geldig email adres.';
                             }
 
-                            $st->bindValue(1, $mailadr);
+                            $stmt->bindValue(1, $mailadr);
 
                             if ($is_edit)
                             {
-                                $st->bindValue(2, $id);
+                                $stmt->bindValue(2, $id);
                             }
 
-                            $st->execute();
+                            $res = $stmt->executeQuery();
 
-                            $row = $st->fetch();
+                            $row = $res->fetchAssociative();
 
                             $warning = 'Omdat deze gebruikers niet meer een uniek E-mail adres hebben zullen zij ';
                             $warning .= 'niet meer zelf hun paswoord kunnnen resetten of kunnen inloggen met ';
@@ -585,29 +585,30 @@ class UsersEditController extends AbstractController
                 {
                     $contact_types = [];
 
-                    $rs = $db->prepare('select abbrev, id
+                    $stmt = $db->prepare('select abbrev, id
                         from ' . $pp->schema() . '.type_contact');
 
-                    $rs->execute();
+                    $res = $stmt->executeQuery();
 
-                    while ($row = $rs->fetch())
+                    while ($row = $res->fetchAssociative())
                     {
                         $contact_types[$row['abbrev']] = $row['id'];
                     }
 
                     $stored_contacts = [];
 
-                    $rs = $db->prepare('select c.id,
+                    $stmt = $db->prepare('select c.id,
                             tc.abbrev, c.value, c.access
                         from ' . $pp->schema() . '.type_contact tc, ' .
                             $pp->schema() . '.contact c
                         WHERE tc.id = c.id_type_contact
                             AND c.user_id = ?');
-                    $rs->bindValue(1, $id);
 
-                    $rs->execute();
+                    $stmt->bindValue(1, $id);
 
-                    while ($row = $rs->fetch())
+                    $res = $stmt->executeQuery();
+
+                    while ($row = $res->fetchAssociative())
                     {
                         $stored_contacts[$row['id']] = $row;
                     }
@@ -812,16 +813,17 @@ class UsersEditController extends AbstractController
                     $contact_keys[$c['abbrev']] = $key;
                 }
 
-                $st = $db->prepare('select tc.abbrev, c.value, tc.name, c.access, c.id
+                $stmt = $db->prepare('select tc.abbrev, c.value, tc.name, c.access, c.id
                     from ' . $pp->schema() . '.type_contact tc, ' .
                         $pp->schema() . '.contact c
                     where tc.id = c.id_type_contact
                         and c.user_id = ?');
 
-                $st->bindValue(1, $id);
-                $st->execute();
+                $stmt->bindValue(1, $id);
 
-                while ($row = $st->fetch())
+                $res = $stmt->executeQuery();
+
+                while ($row = $res->fetchAssociative())
                 {
                     if (isset($contact_keys[$row['abbrev']]))
                     {
