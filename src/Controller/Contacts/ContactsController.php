@@ -355,22 +355,34 @@ class ContactsController extends AbstractController
         ];
 
         $tableheader_ary = [
-            'tc.abbrev' 	=> array_merge($asc_preset_ary, [
-                'lbl' 		=> 'Type']),
-            'c.value'		=> array_merge($asc_preset_ary, [
-                'lbl' 		=> 'Waarde']),
-            'u.code'	    => array_merge($asc_preset_ary, [
-                'lbl' 		=> 'Gebruiker']),
-            'c.comments'	=> array_merge($asc_preset_ary, [
+            'tc.abbrev' 	=> [
+                ...$asc_preset_ary,
+                'lbl'   => 'Type',
+            ],
+            'c.value'		=> [
+                ...$asc_preset_ary,
+                'lbl' 	=> 'Waarde',
+            ],
+            'u.code'	    => [
+                ...$asc_preset_ary,
+                'lbl' 	=> 'Gebruiker',
+            ],
+            'c.comments'	=> [
+                ...$asc_preset_ary,
                 'lbl' 		=> 'Commentaar',
-                'data_hide'	=> 'phone,tablet']),
-            'c.access' => array_merge($asc_preset_ary, [
+                'data_hide'	=> 'phone,tablet',
+            ],
+            'c.access' => [
+                ...$asc_preset_ary,
                 'lbl' 		=> 'Zichtbaar',
-                'data_hide'	=> 'phone, tablet']),
-            'del' 			=> array_merge($asc_preset_ary, [
+                'data_hide'	=> 'phone, tablet',
+            ],
+            'del' 			=> [
+                ...$asc_preset_ary,
                 'lbl' 		=> 'Verwijderen',
                 'data_hide'	=> 'phone, tablet',
-                'no_sort'	=> true]),
+                'no_sort'	=> true,
+            ],
         ];
 
         $tableheader_ary[$sort_orderby]['asc']

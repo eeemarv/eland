@@ -442,11 +442,11 @@ class TransactionsMassController extends AbstractController
 
                     $mail_queue->queue([
                         'schema'	=> $pp->schema(),
-                        'to' 		=> array_merge(
-                            $mail_addr_system_service->get_admin($pp->schema()),
-                            $mail_addr_user_service->get_active($su->id(), $pp->schema()),
-                            $mail_addr_user_service->get_active($one_uid, $pp->schema())
-                        ),
+                        'to' 		=> [
+                            ...$mail_addr_system_service->get_admin($pp->schema()),
+                            ...$mail_addr_user_service->get_active($su->id(), $pp->schema()),
+                            ...$mail_addr_user_service->get_active($one_uid, $pp->schema())
+                        ],
                         'template'	=> $mail_template,
                         'vars'		=> $vars,
                     ], 8000);

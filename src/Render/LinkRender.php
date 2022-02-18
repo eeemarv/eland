@@ -28,7 +28,10 @@ class LinkRender
 	):string
 	{
         return $this->url_generator->generate(
-			$route, array_merge($params, $params_context),
+			$route, [
+				...$params,
+				...$params_context,
+			],
 			UrlGeneratorInterface::ABSOLUTE_URL);
 	}
 
@@ -72,7 +75,10 @@ class LinkRender
 	):string
 	{
         return $this->url_generator->generate(
-			$route, array_merge($params, $params_context),
+			$route, [
+				...$params,
+				...$params_context,
+			],
 			UrlGeneratorInterface::ABSOLUTE_PATH);
 	}
 

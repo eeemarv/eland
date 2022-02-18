@@ -55,8 +55,10 @@ class NewsAddController extends AbstractController
             $id = $news_repository->insert($command, $su->id(), $pp->schema());
 
             $alert_service->success('Nieuwsbericht opgeslagen.');
-            return $this->redirectToRoute('news_show', array_merge($pp->ary(),
-                ['id' => $id]));
+            return $this->redirectToRoute('news_show', [
+                ...$pp->ary(),
+                'id' => $id,
+            ]);
         }
 
         return $this->render('news/news_add.html.twig', [

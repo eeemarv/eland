@@ -63,8 +63,11 @@ class ForumTopicController extends AbstractController
             $forum_repository->insert_post($command, $su->id(), $id, $pp->schema());
 
             $alert_service->success('Reactie toegevoegd.');
-            return $this->redirectToRoute('forum_topic', array_merge($pp->ary(),
-                ['id' => $id]));
+
+            return $this->redirectToRoute('forum_topic', [
+                ...$pp->ary(),
+                'id' => $id,
+            ]);
         }
 
         $posts = $forum_repository->get_topic_posts($id, $pp->schema());

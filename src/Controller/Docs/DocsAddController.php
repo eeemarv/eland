@@ -129,7 +129,10 @@ class DocsAddController extends AbstractController
 
             if (isset($doc['map_id']))
             {
-                return $this->redirectToRoute('docs_map', array_merge($pp->ary(), ['id' => $map_id]));
+                return $this->redirectToRoute('docs_map', [
+                    ...$pp->ary(),
+                    'id' => $map_id,
+                ]);
             }
 
             return $this->redirectToRoute('docs', $pp->ary());

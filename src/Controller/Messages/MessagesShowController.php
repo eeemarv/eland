@@ -186,8 +186,10 @@ class MessagesShowController extends AbstractController
 
                 $alert_service->success('Mail verzonden.');
 
-                return $this->redirectToRoute('messages_show', array_merge($pp->ary(),
-                    ['id' => $id]));
+                return $this->redirectToRoute('messages_show', [
+                    ...$pp->ary(),
+                    'id' => $id,
+                ]);
             }
 
             $alert_service->error($errors);

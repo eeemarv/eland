@@ -140,10 +140,11 @@ class TypeaheadType extends AbstractType
 
         parent::buildView($view, $form, $options);
 
-        $view->vars['attr'] = array_merge($options['attr'], [
+        $view->vars['attr'] = [
+            ...$options['attr'],
             'data-typeahead'    => $data_typeahead,
             'autocomplete'      => 'off',
-        ]);
+        ];
 
         if (isset($process_ary['render']))
         {

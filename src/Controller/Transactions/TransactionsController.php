@@ -484,39 +484,45 @@ class TransactionsController extends AbstractController
         ];
 
         $tableheader_ary = [
-            'description' => array_merge($asc_preset_ary, [
+            'description' => [
+                ...$asc_preset_ary,
                 'lbl' => 'Omschrijving',
-            ]),
-            'amount' => array_merge($asc_preset_ary, [
+            ],
+            'amount' => [
+                ...$asc_preset_ary,
                 'lbl' => $config_service->get_str('transactions.currency.name', $pp->schema()),
-            ]),
-            'created_at'	=> array_merge($asc_preset_ary, [
+            ],
+            'created_at'	=> [
+                ...$asc_preset_ary,
                 'lbl' 		=> 'Tijdstip',
                 'data_hide' => 'phone',
-            ])
+            ],
         ];
 
         if (isset($uid))
         {
-            $tableheader_ary['user'] = array_merge($asc_preset_ary, [
+            $tableheader_ary['user'] = [
+                ...$asc_preset_ary,
                 'lbl'			=> 'Tegenpartij',
                 'data_hide'		=> 'phone, tablet',
                 'no_sort'		=> true,
-            ]);
+            ];
         }
         else
         {
             $tableheader_ary += [
-                'from_user' => array_merge($asc_preset_ary, [
+                'from_user' => [
+                    ...$asc_preset_ary,
                     'lbl' 		=> 'Van',
                     'data_hide'	=> 'phone, tablet',
                     'no_sort'	=> true,
-                ]),
-                'to_user' => array_merge($asc_preset_ary, [
+                ],
+                'to_user' => [
+                    ...$asc_preset_ary,
                     'lbl' 		=> 'Aan',
                     'data_hide'	=> 'phone, tablet',
                     'no_sort'	=> true,
-                ]),
+                ],
             ];
         }
 

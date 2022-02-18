@@ -71,11 +71,15 @@ class InitQueueGeocodingController extends AbstractController
         {
             $start += 50;
 
-            return $this->redirectToRoute('init_queue_geocoding', array_merge($pp->ary(),
-                ['start' => $start]));
+            return $this->redirectToRoute('init_queue_geocoding', [
+                ...$pp->ary(),
+                'start' => $start,
+            ]);
         }
 
-        return $this->redirectToRoute('init', array_merge($pp->ary(),
-            ['ok' => $request->attributes->get('_route')]));
+        return $this->redirectToRoute('init', [
+            ...$pp->ary(),
+            'ok' => $request->attributes->get('_route'),
+        ]);
     }
 }

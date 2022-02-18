@@ -54,9 +54,10 @@ class MailTransactionService
 			'to' 		=> $this->mail_addr_user_service->get($transaction['id_to'], $schema),
 			'reply_to' 	=> $this->mail_addr_system_service->get_admin($schema),
 			'template'	=> 'transaction/to_intersystem_mail_type',
-			'vars'		=> array_merge($vars, [
+			'vars'		=> [
+				...$vars,
 				'user_id'	=> $to_user_id,
-			]),
+			],
 		], 9000);
 
 		$this->mail_queue->queue([
@@ -70,9 +71,10 @@ class MailTransactionService
 			'schema'	=> $schema,
 			'to' 		=> $this->mail_addr_system_service->get_admin($schema),
 			'template'	=> 'transaction/to_intersystem_mail_type_user',
-			'vars'		=> array_merge($vars, [
+			'vars'		=> [
+				...$vars,
 				'user_id'	=> $from_user_id,
-			]),
+			],
 		], 9010);
 	}
 
@@ -104,10 +106,11 @@ class MailTransactionService
 				'schema'	=> $schema,
 				'to' 		=> $this->mail_addr_user_service->get_active($from_user_id, $schema),
 				'template'	=> $tpl,
-				'vars'		=> array_merge($vars, [
+				'vars'		=> [
+					...$vars,
 					'user_id' 		=> $from_user_id,
 					'to_full_name'	=> $to_user['full_name'],
-				]),
+				],
 			], 9000);
 		}
 
@@ -122,10 +125,11 @@ class MailTransactionService
 				'to' 		=> $this->mail_addr_user_service->get_active($to_user_id, $schema),
 				'schema'	=> $schema,
 				'template'	=> $tpl,
-				'vars'		=> array_merge($vars, [
+				'vars'		=> [
+					...$vars,
 					'user_id'		=> $to_user_id,
 					'from_full_name'	=> $from_user['full_name'],
-				]),
+				],
 			], 9000);
 		}
 	}

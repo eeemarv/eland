@@ -74,8 +74,11 @@ class TypeaheadService
 		}
 
 		$path = $this->url_generator->generate(
-			self::ROUTE_PREFIX . $typeahead_route,
-			array_merge($this->pp->ary(), $params, ['thumbprint' => $thumbprint]),
+			self::ROUTE_PREFIX . $typeahead_route, [
+				...$this->pp->ary(),
+				...$params,
+				'thumbprint' => $thumbprint,
+			],
 			UrlGeneratorInterface::ABSOLUTE_PATH);
 
 		$this->fetch_ary[] = [
@@ -89,16 +92,26 @@ class TypeaheadService
 
 	public function str(array $process_ary = []):string
 	{
-		$return_ary = array_merge(['fetch' => $this->fetch_ary], $process_ary);
+		$return_ary = [
+			'fetch' => $this->fetch_ary,
+			...$process_ary,
+		];
+
 		unset($this->fetch_ary);
+
 		return htmlspecialchars(json_encode($return_ary));
 	}
 
 	// escaping already in forms
 	public function str_raw(array $process_ary = []):string
 	{
-		$return_ary = array_merge(['fetch' => $this->fetch_ary], $process_ary);
+		$return_ary = [
+			'fetch' => $this->fetch_ary,
+			...$process_ary,
+		];
+
 		unset($this->fetch_ary);
+
 		return json_encode($return_ary);
 	}
 

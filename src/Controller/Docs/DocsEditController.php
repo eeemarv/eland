@@ -138,8 +138,10 @@ class DocsEditController extends AbstractController
                 return $this->redirectToRoute('docs', $pp->ary());
             }
 
-            return $this->redirectToRoute('docs_map', array_merge($pp->ary(),
-                ['id' => $update['map_id']]));
+            return $this->redirectToRoute('docs_map', [
+                ...$pp->ary(),
+                'id' => $update['map_id'],
+            ]);
         }
 
         return $this->render('docs/docs_edit.html.twig', [

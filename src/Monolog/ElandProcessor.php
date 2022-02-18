@@ -14,7 +14,10 @@ class ElandProcessor implements EventSubscriberInterface
     {
         if (isset($this->extra))
         {
-            $record['extra'] = array_merge($record['extra'], $this->extra);
+            $record['extra'] = [
+                ...$record['extra'],
+                ...$this->extra,
+            ];
         }
 
         return $record;

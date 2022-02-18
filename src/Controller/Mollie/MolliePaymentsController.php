@@ -395,27 +395,33 @@ class MolliePaymentsController extends AbstractController
         ];
 
         $tableheader_ary = [
-            'p.amount' => array_merge($asc_preset_ary, [
+            'p.amount' => [
+                ...$asc_preset_ary,
                 'lbl' => 'Bedrag (EUR)',
-            ]),
-            'r.description' => array_merge($asc_preset_ary, [
+            ],
+            'r.description' => [
+                ...$asc_preset_ary,
                 'lbl' 		=> 'Omschrijving',
-            ]),
-            'code' => array_merge($asc_preset_ary, [
+            ],
+            'code' => [
+                ...$asc_preset_ary,
                 'lbl' => 'Account',
-            ]),
-            'status'	=> array_merge($asc_preset_ary, [
+            ],
+            'status'	=> [
+                ...$asc_preset_ary,
                 'lbl' 	=> 'Status',
                 'no_sort' => true,
-            ]),
-            'p.created_at' => array_merge($asc_preset_ary, [
+            ],
+            'p.created_at' => [
+                ...$asc_preset_ary,
                 'lbl' 		=> 'Tijdstip',
-            ]),
-            'emails' => array_merge($asc_preset_ary, [
+            ],
+            'emails' => [
+                ...$asc_preset_ary,
                 'lbl' 		=> 'E-mails',
                 'title'     => 'Aantal verzonden E-mails',
                 'no_sort'   => true,
-            ]),
+            ],
         ];
 
         $tableheader_ary[$params['s']['orderby']]['asc']
@@ -870,7 +876,7 @@ class MolliePaymentsController extends AbstractController
 
         $flt .= '</div>';
 
-        $params_form = array_merge($params, $pp->ary());
+        $params_form = [...$params, ...$pp->ary()];
         unset($params_form['role_short']);
         unset($params_form['system']);
         unset($params_form['f']);

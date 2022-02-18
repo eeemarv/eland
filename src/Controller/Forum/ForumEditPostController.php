@@ -82,8 +82,10 @@ class ForumEditPostController extends AbstractController
             $forum_repository->update_post($id, $command, $pp->schema());
 
             $alert_service->success('Reactie aangepast.');
-            return $this->redirectToRoute('forum_topic', array_merge($pp->ary(),
-                ['id' => $forum_topic['id']]));
+            return $this->redirectToRoute('forum_topic', [
+                ...$pp->ary(),
+                'id' => $forum_topic['id'],
+            ]);
         }
 
         return $this->render('forum/forum_edit_post.html.twig', [

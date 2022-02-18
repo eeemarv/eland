@@ -165,8 +165,10 @@ class ContactsDelController extends AbstractController
                 return $this->redirectToRoute('contacts', $pp->ary());
             }
 
-            return $this->redirectToRoute('users_show', array_merge($pp->ary(),
-                ['id' => $user_id]));
+            return $this->redirectToRoute('users_show', [
+                ...$pp->ary(),
+                'id' => $user_id,
+            ]);
         }
 
         if ($contact_type['abbrev'] === 'mail'

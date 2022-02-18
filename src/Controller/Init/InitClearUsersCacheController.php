@@ -46,7 +46,9 @@ class InitClearUsersCacheController extends AbstractController
             $user_cache_service->clear_all($schema);
         }
 
-        return $this->redirectToRoute('init', array_merge($pp->ary(),
-            ['ok' => $request->attributes->get('_route')]));
+        return $this->redirectToRoute('init', [
+            ...$pp->ary(),
+            'ok' => $request->attributes->get('_route'),
+        ]);
     }
 }

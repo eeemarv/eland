@@ -90,7 +90,10 @@ class ForumDelPostController extends AbstractController
 
             $alert_service->success($alert_msg);
 
-            return $this->redirectToRoute('forum_topic', array_merge($pp->ary(), ['id' => $forum_topic['id']]));
+            return $this->redirectToRoute('forum_topic', [
+                ...$pp->ary(),
+                'id' => $forum_topic['id'],
+            ]);
         }
 
         return $this->render('forum/forum_del_post.html.twig', [

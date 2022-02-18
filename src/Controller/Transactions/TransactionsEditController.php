@@ -103,7 +103,10 @@ class TransactionsEditController extends AbstractController
                 naar een interSysteem dat draait op eLAS kan
                 niet aangepast worden.');
 
-            return $this->redirectToRoute('transactions_show', array_merge($pp->ary(), ['id' => $id]));
+            return $this->redirectToRoute('transactions_show', [
+                ...$pp->ary(),
+                'id' => $id,
+            ]);
         }
 
         if ($request->isMethod('POST'))
@@ -170,7 +173,10 @@ class TransactionsEditController extends AbstractController
 
                 $alert_service->success('Transactie aangepast.');
 
-                return $this->redirectToRoute('transactions_show', array_merge($pp->ary(), ['id' => $id]));
+                return $this->redirectToRoute('transactions_show', [
+                    ...$pp->ary(),
+                    'id' => $id,
+                ]);
             }
 
             $alert_service->error($errors);

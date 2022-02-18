@@ -90,7 +90,10 @@ class UsersImageDelController extends AbstractController
 
             $alert_service->success('Profielfoto/afbeelding verwijderd.');
 
-            return $this->redirectToRoute('users_show', array_merge($pp->ary(), ['id' => $id]));
+            return $this->redirectToRoute('users_show', [
+                ...$pp->ary(),
+                'id' => $id,
+            ]);
         }
 
         $out = '<div class="row">';

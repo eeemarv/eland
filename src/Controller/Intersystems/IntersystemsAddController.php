@@ -89,8 +89,10 @@ class IntersystemsAddController extends AbstractController
 
                     $intersystems_service->clear_cache();
 
-                    return $this->redirectToRoute('intersystems_show', array_merge($pp->ary(),
-                        ['id' => $id]));
+                    return $this->redirectToRoute('intersystems_show', [
+                        ...$pp->ary(),
+                        'id' => $id,
+                    ]);
                 }
 
                 $alert_service->error('InterSysteem niet opgeslagen.');

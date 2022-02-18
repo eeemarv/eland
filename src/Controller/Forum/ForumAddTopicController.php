@@ -56,8 +56,10 @@ class ForumAddTopicController extends AbstractController
             $id = $forum_repository->insert_topic($command, $su->id(), $pp->schema());
 
             $alert_service->success('Forum onderwerp toegevoegd.');
-            return $this->redirectToRoute('forum_topic', array_merge($pp->ary(),
-                ['id' => $id]));
+            return $this->redirectToRoute('forum_topic', [
+                ...$pp->ary(),
+                'id' => $id,
+            ]);
         }
 
         return $this->render('forum/forum_add_topic.html.twig', [

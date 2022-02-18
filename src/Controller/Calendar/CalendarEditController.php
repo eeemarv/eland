@@ -104,7 +104,10 @@ class CalendarEditController extends AbstractController
 
                 $db->update($pp->schema() . '.news', $news, ['id' => $id]);
                 $alert_service->success('Nieuwsbericht aangepast.');
-                return $this->redirectToRoute('news_show', array_merge($pp->ary(), ['id' => $id]));
+                return $this->redirectToRoute('news_show', [
+                    ...$pp->ary(),
+                    'id' => $id,
+                ]);
             }
 
             $alert_service->error($errors);

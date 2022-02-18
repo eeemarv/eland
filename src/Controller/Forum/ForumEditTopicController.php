@@ -97,8 +97,10 @@ class ForumEditTopicController extends AbstractController
                     ' aangepast.');
             }
 
-            return $this->redirectToRoute('forum_topic', array_merge($pp->ary(),
-                ['id' => $id]));
+            return $this->redirectToRoute('forum_topic', [
+                ...$pp->ary(),
+                'id' => $id,
+            ]);
         }
 
         return $this->render('forum/forum_edit_topic.html.twig', [

@@ -116,7 +116,7 @@ class AccessFieldSubscriber implements EventSubscriberInterface
                 }
             }
 
-            $options = array_merge($options, $this->type_options[$name]);
+            $options = [...$options, ...$this->type_options[$name]];
 
             $form->add($name, BtnChoiceType::class, $options);
         }

@@ -66,8 +66,11 @@ class DocsMapEditController extends AbstractController
             $typeahead_service->clear_cache($pp->schema());
 
             $alert_service->success('Map naam aangepast.');
-            return $this->redirectToRoute('docs_map', array_merge($pp->ary(),
-                ['id' => $id]));
+
+            return $this->redirectToRoute('docs_map', [
+                ...$pp->ary(),
+                'id' => $id,
+            ]);
         }
 
         return $this->render('docs/docs_map_edit.html.twig', [

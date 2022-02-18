@@ -74,11 +74,17 @@ class MessagesExtendController extends AbstractController
         {
             $alert_service->error('Fout: ' . $message['label']['offer_want_the'] . ' is niet verlengd.');
 
-            return $this->redirectToRoute('messages_show', array_merge($pp->ary(), ['id' => $id]));
+            return $this->redirectToRoute('messages_show', [
+                ...$pp->ary(),
+                'id' => $id,
+            ]);
         }
 
         $alert_service->success(ucfirst($message['label']['offer_want_the']) . ' is verlengd.');
 
-        return $this->redirectToRoute('messages_show', array_merge($pp->ary(), ['id' => $id]));
+        return $this->redirectToRoute('messages_show', [
+            ...$pp->ary(),
+            'id' => $id,
+        ]);
     }
 }

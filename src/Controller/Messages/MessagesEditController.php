@@ -460,7 +460,10 @@ class MessagesEditController extends AbstractController
 
                 $alert_service->success('Nieuw vraag of aanbod toegevoegd.');
 
-                return $this->redirectToRoute('messages_show', array_merge($pp->ary(), ['id' => $id]));
+                return $this->redirectToRoute('messages_show', [
+                    ...$pp->ary(),
+                    'id' => $id,
+                ]);
             }
             else if ($edit_mode && !count($errors))
             {
@@ -469,7 +472,10 @@ class MessagesEditController extends AbstractController
 
                 $alert_service->success('Vraag/aanbod aangepast');
 
-                return $this->redirectToRoute('messages_show', array_merge($pp->ary(), ['id' => $id]));
+                return $this->redirectToRoute('messages_show', [
+                    ...$pp->ary(),
+                    'id' => $id,
+                ]);
             }
             else if (!count($errors))
             {

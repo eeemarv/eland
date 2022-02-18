@@ -218,8 +218,10 @@ class UsersShowController extends AbstractController
 
                 $alert_service->success('E-mail bericht verzonden.');
 
-                return $this->redirectToRoute('users_show', array_merge($pp->ary(),
-                    ['id' => $id]));
+                return $this->redirectToRoute('users_show', [
+                    ...$pp->ary(),
+                    'id' => $id,
+                ]);
             }
 
             $alert_service->error($errors);
@@ -401,15 +403,19 @@ class UsersShowController extends AbstractController
             if ($pp->is_admin())
             {
                 $out .= $link_render->link_fa('users_image_del_admin', $pp->ary(),
-                    ['id' => $id], 'Afbeelding verwijderen',
-                    array_merge($btn_del_attr, ['class' => 'btn btn-danger btn-lg btn-block']),
+                    ['id' => $id], 'Afbeelding verwijderen', [
+                        ...$btn_del_attr,
+                        'class' => 'btn btn-danger btn-lg btn-block',
+                    ],
                     'times');
             }
             else
             {
                 $out .= $link_render->link_fa('users_image_del', $pp->ary(),
-                    [], 'Afbeelding verwijderen',
-                    array_merge($btn_del_attr, ['class' => 'btn btn-danger btn-lg btn-block']),
+                    [], 'Afbeelding verwijderen', [
+                        ...$btn_del_attr,
+                        'class' => 'btn btn-danger btn-lg btn-block',
+                    ],
                     'times');
             }
 

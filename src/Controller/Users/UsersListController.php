@@ -1803,7 +1803,10 @@ class UsersListController extends AbstractController
                     {
                         $out .= $link_render->link_no_attr($vr->get('messages'), $pp->ary(), [
                                 'uid'   => $id,
-                                'f'	    => $message_type_filter[$key],
+                                'f'	    => [
+                                    ...['user' => $u['code'] . ' ' . $u['name']],
+                                    ...$message_type_filter[$key],
+                                ],
                             ],
                             (string) $msgs_count[$id][$key]);
                     }

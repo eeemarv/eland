@@ -174,23 +174,28 @@ class LogsController extends AbstractController
         ];
 
         $tableheader_ary = [
-            'ts' => array_merge($asc_preset_ary, [
-                'lbl' => 'Tijd']),
-            'type' => array_merge($asc_preset_ary, [
-                'lbl' => 'Type']),
-
-            'ip'	=> array_merge($asc_preset_ary, [
+            'ts' => [
+                ...$asc_preset_ary,
+                'lbl' => 'Tijd',
+            ],
+            'type' => [
+                ...$asc_preset_ary,
+                'lbl' => 'Type',
+            ],
+            'ip'	=> [
+                ...$asc_preset_ary,
                 'lbl' 		=> 'ip',
                 'data_hide' => 'phone, tablet',
-            ]),
-            'code'	=> array_merge($asc_preset_ary, [
+            ],
+            'code'	=> [...$asc_preset_ary,
                 'lbl' 		=> 'Gebruiker',
                 'data_hide'	=> 'phone, tablet',
-            ]),
-            'event'	=> array_merge($asc_preset_ary, [
+            ],
+            'event'	=> [
+                ...$asc_preset_ary,
                 'lbl' 		=> 'Event',
                 'data_hide'	=> 'phone',
-            ]),
+            ],
         ];
 
         $tableheader_ary[$params['s']['orderby']]['asc'] = $params['s']['asc'] ? 0 : 1;

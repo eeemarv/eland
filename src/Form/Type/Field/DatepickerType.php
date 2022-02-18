@@ -34,14 +34,16 @@ class DatepickerType extends AbstractType
     {
         parent::buildView($view, $form, $options);
 
-        $view->vars['attr_translation_parameters'] = array_merge([
+        $view->vars['attr_translation_parameters'] = [
             'var' => $this->date_format_service->datepicker_placeholder($this->pp->schema()),
-        ], $options['attr_translation_parameters']);
+            ...$options['attr_translation_parameters'],
+        ];
 
-        $view->vars['attr'] = array_merge([
+        $view->vars['attr'] = [
             'data-date-format'  => $this->date_format_service->datepicker_format($this->pp->schema()),
             'placeholder'       => 'var',
-        ], $options['attr']);
+            ...$options['attr'],
+        ];
     }
 
     public function configureOptions(OptionsResolver $resolver)

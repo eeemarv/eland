@@ -21,7 +21,7 @@ class LinkRuntime implements RuntimeExtensionInterface
 	):string
     {
         return $this->url_generator->generate(
-			$route, array_merge($this->pp->ary(), $params), UrlGeneratorInterface::ABSOLUTE_PATH);
+			$route, [...$this->pp->ary(), ...$params], UrlGeneratorInterface::ABSOLUTE_PATH);
 	}
 
 	public function link_filter(
@@ -33,7 +33,7 @@ class LinkRuntime implements RuntimeExtensionInterface
 	{
         $out = '<a href="';
 		$out .= $this->url_generator->generate(
-			$route, array_merge($this->pp->ary(), $params), UrlGeneratorInterface::ABSOLUTE_PATH);
+			$route, [...$this->pp->ary(), ...$params], UrlGeneratorInterface::ABSOLUTE_PATH);
 		$out .= '"';
 
 		foreach ($attr as $name => $value)

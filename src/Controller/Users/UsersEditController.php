@@ -721,8 +721,10 @@ class UsersEditController extends AbstractController
                         $pp->ary());
                 }
 
-                return $this->redirectToRoute('users_show',
-                    array_merge($pp->ary(), ['id' => $id]));
+                return $this->redirectToRoute('users_show', [
+                    ...$pp->ary(),
+                    'id' => $id,
+                ]);
             }
 
             $alert_service->error($errors);

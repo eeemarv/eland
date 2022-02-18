@@ -131,7 +131,10 @@ class UsersPasswordEditController extends AbstractController
                 return $this->redirectToRoute('users_show_self', $pp->ary());
             }
 
-            return $this->redirectToRoute('users_show', array_merge($pp->ary(), ['id' => $id]));
+            return $this->redirectToRoute('users_show', [
+                ...$pp->ary(),
+                'id' => $id,
+            ]);
         }
 
         return $this->render('users/users_password_edit.html.twig', [
