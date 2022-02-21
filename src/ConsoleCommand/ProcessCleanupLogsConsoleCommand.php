@@ -40,7 +40,7 @@ class ProcessCleanupLogsConsoleCommand extends Command
 
             $treshold = gmdate('Y-m-d H:i:s', time() - 86400 * 120);
 
-            $this->db->executeQuery('delete from xdb.logs
+            $this->db->executeStatement('delete from xdb.logs
                 where ts < ?', [$treshold]);
 
             $this->monitor_process_service->periodic_log();

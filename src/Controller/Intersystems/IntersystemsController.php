@@ -79,13 +79,13 @@ class IntersystemsController extends AbstractController
 
         $users_code = [];
 
-        $intersystem_users = $db->executeQuery('select id, status, code, role
+        $res = $db->executeQuery('select id, status, code, role
             from ' . $pp->schema() . '.users
             where code in (?)',
             [$codes],
             [Db::PARAM_INT_ARRAY]);
 
-        foreach ($intersystem_users as $u)
+        while ($u = $res->fetchAssociative())
         {
             $users_code[$u['code']] = [
                 'id'			=> $u['id'],
@@ -288,13 +288,13 @@ class IntersystemsController extends AbstractController
 
         $this_origin = $systems_service->get_legacy_eland_origin($pp->schema());
 
-        $groups = $db->executeQuery('select localletscode, url, id
+        $res = $db->executeQuery('select localletscode, url, id
             from ' . $pp->schema() . '.letsgroups
             where url in (?)',
             [$url_ary],
             [Db::PARAM_STR_ARRAY]);
 
-        foreach ($groups as $group)
+        while ($group = $res->fetchAssociative())
         {
             $loc_letscode_ary[] = $group['localletscode'];
             $h = strtolower(parse_url($group['url'], PHP_URL_HOST));
@@ -302,13 +302,13 @@ class IntersystemsController extends AbstractController
             $loc_group_ary['https://' . $h] = $group;
         }
 
-        $interlets_accounts = $db->executeQuery('select id, code, status, role
+        $res = $db->executeQuery('select id, code, status, role
             from ' . $pp->schema() . '.users
             where code in (?)',
             [$loc_letscode_ary],
             [Db::PARAM_STR_ARRAY]);
 
-        foreach ($interlets_accounts as $u)
+        while ($u = $res->fetchAssociative())
         {
             $loc_account_ary[$u['code']] = $u;
         }

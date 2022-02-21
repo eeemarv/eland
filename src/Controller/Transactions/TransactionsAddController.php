@@ -911,14 +911,14 @@ class TransactionsAddController extends AbstractController
 
         if ($config_service->get_intersystem_en($pp->schema()))
         {
-            $mail_systems = $db->executeQuery('select l.id, l.groupname
+            $res = $db->executeQuery('select l.id, l.groupname
                 from ' . $pp->schema() . '.letsgroups l, ' .
                     $pp->schema() . '.users u
                 where l.apimethod = \'mail\'
                     and u.code = l.localletscode
                     and u.status in (1, 2, 7)');
 
-            foreach ($mail_systems as $sys)
+            while ($sys = $res->fetchAssociative())
             {
                 $sys['mail'] = true;
                 $systems[] = $sys;

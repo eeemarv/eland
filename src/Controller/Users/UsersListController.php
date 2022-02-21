@@ -273,15 +273,15 @@ class UsersListController extends AbstractController
 
                 $users_log = '';
 
-                $rows = $db->executeQuery('select code, name, id
+                $res = $db->executeQuery('select id
                     from ' . $pp->schema() . '.users
                     where id in (?)',
                     [$user_ids], [Db::PARAM_INT_ARRAY]);
 
-                foreach ($rows as $row)
+                while ($row = $res->fetchAssociative())
                 {
                     $users_log .= ', ';
-                    $users_log .= $account_render->str_id($row['id'], $pp->schema(), false, true);
+                    $users_log .= $account_render->str_id($row['id'], $pp->schema());
                 }
 
                 $users_log = ltrim($users_log, ', ');
@@ -852,7 +852,7 @@ class UsersListController extends AbstractController
             where ' . $sql_where . '
             order by u.code asc';
 
-        $res = $stmt = $db->executeQuery($query, $sql_params, $sql_types);
+        $res = $db->executeQuery($query, $sql_params, $sql_types);
 
         while($row = $res->fetchAssociative())
         {

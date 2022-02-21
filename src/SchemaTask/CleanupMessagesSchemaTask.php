@@ -46,7 +46,7 @@ class CleanupMessagesSchemaTask implements SchemaTaskInterface
 			$this->logger->info('Expired and deleted Messages ' . $msgs,
 				['schema' => $schema]);
 
-			$this->db->executeQuery('delete from ' . $schema . '.messages
+			$this->db->executeStatement('delete from ' . $schema . '.messages
 				where expires_at < ?', [$testdate]);
 		}
 
@@ -76,7 +76,7 @@ class CleanupMessagesSchemaTask implements SchemaTaskInterface
 
 			echo 'Cleanup messages from users: ' . $users;
 
-			$this->db->executeQuery('delete
+			$this->db->executeStatement('delete
 				from ' . $schema . '.messages
 				where user_id in (?)',
 				[$user_ids],

@@ -77,14 +77,14 @@ class NewsRepository
 	{
 		$order = $event_at_asc_en ? 'event_at asc, ' : '';
 
-		$stmt = $this->db->executeQuery('select *
+		$res = $this->db->executeQuery('select *
 			from ' . $schema . '.news
 			where access in (?)
 			order by ' . $order . 'created_at desc',
 			[$visible_ary],
 			[Db::PARAM_STR_ARRAY]);
 
-		return $stmt->fetchAllAssociative();
+		return $res->fetchAllAssociative() ?: [];
 	}
 
 	public function insert(

@@ -420,11 +420,11 @@ class MessagesListController extends AbstractController
 
             $parent_name = '***';
 
-            $st = $db->executeQuery('select *
+            $res = $db->executeQuery('select *
                 from ' . $pp->schema() . '.categories
                 order by left_id asc');
 
-            while ($row = $st->fetchAssociative())
+            while ($row = $res->fetchAssociative())
             {
                 $name = $row['name'];
                 $cat_id = $row['id'];
@@ -1180,11 +1180,11 @@ class MessagesListController extends AbstractController
 
         $messages = [];
 
-        $stmt = $db->executeQuery($query,
+        $res = $db->executeQuery($query,
             array_merge(...array_column($sql, 'params')),
             array_merge(...array_column($sql, 'types')));
 
-        while ($msg = $stmt->fetchAssociative())
+        while ($msg = $res->fetchAssociative())
         {
             $msg['label'] = MessagesShowController::get_label($msg['offer_want']);
             $messages[] = $msg;
@@ -1223,11 +1223,11 @@ class MessagesListController extends AbstractController
             where ' . $sql_omit_offer_want_where . '
             group by m.offer_want';
 
-        $stmt = $db->executeQuery($count_offer_want_query,
+        $res = $db->executeQuery($count_offer_want_query,
             array_merge(...array_column($sql_omit_offer_want, 'params')),
             array_merge(...array_column($sql_omit_offer_want, 'types')));
 
-        while($row = $stmt->fetchAssociative())
+        while($row = $res->fetchAssociative())
         {
             $count_ary[$row['offer_want']] = $row['count'];
         }
@@ -1248,11 +1248,11 @@ class MessagesListController extends AbstractController
                 where ' . $sql_omit_service_stuff_where . '
                 group by m.service_stuff';
 
-            $stmt = $db->executeQuery($count_service_stuff_query,
+            $res = $db->executeQuery($count_service_stuff_query,
                 array_merge(...array_column($sql_omit_service_stuff, 'params')),
                 array_merge(...array_column($sql_omit_service_stuff, 'types')));
 
-            while($row = $stmt->fetchAssociative())
+            while($row = $res->fetchAssociative())
             {
                 $count_ary[$row['service_stuff'] ?? 'null_service_stuff'] = $row['count'];
             }
@@ -1275,11 +1275,11 @@ class MessagesListController extends AbstractController
                 where ' . $sql_omit_valid_expired_where . '
                 group by valid';
 
-            $stmt = $db->executeQuery($count_valid_expired_query,
+            $res = $db->executeQuery($count_valid_expired_query,
                 array_merge(...array_column($sql_omit_valid_expired, 'params')),
                 array_merge(...array_column($sql_omit_valid_expired, 'types')));
 
-            while($row = $stmt->fetchAssociative())
+            while($row = $res->fetchAssociative())
             {
                 $count_ary[$row['valid'] ? 'valid' : 'expired'] = $row['count'];
             }
@@ -1305,11 +1305,11 @@ class MessagesListController extends AbstractController
             where ' . $sql_omit_user_status_where . '
             group by u_status';
 
-        $stmt = $db->executeQuery($count_user_status_query,
+        $res = $db->executeQuery($count_user_status_query,
             array_merge([$new_user_treshold], ...array_column($sql_omit_user_status, 'params')),
             array_merge([Types::DATETIME_IMMUTABLE], ...array_column($sql_omit_user_status, 'types')));
 
-        while($row = $stmt->fetchAssociative())
+        while($row = $res->fetchAssociative())
         {
             $count_ary[$row['u_status']] = $row['count'];
         }
@@ -1328,11 +1328,11 @@ class MessagesListController extends AbstractController
             where ' . $sql_omit_access_where . '
             group by m.access';
 
-        $stmt = $db->executeQuery($count_access_query,
+        $res = $db->executeQuery($count_access_query,
             array_merge(...array_column($sql_omit_access, 'params')),
             array_merge(...array_column($sql_omit_access, 'types')));
 
-        while($row = $stmt->fetchAssociative())
+        while($row = $res->fetchAssociative())
         {
             $count_ary[$row['access']] = $row['count'];
         }
@@ -1352,11 +1352,11 @@ class MessagesListController extends AbstractController
             where ' . $sql_omit_category_where . '
             group by m.category_id';
 
-        $stmt = $db->executeQuery($count_category_query,
+        $res = $db->executeQuery($count_category_query,
             array_merge(...array_column($sql_omit_category, 'params')),
             array_merge(...array_column($sql_omit_category, 'types')));
 
-        while($row = $stmt->fetchAssociative())
+        while($row = $res->fetchAssociative())
         {
             if (isset($row['category_id']))
             {

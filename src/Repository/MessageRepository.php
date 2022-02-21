@@ -36,7 +36,7 @@ class MessageRepository
 		string $schema
 	):int
 	{
-        $stmt = $this->db->executeQuery('select m.id
+        $res = $this->db->executeQuery('select m.id
             from ' . $schema . '.messages m,
                 ' . $schema . '.users u
 			where m.id > ?
@@ -47,7 +47,7 @@ class MessageRepository
 			[$ref_id, $visible_ary],
 			[\PDO::PARAM_INT, Db::PARAM_STR_ARRAY]);
 
-		return $stmt->fetchOne() ?: 0;
+		return $res->fetchOne() ?: 0;
 	}
 
 	public function get_next_id(
@@ -56,7 +56,7 @@ class MessageRepository
 		string $schema
 	):int
 	{
-        $stmt = $this->db->executeQuery('select m.id
+        $res = $this->db->executeQuery('select m.id
             from ' . $schema . '.messages m,
                 ' . $schema . '.users u
 			where m.id < ?
@@ -67,7 +67,7 @@ class MessageRepository
 			[$ref_id, $visible_ary],
 			[\PDO::PARAM_INT, Db::PARAM_STR_ARRAY]);
 
-		return $stmt->fetchOne() ?: 0;
+		return $res->fetchOne() ?: 0;
 	}
 
 	public function del(int $id, string $schema):bool

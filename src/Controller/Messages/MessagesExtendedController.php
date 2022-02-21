@@ -92,11 +92,11 @@ class MessagesExtendedController extends AbstractController
         {
             $parent_name = '***';
 
-            $st = $db->executeQuery('select *
+            $res = $db->executeQuery('select *
                 from ' . $pp->schema() . '.categories
                 order by left_id asc');
 
-            while ($row = $st->fetchAssociative())
+            while ($row = $res->fetchAssociative())
             {
                 $name = $row['name'];
                 $cat_id = $row['id'];

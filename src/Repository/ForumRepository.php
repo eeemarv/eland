@@ -57,7 +57,7 @@ class ForumRepository
 
 	public function get_topics_with_reply_count(array $visible_ary, string $schema):array
 	{
-        $stmt = $this->db->executeQuery('select t.*, count(p.*) - 1 as reply_count
+        $res = $this->db->executeQuery('select t.*, count(p.*) - 1 as reply_count
             from ' . $schema . '.forum_topics t
             inner join ' . $schema . '.forum_posts p on p.topic_id = t.id
             where t.access in (?)
@@ -66,7 +66,7 @@ class ForumRepository
             [$visible_ary],
             [Db::PARAM_STR_ARRAY]);
 
-        return $stmt->fetchAllAssociative();
+        return $res->fetchAllAssociative() ?: [];
 	}
 
 	public function get_topic_posts(int $topic_id, string $schema):array
@@ -76,7 +76,7 @@ class ForumRepository
             where topic_id = ?
             order by created_at asc',
 			[$topic_id],
-			[\PDO::PARAM_INT]);
+			[\PDO::PARAM_INT]) ?: [];
 	}
 
 	public function get_post(int $post_id, string $schema):array

@@ -153,7 +153,7 @@ class ContactRepository
 	{
 		return $this->db->fetchAllAssociative('select tc.*
 			from ' . $schema . '.type_contact tc
-			order by tc.id asc');
+			order by tc.id asc') ?: [];
 	}
 
 	public function get_all_contact_types_with_count(
@@ -164,7 +164,7 @@ class ContactRepository
 			from ' . $schema . '.type_contact tc
 			left join ' . $schema . '.contact c
 			on tc.id = c.id_type_contact
-			group by tc.id order by tc.id asc;');
+			group by tc.id order by tc.id asc;') ?: [];
 	}
 
 	public function insert(
@@ -235,7 +235,7 @@ class ContactRepository
 		string $schema
 	):array
 	{
-		$stmt = $this->db->executeQuery('select c.*, tc.abbrev
+		$res = $this->db->executeQuery('select c.*, tc.abbrev
 			from ' . $schema . '.contact c, ' .
 				$schema . '.type_contact tc
 			where c.access in (?)
@@ -245,7 +245,7 @@ class ContactRepository
 				[\PDO::PARAM_INT]
 		);
 
-		return $stmt->fetchAllAssociative();
+		return $res->fetchAllAssociative() ?: [];
 	}
 
 }

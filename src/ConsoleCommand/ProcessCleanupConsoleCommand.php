@@ -47,7 +47,7 @@ class ProcessCleanupConsoleCommand extends Command
                 case 0: // cleanup logs
                     $treshold = gmdate('Y-m-d H:i:s', time() - 86400 * 120);
 
-                    $this->db->executeQuery('delete from xdb.logs
+                    $this->db->executeStatement('delete from xdb.logs
                         where ts < ?', [$treshold]);
 
                     error_log('Cleanup logs.');

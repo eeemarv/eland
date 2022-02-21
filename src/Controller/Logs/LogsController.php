@@ -149,11 +149,11 @@ class LogsController extends AbstractController
 
         $rows = [];
 
-        $stmt = $db->executeQuery($query,
+        $res = $db->executeQuery($query,
             array_merge(...array_column($sql, 'params')),
             array_merge(...array_column($sql, 'types')));
 
-        while ($row = $stmt->fetchAssociative())
+        while ($row = $res->fetchAssociative())
         {
             $rows[] = $row;
         }

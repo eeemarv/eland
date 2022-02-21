@@ -177,7 +177,7 @@ class CacheService
 
 	public function cleanup():void
 	{
-		$this->db->executeQuery('delete from xdb.cache
+		$this->db->executeStatement('delete from xdb.cache
 			where expires < timezone(\'utc\', now())
 				and expires is not null');
 	}

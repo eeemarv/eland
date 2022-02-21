@@ -60,7 +60,6 @@ class CategoryRepository
 			from ' . $schema . '.categories
 			where id <> ? and lower(name) = ?',
 			[$id, $lowercase_name],
-			0,
 			[\PDO::PARAM_INT, \PDO::PARAM_STR]) ? false : true;
 	}
 
@@ -239,7 +238,7 @@ class CategoryRepository
 		$choices = [];
 		$parent_label = '***';
 
-		$st = $this->db->executeQuery('select count(m.*),
+		$res = $this->db->executeQuery('select count(m.*),
 			c.name, c.id, c.parent_id, c.left_id, c.right_id
 			from ' . $schema . '.categories c
 			left join ' . $schema . '.messages m
@@ -247,7 +246,7 @@ class CategoryRepository
 			group by c.id
 			order by c.left_id asc');
 
-        while ($row = $st->fetchAssociative())
+        while ($row = $res->fetchAssociative())
         {
 			$parent_id = $row['parent_id'];
 			$count = $row['count'];
@@ -281,7 +280,7 @@ class CategoryRepository
 	{
 		return $this->db->fetchAllAssociative('select *
 			from ' . $schema . '.categories
-			order by left_id asc');
+			order by left_id asc') ?: [];
 	}
 
     public function get(int $id, string $schema):array

@@ -115,9 +115,9 @@ class CalendarListController extends AbstractController
 
         $access_ary = $item_access_service->get_visible_ary_for_page();
 
-        $rows = $db->executeQuery($query, [$access_ary], [Db::PARAM_STR_ARRAY]);
+        $res = $db->executeQuery($query, [$access_ary], [Db::PARAM_STR_ARRAY]);
 
-        foreach ($rows as $row)
+        while ($row = $res->fetchAssociative())
         {
             $news[$row['id']] = $row;
         }

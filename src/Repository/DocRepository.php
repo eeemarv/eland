@@ -116,7 +116,7 @@ class DocRepository
 
 	public function get_maps(array $visible_ary, string $schema):array
 	{
-        $stmt = $this->db->executeQuery('select dm.name, dm.id, count(d.*) as doc_count
+        $res = $this->db->executeQuery('select dm.name, dm.id, count(d.*) as doc_count
             from ' . $schema . '.doc_maps dm, ' . $schema . '.docs d
 			where d.access in (?)
 				and d.map_id = dm.id
@@ -125,12 +125,12 @@ class DocRepository
             [$visible_ary],
             [Db::PARAM_STR_ARRAY]);
 
-        return $stmt->fetchAllAssociative();
+        return $res->fetchAllAssociative() ?: [];
 	}
 
 	public function get_unmapped_docs(array $visible_ary, string $schema):array
 	{
-		$stmt = $this->db->executeQuery('select coalesce(name, original_filename) as name,
+		$res = $this->db->executeQuery('select coalesce(name, original_filename) as name,
 				id, filename, access, created_at
             from ' . $schema . '.docs d
 			where access in (?)
@@ -139,7 +139,7 @@ class DocRepository
             [$visible_ary],
             [Db::PARAM_STR_ARRAY]);
 
-        return $stmt->fetchAllAssociative();
+        return $res->fetchAllAssociative() ?: [];
 	}
 
 	public function get_docs_for_map_id(
@@ -150,7 +150,7 @@ class DocRepository
 	{
 		$docs = [];
 
-		$stmt = $this->db->executeQuery('select
+		$res = $this->db->executeQuery('select
 				coalesce(name, original_filename) as name,
 				id, filename, access, created_at
 			from ' . $schema . '.docs
@@ -160,7 +160,7 @@ class DocRepository
 			[$visible_ary, $map_id],
 			[Db::PARAM_STR_ARRAY, \PDO::PARAM_INT]);
 
-		while ($row = $stmt->fetchAssociative())
+		while ($row = $res->fetchAssociative())
 		{
 			$docs[] = $row;
 		}
