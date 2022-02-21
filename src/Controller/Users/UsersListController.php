@@ -407,7 +407,7 @@ class UsersListController extends AbstractController
 
                 $bulk_mail_content = $html_purifier->purify($bulk_mail_content);
 
-                $sel_users = $db->executeQuery('select u.*, c.value as mail
+                $res = $db->executeQuery('select u.*, c.value as mail
                     from ' . $pp->schema() . '.users u, ' .
                         $pp->schema() . '.contact c, ' .
                         $pp->schema() . '.type_contact tc
@@ -417,7 +417,7 @@ class UsersListController extends AbstractController
                         and tc.abbrev = \'mail\'',
                         [$user_ids], [Db::PARAM_INT_ARRAY]);
 
-                foreach ($sel_users as $sel_user)
+                while ($sel_user = $res->fetchAssociative())
                 {
                     if (!isset($sel_ary[$sel_user['id']]))
                     {
