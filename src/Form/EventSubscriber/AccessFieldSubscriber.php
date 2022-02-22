@@ -51,8 +51,10 @@ class AccessFieldSubscriber implements EventSubscriberInterface
 
         if ($this->pp->is_guest())
         {
+            /* to review
             throw new \LogicException('post access not allowed for guest role');
-            //
+            */
+
             unset($access_options['admin']);
             unset($access_options['user']);
         }
