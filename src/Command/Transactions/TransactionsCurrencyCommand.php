@@ -8,13 +8,16 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\Constraints\Range;
+use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Constraints\Type;
 
 class TransactionsCurrencyCommand implements CommandInterface
 {
-    #[Type('string')]
-    #[NotBlank()]
-    #[Length(min: 1, max: 40)]
+    #[Sequentially([
+        new NotBlank(),
+        new Type('string'),
+        new Length(min: 1, max: 40),
+    ])]
     #[ConfigMap(type: 'str', key: 'transactions.currency.name')]
     public $currency;
 
@@ -22,10 +25,11 @@ class TransactionsCurrencyCommand implements CommandInterface
     #[ConfigMap(type: 'bool', key: 'transactions.currency.timebased_en')]
     public $timebased_en;
 
-    #[Type('int')]
-    #[NotBlank()]
-    #[NotNull()]
-    #[Range(min: 1, max: 3600)]
+    #[Sequentially([
+        new NotBlank(),
+        new Type('int'),
+        new Range(min: 1, max: 3600),
+    ])]
     #[ConfigMap(type: 'int', key: 'transactions.currency.per_hour_ratio')]
     public $per_hour_ratio;
 }

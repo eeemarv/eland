@@ -8,6 +8,7 @@ use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\NotNull;
+use Symfony\Component\Validator\Constraints\Sequentially;
 
 class DocsCommand implements CommandInterface
 {
@@ -15,8 +16,10 @@ class DocsCommand implements CommandInterface
 
     public $original_filename;
 
-    #[NotBlank(groups: ['add'])]
-    #[File(maxSize: '10M', groups: ['add'])]
+    #[Sequentially([
+        new NotBlank(groups: ['add']),
+        new File(maxSize: '10M', groups: ['add']),
+    ])]
     public $file;
 
     #[Length(max: 60, groups: ['add', 'edit'])]
@@ -25,7 +28,9 @@ class DocsCommand implements CommandInterface
     #[Length(max: 60, groups: ['add', 'edit'])]
     public $map_name;
 
-    #[NotNull(groups: ['add', 'edit'])]
-    #[Choice(['admin', 'user', 'guest'], groups: ['add', 'edit'])]
+    #[Sequentially([
+        new NotNull(groups: ['add', 'edit']),
+        new Choice(['admin', 'user', 'guest'], groups: ['add', 'edit']),
+    ])]
     public $access;
 }

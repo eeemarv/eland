@@ -10,24 +10,15 @@ use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class ConfigMailAddrCommand implements CommandInterface
 {
+    #[All([
+        new Email(),
+    ])]
     #[ConfigMap(type: 'ary', key: 'mail.addresses.admin')]
     public $admin;
 
+    #[All([
+        new Email(),
+    ])]
     #[ConfigMap(type: 'ary', key: 'mail.addresses.support')]
     public $support;
-
-    public static function loadValidatorMetadata(ClassMetadata $metadata)
-    {
-        $metadata->addPropertyConstraint('admin', new All([
-            'constraints' => [
-                new Email(),
-            ],
-        ]));
-
-        $metadata->addPropertyConstraint('support', new All([
-            'constraints' => [
-                new Email(),
-            ],
-        ]));
-    }
 }

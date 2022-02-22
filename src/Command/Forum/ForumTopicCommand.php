@@ -7,18 +7,25 @@ use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\NotNull;
+use Symfony\Component\Validator\Constraints\Sequentially;
 
 class ForumTopicCommand implements CommandInterface
 {
-    #[NotBlank()]
-    #[Length(max: 200)]
+    #[Sequentially([
+        new NotBlank(),
+        new Length(max: 200),
+    ])]
     public $subject;
 
-    #[NotBlank()]
-    #[Length(max: 10000)]
+    #[Sequentially([
+        new NotBlank(),
+        new Length(max: 10000),
+    ])]
     public $content;
 
-    #[NotNull()]
-    #[Choice(['admin', 'user', 'guest'])]
+    #[Sequentially([
+        new NotNull(),
+        new Choice(['admin', 'user', 'guest']),
+    ])]
     public $access;
 }

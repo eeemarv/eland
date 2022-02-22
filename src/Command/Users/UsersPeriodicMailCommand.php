@@ -3,16 +3,28 @@
 namespace App\Command\Users;
 
 use App\Command\CommandInterface;
+use Symfony\Component\Validator\Constraints\Json;
+use Symfony\Component\Validator\Constraints\NotNull;
+use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Constraints\Type;
 
 class UsersPeriodicMailCommand implements CommandInterface
 {
-    #[Type('int')]
+    #[Sequentially([
+        new NotNull(),
+        new Type('int'),
+    ])]
     public $days;
 
-    #[Type('string')]
+    #[Sequentially([
+        new NotNull(),
+        new Json(),
+    ])]
     public $block_layout;
 
-    #[Type('string')]
+    #[Sequentially([
+        new NotNull(),
+        new Json(),
+    ])]
     public $block_select_options;
 }

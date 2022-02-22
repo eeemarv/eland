@@ -4,6 +4,7 @@ namespace App\Command\Contacts;
 
 use App\Command\CommandInterface;
 use Symfony\Component\Validator\Constraints\Choice;
+use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Constraints\Type;
 
 class ContactsFilterCommand implements CommandInterface
@@ -14,8 +15,10 @@ class ContactsFilterCommand implements CommandInterface
     #[Type('int')]
     public $type;
 
-    #[Type('string')]
-    #[Choice(['active', 'new', 'leaving', 'inactive', 'ip', 'im', 'extern'])]
+    #[Sequentially([
+        new Type('string'),
+        new Choice(['active', 'new', 'leaving', 'inactive', 'ip', 'im', 'extern']),
+    ])]
     public $ustatus;
 
     #[Type('int')]

@@ -6,6 +6,7 @@ use App\Attributes\ConfigMap;
 use App\Command\CommandInterface;
 use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\NotNull;
+use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Constraints\Type;
 
 class UsersConfigNewCommand implements CommandInterface
@@ -14,18 +15,24 @@ class UsersConfigNewCommand implements CommandInterface
     #[ConfigMap(type: 'int', key: 'users.new.days')]
     public $days;
 
-    #[NotNull()]
-    #[Choice(['admin', 'user', 'guest'])]
+    #[Sequentially([
+        new NotNull(),
+        new Choice(['admin', 'user', 'guest']),
+    ])]
     #[ConfigMap(type: 'str', key: 'users.new.access')]
     public $access;
 
-    #[NotNull()]
-    #[Choice(['admin', 'user', 'guest'])]
+    #[Sequentially([
+        new NotNull(),
+        new Choice(['admin', 'user', 'guest']),
+    ])]
     #[ConfigMap(type: 'str', key: 'users.new.access_list')]
     public $access_list;
 
-    #[NotNull()]
-    #[Choice(['admin', 'user', 'guest'])]
+    #[Sequentially([
+        new NotNull(),
+        new Choice(['admin', 'user', 'guest']),
+    ])]
     #[ConfigMap(type: 'str', key: 'users.new.access_pane')]
     public $access_pane;
 }

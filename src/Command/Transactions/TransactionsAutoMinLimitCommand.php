@@ -5,12 +5,15 @@ namespace App\Command\Transactions;
 use App\Attributes\ConfigMap;
 use App\Command\CommandInterface;
 use Symfony\Component\Validator\Constraints\NotNull;
+use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Constraints\Type;
 
 class TransactionsAutoMinLimitCommand implements CommandInterface
 {
-    #[Type('int')]
-    #[NotNull()]
+    #[Sequentially([
+        new NotNull(),
+        new Type('int'),
+    ])]
     #[ConfigMap(type: 'int', key: 'accounts.limits.auto_min.percentage')]
     public $percentage;
 

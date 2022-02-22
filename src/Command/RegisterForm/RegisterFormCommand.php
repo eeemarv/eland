@@ -8,33 +8,29 @@ use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Sequentially;
-use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class RegisterFormCommand implements CommandInterface
 {
+    #[Sequentially([
+        new NotBlank(),
+        new Email(),
+        new EmailNotRegisteredYet(),
+    ])]
     public $email;
-    public $first_name;
-    public $last_name;
-    public $postcode;
-    public $mobile;
-    public $phone;
 
-    public static function loadValidatorMetadata(ClassMetadata $metadata)
-    {
-        $metadata->addPropertyConstraint('email', new Sequentially([
-            'constraints'   => [
-                new NotBlank(),
-                new Email(),
-                new EmailNotRegisteredYet(),
-            ],
-        ]));
-        $metadata->addPropertyConstraint('first_name', new NotBlank());
-        $metadata->addPropertyConstraint('last_name', new NotBlank());
-        $metadata->addPropertyConstraint('postcode', new Sequentially([
-            'constraints'   => [
-                new NotBlank(),
-                new Length(['min' => 4, 'max' => 10]),
-            ],
-        ]));
-    }
+    #[NotBlank()]
+    public $first_name;
+
+    #[NotBlank()]
+    public $last_name;
+
+    #[Sequentially([
+        new NotBlank(),
+        new Length(min: 4, max: 10)
+    ])]
+    public $postcode;
+
+    public $mobile;
+
+    public $phone;
 }

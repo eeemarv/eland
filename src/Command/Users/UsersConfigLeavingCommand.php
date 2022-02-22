@@ -6,6 +6,7 @@ use App\Attributes\ConfigMap;
 use App\Command\CommandInterface;
 use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\NotNull;
+use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Constraints\Type;
 
 class UsersConfigLeavingCommand implements CommandInterface
@@ -18,18 +19,24 @@ class UsersConfigLeavingCommand implements CommandInterface
     #[ConfigMap(type: 'bool', key: 'users.leaving.auto_deactivate')]
     public $auto_deactivate;
 
-    #[NotNull()]
-    #[Choice(['admin', 'user', 'guest'])]
+    #[Sequentially([
+        new NotNull(),
+        new Choice(['admin', 'user', 'guest']),
+    ])]
     #[ConfigMap(type: 'str', key: 'users.leaving.access')]
     public $access;
 
-    #[NotNull()]
-    #[Choice(['admin', 'user', 'guest'])]
+    #[Sequentially([
+        new NotNull(),
+        new Choice(['admin', 'user', 'guest']),
+    ])]
     #[ConfigMap(type: 'str', key: 'users.leaving.access_pane')]
     public $access_list;
 
-    #[NotNull()]
-    #[Choice(['admin', 'user', 'guest'])]
+    #[Sequentially([
+        new NotNull(),
+        new Choice(['admin', 'user', 'guest']),
+    ])]
     #[ConfigMap(type: 'str', key: 'users.leaving.access_list')]
     public $access_pane;
 }
