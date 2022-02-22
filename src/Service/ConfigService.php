@@ -27,20 +27,6 @@ class ConfigService
 		$this->local_cache_en = php_sapi_name() !== 'cli';
 	}
 
-	protected function is_sequential_ary(array $ary):bool
-	{
-		$i = 0;
-		foreach($ary as $k => $v)
-		{
-			if ($k !== $i)
-			{
-				return false;
-			}
-			$i++;
-		}
-		return true;
-	}
-
 	protected function flatten_load_ary(string $prefix, array $ary):void
 	{
 		foreach($ary as $key => $value)
@@ -53,7 +39,7 @@ class ConfigService
 				continue;
 			}
 
-			if ($this->is_sequential_ary($value))
+			if (array_is_list($value))
 			{
 				$this->load_ary[$id] = $value;
 				continue;
