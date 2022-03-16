@@ -82,6 +82,8 @@ password_strength:
 type:
   not_an_integer: >-
     De waarde is geen integer.
+  not_an_array: >-
+    De waarde is geen array.
 
 user:
   no_access: >-

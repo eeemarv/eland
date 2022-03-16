@@ -9,7 +9,6 @@ use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 
@@ -51,10 +50,6 @@ class AccessFieldSubscriber implements EventSubscriberInterface
 
         if ($this->pp->is_guest())
         {
-            /* to review
-            throw new \LogicException('post access not allowed for guest role');
-            */
-
             unset($access_options['admin']);
             unset($access_options['user']);
         }
@@ -99,9 +94,6 @@ class AccessFieldSubscriber implements EventSubscriberInterface
 
             if (count($access_options) === 1)
             {
-                $form->add($name, HiddenType::class, [
-                    'data'  => reset($access_options),
-                ]);
                 continue;
             }
 
@@ -142,6 +134,7 @@ class AccessFieldSubscriber implements EventSubscriberInterface
                     continue;
                 }
 
+                error_log('DATA');
                 error_log(var_export($data, true));
 
                 if (is_string($data[$name]))
