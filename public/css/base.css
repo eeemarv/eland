@@ -863,3 +863,65 @@ element {
 .bg-lightgrey {
   background-color: lightgrey;
 }
+
+/*** mimic bootstrap 5 classes **/
+
+.position-relative { position: relative; }
+.position-absolute { position: absolute; }
+.d-flex { display: flex; }
+.flex-column { flex-direction: column; }
+.justify-content-start { justify-content: start; }
+.justify-content-end { justify-content: end; }
+.justify-content-center { justify-content: center; }
+.justify-content-between { justify-content: space-between; }
+.justify-content-around { justify-content: space-around; }
+.align-items-start { align-items: start; }
+.align-items-end { align-items: end; }
+.align-items-center { align-items: center; }
+.align-items-baseline { align-items: baseline; }
+.align-items-stretch { align-items: stretch; }
+.align-self-start { align-self: start; }
+.align-self-end { align-self: end; }
+.align-self-center { align-self: center; }
+.align-self-baseline { align-self: baseline; }
+.align-self-stretch { align-self: stretch; }
+.p-0 { padding: 0; }
+.m-0 { margin: 0; }
+.pt-0 { padding-top: 0; }
+.pb-0 { padding-bottom: 0; }
+.ps-0 { padding-left: 0; }
+.pe-0 { padding-right: 0; }
+.mt-0 { margin-top: 0; }
+.mb-0 { margin-bottom: 0; }
+.ms-0 { margin-left: 0; }
+.me-0 { margin-right: 0; }
+.p-1 { padding: 5px; }
+.m-1 { margin: 5px; }
+.pt-1 { padding-top: 5px; }
+.pb-1 { padding-bottom: 5px; }
+.ps-1 { padding-left: 5px; }
+.pe-1 { padding-right: 5px; }
+.mt-1 { margin-top: 5px; }
+.mb-1 { margin-bottom: 5px; }
+.ms-1 { margin-left: 5px; }
+.me-1 { margin-right: 5px; }
+.p-2 { padding: 10px; }
+.m-2 { margin: 10px; }
+.pt-2 { padding-top: 10px; }
+.pb-2 { padding-bottom: 10px; }
+.ps-2 { padding-left: 10px; }
+.pe-2 { padding-right: 10px; }
+.mt-2 { margin-top: 10px; }
+.mb-2 { margin-bottom: 10px; }
+.ms-2 { margin-left: 10px; }
+.me-2 { margin-right: 10px; }
+.p-3 { padding: 15px; }
+.m-3 { margin: 15px; }
+.pt-3 { padding-top: 15px; }
+.pb-3 { padding-bottom: 15px; }
+.ps-3 { padding-left: 15px; }
+.pe-3 { padding-right: 15px; }
+.mt-3 { margin-top: 15px; }
+.mb-3 { margin-bottom: 15px; }
+.ms-3 { margin-left: 15px; }
+.me-3 { margin-right: 15px; }
