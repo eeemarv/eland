@@ -925,3 +925,8 @@ element {
 .mb-3 { margin-bottom: 15px; }
 .ms-3 { margin-left: 15px; }
 .me-3 { margin-right: 15px; }
+
+/** text background **/
+.bg-darken {
+  background-color: rgba(0, 0, 0, 0.5);
+}
