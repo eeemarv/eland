@@ -925,6 +925,20 @@ element {
 .mb-3 { margin-bottom: 15px; }
 .ms-3 { margin-left: 15px; }
 .me-3 { margin-right: 15px; }
+.top-0 { top: 0; }
+.bottom-0 { bottom: 0; }
+.start-0 { left: 0; }
+.end-0 { right: 0; }
+.w-25 { width: 25%; }
+.w-50 { width: 50%; }
+.w-75 { width: 75%; }
+.w-100 { width: 100%; }
+.h-25 { height: 25%; }
+.h-50 { height: 50%; }
+.h-75 { height: 75%; }
+.h-100 { height: 100%; }
+.text-white { color: #fff; }
+
 
 /** text background **/
 .bg-darken {
