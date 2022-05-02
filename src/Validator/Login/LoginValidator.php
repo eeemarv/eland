@@ -8,14 +8,14 @@ use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use App\Service\PageParamsService;
-use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use App\Security\User;
 use App\Service\ConfigService;
+use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 
 class LoginValidator extends ConstraintValidator
 {
     public function __construct(
-        protected EncoderFactoryInterface $encoder_factory,
+        protected PasswordHasherFactoryInterface $password_hasher_factory,
         protected UserRepository $user_repository,
         protected ConfigService $config_service,
         protected PageParamsService $pp,
@@ -38,11 +38,11 @@ class LoginValidator extends ConstraintValidator
 
         $login_lowercase = strtolower($command->login);
         $password = $command->password;
-        $encoder = $this->encoder_factory->getEncoder(new User());
+        $password_hasher = $this->password_hasher_factory->getPasswordHasher(new User());
 
         if ($login_lowercase === 'master'
             && $this->env_master_password
-            && $encoder->isPasswordValid($this->env_master_password, $password, null))
+            && $password_hasher->verify($this->env_master_password, $password))
         {
             $command->is_master = true;
             return;
@@ -161,7 +161,7 @@ class LoginValidator extends ConstraintValidator
 
         if ($user['password'] === hash('sha512', $password))
         {
-            $hashed_password = $encoder->encodePassword($password, null);
+            $hashed_password = $password_hasher->hash($password);
 
             $this->user_repository->set_password(
                 $command->id,
@@ -174,12 +174,25 @@ class LoginValidator extends ConstraintValidator
             return;
         }
 
-        if (!$encoder->isPasswordValid($user['password'], $password, null))
+        if (!$password_hasher->verify($user['password'], $password))
         {
             $this->context->buildViolation('login.password.not_correct')
                 ->atPath('password')
                 ->addViolation();
             return;
+        }
+
+        if ($password_hasher->needsRehash($user['password'])){
+
+            $hashed_password = $password_hasher->hash($password);
+
+            $this->user_repository->set_password(
+                $command->id,
+                $hashed_password,
+                $this->pp->schema()
+            );
+
+            $command->password_hashing_updated = true;
         }
     }
 }

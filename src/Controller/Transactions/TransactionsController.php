@@ -112,12 +112,12 @@ class TransactionsController extends AbstractController
         $filter_form->handleRequest($request);
         $filter_command = $filter_form->getData();
 
-        $f_params = $request->query->get('f', []);
+        $f_params = $request->query->all('f');
         $filter_form_error = (isset($f_params['from_account']) && !isset($filter_command->from_account))
             || (isset($f_params['to_account']) && !isset($filter_command->to_account));
 
-        $pag = $request->query->get('p', []);
-        $sort = $request->query->get('s', []);
+        $pag = $request->query->all('p');
+        $sort = $request->query->all('s');
 
         $pag_start = $pag['start'] ?? 0;
         $pag_limit = $pag['limit'] ?? 25;
@@ -126,10 +126,10 @@ class TransactionsController extends AbstractController
 
         $all_params = $request->query->all();
 
-        $selected_transactions = $request->request->get('sel', []);
-        $bulk_field = $request->request->get('bulk_field', []);
-        $bulk_verify = $request->request->get('bulk_verify', []);
-        $bulk_submit = $request->request->get('bulk_submit', []);
+        $selected_transactions = $request->request->all('sel');
+        $bulk_field = $request->request->all('bulk_field');
+        $bulk_verify = $request->request->all('bulk_verify');
+        $bulk_submit = $request->request->all('bulk_submit');
 
         if ($request->isMethod('POST')
             && $pp->is_admin()

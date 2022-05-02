@@ -32,7 +32,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -56,11 +56,11 @@ class UsersListController extends AbstractController
 
     public function __invoke(
         Request $request,
+        RequestStack $request_stack,
         string $status,
         Db $db,
         AccountRepository $account_repository,
         LoggerInterface $logger,
-        SessionInterface $session,
         AccountRender $account_render,
         AlertService $alert_service,
         CacheService $cache_service,
@@ -85,6 +85,8 @@ class UsersListController extends AbstractController
         {
             throw new AccessDeniedHttpException('No access for status: ' . $status);
         }
+
+        $session = $request_stack->getSession();
 
         $full_name_enabled = $config_service->get_bool('users.fields.full_name.enabled', $pp->schema());
         $postcode_enabled = $config_service->get_bool('users.fields.postcode.enabled', $pp->schema());
@@ -129,15 +131,15 @@ class UsersListController extends AbstractController
         $filter_form = $this->createForm(QTextSearchFilterType::class);
         $filter_form->handleRequest($request);
 
-        $show_columns = $request->query->get('sh') ?? [];
+        $show_columns = $request->query->all('sh');
 
-        $selected_users = $request->request->get('sel', []);
+        $selected_users = $request->request->all('sel');
         $bulk_mail_subject = $request->request->get('bulk_mail_subject', '');
         $bulk_mail_content = $request->request->get('bulk_mail_content', '');
         $bulk_mail_cc = $request->request->has('bulk_mail_cc');
-        $bulk_field = $request->request->get('bulk_field', []);
-        $bulk_verify = $request->request->get('bulk_verify', []);
-        $bulk_submit = $request->request->get('bulk_submit', []);
+        $bulk_field = $request->request->all('bulk_field');
+        $bulk_verify = $request->request->all('bulk_verify');
+        $bulk_submit = $request->request->all('bulk_submit');
 
         $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
 

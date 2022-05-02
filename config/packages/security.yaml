@@ -1,11 +1,13 @@
 security:
-    encoders:
-        App\Security\User:
-            algorithm: auto
+    #symf 5
+    #encoders:
+    #    App\Security\User:
+    #        algorithm: auto
     enable_authenticator_manager: true
     # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
     password_hashers:
-        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+        App\Security\User: 'auto'
+    # sym 5    Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
         # used to reload user from session & other features (e.g. switch_user)
@@ -17,6 +19,7 @@ security:
             security: false
         main:
             access_denied_handler: App\Security\AccessDeniedHandler
+            provider: app_user_provider
         # main:
         #    lazy: true
         #    provider: users_in_memory

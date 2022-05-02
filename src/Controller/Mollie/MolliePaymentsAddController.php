@@ -67,7 +67,7 @@ class MolliePaymentsAddController extends AbstractController
         $params = [];
 
         $q = $request->get('q', '');
-        $amount = $request->request->get('amount', []);
+        $amount = $request->request->all('amount', []);
         $description = trim($request->request->get('description', ''));
         $verify = $request->request->get('verify');
 

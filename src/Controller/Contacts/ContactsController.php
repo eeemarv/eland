@@ -61,15 +61,15 @@ class ContactsController extends AbstractController
         $filter_form->handleRequest($request);
         $filter_command = $filter_form->getData();
 
-        $f_params = $request->query->get('f', []);
+        $f_params = $request->query->all('f');
         $filter_form_error = isset($f_params['user']) && !isset($filter_command->user);
 
         $intersystem_enabled = $config_service->get_bool('intersystem.enabled', $pp->schema());
 
-        $selected_contacts = $request->request->get('sel', []);
-        $bulk_field = $request->request->get('bulk_field', []);
-        $bulk_verify = $request->request->get('bulk_verify', []);
-        $bulk_submit = $request->request->get('bulk_submit', []);
+        $selected_contacts = $request->request->all('sel');
+        $bulk_field = $request->request->all('bulk_field');
+        $bulk_verify = $request->request->all('bulk_verify');
+        $bulk_submit = $request->request->all('bulk_submit');
 
         if ($request->isMethod('POST')
             && count($bulk_submit))
@@ -162,8 +162,8 @@ class ContactsController extends AbstractController
             $alert_service->error($errors);
         }
 
-        $pag = $request->query->get('p', []);
-        $sort = $request->query->get('s', []);
+        $pag = $request->query->all('p');
+        $sort = $request->query->all('s');
 
         $pag_start = $pag['start'] ?? 0;
         $pag_limit = $pag['limit'] ?? 25;

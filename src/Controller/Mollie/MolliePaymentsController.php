@@ -105,11 +105,11 @@ class MolliePaymentsController extends AbstractController
             $show_leaving_status = $item_access_service->is_visible($leaving_users_access);
         }
 
-        $filter = $request->query->get('f', []);
-        $pag = $request->query->get('p', []);
-        $sort = $request->query->get('s', []);
+        $filter = $request->query->all('f');
+        $pag = $request->query->all('p');
+        $sort = $request->query->all('s');
 
-        $selected = $request->request->get('sel', []);
+        $selected = $request->request->all('sel');
         $bulk_mail_subject = $request->request->get('bulk_mail_subject', '');
         $bulk_mail_content = $request->request->get('bulk_mail_content', '');
         $bulk_mail_cc = $request->request->has('bulk_mail_cc');

@@ -5,10 +5,12 @@ namespace App\Service;
 use App\Cnst\RoleCnst;
 use App\Service\UserCacheService;
 use App\Service\PageParamsService;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 class SessionUserService
 {
+	protected Session $session;
 	protected string $schema;
 	protected string $system;
 	protected bool $is_system_self;
@@ -25,11 +27,12 @@ class SessionUserService
 	protected array $ary;
 
 	public function __construct(
-		protected SessionInterface $session,
+		protected RequestStack $request_stack,
 		protected PageParamsService $pp,
 		protected UserCacheService $user_cache_service
 	)
 	{
+		$this->session = $request_stack->getSession();
 		$this->load_session();
 		$this->load_user_role();
 	}

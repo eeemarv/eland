@@ -4,7 +4,6 @@ namespace App\Service;
 
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
@@ -17,12 +16,12 @@ class AlertService
 	public function __construct(
 		RequestStack $request_stack,
 		protected LoggerInterface $logger,
-		protected SessionInterface $session,
 		protected PageParamsService $pp
 	)
 	{
 		$this->request = $request_stack->getCurrentRequest();
-		$this->flash_bag = $this->session->getFlashBag();
+		$session = $request_stack->getSession();
+		$this->flash_bag = $session->getFlashBag();
 	}
 
 	protected function add(string $type, $message, bool $log_en):void

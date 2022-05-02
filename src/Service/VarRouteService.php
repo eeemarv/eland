@@ -6,20 +6,21 @@ use App\Cnst\PagesCnst;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 class VarRouteService
 {
+	protected Session $session;
 	protected array $var_route_ary;
 	protected bool $is_admin;
 
 	public function __construct(
 		protected RequestStack $request_stack,
-		protected SessionInterface $session,
 		protected PageParamsService $pp,
 		protected ConfigService $config_service
 	)
 	{
+		$this->session = $this->request_stack->getSession();
 		$this->init();
 	}
 

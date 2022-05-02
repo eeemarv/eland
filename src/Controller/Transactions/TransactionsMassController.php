@@ -214,7 +214,7 @@ class TransactionsMassController extends AbstractController
             [$from_code] = explode(' ', $from_code);
         }
 
-        $amount = $request->request->get('amount', []);
+        $amount = $request->request->all('amount');
         $description = trim($request->request->get('description', ''));
         $mail_en = $request->request->has('mail_en');
 

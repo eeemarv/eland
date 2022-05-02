@@ -143,10 +143,10 @@ class MessagesListController extends AbstractController
         $intersytem_en = $config_service->get_intersystem_en($pp->schema());
         $bulk_actions_enabled = $category_enabled || $expires_at_enabled || $intersytem_en;
 
-        $selected_messages = $request->request->get('sel', []);
-        $bulk_field = $request->request->get('bulk_field', []);
-        $bulk_verify = $request->request->get('bulk_verify', []);
-        $bulk_submit = $request->request->get('bulk_submit', []);
+        $selected_messages = $request->request->all('sel');
+        $bulk_field = $request->request->all('bulk_field');
+        $bulk_verify = $request->request->all('bulk_verify');
+        $bulk_submit = $request->request->all('bulk_submit');
 
         if ($request->isMethod('POST')
             && !$pp->is_guest()
@@ -921,11 +921,11 @@ class MessagesListController extends AbstractController
             $filter_command->user = $uid;
         }
 
-        $f_params = $request->query->get('f', []);
+        $f_params = $request->query->all('f');
         $filter_form_error = isset($f_params['user']) && !isset($filter_command->user);
 
-        $pag = $request->query->get('p', []);
-        $sort = $request->query->get('s', []);
+        $pag = $request->query->all('p');
+        $sort = $request->query->all('s');
 
         $sort_col = $sort['col'] ?? 'created';
         $sort_col = isset(self::COLUMNS_DEF_ARY[$sort_col]) ? $sort_col : 'created';

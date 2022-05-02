@@ -49,7 +49,7 @@ class TransactionsSumController extends AbstractController
         PageParamsService $pp
     ):Response
     {
-        $ex_codes = $request->query->get('ex', []);
+        $ex_codes = $request->query->all('ex');
 
         if (!is_array($ex_codes))
         {

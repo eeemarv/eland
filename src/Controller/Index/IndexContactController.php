@@ -6,8 +6,8 @@ use App\Service\CaptchaService;
 use App\Service\FormTokenService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -22,7 +22,7 @@ class IndexContactController extends AbstractController
 
     public function __invoke(
         Request $request,
-        SessionInterface $session,
+        RequestStack $request_stack,
         FormTokenService $form_token_service,
         CaptchaService $captcha_service,
         string $env_mail_hoster_address,
@@ -41,6 +41,8 @@ class IndexContactController extends AbstractController
 
         if ($request->isMethod('POST'))
         {
+            $session = $request_stack->getSession();
+
             $to = $env_mail_hoster_address;
             $from = $env_mail_from_address;
 

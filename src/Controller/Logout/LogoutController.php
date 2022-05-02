@@ -8,9 +8,9 @@ use App\Service\SessionUserService;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Annotation\Route;
 
 class LogoutController extends AbstractController
@@ -29,13 +29,15 @@ class LogoutController extends AbstractController
     public function __invoke(
         Request $request,
         Db $db,
-        SessionInterface $session,
+        RequestStack $request_stack,
         LoggerInterface $logger,
         AlertService $alert_service,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
     {
+        $session = $request_stack->getSession();
+
         foreach($su->logins() as $schema => $user_id)
         {
             if ($user_id === 'master')

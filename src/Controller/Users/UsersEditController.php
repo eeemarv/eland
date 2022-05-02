@@ -32,8 +32,8 @@ use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
 class UsersEditController extends AbstractController
 {
@@ -93,7 +93,7 @@ class UsersEditController extends AbstractController
         bool $is_self,
         Db $db,
         AccountRepository $account_repository,
-        EncoderFactoryInterface $encoder_factory,
+        PasswordHasherFactoryInterface $password_hasher_factory,
         AlertService $alert_service,
         ConfigService $config_service,
         DateFormatService $date_format_service,
@@ -186,7 +186,7 @@ class UsersEditController extends AbstractController
         $min_limit = trim($request->request->get('min_limit', ''));
         $max_limit = trim($request->request->get('max_limit', ''));
         $periodic_overview_en = $request->request->has('periodic_overview_en');
-        $contact = $request->request->get('contact', []);
+        $contact = $request->request->all('contact');
 
         $is_owner = $is_edit
             && $su->is_owner($id);
@@ -498,8 +498,8 @@ class UsersEditController extends AbstractController
                 {
                     $post_user['adate'] = gmdate('Y-m-d H:i:s');
 
-                    $encoder = $encoder_factory->getEncoder(new User());
-                    $post_user['password'] = $encoder->encodePassword($password, null);
+                    $password_hasher = $password_hasher_factory->getPasswordHasher(new User());
+                    $post_user['password'] = $password_hasher->hash($password);
                 }
                 else if ($is_add)
                 {

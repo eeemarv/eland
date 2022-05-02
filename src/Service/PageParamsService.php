@@ -96,7 +96,7 @@ class PageParamsService
 			}
 			else
 			{
-				$edit = $this->request->query->get('edit', []);
+				$edit = $this->request->query->all('edit');
 
 				if ($edit && isset($edit['en']) && $edit['en'] === '1')
 				{

@@ -52,8 +52,8 @@ class LogsController extends AbstractController
         $filter_form->handleRequest($request);
         $filter_command = $filter_form->getData();
 
-        $pag = $request->query->get('p', []);
-        $sort = $request->query->get('s', []);
+        $pag = $request->query->all('p');
+        $sort = $request->query->all('s');
 
         $log_db_service->update();
 
