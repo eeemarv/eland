@@ -16,8 +16,8 @@ use App\Service\SessionUserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
 class PasswordResetConfirmController extends AbstractController
 {
@@ -38,7 +38,7 @@ class PasswordResetConfirmController extends AbstractController
 
     public function __invoke(
         Request $request,
-        EncoderFactoryInterface $encoder_factory,
+        PasswordHasherFactoryInterface $password_hasher_factory,
         string $token,
         UserRepository $user_repository,
         DataTokenService $data_token_service,
@@ -81,8 +81,9 @@ class PasswordResetConfirmController extends AbstractController
             && $form->isValid())
         {
             $command = $form->getData();
-            $encoder = $encoder_factory->getEncoder(new User());
-            $hashed_password = $encoder->encodePassword($command->password, null);
+
+            $password_hasher = $password_hasher_factory->getPasswordHasher(new User());
+            $hashed_password = $password_hasher->hash($command->password);
 
             $user_repository->set_password($user_id, $hashed_password, $pp->schema());
 
