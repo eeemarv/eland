@@ -20,26 +20,26 @@ class ContactsCommand implements CommandInterface
     #[NotBlank()]
     public $user_id;
 
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotBlank(),
         new Type('int'),
     ])]
     public $contact_type_id;
 
-    #[Sequentially([
+    #[Sequentially(constraints:[
         new NotBlank(),
         new Type('string'),
         new Length(max: 120),
     ])]
     public $value;
 
-    #[Sequentially([
+    #[Sequentially(constraints:[
         new Type('string'),
         new Length(max: 60),
     ])]
     public $comments;
 
-    #[Sequentially([
+    #[Sequentially(constraints:[
         new NotBlank(),
         new Type('string'),
         new Choice(['admin', 'user', 'guest']),

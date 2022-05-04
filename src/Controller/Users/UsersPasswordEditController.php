@@ -16,8 +16,8 @@ use App\Service\UserCacheService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
 class UsersPasswordEditController extends AbstractController
 {
@@ -53,7 +53,7 @@ class UsersPasswordEditController extends AbstractController
 
     public function __invoke(
         Request $request,
-        EncoderFactoryInterface $encoder_factory,
+        PasswordHasherFactoryInterface $password_hasher_factory,
         int $id,
         bool $is_self,
         UserRepository $user_repository,
@@ -91,8 +91,8 @@ class UsersPasswordEditController extends AbstractController
             && $form->isValid())
         {
             $command = $form->getData();
-            $encoder = $encoder_factory->getEncoder(new User());
-            $hashed_password = $encoder->encodePassword($command->password, null);
+            $password_hasher = $password_hasher_factory->getPasswordHasher(new User());
+            $hashed_password = $password_hasher->hash($command->password);
             $user_repository->set_password($id, $hashed_password, $pp->schema());
 
             $alert_service->success('Paswoord opgeslagen.');
