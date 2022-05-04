@@ -91,8 +91,13 @@ class ContactsAddController extends AbstractController
             $command->user_id = $user_id;
         }
 
+        $form_options = [
+            'validation_groups' => ['add'],
+            'user_id_enabled'   => $redirect_contacts,
+        ];
+
         $form = $this->createForm(ContactsType::class,
-            $command, ['user_id_enabled' => $redirect_contacts]);
+            $command, $form_options);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()

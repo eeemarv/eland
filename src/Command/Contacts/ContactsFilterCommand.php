@@ -9,21 +9,21 @@ use Symfony\Component\Validator\Constraints\Type;
 
 class ContactsFilterCommand implements CommandInterface
 {
-    #[Type('string')]
+    #[Type('string', groups: ['filter'])]
     public $q;
 
-    #[Type('int')]
+    #[Type('int', groups: ['filter'])]
     public $type;
 
     #[Sequentially([
-        new Type('string'),
-        new Choice(['active', 'new', 'leaving', 'inactive', 'ip', 'im', 'extern']),
+        new Type('string', groups: ['filter']),
+        new Choice(['active', 'new', 'leaving', 'inactive', 'ip', 'im', 'extern'], groups: ['filter']),
     ])]
     public $ustatus;
 
-    #[Type('int')]
+    #[Type('int', groups: ['filter'])]
     public $user;
 
-    #[Choice(choices: ['admin', 'user', 'guest'], multiple: true)]
+    #[Choice(choices: ['admin', 'user', 'guest'], multiple: true, groups: ['filter'])]
     public $access;
 }

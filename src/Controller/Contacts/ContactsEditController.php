@@ -120,6 +120,10 @@ class ContactsEditController extends AbstractController
         $command->comments = $contact['comments'];
         $command->access = $contact['access'];
 
+        $form_options = [
+            'validation_groups'     => ['edit'],
+        ];
+
         $form = $this->createForm(ContactsType::class, $command);
         $form->handleRequest($request);
 

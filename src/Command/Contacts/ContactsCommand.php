@@ -11,38 +11,38 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Constraints\Type;
 
-#[UniqueEmailContact()]
-#[UrlContact()]
+#[UniqueEmailContact(groups: ['add', 'edit'])]
+#[UrlContact(groups: ['add', 'eddit'])]
 class ContactsCommand implements CommandInterface
 {
     public $id;
 
-    #[NotBlank()]
+    #[NotBlank(groups: ['add', 'edit'])]
     public $user_id;
 
     #[Sequentially(constraints: [
-        new NotBlank(),
-        new Type('int'),
+        new NotBlank(groups: ['add', 'edit']),
+        new Type('int', groups: ['add', 'edit']),
     ])]
     public $contact_type_id;
 
     #[Sequentially(constraints:[
-        new NotBlank(),
-        new Type('string'),
-        new Length(max: 120),
+        new NotBlank(groups: ['add', 'edit']),
+        new Type('string', groups: ['add', 'edit']),
+        new Length(max: 120, groups: ['add', 'edit']),
     ])]
     public $value;
 
     #[Sequentially(constraints:[
-        new Type('string'),
-        new Length(max: 60),
+        new Type('string', groups: ['add', 'edit']),
+        new Length(max: 60, groups: ['add', 'edit']),
     ])]
     public $comments;
 
     #[Sequentially(constraints:[
-        new NotBlank(),
-        new Type('string'),
-        new Choice(['admin', 'user', 'guest']),
+        new NotBlank(groups: ['add', 'edit']),
+        new Type('string', groups: ['add', 'edit']),
+        new Choice(['admin', 'user', 'guest'], groups: ['add', 'edit']),
     ])]
     public $access;
 }

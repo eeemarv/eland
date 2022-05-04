@@ -57,7 +57,9 @@ class ContactsController extends AbstractController
             $filter_command->user = (int) $uid;
         }
 
-        $filter_form = $this->createForm(ContactsFilterType::class, $filter_command);
+        $filter_form_options = ['validation_groups' => ['filter']];
+
+        $filter_form = $this->createForm(ContactsFilterType::class, $filter_command, $filter_form_options);
         $filter_form->handleRequest($request);
         $filter_command = $filter_form->getData();
 
