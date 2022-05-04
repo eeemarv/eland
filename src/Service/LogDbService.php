@@ -29,9 +29,16 @@ class LogDbService
 				break;
 			}
 
+			error_log('DB_LOG_JSON: ');
+			error_log(var_export($log_json, true));
+
 			unset($user_id);
 
 			$log = json_decode($log_json, true);
+
+			if (is_null($log)){
+				break;
+			}
 
 			$context = $log['context'];
 			$extra = $log['extra'];
