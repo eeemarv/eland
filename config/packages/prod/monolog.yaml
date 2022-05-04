@@ -4,7 +4,7 @@ monolog:
         stream:
             path: "php://stdout"
             type: stream
-            level: debug
+            level: info
             formatter: Bramus\Monolog\Formatter\ColoredLineFormatter
             #channels: ["app"]
         redis:
