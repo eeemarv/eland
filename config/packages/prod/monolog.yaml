@@ -6,7 +6,7 @@ monolog:
             type: stream
             level: debug
             formatter: Bramus\Monolog\Formatter\ColoredLineFormatter
-            channels: ["app"]
+            #channels: ["app"]
         redis:
             type: service
             id: snc_redis.monolog.handler
