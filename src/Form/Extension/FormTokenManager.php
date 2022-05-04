@@ -4,14 +4,14 @@ namespace App\Form\Extension;
 
 use App\Form\Extension\FormTokenManagerInterface;
 use App\Service\TokenGeneratorService;
-use Predis\Client as Predis;
+use Redis;
 
 class FormTokenManager implements FormTokenManagerInterface
 {
     protected string $token;
 
     public function __construct(
-        protected Predis $predis,
+        protected Redis $predis,
         protected TokenGeneratorService $token_generator_service
     )
     {

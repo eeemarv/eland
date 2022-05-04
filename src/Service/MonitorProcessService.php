@@ -3,7 +3,7 @@
 namespace App\Service;
 
 use Doctrine\DBAL\Connection as Db;
-use Predis\Client as Predis;
+use Redis;
 use App\Service\CacheService;
 use App\Cnst\ProcessCnst;
 
@@ -16,7 +16,7 @@ class MonitorProcessService
 
 	public function __construct(
 		protected Db $db,
-		protected Predis $predis,
+		protected Redis $predis,
 		protected CacheService $cache_service
 	)
 	{
@@ -63,7 +63,7 @@ class MonitorProcessService
 		$now = time();
 		$monitor = $this->predis->get('monitor_processes');
 
-		if (isset($monitor))
+		if (is_string($monitor))
 		{
 			$monitor = json_decode($monitor, true);
 		}

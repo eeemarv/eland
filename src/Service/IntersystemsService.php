@@ -3,7 +3,7 @@
 namespace App\Service;
 
 use Doctrine\DBAL\Connection as Db;
-use Predis\Client as Predis;
+use Redis;
 use App\Service\SystemsService;
 use App\Service\ConfigService;
 
@@ -20,7 +20,7 @@ class IntersystemsService
 
 	public function __construct(
 		protected Db $db,
-		protected Predis $predis,
+		protected Redis $predis,
 		protected SystemsService $systems_service,
 		protected ConfigService $config_service
 	)

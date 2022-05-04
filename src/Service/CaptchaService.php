@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-use Predis\Client as Predis;
+use Redis;
 use App\Service\FormTokenService;
 use Gregwar\Captcha\CaptchaBuilder;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,7 +17,7 @@ class CaptchaService
 
 	public function __construct(
 		RequestStack $request_stack,
-		protected Predis $predis,
+		protected Redis $predis,
 		protected FormTokenService $form_token_service
 	)
 	{
