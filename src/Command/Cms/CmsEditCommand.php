@@ -10,20 +10,20 @@ use Symfony\Component\Validator\Constraints\Type;
 class CmsEditCommand
 {
     #[Sequentially([
-        new NotNull(),
-        new Type('string'),
+        new NotNull(groups: ['edit']),
+        new Type('string', groups: ['edit']),
     ])]
     public $route;
 
     #[Sequentially([
-        new NotNull(),
-        new Json(),
+        new NotNull(groups: ['edit']),
+        new Json(groups: ['edit']),
     ])]
     public $all_params;
 
     #[Sequentially([
-        new NotNull(),
-        new Json(),
+        new NotNull(groups: ['edit']),
+        new Json(groups: ['edit']),
     ])]
     public $content;
 }

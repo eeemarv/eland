@@ -59,8 +59,10 @@ class DocsAddController extends AbstractController
             $command->map_name = $map_name;
         }
 
+        $form_options = ['validation_groups' => ['add']];
+
         $form = $this->createForm(DocsAddType::class,
-                $command, ['validation_groups' => ['add']]);
+                $command, $form_options);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()

@@ -49,7 +49,8 @@ class CmsEditController extends AbstractController
     ):Response
     {
         $command = new CmsEditCommand();
-        $form = $this->createForm(CmsEditType::class, $command);
+        $form_options = ['validation_groups' => ['edit']];
+        $form = $this->createForm(CmsEditType::class, $command, $form_options);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()

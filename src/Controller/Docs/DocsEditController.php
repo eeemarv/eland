@@ -64,8 +64,10 @@ class DocsEditController extends AbstractController
             $command->map_name = $doc_map['name'];
         }
 
+        $form_options = ['validation_groups' => ['edit']];
+
         $form = $this->createForm(DocsEditType::class,
-                $command, ['validation_groups' => ['edit']]);
+                $command, $form_options);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()

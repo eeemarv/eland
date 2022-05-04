@@ -55,8 +55,9 @@ class CategoriesController extends AbstractController
         $command = new CategoriesListCommand();
 
         $command->categories = json_encode($input_ary);
+        $form_options = ['validation_groups' => ['edit']];
 
-        $form = $this->createForm(CategoriesListType::class, $command, ['validation_groups' => ['edit']])
+        $form = $this->createForm(CategoriesListType::class, $command, $form_options)
             ->handleRequest($request);
 
         if ($form->isSubmitted()

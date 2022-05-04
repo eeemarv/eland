@@ -52,11 +52,13 @@ class DocsMapEditController extends AbstractController
         $command->id = $id;
         $command->name = $doc_map['name'];
 
+        $form_options = [
+            'render_omit' => $doc_map['name'],
+            'validation_groups' => ['edit'],
+        ];
+
         $form = $this->createForm(DocsMapType::class,
-            $command, [
-                'render_omit' => $doc_map['name'],
-                'validation_groups' => ['edit'],
-            ]);
+            $command, $form_options);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()
