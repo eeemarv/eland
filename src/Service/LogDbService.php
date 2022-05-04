@@ -4,7 +4,7 @@ namespace App\Service;
 
 use App\Monolog\RedisHandler;
 use Doctrine\DBAL\Connection as Db;
-use Predis\Client as Predis;
+use Redis;
 
 class LogDbService
 {
@@ -12,7 +12,7 @@ class LogDbService
 
 	public function __construct(
 		protected Db $db,
-		protected Predis $predis,
+		protected Redis $predis,
 		protected SystemsService $systems_service
 	)
 	{

@@ -3,7 +3,7 @@
 namespace App\Service;
 
 use Doctrine\DBAL\Connection as Db;
-use Predis\Client as Predis;
+use Redis;
 use Psr\Log\LoggerInterface;
 
 /*
@@ -24,7 +24,7 @@ class CacheService
 
 	public function __construct(
 		protected Db $db,
-		protected Predis $predis,
+		protected Redis $predis,
 		protected LoggerInterface $logger
 	)
 	{
@@ -92,7 +92,7 @@ class CacheService
 
 		$data = $this->predis->get(self::PREFIX . $id);
 
-		if (isset($data))
+		if (is_string($data))
 		{
 			return $data;
 		}

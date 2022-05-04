@@ -9,7 +9,7 @@ use App\Service\SystemsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
-use Predis\Client as Predis;
+use Redis;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -31,7 +31,7 @@ class IntersystemsController extends AbstractController
 
     public function __invoke(
         Db $db,
-        Predis $predis,
+        Redis $predis,
         ConfigService $config_service,
         LinkRender $link_render,
         PageParamsService $pp,
@@ -73,7 +73,7 @@ class IntersystemsController extends AbstractController
             }
             else
             {
-                $intersystems[$key]['user_count'] = $predis->get($sys_host . '_active_user_count');
+                $intersystems[$key]['user_count'] = $predis->get($sys_host . '_active_user_count') ?: 0;
             }
         }
 

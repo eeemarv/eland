@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-use Predis\Client as Predis;
+use Redis;
 use App\Service\TokenGeneratorService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -18,7 +18,7 @@ class FormTokenService
 
 	public function __construct(
 		RequestStack $request_stack,
-		protected Predis $predis,
+		protected Redis $predis,
 		protected TokenGeneratorService $token_generator_service
 	)
 	{

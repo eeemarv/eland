@@ -3,7 +3,7 @@
 namespace App\Service;
 
 use Doctrine\DBAL\Connection as Db;
-use Predis\Client as Predis;
+use Redis;
 
 class UserCacheService
 {
@@ -16,7 +16,7 @@ class UserCacheService
 
 	public function __construct(
 		protected Db $db,
-		protected Predis $predis
+		protected Redis $predis
 	)
 	{
 		$this->is_cli = php_sapi_name() === 'cli' ? true : false;

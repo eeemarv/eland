@@ -77,14 +77,11 @@ services:
     App\Service\PageParamsService:
         lazy: true
 
-    Predis\Client:
-        arguments:
-            - '%env(REDIS_URL)%'
-            - {prefix: eland_}
+    Redis: '@snc_redis.default'
 
     Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler:
         arguments:
-            - '@Predis\Client'
+            - '@snc_redis.default'
             - {prefix: session_, ttl: 864000}
 
     Bramus\Monolog\Formatter\ColoredLineFormatter: ~

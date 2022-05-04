@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-use Predis\Client as Predis;
+use Redis;
 use App\Service\TokenGeneratorService;
 
 class DataTokenService
@@ -10,7 +10,7 @@ class DataTokenService
 	const KEY = 'data_token_%token%_%name%_%schema%';
 
 	public function __construct(
-		protected Predis $predis,
+		protected Redis $predis,
 		protected TokenGeneratorService $token_generator_service
 	)
 	{

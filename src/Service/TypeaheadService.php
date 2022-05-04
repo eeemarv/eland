@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-use Predis\Client as Predis;
+use Redis;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -17,7 +17,7 @@ class TypeaheadService
 	protected array $fetch_ary;
 
 	public function __construct(
-		protected Predis $predis,
+		protected Redis $predis,
 		protected LoggerInterface $logger,
 		protected UrlGeneratorInterface $url_generator
 	)
@@ -63,7 +63,7 @@ class TypeaheadService
 			}
 		}
 
-		if (!isset($thumbprint))
+		if (!$thumbprint)
 		{
 			$hash_rnd = hash('crc32b', random_bytes(4));
 			$thumbprint = substr_replace($hash_rnd, '-', rand(1, 6), 1);

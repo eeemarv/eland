@@ -3,7 +3,7 @@
 namespace App\Service;
 
 use Doctrine\DBAL\Connection as Db;
-use Predis\Client as Predis;
+use Redis;
 
 class StaticContentService
 {
@@ -14,7 +14,7 @@ class StaticContentService
 
 	public function __construct(
 		protected Db $db,
-		protected Predis $predis
+		protected Redis $predis
 	)
 	{
 	}
@@ -174,7 +174,7 @@ class StaticContentService
 
 		$str = $this->predis->hget($key, $field);
 
-		if (isset($str))
+		if (is_string($str))
 		{
 			$this->local_cache[$field] = $str;
 			return $str;

@@ -4,7 +4,7 @@ namespace App\Monolog;
 
 use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\JsonFormatter;
-use Predis\Client as Predis;
+use Redis;
 use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\Logger;
 
@@ -13,7 +13,7 @@ class RedisHandler extends AbstractProcessingHandler
     const KEY = 'monolog_logs';
 
     public function __construct(
-        protected Predis $predis,
+        protected Redis $predis,
         $level = Logger::DEBUG,
         $bubble = true
     )

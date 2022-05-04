@@ -6,7 +6,7 @@ use App\Attributes\ConfigMap;
 use App\Command\CommandInterface;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
-use Predis\Client as Predis;
+use Redis;
 use ReflectionClass;
 use Symfony\Component\Validator\Exception\LogicException;
 
@@ -21,7 +21,7 @@ class ConfigService
 
 	public function __construct(
 		protected Db $db,
-		protected Predis $predis
+		protected Redis $predis
 	)
 	{
 		$this->local_cache_en = php_sapi_name() !== 'cli';
@@ -73,7 +73,7 @@ class ConfigService
 		$key = self::PREFIX . $schema;
 		$data_json = $this->predis->get($key);
 
-		if (isset($data_json))
+		if (is_string($data_json))
 		{
 			$data = json_decode($data_json, true);
 		}
