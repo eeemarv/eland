@@ -6,10 +6,10 @@ use App\Command\CommandInterface;
 use App\Validator\DocMap\DocMapUniqueName;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
-#[DocMapUniqueName()]
+#[DocMapUniqueName(groups: ['edit'])]
 class DocsMapCommand implements CommandInterface
 {
-    #[NotBlank()]
+    #[NotBlank(groups: ['edit'])]
     public $name;
 
     public $id;
