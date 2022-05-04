@@ -53,7 +53,13 @@ class ForumTopicController extends AbstractController
         $topic = $forum_repository->get_topic_with_prev_next($id, $visible_ary, $pp->schema());
 
         $command = new ForumPostCommand();
-        $form = $this->createForm(ForumPostType::class, $command);
+
+        $form_options = [
+            'validation_groups' => ['add'],
+        ];
+
+        $form = $this->createForm(ForumPostType::class, $command, $form_options);
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted()

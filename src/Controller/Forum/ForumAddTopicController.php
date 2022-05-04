@@ -46,7 +46,11 @@ class ForumAddTopicController extends AbstractController
 
         $command = new ForumTopicCommand();
 
-        $form = $this->createForm(ForumTopicType::class, $command);
+        $form_options = [
+            'validation_groups' => ['add'],
+        ];
+
+        $form = $this->createForm(ForumTopicType::class, $command, $form_options);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()

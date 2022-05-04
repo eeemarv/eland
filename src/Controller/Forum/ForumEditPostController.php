@@ -72,7 +72,11 @@ class ForumEditPostController extends AbstractController
         $command = new ForumPostCommand();
         $command->content = $forum_post['content'];
 
-        $form = $this->createForm(ForumPostType::class, $command);
+        $form_options = [
+            'validation_groups' => ['edit'],
+        ];
+
+        $form = $this->createForm(ForumPostType::class, $command, $form_options);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()

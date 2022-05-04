@@ -10,8 +10,8 @@ use Symfony\Component\Validator\Constraints\Sequentially;
 class ForumPostCommand implements CommandInterface
 {
     #[Sequentially([
-        new NotBlank(),
-        new Length(max: 10000),
+        new NotBlank(groups: ['add', 'edit']),
+        new Length(max: 10000, groups: ['add', 'edit']),
     ])]
     public $content;
 }
