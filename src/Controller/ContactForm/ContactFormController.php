@@ -52,9 +52,12 @@ class ContactFormController extends AbstractController
 
         $command = new ContactFormCommand();
 
-        $form = $this->createForm(ContactFormType::class, $command, [
-            'disabled' => $form_disabled,
-        ]);
+        $form_options = [
+            'validation_groups' => ['send'],
+            'disabled'          => $form_disabled,
+        ];
+
+        $form = $this->createForm(ContactFormType::class, $command, $form_options);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()
