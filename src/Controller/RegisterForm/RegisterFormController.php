@@ -49,7 +49,12 @@ class RegisterFormController extends AbstractController
         $postcode_enabled = $config_service->get_bool('users.fields.postcode.enabled', $pp->schema());
 
         $command = new RegisterFormCommand();
-        $form = $this->createForm(RegisterFormType::class, $command);
+
+        $form_options = [
+            'validation_groups' => ['send'],
+        ];
+
+        $form = $this->createForm(RegisterFormType::class, $command, $form_options);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()

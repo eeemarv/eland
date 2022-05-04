@@ -73,8 +73,15 @@ class PasswordResetConfirmController extends AbstractController
         }
 
         $command = new PasswordResetConfirmCommand();
+
+        $form_options = [
+            'validation_groups' => ['edit'],
+            'disabled' => $form_disabled,
+        ];
+
         $form = $this->createForm(PasswordResetConfirmType::class,
-            $command, ['disabled' => $form_disabled]);
+            $command, $form_options);
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted()

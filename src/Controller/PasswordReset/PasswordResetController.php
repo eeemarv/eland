@@ -42,7 +42,13 @@ class PasswordResetController extends AbstractController
     ):Response
     {
         $command = new PasswordResetCommand();
-        $form = $this->createForm(PasswordResetType::class, $command);
+
+        $form_options = [
+            'validation_groups' => ['send'],
+        ];
+
+        $form = $this->createForm(PasswordResetType::class, $command, $form_options);
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted()

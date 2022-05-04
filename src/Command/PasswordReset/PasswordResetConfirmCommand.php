@@ -11,9 +11,9 @@ use Symfony\Component\Validator\Constraints\Sequentially;
 class PasswordResetConfirmCommand implements CommandInterface
 {
     #[Sequentially([
-        new NotBlank(),
-        new Length(min: 5, max: 100),
-        new PasswordStrength(),
+        new NotBlank(groups: ['edit']),
+        new Length(min: 5, max: 100, groups: ['edit']),
+        new PasswordStrength(groups: ['edit']),
     ])]
     public $password;
 }
