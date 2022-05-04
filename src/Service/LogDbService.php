@@ -24,7 +24,7 @@ class LogDbService
 		{
 			$log_json = $this->predis->lpop(RedisHandler::KEY);
 
-			if (!isset($log_json))
+			if (!$log_json)
 			{
 				break;
 			}
