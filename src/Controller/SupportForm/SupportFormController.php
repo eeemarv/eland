@@ -61,9 +61,14 @@ class SupportFormController extends AbstractController
 
         $command = new SupportFormCommand();
         $command->cc = true;
-        $form = $this->createForm(SupportFormType::class, $command, [
+
+        $form_options = [
+            'validation_groups'     => ['send'],
             'disabled'  => $form_disabled,
-        ]);
+        ];
+
+        $form = $this->createForm(SupportFormType::class, $command, $form_options);
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted()
