@@ -53,7 +53,11 @@ class NewsEditController extends AbstractController
         $command->content = $news_item['content'];
         $command->access = $news_item['access'];
 
-        $form = $this->createForm(NewsType::class, $command);
+        $form_options = [
+            'validation_groups' => ['edit'],
+        ];
+
+        $form = $this->createForm(NewsType::class, $command, $form_options);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()

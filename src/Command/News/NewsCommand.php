@@ -15,26 +15,26 @@ class NewsCommand implements CommandInterface
     public $id;
 
     #[Sequentially([
-        new NotBlank(),
-        new Length(max: 200),
+        new NotBlank(groups: ['add', 'edit']),
+        new Length(max: 200, groups: ['add', 'edit']),
     ])]
     public $subject;
 
     public $event_at;
 
-    #[Length(max: 128)]
+    #[Length(max: 128, groups: ['add', 'edit'])]
     public $location;
 
     #[Sequentially([
-        new NotBlank(),
-        new Length(min: 10, max: 10000),
+        new NotBlank(groups: ['add', 'edit']),
+        new Length(min: 10, max: 10000, groups: ['add', 'edit']),
     ])]
     public $content;
 
     #[Sequentially([
-        new NotNull(),
-        new Type('string'),
-        new Choice(['admin', 'user', 'guest']),
+        new NotNull(groups: ['add', 'edit']),
+        new Type('string', groups: ['add', 'edit']),
+        new Choice(['admin', 'user', 'guest'], groups: ['add', 'edit', 'del']),
     ])]
     public $access;
 }

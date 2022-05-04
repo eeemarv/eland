@@ -45,7 +45,12 @@ class NewsAddController extends AbstractController
         }
 
         $command = new NewsCommand();
-        $form = $this->createForm(NewsType::class, $command);
+
+        $form_options = [
+            'validation_groups' => ['add'],
+        ];
+
+        $form = $this->createForm(NewsType::class, $command, $form_options);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()
