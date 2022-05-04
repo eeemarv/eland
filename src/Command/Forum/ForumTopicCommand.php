@@ -24,7 +24,7 @@ class ForumTopicCommand implements CommandInterface
     public $content;
 
     #[Sequentially([
-        new NotNull(groups: ['add', 'edit']),
+        new NotNull(groups: ['add', 'edit', 'del']),
         new Choice(['admin', 'user', 'guest'], groups: ['add', 'edit']),
     ])]
     public $access;
