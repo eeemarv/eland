@@ -67,11 +67,11 @@
 		"symfony/yaml": "^6",
 		"twig/extra-bundle": "^3",
 		"twig/twig": "^3",
-		"xemlock/htmlpurifier-html5": "^0.1.11"
+		"xemlock/htmlpurifier-html5": "^0.1.11",
+		"symfony/debug-bundle": "^6"
 	},
 
     "require-dev": {
-		"symfony/debug-bundle": "^6",
 		"symfony/maker-bundle": "^1.13",
 		"symfony/phpunit-bridge": "^6.0",
 		"symfony/stopwatch": "^6",
