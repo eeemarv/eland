@@ -37,7 +37,8 @@ class NewsType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class'    => NewsCommand::class,
+            'data_class'        => NewsCommand::class,
+            'validation_groups' => ['Default'],
         ]);
     }
 }
