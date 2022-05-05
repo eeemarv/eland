@@ -36,7 +36,13 @@ class ContactTypesAddController extends AbstractController
     ):Response
     {
         $command = new ContactTypesCommand();
-        $form = $this->createForm(ContactTypesType::class, $command);
+
+        $form_options = [
+            'validation_groups' => ['add'],
+        ];
+
+        $form = $this->createForm(ContactTypesType::class, $command, $form_options);
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted()

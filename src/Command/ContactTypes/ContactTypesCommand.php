@@ -8,20 +8,20 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Sequentially;
 
-#[UniqueContactType(['properties' => ['name', 'abbrev']])]
+#[UniqueContactType(['properties' => ['name', 'abbrev']], groups: ['add', 'edit'])]
 class ContactTypesCommand implements CommandInterface
 {
     public $id;
 
     #[Sequentially([
-        new NotBlank(),
-        new Length(max: 20),
+        new NotBlank(groups: ['add', 'edit']),
+        new Length(max: 20, groups: ['add', 'edit']),
     ])]
     public $name;
 
     #[Sequentially([
-        new NotBlank(),
-        new Length(max: 5),
+        new NotBlank(groups: ['add', 'edit']),
+        new Length(max: 5, groups: ['add', 'edit', 'del']),
     ])]
     public $abbrev;
 }

@@ -49,7 +49,13 @@ class ContactTypesEditController extends AbstractController
         $command->id = $id;
         $command->name = $contact_type['name'];
         $command->abbrev = $contact_type['abbrev'];
-        $form = $this->createForm(ContactTypesType::class, $command);
+
+        $form_options = [
+            'validation_groups' => ['edit'],
+        ];
+
+        $form = $this->createForm(ContactTypesType::class, $command, $form_options);
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted()
