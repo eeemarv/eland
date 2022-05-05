@@ -148,9 +148,12 @@ class ContactsDelController extends AbstractController
         $command->comments = $contact['comments'];
         $command->access = $contact['access'];
 
-        $form = $this->createForm(ContactsDelType::class, $command, [
+        $form_options = [
             'contact_type_abbrev'   => $contact_type['abbrev'],
-        ]);
+            'validation_groups'     => ['del'],
+        ];
+
+        $form = $this->createForm(ContactsDelType::class, $command, $form_options);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()

@@ -42,7 +42,7 @@ class ContactsCommand implements CommandInterface
     #[Sequentially(constraints:[
         new NotBlank(groups: ['add', 'edit']),
         new Type('string', groups: ['add', 'edit']),
-        new Choice(['admin', 'user', 'guest'], groups: ['add', 'edit']),
+        new Choice(['admin', 'user', 'guest'], groups: ['add', 'edit', 'del']),
     ])]
     public $access;
 }
