@@ -13,13 +13,13 @@ class ContactTypesCommand implements CommandInterface
 {
     public $id;
 
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotBlank(groups: ['add', 'edit']),
         new Length(max: 20, groups: ['add', 'edit']),
     ])]
     public $name;
 
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotBlank(groups: ['add', 'edit']),
         new Length(max: 5, groups: ['add', 'edit', 'del']),
     ])]

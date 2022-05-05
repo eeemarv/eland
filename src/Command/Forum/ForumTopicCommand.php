@@ -11,21 +11,21 @@ use Symfony\Component\Validator\Constraints\Sequentially;
 
 class ForumTopicCommand implements CommandInterface
 {
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotBlank(groups: ['add', 'edit']),
         new Length(max: 200, groups: ['add', 'edit']),
     ])]
     public $subject;
 
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotBlank(groups: ['add', 'edit']),
         new Length(max: 10000, groups: ['add', 'edit']),
     ])]
     public $content;
 
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotNull(groups: ['add', 'edit', 'del']),
-        new Choice(['admin', 'user', 'guest'], groups: ['add', 'edit']),
+        new Choice(choices: ['admin', 'user', 'guest'], groups: ['add', 'edit']),
     ])]
     public $access;
 }

@@ -6,17 +6,16 @@ use App\Attributes\ConfigMap;
 use App\Command\CommandInterface;
 use Symfony\Component\Validator\Constraints\All;
 use Symfony\Component\Validator\Constraints\Email;
-use Symfony\Component\Validator\Mapping\ClassMetadata;
 
 class ConfigMailAddrCommand implements CommandInterface
 {
-    #[All([
+    #[All(constraints: [
         new Email(),
     ])]
     #[ConfigMap(type: 'ary', key: 'mail.addresses.admin')]
     public $admin;
 
-    #[All([
+    #[All(constraints: [
         new Email(),
     ])]
     #[ConfigMap(type: 'ary', key: 'mail.addresses.support')]

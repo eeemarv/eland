@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Constraints\Type;
 
 class MessagesFilterCommand implements CommandInterface
 {
-    #[Type('string')]
+    #[Type(type: 'string')]
     public $q;
 
     public $cat;
@@ -28,7 +28,7 @@ class MessagesFilterCommand implements CommandInterface
     #[Choice(choices: ['active', 'new', 'leaving'], multiple: true)]
     public $us;
 
-    #[Type('int')]
+    #[Type(type: 'int')]
     public $user;
 
     public $uid;

@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints\Sequentially;
 
 class ConfigDateFormatCommand implements CommandInterface
 {
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotNull(),
         new NotBlank(),
     ])]

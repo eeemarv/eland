@@ -16,21 +16,21 @@ use Symfony\Component\Validator\Constraints\Sequentially;
 // not used yet
 class MessagesCommand implements CommandInterface
 {
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotBlank(),
         new ActiveUser(),
     ], groups: ['user_id'])]
     public $user_id;
 
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotNull(),
-        new Choice(['offer', 'want']),
+        new Choice(choices: ['offer', 'want']),
     ], groups: ['common'])]
     public $offer_want;
 
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotNull(),
-        new Choice(['service', 'stuff']),
+        new Choice(choices: ['service', 'stuff']),
     ], groups: ['service_stuff'])]
     public $service_stuff;
 

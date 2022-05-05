@@ -9,15 +9,17 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Constraints\Type;
 
+use function PHPSTORM_META\type;
+
 class UsersPasswordEditCommand Implements CommandInterface
 {
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotBlank(groups: ['user', 'admin']),
         new Length(min: 5, max: 100, groups: ['user', 'admin']),
         new PasswordStrength(groups: ['user']),
     ])]
     public $password;
 
-    #[Type('bool')]
+    #[Type(type: 'bool')]
     public $notify;
 }

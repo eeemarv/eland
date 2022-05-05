@@ -16,7 +16,7 @@ class DocsCommand implements CommandInterface
 
     public $original_filename;
 
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotBlank(groups: ['add']),
         new File(maxSize: '10M', groups: ['add']),
     ])]
@@ -28,9 +28,9 @@ class DocsCommand implements CommandInterface
     #[Length(max: 60, groups: ['add', 'edit'])]
     public $map_name;
 
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotNull(groups: ['add', 'edit']),
-        new Choice(['admin', 'user', 'guest'], groups: ['add', 'edit']),
+        new Choice(choices: ['admin', 'user', 'guest'], groups: ['add', 'edit']),
     ])]
     public $access;
 }

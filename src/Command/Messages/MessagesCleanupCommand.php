@@ -12,26 +12,26 @@ use Symfony\Component\Validator\Constraints\Type;
 
 class MessagesCleanupCommand implements CommandInterface
 {
-    #[Sequentially([
+    #[Sequentially(constraints:  [
         new Positive(),
         new Range(min: 1, max: 1460),
     ])]
     #[ConfigMap(type: 'int', key: 'messages.fields.expires_at.days_default')]
     public $expires_at_days_default;
 
-    #[Type('bool')]
+    #[Type(type: 'bool')]
     #[ConfigMap(type: 'bool', key: 'messages.fields.expires_at.required')]
     public $expires_at_required;
 
-    #[Type('bool')]
+    #[Type(type: 'bool')]
     #[ConfigMap(type: 'bool', key: 'messages.fields.expires_at.switch_enabled')]
     public $expires_at_switch_enabled;
 
-    #[Type('bool')]
+    #[Type(type: 'bool')]
     #[ConfigMap(type: 'bool', key: 'messages.cleanup.enabled')]
     public $cleanup_enabled;
 
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotBlank(),
         new Positive(),
         new Range(min: 1, max: 365),
@@ -39,7 +39,7 @@ class MessagesCleanupCommand implements CommandInterface
     #[ConfigMap(type: 'int', key: 'messages.cleanup.after_days')]
     public $cleanup_after_days;
 
-    #[Type('bool')]
+    #[Type(type: 'bool')]
     #[ConfigMap(type: 'bool', key: 'messages.expire.notify')]
     public $expire_notify;
 }

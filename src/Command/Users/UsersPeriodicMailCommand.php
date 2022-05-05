@@ -10,19 +10,19 @@ use Symfony\Component\Validator\Constraints\Type;
 
 class UsersPeriodicMailCommand implements CommandInterface
 {
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotNull(),
-        new Type('int'),
+        new Type(type: 'int'),
     ])]
     public $days;
 
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotNull(),
         new Json(),
     ])]
     public $block_layout;
 
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotNull(),
         new Json(),
     ])]

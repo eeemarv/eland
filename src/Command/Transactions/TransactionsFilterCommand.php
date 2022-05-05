@@ -8,22 +8,22 @@ use Symfony\Component\Validator\Constraints\Type;
 
 class TransactionsFilterCommand implements CommandInterface
 {
-    #[Type('string')]
+    #[Type(type: 'string')]
     public $q;
 
-    #[Type('int')]
+    #[Type(type: 'int')]
     public $from_account;
 
-    #[Choice(['and', 'or', 'nor'])]
+    #[Choice(choices: ['and', 'or', 'nor'])]
     public $account_logic;
 
-    #[Type('int')]
+    #[Type(type: 'int')]
     public $to_account;
 
-    #[Type('string')]
+    #[Type(type: 'string')]
     public $from_date;
 
-    #[Type('string')]
+    #[Type(type: 'string')]
     public $to_date;
 
     #[Choice(choices:['srvc', 'stff', 'null'], multiple: true)]

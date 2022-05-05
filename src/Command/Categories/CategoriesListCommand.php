@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Constraints\Sequentially;
 
 class CategoriesListCommand
 {
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotBlank(groups: ['edit']),
         new Json(groups: ['edit']),
     ])]

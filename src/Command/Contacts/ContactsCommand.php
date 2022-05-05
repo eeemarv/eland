@@ -22,27 +22,27 @@ class ContactsCommand implements CommandInterface
 
     #[Sequentially(constraints: [
         new NotBlank(groups: ['add', 'edit']),
-        new Type('int', groups: ['add', 'edit']),
+        new Type(type: 'int', groups: ['add', 'edit']),
     ])]
     public $contact_type_id;
 
     #[Sequentially(constraints:[
         new NotBlank(groups: ['add', 'edit']),
-        new Type('string', groups: ['add', 'edit']),
+        new Type(type: 'string', groups: ['add', 'edit']),
         new Length(max: 120, groups: ['add', 'edit']),
     ])]
     public $value;
 
     #[Sequentially(constraints:[
-        new Type('string', groups: ['add', 'edit']),
+        new Type(type: 'string', groups: ['add', 'edit']),
         new Length(max: 60, groups: ['add', 'edit']),
     ])]
     public $comments;
 
     #[Sequentially(constraints:[
         new NotBlank(groups: ['add', 'edit']),
-        new Type('string', groups: ['add', 'edit']),
-        new Choice(['admin', 'user', 'guest'], groups: ['add', 'edit', 'del']),
+        new Type(type: 'string', groups: ['add', 'edit']),
+        new Choice(choices: ['admin', 'user', 'guest'], groups: ['add', 'edit', 'del']),
     ])]
     public $access;
 }

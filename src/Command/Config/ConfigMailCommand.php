@@ -11,11 +11,11 @@ use Symfony\Component\Validator\Constraints\Type;
 
 class ConfigMailCommand implements CommandInterface
 {
-    #[Type('bool')]
+    #[Type(type: 'bool')]
     #[ConfigMap(type: 'bool', key: 'mail.enabled')]
     public $enabled;
 
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotBlank(),
         new Length(max: 20),
     ])]

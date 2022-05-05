@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Constraints\Sequentially;
 
 class RegisterFormCommand implements CommandInterface
 {
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotBlank(groups: ['send']),
         new Email(groups: ['send']),
         new EmailNotRegisteredYet(groups: ['send']),
@@ -24,7 +24,7 @@ class RegisterFormCommand implements CommandInterface
     #[NotBlank(groups: ['send'])]
     public $last_name;
 
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotBlank(groups: ['send']),
         new Length(min: 4, max: 10, groups: ['send'])
     ])]

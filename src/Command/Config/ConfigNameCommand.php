@@ -8,9 +8,11 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Sequentially;
 
+use function Aws\constantly;
+
 class ConfigNameCommand implements CommandInterface
 {
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotBlank(),
         new Length(max: 60),
     ])]

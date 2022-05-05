@@ -11,25 +11,25 @@ use Symfony\Component\Validator\Constraints\Type;
 
 class UsersConfigNewCommand implements CommandInterface
 {
-    #[Type('int')]
+    #[Type(type: 'int')]
     #[ConfigMap(type: 'int', key: 'users.new.days')]
     public $days;
 
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotNull(),
         new Choice(['admin', 'user', 'guest']),
     ])]
     #[ConfigMap(type: 'str', key: 'users.new.access')]
     public $access;
 
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotNull(),
         new Choice(['admin', 'user', 'guest']),
     ])]
     #[ConfigMap(type: 'str', key: 'users.new.access_list')]
     public $access_list;
 
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotNull(),
         new Choice(['admin', 'user', 'guest']),
     ])]

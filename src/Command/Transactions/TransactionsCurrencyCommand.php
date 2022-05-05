@@ -13,19 +13,19 @@ use Symfony\Component\Validator\Constraints\Type;
 
 class TransactionsCurrencyCommand implements CommandInterface
 {
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotBlank(),
-        new Type('string'),
+        new Type(type: 'string'),
         new Length(min: 1, max: 40),
     ])]
     #[ConfigMap(type: 'str', key: 'transactions.currency.name')]
     public $currency;
 
-    #[Type('bool')]
+    #[Type(type: 'bool')]
     #[ConfigMap(type: 'bool', key: 'transactions.currency.timebased_en')]
     public $timebased_en;
 
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotBlank(),
         new Type('int'),
         new Range(min: 1, max: 3600),

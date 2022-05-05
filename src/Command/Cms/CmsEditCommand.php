@@ -9,19 +9,19 @@ use Symfony\Component\Validator\Constraints\Type;
 
 class CmsEditCommand
 {
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotNull(groups: ['edit']),
-        new Type('string', groups: ['edit']),
+        new Type(type: 'string', groups: ['edit']),
     ])]
     public $route;
 
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotNull(groups: ['edit']),
         new Json(groups: ['edit']),
     ])]
     public $all_params;
 
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotNull(groups: ['edit']),
         new Json(groups: ['edit']),
     ])]

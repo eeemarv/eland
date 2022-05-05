@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints\Sequentially;
 #[GroupSequence(['CategoriesNameCommand', 'unique_name'])]
 class CategoriesNameCommand
 {
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotBlank(),
         new Length(min: 1, max: 40),
     ])]

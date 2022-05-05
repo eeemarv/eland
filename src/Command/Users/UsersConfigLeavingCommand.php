@@ -11,29 +11,29 @@ use Symfony\Component\Validator\Constraints\Type;
 
 class UsersConfigLeavingCommand implements CommandInterface
 {
-    #[Type('int')]
+    #[Type(type: 'int')]
     #[ConfigMap(type: 'int', key: 'accounts.equilibrium')]
     public $equilibrium;
 
-    #[Type('bool')]
+    #[Type(type: 'bool')]
     #[ConfigMap(type: 'bool', key: 'users.leaving.auto_deactivate')]
     public $auto_deactivate;
 
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotNull(),
         new Choice(['admin', 'user', 'guest']),
     ])]
     #[ConfigMap(type: 'str', key: 'users.leaving.access')]
     public $access;
 
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotNull(),
         new Choice(['admin', 'user', 'guest']),
     ])]
     #[ConfigMap(type: 'str', key: 'users.leaving.access_pane')]
     public $access_list;
 
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotNull(),
         new Choice(['admin', 'user', 'guest']),
     ])]

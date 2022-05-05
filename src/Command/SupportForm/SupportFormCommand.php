@@ -10,12 +10,12 @@ use Symfony\Component\Validator\Constraints\Type;
 
 class SupportFormCommand implements CommandInterface
 {
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotBlank(groups: ['send']),
         new Length(min: 10, max: 10000, groups: ['send']),
     ])]
     public $message;
 
-    #[Type('bool', groups: ['send'])]
+    #[Type(type: 'bool', groups: ['send'])]
     public $cc;
 }

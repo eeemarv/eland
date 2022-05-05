@@ -44,6 +44,7 @@
 		"symfony/config": "^6",
 		"symfony/console": "^6",
 		"symfony/contracts": "^3",
+		"symfony/debug-bundle": "^6",
 		"symfony/dotenv": "^6",
 		"symfony/finder": "^6",
 		"symfony/flex": "^2",
@@ -67,8 +68,7 @@
 		"symfony/yaml": "^6",
 		"twig/extra-bundle": "^3",
 		"twig/twig": "^3",
-		"xemlock/htmlpurifier-html5": "^0.1.11",
-		"symfony/debug-bundle": "^6"
+		"xemlock/htmlpurifier-html5": "^0.1.11"
 	},
 
     "require-dev": {

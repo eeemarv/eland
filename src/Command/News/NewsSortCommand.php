@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Constraints\Type;
 
 class NewsSortCommand implements CommandInterface
 {
-    #[Type('bool')]
+    #[Type(type: 'bool')]
     #[ConfigMap(type: 'bool', key: 'news.sort.asc')]
     public $sort_asc;
 }

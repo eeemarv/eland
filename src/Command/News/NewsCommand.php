@@ -16,7 +16,7 @@ class NewsCommand implements CommandInterface
 {
     public $id;
 
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotBlank(groups: ['add', 'edit']),
         new Length(max: 200, groups: ['add', 'edit']),
     ])]
@@ -27,13 +27,13 @@ class NewsCommand implements CommandInterface
     #[Length(max: 128, groups: ['add', 'edit'])]
     public $location;
 
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotBlank(groups: ['add', 'edit']),
         new Length(min: 10, max: 10000, groups: ['add', 'edit']),
     ])]
     public $content;
 
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotNull(groups: ['add', 'edit']),
         new Type('string', groups: ['add', 'edit']),
         new Choice(['admin', 'user', 'guest'], groups: ['add', 'edit', 'del']),

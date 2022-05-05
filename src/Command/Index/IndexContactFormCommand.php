@@ -10,13 +10,13 @@ use Symfony\Component\Validator\Constraints\Sequentially;
 
 class IndexContactFormCommand implements CommandInterface
 {
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotBlank(groups: ['send']),
         new Email(groups: ['send']),
     ])]
     public $email;
 
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotBlank(groups: ['send']),
         new Length(min: 10, max: 5000, groups: ['send']),
     ])]

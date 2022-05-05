@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints\Sequentially;
 
 class PasswordResetCommand implements CommandInterface
 {
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotBlank(groups: ['send']),
         new Email(groups: ['send']),
         new EmailUniqueToActiveUser(groups: ['send']),

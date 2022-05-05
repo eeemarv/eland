@@ -10,18 +10,18 @@ use Symfony\Component\Validator\Constraints\Type;
 
 class TransactionsAutoMinLimitCommand implements CommandInterface
 {
-    #[Sequentially([
+    #[Sequentially(constraints: [
         new NotNull(),
-        new Type('int'),
+        new Type(type: 'int'),
     ])]
     #[ConfigMap(type: 'int', key: 'accounts.limits.auto_min.percentage')]
     public $percentage;
 
-    #[Type('string')]
+    #[Type(type: 'string')]
     #[ConfigMap(type: 'str', key: 'accounts.limits.auto_min.exclude.to')]
     public $exclude_to;
 
-    #[Type('string')]
+    #[Type(type: 'string')]
     #[ConfigMap(type: 'str', key: 'accounts.limits.auto_min.exclude.from')]
     public $exclude_from;
 }
