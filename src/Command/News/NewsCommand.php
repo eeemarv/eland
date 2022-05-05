@@ -4,12 +4,14 @@ namespace App\Command\News;
 
 use App\Command\CommandInterface;
 use Symfony\Component\Validator\Constraints\Choice;
+use Symfony\Component\Validator\Constraints\GroupSequence;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Constraints\Type;
 
+#[GroupSequence(['NewsCommand', 'add', 'edit', 'del'])]
 class NewsCommand implements CommandInterface
 {
     public $id;
