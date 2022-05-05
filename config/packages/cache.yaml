@@ -1,5 +1,6 @@
 framework:
     cache:
+        enable_annotations: true
         prefix_seed: app_
         app: cache.adapter.redis
         system: cache.adapter.redis
