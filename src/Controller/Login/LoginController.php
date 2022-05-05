@@ -53,7 +53,9 @@ class LoginController extends AbstractController
 
         $command = new LoginCommand();
         $command->login = $request->query->get('login');
+
         $form = $this->createForm(LoginType::class, $command);
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted()
