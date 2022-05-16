@@ -19,8 +19,8 @@ class SimpleTextExtension extends AbstractExtension
 	public function getFunctions():array
 	{
 		return [
-			new TwigFunction('encore_entry_script_tags', [$this, 'encore_script_tags']),
-			new TwigFunction('encore_entry_link_tags', [$this, 'encore_link_tags']),
+			new TwigFunction('encore_entry_script_tags', [$this, 'encore_entry_script_tags']),
+			new TwigFunction('encore_entry_link_tags', [$this, 'encore_entry_link_tags']),
 		];
 	}
 
