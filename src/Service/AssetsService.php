@@ -185,14 +185,14 @@ class AssetsService
 		foreach ($finder as $file)
 		{
 			$contents = $file->getContents();
-			$crc = crc32($contents);
+			$hash = hash('crc32b', $contents);
 			$name = $file->getRelativePathname();
 
 			if (!isset($this->file_hash_ary[$name]))
 			{
 				$comment = 'NEW';
 			}
-			else if ($this->file_hash_ary[$name] !== $crc)
+			else if ($this->file_hash_ary[$name] !== $hash)
 			{
 				$comment = 'NEW hash, OLD: ' . $this->file_hash_ary[$name];
 			}
@@ -201,9 +201,9 @@ class AssetsService
 				$comment = 'unchanged';
 			}
 
-			error_log($name . ' :: ' . $crc . ' ' . $comment);
+			error_log($name . ' :: ' . $hash . ' ' . $comment);
 
-			$new_file_hash_ary[$name] = $crc;
+			$new_file_hash_ary[$name] = $hash;
 		}
 
 		$this->file_hash_ary = $new_file_hash_ary;
