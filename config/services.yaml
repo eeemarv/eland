@@ -88,4 +88,4 @@ services:
 
     App\Monolog\ElandProcessor:
         tags:
-           - {name: 'monolog.processor', channel: 'app'}
+           - {name: 'monolog.processor'}

@@ -26,18 +26,15 @@ class LogDbService
 
 			if (!$log_json)
 			{
-				break;
+				continue;
 			}
-
-			error_log('DB_LOG_JSON: ');
-			error_log(var_export($log_json, true));
 
 			unset($user_id);
 
 			$log = json_decode($log_json, true);
 
 			if (is_null($log)){
-				break;
+				continue;
 			}
 
 			$context = $log['context'];

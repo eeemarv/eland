@@ -7,14 +7,15 @@ snc_redis:
             logging: '%kernel.debug%'
             options:
                 prefix: eland_
-        monolog:
-            type: phpredis
-            alias: monolog
-            dsn: '%env(REDIS_URL)%'
-            logging: false
-            options:
-                connection_persistent: true
-                prefix: eland_
-    monolog:
-        client: monolog
-        key: monolog_logs
+
+#        monolog:
+#            type: phpredis
+#            alias: monolog
+#            dsn: '%env(REDIS_URL)%'
+#            logging: false
+#            options:
+#                connection_persistent: true
+#                prefix: eland_
+#    monolog:
+#        client: monolog
+#        key: monolog_logs
