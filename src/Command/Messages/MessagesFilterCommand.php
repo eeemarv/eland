@@ -16,7 +16,7 @@ class MessagesFilterCommand implements CommandInterface
     #[Choice(choices: ['offer', 'want'], multiple: true)]
     public $ow;
 
-    #[Choice(choices: ['srvc', 'stff'], multiple: true)]
+    #[Choice(choices: ['srvc', 'stff', 'null'], multiple: true)]
     public $srvc;
 
     #[Choice(choices: ['valid', 'expired'], multiple: true)]

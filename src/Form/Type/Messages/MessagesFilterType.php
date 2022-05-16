@@ -33,7 +33,7 @@ class MessagesFilterType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $service_stuff_enabled = $this->config_service->get_bool('transactions.fields.service_stuff.enabled', $this->pp->schema());
+        $service_stuff_enabled = $this->config_service->get_bool('messages.fields.service_stuff.enabled', $this->pp->schema());
         $category_enabled = $this->config_service->get_bool('messages.fields.category.enabled', $this->pp->schema());
         $expires_at_enabled = $this->config_service->get_bool('messages.fields.expires_at.enabled', $this->pp->schema());
 
@@ -113,14 +113,12 @@ class MessagesFilterType extends AbstractType
 
         if ($service_stuff_enabled)
         {
-            $srvc_choices = [
-                'service'               => 'srvc',
-                'stuff'                 => 'stff',
-                'null_service_stuff'    => 'null',
-            ];
-
             $builder->add('srvc', BtnChoiceType::class, [
-                'choices'       => $srvc_choices,
+                'choices'       => [
+                    'service'               => 'srvc',
+                    'stuff'                 => 'stff',
+                    'null_service_stuff'    => 'null',
+                ],
                 'multiple'      => true,
                 'required'      => false,
             ]);
