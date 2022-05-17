@@ -903,6 +903,12 @@ messages_show:
     title: >-
       Stuur een reactie naar {to_user}.
 
+mollie:
+  status:
+    canceled: Geannuleerd
+    open: Open
+    paid: Betaald
+
 mollie_checkout:
   title: >-
     Euro-betaling uitvoeren

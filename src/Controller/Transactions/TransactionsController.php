@@ -338,6 +338,7 @@ class TransactionsController extends AbstractController
             $sql['from_date']['types'][] = Types::DATETIME_IMMUTABLE;
         }
 
+
         if (isset($filter_command->to_date))
         {
             $sql['to_date'] = $sql_map;

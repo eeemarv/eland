@@ -1,7 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace App\Form\Type\Transactions;
+namespace App\Form\Type\Mollie;
 
+use App\Command\Mollie\MollieFilterCommand;
 use App\Command\Transactions\TransactionsFilterCommand;
 use App\Form\Type\Field\BtnChoiceType;
 use App\Form\Type\Field\DatepickerType;
@@ -16,7 +17,7 @@ use App\Service\PageParamsService;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class TransactionsFilterType extends AbstractType
+class MollieFilterType extends AbstractType
 {
     public function __construct(
         protected ConfigService $config_service,
@@ -31,47 +32,21 @@ class TransactionsFilterType extends AbstractType
         array $options
     ):void
     {
-        $service_stuff_enabled = $this->config_service->get_bool('transactions.fields.service_stuff.enabled', $this->pp->schema());
-
         $typeahead_add = [];
-
         $typeahead_add[] = ['accounts', ['status' => 'active']];
-
-        if (!$this->pp->is_guest())
-        {
-            $typeahead_add[] = ['accounts', ['status' => 'extern']];
-        }
-
-        if ($this->pp->is_admin())
-        {
-            $typeahead_add[] = ['accounts', ['status' => 'inactive']];
-            $typeahead_add[] = ['accounts', ['status' => 'im']];
-            $typeahead_add[] = ['accounts', ['status' => 'ip']];
-        }
+        $typeahead_add[] = ['accounts', ['status' => 'extern']];
+        $typeahead_add[] = ['accounts', ['status' => 'inactive']];
+        $typeahead_add[] = ['accounts', ['status' => 'im']];
+        $typeahead_add[] = ['accounts', ['status' => 'ip']];
 
         $builder->add('q', TextType::class, [
             'required' => false,
         ]);
 
-		$builder->add('from_account', TypeaheadType::class, [
-            'add'           => $typeahead_add,
-            'filter'		=> 'accounts',
-            'required'      => false,
-        ]);
-
-		$builder->add('to_account', TypeaheadType::class, [
+		$builder->add('user', TypeaheadType::class, [
             'add'           => $typeahead_add,
             'filter'        => 'accounts',
             'required' 		=> false,
-        ]);
-
-		$builder->add('account_logic', ChoiceType::class, [
-            'choices'	=> [
-                'logic.and'	=> 'and',
-                'logic.or'	=> 'or',
-                'logic.nor'	=> 'nor',
-            ],
-            'required'  => true,
         ]);
 
 		$builder->add('from_date', DatepickerType::class, [
@@ -89,22 +64,16 @@ class TransactionsFilterType extends AbstractType
             'required'  => false,
         ]);
 
-        if ($service_stuff_enabled)
-        {
-            $builder->add('srvc', BtnChoiceType::class, [
-                'choices'       => [
-                    'service'               => 'srvc',
-                    'stuff'                 => 'stff',
-                    'null_service_stuff'    => 'null',
-                ],
-                'multiple'      => true,
-                'required'      => false,
-            ]);
-        }
 
-        $action = $this->url_generator->generate('transactions', $this->pp->ary(), UrlGeneratorInterface::ABSOLUTE_PATH);
-
-        $builder->setAction($action);
+        $builder->add('status', BtnChoiceType::class, [
+            'choices'       => [
+                'open'      => 'open',
+                'paid'      => 'paid',
+                'canceled'  => 'canceled',
+            ],
+            'multiple'      => true,
+            'required'      => false,
+        ]);
     }
 
     public function getParent():string
@@ -120,7 +89,7 @@ class TransactionsFilterType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class'                => TransactionsFilterCommand::class,
+            'data_class'                => MollieFilterCommand::class,
         ]);
     }
 }

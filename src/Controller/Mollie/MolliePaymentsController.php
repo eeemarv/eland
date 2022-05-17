@@ -4,6 +4,8 @@ namespace App\Controller\Mollie;
 
 use App\Cnst\BulkCnst;
 use App\Cnst\StatusCnst;
+use App\Command\Mollie\MollieFilterCommand;
+use App\Form\Type\Mollie\MollieFilterType;
 use App\HtmlProcess\HtmlPurifier;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
@@ -16,7 +18,6 @@ use App\Service\ItemAccessService;
 use App\Service\MailAddrUserService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -68,7 +69,6 @@ class MolliePaymentsController extends AbstractController
         ItemAccessService $item_access_service,
         LinkRender $link_render,
         MailQueue $mail_queue,
-        TypeaheadService $typeahead_service,
         MailAddrUserService $mail_addr_user_service,
         DateFormatService $date_format_service,
         PageParamsService $pp,
@@ -105,7 +105,15 @@ class MolliePaymentsController extends AbstractController
             $show_leaving_status = $item_access_service->is_visible($leaving_users_access);
         }
 
-        $filter = $request->query->all('f');
+        $filter_command = new MollieFilterCommand();
+
+        $filter_form = $this->createForm(MollieFilterType::class, $filter_command);
+        $filter_form->handleRequest($request);
+        $filter_command = $filter_form->getData();
+
+        $f_params = $request->query->all('f');
+        $filter_form_error = isset($f_params['user']) && !isset($filter_command->user);
+
         $pag = $request->query->all('p');
         $sort = $request->query->all('s');
 
@@ -165,73 +173,38 @@ class MolliePaymentsController extends AbstractController
         $sql['common'] = $sql_map;
         $sql['common']['where'][] = '1 = 1';
 
-        $filter_uid = isset($filter['uid']);
-
-        if ($filter_uid)
-        {
-            $filter['code'] = $account_render->str((int) $filter['uid'], $pp->schema());
-            $params['f']['uid'] = $filter['uid'];
-        }
-
-        $filter_q = isset($filter['q']) && $filter['q'];
-
-        if ($filter_q)
+        if (isset($filter_command->q))
         {
             $sql['q'] = $sql_map;
             $sql['q']['where'][] = 'r.description ilike ?';
-            $sql['q']['params'][] = '%' . $filter['q'] . '%';
+            $sql['q']['params'][] = '%' . $filter_command->q . '%';
             $sql['q']['types'][] = \PDO::PARAM_STR;
-            $params['f']['q'] = $filter['q'];
         }
 
-        $filter_code = isset($filter['code']) && $filter['code'];
-
-        if ($filter_code)
+        if (isset($filter_command->user))
         {
-            [$code] = explode(' ', trim($filter['code']));
-            $code = trim($code);
-
-            $uid = $db->fetchOne('select id
-                from ' . $pp->schema() . '.users
-                where code = ?', [$code], [\PDO::PARAM_STR]);
-
-            $sql['code'] = $sql_map;
-            $sql['code']['where'][] = 'u.id = ?';
-            $sql['code']['params'][] = $uid ?: 0;
-            $sql['code']['types'][] = \PDO::PARAM_INT;
-
-            if ($uid)
-            {
-                $code = $account_render->str($uid, $pp->schema());
-            }
-
-            $params['f']['code'] = $code;
+            $sql['user']['where'][] = 'u.id = ?';
+            $sql['user']['params'][] = $filter_command->user;
+            $sql['user']['types'][] = \PDO::PARAM_INT;
         }
 
-        $filter_status = isset($filter['open'])
-                || isset($filter['paid'])
-                || isset($filter['canceled']);
-
-        if ($filter_status)
+        if (isset($filter_command->status) && $filter_command->status)
         {
             $sql['status'] = $sql_map;;
 
-            if (isset($filter['open']))
+            if (in_array('open', $filter_command->status))
             {
                 $sql['status']['where_or'][] = '(p.is_paid = \'f\'::bool and p.is_canceled = \'f\'::bool)';
-                $params['f']['open'] = '1';
             }
 
-            if (isset($filter['paid']))
+            if (in_array('paid', $filter_command->status))
             {
                 $sql['status']['where_or'][] = 'p.is_paid = \'t\'::bool';
-                $params['f']['paid'] = '1';
             }
 
-            if (isset($filter['canceled']))
+            if (in_array('canceled', $filter_command->status))
             {
                 $sql['status']['where_or'][] = 'p.is_canceled = \'t\'::bool';
-                $params['f']['canceled'] = 'on';
             }
 
             if (count($sql['status']['where_or']))
@@ -240,47 +213,26 @@ class MolliePaymentsController extends AbstractController
             }
         }
 
-        $filter_fdate = isset($filter['fdate']) && $filter['fdate'];
-
-        if ($filter_fdate)
+        if (isset($filter_command->from_date))
         {
-            $sql_fdate = $date_format_service->reverse($filter['fdate'], $pp->schema());
+            $sql['from_date'] = $sql_map;
 
-            if ($sql_fdate === '')
-            {
-                $alert_service->warning('De begindatum is fout geformateerd.');
-            }
-            else
-            {
-                $fdate_immutable = \DateTimeImmutable::createFromFormat('U', (string) strtotime($sql_fdate . ' UTC'));
-                $sql['fdate'] = $sql_map;
-                $sql['fdate']['where'][] = 'p.created_at >= ?';
-                $sql['fdate']['params'][] = $fdate_immutable;
-                $sql['fdate']['types'][] = Types::DATETIME_IMMUTABLE;
-                $params['f']['fdate'] = $fdate = $filter['fdate'];
-            }
+            $from_date_immutable = \DateTimeImmutable::createFromFormat('U', (string) strtotime($filter_command->from_date . ' UTC'));
+
+            $sql['from_date']['where'][] = 'p.created_at >= ?';
+            $sql['from_date']['params'][] = $from_date_immutable;
+            $sql['from_date']['types'][] = Types::DATETIME_IMMUTABLE;
         }
 
-        $filter_tdate = isset($filter['tdate']) && $filter['tdate'];
-
-        if ($filter_tdate)
+        if (isset($filter_command->to_date))
         {
-            $sql_tdate = $date_format_service->reverse($filter['tdate'], $pp->schema());
+            $sql['to_date'] = $sql_map;
 
-            if ($sql_tdate === '')
-            {
-                $alert_service->warning('De einddatum is fout geformateerd.');
-            }
-            else
-            {
-                $tdate_immutable = \DateTimeImmutable::createFromFormat('U', (string) strtotime($sql_tdate . ' UTC'));
+            $to_date_immutable = \DateTimeImmutable::createFromFormat('U', (string) strtotime($filter_command->to_date . ' UTC'));
 
-                $sql['tdate'] = $sql_map;
-                $sql['tdate']['where'][] = 'p.created_at <= ?';
-                $sql['tdate']['params'][] = $tdate_immutable;
-                $sql['tdate']['types'][] = Types::DATETIME_IMMUTABLE;
-                $params['f']['tdate'] = $tdate = $filter['tdate'];
-            }
+            $sql['to_date']['where'][] = 'p.created_at <= ?';
+            $sql['to_date']['params'][] = $to_date_immutable;
+            $sql['to_date']['types'][] = Types::DATETIME_IMMUTABLE;
         }
 
         $sql['pagination'] = $sql_map;
@@ -721,188 +673,13 @@ class MolliePaymentsController extends AbstractController
             $alert_service->error($errors);
         }
 
-        $filtered = !$filter_uid && (
-            $filter_q
-            || $filter_code
-            || $filter_status
-            || $filter_fdate
-            || $filter_tdate
-        );
+        $filtered = isset($filter_command->q)
+            || isset($filter_command->user)
+            || isset($filter_command->status)
+            || isset($filter_command->from_date)
+            || isset($filter_command->to_date);
 
-        $flt = '<div class="panel panel-info';
-        $flt .= $filtered ? '' : ' collapse';
-        $flt .= '" id="filter">';
-        $flt .= '<div class="panel-heading">';
-
-        $flt .= '<form method="get" class="form-horizontal">';
-
-        $flt .= '<div class="row">';
-
-        $flt .= '<div class="col-sm-6">';
-        $flt .= '<div class="input-group margin-bottom">';
-        $flt .= '<span class="input-group-addon">';
-        $flt .= '<i class="fa fa-search"></i>';
-        $flt .= '</span>';
-        $flt .= '<input type="text" class="form-control" id="q" value="';
-        $flt .= $filter['q'] ?? '';
-        $flt .= '" name="f[q]" placeholder="Omschrijving">';
-        $flt .= '</div>';
-        $flt .= '</div>';
-
-        $flt .= '<div class="col-sm-6">';
-        $flt .= '<div class="input-group margin-bottom">';
-        $flt .= '<span class="input-group-addon" id="code_addon">';
-        $flt .= '<span class="fa fa-user"></span></span>';
-
-        $flt .= '<input type="text" class="form-control" ';
-        $flt .= 'aria-describedby="code_addon" ';
-
-        $flt .= 'data-typeahead="';
-
-        $flt .= $typeahead_service->ini($pp)
-            ->add('accounts', ['status' => 'active'])
-            ->add('accounts', ['status' => 'extern'])
-            ->add('accounts', ['status' => 'inactive'])
-            ->add('accounts', ['status' => 'ip'])
-            ->add('accounts', ['status' => 'im'])
-            ->str([
-                'filter'		=> 'accounts',
-                'new_users_days'        => $new_users_days,
-                'show_new_status'       => $show_new_status,
-                'show_leaving_status'   => $show_leaving_status,
-            ]);
-
-        $flt .= '" ';
-
-        $flt .= 'name="f[code]" id="code" placeholder="Account Code" ';
-        $flt .= 'value="';
-        $flt .= $code ?? '';
-        $flt .= '">';
-
-        $flt .= '</div>';
-        $flt .= '</div>';
-
-        $flt .= '</div>';
-
-        $flt .= '<div class="col-md-12">';
-        $flt .= '<div class="input-group margin-bottom">';
-        $flt .= '<div class="custom-checkbox">';
-
-        foreach (self::STATUS_RENDER as $key => $render)
-        {
-            $name = 'f[' . $key . ']';
-
-            $attr = isset($filter[$key]) ? ' checked' : '';
-
-            $label = '<span class="btn btn-' . $render['class'] . '">';
-            $label .= $render['label'];
-            $label .= '&nbsp;(' . $count_ary[$key] . ')';
-            $label .= '</span>';
-
-			$flt .= strtr(BulkCnst::TPL_CHECKBOX_INLINE, [
-				'%name%'	=> $name,
-				'%attr%'	=> $attr,
-				'%label%'	=> $label,
-			]);
-        }
-
-        $flt .= '</div>';
-        $flt .= '</div>';
-        $flt .= '</div>';
-
-        $flt .= '<div class="row">';
-
-        $flt .= '<div class="col-sm-5">';
-        $flt .= '<div class="input-group margin-bottom">';
-        $flt .= '<span class="input-group-addon" id="fdate_addon">Vanaf ';
-        $flt .= '<span class="fa fa-calendar"></span></span>';
-        $flt .= '<input type="text" class="form-control margin-bottom" ';
-        $flt .= 'aria-describedby="fdate_addon" ';
-
-        $flt .= 'id="fdate" name="f[fdate]" ';
-        $flt .= 'value="';
-        $flt .= $fdate ?? '';
-        $flt .= '" ';
-        $flt .= 'data-provide="datepicker" ';
-        $flt .= 'data-date-format="';
-        $flt .= $date_format_service->datepicker_format($pp->schema());
-        $flt .= '" ';
-        $flt .= 'data-date-default-view-date="-1y" ';
-        $flt .= 'data-date-end-date="0d" ';
-        $flt .= 'data-date-language="nl" ';
-        $flt .= 'data-date-today-highlight="true" ';
-        $flt .= 'data-date-autoclose="true" ';
-        $flt .= 'data-date-immediate-updates="true" ';
-        $flt .= 'data-date-orientation="bottom" ';
-        $flt .= 'placeholder="';
-        $flt .= $date_format_service->datepicker_placeholder($pp->schema());
-        $flt .= '">';
-
-        $flt .= '</div>';
-        $flt .= '</div>';
-
-        $flt .= '<div class="col-sm-5">';
-        $flt .= '<div class="input-group margin-bottom">';
-        $flt .= '<span class="input-group-addon" id="tdate_addon">Tot ';
-        $flt .= '<span class="fa fa-calendar"></span></span>';
-        $flt .= '<input type="text" class="form-control margin-bottom" ';
-        $flt .= 'aria-describedby="tdate_addon" ';
-
-        $flt .= 'id="tdate" name="f[tdate]" ';
-        $flt .= 'value="';
-        $flt .= $tdate ?? '';
-        $flt .= '" ';
-        $flt .= 'data-provide="datepicker" ';
-        $flt .= 'data-date-format="';
-        $flt .= $date_format_service->datepicker_format($pp->schema());
-        $flt .= '" ';
-        $flt .= 'data-date-end-date="0d" ';
-        $flt .= 'data-date-language="nl" ';
-        $flt .= 'data-date-today-highlight="true" ';
-        $flt .= 'data-date-autoclose="true" ';
-        $flt .= 'data-date-immediate-updates="true" ';
-        $flt .= 'data-date-orientation="bottom" ';
-        $flt .= 'placeholder="';
-        $flt .= $date_format_service->datepicker_placeholder($pp->schema());
-        $flt .= '">';
-
-        $flt .= '</div>';
-        $flt .= '</div>';
-
-        $flt .= '<div class="col-sm-2">';
-        $flt .= '<input type="submit" value="Toon" ';
-        $flt .= 'class="btn btn-default btn-block">';
-        $flt .= '</div>';
-
-        $flt .= '</div>';
-
-        $params_form = [...$params, ...$pp->ary()];
-        unset($params_form['role_short']);
-        unset($params_form['system']);
-        unset($params_form['f']);
-        unset($params_form['p']['start']);
-
-        $params_form = http_build_query($params_form, 'prefix', '&');
-        $params_form = urldecode($params_form);
-        $params_form = explode('&', $params_form);
-
-        foreach ($params_form as $param)
-        {
-            [$name, $value] = explode('=', $param);
-
-            if (!isset($value) || $value === '')
-            {
-                continue;
-            }
-
-            $flt .= '<input name="' . $name . '" ';
-            $flt .= 'value="' . $value . '" type="hidden">';
-        }
-
-        $flt .= '</form>';
-
-        $flt .= '</div>';
-        $flt .= '</div>';
+        $filter_collapse = !($filtered || $filter_form_error);
 
         $out = '<div class="panel panel-info">';
 
@@ -1148,10 +925,12 @@ class MolliePaymentsController extends AbstractController
 
         return $this->render('mollie/mollie_payments.html.twig', [
             'data_list_raw'     => $out,
-            'filter_form_raw'   => $flt,
             'bulk_actions_raw'  => $blk,
-            'row_count' => $row_count,
-            'filtered'  => $filtered,
+            'row_count'         => $row_count,
+            'filtered'          => $filtered,
+            'filter_collapse'   => $filter_collapse,
+            'filter_form'       => $filter_form->createView(),
+            'count_ary'         => $count_ary,
         ]);
     }
 }

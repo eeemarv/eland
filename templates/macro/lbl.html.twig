@@ -81,6 +81,18 @@
             'class': 'danger',
             'label': 'status.leaving'
         },
+        'open': {
+            'class': 'warning',
+            'label': 'mollie.status.open'
+        },
+        'paid': {
+            'class': 'success',
+            'label': 'mollie.status.paid'
+        },
+        'canceled': {
+            'class': 'default-2',
+            'label': 'mollie.status.canceled'
+        }
     } -%}
 
     <span class="btn btn-{{- render[id].class -}}"{%- if render[id].title is defined %} title="{{- render[id].title|trans -}}"{%- endif -%}>
