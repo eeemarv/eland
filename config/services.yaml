@@ -69,7 +69,8 @@ services:
             tags: ['app.schema_task']
 
     App\SchemaTask\SchemaTaskCollection:
-        arguments: [!tagged {tag: 'app.schema_task'}]
+        arguments:
+            - !tagged_iterator app.schema_task
 
     App\Service\SessionUserService:
         lazy: true
