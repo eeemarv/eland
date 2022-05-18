@@ -62,6 +62,8 @@ class ExportController extends AbstractController
         {
             $btn = $download_form->getClickedButton()->getName();
 
+            [$database_url] = explode('?', $env_database_url);
+
             $download_sql = $btn === 'sql';
             $download_zip_csv = $btn === 'csv_zip';
 
@@ -90,7 +92,7 @@ class ExportController extends AbstractController
                 $process_ary = [
                     'pg_dump',
                     '-d',
-                    $env_database_url,
+                    $database_url,
                     '-n',
                     $pp->schema(),
                     '-O',
@@ -122,7 +124,7 @@ class ExportController extends AbstractController
                         $process_ary = [
                             'psql',
                             '-d',
-                            $env_database_url,
+                            $database_url,
                             '-c',
                             $copy_cmd,
                         ];
@@ -156,7 +158,7 @@ class ExportController extends AbstractController
                 $process_ary = [
                     'psql',
                     '-d',
-                    $env_database_url,
+                    $database_url,
                     '-c',
                     $copy_cmd
                 ];
