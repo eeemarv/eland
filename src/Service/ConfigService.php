@@ -290,6 +290,8 @@ class ConfigService
 			$set = 'set_' . $type;
 			$value = $command->$property_name;
 			$value = $type === 'str' && !isset($value) ? '' : $value;
+			// See #270, re-index to list
+			$value = $type === 'ary' ? array_values($value) : $value;
 			$this->$set($config_map->key, $value, $schema);
 		};
 
