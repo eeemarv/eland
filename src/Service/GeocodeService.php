@@ -3,27 +3,33 @@
 namespace App\Service;
 
 use Geocoder\Query\GeocodeQuery;
-use Http\Adapter\Guzzle6\Client as HttpClient;
+// use Psr\Http\Client\ClientInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+// use Http\Adapter\Guzzle6\Client as HttpClient;
 use Geocoder\Provider\bpost\bpost;
 use Geocoder\StatefulGeocoder;
+// use GuzzleHttp\ClientInterface as GuzzleHttpClientInterface;
 
 class GeocodeService
 {
-    protected StatefulGeocoder $geocoder;
-
-    public function __construct()
+    public function __construct(
+        protected HttpClientInterface $http_client_interface
+    )
     {
-        $http_client = new HttpClient();
-        $provider = new bpost($http_client);
-        $this->geocoder = new StatefulGeocoder($provider, 'nl');
-        $this->geocoder->setLimit(1);
     }
 
     public function getCoordinates(string $address):array
     {
+        // old
+        // $http_client = new HttpClient();
+        // $provider = new bpost($http_client);
+        $provider = new bpost($this->http_client_interface);
+        $geocoder = new StatefulGeocoder($provider, 'nl');
+        $geocoder->setLimit(1);
+
         try
         {
-            $addressCollection = $this->geocoder->geocodeQuery(GeocodeQuery::create($address));
+            $addressCollection = $geocoder->geocodeQuery(GeocodeQuery::create($address));
 
             if (is_object($addressCollection))
             {
