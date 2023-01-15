@@ -19,7 +19,8 @@ class GeocodeQueue implements QueueInterface
 		protected LoggerInterface $logger,
 		protected GeocodeService $geocode_service,
 		protected AccountStrRender $account_str_render,
-		protected string $env_geo_block
+		protected string $env_geo_block,
+		protected string $env_geo_rm_error
 	)
 	{
 	}
@@ -151,9 +152,16 @@ class GeocodeQueue implements QueueInterface
 			}
 			else if ($status_data['value'] === 'error')
 			{
-				$this->logger->info('Geocoding: error exists for ' .
-					json_encode($data), ['schema' => $data['schema']]);
-				return;
+				if ($this->env_geo_rm_error === '1')
+				{
+					$this->cache_service->del($status_key);
+				}
+				else
+				{
+					$this->logger->info('Geocoding: error exists for ' .
+						json_encode($data), ['schema' => $data['schema']]);
+					return;
+				}
 			}
 		}
 
