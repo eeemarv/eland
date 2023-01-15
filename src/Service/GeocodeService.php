@@ -36,14 +36,14 @@ class GeocodeService
         {
             if ($postal_code !== '')
             {
-                $postal_code += $lp;
+                $postal_code .= $lp;
                 continue;
             }
             if ($locality !== '')
             {
-                $locality += ' ';
+                $locality .= ' ';
             }
-            $locality += $lp;
+            $locality .= $lp;
         }
 
         $street_name = '';
@@ -66,15 +66,15 @@ class GeocodeService
                 {
                     if ($street_bus !== '')
                     {
-                        $street_bus += ' ';
+                        $street_bus .= ' ';
                     }
-                    $street_bus += $st;
+                    $street_bus .= $st;
                     continue;
                 }
-                $street_name += ' ';
+                $street_name .= ' ';
             }
 
-            $street_name += $st;
+            $street_name .= $st;
         }
 
         error_log('-- GEOCDDE parsed address ---');
