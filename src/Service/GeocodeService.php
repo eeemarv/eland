@@ -23,7 +23,10 @@ class GeocodeService
 
         try
         {
-            $addressCollection = $geocoder->geocodeQuery(GeocodeQuery::create($address));
+            $f_address = strtoupper($address);
+            $f_address = str_replace(',', ' -', $f_address);
+
+            $addressCollection = $geocoder->geocodeQuery(GeocodeQuery::create($f_address));
 
             if (is_object($addressCollection))
             {
