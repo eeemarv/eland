@@ -3,11 +3,11 @@
 	"license": "AGPL-3.0",
 	"type": "project",
 	"description": "web app for community currencies.",
-	"homepage": "https://eland.letsa.net",
+	"homepage": "https://github.com/eeemarv/eland",
 	"keywords": ["community", "currencies", "app"],
 
     "require": {
-		"php": "^8.1",
+		"php": "^8.2",
 		"ext-ctype": "*",
 		"ext-exif": "*",
 		"ext-gd": "*",
