@@ -7,6 +7,7 @@ use App\Command\CommandInterface;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Sequentially;
+use Symfony\Component\Validator\Constraints\Type;
 
 use function Aws\constantly;
 
@@ -18,4 +19,8 @@ class ConfigNameCommand implements CommandInterface
     ])]
     #[ConfigMap(type: 'str', key: 'system.name')]
     public $system_name;
+
+    #[Type('bool')]
+    #[ConfigMap(type: 'bool', key: 'home.header.enabled')]
+    public $home_header_enabled;
 }

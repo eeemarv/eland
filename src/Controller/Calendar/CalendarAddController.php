@@ -17,7 +17,6 @@ use App\Service\SessionUserService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Routing\Annotation\Route;
 
 class CalendarAddController extends AbstractController
 {

@@ -523,6 +523,9 @@ config_name:
   title: Naam
   config_name:
     label: Naam van het systeem
+  home_header_enabled:
+    label: >
+      Toon standaard hoofdingpaneel met systeemnaam op de home pagina.
 
 contact_form:
   title: Contact

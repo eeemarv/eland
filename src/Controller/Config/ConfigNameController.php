@@ -46,7 +46,7 @@ class ConfigNameController extends AbstractController
             $command = $form->getData();
             $config_service->store_command($command, $pp->schema());
 
-            $alert_service->success('Naam systeem aangepast.');
+            $alert_service->success('Naam systeem of hoofding paneel aangepast.');
             return $this->redirectToRoute('config_name', $pp->ary());
         }
 

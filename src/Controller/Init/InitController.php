@@ -13,8 +13,6 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class InitController extends AbstractController
 {
-    const POSSIBLE_IMAGE_EXT = ['jpg', 'jpeg', 'JPG', 'JPEG'];
-
     const ROUTES_LABELS = [
         'init_clear_users_cache'    => 'Clear users cache',
         'init_queue_geocoding'      => 'Queue geocoding',
@@ -63,6 +61,7 @@ class InitController extends AbstractController
             $out .= $link_render->link($route, $pp->ary(),
                 [], $lbl, ['class' => 'list-group-item' . $class_done]);
         }
+
         $out .= '</div>';
         $out .= '</div>';
         $out .= '</div>';

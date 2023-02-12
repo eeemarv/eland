@@ -7,6 +7,11 @@
             'fa': 'share-alt',
         }
     }) -}}
+
+    {{- form_row(form.home_header_enabled, {
+        'label': 'config_name.home_header_enabled.label',
+        'required': false
+    }) -}}
 {%- endblock form_a -%}
 
 {%- block css -%}
