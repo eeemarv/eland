@@ -5,14 +5,14 @@ namespace App\ConsoleCommand;
 use App\Queue\MailQueue;
 use App\Service\MonitorProcessService;
 use App\Service\QueueService;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(name: 'process:mail')]
 class ProcessMailConsoleCommand extends Command
 {
-    protected static $defaultName = 'process:mail';
-
     public function __construct(
         protected MonitorProcessService $monitor_process_service,
         protected MailQueue $mail_queue,

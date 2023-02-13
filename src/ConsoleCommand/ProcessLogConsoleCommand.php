@@ -4,14 +4,14 @@ namespace App\ConsoleCommand;
 
 use App\Service\LogDbService;
 use App\Service\MonitorProcessService;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(name: 'process:log')]
 class ProcessLogConsoleCommand extends Command
 {
-    protected static $defaultName = 'process:log';
-
     public function __construct(
         protected MonitorProcessService $monitor_process_service,
         protected LogDbService $log_db_service

@@ -4,14 +4,14 @@ namespace App\ConsoleCommand;
 
 use App\Service\CacheService;
 use App\Service\MonitorProcessService;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(name: 'process:cleanup_cache')]
 class ProcessCleanupCacheConsoleCommand extends Command
 {
-    protected static $defaultName = 'process:cleanup_cache';
-
     public function __construct(
         protected MonitorProcessService $monitor_process_service,
         protected CacheService $cache_service

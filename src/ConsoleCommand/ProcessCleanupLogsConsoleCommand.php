@@ -4,14 +4,14 @@ namespace App\ConsoleCommand;
 
 use App\Service\MonitorProcessService;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(name: 'process:cleanup_logs')]
 class ProcessCleanupLogsConsoleCommand extends Command
 {
-    protected static $defaultName = 'process:cleanup_logs';
-
     public function __construct(
         protected MonitorProcessService $monitor_process_service,
         protected Db $db

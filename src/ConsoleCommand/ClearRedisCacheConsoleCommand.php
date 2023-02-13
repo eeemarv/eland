@@ -7,14 +7,14 @@ use App\Service\StaticContentService;
 use App\Service\SystemsService;
 use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(name: 'app:clear-redis-cache')]
 class ClearRedisCacheConsoleCommand extends Command
 {
-    protected static $defaultName = 'app:clear-redis-cache';
-
     public function __construct(
         protected ConfigService $config_service,
         protected TypeaheadService $typeahead_service,

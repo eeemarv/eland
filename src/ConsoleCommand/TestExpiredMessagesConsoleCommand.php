@@ -3,15 +3,15 @@
 namespace App\ConsoleCommand;
 
 use App\SchemaTask\UserExpMsgsSchemaTask;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 
+#[AsCommand(name: 'test:expired_messages')]
 class TestExpiredMessagesConsoleCommand extends Command
 {
-    protected static $defaultName = 'test:expired_messages';
-
     public function __construct(
         protected UserExpMsgsSchemaTask $user_exp_msgs_schema_task
     )

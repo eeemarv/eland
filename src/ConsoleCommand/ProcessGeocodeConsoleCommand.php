@@ -5,14 +5,14 @@ namespace App\ConsoleCommand;
 use App\Queue\GeocodeQueue;
 use App\Service\MonitorProcessService;
 use App\Service\QueueService;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(name: 'process:geocode')]
 class ProcessGeocodeConsoleCommand extends Command
 {
-    protected static $defaultName = 'process:geocode';
-
     public function __construct(
         protected MonitorProcessService $monitor_process_service,
         protected GeocodeQueue $geocode_queue,
