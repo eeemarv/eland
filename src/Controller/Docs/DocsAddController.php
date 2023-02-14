@@ -15,9 +15,11 @@ use App\Service\S3Service;
 use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[AsController]
 class DocsAddController extends AbstractController
 {
     #[Route(

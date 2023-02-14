@@ -13,9 +13,11 @@ use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[AsController]
 class UsersTilesController extends AbstractController
 {
     #[Route(

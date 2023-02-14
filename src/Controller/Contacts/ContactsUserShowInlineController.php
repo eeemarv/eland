@@ -11,7 +11,9 @@ use App\Service\DistanceService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 
+#[AsController]
 class ContactsUserShowInlineController extends AbstractController
 {
     public function __invoke(

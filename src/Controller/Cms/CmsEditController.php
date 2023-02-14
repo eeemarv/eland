@@ -14,9 +14,10 @@ use App\Service\SessionUserService;
 use App\Service\StaticContentService;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[AsController]
 class CmsEditController extends AbstractController
 {
     const EMPTY_ARTEFACTS = [

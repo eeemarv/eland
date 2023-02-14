@@ -6,8 +6,10 @@ use App\Repository\ContactRepository;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[AsController]
 class ContactTypesController extends AbstractController
 {
     const PROTECTED = ['mail', 'gsm', 'tel', 'adr', 'web'];

@@ -15,9 +15,11 @@ use App\Service\SessionUserService;
 use App\Service\StaticContentService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[AsController]
 class RegisterFormConfirmController extends AbstractController
 {
     #[Route(

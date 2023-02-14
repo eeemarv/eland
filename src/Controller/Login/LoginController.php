@@ -15,8 +15,10 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\VarRouteService;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[AsController]
 class LoginController extends AbstractController
 {
     #[Route(

@@ -12,8 +12,10 @@ use App\Service\AlertService;
 use App\Repository\ContactRepository;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[AsController]
 class ContactsAddController extends AbstractController
 {
     #[Route(

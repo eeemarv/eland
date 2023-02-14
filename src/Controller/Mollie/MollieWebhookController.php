@@ -11,9 +11,11 @@ use App\Service\PageParamsService;
 use Doctrine\DBAL\Connection as Db;
 use Mollie\Api\MollieApiClient;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[AsController]
 class MollieWebhookController extends AbstractController
 {
     #[Route(

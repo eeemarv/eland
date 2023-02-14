@@ -25,9 +25,11 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Types\Types;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[AsController]
 class MessagesListController extends AbstractController
 {
     const COLUMNS_DEF_ARY = [

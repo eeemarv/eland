@@ -13,9 +13,11 @@ use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[AsController]
 class MessagesImagesUploadController extends AbstractController
 {
     #[Route(

@@ -8,8 +8,10 @@ use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\SystemsService;
 use App\Service\PageParamsService;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[AsController]
 class ConfigRefreshController extends AbstractController
 {
     #[Route(

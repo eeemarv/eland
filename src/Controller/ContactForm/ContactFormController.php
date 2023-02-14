@@ -13,9 +13,11 @@ use App\Service\ConfigService;
 use App\Service\DataTokenService;
 use App\Service\PageParamsService;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[AsController]
 class ContactFormController extends AbstractController
 {
     #[Route(

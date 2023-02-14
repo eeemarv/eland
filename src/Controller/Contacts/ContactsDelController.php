@@ -13,8 +13,10 @@ use App\Repository\ContactRepository;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\UserCacheService;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[AsController]
 class ContactsDelController extends AbstractController
 {
     #[Route(

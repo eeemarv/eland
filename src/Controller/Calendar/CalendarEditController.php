@@ -14,8 +14,10 @@ use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+#[AsController]
 class CalendarEditController extends AbstractController
 {
     public function __invoke(

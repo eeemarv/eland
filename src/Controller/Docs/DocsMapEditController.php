@@ -12,9 +12,11 @@ use App\Repository\DocRepository;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\TypeaheadService;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[AsController]
 class DocsMapEditController extends AbstractController
 {
     #[Route(

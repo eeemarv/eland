@@ -17,9 +17,11 @@ use App\Service\PageParamsService;
 use App\Service\AlertService;
 use App\Service\FormTokenService;
 use Doctrine\DBAL\Types\Types;
+use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[AsController]
 class ContactsController extends AbstractController
 {
     #[Route(
