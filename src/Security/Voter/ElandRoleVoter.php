@@ -9,7 +9,6 @@ use App\Service\IntersystemsService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\SystemsService;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 

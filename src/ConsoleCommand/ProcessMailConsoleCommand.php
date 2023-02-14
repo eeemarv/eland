@@ -10,7 +10,10 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-#[AsCommand(name: 'process:mail')]
+#[AsCommand(
+    name: 'process:mail',
+    description: 'Send emails from queue'
+)]
 class ProcessMailConsoleCommand extends Command
 {
     public function __construct(
@@ -20,11 +23,6 @@ class ProcessMailConsoleCommand extends Command
     )
     {
         parent::__construct();
-    }
-
-    protected function configure()
-    {
-        $this->setDescription('Send emails from queue');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

@@ -9,7 +9,10 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 
-#[AsCommand(name: 'test:periodic_overview')]
+#[AsCommand(
+    name: 'test:periodic_overview',
+    description: 'Test sending a periodic overview, arg: schema'
+)]
 class TestPeriodicOverviewConsoleCommand extends Command
 {
     public function __construct(
@@ -21,7 +24,6 @@ class TestPeriodicOverviewConsoleCommand extends Command
 
     protected function configure()
     {
-        $this->setDescription('Test sending a periodic overview');
         $this->setDefinition([
             new InputArgument('schema', InputArgument::REQUIRED, 'The schema'),
         ]);

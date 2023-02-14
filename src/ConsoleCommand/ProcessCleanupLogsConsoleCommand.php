@@ -9,7 +9,10 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-#[AsCommand(name: 'process:cleanup_logs')]
+#[AsCommand(
+    name: 'process:cleanup_logs',
+    description: 'Process to cleanup old log entries from db.'
+)]
 class ProcessCleanupLogsConsoleCommand extends Command
 {
     public function __construct(
@@ -18,11 +21,6 @@ class ProcessCleanupLogsConsoleCommand extends Command
     )
     {
         parent::__construct();
-    }
-
-    protected function configure()
-    {
-        $this->setDescription('Process to cleanup old log entries from db.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

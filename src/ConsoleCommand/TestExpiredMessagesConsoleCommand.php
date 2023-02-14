@@ -9,7 +9,10 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 
-#[AsCommand(name: 'test:expired_messages')]
+#[AsCommand(
+    name: 'test:expired_messages',
+    description: 'Test notify expired messages, arg: schema'
+)]
 class TestExpiredMessagesConsoleCommand extends Command
 {
     public function __construct(
@@ -21,7 +24,6 @@ class TestExpiredMessagesConsoleCommand extends Command
 
     protected function configure()
     {
-        $this->setDescription('Test notify expired messages');
         $this->setDefinition([
             new InputArgument('schema', InputArgument::REQUIRED, 'The schema'),
         ]);

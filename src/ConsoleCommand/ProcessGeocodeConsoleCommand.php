@@ -10,7 +10,10 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-#[AsCommand(name: 'process:geocode')]
+#[AsCommand(
+    name: 'process:geocode',
+    description: 'Process to retrieve geographic coordinates from geocoding API'
+)]
 class ProcessGeocodeConsoleCommand extends Command
 {
     public function __construct(
@@ -20,11 +23,6 @@ class ProcessGeocodeConsoleCommand extends Command
     )
     {
         parent::__construct();
-    }
-
-    protected function configure()
-    {
-        $this->setDescription('Process to retrieve geographic coordinates from geocoding API');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

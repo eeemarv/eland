@@ -11,7 +11,10 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-#[AsCommand(name: 'process:worker')]
+#[AsCommand(
+    name: 'process:worker',
+    description: 'Several slow background processes and set asset hashes.'
+)]
 class ProcessWorkerConsoleCommand extends Command
 {
     public function __construct(
@@ -21,11 +24,6 @@ class ProcessWorkerConsoleCommand extends Command
     )
     {
         parent::__construct();
-    }
-
-    protected function configure()
-    {
-        $this->setDescription('Several slow background processes and set asset hashes.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

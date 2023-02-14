@@ -12,7 +12,10 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-#[AsCommand(name: 'app:clear-redis-cache')]
+#[AsCommand(
+    name: 'app:clear-redis-cache',
+    description: 'Clear Redis cache (no sessions). To be called on deploy.'
+)]
 class ClearRedisCacheConsoleCommand extends Command
 {
     public function __construct(
@@ -24,11 +27,6 @@ class ClearRedisCacheConsoleCommand extends Command
     )
     {
         parent::__construct();
-    }
-
-    protected function configure()
-    {
-        $this->setDescription('Clear Redis cache (no sessions). To be called on deploy.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

@@ -9,7 +9,10 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-#[AsCommand(name: 'process:log')]
+#[AsCommand(
+    name: 'process:log',
+    description: 'Process to pipe logs from Redis to db.'
+)]
 class ProcessLogConsoleCommand extends Command
 {
     public function __construct(
@@ -18,11 +21,6 @@ class ProcessLogConsoleCommand extends Command
     )
     {
         parent::__construct();
-    }
-
-    protected function configure()
-    {
-        $this->setDescription('Process to pipe logs from Redis to db.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
