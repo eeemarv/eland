@@ -16,10 +16,9 @@ use Symfony\Component\Security\Http\Authorization\AccessDeniedHandlerInterface;
 class AccessDeniedHandler implements AccessDeniedHandlerInterface
 {
     public function __construct(
-        LinkRender $link_render
+        protected LinkRender $link_render
     )
     {
-        $this->link_render = $link_render;
     }
 
     public function handle(Request $request, AccessDeniedException $accessDeniedException): ?Response

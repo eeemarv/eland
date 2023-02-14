@@ -8,6 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Process\Exception\ProcessFailedException;
@@ -34,7 +35,9 @@ class ExportController extends AbstractController
         SchemaRepository $schema_repository,
         LoggerInterface $logger,
         PageParamsService $pp,
+        #[Autowire('%kernel.cache_dir%')]
         string $cache_dir,
+        #[Autowire('%env(DATABASE_URL)%')]
         string $env_database_url
     ):Response
     {

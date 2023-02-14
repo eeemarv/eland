@@ -6,6 +6,7 @@ use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -32,6 +33,7 @@ class InitController extends AbstractController
         AlertService $alert_service,
         PageParamsService $pp,
         LinkRender $link_render,
+        #[Autowire('%env(APP_INIT_ENABLED)%')]
         string $env_app_init_enabled
     ):Response
     {

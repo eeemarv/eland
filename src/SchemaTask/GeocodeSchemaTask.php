@@ -7,6 +7,7 @@ use App\Service\CacheService;
 use Psr\Log\LoggerInterface;
 use App\Queue\GeocodeQueue;
 use App\Render\AccountStrRender;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 class GeocodeSchemaTask implements SchemaTaskInterface
 {
@@ -16,7 +17,9 @@ class GeocodeSchemaTask implements SchemaTaskInterface
 		protected LoggerInterface $logger,
 		protected GeocodeQueue $geocode_queue,
 		protected AccountStrRender $account_str_render,
+		#[Autowire('%env(GEO_BLOCK)%')]
 		protected string $env_geo_block,
+		#[Autowire('%env(GEO_RM_ERROR)%')]
 		protected string $env_geo_rm_error
 	)
 	{

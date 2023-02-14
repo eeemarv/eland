@@ -11,15 +11,11 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 class UserProvider implements UserProviderInterface
 {
-    protected $user_cache_service;
-
     public function __construct(
-        UserCacheService $user_cache_service,
-        SessionUserService $su
+        protected UserCacheService $user_cache_service,
+        protected SessionUserService $su
     )
     {
-        $this->user_cache_service = $user_cache_service;
-        $this->su = $su;
     }
 
     /**

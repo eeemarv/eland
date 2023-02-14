@@ -6,6 +6,7 @@ use App\Service\PageParamsService;
 use App\Service\SystemsService;
 use App\Service\UserCacheService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -27,6 +28,7 @@ class InitClearUsersCacheController extends AbstractController
         PageParamsService $pp,
         SystemsService $systems_service,
         UserCacheService $user_cache_service,
+        #[Autowire('%env(APP_INIT_ENABLED)%')]
         string $env_app_init_enabled
     ):Response
     {

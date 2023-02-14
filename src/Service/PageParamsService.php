@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Cnst\RoleCnst;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -23,11 +24,13 @@ class PageParamsService
 	protected bool $is_anonymous;
 
 	protected string $org_system;
+	protected string $org_schema;
 	protected string $route;
 
 	public function __construct(
 		protected RequestStack $request_stack,
 		protected SystemsService $systems_service,
+		#[Autowire('%env(base64:APP_SYSTEM_REDIRECTS)%')]
 		protected string $env_app_system_redirects
 	)
 	{

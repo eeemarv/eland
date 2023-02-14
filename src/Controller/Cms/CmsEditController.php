@@ -69,11 +69,6 @@ class CmsEditController extends AbstractController
             $route_en = isset($all_params['edit']['route']) && $all_params['edit']['route'] === '1';
             $role_en = isset($all_params['edit']['role']) && $all_params['edit']['role'] === '1';
 
-            if ($role_en && !isset($route_params['role_short']))
-            {
-                throw new BadRequestHttpException('CMS: role blocks are not allowed on public pages.');
-            }
-
             $sel_route = $route_en ? $route : '';
             $sel_role = $role_en ? RoleCnst::LONG[$all_params['role_short']] : '';
 

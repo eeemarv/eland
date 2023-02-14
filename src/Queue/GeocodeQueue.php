@@ -9,6 +9,7 @@ use Psr\Log\LoggerInterface;
 use App\Render\AccountStrRender;
 use App\Service\GeocodeService;
 use App\Service\QueueService;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 class GeocodeQueue implements QueueInterface
 {
@@ -19,7 +20,9 @@ class GeocodeQueue implements QueueInterface
 		protected LoggerInterface $logger,
 		protected GeocodeService $geocode_service,
 		protected AccountStrRender $account_str_render,
+		#[Autowire('%env(GEO_BLOCK)%')]
 		protected string $env_geo_block,
+		#[Autowire('%env(GEO_RM_ERROR)%')]
 		protected string $env_geo_rm_error
 	)
 	{

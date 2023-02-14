@@ -11,6 +11,7 @@ use App\Service\MailAddrSystemService;
 use App\Service\EmailVerifyService;
 use App\Service\QueueService;
 use App\Service\SystemsService;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 class MailQueue implements QueueInterface
 {
@@ -25,9 +26,13 @@ class MailQueue implements QueueInterface
 		protected EmailVerifyService $email_verify_service,
 		protected SystemsService $systems_service,
 		protected HtmlToMarkdownConverter $html_to_markdown_converter,
+		#[Autowire('%env(SMTP_HOST)%')]
 		string $env_smtp_host,
+		#[Autowire('%env(SMTP_PORT)%')]
 		string $env_smtp_port,
+		#[Autowire('%env(SMTP_USERNAME)%')]
 		string $env_smtp_username,
+		#[Autowire('%env(SMTP_PASSWORD)%')]
 		string $env_smtp_password
 	)
 	{

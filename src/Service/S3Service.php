@@ -5,6 +5,7 @@ namespace App\Service;
 use Aws\S3\S3Client;
 use GuzzleHttp\Psr7\Stream;
 use GuzzleHttp\Psr7\CachingStream;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 class S3Service
 {
@@ -59,7 +60,9 @@ class S3Service
 	];
 
 	public function __construct(
+		#[Autowire('%env(AWS_S3_BUCKET)%')]
 		protected string $env_aws_s3_bucket,
+		#[Autowire('%env(AWS_S3_REGION)%')]
 		protected string $env_aws_s3_region
 	)
 	{

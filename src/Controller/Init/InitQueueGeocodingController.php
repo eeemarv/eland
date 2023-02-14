@@ -8,6 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -32,6 +33,7 @@ class InitQueueGeocodingController extends AbstractController
         Db $db,
         GeocodeQueue $geocode_queue,
         PageParamsService $pp,
+        #[Autowire('%env(APP_INIT_ENABLED)%')]
         string $env_app_init_enabled
     ):Response
     {

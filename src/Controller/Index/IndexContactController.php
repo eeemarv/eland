@@ -5,6 +5,7 @@ namespace App\Controller\Index;
 use App\Service\CaptchaService;
 use App\Service\FormTokenService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,11 +26,17 @@ class IndexContactController extends AbstractController
         RequestStack $request_stack,
         FormTokenService $form_token_service,
         CaptchaService $captcha_service,
+        #[Autowire('%env(MAIL_HOSTER_ADDRESS)%')]
         string $env_mail_hoster_address,
+        #[Autowire('%env(MAIL_FROM_ADDRESS)%')]
         string $env_mail_from_address,
+        #[Autowire('%env(SMTP_HOST)%')]
         string $env_smtp_host,
+        #[Autowire('%env(SMTP_PORT)%')]
         string $env_smtp_port,
+        #[Autowire('%env(SMTP_PASSWORD)%')]
         string $env_smtp_password,
+        #[Autowire('%env(SMTP_USERNAME)%')]
         string $env_smtp_username
     ):Response
     {

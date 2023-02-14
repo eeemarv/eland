@@ -10,6 +10,7 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use App\Service\PageParamsService;
 use App\Security\User;
 use App\Service\ConfigService;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 
 class LoginValidator extends ConstraintValidator
@@ -19,6 +20,7 @@ class LoginValidator extends ConstraintValidator
         protected UserRepository $user_repository,
         protected ConfigService $config_service,
         protected PageParamsService $pp,
+        #[Autowire('%env(base64:MASTER_PASSWORD)%')]
         protected string $env_master_password
     )
     {

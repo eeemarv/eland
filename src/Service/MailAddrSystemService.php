@@ -4,25 +4,30 @@ namespace App\Service;
 
 use Psr\Log\LoggerInterface;
 use App\Service\ConfigService;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 class MailAddrSystemService
 {
 	public function __construct(
 		protected LoggerInterface $logger,
-		protected ConfigService $config_service
+		protected ConfigService $config_service,
+        #[Autowire('%env(MAIL_FROM_ADDRESS)%')]
+        protected string $env_mail_from_address,
+        #[Autowire('%env(MAIL_NOREPLY_ADDRESS)%')]
+        protected string $env_mail_noreply_address
 	)
 	{
 	}
 
 	public function get_from(string $schema):array
 	{
-		$mail_ary = [getenv('MAIL_FROM_ADDRESS')];
+		$mail_ary = [$this->env_mail_from_address];
 		return $this->get_validated_ary($mail_ary, 'from', $schema);
 	}
 
 	public function get_noreply(string $schema):array
 	{
-		$mail_ary = [getenv('MAIL_NOREPLY_ADDRESS')];
+		$mail_ary = [$this->env_mail_noreply_address];
 		return $this->get_validated_ary($mail_ary, 'noreply', $schema);
 	}
 

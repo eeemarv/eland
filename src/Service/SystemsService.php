@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 class SystemsService
 {
@@ -23,6 +24,7 @@ class SystemsService
 
 	public function __construct(
 		protected Db $db,
+		#[Autowire('%env(LEGACY_ELAND_ORIGIN_PATTERN)%')]
 		protected string $env_legacy_eland_origin_pattern
 	)
 	{
