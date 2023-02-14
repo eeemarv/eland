@@ -2,6 +2,9 @@
 
 namespace App\SchemaTask;
 
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
+
+#[AutoconfigureTag('app.schema_task')]
 interface SchemaTaskInterface
 {
 	/**

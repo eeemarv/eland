@@ -43,20 +43,6 @@ services:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
 
-    _instanceof:
-        App\SchemaTask\SchemaTaskInterface:
-            tags: ['app.schema_task']
-
-    App\SchemaTask\SchemaTaskCollection:
-        arguments:
-            - !tagged_iterator app.schema_task
-
-    App\Service\SessionUserService:
-        lazy: true
-
-    App\Service\PageParamsService:
-        lazy: true
-
     Redis: '@snc_redis.default'
 
     Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler:
@@ -65,7 +51,3 @@ services:
             - {prefix: session_, ttl: 864000}
 
     Bramus\Monolog\Formatter\ColoredLineFormatter: ~
-
-    App\Monolog\ElandProcessor:
-        tags:
-           - {name: 'monolog.processor'}

@@ -5,9 +5,11 @@ namespace App\Service;
 use App\Cnst\RoleCnst;
 use App\Service\UserCacheService;
 use App\Service\PageParamsService;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
 
+#[Autoconfigure(lazy: true)]
 class SessionUserService
 {
 	protected Session $session;

@@ -3,11 +3,13 @@
 namespace App\Service;
 
 use App\Cnst\RoleCnst;
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+#[Autoconfigure(lazy: true)]
 class PageParamsService
 {
 	protected Request $request;

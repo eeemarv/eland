@@ -2,10 +2,12 @@
 
 namespace App\Monolog;
 
+use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
+#[Autoconfigure(tags: ['monolog.processor'])]
 class ElandProcessor implements EventSubscriberInterface
 {
     private $extra = [];
