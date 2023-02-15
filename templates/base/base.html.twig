@@ -59,7 +59,7 @@
 <body{%- block body_attr -%}{%- endblock -%}>
 
 {%- block navbar -%}
-	<div class="navbar navbar-default navbar-fixed-top{%- if pp_role('admin') %} bg-info{%- elseif pp_role('guest') %} bg-warning{%- endif -%}">
+	<div class="navbar navbar-default navbar-fixed-top{%- if pp_has_role('admin') %} bg-info{%- elseif pp_has_role('guest') %} bg-warning{%- endif -%}">
 		<div class="container-fluid">
 			<div class="navbar-header">
 
@@ -113,7 +113,6 @@
 	</div>
 	<div class="clearfix"></div>
 </footer>
-
 
 {%- for j in assets_ary('js') -%}
 	<script src="{{- j -}}"></script>

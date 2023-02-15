@@ -4,13 +4,13 @@
     {{- parent() -}}
     {{- assets_add(['leaflet', 'contacts_user_map.js']) -}}
     {{- assets_add(['jqplot', 'transactions_plot_user.js']) -}}
-    {%- if pp_role('admin') or su_is_owner(id) -%}
+    {%- if pp_has_role('admin') or su_is_owner(id) -%}
         {{- assets_add(['fileupload', 'upload_image.js']) -}}
     {%- endif -%}
 {%- endblock assets_add -%}
 
 {%- block btn_top_edit -%}
-    {%- if pp_role('admin') -%}
+    {%- if pp_has_role('admin') -%}
         {%- include 'include/btn_top/edit.html.twig' with {
             'btn_route': 'users_edit'
         } -%}
@@ -23,7 +23,7 @@
 {%- endblock btn_top_edit -%}
 
 {%- block btn_top_del -%}
-    {%- if pp_role('admin') and count_transactions is same as 0 and not su_is_owner(id) -%}
+    {%- if pp_has_role('admin') and count_transactions is same as 0 and not su_is_owner(id) -%}
         {%- include 'include/btn_top/del.html.twig' with {
             'btn_route': 'users_del',
             'btn_title': 'users_del.title',
@@ -35,7 +35,7 @@
 {%- endblock btn_top_del -%}
 
 {%- block btn_top_password_edit -%}
-    {%- if pp_role('admin') or su_is_owner(id) -%}
+    {%- if pp_has_role('admin') or su_is_owner(id) -%}
         {%- include 'include/btn_top/password_edit.html.twig' with {
             'btn_route': 'users_password_edit' ~ (su_is_owner(id) ? '_self' : ''),
             'btn_title': 'users_password_edit.title',
@@ -50,7 +50,7 @@
 {%- block btn_top_transaction -%}
     {%- if config_bool('transactions.enabled', schema)
         and config_bool('transactions.enabled', su_schema())
-        and (pp_role('admin') or not su_is_owner(id))  -%}
+        and (pp_has_role('admin') or not su_is_owner(id))  -%}
         {%- include 'include/btn_top/transaction.html.twig' with {
             'btn_route': 'transactions_add',
             'btn_route_params': su_ary()|merge({'tuid': id, 'tus': schema}),
@@ -77,7 +77,7 @@
         'user': account(id, schema),
     }) -}}
     {{- account_status(id, schema)|raw -}}
-    {%- if pp_role('admin') -%}
+    {%- if pp_has_role('admin') -%}
         {%- if intersystem_missing -%}
             &nbsp;
             <small>

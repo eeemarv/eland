@@ -12,7 +12,8 @@ class PpExtension extends AbstractExtension
 		return [
 			new TwigFunction('pp_ary', [PpRuntime::class, 'get_ary']),
 			new TwigFunction('pp_schema', [PpRuntime::class, 'get_schema']),
-			new TwigFunction('pp_role', [PpRuntime::class, 'has_role']),
+			new TwigFunction('pp_role', [PpRuntime::class, 'get_role']),
+			new TwigFunction('pp_has_role', [PpRuntime::class, 'has_role']),
 		];
 	}
 }

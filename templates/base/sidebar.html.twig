@@ -27,8 +27,8 @@
 {%- endblock -%}
 
 {%- block body_attr %} class="body-navbar
-	{%- if pp_role('admin') %} admin
-	{%- elseif pp_role('guest') %} guest
+	{%- if pp_has_role('admin') %} admin
+	{%- elseif pp_has_role('guest') %} guest
 	{%- endif -%}"
 {%- endblock body_attr -%}
 
@@ -94,10 +94,33 @@
 
 	</ul>
 
+	{%- block content_sidebar-%}
+		{%- embed 'embed/static_content.html.twig' with {
+			'with_role': true,
+			'with_route': true
+		} -%}
+			{%- block block_name -%}sidebar{%- endblock -%}
+		{%- endembed -%}
+
+		{%- embed 'embed/static_content.html.twig' with {
+			'with_role': false,
+			'with_route': true
+		} -%}
+			{%- block block_name -%}sidebar{%- endblock -%}
+		{%- endembed -%}
+
+		{%- embed 'embed/static_content.html.twig' with {
+			'with_role': true,
+			'with_route': false
+		} -%}
+			{%- block block_name -%}sidebar{%- endblock -%}
+		{%- endembed -%}
+	{%- endblock content_sidebar -%}
+
 	</div>
 
 	<div id="wrap">
-	<div id="main" class="container-fluid clear-top{%- if pp_role('admin') %} admin{%- endif -%}">
+	<div id="main" class="container-fluid clear-top{%- if pp_has_role('admin') %} admin{%- endif -%}">
 
 	{%- block alert -%}
 		{%- include 'include/alert.html.twig' -%}
@@ -108,6 +131,29 @@
 	{%- endblock cms_edit_form -%}
 
 	{%- block cms_edit_extra -%}{%- endblock -%}
+
+	{%- block pre_heading -%}
+		{%- embed 'embed/static_content.html.twig' with {
+			'with_role': true,
+			'with_route': true
+		} -%}
+			{%- block block_name -%}pre_heading{%- endblock -%}
+		{%- endembed -%}
+
+		{%- embed 'embed/static_content.html.twig' with {
+			'with_role': false,
+			'with_route': true
+		} -%}
+			{%- block block_name -%}pre_heading{%- endblock -%}
+		{%- endembed -%}
+
+		{%- embed 'embed/static_content.html.twig' with {
+			'with_role': true,
+			'with_route': false
+		} -%}
+			{%- block block_name -%}pre_heading{%- endblock -%}
+		{%- endembed -%}
+	{%- endblock pre_heading -%}
 
 	{%- block btn_row -%}
 	<div class="row">
@@ -129,7 +175,7 @@
 			{%- if block('btn_nav_top_right') -%}
 				<div class="pull-right">
 					{%- block btn_nav_top_right -%}
-						{%- if pp_role('admin') and block('local_admin_menu') -%}
+						{%- if pp_has_role('admin') and block('local_admin_menu') -%}
 							<div class="btn-group" role="group">
 								{%- block local_admin_menu -%}
 									{%- include 'include/menu/local_admin_menu.html.twig' -%}
@@ -162,8 +208,22 @@
 
 	{%- block content_top -%}
 		{%- embed 'embed/static_content.html.twig' with {
+			'with_role': true,
+			'with_route': true
+		} -%}
+			{%- block block_name -%}top{%- endblock -%}
+		{%- endembed -%}
+
+		{%- embed 'embed/static_content.html.twig' with {
 			'with_role': false,
 			'with_route': true
+		} -%}
+			{%- block block_name -%}top{%- endblock -%}
+		{%- endembed -%}
+
+		{%- embed 'embed/static_content.html.twig' with {
+			'with_role': true,
+			'with_route': false
 		} -%}
 			{%- block block_name -%}top{%- endblock -%}
 		{%- endembed -%}
@@ -261,7 +321,16 @@
 
 	{%- block bulk_actions -%}{%- endblock -%}
 
+
+
 	{%- block content_bottom -%}
+		{%- embed 'embed/static_content.html.twig' with {
+			'with_role': true,
+			'with_route': true
+		} -%}
+			{%- block block_name -%}bottom{%- endblock -%}
+		{%- endembed -%}
+
 		{%- embed 'embed/static_content.html.twig' with {
 			'with_role': false,
 			'with_route': true
@@ -270,12 +339,26 @@
 		{%- endembed -%}
 	{%- endblock content_bottom -%}
 
+	{%- embed 'embed/static_content.html.twig' with {
+		'with_role': true,
+		'with_route': false
+	} -%}
+		{%- block block_name -%}bottom{%- endblock -%}
+	{%- endembed -%}
+
 	</div>
 	</div>
 	</div>
 {%- endblock page_container -%}
 
 {%- block footer_system -%}
+	{%- embed 'embed/static_content.html.twig' with {
+		'with_role': true,
+		'with_route': false
+	} -%}
+		{%- block block_name -%}footer{%- endblock -%}
+	{%- endembed -%}
+
 	{%- if static_content_has(false, false, 'footer') -%}
 	<footer class="alert-info">
 		<br>

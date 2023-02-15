@@ -854,7 +854,38 @@ element {
 /** cms-edit **/
 
 .note-airframe .note-editing-area {
-  border: 3px dashed #888;
+  border: 3px dotted #888;
+}
+.cms-edit.cms-role.cms-admin .note-toolbar,
+.cms-edit.cms-role.cms-admin .note-resizebar {
+  background:#286090;
+}
+.cms-edit.cms-role.cms-admin .note-airframe .note-editing-area {
+  border-color: #286090;
+}
+.cms-edit.cms-role.cms-user .note-toolbar,
+.cms-edit.cms-role.cms-user .note-resizebar {
+  background: #333;
+}
+.cms-edit.cms-role.cms-user .note-airframe .note-editing-area {
+  border-color: #333;
+}
+.cms-edit.cms-role.cms-guest .note-toolbar,
+.cms-edit.cms-role.cms-guest .note-resizebar{
+  background: #ec971f;
+}
+.cms-edit.cms-role.cms-guest .note-airframe .note-editing-area {
+  border-color: #ec971f;
+}
+.cms-edit.cms-role.cms-anonymous .note-toolbar,
+.cms-edit.cms-role.cms-anonymous .note-resizebar {
+  background: #c9302c;
+}
+.cms-edit.cms-role.cms-anonymous .note-airframe .note-editing-area {
+  border-color: #c9302c;
+}
+div.cms-edit.cms-global .note-airframe .note-editing-area {
+  border-style: dashed;
 }
 
 .bg-white {

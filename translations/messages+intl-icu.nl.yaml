@@ -407,12 +407,29 @@ cms_edit:
     full: Volledig
   block_type:
     title: Blok type
+    local_role:
+      label: lokaal per rol
+      title: >-
+        Blokken die eigen zijn aan
+        een pagina en aan één gebruikersrol
+        (admin, lid, gast, anoniem)
     local:
       label: Lokaal
-      title: Blokken die eigen zijn aan een pagina
+      title: >-
+        Blokken die eigen zijn aan een pagina
+    global_role:
+      label: Globaal per rol
+      title: >-
+        Blokken die op alle pagina's
+        getoond worden, maar
+        slechts voor één gebruikersrol
+        (admin, lid, gast, anoniem)
     global:
       label: Globaal
-      title: Blokken die op alle pagina's getoond worden.
+      title: >-
+        Blokken die op alle pagina's
+        getoond worden.
+
   related_pages: Verwante pagina's
   form_disabled: >-
     Dit formulier is niet actief in CMS Edit Mdous.

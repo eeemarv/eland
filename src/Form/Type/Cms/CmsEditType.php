@@ -15,6 +15,9 @@ class CmsEditType extends AbstractType
     {
         $builder
             ->add('route', HiddenType::class)
+            ->add('route_en', HiddenType::class)
+            ->add('role', HiddenType::class)
+            ->add('role_en', HiddenType::class)
             ->add('all_params', HiddenType::class)
             ->add('content', HiddenType::class)
             ->add('submit', SubmitType::class);

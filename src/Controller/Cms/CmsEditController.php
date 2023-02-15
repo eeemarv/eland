@@ -2,7 +2,6 @@
 
 namespace App\Controller\Cms;
 
-use App\Cnst\RoleCnst;
 use App\Command\Cms\CmsEditCommand;
 use App\Form\Type\Cms\CmsEditType;
 use App\HtmlProcess\HtmlPurifier;
@@ -50,8 +49,7 @@ class CmsEditController extends AbstractController
     ):Response
     {
         $command = new CmsEditCommand();
-        $form_options = ['validation_groups' => ['edit']];
-        $form = $this->createForm(CmsEditType::class, $command, $form_options);
+        $form = $this->createForm(CmsEditType::class, $command);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()
@@ -61,17 +59,12 @@ class CmsEditController extends AbstractController
             $content_ary = json_decode($command->content, true);
             $all_params = json_decode($command->all_params, true);
             $route = $command->route;
+            $route_enabled = $command->route_en === '1';
+            $role = $command->role;
+            $role_enabled = $command->role_en === '1';
 
-            if (!isset($all_params['edit']) || !isset($all_params['edit']['en']) || $all_params['edit']['en'] !== '1')
-            {
-                throw new BadRequestException('Invalid form, cms not enabled in query.');
-            }
-
-            $route_en = isset($all_params['edit']['route']) && $all_params['edit']['route'] === '1';
-            $role_en = isset($all_params['edit']['role']) && $all_params['edit']['role'] === '1';
-
-            $sel_route = $route_en ? $route : '';
-            $sel_role = $role_en ? RoleCnst::LONG[$all_params['role_short']] : '';
+            $sel_route = $route_enabled ? $route : '';
+            $sel_role = $role_enabled ? $role : '';
 
             $count_updated = 0;
 

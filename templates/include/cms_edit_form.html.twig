@@ -15,41 +15,44 @@
 			}
 		}
 	} -%}
-	{#
-	{%- set cms_edit_block_types_menu = {
-		'local-by-role': {
-			'lbl': 'Lokaal per rol',
-			'title': 'Blokken die eigen zijn aan een pagina en de rol modus van de pagina.'
-		},
-		'local': {
-			'lbl': 'Lokaal',
-			'title': 'Blokken die eigen zijn aan een pagina'
-		},
-		'global-by-role': {
-			'lbl': 'Globaal per rol',
-			'title': 'Blokken die op alle pagina\'s getoond worden, maar eigen zijn aan de rol modus'
-		},
-		'global': {
-			'lbl': 'Globaal',
-			'title': 'Blokken die op alle pagina\'s getoond worden.'
-		}
-	} -%}
-	#}
 
 	{%- set cms_edit_block_type_menu = {
-		'route': {
-			'params': {'edit': pp_ary().edit|merge({'route': '1'})},
+		'local_role': {
+			'params': {'edit': pp_ary().edit|merge({'route': '1', 'role': '1'})},
+			'lbl': 'cms_edit.block_type.local_role.label',
+			'title': 'cms_edit.block_type.local_role.title'
+		},
+		'local': {
+			'params': {'edit': pp_ary().edit|merge({'route': '1', 'role': '0'})},
 			'lbl': 'cms_edit.block_type.local.label',
 			'title': 'cms_edit.block_type.local.title'
 		},
-		'no_route': {
-			'params': {'edit': pp_ary().edit|merge({'route': '0'})},
+		'global_role': {
+			'params': {'edit': pp_ary().edit|merge({'route': '0', 'role': '1'})},
+			'lbl': 'cms_edit.block_type.global_role.label',
+			'title': 'cms_edit.block_type.global_role.title'
+		},
+		'global': {
+			'params': {'edit': pp_ary().edit|merge({'route': '0', 'role': '0'})},
 			'lbl': 'cms_edit.block_type.global.label',
 			'title': 'cms_edit.block_type.global.title'
 		}
 	} -%}
 
-	{%- set cms_edit_block_type_active = pp_ary().edit.route is defined and pp_ary().edit.route == '1' ? 'route' : 'no_route' -%}
+	{%- if pp_ary().edit.route is defined and pp_ary().edit.route == '1' -%}
+		{%- if pp_ary().edit.role is defined and pp_ary().edit.role == '1' -%}
+			{%- set cms_edit_block_type_active = 'local_role' -%}
+		{%- else -%}
+			{%- set cms_edit_block_type_active = 'local' -%}
+		{%- endif -%}
+	{%- else -%}
+		{%- if pp_ary().edit.role is defined and pp_ary().edit.role == '1' -%}
+			{%- set cms_edit_block_type_active = 'global_role' -%}
+		{%- else -%}
+			{%- set cms_edit_block_type_active = 'global' -%}
+		{%- endif -%}
+	{%- endif -%}
+
 	{%- set cms_edit_style_menu = {
 		'inline': {
 			'params': {'edit': pp_ary().edit|merge({'inline': '1'})},
@@ -135,6 +138,15 @@
 					{{- form_errors(cms_edit_form) -}}
 					{{- form_row(cms_edit_form.route, {
 						'value': route
+					}) -}}
+					{{- form_row(cms_edit_form.route_en, {
+						'value': pp_ary().edit.route is defined and pp_ary().edit.route == '1' ? '1' : '0'
+					}) -}}
+					{{- form_row(cms_edit_form.role, {
+						'value': pp_role()
+					}) -}}
+					{{- form_row(cms_edit_form.role_en, {
+						'value': pp_ary().edit.role is defined and pp_ary().edit.role == '1' ? '1' : '0'
 					}) -}}
 					{{- form_row(cms_edit_form.all_params, {
 						'value': all_params|json_encode

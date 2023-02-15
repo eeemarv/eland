@@ -12,7 +12,7 @@
                 {{- 'access.visible_for'|trans -}}
             </th>
         {%- endif -%}
-        {%- if pp_role('admin') -%}
+        {%- if pp_has_role('admin') -%}
             <th data-hide="phone" data-sort-ignore="true">
                 &nbsp;
             </th>
@@ -32,7 +32,7 @@
                         {{- lbl.btn(d.access) -}}
                     </td>
                 {%- endif -%}
-                {%- if pp_role('admin') -%}
+                {%- if pp_has_role('admin') -%}
                     <td>
                         {%- include 'include/btn/edit.html.twig' with {
                             'btn_route': 'docs_edit',

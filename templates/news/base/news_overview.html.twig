@@ -1,7 +1,7 @@
 {%- extends 'news/base/news_base.html.twig' -%}
 
 {%- block btn_top_add -%}
-    {%- if pp_role('admin') -%}
+    {%- if pp_has_role('admin') -%}
         {%- include 'include/btn_top/add.html.twig' with {
             'btn_route': 'news_add',
             'btn_title': 'news_add.title'

@@ -23,6 +23,11 @@ class PpRuntime implements RuntimeExtensionInterface
 		return $this->pp->schema();
 	}
 
+	public function get_role():string
+	{
+		return $this->pp->role();
+	}
+
 	public function has_role(string $role):bool
 	{
 		switch($role)

@@ -139,7 +139,7 @@ class StaticContentService
 		$field = $lang;
 		$field .= $role === '' ? '' : '.' . $role;
 		$field .= $route === '' ? '' : '.' . $route;
-		$field .= $block;
+		$field .= '.' . $block;
 
 		unset($this->local_cache[$field]);
 		$this->predis->hdel($key, $field);
@@ -165,7 +165,7 @@ class StaticContentService
 		$field = $lang;
 		$field .= $role === '' ? '' : '.' . $role;
 		$field .= $route === '' ? '' : '.' . $route;
-		$field .= $block;
+		$field .= '.' . $block;
 
 		if (isset($this->local_cache[$field]))
 		{
