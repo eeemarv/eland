@@ -11,24 +11,26 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
-class TypeaheadLogTypesController extends AbstractController
+class TypeaheadTagsController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/typeahead-log-types/{thumbprint}',
-        name: 'typeahead_log_types',
+        '/{system}/{role_short}/typeahead-tags/{tag_type}/{thumbprint}',
+        name: 'typeahead_tags',
         methods: ['GET'],
         requirements: [
             'system'        => '%assert.system%',
-            'role_short'    => '%assert.role_short.admin%',
+            'role_short'    => '%assert.role_short.guest%',
+            'tag_type'      => '%assert.tag_type%',
             'thumbprint'    => '%assert.thumbprint%',
         ],
         defaults: [
-            'module'        => 'logs',
+            'module'        => 'users',
         ],
     )]
 
     public function __invoke(
         string $thumbprint,
+        string $tag_type,
         Db $db,
         TypeaheadService $typeahead_service,
         PageParamsService $pp
@@ -41,23 +43,22 @@ class TypeaheadLogTypesController extends AbstractController
             return new Response($cached, 200, ['Content-Type' => 'application/json']);
         }
 
-        $log_types = [];
+        $tags = [];
 
-        $stmt = $db->prepare('select distinct type
-            from xdb.logs
-            where schema = ?
-            order by type asc');
+        $stmt = $db->prepare('select id, txt, txt_color, bg_color
+            from ' . $pp->schema() . '.tags
+            where tag_type = ?');
 
-        $stmt->bindValue(1, $pp->schema(), \PDO::PARAM_STR);
+        $stmt->bindValue(1, $tag_type, \PDO::PARAM_STR);
 
         $res = $stmt->executeQuery();
 
         while ($row = $res->fetchAssociative())
         {
-            $log_types[] = $row['type'];
+            $tags[] = $row;
         }
 
-        $data = json_encode($log_types);
+        $data = json_encode($tags);
         $typeahead_service->set_thumbprint($thumbprint, $data, $pp, []);
         return new Response($data, 200, ['Content-Type' => 'application/json']);
     }

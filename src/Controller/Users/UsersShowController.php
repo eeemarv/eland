@@ -15,6 +15,7 @@ use App\Queue\MailQueue;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Repository\AccountRepository;
+use App\Repository\ContactRepository;
 use App\Service\AlertService;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
@@ -75,6 +76,7 @@ class UsersShowController extends AbstractController
         int $id,
         bool $is_self,
         Db $db,
+        ContactRepository $contact_repository,
         AccountRepository $account_repository,
         AccountRender $account_render,
         AlertService $alert_service,
@@ -316,7 +318,7 @@ class UsersShowController extends AbstractController
 
         $contacts_response = $contacts_user_show_inline_controller(
             $user['id'],
-            $db,
+            $contact_repository,
             $item_access_service,
             $link_render,
             $pp,

@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Constraints\Type;
 
 #[UniqueEmailContact(groups: ['add', 'edit'])]
-#[UrlContact(groups: ['add', 'eddit'])]
+#[UrlContact(groups: ['add', 'edit'])]
 class ContactsCommand implements CommandInterface
 {
     public $id;

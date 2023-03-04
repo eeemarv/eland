@@ -79,6 +79,9 @@ mollie:
 password_strength:
   Het paswoord is niet sterk genoeg.
 
+tag:
+  txt_not_unique: Deze tag-tekst is niet uniek.
+
 type:
   not_an_integer: >-
     De waarde is geen integer.

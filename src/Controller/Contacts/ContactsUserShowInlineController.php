@@ -5,8 +5,8 @@ namespace App\Controller\Contacts;
 use App\Render\AccountRender;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Doctrine\DBAL\Connection as Db;
 use App\Render\LinkRender;
+use App\Repository\ContactRepository;
 use App\Service\DistanceService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
@@ -18,7 +18,7 @@ class ContactsUserShowInlineController extends AbstractController
 {
     public function __invoke(
         int $uid,
-        Db $db,
+        ContactRepository $contact_repository,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
         PageParamsService $pp,
@@ -29,12 +29,7 @@ class ContactsUserShowInlineController extends AbstractController
         string $env_map_tiles_url
     ):Response
     {
-        $contacts = $db->fetchAllAssociative('select c.*, tc.abbrev
-            from ' . $pp->schema() . '.contact c, ' .
-                $pp->schema() . '.type_contact tc
-            where c.id_type_contact = tc.id
-                and c.user_id = ?',
-            [$uid], [\PDO::PARAM_INT]);
+        $contacts = $contact_repository->get_all_for_user($uid, $pp->schema());
 
 		$out = '<div class="row">';
 		$out .= '<div class="col-md-12">';

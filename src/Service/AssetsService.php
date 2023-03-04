@@ -25,7 +25,7 @@ class AssetsService
 				'twitter-bootstrap/3.3.7/js/bootstrap.min.js',
 			],
 		],
-		'bootstrap-tagsinput' => [
+		'tagsinput' => [
 			'js'	=> [
 				'bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.min.js',
 			],

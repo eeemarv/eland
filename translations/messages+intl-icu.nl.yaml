@@ -143,6 +143,7 @@ label:
   balance: Saldo
   balance_on_date: Saldo op datum
   balance_sum: "Totaal Saldo: {balance_sum}"
+  bg_color: Achtergrondkleur
   captcha: Anti-spam verificatiecode
   category: Categorie
   code: Code
@@ -161,6 +162,7 @@ label:
   email: E-mail
   email_tag: E-mail tag
   event_date: Agendadatum
+  example: Voorbeeld
   exclude_counterparties: Exclusief tegenpartijen
   expired: Vervallen
   expires_at: Vervaldatum
@@ -233,6 +235,7 @@ label:
   suggested_price: Richtprijs
   system_name: Naam van het Systeem
   temporal: Tijdelijk
+  text: Tekst
   time: Tijdstip
   title: Titel
   to: Naar
@@ -241,6 +244,7 @@ label:
   type: Type
   transactions: Transacties
   transaction_id: Transactie Id
+  txt_color: Tekstkleur
   upload: Opladen
   user: Gebruiker
   username: Gebruikersnaam
@@ -330,8 +334,6 @@ status:
   ip: Instap-pakket
   new: Instappers
   new_only: Enkel instappers
-
-
 
 system_menu:
   linked_intersystem: Gekoppeld interSysteem
@@ -1033,6 +1035,18 @@ support_form:
           is voor je account kan je geen kopie
           naar je eigen e-mail box sturen}
       }
+
+tags:
+  explain: >-
+    Versleep om de standaard volgorde te veranderen.
+tags_users:
+  title: Tags voor leden
+tags_users_add:
+  title: Tag voor leden toevoegen
+tags_users_del:
+  title: Tag voor leden verwijderen
+tags_users_edit:
+  title: Tag voor leden aanpassen
 
 transactions:
   title: >-

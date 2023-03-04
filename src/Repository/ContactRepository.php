@@ -59,11 +59,14 @@ class ContactRepository
 		string $schema
 	):array
 	{
-		$contact_type =  $this->db->fetchAssociative('select *
+		$stmt =  $this->db->prepare('select *
             from ' . $schema . '.type_contact
-            where id = ?',
-			[$contact_type_id],
-			[\PDO::PARAM_INT]);
+            where id = :contact_type_id');
+
+		$stmt->bindValue('contact_type_id', $contact_type_id, \PDO::PARAM_INT);
+		$res = $stmt->executeQuery();
+
+		$contact_type = $res->fetchAssociative();
 
 		if ($contact_type === false)
 		{
@@ -78,11 +81,13 @@ class ContactRepository
 		string $schema
 	):array
 	{
-		$contact_type =  $this->db->fetchAssociative('select *
+		$stmt = $this->db->prepare('select *
             from ' . $schema . '.type_contact
-            where abbrev = ?',
-			[$abbrev],
-			[\PDO::PARAM_STR]);
+            where abbrev = :abbrev');
+
+		$stmt->bindValue('abbrev', $abbrev, \PDO::PARAM_STR);
+		$res = $stmt->executeQuery();
+		$contact_type = $res->fetchAssociative();
 
 		if ($contact_type === false)
 		{
@@ -97,22 +102,24 @@ class ContactRepository
 		string $schema
 	):int
 	{
-		return $this->db->fetchOne('select count(*)
+		$stmt = $this->db->prepare('select count(*)
             from ' . $schema . '.contact
-            where id_type_contact = ?',
-            [$contact_type_id],
-			[\PDO::PARAM_INT]);
+            where id_type_contact = :contact_type_id');
+
+		$stmt->bindValue('contact_type_id', $contact_type_id, \PDO::PARAM_INT);
+		$res = $stmt->executeQuery();
+		return $res->fetchOne();
 	}
 
 	public function get_mail_count_except_for_user(
-		string $mail_address,
+		string $email_address,
 		int $user_id,
 		string $schema
 	)
 	{
-		$mail_address_lowercase = strtolower($mail_address);
+		$email_lowercase = strtolower($email_address);
 
-		$mail_count = $this->db->fetchOne('select count(c.*)
+		$stmt = $this->db->prepare('select count(c.*)
 			from ' . $schema . '.contact c, ' .
 				$schema . '.type_contact tc, ' .
 				$schema . '.users u
@@ -120,12 +127,14 @@ class ContactRepository
 				and tc.abbrev = \'mail\'
 				and c.user_id = u.id
 				and u.status in (1, 2)
-				and u.id <> ?
-				and lower(c.value) = ?',
-				[$user_id, $mail_address_lowercase],
-				[\PDO::PARAM_INT, \PDO::PARAM_STR]);
+				and u.id <> :user_id
+				and lower(c.value) = :email_lowercase');
 
-		return $mail_count;
+		$stmt->bindValue('user_id', $user_id, \PDO::PARAM_INT);
+		$stmt->bindValue('email_lowercase', $email_lowercase, \PDO::PARAM_STR);
+		$res = $stmt->executeQuery();
+
+		return $res->fetchOne();
 	}
 
 	public function get_mail_count_for_user(
@@ -133,18 +142,19 @@ class ContactRepository
 		string $schema
 	)
 	{
-		$mail_count = $this->db->fetchOne('select count(c.*)
+		$stmt = $this->db->prepare('select count(c.*)
 			from ' . $schema . '.contact c, ' .
 				$schema . '.type_contact tc, ' .
 				$schema . '.users u
 			where c.id_type_contact = tc.id
 				and tc.abbrev = \'mail\'
 				and c.user_id = u.id
-				and u.id = ?',
-				[$user_id],
-				[\PDO::PARAM_INT]);
+				and u.id = :user_id');
 
-		return $mail_count;
+		$stmt->bindValue('user_id', $user_id, \PDO::PARAM_INT);
+		$res = $stmt->executeQuery();
+
+		return $res->fetchOne();
 	}
 
 	public function get_all_contact_types(
@@ -189,7 +199,7 @@ class ContactRepository
 
 	public function update(
 		ContactsCommand $command,
-		$schema
+		string $schema
 	):bool
 	{
 		$update_ary = [
@@ -207,20 +217,28 @@ class ContactRepository
 		}
 
 		return $this->db->update($schema . '.contact',
-			$update_ary, ['id' => $id]) ? true : false;
+			$update_ary,
+			['id' => $id],
+			['id' => \PDO::PARAM_INT]) ? true : false;
 	}
 
 	public function del(int $id, string $schema):bool
 	{
 		return $this->db->delete($schema . '.contact',
-			['id' => $id]) ? true : false;
+			['id' => $id],
+			['id' => \PDO::PARAM_INT]) ? true : false;
 	}
 
 	public function get(int $id, string $schema):array
 	{
-		$contact = $this->db->fetchAssociative('select *
+
+		$stmt = $this->db->prepare('select *
 			from ' . $schema . '.contact
-			where id = ?', [$id]);
+			where id = :id');
+
+		$stmt->bindValue('id', $id, \PDO::PARAM_INT);
+		$res = $stmt->executeQuery();
+		$contact = $res->fetchAssociative();
 
 		if ($contact === false)
 		{
@@ -235,17 +253,15 @@ class ContactRepository
 		string $schema
 	):array
 	{
-		$res = $this->db->executeQuery('select c.*, tc.abbrev
+		$stmt = $this->db->prepare('select c.*, tc.abbrev
 			from ' . $schema . '.contact c, ' .
 				$schema . '.type_contact tc
-			where c.access in (?)
-				and c.user_id = ?
-				and c.id_type_contact = tc.id',
-				[$user_id],
-				[\PDO::PARAM_INT]
-		);
+			where c.user_id = :user_id
+				and c.id_type_contact = tc.id');
+
+		$stmt->bindValue('user_id', $user_id, \PDO::PARAM_INT);
+		$res = $stmt->executeQuery();
 
 		return $res->fetchAllAssociative() ?: [];
 	}
-
 }

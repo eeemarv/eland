@@ -1,0 +1,63 @@
+<?php declare(strict_types=1);
+
+namespace App\Form\Type\Tags;
+
+use App\Command\Tags\TagsDefCommand;
+use App\Form\DataTransformer\ColorTransformer;
+use App\Form\Type\Field\TypeaheadType;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ColorType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+
+class TagsDefType extends AbstractType
+{
+    public function __construct(
+        protected ColorTransformer $color_transformer
+    )
+    {
+    }
+
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+        $opt_ary = [];
+
+        if ($options['del'] === true)
+        {
+            $opt_ary = ['disabled' => true];
+        }
+
+        $builder
+            ->add('txt', TypeaheadType::class, [
+                ...$opt_ary,
+                'render_omit'   => $options['tag_omit'],
+                'add'           => 'tags_' . $options['tag_type'] . '_check',
+            ])
+            ->add('bg_color', ColorType::class, $opt_ary)
+            ->add('txt_color', ColorType::class, $opt_ary)
+            ->add('description', TextType::class, $opt_ary)
+            ->add('submit', SubmitType::class);
+
+        $builder
+            ->get('bg_color')
+            ->addModelTransformer($this->color_transformer);
+        $builder
+            ->get('txt_color')
+            ->addModelTransformer($this->color_transformer);
+    }
+
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefault('del', false);
+        $resolver->setAllowedTypes('del', 'bool');
+        $resolver->setDefault('tag_omit', '');
+        $resolver->setAllowedTypes('tag_omit', ['string']);
+        $resolver->setDefault('tag_type', null);
+        $resolver->setRequired('tag_type');
+        $resolver->setAllowedTypes('tag_type', 'string');
+        $resolver->setAllowedValues('tag_type', ['users', 'messages', 'calendar']);
+        $resolver->setDefault('data_class', TagsDefCommand::class);
+    }
+}

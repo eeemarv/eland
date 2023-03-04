@@ -54,13 +54,16 @@ class CategoryRepository
 		string $name, int $id, string $schema
 	):bool
 	{
-		$lowercase_name = trim(strtolower($name));
+		$lower_name = trim(strtolower($name));
 
-		return $this->db->fetchOne('select id
+		$stmt = $this->db->prepare('select id
 			from ' . $schema . '.categories
-			where id <> ? and lower(name) = ?',
-			[$id, $lowercase_name],
-			[\PDO::PARAM_INT, \PDO::PARAM_STR]) ? false : true;
+			where id <> :id
+				and lower(name) = :lower_name');
+		$stmt->bindValue('id', $id, \PDO::PARAM_INT);
+		$stmt->bindValue('lower_name', $lower_name, \PDO::PARAM_STR);
+		$res = $stmt->executeQuery();
+		return $res->fetchOne() === false;
 	}
 
 	public function get_flat_ary(string $schema):array

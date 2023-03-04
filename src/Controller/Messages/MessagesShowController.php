@@ -15,6 +15,7 @@ use App\Queue\MailQueue;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Repository\CategoryRepository;
+use App\Repository\ContactRepository;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
@@ -52,6 +53,7 @@ class MessagesShowController extends AbstractController
         Request $request,
         int $id,
         Db $db,
+        ContactRepository $contact_repository,
         CategoryRepository $category_repository,
         AccountRender $account_render,
         AlertService $alert_service,
@@ -116,14 +118,13 @@ class MessagesShowController extends AbstractController
 
             if (!$pp->is_admin() && !in_array($to_user['status'], [1, 2]))
             {
-                throw new AccessDeniedHttpException('Je hebt geen rechten om een
-                    bericht naar een niet-actieve gebruiker te sturen');
+                throw new AccessDeniedHttpException('You dan\'t have enough rights
+                    to send a message to a non-active user.');
             }
 
             if ($su->is_master())
             {
-                throw new AccessDeniedHttpException('Het master account
-                    kan geen berichten versturen.');
+                throw new AccessDeniedHttpException('The master account can not send messages.');
             }
 
             $token_error = $form_token_service->get_error();
@@ -236,7 +237,7 @@ class MessagesShowController extends AbstractController
 
         $contacts_response = $contacts_user_show_inline_controller(
             $user['id'],
-            $db,
+            $contact_repository,
             $item_access_service,
             $link_render,
             $pp,

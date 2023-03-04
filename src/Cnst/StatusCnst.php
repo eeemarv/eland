@@ -34,13 +34,4 @@ class StatusCnst
         6 => 'info',
         7 => 'extern',
     ];
-
-    const THUMBPINT_ARY = [
-       0 => 'inactive',
-       1 => 'active',
-       2 => 'active',
-       5 => 'ip',
-       6 => 'im',
-       7 => 'extern'
-    ];
 }
