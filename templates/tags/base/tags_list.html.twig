@@ -23,8 +23,8 @@
     <div class="list-group list-group-striped list-group-hover{% if tags|length > 1 %} grab{%- endif -%}" data-sortable data-sort-base>
     {%- for tag in tags -%}
         <div class="list-group-item" data-id="{{- tag.id -}}">
-        {%- set style = 'color: ' ~ tag.txt_color ~ '; background-color: ' ~ tag.bg_color ~ ';' -%}
-        <span class="label tag-eland" title="{{- tag.description -}}" style="{{- style -}}">
+        {%- set style = 'color:' ~ tag.txt_color ~ ';background-color:' ~ tag.bg_color ~ '; border-color:' ~ tag.txt_color ~ ';' -%}
+        <span class="label tag-eland" title="{{- tag.description -}}" style="{{- style -}}" data-tag="{{- tag.id -}}">
             {{- tag.txt -}}
         </span>
             {%- if tag.count > 0 %} (
@@ -64,6 +64,6 @@
 
 {%- block form_a -%}
     {{- form_row(form.tags,{
-        'attr': {'data-tags-input': 'btn-info'}
+        'attr': {'data-tags-input': ''}
     }) -}}
 {%- endblock form_a -%}

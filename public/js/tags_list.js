@@ -8,21 +8,12 @@ jQuery(function(){
 		});
 	}
 
-	$('form[method="post"]').on('submit', function(event) {
+	$('form[method="post"]').on('submit', function() {
 		var $base = $('[data-sort-base]');
-		function serialize($sort){
-			var ary = [];
-			$sort.children('[data-id]').each(function(){
-				var $item = $(this);
-				var children = serialize($item.children('[data-sortable]'));
-				var ary_item = {id: $item.data('id')};
-				if (children.length > 0){
-					ary_item.children = children;
-				}
-				ary.push(ary_item);
-			});
-			return ary;
-		}
-		$('[data-tags-input]').val(JSON.stringify(serialize($base)));
+		var ary = [];
+		$base.children('[data-id]').each(function(){
+			ary.push($(this).data('id'));
+		});
+		$('[data-tags-input]').val(JSON.stringify(ary));
 	});
 });

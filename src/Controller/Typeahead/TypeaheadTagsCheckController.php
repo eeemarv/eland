@@ -73,7 +73,7 @@ class TypeaheadTagsCheckController extends AbstractController
             return new Response($cached, 200, ['Content-Type' => 'application/json']);
         }
 
-        $tags = $tag_repository->get_ary($tag_type, $pp->schema());
+        $tags = $tag_repository->get_flat_ary($tag_type, $pp->schema());
         $data = json_encode($tags);
         $typeahead_service->set_thumbprint($thumbprint, $data, $pp, []);
         return new Response($data, 200, ['Content-Type' => 'application/json']);

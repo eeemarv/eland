@@ -92,9 +92,8 @@ class TagsListController extends AbstractController
             $tags_json = $command->tags;
             $posted_tags = json_decode($tags_json, true);
 
-            //$update_count = $tag_repository->update_list($posted_tags, $tag_type, $pp->schema());
+            $update_count = $tag_repository->update_list($posted_tags, $tag_type, $pp->schema());
 
-            $update_count = 0;
             if ($update_count)
             {
                 $alert_service->success('Plaatsing tags aangepast.');
@@ -107,7 +106,7 @@ class TagsListController extends AbstractController
             return $this->redirectToRoute('tags_' . $module, $pp->ary());
         }
 
-        return $this->render('tags/tags_' . $tag_type . '.html.twig', [
+        return $this->render('tags/tags_' . $tag_type . '_list.html.twig', [
             'tags'      => $tags,
             'form'      => $form->createView(),
             'module'    => $module,

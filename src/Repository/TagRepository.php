@@ -144,7 +144,7 @@ class TagRepository
 		return $tags;
 	}
 
-	public function get_ary(
+	public function get_flat_ary(
 		string $tag_type,
 		string $schema
 	):array
@@ -153,7 +153,8 @@ class TagRepository
 
         $stmt = $this->db->prepare('select txt
             from ' . $schema . '.tags
-            where tag_type = :tag_type');
+            where tag_type = :tag_type
+			order by pos');
         $stmt->bindValue('tag_type', $tag_type, \PDO::PARAM_STR);
         $res = $stmt->executeQuery();
 
@@ -175,6 +176,7 @@ class TagRepository
 			(txt, txt_color, bg_color, description, tag_type, created_by, pos)
 			values(:txt, :txt_color, :bg_color, :description, :tag_type, :created_by, (
 				select coalesce(max(pos), 0) + 1 from ' . $schema . '.tags
+				where tag_type = :tag_type
 			))');
 		$stmt->bindValue('txt', $command->txt, \PDO::PARAM_STR);
 		$stmt->bindValue('txt_color', $command->txt_color, \PDO::PARAM_STR);
@@ -212,12 +214,76 @@ class TagRepository
 
 	public function del(int $id, string $tag_type, string $schema):int
 	{
-		$stmt = $this->db->prepare('delete from ' . $schema . '.tags
-			where id = :id
-				and tag_type = :tag_type');
+		$stmt = $this->db->prepare('delete from ' . $schema . '.tags t
+			where t.id = :id
+				and t.tag_type = :tag_type
+				and not exists (
+					select from ' . $schema . '.' . $tag_type . '_tags j
+					where t.id = j.tag_id)
+				');
 		$stmt->bindValue('id', $id, \PDO::PARAM_INT);
 		$stmt->bindValue('tag_type', $tag_type, \PDO::PARAM_STR);
 		return $stmt->executeStatement();
+	}
+
+	public function update_list(
+		array $tags_list,
+		string $tag_type,
+		string $schema
+	):int
+	{
+		$tags_count = count($tags_list);
+		if ($tags_count < 2)
+		{
+			return 0;
+		}
+		$update_count = 0;
+		$stored_tags = [];
+		$this->db->beginTransaction();
+        $stmt = $this->db->prepare('select id
+            from ' . $schema . '.tags
+            where tag_type = :tag_type
+			order by pos');
+        $stmt->bindValue('tag_type', $tag_type, \PDO::PARAM_STR);
+        $res = $stmt->executeQuery();
+		while($tag_id = $res->fetchOne())
+		{
+			$stored_tags[] = $tag_id;
+		}
+		if (count($stored_tags) !== $tags_count)
+		{
+			throw new Exception('Tags count for update does not match.');
+		}
+		if ($stored_tags === $tags_list)
+		{
+			$this->db->commit();
+			return 0;
+		}
+		$stmt = $this->db->prepare('select min(pos), max(pos)
+			from ' . $schema . '.tags
+			where tag_type = :tag_type');
+		$stmt->bindValue('tag_type', $tag_type, \PDO::PARAM_STR);
+		$res = $stmt->executeQuery();
+		[$min_pos, $max_pos] = $res->fetchNumeric();
+		$pos = $tags_count >= $min_pos ? $max_pos + 1 : 1;
+		foreach ($tags_list as $key => $tag_id)
+		{
+			$stmt = $this->db->prepare('update ' . $schema . '.tags
+				set pos = :pos
+				where tag_type = :tag_type
+					and id = :id');
+			$stmt->bindValue('pos', $pos, \PDO::PARAM_INT);
+			$stmt->bindValue('tag_type', $tag_type, \PDO::PARAM_STR);
+			$stmt->bindValue('id', $tag_id, \PDO::PARAM_INT);
+			$stmt->executeStatement();
+			if ($tag_id !== $stored_tags[$key])
+			{
+				$update_count++;
+			}
+			$pos++;
+		}
+		$this->db->commit();
+		return $update_count;
 	}
 
 	public function is_unique_txt_except_id(
