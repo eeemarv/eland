@@ -32,7 +32,7 @@ class TagsDefType extends AbstractType
         $builder
             ->add('txt', TypeaheadType::class, [
                 ...$opt_ary,
-                'render_omit'   => $options['tag_omit'],
+                'render_omit'   => $options['txt_omit'],
                 'add'           => 'tags_' . $options['tag_type'] . '_check',
             ])
             ->add('bg_color', ColorType::class, $opt_ary)
@@ -52,8 +52,8 @@ class TagsDefType extends AbstractType
     {
         $resolver->setDefault('del', false);
         $resolver->setAllowedTypes('del', 'bool');
-        $resolver->setDefault('tag_omit', '');
-        $resolver->setAllowedTypes('tag_omit', ['string']);
+        $resolver->setDefault('txt_omit', '');
+        $resolver->setAllowedTypes('txt_omit', ['string']);
         $resolver->setDefault('tag_type', null);
         $resolver->setRequired('tag_type');
         $resolver->setAllowedTypes('tag_type', 'string');

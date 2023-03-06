@@ -2,11 +2,11 @@
 
 namespace App\Controller\Typeahead;
 
+use App\Repository\TagRepository;
 use App\Service\PageParamsService;
 use App\Service\TypeaheadService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -14,13 +14,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class TypeaheadTagsController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/typeahead-tags/{tag_type}/{thumbprint}',
-        name: 'typeahead_tags',
+        '/{system}/{role_short}/typeahead-tags-users/{thumbprint}',
+        name: 'typeahead_tags_users',
         methods: ['GET'],
         requirements: [
             'system'        => '%assert.system%',
             'role_short'    => '%assert.role_short.guest%',
-            'tag_type'      => '%assert.tag_type%',
             'thumbprint'    => '%assert.thumbprint%',
         ],
         defaults: [
@@ -28,14 +27,44 @@ class TypeaheadTagsController extends AbstractController
         ],
     )]
 
+    #[Route(
+        '/{system}/{role_short}/typeahead-tags-messages/{thumbprint}',
+        name: 'typeahead_tags_messages',
+        methods: ['GET'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.guest%',
+            'thumbprint'    => '%assert.thumbprint%',
+        ],
+        defaults: [
+            'module'        => 'messages',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/typeahead-tags-calendar/{thumbprint}',
+        name: 'typeahead_tags_calendar',
+        methods: ['GET'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.guest%',
+            'thumbprint'    => '%assert.thumbprint%',
+        ],
+        defaults: [
+            'module'        => 'calendar',
+        ],
+    )]
+
     public function __invoke(
         string $thumbprint,
-        string $tag_type,
-        Db $db,
+        string $module,
+        TagRepository $tag_repository,
         TypeaheadService $typeahead_service,
         PageParamsService $pp
     ):Response
     {
+        $tag_type = $module;
+
         $cached = $typeahead_service->get_cached_data($thumbprint, $pp, []);
 
         if ($cached !== false)
@@ -43,21 +72,7 @@ class TypeaheadTagsController extends AbstractController
             return new Response($cached, 200, ['Content-Type' => 'application/json']);
         }
 
-        $tags = [];
-
-        $stmt = $db->prepare('select id, txt, txt_color, bg_color
-            from ' . $pp->schema() . '.tags
-            where tag_type = ?');
-
-        $stmt->bindValue(1, $tag_type, \PDO::PARAM_STR);
-
-        $res = $stmt->executeQuery();
-
-        while ($row = $res->fetchAssociative())
-        {
-            $tags[] = $row;
-        }
-
+        $tags = $tag_repository->get_all_for_render($tag_type, $pp->schema());
         $data = json_encode($tags);
         $typeahead_service->set_thumbprint($thumbprint, $data, $pp, []);
         return new Response($data, 200, ['Content-Type' => 'application/json']);

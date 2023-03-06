@@ -1,0 +1,69 @@
+{%- extends 'tags/base/tags_base.html.twig' -%}
+
+{%- set cancel_route = module|var_route -%}
+
+{%- block heading_fa -%}
+    tags
+{%- endblock -%}
+
+{%- block assets_add -%}
+    {{- parent() -}}
+    {{- assets_add(['sortable', 'tags_list.js']) -}}
+{%- endblock assets_add -%}
+
+{%- block pre_form -%}
+    <p>
+        <ul>
+            <li>{{- 'tags_' ~ module ~ '.explain'|trans -}}</li>
+            <li>{{- 'tags.explain.drag'|trans -}}</li>
+            <li>{{- 'tags.explain.store'|trans -}}</li>
+            <li>{{- 'tags.explain.del'|trans -}}</li>
+        </ul>
+    </p>
+    <div class="list-group list-group-striped list-group-hover{% if tags|length > 1 %} grab{%- endif -%}" data-sortable data-sort-base>
+    {%- for tag in tags -%}
+        <div class="list-group-item" data-id="{{- tag.id -}}">
+        {%- set style = 'color: ' ~ tag.txt_color ~ '; background-color: ' ~ tag.bg_color ~ ';' -%}
+        <span class="label tag-eland" title="{{- tag.description -}}" style="{{- style -}}">
+            {{- tag.txt -}}
+        </span>
+            {%- if tag.count > 0 %} (
+                <a href="{{- path(module|var_route, pp_ary()|merge({'f': {'tag[]': tag.id}})) -}}">
+                    {{- tag.count -}}
+                </a> )
+            {%- endif -%}
+        <div class="pull-right">
+            {%- include 'include/btn/edit.html.twig' with {
+                'btn_route': 'tags_' ~ module ~ '_edit',
+                'id': tag.id,
+                'btn_title': 'tags_' ~ module ~ '_edit.title',
+                'btn_title_trans_params': {
+                    'txt': tag.txt
+                }
+            } -%}
+
+            {%- if tag.count == 0 -%}
+                {%- include 'include/btn/del.html.twig' with {
+                    'btn_route': 'tags_' ~ module ~ '_del',
+                    'id': tag.id,
+                    'btn_title': 'tags_' ~ module ~ '_del.title',
+                    'btn_title_trans_params': {
+                        'txt': tag.txt
+                    },
+                    'btn_attr': {
+                        'data-del-btn': ''
+                    }
+                } -%}
+            {%- endif -%}
+        </div>
+        </div>
+        {%- endfor -%}
+    </div>
+    <div class="mb-5p"></div>
+{%- endblock pre_form -%}
+
+{%- block form_a -%}
+    {{- form_row(form.tags,{
+        'attr': {'data-tags-input': 'btn-info'}
+    }) -}}
+{%- endblock form_a -%}

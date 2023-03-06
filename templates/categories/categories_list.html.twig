@@ -22,7 +22,7 @@
             <li>{{- 'categories.explain.del'|trans -}}</li>
         </ul>
     </p>
-    <div class="list-group" data-sortable data-sort-base>
+    <div class="list-group{% if categories|length > 1 %} grab{%- endif -%}" data-sortable data-sort-base>
     {%- set open_div = 0 -%}
     {%- for id, cat in categories -%}
         {%- set close_div = open_div - ((cat.level - 1) * 2) -%}
@@ -69,7 +69,7 @@
         </div>
         <div class="clearfix"></div>
         {%- if cat.count == 0 -%}
-            <div class="list-group" data-sortable>
+            <div class="list-group list-group-striped" data-sortable>
             {%- set open_div = open_div + 2 -%}
         {%- else -%}
             </div>
@@ -86,7 +86,7 @@
 
 {%- block form_a -%}
     {{- form_row(form.categories,{
-        'attr': {'data-categories-input': 'btn-info'}
+        'attr': {'data-categories-input': ''}
     }) -}}
 {%- endblock form_a -%}
 

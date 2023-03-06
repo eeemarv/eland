@@ -1,5 +1,11 @@
 {%- extends 'tags/base/tags_base.html.twig' -%}
 
+{%- set cancel_route = 'tags_' ~ module -%}
+
+{%- block heading_fa -%}
+    tag
+{%- endblock -%}
+
 {%- block assets_add -%}
     {{- parent() -}}
 	{{- assets_add([
@@ -26,7 +32,8 @@
                     {{- 'label.example'|trans -}}
                 </label>
                 <div class="input-group">
-                    <span class="tag label" style="background: #235;" data-tag-exp>
+                    <span class="tag-eland label" data-tag-exp title="{{- form.children.description.vars.value -}}">
+                        {{- form.children.txt.vars.value -}}
                     </span>
                 </div>
             </div>

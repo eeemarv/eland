@@ -75,7 +75,7 @@ class TagsDelController extends AbstractController
 
         $tag = $tag_repository->get_with_count($id, $tag_type, $pp->schema());
 
-        if ($tag['count'])
+        if ($tag['count'] !== 0)
         {
             throw new BadRequestException('Count not zero, tag can not be deleted.');
         }
@@ -85,28 +85,27 @@ class TagsDelController extends AbstractController
         $command->txt_color = $tag['txt_color'];
         $command->bg_color = $tag['bg_color'];
         $command->description = $tag['description'];
+        $command->id = $id;
+        $command->tag_type = $tag_type;
 
-        $form_options = [
-            'validation_groups'     => ['del'],
-        ];
-
-        $form = $this->createForm(TagsDefType::class, $command, $form_options);
+        $form = $this->createForm(TagsDefType::class, $command, [
+            'del'       => true,
+            'tag_type'  => $tag_type,
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $command = $form->getData();
-            $command->id = $id;
-            $command->tag_type = $tag_type;
-            $tag_repository->del($command, $pp->schema());
+            $tag_repository->del($id, $tag_type, $pp->schema());
             $alert_service->success('Tag "' . $command->txt . '" verwijderd.');
 
             return $this->redirectToRoute('tags_' . $tag_type, $pp->ary());
         }
 
         return $this->render('tags/tags_' . $tag_type . '_del.html.twig', [
-            'form'  => $form->createView(),
+            'form'      => $form->createView(),
+            'module'    => $module,
         ]);
     }
 }

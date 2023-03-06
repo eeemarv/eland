@@ -80,20 +80,20 @@ class TagRepository
 		int $id,
 		string $tag_type,
 		string $schema
-	):int
+	):array
 	{
 		$stmt = $this->db->prepare('select t.*, count(j.*)
 			from ' . $schema . '.tags t
-				left join ' . $schema . '.tags_' . $tag_type . ' j
+				left join ' . $schema . '.' . $tag_type . '_tags j
 				on t.id = j.tag_id
 			where t.id = :id
-				and t.tag_type = :tag_type');
+				and t.tag_type = :tag_type
+			group by t.id');
 
 		$stmt->bindValue('id', $id, \PDO::PARAM_INT);
 		$stmt->bindValue('tag_type', $tag_type, \PDO::PARAM_STR);
 		$res = $stmt->executeQuery();
-
-		$tag = $res->fetchOne();
+		$tag = $res->fetchAssociative();
 
 		if ($tag === false)
 		{
@@ -110,13 +110,38 @@ class TagRepository
 	{
 		$stmt = $this->db->prepare('select t.*, count(j.*)
 			from ' . $schema . '.tags t
-			left join ' . $schema . '.tags_' . $tag_type . ' j
+			left join ' . $schema . '.' . $tag_type . '_tags j
 			on t.id = j.tag_id
+			where t.tag_type = :tag_type
 			group by t.id
 			order by t.pos asc;');
-
+		$stmt->bindValue('tag_type', $tag_type, \PDO::PARAM_STR);
 		$res = $stmt->executeQuery();
 		return $res->fetchAllAssociative();
+	}
+
+	public function get_all_for_render(
+		string $tag_type,
+		string $schema
+	):array
+	{
+		$tags = [];
+
+        $stmt = $this->db->prepare('select id, txt, txt_color, bg_color, pos
+            from ' . $schema . '.tags
+            where tag_type = ?
+			order by pos asc');
+
+        $stmt->bindValue(1, $tag_type, \PDO::PARAM_STR);
+
+        $res = $stmt->executeQuery();
+
+        while ($row = $res->fetchAssociative())
+        {
+            $tags[] = $row;
+        }
+
+		return $tags;
 	}
 
 	public function get_ary(
@@ -167,8 +192,13 @@ class TagRepository
 		string $schema
 	):int
 	{
+		if (!isset($command->id))
+		{
+			throw new Exception('no id set for tag update.');
+		}
+
 		$stmt = $this->db->prepare('update ' . $schema . '.tags
-			txt = :txt, bg_color = :bg_color, txt_color = :txt_color, description = :description
+			set txt = :txt, bg_color = :bg_color, txt_color = :txt_color, description = :description
 			where id = :id
 				and tag_type = :tag_type');
 		$stmt->bindValue('txt', $command->txt, \PDO::PARAM_STR);
@@ -180,13 +210,13 @@ class TagRepository
 		return $stmt->executeStatement();
 	}
 
-	public function del(TagsDefCommand $command, string $schema):int
+	public function del(int $id, string $tag_type, string $schema):int
 	{
 		$stmt = $this->db->prepare('delete from ' . $schema . '.tags
 			where id = :id
 				and tag_type = :tag_type');
-		$stmt->bindValue('id', $command->id, \PDO::PARAM_INT);
-		$stmt->bindValue('tag_type', $command->tag_type, \PDO::PARAM_STR);
+		$stmt->bindValue('id', $id, \PDO::PARAM_INT);
+		$stmt->bindValue('tag_type', $tag_type, \PDO::PARAM_STR);
 		return $stmt->executeStatement();
 	}
 

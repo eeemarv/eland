@@ -96,7 +96,8 @@ class TagsAddController extends AbstractController
         }
 
         return $this->render('tags/tags_' . $tag_type . '_add.html.twig', [
-            'form'  => $form->createView(),
+            'form'      => $form->createView(),
+            'module'    => $module,
         ]);
     }
 }

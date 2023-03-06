@@ -1015,3 +1015,21 @@ div.cms-edit.cms-global .note-airframe .note-editing-area {
 /** object-fit **/
 .object-fit-cover { object-fit: cover; }
 .object-center { object-position: center; }
+
+/** tags **/
+.tag-eland {
+  border: 2px solid #555;
+  color: #555;
+  background-color: #eee;
+}
+
+/** list-group (tags,cats) **/
+.list-group-striped div:nth-of-type(odd){
+  background: #eee;
+}
+.list-group-hover div:hover{
+  background: #ddd;
+}
+.grab {
+  cursor: grab;
+}

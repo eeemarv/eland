@@ -7,7 +7,7 @@ use Symfony\Component\Validator\Constraints\Json;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Sequentially;
 
-class TagsOrderCommand implements CommandInterface
+class TagsListCommand implements CommandInterface
 {
     #[Sequentially(constraints: [
         new NotBlank(groups: ['edit']),

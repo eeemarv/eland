@@ -81,11 +81,10 @@ class TagsEditController extends AbstractController
         $command->bg_color = $tag['bg_color'];
         $command->description = $tag['description'];
 
-        $form_options = [
-            'validation_groups'     => ['edit'],
-        ];
-
-        $form = $this->createForm(TagsDefType::class, $command, $form_options);
+        $form = $this->createForm(TagsDefType::class, $command, [
+            'tag_type'  => $tag_type,
+            'txt_omit'  => $tag['txt'],
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()
@@ -101,6 +100,7 @@ class TagsEditController extends AbstractController
 
         return $this->render('tags/tags_' . $tag_type . '_edit.html.twig', [
             'form'      => $form->createView(),
+            'module'    => $module,
         ]);
     }
 }

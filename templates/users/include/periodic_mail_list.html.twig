@@ -4,7 +4,7 @@
             {{- title|trans -}}
         </div>
         <div class="panel-body">
-            <ul class="list-group"{{- list_attr -}}>
+            <ul class="list-group grab"{{- list_attr -}}>
                 {%- for b in block_list -%}
                     <li class="list-group-item {{ item_class -}}" data-block="{{- b -}}"
                     {%- if block_ary[b]|length > 1 %} data-option="{{- block_select_options[b] -}}"{%- endif -%}>

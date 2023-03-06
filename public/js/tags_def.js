@@ -3,10 +3,8 @@ jQuery(function(){
 	var $exp = $('[data-tag-exp]');
 	var $txt_color = $('[data-tag-txt-color]');
 	var $bg_color = $('[data-tag-bg-color]');
+	var $description = $('[data-tag-description]');
 
-	$exp.css('border-style', 'solid');
-	$exp.css('border-width', '2px');
-	$exp.text($txt.val());
 	$exp.css('color', $txt_color.val());
 	$exp.css('border-color', $txt_color.val());
 	$exp.css('background-color', $bg_color.val());
@@ -20,5 +18,8 @@ jQuery(function(){
 	});
 	$bg_color.on('change click', function(){
 		$exp.css('background-color', $(this).val());
+	});
+	$description.on('change keyup', function(){
+		$exp.attr('title', $(this).val());
 	});
 });
