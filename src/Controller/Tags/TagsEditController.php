@@ -61,6 +61,81 @@ class TagsEditController extends AbstractController
         ],
     )]
 
+    #[Route(
+        '/{system}/{role_short}/tags/news/{id}/edit',
+        name: 'tags_news_edit',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'id'            => '%assert.id%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'                => 'news',
+            'sub_module'            => 'tags',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/tags/transactions/{id}/edit',
+        name: 'tags_transactions_edit',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'id'            => '%assert.id%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'                => 'transactions',
+            'sub_module'            => 'tags',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/tags/docs/{id}/edit',
+        name: 'tags_docs_edit',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'id'            => '%assert.id%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'                => 'docs',
+            'sub_module'            => 'tags',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/tags/forum/{id}/edit',
+        name: 'tags_forum_edit',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'id'            => '%assert.id%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'                => 'forum',
+            'sub_module'            => 'tags',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/tags/blog/{id}/edit',
+        name: 'tags_blog_edit',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'id'            => '%assert.id%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'                => 'blog',
+            'sub_module'            => 'tags',
+        ],
+    )]
+
     public function __invoke(
         Request $request,
         int $id,

@@ -60,6 +60,76 @@ class TagsAddController extends AbstractController
         ],
     )]
 
+    #[Route(
+        '/{system}/{role_short}/tags/news/add',
+        name: 'tags_news_add',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'                => 'news',
+            'sub_module'            => 'tags',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/tags/transactions/add',
+        name: 'tags_transactions_add',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'                => 'transactions',
+            'sub_module'            => 'tags',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/tags/docs/add',
+        name: 'tags_docs_add',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'                => 'docs',
+            'sub_module'            => 'tags',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/tags/forum/add',
+        name: 'tags_forum_add',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'                => 'forum',
+            'sub_module'            => 'tags',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/tags/blog/add',
+        name: 'tags_blog_add',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'                => 'blog',
+            'sub_module'            => 'tags',
+        ],
+    )]
+
     public function __invoke(
         string $module,
         Request $request,

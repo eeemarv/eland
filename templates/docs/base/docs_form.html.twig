@@ -4,10 +4,10 @@
 {%- block form_a -%}
     {%- if form.file_location is defined -%}
         {{- form_row(form.file_location, {
-            'label': 'label.file_location_link',
+            'label': 'link.file_location',
             'label_translation_parameters': {
-                'open_link': a.open(form.children.file_location.vars.value),
-                'close_link': a.close()
+                'open': a.open(form.children.file_location.vars.value),
+                'close': a.close()
             },
             'label_html': true,
             'pre_addon': {

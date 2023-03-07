@@ -131,6 +131,7 @@ label:
   account_code: Account Code
   action: Actie
   actions: Acties
+  actif: Actief
   activated: Geactiveerd
   activity: Activiteit
   admin: Admin
@@ -168,7 +169,7 @@ label:
   expires_at: Vervaldatum
   file: Bestand
   file_location: Bestandslocatie
-  file_location_link: Bestandslocatie ({open_link}link{close_link})
+  file_location_link:
   filtered: Gefilterd
   filters: Filters
   first_name: Voornaam
@@ -257,6 +258,12 @@ label:
   your_account: Je Account
   your_email: Je E-Mail adres
   your_message: Je Bericht
+
+link:
+  count: >-
+    Aantal: {open}{count}{close}
+  file_location: >-
+    Bestandslocatie ({open}link{close})
 
 logic:
   and: en
@@ -1023,9 +1030,6 @@ register_form_confirm_success:
 
 support_form:
   title: Support
-  explain: >-
-    Stuur een bericht naar de
-    administratie van {system_name}.
   cc:
     label: >-
       {can_reply, select,
@@ -1039,6 +1043,14 @@ support_form:
 tags:
   explain: >-
     Versleep om de standaard volgorde te veranderen.
+tags_blog:
+  title: Tags voor blog onderwerpen
+tags_blog_add:
+  title: Tag voor blog onderwerpen toevoegen
+tags_blog_del:
+  title: Tag "{txt}" voor blog onderwerpen verwijderen
+tags_blog_edit:
+  title: Tag "{txt}" voor blog onderwerpen aanpassen
 tags_calendar:
   title: Tags voor kalender
 tags_calendar_add:
@@ -1047,6 +1059,22 @@ tags_calendar_del:
   title: Tag "{txt}" voor kalender verwijderen
 tags_calendar_edit:
   title: Tag "{txt}" voor kalender aanpassen
+tags_docs:
+  title: Tags voor documenten
+tags_docs_add:
+  title: Tag voor documenten toevoegen
+tags_docs_del:
+  title: Tag "{txt}" voor documenten verwijderen
+tags_docs_edit:
+  title: Tag "{txt}" voor documenten aanpassen
+tags_forum:
+  title: Tags voor forum onderwerpen
+tags_forum_add:
+  title: Tag voor forum onderwerpen toevoegen
+tags_forum_del:
+  title: Tag "{txt}" voor forum onderwerpen verwijderen
+tags_forum_edit:
+  title: Tag "{txt}" voor forum onderwerpen aanpassen
 tags_messages:
   title: Tags voor vraag en aanbod
 tags_messages_add:
@@ -1055,6 +1083,22 @@ tags_messages_del:
   title: Tag "{txt}" voor vraag en aanbod verwijderen
 tags_messages_edit:
   title: Tag "{txt}" voor vraag en aanbod aanpassen
+tags_news:
+  title: Tags voor nieuws onderwerpen
+tags_news_add:
+  title: Tag voor nieuws onderwerpen toevoegen
+tags_news_del:
+  title: Tag "{txt}" voor nieuws onderwerpen verwijderen
+tags_news_edit:
+  title: Tag "{txt}" voor nieuws onderwerpen aanpassen
+tags_transactions:
+  title: Tags voor transacties
+tags_transactions_add:
+  title: Tag voor transacties toevoegen
+tags_transactions_del:
+  title: Tag "{txt}" voor transacties verwijderen
+tags_transactions_edit:
+  title: Tag "{txt}" voor transacties aanpassen
 tags_users:
   title: Tags voor leden
 tags_users_add:

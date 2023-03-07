@@ -1,0 +1,12 @@
+{%- extends 'tags/base/tags_list.html.twig' -%}
+
+{%- block heading_title -%}
+    {{- 'tags_docs.title'|trans -}}
+{%- endblock heading_title -%}
+
+{%- block btn_top_add -%}
+    {%- include 'include/btn_top/add.html.twig' with {
+        'btn_route': 'tags_docs_add',
+        'btn_title': 'tags_docs_add.title'
+    } -%}
+{%- endblock btn_top_add -%}

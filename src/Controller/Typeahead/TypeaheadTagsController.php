@@ -55,6 +55,76 @@ class TypeaheadTagsController extends AbstractController
         ],
     )]
 
+    #[Route(
+        '/{system}/{role_short}/typeahead-tags-news/{thumbprint}',
+        name: 'typeahead_tags_news',
+        methods: ['GET'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.guest%',
+            'thumbprint'    => '%assert.thumbprint%',
+        ],
+        defaults: [
+            'module'        => 'news',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/typeahead-tags-transactions/{thumbprint}',
+        name: 'typeahead_tags_transactions',
+        methods: ['GET'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.guest%',
+            'thumbprint'    => '%assert.thumbprint%',
+        ],
+        defaults: [
+            'module'        => 'transactions',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/typeahead-tags-docs/{thumbprint}',
+        name: 'typeahead_tags_docs',
+        methods: ['GET'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.guest%',
+            'thumbprint'    => '%assert.thumbprint%',
+        ],
+        defaults: [
+            'module'        => 'docs',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/typeahead-tags-forum/{thumbprint}',
+        name: 'typeahead_tags_forum',
+        methods: ['GET'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.guest%',
+            'thumbprint'    => '%assert.thumbprint%',
+        ],
+        defaults: [
+            'module'        => 'forum',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/typeahead-tags-blog/{thumbprint}',
+        name: 'typeahead_tags_blog',
+        methods: ['GET'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.guest%',
+            'thumbprint'    => '%assert.thumbprint%',
+        ],
+        defaults: [
+            'module'        => 'blog',
+        ],
+    )]
+
     public function __invoke(
         string $thumbprint,
         string $module,

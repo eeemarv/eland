@@ -59,6 +59,76 @@ class TagsListController extends AbstractController
         ],
     )]
 
+    #[Route(
+        '/{system}/{role_short}/tags/news',
+        name: 'tags_news',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'news',
+            'sub_module'    => 'tags',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/tags/transactions',
+        name: 'tags_transactions',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'transactions',
+            'sub_module'    => 'tags',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/tags/docs',
+        name: 'tags_docs',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'docs',
+            'sub_module'    => 'tags',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/tags/forum',
+        name: 'tags_forum',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'forum',
+            'sub_module'    => 'tags',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/tags/blog',
+        name: 'tags_blog',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'module'        => 'blog',
+            'sub_module'    => 'tags',
+        ],
+    )]
+
     public function __invoke(
         string $module,
         Request $request,

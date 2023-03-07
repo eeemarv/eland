@@ -24,7 +24,6 @@ class TypeaheadTagsCheckController extends AbstractController
         ],
         defaults: [
             'module'        => 'users',
-            'tag_type'      => 'users',
         ],
     )]
 
@@ -39,7 +38,6 @@ class TypeaheadTagsCheckController extends AbstractController
         ],
         defaults: [
             'module'        => 'messages',
-            'tag_type'      => 'messages',
         ],
     )]
 
@@ -54,18 +52,90 @@ class TypeaheadTagsCheckController extends AbstractController
         ],
         defaults: [
             'module'        => 'calendar',
-            'tag_type'      => 'calendar',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/typeahead-tags-news-check/{thumbprint}',
+        name: 'typeahead_tags_news_check',
+        methods: ['GET'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+            'thumbprint'    => '%assert.thumbprint%',
+        ],
+        defaults: [
+            'module'        => 'news',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/typeahead-tags-transactions-check/{thumbprint}',
+        name: 'typeahead_tags_transactions_check',
+        methods: ['GET'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+            'thumbprint'    => '%assert.thumbprint%',
+        ],
+        defaults: [
+            'module'        => 'transactions',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/typeahead-tags-docs-check/{thumbprint}',
+        name: 'typeahead_tags_docs_check',
+        methods: ['GET'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+            'thumbprint'    => '%assert.thumbprint%',
+        ],
+        defaults: [
+            'module'        => 'docs',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/typeahead-tags-forum-check/{thumbprint}',
+        name: 'typeahead_tags_forum_check',
+        methods: ['GET'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+            'thumbprint'    => '%assert.thumbprint%',
+        ],
+        defaults: [
+            'module'        => 'forum',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/typeahead-tags-blog-check/{thumbprint}',
+        name: 'typeahead_tags_blog_check',
+        methods: ['GET'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+            'thumbprint'    => '%assert.thumbprint%',
+        ],
+        defaults: [
+            'module'        => 'blog',
         ],
     )]
 
     public function __invoke(
         string $thumbprint,
+        string $module,
         string $tag_type,
         TagRepository $tag_repository,
         TypeaheadService $typeahead_service,
         PageParamsService $pp
     ):Response
     {
+        $tag_type = $module;
+
         $cached = $typeahead_service->get_cached_data($thumbprint, $pp, []);
 
         if ($cached !== false)

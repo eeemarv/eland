@@ -1,0 +1,7 @@
+{%- extends 'tags/base/tags_def_del_form.html.twig' -%}
+
+{%- block heading_title -%}
+    {{- 'tags_blog_del.title'|trans({
+        'txt': form.children.txt.vars.value
+    }) -}}
+{%- endblock heading_title -%}

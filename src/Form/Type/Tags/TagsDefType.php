@@ -3,6 +3,7 @@
 namespace App\Form\Type\Tags;
 
 use App\Command\Tags\TagsDefCommand;
+use App\Enum\TagTypeEnum;
 use App\Form\DataTransformer\ColorTransformer;
 use App\Form\Type\Field\TypeaheadType;
 use Symfony\Component\Form\AbstractType;
@@ -53,11 +54,11 @@ class TagsDefType extends AbstractType
         $resolver->setDefault('del', false);
         $resolver->setAllowedTypes('del', 'bool');
         $resolver->setDefault('txt_omit', '');
-        $resolver->setAllowedTypes('txt_omit', ['string']);
+        $resolver->setAllowedTypes('txt_omit', 'string');
         $resolver->setDefault('tag_type', null);
         $resolver->setRequired('tag_type');
         $resolver->setAllowedTypes('tag_type', 'string');
-        $resolver->setAllowedValues('tag_type', ['users', 'messages', 'calendar']);
+        $resolver->setAllowedValues('tag_type', TagTypeEnum::values());
         $resolver->setDefault('data_class', TagsDefCommand::class);
     }
 }
