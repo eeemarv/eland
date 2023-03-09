@@ -1041,72 +1041,64 @@ support_form:
       }
 
 tags:
-  explain: >-
-    Versleep om de standaard volgorde te veranderen.
-tags_blog:
-  title: Tags voor blog onderwerpen
-tags_blog_add:
-  title: Tag voor blog onderwerpen toevoegen
-tags_blog_del:
-  title: Tag "{txt}" voor blog onderwerpen verwijderen
-tags_blog_edit:
-  title: Tag "{txt}" voor blog onderwerpen aanpassen
-tags_calendar:
-  title: Tags voor kalender
-tags_calendar_add:
-  title: Tag voor kalender toevoegen
-tags_calendar_del:
-  title: Tag "{txt}" voor kalender verwijderen
-tags_calendar_edit:
-  title: Tag "{txt}" voor kalender aanpassen
-tags_docs:
-  title: Tags voor documenten
-tags_docs_add:
-  title: Tag voor documenten toevoegen
-tags_docs_del:
-  title: Tag "{txt}" voor documenten verwijderen
-tags_docs_edit:
-  title: Tag "{txt}" voor documenten aanpassen
-tags_forum:
-  title: Tags voor forum onderwerpen
-tags_forum_add:
-  title: Tag voor forum onderwerpen toevoegen
-tags_forum_del:
-  title: Tag "{txt}" voor forum onderwerpen verwijderen
-tags_forum_edit:
-  title: Tag "{txt}" voor forum onderwerpen aanpassen
-tags_messages:
-  title: Tags voor vraag en aanbod
-tags_messages_add:
-  title: Tag voor vraag en aanbod toevoegen
-tags_messages_del:
-  title: Tag "{txt}" voor vraag en aanbod verwijderen
-tags_messages_edit:
-  title: Tag "{txt}" voor vraag en aanbod aanpassen
-tags_news:
-  title: Tags voor nieuws onderwerpen
-tags_news_add:
-  title: Tag voor nieuws onderwerpen toevoegen
-tags_news_del:
-  title: Tag "{txt}" voor nieuws onderwerpen verwijderen
-tags_news_edit:
-  title: Tag "{txt}" voor nieuws onderwerpen aanpassen
-tags_transactions:
-  title: Tags voor transacties
-tags_transactions_add:
-  title: Tag voor transacties toevoegen
-tags_transactions_del:
-  title: Tag "{txt}" voor transacties verwijderen
-tags_transactions_edit:
-  title: Tag "{txt}" voor transacties aanpassen
-tags_users:
-  title: Tags voor leden
-tags_users_add:
-  title: Tag voor leden toevoegen
-tags_users_del:
-  title: Tag "{txt}" voor leden verwijderen
-tags_users_edit:
-  title: Tag "{txt}" voor leden aanpassen
+  add:
+    title: >-
+      {tag_type, select,
+        accounts {Tag voor accounts toevoegen}
+        blog {Tag voor blog onderwerpen toevoegen}
+        calendar {Tag voor kalender toevoegen}
+        docs {Tag voor documenten toevoegen}
+        forum_topics {Tag voor forum onderwerpen toevoegen}
+        messages {Tag voor vraag en aanbod toevoegen}
+        news {Tags voor nieuws onderwerpen}
+        transactions {Tag voor transacties toevoegen}
+        users {Tag voor leden toevoegen}
+        other {---}
+      }
+  del:
+    title: >-
+      {tag_type, select,
+        accounts {Tag "{txt}" voor accounts verwijderen}
+        blog {Tag "{txt}" voor blog onderwerpen verwijderen}
+        calendar {Tag "{txt}" voor kalender verwijderen}
+        docs {Tag "{txt}" voor documenten verwijderen}
+        forum_topics {Tag "{txt}" voor forum onderwerpen verwijderen}
+        messages {Tag "{txt}" voor vraag en aanbod verwijderen}
+        news {Tag "{txt}" voor nieuws onderwerpen verwijderen}
+        transactions {Tag "{txt}" voor trransacties verwijderen}
+        users {Tag "{txt}" voor leden verwijderen}
+        other {---}
+      }
+  edit:
+    title: >-
+      {tag_type, select,
+        accounts {Tag "{txt}" voor accounts aanpassen}
+        blog {Tag "{txt}" voor blog onderwerpen aanpassen}
+        calendar {Tag "{txt}" voor kalender aanpassen}
+        docs {Tag "{txt}" voor documenten aanpassen}
+        forum_topics {Tag "{txt}" voor forum onderwerpen aanpassen}
+        messages {Tag "{txt}" voor vraag en aanbod aanpassen}
+        news {Tag "{txt}" voor nieuws onderwerpen aanpassen}
+        transactions {Tag "{txt}" voor trransacties aanpassen}
+        users {Tag "{txt}" voor leden aanpassen}
+        other {---}
+      }
+  list:
+    explain: >-
+      Versleep om de standaard volgorde te veranderen.
+    title: >-
+      {tag_type, select,
+        accounts {Tags voor accounts}
+        blog {Tags voor blog onderwerpen}
+        calendar {Tags voor kalender}
+        docs {Tags voor documenten}
+        forum_topics {Tags voor forum onderwerpen}
+        messages {Tags voor vraag en aanbod}
+        news {Tags voor nieuws onderwerpen}
+        transactions {Tags voor trransacties}
+        users {Tags voor leden}
+        other {---}
+      }
 
 transactions:
   title: >-

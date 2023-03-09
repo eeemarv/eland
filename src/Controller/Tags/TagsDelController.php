@@ -27,8 +27,9 @@ class TagsDelController extends AbstractController
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
-            'module'                => 'users',
-            'sub_module'            => 'tags',
+            'tag_type'      => 'users',
+            'module'        => 'users',
+            'sub_module'    => 'tags',
         ],
     )]
 
@@ -42,8 +43,9 @@ class TagsDelController extends AbstractController
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
-            'module'                => 'messages',
-            'sub_module'            => 'tags',
+            'tag_type'      => 'messages',
+            'module'        => 'messages',
+            'sub_module'    => 'tags',
         ],
     )]
 
@@ -57,8 +59,9 @@ class TagsDelController extends AbstractController
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
-            'module'                => 'calendar',
-            'sub_module'            => 'tags',
+            'tag_type'      => 'calendar',
+            'module'        => 'calendar',
+            'sub_module'    => 'tags',
         ],
     )]
 
@@ -72,8 +75,9 @@ class TagsDelController extends AbstractController
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
-            'module'                => 'news',
-            'sub_module'            => 'tags',
+            'tag_type'      => 'news',
+            'module'        => 'news',
+            'sub_module'    => 'tags',
         ],
     )]
 
@@ -87,8 +91,9 @@ class TagsDelController extends AbstractController
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
-            'module'                => 'transactions',
-            'sub_module'            => 'tags',
+            'tag_type'      => 'transactions',
+            'module'        => 'transactions',
+            'sub_module'    => 'tags',
         ],
     )]
 
@@ -102,14 +107,15 @@ class TagsDelController extends AbstractController
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
-            'module'                => 'docs',
-            'sub_module'            => 'tags',
+            'tag_type'      => 'docs',
+            'module'        => 'docs',
+            'sub_module'    => 'tags',
         ],
     )]
 
     #[Route(
-        '/{system}/{role_short}/tags/forum/{id}/del',
-        name: 'tags_forum_del',
+        '/{system}/{role_short}/tags/forum-topics/{id}/del',
+        name: 'tags_forum_topics_del',
         methods: ['GET', 'POST'],
         requirements: [
             'id'            => '%assert.id%',
@@ -117,8 +123,9 @@ class TagsDelController extends AbstractController
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
-            'module'                => 'forum',
-            'sub_module'            => 'tags',
+            'tag_type'      => 'forum_topics',
+            'module'        => 'forum',
+            'sub_module'    => 'tags',
         ],
     )]
 
@@ -132,8 +139,9 @@ class TagsDelController extends AbstractController
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
-            'module'                => 'blog',
-            'sub_module'            => 'tags',
+            'tag_type'      => 'blog',
+            'module'        => 'blog',
+            'sub_module'    => 'tags',
         ],
     )]
 
@@ -141,13 +149,12 @@ class TagsDelController extends AbstractController
         Request $request,
         int $id,
         string $module,
+        string $tag_type,
         TagRepository $tag_repository,
         AlertService $alert_service,
         PageParamsService $pp
     ):Response
     {
-        $tag_type = $module;
-
         $tag = $tag_repository->get_with_count($id, $tag_type, $pp->schema());
 
         if ($tag['count'] !== 0)
@@ -178,9 +185,10 @@ class TagsDelController extends AbstractController
             return $this->redirectToRoute('tags_' . $tag_type, $pp->ary());
         }
 
-        return $this->render('tags/tags_' . $tag_type . '_del.html.twig', [
+        return $this->render('tags/tags_del.html.twig', [
             'form'      => $form->createView(),
             'module'    => $module,
+            'tag_type'  => $tag_type,
         ]);
     }
 }

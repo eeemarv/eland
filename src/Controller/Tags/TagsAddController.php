@@ -27,8 +27,9 @@ class TagsAddController extends AbstractController
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
-            'module'                => 'users',
-            'sub_module'            => 'tags',
+            'tag_type'      => 'users',
+            'module'        => 'users',
+            'sub_module'    => 'tags',
         ],
     )]
 
@@ -41,8 +42,9 @@ class TagsAddController extends AbstractController
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
-            'module'                => 'messages',
-            'sub_module'            => 'tags',
+            'tag_type'      => 'messages',
+            'module'        => 'messages',
+            'sub_module'    => 'tags',
         ],
     )]
 
@@ -55,8 +57,9 @@ class TagsAddController extends AbstractController
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
-            'module'                => 'calendar',
-            'sub_module'            => 'tags',
+            'tag_type'      => 'calendar',
+            'module'        => 'calendar',
+            'sub_module'    => 'tags',
         ],
     )]
 
@@ -69,8 +72,9 @@ class TagsAddController extends AbstractController
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
-            'module'                => 'news',
-            'sub_module'            => 'tags',
+            'tag_type'      => 'news',
+            'module'        => 'news',
+            'sub_module'    => 'tags',
         ],
     )]
 
@@ -83,8 +87,9 @@ class TagsAddController extends AbstractController
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
-            'module'                => 'transactions',
-            'sub_module'            => 'tags',
+            'tag_type'      => 'transactions',
+            'module'        => 'transactions',
+            'sub_module'    => 'tags',
         ],
     )]
 
@@ -97,22 +102,24 @@ class TagsAddController extends AbstractController
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
-            'module'                => 'docs',
-            'sub_module'            => 'tags',
+            'tag_type'      => 'docs',
+            'module'        => 'docs',
+            'sub_module'    => 'tags',
         ],
     )]
 
     #[Route(
-        '/{system}/{role_short}/tags/forum/add',
-        name: 'tags_forum_add',
+        '/{system}/{role_short}/tags/forum-topics/add',
+        name: 'tags_forum_topics_add',
         methods: ['GET', 'POST'],
         requirements: [
             'system'        => '%assert.system%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
-            'module'                => 'forum',
-            'sub_module'            => 'tags',
+            'tag_type'      => 'forum_topics',
+            'module'        => 'forum',
+            'sub_module'    => 'tags',
         ],
     )]
 
@@ -125,13 +132,15 @@ class TagsAddController extends AbstractController
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
-            'module'                => 'blog',
-            'sub_module'            => 'tags',
+            'tag_type'      => 'blog',
+            'module'        => 'blog',
+            'sub_module'    => 'tags',
         ],
     )]
 
     public function __invoke(
         string $module,
+        string $tag_type,
         Request $request,
         TagRepository $tag_repository,
         TypeaheadService $typeahead_service,
@@ -140,7 +149,6 @@ class TagsAddController extends AbstractController
         SessionUserService $su
     ):Response
     {
-        $tag_type = $module;
         $command = new TagsDefCommand();
         $command->id = 0;
         $command->tag_type = $tag_type;
@@ -165,9 +173,10 @@ class TagsAddController extends AbstractController
             return $this->redirectToRoute('tags_' . $tag_type, $pp->ary());
         }
 
-        return $this->render('tags/tags_' . $tag_type . '_add.html.twig', [
+        return $this->render('tags/tags_add.html.twig', [
             'form'      => $form->createView(),
             'module'    => $module,
+            'tag_type'  => $tag_type,
         ]);
     }
 }

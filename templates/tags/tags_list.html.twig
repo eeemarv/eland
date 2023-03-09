@@ -1,10 +1,26 @@
 {%- extends 'tags/base/tags_base.html.twig' -%}
 
-{%- set cancel_route = module|var_route -%}
-
 {%- block heading_fa -%}
     tags
 {%- endblock -%}
+
+{%- block heading_title -%}
+    {{- 'tags.list.title'|trans({
+        'tag_type': tag_type
+    }) -}}
+{%- endblock heading_title -%}
+
+{%- block btn_top_add -%}
+    {%- include 'include/btn_top/add.html.twig' with {
+        'btn_route': 'tags_' ~ tag_type ~ '_add',
+        'btn_title': 'tags.add.title',
+        'btn_title_trans_params': {
+            'tag_type': tag_type
+        }
+    } -%}
+{%- endblock btn_top_add -%}
+
+{%- set cancel_route = module|var_route -%}
 
 {%- block assets_add -%}
     {{- parent() -}}
@@ -14,7 +30,11 @@
 {%- block pre_form -%}
     <p>
         <ul>
-            <li>{{- 'tags_' ~ module ~ '.explain'|trans -}}</li>
+            <li>
+                {{- 'tags.list.explain'|trans({
+                    'tag_type': tag_type })
+                -}}
+            </li>
             <li>{{- 'tags.explain.drag'|trans -}}</li>
             <li>{{- 'tags.explain.store'|trans -}}</li>
             <li>{{- 'tags.explain.del'|trans -}}</li>
@@ -34,24 +54,23 @@
             {%- endif -%}
         <div class="pull-right">
             {%- include 'include/btn/edit.html.twig' with {
-                'btn_route': 'tags_' ~ module ~ '_edit',
+                'btn_route': 'tags_' ~ tag_type ~ '_edit',
                 'id': tag.id,
-                'btn_title': 'tags_' ~ module ~ '_edit.title',
+                'btn_title': 'tags.edit.title',
                 'btn_title_trans_params': {
-                    'txt': tag.txt
+                    'txt': tag.txt,
+                    'tag_type': tag_type
                 }
             } -%}
 
             {%- if tag.count == 0 -%}
                 {%- include 'include/btn/del.html.twig' with {
-                    'btn_route': 'tags_' ~ module ~ '_del',
+                    'btn_route': 'tags_' ~ tag_type ~ '_del',
                     'id': tag.id,
-                    'btn_title': 'tags_' ~ module ~ '_del.title',
+                    'btn_title': 'tags.del.title',
                     'btn_title_trans_params': {
-                        'txt': tag.txt
-                    },
-                    'btn_attr': {
-                        'data-del-btn': ''
+                        'txt': tag.txt,
+                        'tag_type': tag_type
                     }
                 } -%}
             {%- endif -%}

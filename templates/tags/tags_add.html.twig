@@ -1,5 +1,11 @@
 {%- extends 'tags/base/tags_def_form.html.twig' -%}
 
+{%- block heading_title -%}
+    {{- 'tags.add.title'|trans({
+        'tag_type': tag_type
+    }) -}}
+{%- endblock heading_title -%}
+
 {%- block form_submit_btn -%}
     {%- include 'form/submit_add_btn.html.twig' -%}
 {%- endblock form_submit_btn -%}

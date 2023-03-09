@@ -24,6 +24,7 @@ class TypeaheadTagsController extends AbstractController
         ],
         defaults: [
             'module'        => 'users',
+            'tag_type'      => 'users',
         ],
     )]
 
@@ -38,6 +39,7 @@ class TypeaheadTagsController extends AbstractController
         ],
         defaults: [
             'module'        => 'messages',
+            'tag_type'      => 'messages',
         ],
     )]
 
@@ -52,6 +54,7 @@ class TypeaheadTagsController extends AbstractController
         ],
         defaults: [
             'module'        => 'calendar',
+            'tag_type'      => 'calendar',
         ],
     )]
 
@@ -66,6 +69,7 @@ class TypeaheadTagsController extends AbstractController
         ],
         defaults: [
             'module'        => 'news',
+            'tag_type'      => 'news',
         ],
     )]
 
@@ -80,6 +84,7 @@ class TypeaheadTagsController extends AbstractController
         ],
         defaults: [
             'module'        => 'transactions',
+            'tag_type'      => 'transactions',
         ],
     )]
 
@@ -94,12 +99,13 @@ class TypeaheadTagsController extends AbstractController
         ],
         defaults: [
             'module'        => 'docs',
+            'tag_type'      => 'docs',
         ],
     )]
 
     #[Route(
-        '/{system}/{role_short}/typeahead-tags-forum/{thumbprint}',
-        name: 'typeahead_tags_forum',
+        '/{system}/{role_short}/typeahead-tags-forum-topics/{thumbprint}',
+        name: 'typeahead_tags_forum_topics',
         methods: ['GET'],
         requirements: [
             'system'        => '%assert.system%',
@@ -108,6 +114,7 @@ class TypeaheadTagsController extends AbstractController
         ],
         defaults: [
             'module'        => 'forum',
+            'tag_type'      => 'forum_topics',
         ],
     )]
 
@@ -122,19 +129,18 @@ class TypeaheadTagsController extends AbstractController
         ],
         defaults: [
             'module'        => 'blog',
+            'tag_type'      => 'blog',
         ],
     )]
 
     public function __invoke(
         string $thumbprint,
-        string $module,
+        string $tag_type,
         TagRepository $tag_repository,
         TypeaheadService $typeahead_service,
         PageParamsService $pp
     ):Response
     {
-        $tag_type = $module;
-
         $cached = $typeahead_service->get_cached_data($thumbprint, $pp, []);
 
         if ($cached !== false)
