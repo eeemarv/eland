@@ -20,7 +20,7 @@ jQuery(function () {
 		}
 	});
 
-	$form.find('span.img-delete').click(function() {
+	$form.find('span.img-delete').on('touchstart click', function() {
 		$(this).closest('div.thumbnail-col').remove();
 		rewrite_image_files_input();
 	});
