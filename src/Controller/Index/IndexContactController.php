@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -28,18 +30,11 @@ class IndexContactController extends AbstractController
         RequestStack $request_stack,
         FormTokenService $form_token_service,
         CaptchaService $captcha_service,
+        MailerInterface $mailer,
         #[Autowire('%env(MAIL_HOSTER_ADDRESS)%')]
         string $env_mail_hoster_address,
         #[Autowire('%env(MAIL_FROM_ADDRESS)%')]
         string $env_mail_from_address,
-        #[Autowire('%env(SMTP_HOST)%')]
-        string $env_smtp_host,
-        #[Autowire('%env(SMTP_PORT)%')]
-        string $env_smtp_port,
-        #[Autowire('%env(SMTP_PASSWORD)%')]
-        string $env_smtp_password,
-        #[Autowire('%env(SMTP_USERNAME)%')]
-        string $env_smtp_username
     ):Response
     {
         $errors = [];
@@ -88,20 +83,14 @@ class IndexContactController extends AbstractController
                 $text .= $request->headers->get('User-Agent') . "\n";
                 $text .= 'form_token: ' . $form_token_service->get();
 
-                $transport = (new \Swift_SmtpTransport($env_smtp_host, $env_smtp_port, 'tls'))
-                    ->setUsername($env_smtp_username)
-                    ->setPassword($env_smtp_password);
-                $mailer = new \Swift_Mailer($transport);
-                $mailer->registerPlugin(new \Swift_Plugins_AntiFloodPlugin(100, 30));
+                $email = new Email();
+                $email->from($from);
+                $email->to($to);
+                $email->text($text);
+                $email->subject('eLAND Contact Formulier');
+                $email->replyTo($mail);
 
-                $message = (new \Swift_Message())
-                    ->setSubject('eLAND Contact Formulier')
-                    ->setBody($text)
-                    ->setTo($to)
-                    ->setFrom($from)
-                    ->setReplyTo($mail);
-
-                $mailer->send($message);
+                $mailer->send($email);
 
                 return $this->redirectToRoute('index_contact', ['form_ok' => '1']);
             }
