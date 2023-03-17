@@ -65,6 +65,7 @@ class ExportController extends AbstractController
         if ($download_form->isSubmitted()
             && $download_form->isValid())
         {
+            /** @var Form $download_form */
             $btn = $download_form->getClickedButton()->getName();
 
             [$database_url] = explode('?', $env_database_url);

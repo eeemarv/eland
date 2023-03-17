@@ -20,6 +20,7 @@ class AlertService
 	)
 	{
 		$this->request = $request_stack->getCurrentRequest();
+		/** @var Session $session */
 		$session = $request_stack->getSession();
 		$this->flash_bag = $session->getFlashBag();
 	}

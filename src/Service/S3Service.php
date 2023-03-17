@@ -66,7 +66,7 @@ class S3Service
 		protected string $env_aws_s3_region
 	)
 	{
-		$this->s3_client = S3Client::factory([
+		$this->s3_client = new S3Client([
 			'signature'	=> 'v4',
 			'region'	=> $this->env_aws_s3_region,
 			'version'	=> '2006-03-01',

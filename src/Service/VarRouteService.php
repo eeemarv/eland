@@ -13,6 +13,7 @@ class VarRouteService
 	protected Session $session;
 	protected array $var_route_ary;
 	protected bool $is_admin;
+	protected string $route;
 
 	public function __construct(
 		protected RequestStack $request_stack,

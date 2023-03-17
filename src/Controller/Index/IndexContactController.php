@@ -108,6 +108,7 @@ class IndexContactController extends AbstractController
 
             foreach ($errors as $error)
             {
+                /** @var Session $session */
                 $session->getFlashBag()->add('alert', [
                     'type'      => 'error',
                     'message'	=> $error,

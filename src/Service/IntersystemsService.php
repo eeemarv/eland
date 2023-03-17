@@ -35,7 +35,7 @@ class IntersystemsService
 	public function clear_eland_cache():void
 	{
 		unset($this->eland_ary);
-		unset($this->eland_account_schemas);
+		unset($this->eland_accounts_schemas);
 
 		foreach ($this->systems_service->get_schemas() as $schema)
 		{
