@@ -11,12 +11,15 @@ use App\Service\MailAddrSystemService;
 use App\Service\EmailVerifyService;
 use App\Service\QueueService;
 use App\Service\SystemsService;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mailer\Transport\Smtp\SmtpTransport;
+use Symfony\Component\Mailer\Transport\TransportInterface;
+use Symfony\Component\Mime\Email;
+use Symfony\Component\Mime\Address;
 
 class MailQueue implements QueueInterface
 {
-	protected \Swift_Mailer $mailer;
-
 	public function __construct(
 		protected QueueService $queue_service,
 		protected LoggerInterface $logger,
@@ -26,22 +29,10 @@ class MailQueue implements QueueInterface
 		protected EmailVerifyService $email_verify_service,
 		protected SystemsService $systems_service,
 		protected HtmlToMarkdownConverter $html_to_markdown_converter,
-		#[Autowire('%env(SMTP_HOST)%')]
-		string $env_smtp_host,
-		#[Autowire('%env(SMTP_PORT)%')]
-		string $env_smtp_port,
-		#[Autowire('%env(SMTP_USERNAME)%')]
-		string $env_smtp_username,
-		#[Autowire('%env(SMTP_PASSWORD)%')]
-		string $env_smtp_password
+		protected MailerInterface $mailer,
+		protected TransportInterface $transport
 	)
 	{
-		$transport = (new \Swift_SmtpTransport($env_smtp_host, $env_smtp_port, 'tls'))
-			->setUsername($env_smtp_username)
-			->setPassword($env_smtp_password);
-		$this->mailer = new \Swift_Mailer($transport);
-		$this->mailer->registerPlugin(new \Swift_Plugins_AntiFloodPlugin(100, 30));
-		$this->mailer->getTransport()->stop();
 	}
 
 	public function process(array $data):void
@@ -87,51 +78,33 @@ class MailQueue implements QueueInterface
 		$text = $template->renderBlock('text_body', $data['vars']);
 		$html = $template->renderBlock('html_body', $data['vars']);
 
-		$message = (new \Swift_Message())
-			->setSubject($subject)
-			->setBody($text)
-			->setTo($data['to'])
-			->setFrom($data['from'])
-			->addPart($html, 'text/html');
-
-		$headers = $message->getHeaders();
+		$email = new Email();
+		$email->subject($subject);
+		$email->to(...$data['to']);
+		$email->from(...$data['from']);
+		$email->text($text);
+		$email->html($html);
 
 		if (isset($data['reply_to']))
 		{
-			$message->setReplyTo($data['reply_to']);
+			$email->replyTo(...$data['reply_to']);
 		}
 
 		if (isset($data['cc']))
 		{
-			$message->setCc($data['cc']);
+			$email->cc(...$data['cc']);
 		}
 
 		if (isset($data['vars']['et']))
 		{
-			$headers->addTextHeader('X-Eland', $data['vars']['et']);
+			$email->getHeaders()->addTextHeader('X-Eland', $data['vars']['et']);
 		}
 
 		try
 		{
-			$failed_recipients = [];
-
-			if ($this->mailer->send($message, $failed_recipients))
-			{
-				$this->logger->info('mail queue process, sent to ' .
-					json_encode($data['to']) . ' template: ' . $data['template'] .
-					' subject: ' . $subject,
-					['schema' => $schema]);
-			}
-			else
-			{
-				$this->logger->error('mail queue process: failed sending message ' .
-					json_encode($data) .
-					' failed recipients: ' .
-					json_encode($failed_recipients),
-					['schema' => $schema]);
-			}
+			$this->mailer->send($email);
 		}
-		catch (\Exception $e)
+		catch (TransportExceptionInterface $e)
 		{
 			$err = $e->getMessage();
 			$this->logger->error('mail queue process: ' . $err . ' | ' .
@@ -139,7 +112,10 @@ class MailQueue implements QueueInterface
 				['schema' => $schema]);
 		}
 
-		$this->mailer->getTransport()->stop();
+		if ($this->transport instanceof SmtpTransport)
+		{
+			$this->transport->stop();
+		}
 	}
 
 	public function queue(array $data, int $priority):void
@@ -197,8 +173,14 @@ class MailQueue implements QueueInterface
 
 		$reply_log = isset($data['reply_to']) ? ' reply-to: ' . json_encode($data['reply_to']) : '';
 
-		foreach ($data['to'] as $email => $name)
+		$to = $data['to'];
+		$data['to'] = [];
+
+		foreach($to as $email_adr)
 		{
+			/** @var Address $email_adr */
+			$email = $email_adr->getAddress();
+
 			if (!filter_var($email, FILTER_VALIDATE_EMAIL))
 			{
 				$this->logger->error('mail queue (validate): non-valid email address (not sent): ' .
@@ -207,22 +189,29 @@ class MailQueue implements QueueInterface
 				continue;
 			}
 
-			$val_data = $data;
-			$val_data['to'] = [$email => $name];
-
-			$email_token = $this->email_verify_service->get_token($email, $schema, $data['template']);
-			$val_data['vars']['et'] = $email_token;
-
-			$this->queue_service->set('mail', $val_data, $priority);
-
-			$this->logger->info('mail in queue with email token ' .
-				$email_token .
-				', template: ' . $val_data['template'] . ', from : ' .
-				json_encode($val_data['from']) . ' to : ' . json_encode($val_data['to']) . ' ' .
-				$reply_log .
-				' priority: ' . $priority,
-				['schema' => $schema]);
+			$data['to'][] = $email_adr;
 		}
+
+		if (count($data['to']) === 0)
+		{
+			return;
+		}
+
+		if (count($data['to']) === 1)
+		{
+			$email_token = $this->email_verify_service->get_token($email, $schema, $data['template']);
+			$data['vars']['et'] = $email_token;
+		}
+
+		$this->queue_service->set('mail', $data, $priority);
+
+		$this->logger->info('mail in queue with email token ' .
+			$email_token .
+			', template: ' . $data['template'] . ', from : ' .
+			json_encode($data['from']) . ' to : ' . json_encode($data['to']) . ' ' .
+			$reply_log .
+			' priority: ' . $priority,
+			['schema' => $schema]);
 	}
 
 	protected function has_data_error(array $data, string $log_prefix):bool

@@ -17,6 +17,7 @@ use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -223,7 +224,7 @@ class RegisterFormConfirmController extends AbstractController
         {
             $mail_queue->queue([
                 'schema'				=> $pp->schema(),
-                'to' 					=> [$data['email'] => $user['full_name']],
+                'to' 					=> [new Address($data['email'], $user['full_name'])],
                 'reply_to'				=> $mail_addr_system_service->get_admin($pp->schema()),
                 'pre_html_template'		=> $pre_html_template,
                 'template'				=> 'register/success',

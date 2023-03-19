@@ -15,6 +15,7 @@ use App\Service\PageParamsService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -90,9 +91,7 @@ class ContactFormController extends AbstractController
 
             $mail_queue->queue([
                 'schema'	=> $pp->schema(),
-                'to' 		=> [
-                    $email => $email
-                ],
+                'to' 		=> [new Address($email)],
                 'template'	=> 'contact/confirm',
                 'vars'		=> [
                     'token' 	=> $token,

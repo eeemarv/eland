@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -95,7 +96,7 @@ class RegisterFormController extends AbstractController
 
             $mail_queue->queue([
                 'schema'	=> $pp->schema(),
-                'to' 		=> [$email => $full_name],
+                'to' 		=> [new Address($email, $full_name)],
                 'vars'		=> ['token' => $token],
                 'template'	=> 'register/confirm',
             ], 10000);

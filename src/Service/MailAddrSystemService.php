@@ -5,6 +5,7 @@ namespace App\Service;
 use Psr\Log\LoggerInterface;
 use App\Service\ConfigService;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\Mime\Address;
 
 class MailAddrSystemService
 {
@@ -62,7 +63,7 @@ class MailAddrSystemService
 
 			if ($this->validate($mail, $mail_id, $schema))
 			{
-				$out[$mail] = $this->config_service->get_str('system.name', $schema);
+				$out[] = new Address($mail, $this->config_service->get_str('system.name', $schema));
 			}
 		}
 

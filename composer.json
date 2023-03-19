@@ -40,7 +40,6 @@
 		"psr/http-client": "^1.0",
 		"sensio/framework-extra-bundle": "^6",
 		"snc/redis-bundle": "^4.1",
-		"swiftmailer/swiftmailer": "^6",
 		"symfony/amazon-mailer": "^6",
 		"symfony/asset": "^6",
 		"symfony/cache": "^6",

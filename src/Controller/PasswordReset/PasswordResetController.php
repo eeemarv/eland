@@ -14,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
+use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -70,7 +71,7 @@ class PasswordResetController extends AbstractController
 
             $mail_queue->queue([
                 'schema'	=> $pp->schema(),
-                'to' 		=> [$email => $account_str],
+                'to' 		=> [new Address($email, $account_str)],
                 'template'	=> 'password_reset/confirm',
                 'vars'		=> [
                     'token'			=> $token,

@@ -12,6 +12,7 @@ use App\Service\MailAddrSystemService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -65,7 +66,7 @@ class ContactFormConfirmController extends AbstractController
             'schema'	=> $pp->schema(),
             'template'	=> 'contact/copy',
             'vars'		=> $vars,
-            'to'		=> [$data['email'] => $data['email']],
+            'to'		=> [new Address($data['email'])],
         ], 9000);
 
         $mail_queue->queue([
@@ -73,7 +74,7 @@ class ContactFormConfirmController extends AbstractController
             'template'	=> 'contact/support',
             'vars'		=> $vars,
             'to'		=> $mail_addr_system_service->get_support($pp->schema()),
-            'reply_to'	=> [$data['email']],
+            'reply_to'	=> [new Address($data['email'])],
         ], 8000);
 
         $data_token_service->del($token, 'contact_form', $pp->schema());

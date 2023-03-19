@@ -223,9 +223,6 @@
             "config/packages/snc_redis.yaml"
         ]
     },
-    "swiftmailer/swiftmailer": {
-        "version": "v6.2.3"
-    },
     "symfony/amazon-mailer": {
         "version": "6.2",
         "recipe": {

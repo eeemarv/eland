@@ -4,6 +4,7 @@ namespace App\Service;
 
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Mime\Address;
 
 class MailAddrUserService
 {
@@ -65,7 +66,7 @@ class MailAddrUserService
 				continue;
 			}
 
-			$out[$mail] = $code_name;
+			$out[] = new Address($mail, $code_name);
 		}
 
 		return $out;
