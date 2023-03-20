@@ -1,12 +1,10 @@
-{%- extends 'categories/base/categories_base.html.twig' -%}
+{%- extends 'categories/base/categories_name_form.html.twig' -%}
 
 {%- block heading_title -%}
     {{- 'categories_del.title'|trans({
-        'name': category.name
+        'name': form.children.name.vars.value
     }) -}}
 {%- endblock heading_title -%}
-
-{%- block content -%}{%- endblock -%}
 
 {%- block form_submit_btn -%}
     {%- include 'form/submit_del_btn.html.twig' -%}

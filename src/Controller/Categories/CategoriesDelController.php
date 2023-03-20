@@ -2,6 +2,8 @@
 
 namespace App\Controller\Categories;
 
+use App\Command\Categories\CategoriesNameCommand;
+use App\Form\Type\Categories\CategoriesNameType;
 use App\Form\Type\Del\DelType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -64,8 +66,14 @@ class CategoriesDelController extends AbstractController
             throw new ConflictHttpException('A category containing categories cannot be deleted.');
         }
 
-        $form = $this->createForm(DelType::class)
-            ->handleRequest($request);
+        $command = new CategoriesNameCommand();
+        $command->id = $id;
+        $command->name = $category['name'];
+
+        $form = $this->createForm(CategoriesNameType::class, $command, [
+            'del'   => true,
+        ]);
+        $form->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
@@ -79,7 +87,6 @@ class CategoriesDelController extends AbstractController
 
         return $this->render('categories/categories_del.html.twig', [
             'form'      => $form->createView(),
-            'category'  => $category,
         ]);
     }
 }

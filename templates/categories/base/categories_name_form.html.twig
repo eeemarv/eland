@@ -1,5 +1,7 @@
 {%- extends 'categories/base/categories_base.html.twig' -%}
 
+{%- set cancel_route = 'categories' -%}
+
 {%- block form_a -%}
     {{- form_row(form.name, {
         'label': 'label.name',

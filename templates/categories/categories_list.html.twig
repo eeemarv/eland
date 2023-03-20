@@ -1,5 +1,7 @@
 {%- extends 'categories/base/categories_base.html.twig' -%}
 
+{%- set cancel_route = 'messages'|var_route -%}
+
 {%- block btn_top_add -%}
     {%- include 'include/btn_top/add.html.twig' with {
         'btn_route': 'categories_add',
