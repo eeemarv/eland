@@ -111,7 +111,7 @@ class UsersDelController extends AbstractController
                     $pp
                 );
 
-                $status = StatusCnst::THUMBPINT_ARY[$user['status']];
+                $status = StatusCnst::THUMBPRINT_ARY[$user['status']];
 
                 return $this->redirectToRoute($vr->get('users'), [
                     ...$pp->ary(),

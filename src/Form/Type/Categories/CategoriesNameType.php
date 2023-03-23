@@ -13,15 +13,22 @@ class CategoriesNameType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $opt_ary = [];
+
+        if ($options['del'] === true)
+        {
+            $opt_ary = ['disabled' => true];
+        }
+
         $builder
-            ->add('name', TextType::class)
+            ->add('name', TextType::class, $opt_ary)
             ->add('submit', SubmitType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults([
-            'data_class'    => CategoriesNameCommand::class,
-        ]);
+        $resolver->setDefault('data_class', CategoriesNameCommand::class);
+        $resolver->setDefault('del', false);
+        $resolver->setAllowedTypes('del', 'bool');
     }
 }
