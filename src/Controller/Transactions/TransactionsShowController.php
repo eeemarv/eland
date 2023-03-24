@@ -5,6 +5,7 @@ namespace App\Controller\Transactions;
 use App\Cnst\MessageTypeCnst;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
+use App\Repository\TransactionRepository;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
@@ -40,6 +41,7 @@ class TransactionsShowController extends AbstractController
     public function __invoke(
         int $id,
         Db $db,
+        TransactionRepository $transaction_repository,
         ConfigService $config_service,
         DateFormatService $date_format_service,
         AccountRender $account_render,
@@ -65,10 +67,7 @@ class TransactionsShowController extends AbstractController
         $su_intersystem_ary = $intersystems_service->get_eland($su->schema());
         $su_intersystem_ary[$su->schema()] = true;
 
-        $transaction = $db->fetchAssociative('select t.*
-            from ' . $pp->schema() . '.transactions t
-            where t.id = ?',
-            [$id], [\PDO::PARAM_INT]);
+        $transaction = $transaction_repository->get($id, $pp->schema());
 
         $inter_schema = false;
 
@@ -97,19 +96,8 @@ class TransactionsShowController extends AbstractController
             $inter_transaction = false;
         }
 
-        $next_id = $db->fetchOne('select id
-            from ' . $pp->schema() . '.transactions
-            where id > ?
-            order by id asc
-            limit 1',
-            [$id], [\PDO::PARAM_INT]);
-
-        $prev_id = $db->fetchOne('select id
-            from ' . $pp->schema() . '.transactions
-            where id < ?
-            order by id desc
-            limit 1',
-            [$id], [\PDO::PARAM_INT]);
+        $next_id = $transaction_repository->get_next_id($id, $pp->schema());
+        $prev_id = $transaction_repository->get_prev_id($id, $pp->schema());
 
         $real_to = $transaction['real_to'] ? true : false;
         $real_from = $transaction['real_from'] ? true : false;
