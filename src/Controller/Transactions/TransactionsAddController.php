@@ -251,8 +251,11 @@ class TransactionsAddController extends AbstractController
                 $errors[] = 'Het bedrag is geen geldig getal';
             }
 
-            $from_user_min_limit = $account_repository->get_min_limit($from_id, $pp->schema());
-            $from_user_balance = $account_repository->get_balance($from_id, $pp->schema());
+            if (isset($from_id))
+            {
+                $from_user_min_limit = $account_repository->get_min_limit($from_id, $pp->schema());
+                $from_user_balance = $account_repository->get_balance($from_id, $pp->schema());
+            }
 
             if ($limits_enabled
                 && !$pp->is_admin()
@@ -283,13 +286,16 @@ class TransactionsAddController extends AbstractController
                 }
             }
 
-            if(!count($errors) && ($from_user['code'] == $to_user['code']))
+            if (!count($errors) && ($from_user['code'] == $to_user['code']))
             {
                 $errors[] = 'Van en Aan Account Code kunnen niet hetzelfde zijn.';
             }
 
-            $to_user_balance = $account_repository->get_balance($to_id, $pp->schema());
-            $to_user_max_limit = $account_repository->get_max_limit($to_id, $pp->schema());
+            if (isset($to_id))
+            {
+                $to_user_balance = $account_repository->get_balance($to_id, $pp->schema());
+                $to_user_max_limit = $account_repository->get_max_limit($to_id, $pp->schema());
+            }
 
             if ($limits_enabled
                 && !$pp->is_admin()
