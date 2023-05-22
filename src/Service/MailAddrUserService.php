@@ -41,12 +41,12 @@ class MailAddrUserService
 				' . $schema . '.type_contact tc,
 				' . $schema . '.users u
 			where c.id_type_contact = tc.id
-				and c.user_id = ?
+				and c.user_id = :user_id
 				and c.user_id = u.id
 				and tc.abbrev = \'mail\''
 				. $status_sql);
 
-		$stmt->bindValue(1, $user_id);
+		$stmt->bindValue('user_id', $user_id, \PDO::PARAM_INT);
 		$res = $stmt->executeQuery();
 
 		while ($row = $res->fetchAssociative())

@@ -17,6 +17,7 @@ use Symfony\Component\Mailer\Transport\Smtp\SmtpTransport;
 use Symfony\Component\Mailer\Transport\TransportInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Mime\Address;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class MailQueue implements QueueInterface
 {
@@ -30,7 +31,8 @@ class MailQueue implements QueueInterface
 		protected SystemsService $systems_service,
 		protected HtmlToMarkdownConverter $html_to_markdown_converter,
 		protected MailerInterface $mailer,
-		protected TransportInterface $transport
+		protected TransportInterface $transport,
+		protected SerializerInterface $serializer
 	)
 	{
 	}
@@ -43,11 +45,6 @@ class MailQueue implements QueueInterface
 		}
 
 		$schema = $data['schema'];
-
-		if ($this->has_from_address_error($data, 'mail_process'))
-		{
-			return;
-		}
 
 		$data['vars']['schema'] = $schema;
 
@@ -78,21 +75,26 @@ class MailQueue implements QueueInterface
 		$text = $template->renderBlock('text_body', $data['vars']);
 		$html = $template->renderBlock('html_body', $data['vars']);
 
+		$to = $this->deserialize_address_ary($data['to']);
+		$from = $this->deserialize_address_ary($data['from']);
+
 		$email = new Email();
 		$email->subject($subject);
-		$email->to(...$data['to']);
-		$email->from(...$data['from']);
 		$email->text($text);
 		$email->html($html);
+		$email->to(...$to);
+		$email->from(...$from);
 
 		if (isset($data['reply_to']))
 		{
-			$email->replyTo(...$data['reply_to']);
+			$reply_to = $this->deserialize_address_ary($data['reply_to']);
+			$email->replyTo(...$reply_to);
 		}
 
 		if (isset($data['cc']))
 		{
-			$email->cc(...$data['cc']);
+			$cc = $this->deserialize_address_ary($data['cc']);
+			$email->cc(...$cc);
 		}
 
 		if (isset($data['vars']['et']))
@@ -103,6 +105,9 @@ class MailQueue implements QueueInterface
 		try
 		{
 			$this->mailer->send($email);
+			$this->logger->info('mail queue send: ' .
+				json_encode($data),
+				['schema' => $schema]);
 		}
 		catch (TransportExceptionInterface $e)
 		{
@@ -129,27 +134,16 @@ class MailQueue implements QueueInterface
 
 		if (isset($data['reply_to']))
 		{
-			if (is_array($data['reply_to']))
-			{
-				if (!count($data['reply_to']))
-				{
-					unset($data['reply_to']);
-				}
-			}
-			else
-			{
-				unset($data['reply_to']);
-			}
-		}
+			$data['reply_to'] = $this->serialize_address_ary($data['reply_to']);
 
-		if (isset($data['reply_to']))
-		{
-			$data['from'] = $this->mail_addr_system_service->get_from($schema);
+			$adr_from = $this->mail_addr_system_service->get_from($schema);
 		}
  		else
 		{
-			$data['from'] = $this->mail_addr_system_service->get_noreply($schema);
+			$adr_from = $this->mail_addr_system_service->get_noreply($schema);
 		}
+
+		$data['from'] = $this->serialize_address_ary($adr_from);
 
 		if ($this->has_from_address_error($data, 'mail_queue'))
 		{
@@ -158,20 +152,8 @@ class MailQueue implements QueueInterface
 
 		if (isset($data['cc']))
 		{
-			if (is_array($data['cc']))
-			{
-				if (!count($data['cc']))
-				{
-					unset($data['cc']);
-				}
-			}
-			else
-			{
-				unset($data['cc']);
-			}
+			$data['cc'] = $this->serialize_address_ary($data['cc']);
 		}
-
-		$reply_log = isset($data['reply_to']) ? ' reply-to: ' . json_encode($data['reply_to']) : '';
 
 		$to = $data['to'];
 		$data['to'] = [];
@@ -189,7 +171,7 @@ class MailQueue implements QueueInterface
 				continue;
 			}
 
-			$data['to'][] = $email_adr;
+			$data['to'][] = $this->serialize_address($email_adr);
 		}
 
 		if (count($data['to']) === 0)
@@ -197,21 +179,22 @@ class MailQueue implements QueueInterface
 			return;
 		}
 
-		if (count($data['to']) === 1)
+		$email_token = $this->email_verify_service->get_token($email, $schema, $data['template']);
+		if (count($data['to']) !== 1)
 		{
-			$email_token = $this->email_verify_service->get_token($email, $schema, $data['template']);
-			$data['vars']['et'] = $email_token;
+			$email_token .= '-no-unique-to-addr';
 		}
+		$data['vars']['et'] = $email_token;
 
 		$this->queue_service->set('mail', $data, $priority);
 
-		$this->logger->info('mail in queue with email token ' .
-			$email_token .
-			', template: ' . $data['template'] . ', from : ' .
-			json_encode($data['from']) . ' to : ' . json_encode($data['to']) . ' ' .
-			$reply_log .
-			' priority: ' . $priority,
-			['schema' => $schema]);
+		$log_msg = 'mail in queue';
+		$log_msg .= isset($email_token) ? ' with email token ' . $email_token : '';
+		$log_msg .= ', ';
+		$log_msg .= json_encode($data);
+		$log_msg .= ', priority: ' . $priority;
+
+		$this->logger->info($log_msg, ['schema' => $schema]);
 	}
 
 	protected function has_data_error(array $data, string $log_prefix):bool
@@ -277,5 +260,35 @@ class MailQueue implements QueueInterface
 		}
 
 		return false;
+	}
+
+	protected function serialize_address_ary(array $address_ary):array
+	{
+		$ary = [];
+		foreach($address_ary as $adr)
+		{
+			$ary[] = $this->serialize_address($adr);
+		}
+		return $ary;
+	}
+
+	protected function deserialize_address_ary(array $serialized_address_ary):array
+	{
+		$ary = [];
+		foreach($serialized_address_ary as $ser_adr)
+		{
+			$ary[] = $this->deserialize_address($ser_adr);
+		}
+		return $ary;
+	}
+
+	protected function serialize_address(Address $address):string
+	{
+		return $this->serializer->serialize($address, 'json');
+	}
+
+	protected function deserialize_address(string $json_address):Address
+	{
+		return $this->serializer->deserialize($json_address, Address::class, 'json');
 	}
 }

@@ -3,7 +3,6 @@
 namespace App\Service;
 
 use Doctrine\DBAL\Connection as Db;
-use Psr\Log\LoggerInterface;
 
 /*
                                         Table "xdb.queue"
@@ -11,7 +10,7 @@ use Psr\Log\LoggerInterface;
 ----------+-----------------------------+----------------------------------------------------------------
  ts       | timestamp without time zone | default timezone('utc'::text, now())
  data     | jsonb                       |
- topic    | character varying(60)       | not null
+ topic    | text                        | not null
  priority | integer                     | default 0
  id       | bigint                      | not null default nextval('xdb.queue_id_seq'::regclass)
 Indexes:
@@ -23,30 +22,25 @@ Indexes:
 class QueueService
 {
 	public function __construct(
-		protected Db $db,
-		protected LoggerInterface $logger
+		protected Db $db
 	)
 	{
 	}
 
 	public function set(string $topic, array $data, int $priority):void
 	{
-		if (!strlen($topic))
-		{
-			$this->logger->error('queue: no topic. ' . json_encode($data));
-			return;
-		}
+		$json_data = json_encode($data);
 
 		$insert = [
-			'topic'				=> $topic,
-			'data'				=> json_encode($data),
-			'priority'		=> $priority,
+			'topic'		=> $topic,
+			'data'		=> $json_data,
+			'priority'	=> $priority,
 		];
 
 		$this->db->insert('xdb.queue', $insert);
 	}
 
-	public function get(array $topics = []):array
+	public function get(array $topics):array
 	{
 		$sql_where = $sql_params = $sql_types = [];
 
@@ -86,7 +80,7 @@ class QueueService
 		return [];
 	}
 
-	public function count(string $topic = ''):int
+	public function count(string $topic):int
 	{
 		if ($topic)
 		{
