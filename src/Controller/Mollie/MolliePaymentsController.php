@@ -6,7 +6,6 @@ use App\Cnst\BulkCnst;
 use App\Cnst\StatusCnst;
 use App\Command\Mollie\MollieFilterCommand;
 use App\Form\Type\Mollie\MollieFilterType;
-use App\HtmlProcess\HtmlPurifier;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
@@ -25,6 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
@@ -76,7 +76,7 @@ class MolliePaymentsController extends AbstractController
         PageParamsService $pp,
         SessionUserService $su,
         UserCacheService $user_cache_service,
-        HtmlPurifier $html_purifier,
+        HtmlSanitizerInterface $html_sanitizer,
         LoggerInterface $logger
     ):Response
     {
@@ -529,7 +529,7 @@ class MolliePaymentsController extends AbstractController
 
             if (!count($errors))
             {
-                $bulk_mail_content = $html_purifier->purify($bulk_mail_content);
+                $bulk_mail_content = $html_sanitizer->sanitize($bulk_mail_content);
 
                 $db->insert($pp->schema() . '.emails', [
                     'subject'       => $bulk_mail_subject,

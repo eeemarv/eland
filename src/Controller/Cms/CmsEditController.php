@@ -4,7 +4,7 @@ namespace App\Controller\Cms;
 
 use App\Command\Cms\CmsEditCommand;
 use App\Form\Type\Cms\CmsEditType;
-use App\HtmlProcess\HtmlPurifier;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
@@ -42,7 +42,7 @@ class CmsEditController extends AbstractController
     public function __invoke(
         Request $request,
         StaticContentService $static_content_service,
-        HtmlPurifier $html_purifier,
+        HtmlSanitizerInterface $html_sanitizer,
         AlertService $alert_service,
         SessionUserService $su,
         PageParamsService $pp
@@ -71,7 +71,7 @@ class CmsEditController extends AbstractController
             foreach($content_ary as $block => $content)
             {
                 $no_space_content = trim(preg_replace('/\s+/', '', $content));
-                $set = isset(self::EMPTY_ARTEFACTS[$no_space_content]) ? '' : $html_purifier->purify($content);
+                $set = isset(self::EMPTY_ARTEFACTS[$no_space_content]) ? '' : $html_sanitizer->sanitize($content);
                 $get = $static_content_service->get($sel_role, $sel_route, $block, $pp->schema());
                 if($get !== $set)
                 {

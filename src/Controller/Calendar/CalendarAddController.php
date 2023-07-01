@@ -2,7 +2,6 @@
 
 namespace App\Controller\Calendar;
 
-use App\HtmlProcess\HtmlPurifier;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,8 +32,7 @@ class CalendarAddController extends AbstractController
         LinkRender $link_render,
         PageParamsService $pp,
         SessionUserService $su,
-        VarRouteService $vr,
-        HtmlPurifier $html_purifier
+        VarRouteService $vr
     ):Response
     {
         if (!$config_service->get_bool('calendar.enabled', $pp->schema()))
@@ -58,7 +56,7 @@ class CalendarAddController extends AbstractController
                 $errors[] = 'Vul een zichtbaarheid in.';
             }
 
-            $content = $html_purifier->purify($content);
+            // $content = $html_purifier->purify($content);
 
             if ($event_at)
             {

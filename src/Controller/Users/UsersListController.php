@@ -10,7 +10,6 @@ use App\Cnst\StatusCnst;
 use App\Cnst\RoleCnst;
 use App\Cnst\BulkCnst;
 use App\Form\Type\Filter\QTextSearchFilterType;
-use App\HtmlProcess\HtmlPurifier;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
 use App\Render\SelectRender;
@@ -32,6 +31,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -80,7 +80,7 @@ class UsersListController extends AbstractController
         PageParamsService $pp,
         SessionUserService $su,
         VarRouteService $vr,
-        HtmlPurifier $html_purifier
+        HtmlSanitizerInterface $html_sanitizer
     ):Response
     {
         if (!$pp->is_admin() && !in_array($status, ['active', 'new', 'leaving']))
@@ -409,7 +409,7 @@ class UsersListController extends AbstractController
                 $mail_users_sent_ary = [];
                 $sent_to_ary = [];
 
-                $bulk_mail_content = $html_purifier->purify($bulk_mail_content);
+                $bulk_mail_content = $html_sanitizer->sanitize($bulk_mail_content);
 
                 $res = $db->executeQuery('select u.*, c.value as mail
                     from ' . $pp->schema() . '.users u, ' .
@@ -453,6 +453,8 @@ class UsersListController extends AbstractController
                     $alert_users_sent_ary[] = $account_render->link($sel_user['id'], $pp->ary());
                     $mail_users_sent_ary[] = $account_render->link_url($sel_user['id'], $pp->ary());
                 }
+
+                $msg_users_sent = '';
 
                 if (count($alert_users_sent_ary))
                 {

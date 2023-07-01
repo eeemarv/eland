@@ -2,7 +2,6 @@
 
 namespace App\Controller\Calendar;
 
-use App\HtmlProcess\HtmlPurifier;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,8 +29,7 @@ class CalendarEditController extends AbstractController
         FormTokenService $form_token_service,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
-        PageParamsService $pp,
-        HtmlPurifier $html_purifier
+        PageParamsService $pp
     ):Response
     {
         if (!$config_service->get_bool('calendar.enabled', $pp->schema()))
@@ -49,7 +47,7 @@ class CalendarEditController extends AbstractController
 
         if ($request->isMethod('POST'))
         {
-            $content = $html_purifier->purify($content);
+            // $content = $html_purifier->purify($content);
 
             if (!$access)
             {

@@ -24,7 +24,6 @@
 		"doctrine/doctrine-bundle": "^2",
 		"doctrine/doctrine-migrations-bundle": "^3",
 		"doctrine/orm": "^2",
-		"ezyang/htmlpurifier": "^4.8",
 		"geo6/geocoder-php-bpost-provider": "^1.4",
 		"gregwar/captcha": "^1.1",
 		"gregwar/captcha-bundle": "^2.1",
@@ -79,8 +78,7 @@
 		"twig/extra-bundle": "^3.5",
 		"twig/inky-extra": "^3.5",
 		"twig/markdown-extra": "^3.5",
-		"twig/twig": "^2.12|^3.0",
-		"xemlock/htmlpurifier-html5": "^0.1.11"
+		"twig/twig": "^2.12|^3.0"
 	},
 
     "require-dev": {

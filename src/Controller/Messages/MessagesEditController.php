@@ -11,7 +11,6 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Psr\Log\LoggerInterface;
-use App\HtmlProcess\HtmlPurifier;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
@@ -25,6 +24,7 @@ use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -82,7 +82,7 @@ class MessagesEditController extends AbstractController
         SessionUserService $su,
         VarRouteService $vr,
         UserCacheService $user_cache_service,
-        HtmlPurifier $html_purifier,
+        HtmlSanitizerInterface $html_sanitizer,
         S3Service $s3_service,
         string $env_s3_url
     ):Response
@@ -167,7 +167,8 @@ class MessagesEditController extends AbstractController
 
         if ($request->isMethod('POST'))
         {
-            $content = $html_purifier->purify($content);
+            $content = $html_sanitizer->sanitize($content);
+
             $expires_at = null;
 
             if ($error_form = $form_token_service->get_error())
