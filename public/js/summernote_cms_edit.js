@@ -62,8 +62,10 @@ jQuery(function(){
 				air: toolbar,
 			},
 			toolbar: toolbar,
+
 			styleTags: ['p', 'h1', 'h2', 'h3', 'h4', 'h5'],
-			fontSizes: ['12', '14', '16', '18', '24', '36'],
+			fontSizes: ['12', '14', '16', '18', '20', '22', '24', '28', '36'],
+
 			codemirror: {
 				theme: 'monokai',
 				mode: 'htmlmixed',
@@ -78,6 +80,10 @@ jQuery(function(){
 				foldGutter: true,
 				styleActiveLine: true
 			},
+
+			codeviewFilter: false,
+			codeviewIframeFilter: true,
+
 			buttons: {
 				tpl_vars: tpl_vars_btn
 			}

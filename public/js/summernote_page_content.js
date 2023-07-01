@@ -22,6 +22,7 @@ jQuery(function(){
 			],
 
 			styleTags: ['p', 'quote', 'h1', 'h2', 'h3', 'h4'],
+			fontSizes: ['12', '14', '16', '18', '20', '22', '24', '28', '36'],
 
 			codemirror: {
 				theme: 'monokai',

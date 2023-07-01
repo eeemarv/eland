@@ -15,7 +15,7 @@ jQuery(function(){
 				['para', ['ul', 'ol', 'paragraph']],
 				['insert', ['link']]
 			],
-			fontSizes: ['12', '14', '16', '18', '24']
+			fontSizes: ['12', '14', '16', '18', '20', '24']
 		});
 
 		if ($self.prop('disabled')){

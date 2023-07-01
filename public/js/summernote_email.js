@@ -51,9 +51,13 @@ jQuery(function(){
 				['misc', ['fullscreen', 'codeview']],
 				['tpl',['tpl_vars']]
 			],
+
 			buttons: {
 				tpl_vars: tpl_vars_btn
 			},
+
+			fontSizes: ['12', '14', '16', '18', '20', '22', '24', '28', '36'],
+
 			codemirror: {
 				theme: 'monokai',
 				mode: 'htmlmixed',
