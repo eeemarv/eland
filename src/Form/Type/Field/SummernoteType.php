@@ -18,7 +18,8 @@ class SummernoteType extends AbstractType
                 'data-summernote'   => '',
                 'class'             => 'summernote',
             ],
-            'sanitize_html' => true,
+            // handled in controller for now
+            // 'sanitize_html' => true,
         ]);
     }
 

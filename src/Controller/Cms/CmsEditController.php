@@ -73,10 +73,17 @@ class CmsEditController extends AbstractController
             {
                 $no_space_content = trim(preg_replace('/\s+/', '', $content));
                 $set = '';
+
+                error_log('block ' . $block . ' -- ' . $content);
+
                 if (!isset(self::EMPTY_ARTEFACTS[$no_space_content]))
                 {
+                    error_log('sanitize');
                     $set =  $html_sanitizer->sanitize($content);
                 }
+
+                error_log('SET block ' . $block . ' -- ' . $set);
+
 
                 $get = $static_content_service->get($sel_role, $sel_route, $block, $pp->schema());
                 if($get !== $set)
