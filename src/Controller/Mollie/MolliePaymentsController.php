@@ -24,6 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -76,7 +77,7 @@ class MolliePaymentsController extends AbstractController
         PageParamsService $pp,
         SessionUserService $su,
         UserCacheService $user_cache_service,
-        HtmlSanitizerInterface $html_sanitizer,
+        #[Autowire(service: 'html_sanitizer.sanitizer.admin_email_sanitizer')] HtmlSanitizerInterface $html_sanitizer,
         LoggerInterface $logger
     ):Response
     {

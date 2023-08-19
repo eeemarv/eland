@@ -31,6 +31,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -80,7 +81,7 @@ class UsersListController extends AbstractController
         PageParamsService $pp,
         SessionUserService $su,
         VarRouteService $vr,
-        HtmlSanitizerInterface $html_sanitizer
+        #[Autowire(service: 'html_sanitizer.sanitizer.admin_email_sanitizer')] HtmlSanitizerInterface $html_sanitizer
     ):Response
     {
         if (!$pp->is_admin() && !in_array($status, ['active', 'new', 'leaving']))

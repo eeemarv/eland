@@ -1,0 +1,9 @@
+framework:
+  html_sanitizer:
+    sanitizers:
+      cms_sanitizer:
+        allow_static_elements: true
+      user_post_sanitizer:
+        allow_safe_elements: true
+      admin_email_sanitizer:
+        allow_safe_elements: true

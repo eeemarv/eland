@@ -24,6 +24,7 @@ use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -82,7 +83,7 @@ class MessagesEditController extends AbstractController
         SessionUserService $su,
         VarRouteService $vr,
         UserCacheService $user_cache_service,
-        HtmlSanitizerInterface $html_sanitizer,
+        #[Autowire(service: 'html_sanitizer.sanitizer.user_post_sanitizer')] HtmlSanitizerInterface $html_sanitizer,
         S3Service $s3_service,
         string $env_s3_url
     ):Response

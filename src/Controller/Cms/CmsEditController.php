@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 #[AsController]
 class CmsEditController extends AbstractController
@@ -42,7 +43,7 @@ class CmsEditController extends AbstractController
     public function __invoke(
         Request $request,
         StaticContentService $static_content_service,
-        HtmlSanitizerInterface $html_sanitizer,
+        #[Autowire(service: 'html_sanitizer.sanitizer.cms_sanitizer')] HtmlSanitizerInterface $html_sanitizer,
         AlertService $alert_service,
         SessionUserService $su,
         PageParamsService $pp
@@ -71,7 +72,12 @@ class CmsEditController extends AbstractController
             foreach($content_ary as $block => $content)
             {
                 $no_space_content = trim(preg_replace('/\s+/', '', $content));
-                $set = isset(self::EMPTY_ARTEFACTS[$no_space_content]) ? '' : $html_sanitizer->sanitize($content);
+                $set = '';
+                if (!isset(self::EMPTY_ARTEFACTS[$no_space_content]))
+                {
+                    $set =  $html_sanitizer->sanitize($content);
+                }
+
                 $get = $static_content_service->get($sel_role, $sel_route, $block, $pp->schema());
                 if($get !== $set)
                 {
