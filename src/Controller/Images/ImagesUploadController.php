@@ -9,16 +9,13 @@ use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\ImageUploadService;
 use App\Service\PageParamsService;
-use App\Service\SessionUserService;
-use Doctrine\DBAL\Connection as Db;
-use Doctrine\DBAL\Types\Types;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
-class MessagesImagesUploadController extends AbstractController
+class ImagesUploadController extends AbstractController
 {
     #[Route(
         '/{system}/{role_short}/images/upload/{form_token}',
@@ -37,12 +34,10 @@ class MessagesImagesUploadController extends AbstractController
     public function __invoke(
         Request $request,
         string $form_token,
-        Db $db,
         FormTokenService $form_token_service,
         ConfigService $config_service,
         LoggerInterface $logger,
         PageParamsService $pp,
-        SessionUserService $su,
         ImageUploadService $image_upload_service
     ):Response
     {
