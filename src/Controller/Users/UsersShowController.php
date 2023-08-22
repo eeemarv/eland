@@ -401,7 +401,7 @@ class UsersShowController extends AbstractController
             $out .= '></span>';
 
             $out .= '<p class="text-warning">';
-            $out .= 'Toegestane formaten: jpg/jpeg, png, gif, svg. ';
+            $out .= 'Toegestane formaten: jpg/jpeg, png, webp, gif, svg. ';
             $out .= 'Je kan ook een afbeelding hierheen verslepen.</p>';
 
             if ($pp->is_admin())

@@ -118,7 +118,7 @@ help:
     Er wordt een aan te klikken validatielink
     naar je E-mailbox verstuurd.
   images_upload: >-
-    Toegestane formaten: jpg/jpeg, png, gif en svg.
+    Toegestane formaten: jpg/jpeg, png, webp, gif en svg.
     Je kan ook afbeeldingen hierheen verslepen.
   only_in_admin_modus: >-
     Enkel in admin modus
@@ -479,7 +479,7 @@ config_logo:
     no_logo: >-
       Geen logo ingesteld.
     upload: >-
-      Toegestane formaten: jpg/jpeg, png, gif en svg. Je kan ook een
+      Toegestane formaten: jpg/jpeg, png, webp, gif en svg. Je kan ook een
       afbeelding hierheen verslepen. Gebruik een doorzichtige
       achtergrond voor het beste resultaat.
   error:
@@ -811,7 +811,7 @@ messages:
 
   image_files:
     help: >-
-      Toegestane formaten: jpg/jpeg, png, gif en svg.
+      Toegestane formaten: jpg/jpeg, png, webp, gif en svg.
       Je kan ook afbeeldingen hierheen verslepen.
       De volgorde kan veranderd worden door te verslepen.
 

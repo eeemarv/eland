@@ -174,6 +174,7 @@ class AssetsService
 				'*.gif',
 				'*.jpg',
 				'*.jpeg',
+				'*.webp',
 			]);
 
 		error_log('+-----------------------+');

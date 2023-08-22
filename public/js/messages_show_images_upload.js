@@ -13,14 +13,14 @@ jQuery(function () {
 	}).fileupload({
 		dataType: 'json',
 		autoUpload: true,
-        acceptFileFypes: /(\.|\/)(jpg|jpeg|png|gif|svg)$/i,
+        acceptFileFypes: /(\.|\/)(jpg|jpeg|png|gif|webp|svg)$/i,
 		maxFileSize: 999000,
 		minFileSize: 100,
 		disableImageResize: /Android(?!.*Chrome)|Opera/
 			.test(window.navigator.userAgent),
 		imageMaxWidth: 400,
 		imageMaxHeight: 400,
-		loadImageFileTypes: /^image\/(gif|jpeg|jpg|png)$/,
+		loadImageFileTypes: /^image\/(gif|jpeg|jpg|webp|png|svg)$/,
 		imageOrientation: true,
 		messages: messages
 	}).on('fileuploadadd', function (e, data) {

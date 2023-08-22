@@ -318,7 +318,7 @@ class MessagesShowController extends AbstractController
             $out .= 'multiple></span>';
 
             $out .= '<p class="text-warning">';
-            $out .= 'Toegestane formaten: jpg/jpeg, png, gif, svg. ';
+            $out .= 'Toegestane formaten: jpg/jpeg, png, wepb, gif, svg. ';
             $out .= 'Je kan ook afbeeldingen hierheen verslepen.</p>';
 
             $out .= $link_render->link_fa('messages_images_del', $pp->ary(),

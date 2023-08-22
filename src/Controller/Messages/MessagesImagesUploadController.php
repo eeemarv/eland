@@ -105,7 +105,7 @@ class MessagesImagesUploadController extends AbstractController
         if (!count($uploaded_files))
         {
             return $this->json([
-                'error' => 'Afbeeldingsbestand ontbreekt.',
+                'error' => 'Image file missing.',
                 'code'  => 400,
             ], 400);
         }

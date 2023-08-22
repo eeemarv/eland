@@ -877,7 +877,7 @@ class MessagesEditController extends AbstractController
         $out .= 'data-message-uploaded-bytes="Het bestand is te groot." ';
         $out .= '></span>&nbsp;';
 
-        $out .= '<p>Toegestane formaten: jpg/jpeg, png, gif, svg. ';
+        $out .= '<p>Toegestane formaten: jpg/jpeg, png, webp, gif, svg. ';
         $out .= 'Je kan ook afbeeldingen hierheen ';
         $out .= 'verslepen. ';
         $out .= 'De volgorde kan veranderd worden door te verslepen.</p>';
