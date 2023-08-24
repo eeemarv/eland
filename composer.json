@@ -38,7 +38,7 @@
 		"php-http/guzzle6-adapter": "^1",
 		"php-http/message": "^1.6",
 		"psr/http-client": "^1.0",
-		"sensio/framework-extra-bundle": "^6",
+		"psr/http-factory": "^1.0",
 		"snc/redis-bundle": "^4.1",
 		"symfony/amazon-mailer": "^6",
 		"symfony/asset": "^6",
