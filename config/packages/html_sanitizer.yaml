@@ -6,22 +6,24 @@ framework:
         allow_relative_links: true
         force_https_urls: true
         allowed_link_schemes:
-          - 'https'
+          - https
         allowed_media_schemes:
-          - 'https'
+          - https
         allowed_media_hosts:
           - 's3.%env(AWS_S3_REGION)%.amazonaws.com'
           - '%env(APP_HOST)%'
         allow_relative_medias: false
+        allow_attributes:
+          data-sizes: img
       user_post_sanitizer:
         allow_safe_elements: true
         allow_relative_links: false
         force_https_urls: true
         allowed_link_schemes:
-          - 'https'
+          - https
       admin_email_sanitizer:
         allow_safe_elements: true
         allow_relative_links: false
         force_https_urls: true
         allowed_link_schemes:
-          - 'https'
+          - https

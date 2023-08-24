@@ -131,7 +131,13 @@
 						'attr': {
 							'novalidate': 'novalidate',
 							'data-cms-edit-form': '',
-							'data-cms-edit-style': cms_edit_style_active
+							'data-cms-edit-style': cms_edit_style_active,
+							'data-s3-url': s3(),
+							'data-images-upload-url': path('images_upload', {
+								'role_short': 'a',
+								'system': pp_ary().system,
+								'form_token': cms_edit_form.children.form_token.vars.value
+							})
 						},
 						'action': path('cms_edit', {'role_short': 'a', 'system': pp_ary().system})
 					}) -}}
