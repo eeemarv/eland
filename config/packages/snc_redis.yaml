@@ -4,7 +4,7 @@ snc_redis:
             type: phpredis
             alias: default
             # See https://github.com/snc/SncRedisBundle/issues/709
-            dsn: '%env(temp_redis_dns_fix:REDIS_URL)%'
+            dsn: '%env(temp_redis_dsn_fix:REDIS_URL)%'
             logging: '%kernel.debug%'
             options:
                 prefix: eland_
