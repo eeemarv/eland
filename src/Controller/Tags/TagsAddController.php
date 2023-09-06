@@ -9,10 +9,12 @@ use App\Command\Tags\TagsDefCommand;
 use App\Form\Type\Tags\TagsDefType;
 use App\Service\AlertService;
 use App\Repository\TagRepository;
+use App\Service\ConfigService;
 use App\Service\PageParamsService;
+use App\Service\ResponseCacheService;
 use App\Service\SessionUserService;
-use App\Service\TypeaheadService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -143,12 +145,26 @@ class TagsAddController extends AbstractController
         string $tag_type,
         Request $request,
         TagRepository $tag_repository,
-        TypeaheadService $typeahead_service,
+        ResponseCacheService $response_cache_service,
         AlertService $alert_service,
+        ConfigService $config_service,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
     {
+        switch ($tag_type)
+        {
+            case 'users':
+                if (!$config_service->get_bool('users.tags.enabled', $pp->schema()))
+                {
+                    throw new NotFoundHttpException('Tags for users not enabled.');
+                }
+                break;
+            default:
+                throw new NotFoundHttpException('Tag type not supported.');
+                break;
+        }
+
         $command = new TagsDefCommand();
         $command->id = 0;
         $command->tag_type = $tag_type;
@@ -167,7 +183,7 @@ class TagsAddController extends AbstractController
             $created_by = $su->is_master() ? null : $su->id();
             $command->tag_type = $tag_type;
             $tag_repository->insert($command, $created_by, $pp->schema());
-            $typeahead_service->clear_cache($pp->schema());
+            $response_cache_service->clear_cache($pp->schema());
             $alert_service->success('Tag "' . $command->txt . '" opgeslagen.');
 
             return $this->redirectToRoute('tags_' . $tag_type, $pp->ary());

@@ -1,38 +1,42 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller\Typeahead;
+namespace App\Controller\Tags;
 
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use App\Repository\TagRepository;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
-use App\Service\TypeaheadService;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
+use App\Service\ResponseCacheService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
+use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
-class TypeaheadTagsController extends AbstractController
+#[Cache(public: true, maxage: 31536000)]
+class TagsStyleSheetController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/typeahead-tags/{tag_type}/{thumbprint}',
-        name: 'typeahead_tags',
+        '/{system}/tags/{tag_type}/{thumbprint}.css',
+        name: 'tags_stylesheet',
         methods: ['GET'],
+        priority: 20,
         requirements: [
             'system'        => '%assert.system%',
-            'role_short'    => '%assert.role_short.guest%',
             'thumbprint'    => '%assert.thumbprint%',
             'tag_type'      => '%assert.tag_type%',
-        ]
+        ],
     )]
 
     public function __invoke(
-        string $thumbprint,
         string $tag_type,
+        string $thumbprint,
+        Request $request,
+        ResponseCacheService $response_cache_service,
         TagRepository $tag_repository,
-        TypeaheadService $typeahead_service,
         ConfigService $config_service,
         PageParamsService $pp
     ):Response
@@ -54,20 +58,27 @@ class TypeaheadTagsController extends AbstractController
                 break;
         }
 
-        $params = [
-            'tag_type'  => $tag_type,
-        ];
-
-        $cached = $typeahead_service->get_cached_response_body($thumbprint, $pp, $params);
+        $thumbprint_key = 'tags_css_' . $tag_type;
+        $cached = $response_cache_service->get_response_body($thumbprint, $thumbprint_key, $pp->schema());
 
         if ($cached !== false)
         {
-            return new Response($cached, 200, ['Content-Type' => 'application/json']);
+            return new Response($cached, Response::HTTP_OK, [
+                'Content-Type'  => 'text/css',
+            ]);
         }
 
         $tags = $tag_repository->get_all_for_render($tag_type, $pp->schema());
-        $response_body = json_encode($tags);
-        $typeahead_service->store_response_body($response_body, $pp, $params);
-        return new Response($response_body, 200, ['Content-Type' => 'application/json']);
+
+        $response = $this->render('stylesheet/tags.css.twig', [
+            'tags'   => $tags,
+        ]);
+
+        $response_body = $response->getContent();
+        $response_cache_service->store_response_body($thumbprint_key, $pp->schema(), $response_body);
+
+        $response->setStatusCode(Response::HTTP_OK);
+        $response->headers->set('Content-Type', 'text/css');
+        return $response;
     }
 }

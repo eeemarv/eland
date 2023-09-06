@@ -11,8 +11,8 @@ use App\Repository\DocRepository;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
+use App\Service\ResponseCacheService;
 use App\Service\SessionUserService;
-use App\Service\TypeaheadService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
@@ -40,7 +40,7 @@ class DocsEditController extends AbstractController
         DocRepository $doc_repository,
         ConfigService $config_service,
         AlertService $alert_service,
-        TypeaheadService $typeahead_service,
+        ResponseCacheService $response_cache_service,
         PageParamsService $pp,
         SessionUserService $su,
         string $env_s3_url
@@ -130,7 +130,7 @@ class DocsEditController extends AbstractController
 
             if (isset($delete_thumbprint) && $delete_thumbprint)
             {
-                $typeahead_service->clear_cache($pp->schema());
+                $response_cache_service->clear_cache($pp->schema());
             }
 
             $alert_success_msg[] = 'Document aangepast.';

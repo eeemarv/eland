@@ -11,7 +11,7 @@ use App\Service\AlertService;
 use App\Repository\DocRepository;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
-use App\Service\TypeaheadService;
+use App\Service\ResponseCacheService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
@@ -39,7 +39,7 @@ class DocsMapEditController extends AbstractController
         DocRepository $doc_repository,
         ConfigService $config_service,
         AlertService $alert_service,
-        TypeaheadService $typeahead_service,
+        ResponseCacheService $response_cache_service,
         PageParamsService $pp
     ):Response
     {
@@ -70,7 +70,7 @@ class DocsMapEditController extends AbstractController
 
             $doc_repository->update_map_name($command->name, $id, $pp->schema());
 
-            $typeahead_service->clear_cache($pp->schema());
+            $response_cache_service->clear_cache($pp->schema());
 
             $alert_service->success('Map naam aangepast.');
 

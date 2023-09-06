@@ -4,6 +4,7 @@ namespace App\Controller\Typeahead;
 
 use App\Service\PageParamsService;
 use App\Service\TypeaheadService;
+use Doctrine\DBAL\ArrayParameterType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
@@ -50,29 +51,32 @@ class TypeaheadAccountsController extends AbstractController
             'status' => $status,
         ];
 
-        $cached = $typeahead_service->get_cached_data($thumbprint, $pp, $params);
+        $cached = $typeahead_service->get_cached_response_body($thumbprint, $pp, $params);
 
         if ($cached !== false)
         {
             return new Response($cached, 200, ['Content-Type' => 'application/json']);
         }
 
+        $status_ary = [];
+
         switch($status)
         {
             case 'extern':
-                $status_sql = '= 7';
+                $status_ary[] = 7;
                 break;
             case 'inactive':
-                $status_sql = '= 0';
+                $status_ary[] = 0;
                 break;
             case 'ip':
-                $status_sql = '= 5';
+                $status_ary[] = 5;
                 break;
             case 'im':
-                $status_sql = '= 6';
+                $status_ary[] = 6;
                 break;
             case 'active':
-                $status_sql = 'in (1, 2)';
+                $status_ary[] = 1;
+                $status_ary[] = 2;
                 break;
             default:
                 return $this->json([
@@ -81,25 +85,40 @@ class TypeaheadAccountsController extends AbstractController
                 break;
         }
 
-        $fetched_users = $db->fetchAllAssociative(
-            'select code as c,
+        $res = $db->executeQuery(
+            'select id,
+                code as c,
                 name as n,
-                extract(epoch from adate) as a,
-                status as s
+                extract(epoch from adate)::int as a,
+                status as s,
+                remote_schema,
+                remote_email
             from ' . $pp->schema() . '.users
-            where status ' . $status_sql . '
-            order by id asc', [], []
+            where status in (?)
+            order by id asc',
+            [$status_ary],
+            [ArrayParameterType::INTEGER]
         );
 
         $accounts = [];
 
-        foreach ($fetched_users as $account)
+        while ($row = $res->fetchAssociative())
         {
-            $accounts[] = $account;
+            if (!isset($row['remote_schema']))
+            {
+                unset($row['remote_schema']);
+            }
+
+            if (!isset($row['remote_email']))
+            {
+                unset($row['remote_email']);
+            }
+
+            $accounts[] = $row;
         }
 
-        $data = json_encode($accounts);
-        $typeahead_service->set_thumbprint($thumbprint, $data, $pp, $params);
-        return new Response($data, 200, ['Content-Type' => 'application/json']);
+        $response_body = json_encode($accounts);
+        $typeahead_service->store_response_body($response_body, $pp, $params);
+        return new Response($response_body, 200, ['Content-Type' => 'application/json']);
     }
 }

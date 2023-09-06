@@ -55,7 +55,7 @@ class TypeaheadElandIntersystemAccountsController extends AbstractController
             'remote_schema' => $remote_schema,
         ];
 
-        $cached = $typeahead_service->get_cached_data($thumbprint, $pp, $params);
+        $cached = $typeahead_service->get_cached_response_body($thumbprint, $pp, $params);
 
         if ($cached !== false)
         {
@@ -79,8 +79,8 @@ class TypeaheadElandIntersystemAccountsController extends AbstractController
             $accounts[] = $account;
         }
 
-        $data = json_encode($accounts);
-        $typeahead_service->set_thumbprint($thumbprint, $data, $pp, $params);
-        return new Response($data, 200, ['Content-Type' => 'application/json']);
+        $response_body = json_encode($accounts);
+        $typeahead_service->store_response_body($response_body, $pp, $params);
+        return new Response($response_body, 200, ['Content-Type' => 'application/json']);
     }
 }

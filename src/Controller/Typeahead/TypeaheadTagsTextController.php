@@ -14,18 +14,18 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
-class TypeaheadTagsController extends AbstractController
+class TypeaheadTagsTextController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/typeahead-tags/{tag_type}/{thumbprint}',
-        name: 'typeahead_tags',
+        '/{system}/{role_short}/typeahead-tags-text/{tag_type}/{thumbprint}',
+        name: 'typeahead_tags_text',
         methods: ['GET'],
         requirements: [
             'system'        => '%assert.system%',
             'role_short'    => '%assert.role_short.guest%',
             'thumbprint'    => '%assert.thumbprint%',
             'tag_type'      => '%assert.tag_type%',
-        ]
+        ],
     )]
 
     public function __invoke(
@@ -65,7 +65,7 @@ class TypeaheadTagsController extends AbstractController
             return new Response($cached, 200, ['Content-Type' => 'application/json']);
         }
 
-        $tags = $tag_repository->get_all_for_render($tag_type, $pp->schema());
+        $tags = $tag_repository->get_flat_ary($tag_type, $pp->schema());
         $response_body = json_encode($tags);
         $typeahead_service->store_response_body($response_body, $pp, $params);
         return new Response($response_body, 200, ['Content-Type' => 'application/json']);

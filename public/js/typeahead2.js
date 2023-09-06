@@ -1,5 +1,5 @@
 jQuery(function(){
-	var now = Math.floor(new Date().getTime() / 1000);
+	var now_unix = Math.floor(new Date().getTime() / 1000);
 	var $data_text_inputs = $('form input[type="text"][data-typeahead]');
 	var $data_options = $('form select option[data-typeahead]');
 	var $target_text_inputs = $('form input[type="text"][data-typeahead-source]');
@@ -24,7 +24,7 @@ jQuery(function(){
 			&& data.show_new_status
 			&& data.new_users_days){
 			show_new_status = true;
-			new_users_treshold = now - (data.new_users_days * 86400);
+			new_users_treshold = now_unix - (data.new_users_days * 86400);
 			filter_thumb += '_nu_' + data.show_new_status;
 		}
 

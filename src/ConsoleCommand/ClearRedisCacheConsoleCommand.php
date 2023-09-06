@@ -3,9 +3,9 @@
 namespace App\ConsoleCommand;
 
 use App\Service\ConfigService;
+use App\Service\ResponseCacheService;
 use App\Service\StaticContentService;
 use App\Service\SystemsService;
-use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -20,7 +20,7 @@ class ClearRedisCacheConsoleCommand extends Command
 {
     public function __construct(
         protected ConfigService $config_service,
-        protected TypeaheadService $typeahead_service,
+        protected ResponseCacheService $response_cache_service,
         protected StaticContentService $static_content_service,
         protected UserCacheService $user_cache_service,
         protected SystemsService $systems_service
@@ -35,9 +35,9 @@ class ClearRedisCacheConsoleCommand extends Command
 
         foreach ($schemas as $schema)
         {
+            $this->response_cache_service->clear_cache($schema);
             $this->config_service->clear_cache($schema);
             $this->static_content_service->clear_cache($schema);
-            $this->typeahead_service->clear_cache($schema);
             $this->user_cache_service->clear_all($schema);
         }
 

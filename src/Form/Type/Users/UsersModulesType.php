@@ -13,6 +13,7 @@ class UsersModulesType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $builder->add('tags_enabled', CheckboxType::class);
         $builder->add('full_name_enabled', CheckboxType::class);
         $builder->add('postcode_enabled', CheckboxType::class);
         $builder->add('birthday_enabled', CheckboxType::class);

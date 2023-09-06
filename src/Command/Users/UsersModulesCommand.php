@@ -9,6 +9,10 @@ use Symfony\Component\Validator\Constraints\Type;
 class UsersModulesCommand implements CommandInterface
 {
     #[Type(type: 'bool')]
+    #[ConfigMap(type: 'bool', key: 'users.tags.enabled')]
+    public $tags_enabled;
+
+    #[Type(type: 'bool')]
     #[ConfigMap(type: 'bool', key: 'users.fields.full_name.enabled')]
     public $full_name_enabled;
 

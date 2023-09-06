@@ -5,6 +5,11 @@
 {%- endblock heading_title -%}
 
 {%- block form_a -%}
+    {{- form_row(form.tags_enabled, {
+        'label': 'tags_users.title',
+        'required': false
+    }) -}}
+
     {{- form_row(form.full_name_enabled, {
         'label': 'label.full_name',
         'required': false

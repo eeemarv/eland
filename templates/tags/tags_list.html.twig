@@ -35,18 +35,20 @@
                     'tag_type': tag_type })
                 -}}
             </li>
-            <li>{{- 'tags.explain.drag'|trans -}}</li>
-            <li>{{- 'tags.explain.store'|trans -}}</li>
-            <li>{{- 'tags.explain.del'|trans -}}</li>
+             {%- if tag_type == 'users' -%}
+                <li>
+                    {{- 'tags_users.help.only_for_admins'|trans -}}
+                </li>
+             {%- endif -%}
         </ul>
     </p>
     <div class="list-group list-group-striped list-group-hover{% if tags|length > 1 %} grab{%- endif -%}" data-sortable data-sort-base>
     {%- for tag in tags -%}
         <div class="list-group-item" data-id="{{- tag.id -}}">
-        {%- set style = 'color:' ~ tag.txt_color ~ ';background-color:' ~ tag.bg_color ~ '; border-color:' ~ tag.txt_color ~ ';' -%}
-        <span class="label tag-eland" title="{{- tag.description -}}" style="{{- style -}}" data-tag="{{- tag.id -}}">
-            {{- tag.txt -}}
-        </span>
+            <span class="label tag-eland" title="{{- tag.description -}}" style="color: {{- tag.txt_color -}}; background-color:{{- tag.bg_color -}};border-color:{{- tag.txt_color -}};" data-tag="{{- tag.id -}}">
+                {{- tag.txt -}}
+            </span>
+
             {%- if tag.count > 0 %} (
                 <a href="{{- path(module|var_route, pp_ary()|merge({'f': {'tag[]': tag.id}})) -}}">
                     {{- tag.count -}}

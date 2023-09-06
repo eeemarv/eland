@@ -13,6 +13,18 @@
 	]) -}}
 {%- endblock assets_add -%}
 
+{%- block pre_form -%}
+    {%- if tag_type == 'users' -%}
+        <p>
+            <ul>
+                <li>
+                    {{- 'tags_users.help.only_for_admins'|trans -}}
+                </li>
+            </ul>
+        </p>
+    {%- endif -%}
+{%- endblock pre_form -%}
+
 {%- block form_a -%}
     <div class="row">
         <div class="col-sm-6">
@@ -70,7 +82,8 @@
         },
         'attr': {
             'data-tag-description': ''
-        }
+        },
+        'help': 'tags.description.help'
     }) -}}
 {%- endblock form_a -%}
 

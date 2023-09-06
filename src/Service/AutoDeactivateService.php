@@ -23,7 +23,7 @@ class AutoDeactivateService
 		protected MailAddrUserService $mail_addr_user_service,
 		protected ConfigService $config_service,
 		protected SessionUserService $su,
-		protected TypeaheadService $typeahead_service,
+		protected ResponseCacheService $response_cache_service,
 		protected AccountRender $account_render
 	)
 	{
@@ -61,7 +61,7 @@ class AutoDeactivateService
 
 		$this->db->update($schema . '.users', ['status'	=> 0], ['id' => $user_id]);
 		$this->user_cache_service->clear($user_id, $schema);
-		$this->typeahead_service->clear_cache($schema);
+		$this->response_cache_service->clear_cache($schema);
 
 		$this->logger->info('Auto-deactivated: user ' .
 			$this->account_render->str($user_id, $schema),

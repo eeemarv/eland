@@ -27,14 +27,14 @@ class TagsDefType extends AbstractType
 
         if ($options['del'] === true)
         {
-            $opt_ary = ['disabled' => true];
+            $opt_ary['disabled'] = true;
         }
 
         $builder
             ->add('txt', TypeaheadType::class, [
                 ...$opt_ary,
                 'render_omit'   => $options['txt_omit'],
-                'add'           => 'tags_' . $options['tag_type'] . '_check',
+                'add'           => [['tags_text', ['tag_type' => $options['tag_type']]]],
             ])
             ->add('bg_color', ColorType::class, $opt_ary)
             ->add('txt_color', ColorType::class, $opt_ary)

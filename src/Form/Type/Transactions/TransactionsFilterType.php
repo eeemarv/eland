@@ -120,7 +120,7 @@ class TransactionsFilterType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class'                => TransactionsFilterCommand::class,
+            'data_class'    => TransactionsFilterCommand::class,
         ]);
     }
 }

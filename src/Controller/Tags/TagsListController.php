@@ -12,6 +12,7 @@ use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\AlertService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -147,6 +148,19 @@ class TagsListController extends AbstractController
         PageParamsService $pp
     ):Response
     {
+        switch ($tag_type)
+        {
+            case 'users':
+                if (!$config_service->get_bool('users.tags.enabled', $pp->schema()))
+                {
+                    throw new NotFoundHttpException('Tags for users not enabled.');
+                }
+                break;
+            default:
+                throw new NotFoundHttpException('Tag type not supported.');
+                break;
+        }
+
         $command = new TagsListCommand();
 
         $tags = $tag_repository->get_all_with_count($tag_type, $pp->schema());

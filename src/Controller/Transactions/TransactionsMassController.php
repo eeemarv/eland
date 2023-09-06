@@ -60,7 +60,7 @@ class TransactionsMassController extends AbstractController
             'lbl'	=> 'Info-pakket',
             'st'	=> 5,
             'hsh'	=> '2ed157',
-            'cl'	=> 'warning',
+            'cl'	=> 'info-pack',
         ],
         'info-moment'	=> [
             'lbl'	=> 'Info-moment',
@@ -768,6 +768,19 @@ class TransactionsMassController extends AbstractController
         $out .= '<div class="panel panel-info">';
         $out .= '<div class="panel-heading">';
 
+        $data_typeahead = $typeahead_service->ini($pp)
+            ->add('accounts', ['status' => 'active'])
+            ->add('accounts', ['status' => 'inactive'])
+            ->add('accounts', ['status' => 'ip'])
+            ->add('accounts', ['status' => 'im'])
+            ->add('accounts', ['status' => 'extern'])
+            ->str([
+                'filter'        => 'accounts',
+                'new_users_days'        => $new_users_days,
+                'show_new_status'       => $show_new_status,
+                'show_leaving_status'   => $show_leaving_status,
+            ]);
+
         $out .= '<div class="form-group">';
         $out .= '<label for="from_code" class="control-label">';
         $out .= 'Van Account Code';
@@ -782,18 +795,7 @@ class TransactionsMassController extends AbstractController
         $out .= '" ';
 
         $out .= 'data-typeahead="';
-        $out .= $typeahead_service->ini($pp)
-            ->add('accounts', ['status' => 'active'])
-            ->add('accounts', ['status' => 'inactive'])
-            ->add('accounts', ['status' => 'ip'])
-            ->add('accounts', ['status' => 'im'])
-            ->add('accounts', ['status' => 'extern'])
-            ->str([
-                'filter'        => 'accounts',
-                'new_users_days'        => $new_users_days,
-                'show_new_status'       => $show_new_status,
-                'show_leaving_status'   => $show_leaving_status,
-            ]);
+        $out .=  $data_typeahead;
         $out .= '">';
 
         $out .= '</div>';
@@ -946,7 +948,9 @@ class TransactionsMassController extends AbstractController
         $out .= 'value="';
         $out .= $to_code;
         $out .= '" ';
-        $out .= 'data-typeahead-source="from_code">';
+        $out .= 'data-typeahead="';
+        $out .= $data_typeahead;
+        $out .= '">';
         $out .= '</div>';
         $out .= '<p>Vul dit enkel in bij een "Veel naar één" transactie. ';
         $out .= 'Bijvoorbeeld, een ledenbijdrage. ';

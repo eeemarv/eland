@@ -25,6 +25,7 @@ use App\Service\MailAddrSystemService;
 use App\Service\MailAddrUserService;
 use App\Service\PageParamsService;
 use App\Service\PasswordStrengthService;
+use App\Service\ResponseCacheService;
 use App\Service\SessionUserService;
 use App\Service\SystemsService;
 use App\Service\TypeaheadService;
@@ -107,6 +108,7 @@ class UsersEditController extends AbstractController
         PasswordStrengthService $password_strength_service,
         SelectRender $select_render,
         SystemsService $systems_service,
+        ResponseCacheService $response_cache_service,
         TypeaheadService $typeahead_service,
         UserCacheService $user_cache_service,
         MailAddrUserService $mail_addr_user_service,
@@ -713,7 +715,7 @@ class UsersEditController extends AbstractController
                     }
                 }
 
-                $typeahead_service->clear_cache($pp->schema());
+                $response_cache_service->clear_cache($pp->schema());
 
                 $intersystems_service->clear_cache();
 

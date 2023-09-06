@@ -1041,6 +1041,10 @@ support_form:
       }
 
 tags:
+  description:
+    help: >-
+      Deze tekst wordt weergegeven als je de muisaanwijzer
+      over de tag houdt.
   add:
     title: >-
       {tag_type, select,
@@ -1099,6 +1103,11 @@ tags:
         users {Tags voor leden}
         other {---}
       }
+tags_users: # submodule
+  title: Tags voor leden
+  help:
+    only_for_admins: >-
+      Tags voor leden zijn enkel zichtbaar voor admins.
 
 transactions:
   title: >-
@@ -1115,6 +1124,21 @@ transactions:
 transactions_add:
   title: Nieuwe transactie
   btn_add_to_user: Nieuwe transactie naar {user}
+  from_id:
+    label: Van Account Code
+  from_remote_account:
+    label: >-
+      Van Gebruiker/Account Code in InterSysteem
+  to_id:
+    label: Aan Account Code
+  to_remote_id:
+    label: Aan Account Code in InterSysteem
+  to_remote_account:
+    label: Aan Gebruiker/Account Code in InterSysteem
+  amount:
+    label: Aantal
+  remote_amount:
+    label: Aantal in InterSysteem
 
 transactions_autominlimit:
   title: Automatische minimum limiet

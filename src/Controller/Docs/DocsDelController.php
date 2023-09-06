@@ -8,8 +8,8 @@ use App\Repository\DocRepository;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
+use App\Service\ResponseCacheService;
 use App\Service\S3Service;
-use App\Service\TypeaheadService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -43,7 +43,7 @@ class DocsDelController extends AbstractController
         LoggerInterface $logger,
         AlertService $alert_service,
         S3Service $s3_service,
-        TypeaheadService $typeahead_service,
+        ResponseCacheService $response_cache_service,
         PageParamsService $pp,
         string $env_s3_url
     ):Response
@@ -97,7 +97,7 @@ class DocsDelController extends AbstractController
                 {
                     $alert_success_msg[] = 'Map "' . $doc_map['name'] . '" bevatte geen items meer en werd automatisch gewist.';
                     $doc_repository->del_map($doc['map_id'], $pp->schema());
-                    $typeahead_service->clear_cache($pp->schema());
+                    $response_cache_service->clear_cache($pp->schema());
                     unset($doc['map_id']);
                 }
             }

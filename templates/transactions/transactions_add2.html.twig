@@ -1,0 +1,127 @@
+{%- extends 'transactions/base/transactions_base.html.twig' -%}
+
+{%- block assets_add -%}
+    {{- parent() -}}
+    {{- assets_add(['transactions_add.js']) -}}
+{%- endblock assets_add -%}
+
+{%- block heading_title -%}
+    {{- 'transactions_add.title'|trans -}}
+{%- endblock heading_title -%}
+
+{%- block content -%}
+{%- endblock content -%}
+
+{%- set cancel_route = 'transactions' -%}
+
+{%- block form_submit_btn -%}
+    {%- include 'form/submit_add_btn.html.twig' -%}
+{%- endblock form_submit_btn -%}
+
+{%- block form_a -%}
+
+    <div class="row">
+        <div id="col_from_id" class="col-md-12">
+            {{- form_row(form.from_id, {
+                'label': 'transactions_add.from_id.label',
+                'pre_addon': {
+                    'fa': 'user'
+                }
+            }) -}}
+        </div>
+    </div>
+
+    <div class="row">
+        <div id="col_from_remote_account" class="col-md-12 alert-warning">
+            {{- form_row(form.from_remote_account, {
+                'label': 'transactions_add.from_remote_account.label',
+                'pre_addon': {
+                    'fa': 'user'
+                }
+            }) -}}
+        </div>
+    </div>
+
+    <div class="row">
+        <div id="col_to_id" class="col-md-12">
+            {{- form_row(form.to_id, {
+                'label': 'transactions_add.to_id.label',
+                'pre_addon': {
+                    'fa': 'user'
+                }
+            }) -}}
+        </div>
+    </div>
+
+    <div class="row">
+        <div id="col_to_remote_id" class="col-md-12 alert-warning">
+            {{- form_row(form.to_remote_id, {
+                'label': 'transactions_add.to_remote_id.label',
+                'pre_addon': {
+                    'fa': 'user'
+                }
+            }) -}}
+        </div>
+    </div>
+
+    <div class="row">
+        <div id="col_to_remote_account" class="col-md-12 alert-warning">
+            {{- form_row(form.to_remote_account, {
+                'label': 'transactions_add.to_remote_account.label',
+                'pre_addon': {
+                    'fa': 'user'
+                }
+            }) -}}
+        </div>
+    </div>
+
+    <div class="row">
+        <div id="col_amount" class="col-md-6">
+            {{- form_row(form.amount, {
+                'label': 'transactions_add.amount.label',
+                'pre_addon': {
+                    'text': config_str('transactions.currency.name', schema)
+                }
+            }) -}}
+        </div>
+
+        <div id="col_remote_amount" class="col-md-6 alert-warning">
+            {{- form_row(form.remote_amount, {
+                'label': 'transactions_add.remote_amount.label',
+                'pre_addon': {
+                    'text': ''
+                }
+            }) -}}
+        </div>
+    </div>
+
+    <div class="row">
+        <div id="col_description" class="col-md-12">
+            {{- form_row(form.description, {
+                'label': 'label.description',
+                'pre_addon': {
+                    'fa': 'pencil'
+                }
+            }) -}}
+        </div>
+    </div>
+
+    <div class="row">
+        <div id="col_service_stuff" class="col-md-12" style="display:none;">
+            {{- form_row(form.service_stuff, {
+                'label': false,
+            }) -}}
+        </div>
+    </div>
+
+{%- endblock form_a -%}
+
+{%- block css -%}
+    {{- parent() -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+	{{- encore_entry_script_tags('typeahead') -}}
+	{{- encore_entry_script_tags('transactions_add') -}}
+{%- endblock js -%}

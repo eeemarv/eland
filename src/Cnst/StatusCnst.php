@@ -30,9 +30,9 @@ class StatusCnst
         0 => 'inactive',
         2 => 'danger',
         3 => 'success',
-        5 => 'warning',
+        5 => 'info-pack',
         6 => 'info',
-        7 => 'extern',
+        7 => 'warning',
     ];
 
     const THUMBPRINT_ARY = [

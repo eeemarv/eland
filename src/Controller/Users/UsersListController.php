@@ -23,6 +23,7 @@ use App\Service\IntersystemsService;
 use App\Service\ItemAccessService;
 use App\Service\MailAddrUserService;
 use App\Service\PageParamsService;
+use App\Service\ResponseCacheService;
 use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
@@ -76,6 +77,7 @@ class UsersListController extends AbstractController
         MailAddrUserService $mail_addr_user_service,
         MailQueue $mail_queue,
         SelectRender $select_render,
+        ResponseCacheService $response_cache_service,
         TypeaheadService $typeahead_service,
         UserCacheService $user_cache_service,
         PageParamsService $pp,
@@ -379,7 +381,7 @@ class UsersListController extends AbstractController
 
                 if ($bulk_field == 'status')
                 {
-                    $typeahead_service->clear_cache($pp->schema());
+                    $response_cache_service->clear_cache($pp->schema());
                 }
 
                 $logger->info('bulk: Set ' . $bulk_submit_action .
@@ -2087,6 +2089,15 @@ class UsersListController extends AbstractController
 
         if ($pp->is_admin())
         {
+            $status_def_ary['extern'] = [
+                'lbl'	=> 'Extern',
+                'sql'	=> [
+                    'where'     => ['u.status = 7'],
+                ],
+                'cl'	=> 'warning',
+                'st'	=> 7,
+            ];
+
             $status_def_ary['inactive'] = [
                 'lbl'	=> 'Inactief',
                 'sql'	=> [
@@ -2101,7 +2112,7 @@ class UsersListController extends AbstractController
                 'sql'	=> [
                     'where'     => ['u.status = 5'],
                 ],
-                'cl'	=> 'warning',
+                'cl'	=> 'info-pack',
                 'st'	=> 5,
             ];
 
@@ -2112,15 +2123,6 @@ class UsersListController extends AbstractController
                 ],
                 'cl'	=> 'info',
                 'st'	=> 6
-            ];
-
-            $status_def_ary['extern'] = [
-                'lbl'	=> 'Extern',
-                'sql'	=> [
-                    'where'     => ['u.status = 7'],
-                ],
-                'cl'	=> 'extern',
-                'st'	=> 7,
             ];
 
             $status_def_ary['all'] = [

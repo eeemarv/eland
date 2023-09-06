@@ -9,8 +9,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
 use App\Repository\TagRepository;
+use App\Service\ConfigService;
 use App\Service\PageParamsService;
+use App\Service\ResponseCacheService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -151,9 +154,24 @@ class TagsEditController extends AbstractController
         string $tag_type,
         TagRepository $tag_repository,
         AlertService $alert_service,
+        ConfigService $config_service,
+        ResponseCacheService $response_cache_service,
         PageParamsService $pp,
     ):Response
     {
+        switch ($tag_type)
+        {
+            case 'users':
+                if (!$config_service->get_bool('users.tags.enabled', $pp->schema()))
+                {
+                    throw new NotFoundHttpException('Tags for users not enabled.');
+                }
+                break;
+            default:
+                throw new NotFoundHttpException('Tag type not supported.');
+                break;
+        }
+
         $tag = $tag_repository->get($id, $tag_type, $pp->schema());
 
         $command = new TagsDefCommand();
@@ -175,6 +193,7 @@ class TagsEditController extends AbstractController
         {
             $command = $form->getData();
             $tag_repository->update($command, $pp->schema());
+            $response_cache_service->clear_cache($pp->schema());
 
             $alert_service->success('Tag "' . $command->txt . '" aangepast.');
 

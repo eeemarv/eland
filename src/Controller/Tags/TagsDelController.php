@@ -9,9 +9,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
 use App\Repository\TagRepository;
+use App\Service\ConfigService;
 use App\Service\PageParamsService;
+use App\Service\ResponseCacheService;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Attribute\AsController;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -151,10 +154,25 @@ class TagsDelController extends AbstractController
         string $module,
         string $tag_type,
         TagRepository $tag_repository,
+        ResponseCacheService $response_cache_service,
         AlertService $alert_service,
+        ConfigService $config_service,
         PageParamsService $pp
     ):Response
     {
+        switch ($tag_type)
+        {
+            case 'users':
+                if (!$config_service->get_bool('users.tags.enabled', $pp->schema()))
+                {
+                    throw new NotFoundHttpException('Tags for users not enabled.');
+                }
+                break;
+            default:
+                throw new NotFoundHttpException('Tag type not supported.');
+                break;
+        }
+
         $tag = $tag_repository->get_with_count($id, $tag_type, $pp->schema());
 
         if ($tag['count'] !== 0)
@@ -180,6 +198,8 @@ class TagsDelController extends AbstractController
             && $form->isValid())
         {
             $tag_repository->del($id, $tag_type, $pp->schema());
+            $response_cache_service->clear_cache($pp->schema());
+
             $alert_service->success('Tag "' . $command->txt . '" verwijderd.');
 
             return $this->redirectToRoute('tags_' . $tag_type, $pp->ary());

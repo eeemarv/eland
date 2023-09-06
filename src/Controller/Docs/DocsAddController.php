@@ -11,6 +11,7 @@ use App\Service\AlertService;
 use App\Repository\DocRepository;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
+use App\Service\ResponseCacheService;
 use App\Service\S3Service;
 use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
@@ -42,7 +43,7 @@ class DocsAddController extends AbstractController
         LoggerInterface $logger,
         AlertService $alert_service,
         S3Service $s3_service,
-        TypeaheadService $typeahead_service,
+        ResponseCacheService $response_cache_service,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
@@ -116,7 +117,7 @@ class DocsAddController extends AbstractController
                 {
                     $map_id = $doc_repository->insert_map($map_name, $su->id(), $pp->schema());
                     $alert_success_msg[] = 'Nieuwe map "' . $map_name . '" gecreëerd.';
-                    $typeahead_service->clear_cache($pp->schema());
+                    $response_cache_service->clear_cache($pp->schema());
                 }
 
                 $doc['map_id'] = $map_id;

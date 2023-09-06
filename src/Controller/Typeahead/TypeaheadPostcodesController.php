@@ -34,7 +34,7 @@ class TypeaheadPostcodesController extends AbstractController
         PageParamsService $pp
     ):Response
     {
-        $cached = $typeahead_service->get_cached_data($thumbprint, $pp, []);
+        $cached = $typeahead_service->get_cached_response_body($thumbprint, $pp, []);
 
         if ($cached !== false)
         {
@@ -59,8 +59,8 @@ class TypeaheadPostcodesController extends AbstractController
             $postcodes[] = $row['postcode'];
         }
 
-        $data = json_encode($postcodes);
-        $typeahead_service->set_thumbprint($thumbprint, $data, $pp, []);
-        return new Response($data, 200, ['Content-Type' => 'application/json']);
+        $response_body = json_encode($postcodes);
+        $typeahead_service->store_response_body($response_body, $pp, []);
+        return new Response($response_body, 200, ['Content-Type' => 'application/json']);
     }
 }
