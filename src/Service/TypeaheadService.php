@@ -52,6 +52,7 @@ class TypeaheadService
 			UrlGeneratorInterface::ABSOLUTE_PATH);
 
 		$this->fetch_ary[] = [
+			'key'			=> $thumbprint_key,
 			'path'			=> $path,
 			'thumbprint'	=> $thumbprint,
 			'ttl_client'	=> $ttl_client,

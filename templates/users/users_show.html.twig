@@ -7,6 +7,7 @@
     {%- if pp_has_role('admin') or su_is_owner(id) -%}
         {{- assets_add(['fileupload', 'upload_image.js']) -}}
     {%- endif -%}
+    {{- assets_add(['tagsinput', 'tagsinput.js']) -}}
 {%- endblock assets_add -%}
 
 {%- block btn_top_edit -%}
@@ -97,6 +98,35 @@
         {%- endif -%}
     {%- endif -%}
 {%- endblock heading_title -%}
+
+{%- block tags -%}
+{%- if tags_form is defined -%}
+{{- form_row(tags_form.tags, {
+    'post_addon': {
+        'text': 'tags'
+    }
+}) -}}
+
+{%- endif -%}
+
+{#
+{%- if pp_has_role('admin') and config_bool('users.tags.enabled', schema) -%}
+<div class="panel panel-info">
+    <div class="panel-heading">
+        <h3>{{- 'tags.title'|trans -}}</h3>
+        {%- for tag in tags -%}
+
+        {%- endfor -%}
+        <ul>
+            <li>{{- 'tags_users.help.none'|trans -}}</li>
+            <li>{{- 'tags_users.help.only_for_admin' -}}</li>
+        </ul>
+    </div>
+</div>
+
+{%- endif -%}
+#}
+{%- endblock tags -%}
 
 {%- block css -%}
     {{- parent() -}}

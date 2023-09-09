@@ -4,6 +4,7 @@ namespace App\Service;
 
 use Symfony\Component\Finder\Finder;
 use App\Service\CacheService;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class AssetsService
 {
@@ -152,7 +153,10 @@ class AssetsService
 	];
 
 	public function __construct(
-		protected CacheService $cache_service
+		protected CacheService $cache_service,
+		protected ResponseCacheService $response_cache_service,
+		protected UrlGeneratorInterface $url_generator,
+		protected SystemsService $systems_service
 	)
 	{
 		$this->file_hash_ary = $this->cache_service->get(self::CACHE_HASH_KEY);
@@ -251,6 +255,27 @@ class AssetsService
 		return '/' . $type . '/' . $asset_name . '?' . $this->file_hash_ary[$asset_name];
 	}
 
+	public function add_var_css(string $thumbprint_key, string $schema):void
+	{
+		[$route, $type] = explode('.', $thumbprint_key);
+		$thumbprint = $this->response_cache_service->get_thumbprint_from_key($thumbprint_key, $schema);
+		$params = [
+			'thumbprint'	=> $thumbprint,
+			'system'		=> $this->systems_service->get_system($schema),
+		];
+		switch ($route)
+		{
+			case 'tags_css':
+				$params['tag_type'] = $type;
+				break;
+			default:
+				return;
+				break;
+		}
+		$url = $this->url_generator->generate($route, $params, UrlGeneratorInterface::ABSOLUTE_PATH);
+		$this->include_ary['css_var'][$url] = true;
+	}
+
 	public function add_print_css(array $asset_ary):void
 	{
 		foreach ($asset_ary as $asset_name)
@@ -276,6 +301,11 @@ class AssetsService
 		$out = '';
 
 		foreach ($this->include_ary['css'] as $css => $dummy_bool)
+		{
+			$out .= '<link type="text/css" rel="stylesheet" href="' . $css . '" media="screen">';
+		}
+
+		foreach ($this->include_ary['css_var'] as $css => $dummy_bool)
 		{
 			$out .= '<link type="text/css" rel="stylesheet" href="' . $css . '" media="screen">';
 		}

@@ -1041,6 +1041,7 @@ support_form:
       }
 
 tags:
+  title: Tags
   description:
     help: >-
       Deze tekst wordt weergegeven als je de muisaanwijzer
@@ -1108,6 +1109,8 @@ tags_users: # submodule
   help:
     only_for_admins: >-
       Tags voor leden zijn enkel zichtbaar voor admins.
+    none: >-
+      Er zijn geen tags gedefiniëerd voor dit lid.
 
 transactions:
   title: >-
@@ -1128,13 +1131,13 @@ transactions_add:
     label: Van Account Code
   from_remote_account:
     label: >-
-      Van Gebruiker/Account Code in InterSysteem
+      Van Account in InterSysteem
   to_id:
     label: Aan Account Code
   to_remote_id:
     label: Aan Account Code in InterSysteem
   to_remote_account:
-    label: Aan Gebruiker/Account Code in InterSysteem
+    label: Aan Account in InterSysteem
   amount:
     label: Aantal
   remote_amount:

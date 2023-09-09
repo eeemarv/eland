@@ -10,12 +10,15 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use App\Cnst\StatusCnst;
 use App\Cnst\RoleCnst;
+use App\Command\Tags\TagsUsersCommand;
 use App\Controller\Contacts\ContactsUserShowInlineController;
+use App\Form\Type\Tags\TagsUsersType;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Repository\AccountRepository;
 use App\Repository\ContactRepository;
+use App\Repository\TagRepository;
 use App\Service\AlertService;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
@@ -76,6 +79,7 @@ class UsersShowController extends AbstractController
         int $id,
         bool $is_self,
         Db $db,
+        TagRepository $tag_repository,
         ContactRepository $contact_repository,
         AccountRepository $account_repository,
         AccountRender $account_render,
@@ -141,6 +145,8 @@ class UsersShowController extends AbstractController
             throw new AccessDeniedHttpException('You have no access to this user account.');
         }
 
+        $tags_enabled = $config_service->get_bool('users.tags.enabled', $pp->schema());
+
         $messages_enabled = $config_service->get_bool('messages.enabled', $pp->schema());
         $transactions_enabled = $config_service->get_bool('transactions.enabled', $pp->schema());
         $limits_enabled = $config_service->get_bool('accounts.limits.enabled', $pp->schema());
@@ -153,6 +159,12 @@ class UsersShowController extends AbstractController
         $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
 
         $status_def_ary = UsersListController::get_status_def_ary($config_service, $item_access_service, $pp);
+
+        $tags_command = new TagsUsersCommand();
+        $tags_command->tags = [16, 17, 18]; //$tag_repository->get_all_active_for_user($id, $pp->schema());
+
+        $tags_form = $this->createForm(TagsUsersType::class,
+            $tags_command);
 
         // process mail form
 
@@ -751,6 +763,8 @@ class UsersShowController extends AbstractController
             'count_messages'        => $count_messages,
             'intersystem_missing'   => $intersystem_missing,
             'intersystem_id'        => $intersystem_id,
+            'tags_form'             => $tags_form,
+            'tags'                  => [],
         ]);
     }
 

@@ -61,9 +61,10 @@ jQuery(function(){
 					prefetch: {
 						url: rec.path,
 						cache: true,
+						cacheKey: rec.key,
 						ttl: rec.ttl_client * 1000,
 						thumbprint: rec.thumbprint,
-						filter: filter
+						filter: false
 					},
 					datumTokenizer: Bloodhound.tokenizers.whitespace,
 					queryTokenizer: Bloodhound.tokenizers.whitespace
@@ -212,6 +213,7 @@ jQuery(function(){
 					prefetch: {
 						url: rec.path,
 						cache: true,
+						cacheKey: rec.key,
 						ttl: rec.ttl_client * 1000,
 						thumbprint: rec.thumbprint + filter_thumb + '_a',
 						filter: filter
@@ -226,7 +228,10 @@ jQuery(function(){
 		}
 
 		var args = [{
-			HighLight: true
+			highlight: true,
+			classNames: {
+				wrapper: 'tw-typeahead twf-typeahead'
+			}
 		}];
 
 		for (i = 0; i < datasets.length; i++){

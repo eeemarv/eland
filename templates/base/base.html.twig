@@ -30,6 +30,10 @@
 		<link type="text/css" rel="stylesheet" href="{{- c -}}" media="screen">
 	{%- endfor -%}
 
+	{%- for c in assets_ary('css_var') -%}
+		<link type="text/css" rel="stylesheet" href="{{- c -}}" media="screen">
+	{%- endfor -%}
+
 	{%- for c in assets_ary('css_print') -%}
 		<link type="text/css" rel="stylesheet" href="{{- c -}}" media="print">
 	{%- endfor -%}

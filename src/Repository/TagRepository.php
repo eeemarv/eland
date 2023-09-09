@@ -120,7 +120,7 @@ class TagRepository
 		return $res->fetchAllAssociative();
 	}
 
-	public function get_all_for_render(
+	public function get_all(
 		string $tag_type,
 		string $schema
 	):array
@@ -130,6 +130,31 @@ class TagRepository
         $stmt = $this->db->prepare('select id, txt, txt_color, bg_color, pos
             from ' . $schema . '.tags
             where tag_type = ?
+			order by id asc');
+
+        $stmt->bindValue(1, $tag_type, \PDO::PARAM_STR);
+
+        $res = $stmt->executeQuery();
+
+        while ($row = $res->fetchAssociative())
+        {
+            $tags[] = $row;
+        }
+
+		return $tags;
+	}
+
+	public function get_all_active_and_ordered(
+		string $tag_type,
+		string $schema
+	):array
+	{
+		$tags = [];
+
+        $stmt = $this->db->prepare('select id, txt, txt_color, bg_color, description, pos
+            from ' . $schema . '.tags
+            where tag_type = ?
+				and is_active = \'t\'::bool
 			order by pos asc');
 
         $stmt->bindValue(1, $tag_type, \PDO::PARAM_STR);
@@ -144,7 +169,7 @@ class TagRepository
 		return $tags;
 	}
 
-	public function get_flat_ary(
+	public function get_txt_ary(
 		string $tag_type,
 		string $schema
 	):array
@@ -305,5 +330,89 @@ class TagRepository
 		$stmt->bindValue('lower_txt', $lower_txt, \PDO::PARAM_STR);
 		$res = $stmt->executeQuery();
 		return $res->fetchOne() === false;
+	}
+
+	public function get_all_active_for_user(
+		int $user_id,
+		string $schema
+	):array
+	{
+		$tags = [];
+
+        $stmt = $this->db->prepare('select t.id
+            from ' . $schema . '.tags t
+				inner join ' . $schema . '.users_tags ut
+					on ut.tag_id = t.id
+				inner join ' . $schema . '.users u
+					on u.id = ut.user_id
+            where t.tag_type = \'users\'
+				and t.is_active = \'t\'::bool
+				and u.id = :user_id
+			order by t.pos asc');
+        $stmt->bindValue('user_id', $user_id, \PDO::PARAM_INT);
+        $res = $stmt->executeQuery();
+
+        while ($row = $res->fetchAssociative())
+        {
+            $tags[] = $row['id'];
+        }
+
+		return $tags;
+	}
+
+	public function get_all_active_for_message(
+		int $message_id,
+		string $schema
+	):array
+	{
+		$tags = [];
+
+        $stmt = $this->db->prepare('select t.id
+            from ' . $schema . '.tags t
+				inner join ' . $schema . '.messages_tags mt
+					on mt.tag_id = t.id
+				inner join ' . $schema . '.messages m
+					on m.id = mt.message_id
+            where t.tag_type = \'messages\'
+				and t.is_active = \'t\'::bool
+				and m.id = :message_id
+			order by t.pos asc');
+        $stmt->bindValue('message_id', $message_id, \PDO::PARAM_INT);
+        $res = $stmt->executeQuery();
+
+        while ($row = $res->fetchAssociative())
+        {
+            $tags[] = $row['id'];
+        }
+
+		return $tags;
+	}
+
+	public function get_all_active_for_news(
+		int $news_id,
+		string $schema
+	):array
+	{
+		$tags = [];
+
+        $stmt = $this->db->prepare('select t.id
+            from ' . $schema . '.tags t
+				inner join ' . $schema . '.news_tags nt
+					on nt.tag_id = t.id
+				inner join ' . $schema . '.news n
+					on n.id = nt.news_id
+            where t.tag_type = \'news\'
+				and t.is_active = \'t\'::bool
+				and n.id = :news_id
+			order by t.pos asc');
+        $stmt->bindValue('news_id', $news_id, \PDO::PARAM_INT);
+        $res = $stmt->executeQuery();
+
+        while ($row = $res->fetchAssociative())
+        {
+            $tags[] = $row['id'];
+        }
+
+		return $tags;
 	}
 }

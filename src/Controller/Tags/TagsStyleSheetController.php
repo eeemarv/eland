@@ -3,7 +3,6 @@
 namespace App\Controller\Tags;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\TagRepository;
 use App\Service\ConfigService;
@@ -11,7 +10,6 @@ use App\Service\PageParamsService;
 use App\Service\ResponseCacheService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Attribute\Cache;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -20,8 +18,8 @@ use Symfony\Component\Routing\Annotation\Route;
 class TagsStyleSheetController extends AbstractController
 {
     #[Route(
-        '/{system}/tags/{tag_type}/{thumbprint}.css',
-        name: 'tags_stylesheet',
+        '/{system}/tags/{tag_type}/{thumbprint}_css',
+        name: 'tags_css',
         methods: ['GET'],
         priority: 20,
         requirements: [
@@ -34,7 +32,6 @@ class TagsStyleSheetController extends AbstractController
     public function __invoke(
         string $tag_type,
         string $thumbprint,
-        Request $request,
         ResponseCacheService $response_cache_service,
         TagRepository $tag_repository,
         ConfigService $config_service,
@@ -48,17 +45,13 @@ class TagsStyleSheetController extends AbstractController
                 {
                     throw new NotFoundHttpException('Tags for users not enabled.');
                 }
-                if (!$pp->is_admin())
-                {
-                    throw new AccessDeniedHttpException('Access denied.');
-                }
                 break;
             default:
                 throw new NotFoundHttpException('Tag type not supported.');
                 break;
         }
 
-        $thumbprint_key = 'tags_css_' . $tag_type;
+        $thumbprint_key = 'tags_css.' . $tag_type;
         $cached = $response_cache_service->get_response_body($thumbprint, $thumbprint_key, $pp->schema());
 
         if ($cached !== false)
@@ -68,9 +61,9 @@ class TagsStyleSheetController extends AbstractController
             ]);
         }
 
-        $tags = $tag_repository->get_all_for_render($tag_type, $pp->schema());
+        $tags = $tag_repository->get_all($tag_type, $pp->schema());
 
-        $response = $this->render('stylesheet/tags.css.twig', [
+        $response = $this->render('style/tags.css.twig', [
             'tags'   => $tags,
         ]);
 

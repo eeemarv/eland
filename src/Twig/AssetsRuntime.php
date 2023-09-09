@@ -30,6 +30,12 @@ class AssetsRuntime implements RuntimeExtensionInterface
 		return '';
 	}
 
+	public function add_var_css(string $thumbprint_key, string $schema):string
+	{
+		$this->assets_service->add_var_css($thumbprint_key, $schema);
+		return '';
+	}
+
 	public function get_ary(string $type):array
 	{
 		return $this->assets_service->get_ary($type);

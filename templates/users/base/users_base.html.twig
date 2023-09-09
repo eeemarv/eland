@@ -15,3 +15,10 @@
     'intersystems': {'fa': 'share-alt', 'config_en': 'intersystem.enabled'},
     'mollie_payments': {'fa': 'eur', 'config_en': 'mollie.enabled'}
 } -%}
+
+{%- block assets_add -%}
+    {{- parent() -}}
+    {%- if config_bool('users.tags.enabled', schema) -%}
+        {{- assets_add_var_css('tags_css.users', schema) -}}
+    {%- endif -%}
+{%- endblock assets_add -%}

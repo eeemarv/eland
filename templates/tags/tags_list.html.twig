@@ -25,6 +25,7 @@
 {%- block assets_add -%}
     {{- parent() -}}
     {{- assets_add(['sortable', 'tags_list.js']) -}}
+    {{- assets_add_var_css('tags_css.' ~ tag_type, schema) -}}
 {%- endblock assets_add -%}
 
 {%- block pre_form -%}
@@ -45,9 +46,9 @@
     <div class="list-group list-group-striped list-group-hover{% if tags|length > 1 %} grab{%- endif -%}" data-sortable data-sort-base>
     {%- for tag in tags -%}
         <div class="list-group-item" data-id="{{- tag.id -}}">
-            <span class="label tag-eland" title="{{- tag.description -}}" style="color: {{- tag.txt_color -}}; background-color:{{- tag.bg_color -}};border-color:{{- tag.txt_color -}};" data-tag="{{- tag.id -}}">
-                {{- tag.txt -}}
-            </span>
+            {%- include 'include/tag.html.twig' with {
+                'tag': tag
+            } -%}
 
             {%- if tag.count > 0 %} (
                 <a href="{{- path(module|var_route, pp_ary()|merge({'f': {'tag[]': tag.id}})) -}}">

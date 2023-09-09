@@ -160,6 +160,17 @@
     {{- block('form_widget') -}}
 {%- endblock datepicker_widget -%}
 
+{%- block tags_widget -%}
+    {%- set pre_addon = pre_addon|default({})|merge({
+        'fa': 'tags',
+        'text': 'tags.title'|trans,
+    }) -%}
+    {{- block('form_widget') -}}
+{%- endblock tags_widget -%}
+
+{%- block tags_label -%}
+{%- endblock tags_label -%}
+
 {%- block form_row -%}
     {%- if col is defined -%}
         {%- set widget_attr = {} -%}
