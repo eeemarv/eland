@@ -40,6 +40,7 @@ btn:
   password: Paswoord
   password_reset: Reset Paswoord
   register: Inschrijven
+  reset: Reset
   save_password: Bewaar paswoord
   send: Verzenden
   show: Toon
@@ -122,6 +123,10 @@ help:
     Je kan ook afbeeldingen hierheen verslepen.
   only_in_admin_modus: >-
     Enkel in admin modus
+  undo: >-
+    Maak wijzigingen ongedaan
+  store: >-
+    Bewaar de wijzigingen
 
 label:
   abbrev: Afkorting
@@ -1104,6 +1109,15 @@ tags:
         users {Tags voor leden}
         other {---}
       }
+tags_edit:
+  store:
+    title: Bewaar de gewijzigde tags
+  undo:
+    title: Maak wijzigingen van de tags ongedaan
+  block:
+    title: >-
+      Blokkeer aanpassingen aan de tags.
+      Vink af als je de tags wil wijzigen.
 tags_users: # submodule
   title: Tags voor leden
   help:

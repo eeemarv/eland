@@ -104,60 +104,49 @@
 .input-group.input-group-lg .tw-typeahead .tt-dropdown-menu {
   top: 46px !important;
 }
-/*
-.twitter-typeahead .tt-query,
-.twitter-typeahead .tt-hint {
-    margin-bottom: 0;
+
+/***/
+
+.bootstrap-tagsinput {
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  display: inline-block;
+  padding: 4px 6px;
+  vertical-align: middle;
+  border-radius: 4px;
+  max-width: 100%;
+  cursor: text;
 }
-.twitter-typeahead .tt-hint
-{
-    display: none;
+.bootstrap-tagsinput input {
+  border: none;
+  box-shadow: none;
+  outline: none;
+  background-color: transparent;
+  padding: 0 6px;
+  margin: 0;
+  width: auto;
+  max-width: inherit;
 }
-.twitter-typeahead {
-  background-color: white;
-  width: 100%;
+.bootstrap-tagsinput.form-control input::-moz-placeholder {
+  opacity: 1;
 }
-.tt-hint {
-  border:rgba(0, 0, 0, 0);
+.bootstrap-tagsinput .tag {
+  margin-right: 2px;
 }
-.tt-menu {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    z-index: 1000;
-    display: none;
-    float: left;
-    min-width: 160px;
-    padding: 5px 0;
-    margin: 2px 0 0;
-    list-style: none;
-    font-size: 14px;
-    background-color: #ffffff;
-    border: 1px solid #cccccc;
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    border-radius: 4px;
-    -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
-    background-clip: padding-box;
-    cursor: pointer;
+.bootstrap-tagsinput .tag [data-role="remove"] {
+  margin-left: 8px;
+  cursor: pointer;
 }
-.tt-suggestion {
-    display: block;
-    padding: 3px 20px;
-    clear: both;
-    font-weight: normal;
-    line-height: 1.428571429;
-    color: #333333;
-    white-space: nowrap;
+.bootstrap-tagsinput .tag [data-role="remove"]:after {
+  color: red;
+  content: 'X';
+  padding: 0px 2px;
 }
-.tt-suggestion:hover,
-.tt-suggestion:focus {
-  color: #ffffff;
-  text-decoration: none;
-  outline: 0;
-  background-color: #428bca;
+.bootstrap-tagsinput .tag [data-role="remove"]:hover {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
 }
-*/
+.bootstrap-tagsinput .tag [data-role="remove"]:hover:active {
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
 
 /********************colors typeahead******************/
 
@@ -466,6 +455,9 @@ li.active-group a:visited, li.active-group a:hover
 
 .label-sm {
   font-size: 12px;
+}
+.no-radius {
+  border-radius: 0;
 }
 
 /***for inputs of horizontal form******/

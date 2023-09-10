@@ -1,0 +1,40 @@
+{%- if tags_form is defined -%}
+    {{- form_start(tags_form, {'attr': {'novalidate': 'novalidate'}}) -}}
+    {{- form_errors(tags_form) -}}
+
+    {%- set btn_reset -%}
+        <button type="button" data-tags-edit-reset class="btn btn-default no-radius" title="{{- 'tags_edit.undo.title'|trans -}}" disabled>
+            <span class="fa fa-undo"></span>
+        </button>
+    {%- endset -%}
+
+    {%- set btn_submit -%}
+        {{- form_widget(tags_form.submit, {
+            'label': label|default('btn.store'),
+            'attr': {
+                'title': 'tags_edit.store.title',
+                'class': 'btn btn-primary no-radius',
+                'data-tags-edit-submit': ''
+            },
+            'disabled': true
+        }) -}}
+    {%- endset -%}
+
+    {%- set checkbox_block -%}
+        <label title="{{- 'tags_edit.block.title'|trans -}}">
+            <input type="checkbox" checked data-tags-edit-block>
+            &nbsp;
+            <span class="fa fa-lock"></span>
+        </label>
+    {%- endset -%}
+
+    {{- form_row(tags_form.tags, {
+        'post_addon': {
+            'btn_group' : btn_reset ~ btn_submit,
+            'text': checkbox_block
+        },
+        'disabled': true
+    }) -}}
+
+    {{- form_end(tags_form) -}}
+{%- endif -%}

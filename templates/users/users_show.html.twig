@@ -100,30 +100,14 @@
 {%- endblock heading_title -%}
 
 {%- block tags -%}
+    {%- include 'form/tags.html.twig' -%}
+{#
 {%- if tags_form is defined -%}
 {{- form_row(tags_form.tags, {
     'post_addon': {
-        'text': 'tags'
+        'text': '<label title="Blokkeer aanpassen van tags"><input type="checkbox" checked data-block-tags-edit>&nbsp;<span class="fa fa-lock"></span></label>'
     }
 }) -}}
-
-{%- endif -%}
-
-{#
-{%- if pp_has_role('admin') and config_bool('users.tags.enabled', schema) -%}
-<div class="panel panel-info">
-    <div class="panel-heading">
-        <h3>{{- 'tags.title'|trans -}}</h3>
-        {%- for tag in tags -%}
-
-        {%- endfor -%}
-        <ul>
-            <li>{{- 'tags_users.help.none'|trans -}}</li>
-            <li>{{- 'tags_users.help.only_for_admin' -}}</li>
-        </ul>
-    </div>
-</div>
-
 {%- endif -%}
 #}
 {%- endblock tags -%}
