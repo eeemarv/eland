@@ -9,8 +9,6 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Constraints\Type;
 
-use function PHPSTORM_META\type;
-
 class UsersPasswordEditCommand Implements CommandInterface
 {
     #[Sequentially(constraints: [

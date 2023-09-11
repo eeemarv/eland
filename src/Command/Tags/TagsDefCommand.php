@@ -28,7 +28,10 @@ class TagsDefCommand implements CommandInterface
     ])]
     public $txt;
 
-    #[Type(type: 'string')]
+    #[Sequentially(constraints:[
+        new Type(type: 'string'),
+        new Length(max: 128),
+    ])]
     public $description;
 
     #[Sequentially(constraints:[

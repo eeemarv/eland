@@ -82,6 +82,10 @@ password_strength:
 tag:
   txt_not_unique: Deze tag-tekst is niet uniek.
 
+tags_users:
+  not_active: >-
+    Bevat een niet-actieve tag
+
 type:
   not_an_integer: >-
     De waarde is geen integer.

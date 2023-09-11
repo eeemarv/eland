@@ -19,7 +19,7 @@ class TagUniqueTxtValidator extends ConstraintValidator
     {
     }
 
-    public function validate($tags_def_command, Constraint $constraint)
+    public function validate($tags_def_command, Constraint $constraint):void
     {
         if (!$constraint instanceof TagUniqueTxt)
         {
