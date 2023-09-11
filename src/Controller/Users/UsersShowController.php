@@ -28,6 +28,7 @@ use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
 use App\Service\MailAddrUserService;
 use App\Service\PageParamsService;
+use App\Service\ResponseCacheService;
 use App\Service\SessionUserService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
@@ -97,6 +98,7 @@ class UsersShowController extends AbstractController
         PageParamsService $pp,
         SessionUserService $su,
         VarRouteService $vr,
+        ResponseCacheService $response_cache_service,
         ContactsUserShowInlineController $contacts_user_show_inline_controller,
         string $env_s3_url,
         string $env_map_access_token,
@@ -160,13 +162,33 @@ class UsersShowController extends AbstractController
 
         $status_def_ary = UsersListController::get_status_def_ary($config_service, $item_access_service, $pp);
 
-        $tags_command = new TagsUsersCommand();
-        $tags_command->tags = [16, 17, 18]; //$tag_repository->get_all_active_for_user($id, $pp->schema());
+        $tags_form = null;
 
-        $tags_form = $this->createForm(TagsUsersType::class,
-            $tags_command);
+        if ($pp->is_admin() && $tags_enabled)
+        {
+            $tags_command = new TagsUsersCommand();
+            $tags_command->tags = $tag_repository->get_id_ary_for_user($id, $pp->schema(), active_only:true);
 
-        // process mail form
+            $tags_form = $this->createForm(TagsUsersType::class,
+                $tags_command);
+
+            $tags_form->handleRequest($request);
+
+            if ($tags_form->isSubmitted() &&
+                $tags_form->isValid())
+            {
+                $tags_command = $tags_form->getData();
+                error_log(var_export($tags_command->tags, true));
+
+                $count_changes = $tag_repository->update_for_user($tags_command, $id, $su->id(), $pp->schema());
+                $response_cache_service->clear_cache($pp->schema());
+                $alert_service->success('Wijzigingen van tags opgeslagen. (' . $count_changes . ')');
+
+                $this->redirectToRoute('users_show', [...$pp->ary(),
+                    'id'    => $id,
+                ]);
+            }
+        }
 
         if ($request->isMethod('POST') && $user_mail_submit)
         {

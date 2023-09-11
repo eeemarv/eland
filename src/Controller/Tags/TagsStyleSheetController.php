@@ -61,7 +61,7 @@ class TagsStyleSheetController extends AbstractController
             ]);
         }
 
-        $tags = $tag_repository->get_all($tag_type, $pp->schema());
+        $tags = $tag_repository->get_all($tag_type, $pp->schema(), active_only:false);
 
         $response = $this->render('style/tags.css.twig', [
             'tags'   => $tags,

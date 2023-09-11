@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Command\Tags\TagsDefCommand;
+use App\Command\Tags\TagsUsersCommand;
 use Doctrine\DBAL\Connection as Db;
 use Exception;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -122,42 +123,23 @@ class TagRepository
 
 	public function get_all(
 		string $tag_type,
-		string $schema
+		string $schema,
+		bool $active_only
 	):array
 	{
+		$non_active_included = !$active_only;
 		$tags = [];
 
-        $stmt = $this->db->prepare('select id, txt, txt_color, bg_color, pos
+        $stmt = $this->db->prepare('select id,
+			txt, txt_color, bg_color, pos, is_active
             from ' . $schema . '.tags
-            where tag_type = ?
-			order by id asc');
-
-        $stmt->bindValue(1, $tag_type, \PDO::PARAM_STR);
-
-        $res = $stmt->executeQuery();
-
-        while ($row = $res->fetchAssociative())
-        {
-            $tags[] = $row;
-        }
-
-		return $tags;
-	}
-
-	public function get_all_active_and_ordered(
-		string $tag_type,
-		string $schema
-	):array
-	{
-		$tags = [];
-
-        $stmt = $this->db->prepare('select id, txt, txt_color, bg_color, description, pos
-            from ' . $schema . '.tags
-            where tag_type = ?
-				and is_active = \'t\'::bool
+            where tag_type = :tag_type
+				and (\'t\'::bool = :non_active_included
+				or is_active = \'t\'::bool)
 			order by pos asc');
 
-        $stmt->bindValue(1, $tag_type, \PDO::PARAM_STR);
+        $stmt->bindValue('tag_type', $tag_type, \PDO::PARAM_STR);
+        $stmt->bindValue('non_active_included', $non_active_included, \PDO::PARAM_BOOL);
 
         $res = $stmt->executeQuery();
 
@@ -171,17 +153,24 @@ class TagRepository
 
 	public function get_txt_ary(
 		string $tag_type,
-		string $schema
+		string $schema,
+		bool $active_only
 	):array
 	{
+		$non_active_included = !$active_only;
 		$tags = [];
 
         $stmt = $this->db->prepare('select txt
             from ' . $schema . '.tags
             where tag_type = :tag_type
+				and (\'t\'::bool = :non_active_included
+				or is_active = \'t\'::bool)
 			order by pos');
+
         $stmt->bindValue('tag_type', $tag_type, \PDO::PARAM_STR);
-        $res = $stmt->executeQuery();
+        $stmt->bindValue('non_active_included', $non_active_included, \PDO::PARAM_BOOL);
+
+		$res = $stmt->executeQuery();
 
         while ($row = $res->fetchAssociative())
         {
@@ -235,6 +224,103 @@ class TagRepository
 		$stmt->bindValue('id', $command->id, \PDO::PARAM_INT);
 		$stmt->bindValue('tag_type', $command->tag_type, \PDO::PARAM_STR);
 		return $stmt->executeStatement();
+	}
+
+	public function update_for_user(
+		TagsUsersCommand $command,
+		int $user_id,
+		int $created_by,
+		string $schema
+	):int
+	{
+		$this->db->beginTransaction();
+		$count_changes = 0;
+		$all_users_tags = $this->get_all(tag_type:'users', schema:$schema, active_only:false);
+
+		$all_id_keys = [];
+		$all_active_id_keys = [];
+		$all_non_active_id_keys = [];
+		$insert_id_keys = [];
+		$current_id_keys = [];
+		$keep_id_keys = [];
+
+		foreach ($all_users_tags as $tag)
+		{
+			$all_id_keys[$tag['id']] = true;
+
+			if ($tag['is_active'])
+			{
+				$all_active_id_keys[$tag['id']] = true;
+				continue;
+			}
+
+			$all_non_active_id_keys[$tag['id']] = true;
+		}
+
+		$tag_id_ary_for_user = $this->get_id_ary_for_user($user_id, $schema, active_only:false);
+
+		foreach ($tag_id_ary_for_user as $tag_id)
+		{
+			$current_id_keys[$tag_id] = true;
+		}
+
+		$stmt = $this->db->prepare('insert into ' .
+			$schema . '.users_tags(tag_id, user_id, created_by)
+			values(:tag_id, :user_id, :created_by)');
+
+		foreach ($command->tags as $tag_id)
+		{
+			if (!isset($all_id_keys[$tag_id]))
+			{
+				throw new Exception('Trying to store non-existing tag id error ' . $tag_id);
+			}
+			if (!isset($all_active_id_keys[$tag_id]))
+			{
+				throw new Exception('Trying to store non-active tag id error ' . $tag_id);
+			}
+			if (isset($current_id_keys[$tag_id]))
+			{
+				$keep_id_keys[$tag_id] = true;
+				continue;
+			}
+			$insert_id_keys[$tag_id] = true;
+
+			$stmt->bindValue('tag_id', $tag_id, \PDO::PARAM_INT);
+			$stmt->bindValue('user_id', $user_id, \PDO::PARAM_INT);
+			$stmt->bindValue('created_by', $created_by, \PDO::PARAM_INT);
+			$stmt->executeStatement();
+			$count_changes++;
+		}
+
+		$stmt = $this->db->prepare('delete from ' .
+			$schema . '.users_tags
+			where tag_id = :tag_id
+			and user_id = :user_id');
+
+		foreach ($tag_id_ary_for_user as $tag_id)
+		{
+			if (isset($all_non_active_id_keys[$tag_id]))
+			{
+				continue;
+			}
+			if (isset($insert_id_keys[$tag_id]))
+			{
+				continue;
+			}
+			if (isset($keep_id_keys[$tag_id]))
+			{
+				continue;
+			}
+
+			$stmt->bindValue('tag_id', $tag_id, \PDO::PARAM_INT);
+			$stmt->bindValue('user_id', $user_id, \PDO::PARAM_INT);
+			$stmt->executeStatement();
+			$count_changes++;
+		}
+
+		$this->db->commit();
+
+		return $count_changes;
 	}
 
 	public function del(int $id, string $tag_type, string $schema):int
@@ -332,12 +418,14 @@ class TagRepository
 		return $res->fetchOne() === false;
 	}
 
-	public function get_all_active_for_user(
+	public function get_id_ary_for_user(
 		int $user_id,
-		string $schema
+		string $schema,
+		bool $active_only
 	):array
 	{
-		$tags = [];
+		$non_active_included = !$active_only;
+		$tag_ids = [];
 
         $stmt = $this->db->prepare('select t.id
             from ' . $schema . '.tags t
@@ -346,18 +434,20 @@ class TagRepository
 				inner join ' . $schema . '.users u
 					on u.id = ut.user_id
             where t.tag_type = \'users\'
-				and t.is_active = \'t\'::bool
+				and (\'t\'::bool = :non_active_included or t.is_active = \'t\'::bool)
 				and u.id = :user_id
 			order by t.pos asc');
+
+        $stmt->bindValue('non_active_included', $non_active_included, \PDO::PARAM_BOOL);
         $stmt->bindValue('user_id', $user_id, \PDO::PARAM_INT);
         $res = $stmt->executeQuery();
 
         while ($row = $res->fetchAssociative())
         {
-            $tags[] = $row['id'];
+            $tag_ids[] = $row['id'];
         }
 
-		return $tags;
+		return $tag_ids;
 	}
 
 	public function get_all_active_for_message(

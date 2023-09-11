@@ -1122,7 +1122,7 @@ tags_users: # submodule
   title: Tags voor leden
   help:
     only_for_admins: >-
-      Tags voor leden zijn enkel zichtbaar voor admins.
+      Deze "tags voor leden" zijn enkel zichtbaar voor admins.
     none: >-
       Er zijn geen tags gedefiniëerd voor dit lid.
 

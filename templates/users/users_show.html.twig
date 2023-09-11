@@ -7,7 +7,9 @@
     {%- if pp_has_role('admin') or su_is_owner(id) -%}
         {{- assets_add(['fileupload', 'upload_image.js']) -}}
     {%- endif -%}
-    {{- assets_add(['tagsinput', 'tagsinput.js']) -}}
+    {%- if tags_form is defined and tags_form is not null -%}
+        {{- assets_add(['tagsinput', 'tagsinput.js']) -}}
+    {%- endif -%}
 {%- endblock assets_add -%}
 
 {%- block btn_top_edit -%}
@@ -100,16 +102,9 @@
 {%- endblock heading_title -%}
 
 {%- block tags -%}
-    {%- include 'form/tags.html.twig' -%}
-{#
-{%- if tags_form is defined -%}
-{{- form_row(tags_form.tags, {
-    'post_addon': {
-        'text': '<label title="Blokkeer aanpassen van tags"><input type="checkbox" checked data-block-tags-edit>&nbsp;<span class="fa fa-lock"></span></label>'
-    }
-}) -}}
-{%- endif -%}
-#}
+    {%- include 'form/tags.html.twig' with {
+        'help': 'tags_users.help.only_for_admins'
+    } -%}
 {%- endblock tags -%}
 
 {%- block css -%}

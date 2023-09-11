@@ -1,4 +1,4 @@
-{%- if tags_form is defined -%}
+{%- if tags_form is defined and tags_form is not null -%}
     {{- form_start(tags_form, {'attr': {'novalidate': 'novalidate'}}) -}}
     {{- form_errors(tags_form) -}}
 
@@ -33,7 +33,8 @@
             'btn_group' : btn_reset ~ btn_submit,
             'text': checkbox_block
         },
-        'disabled': true
+        'disabled': true,
+        'help': help ?? null
     }) -}}
 
     {{- form_end(tags_form) -}}

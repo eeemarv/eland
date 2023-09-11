@@ -65,7 +65,7 @@ class TypeaheadTagsTextController extends AbstractController
             return new Response($cached, 200, ['Content-Type' => 'application/json']);
         }
 
-        $tags = $tag_repository->get_txt_ary($tag_type, $pp->schema());
+        $tags = $tag_repository->get_txt_ary($tag_type, $pp->schema(), active_only: false);
         $response_body = json_encode($tags);
         $typeahead_service->store_response_body($response_body, $pp, $params);
         return new Response($response_body, 200, ['Content-Type' => 'application/json']);

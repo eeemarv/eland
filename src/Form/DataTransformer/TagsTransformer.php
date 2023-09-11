@@ -3,6 +3,7 @@
 namespace App\Form\DataTransformer;
 
 use Symfony\Component\Form\DataTransformerInterface;
+use Symfony\Component\Form\Exception\TransformationFailedException;
 
 class TagsTransformer implements DataTransformerInterface
 {
@@ -16,8 +17,21 @@ class TagsTransformer implements DataTransformerInterface
         return implode(',', $id_ary);
     }
 
-    public function reverseTransform($id_str): mixed
+    public function reverseTransform($str_ids): mixed
     {
-        return explode(',', $id_str);
+        $str_id_ary = explode(',', $str_ids);
+        $id_ary = [];
+
+        foreach ($str_id_ary as $str_id)
+        {
+            if (!ctype_digit($str_id))
+            {
+                throw new TransformationFailedException('Transformation failed of value ' . $str_ids);
+            }
+
+            $id_ary[] = (int) $str_id;
+        }
+
+        return $id_ary;
     }
 }
