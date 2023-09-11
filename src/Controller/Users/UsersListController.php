@@ -101,6 +101,7 @@ class UsersListController extends AbstractController
         $admin_comments_enabled = $config_service->get_bool('users.fields.admin_comments.enabled', $pp->schema());
         $periodic_mail_enabled = $config_service->get_bool('periodic_mail.enabled', $pp->schema());
 
+        $tags_enabled = $config_service->get_bool('users.tags.enabled', $pp->schema());
         $mollie_enabled = $config_service->get_bool('mollie.enabled', $pp->schema());
         $messages_enabled = $config_service->get_bool('messages.enabled', $pp->schema());
         $transactions_enabled = $config_service->get_bool('transactions.enabled', $pp->schema());
@@ -149,6 +150,8 @@ class UsersListController extends AbstractController
         $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
 
         $user_tabs = BulkCnst::USER_TABS;
+
+        $render_tags = false;
 
         if (!$full_name_enabled)
         {
@@ -624,6 +627,13 @@ class UsersListController extends AbstractController
             ];
         }
 
+        if ($pp->is_admin())
+        {
+            $columns['tags'] = [
+                'tags'    => 'Tags',
+            ];
+        }
+
         foreach ($type_contact as $tc)
         {
             $columns['c'][$tc['abbrev']] = $tc['name'];
@@ -711,6 +721,11 @@ class UsersListController extends AbstractController
         if (!$periodic_mail_enabled)
         {
             unset($columns['u']['periodic_overview_en']);
+        }
+
+        if (!$tags_enabled)
+        {
+            unset($columns['tags']);
         }
 
         if (!$mollie_enabled)
@@ -816,6 +831,11 @@ class UsersListController extends AbstractController
         if (!$periodic_mail_enabled)
         {
             unset($show_columns['u']['periodic_overview_en']);
+        }
+
+        if (!$tags_enabled)
+        {
+            unset($show_columns['tags']);
         }
 
         if (!$mollie_enabled)
@@ -982,6 +1002,37 @@ class UsersListController extends AbstractController
             if (isset($my_adr))
             {
                 $ref_geo = $cache_service->get('geo_' . $my_adr);
+            }
+        }
+
+        if (isset($show_columns['tags']) && $pp->is_admin())
+        {
+            $tags_ary = [];
+
+            $res = $db->executeQuery('select u.id,
+                t.txt, t.txt_color, t.bg_color,
+                t.pos, t.description, ut.tag_id
+                from ' . $pp->schema() . '.users u
+                inner join ' . $pp->schema() . '.users_tags ut
+                    on u.id = ut.user_id
+                inner join ' . $pp->schema() . '.tags t
+                    on (ut.tag_id = t.id and t.tag_type = \'users\')
+                where ' . $sql_where . '
+                order by u.id asc, t.pos asc',
+                $sql_params, $sql_types);
+
+            while (($row = $res->fetchAssociative()) !== false)
+            {
+                if (!isset($tags_ary[$row['id']]))
+                {
+                    $tags_ary[$row['id']] = [];
+                }
+                $tags_ary[$row['id']][] = $row;
+            }
+
+            if (count($tags_ary))
+            {
+                $render_tags = true;
             }
         }
 
@@ -1158,6 +1209,10 @@ class UsersListController extends AbstractController
             }
         }
 
+        /**
+         * Form Show columns
+         */
+
         $f_col = '<form method="get">';
 
         $hidden_ary = $query_params;
@@ -1200,7 +1255,11 @@ class UsersListController extends AbstractController
                 continue;
             }
 
-            if ($group === 'c')
+            if ($group === 'tags')
+            {
+                $fc2 .= '<h3>Tags</h3>';
+            }
+            else if ($group === 'c')
             {
                 $fc2 .= '<h3>Contacten</h3>';
             }
@@ -1362,6 +1421,7 @@ class UsersListController extends AbstractController
                     case 'u':
                         $fc1 .= $chckbx;
                     break;
+                    case 'tags':
                     case 'c':
                     case 'd':
                     case 'mollie':
@@ -1460,6 +1520,10 @@ class UsersListController extends AbstractController
             'name'		=> true,
         ];
 
+        /**
+         * Table thead row
+         */
+
         foreach ($show_columns as $group => $ary)
         {
             if ($group === 'p')
@@ -1493,6 +1557,15 @@ class UsersListController extends AbstractController
                 }
 
                 continue;
+            }
+            else if ($group === 'tags')
+            {
+                foreach($ary as $key => $one)
+                {
+                    $out .= '<th>';
+                    $out .= $columns[$group][$key];
+                    $out .= '</th>';
+                }
             }
             else if ($group === 'mollie')
             {
@@ -1711,6 +1784,28 @@ class UsersListController extends AbstractController
                     else if (isset($contacts[$id][$key]))
                     {
                         $out .= self::get_contacts_str($item_access_service, $contacts[$id][$key], $key);
+                    }
+                    else
+                    {
+                        $out .= '&nbsp;';
+                    }
+
+                    $out .= '</td>';
+                }
+            }
+
+            if (isset($show_columns['tags']))
+            {
+                foreach ($show_columns['tags'] as $key => $one)
+                {
+                    $out .= '<td>';
+
+                    if (isset($tags_ary[$id]))
+                    {
+                        foreach ($tags_ary[$id] as $tag)
+                        {
+                            $out .= self::render_tag($tag);
+                        }
                     }
                     else
                     {
@@ -2029,6 +2124,7 @@ class UsersListController extends AbstractController
         return $this->render('users/users_list.html.twig', [
             'content'           => $out,
             'columns_form_raw'  => $f_col,
+            'render_tags'       => $render_tags,
             'filter_form'       => $filter_form->createView(),
         ]);
     }
@@ -2145,48 +2241,6 @@ class UsersListController extends AbstractController
     {
         $status_def_ary = self::get_status_def_ary($config_service, $item_access_service, $pp);
 
-        /*
-        $out = '';
-
-        $out .= '<form method="get">';
-
-        foreach ($params as $k => $v)
-        {
-            $out .= '<input type="hidden" name="' . $k . '" value="' . $v . '">';
-        }
-
-        if ($pp->is_guest() && $pp->org_system())
-        {
-            $out .= '<input type="hidden" name="os" value="' . $pp->org_system() . '">';
-        }
-
-        $out .= $before;
-
-
-        $out .= '<br>';
-
-        $out .= '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
-
-        $out .= '<div class="row">';
-        $out .= '<div class="col-xs-12">';
-        $out .= '<div class="input-group">';
-        $out .= '<span class="input-group-addon">';
-        $out .= '<i class="fa fa-search"></i>';
-        $out .= '</span>';
-        $out .= '<input type="text" class="form-control" ';
-        $out .= 'id="q" name="q" value="' . $q . '" ';
-        $out .= 'placeholder="Zoeken">';
-        $out .= '</div>';
-        $out .= '</div>';
-        $out .= '</div>';
-
-        $out .= '</div>';
-        $out .= '</div>';
-
-        $out .= '</form>';
-        */
-
         $out = '<div class="pull-right hidden-xs hidden-sm print-hide">';
         $out .= 'Totaal: <span id="total"></span>';
         $out .= '</div>';
@@ -2277,6 +2331,28 @@ class UsersListController extends AbstractController
         }
 
         return $ret;
+    }
+
+    public static function render_tag(array $tag):string
+    {
+        $out = '';
+
+        $out .= '<span ';
+
+        if (isset($tag['description']) && !empty($tag['description']))
+        {
+            $out .= 'title="';
+            $out .= htmlspecialchars($tag['description'], ENT_QUOTES);
+            $out .= '" ';
+        }
+
+        $out .= 'class="label tag-eland tag-';
+        $out .= $tag['tag_id'];
+        $out .= '">';
+        $out .= htmlspecialchars($tag['txt'], ENT_QUOTES);
+        $out .= '</span> ';
+
+        return $out;
     }
 
     public static function array_intersect_key_recursive(array $ary_1, array $ary_2)

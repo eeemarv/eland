@@ -18,7 +18,7 @@
 
 {%- block assets_add -%}
     {{- parent() -}}
-    {%- if config_bool('users.tags.enabled', schema) -%}
+    {%- if render_tags is defined and render_tags == true -%}
         {{- assets_add_var_css('tags_css.users', schema) -}}
     {%- endif -%}
 {%- endblock assets_add -%}

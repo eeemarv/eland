@@ -163,6 +163,7 @@ class UsersShowController extends AbstractController
         $status_def_ary = UsersListController::get_status_def_ary($config_service, $item_access_service, $pp);
 
         $tags_form = null;
+        $render_tags = false;
 
         if ($pp->is_admin() && $tags_enabled)
         {
@@ -188,6 +189,8 @@ class UsersShowController extends AbstractController
                     'id'    => $id,
                 ]);
             }
+
+            $render_tags = true;
         }
 
         if ($request->isMethod('POST') && $user_mail_submit)
@@ -786,7 +789,7 @@ class UsersShowController extends AbstractController
             'intersystem_missing'   => $intersystem_missing,
             'intersystem_id'        => $intersystem_id,
             'tags_form'             => $tags_form,
-            'tags'                  => [],
+            'render_tags'           => $render_tags,
         ]);
     }
 

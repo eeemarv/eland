@@ -44,7 +44,7 @@ btn:
   save_password: Bewaar paswoord
   send: Verzenden
   show: Toon
-  show_columns: Toon Kolommen
+  show_columns: Weergave Kolommen
   store: Opslaan
   transaction: Transactie
   transaction_to: Transactie naar {user}
