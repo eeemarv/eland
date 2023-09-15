@@ -50,10 +50,18 @@
                 'tag': tag
             } -%}
 
-            {%- if tag.count > 0 %} (
-                <a href="{{- path(module|var_route, pp_ary()|merge({'f': {'tag[]': tag.id}})) -}}">
-                    {{- tag.count -}}
-                </a> )
+            {%- if module == 'users' -%}
+                {%- if tag.count > 0 %} (
+                    <a href="{{- path(module|var_route, pp_ary()|merge({'status': 'all', 'f': {'q': tag.txt}})) -}}">
+                        {{- tag.count -}}
+                    </a> )
+                {%- endif -%}
+            {%- else -%}
+                {%- if tag.count > 0 %} (
+                    <a href="{{- path(module|var_route, pp_ary()|merge({'f': {'tag[]': tag.id}})) -}}">
+                        {{- tag.count -}}
+                    </a> )
+                {%- endif -%}
             {%- endif -%}
         <div class="pull-right">
             {%- include 'include/btn/edit.html.twig' with {

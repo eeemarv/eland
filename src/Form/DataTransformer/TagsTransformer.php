@@ -19,6 +19,16 @@ class TagsTransformer implements DataTransformerInterface
 
     public function reverseTransform($str_ids): mixed
     {
+        if (!isset($str_ids))
+        {
+            return [];
+        }
+
+        if (empty($str_ids))
+        {
+            return [];
+        }
+
         $str_id_ary = explode(',', $str_ids);
         $id_ary = [];
 

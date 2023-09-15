@@ -2,13 +2,11 @@
 
 namespace App\Validator\Tag;
 
-use App\Command\Tags\TagsDefCommand;
 use App\Repository\TagRepository;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use App\Service\PageParamsService;
-use App\Validator\Tag\TagUniqueTxt;
 
 class TagsUsersActiveValidator extends ConstraintValidator
 {
