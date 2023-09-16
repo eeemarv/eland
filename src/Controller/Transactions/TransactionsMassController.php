@@ -178,7 +178,7 @@ class TransactionsMassController extends AbstractController
 
         $stmt = $db->prepare(
             'select id, name, code,
-                role, status, adate
+                role, status, activated_at
             from ' . $pp->schema() . '.users
             where status IN (0, 1, 2, 5, 6)
             order by code');
@@ -838,10 +838,10 @@ class TransactionsMassController extends AbstractController
         {
             $status_key = self::STATUS[$user['status']];
 
-            if (isset($user['adate'])
+            if (isset($user['activated_at'])
                 && $status_key === 'active'
                 && $new_users_enabled
-                && $new_user_treshold->getTimestamp() < strtotime($user['adate'] . ' UTC')
+                && $new_user_treshold->getTimestamp() < strtotime($user['activated_at'] . ' UTC')
             )
             {
                 $status_key = 'new';

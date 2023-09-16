@@ -122,10 +122,10 @@ class UsersTilesController extends AbstractController
         {
             $row_stat = $u['status'];
 
-            if (isset($u['adate'])
+            if (isset($u['activated_at'])
                 && $new_users_enabled
                 && $u['status'] == 1
-                && $new_user_treshold->getTimestamp() < strtotime($u['adate'] . ' UTC'))
+                && $new_user_treshold->getTimestamp() < strtotime($u['activated_at'] . ' UTC'))
             {
                 $row_stat = 3;
             }

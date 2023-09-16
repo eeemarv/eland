@@ -65,7 +65,7 @@ class TypeaheadElandIntersystemAccountsController extends AbstractController
         $fetched_users = $db->fetchAllAssociative(
             'select code as c,
                 name as n,
-                extract(epoch from adate) as a,
+                extract(epoch from activated_at)::int as a,
                 status as s
             from ' . $remote_schema . '.users
             where status in (1, 2)

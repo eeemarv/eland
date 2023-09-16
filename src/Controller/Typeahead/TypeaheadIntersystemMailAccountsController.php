@@ -44,7 +44,7 @@ class TypeaheadIntersystemMailAccountsController extends AbstractController
         $accounts = $db->fetchAllAssociative(
             'select u.code as c,
                 u.name as n,
-                extract(epoch from u.adate) as a,
+                extract(epoch from u.activated_at)::int as a,
                 u.status as s,
                 \'mail\' as api
             from ' . $pp->schema() . '.users u,

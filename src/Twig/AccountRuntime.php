@@ -55,7 +55,7 @@ class AccountRuntime implements RuntimeExtensionInterface
 		$user = $this->user_cache_service->get($id, $schema);
 		$status_id = $user['status'];
 
-        if (isset($user['adate'])
+        if (isset($user['activated_at'])
             && $status_id === 1
 		)
         {
@@ -65,7 +65,7 @@ class AccountRuntime implements RuntimeExtensionInterface
 			{
 				$new_user_treshold = $this->config_service->get_new_user_treshold($schema);
 
-				if ($new_user_treshold->getTimestamp() < strtotime($user['adate'] . ' UTC'))
+				if ($new_user_treshold->getTimestamp() < strtotime($user['activated_at'] . ' UTC'))
 				{
 					$status_id = 3;
 				}

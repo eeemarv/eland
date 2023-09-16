@@ -89,7 +89,7 @@ class TypeaheadAccountsController extends AbstractController
             'select id,
                 code as c,
                 name as n,
-                extract(epoch from adate)::int as a,
+                extract(epoch from activated_at)::int as a,
                 status as s,
                 remote_schema,
                 remote_email

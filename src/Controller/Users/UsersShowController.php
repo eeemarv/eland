@@ -559,9 +559,9 @@ class UsersShowController extends AbstractController
             $out .= 'Tijdstip activering';
             $out .= '</dt>';
 
-            if (isset($user['adate']))
+            if (isset($user['activated_at']))
             {
-                $out .= $this->get_dd($date_format_service->get($user['adate'], 'min', $pp->schema()));
+                $out .= $this->get_dd($date_format_service->get($user['activated_at'], 'min', $pp->schema()));
             }
             else
             {

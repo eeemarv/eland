@@ -253,7 +253,7 @@ class MolliePaymentsController extends AbstractController
 
         $res = $db->executeQuery('select p.*, r.description,
             u.code, u.name, u.full_name,
-            u.status, u.adate,
+            u.status, u.activated_at,
             c.value as mail
             from ' . $pp->schema() . '.mollie_payments p
             inner join ' . $pp->schema() . '.mollie_payment_requests r
@@ -733,10 +733,10 @@ class MolliePaymentsController extends AbstractController
         {
             $user_status = $payment['status'];
 
-            if (isset($payment['adate'])
+            if (isset($payment['activated_at'])
                 && $new_users_enabled
                 && $payment['status'] === 1
-                && $new_user_treshold->getTimestamp() < strtotime($payment['adate'] . ' UTC'))
+                && $new_user_treshold->getTimestamp() < strtotime($payment['activated_at'] . ' UTC'))
             {
                 $user_status = 3;
             }

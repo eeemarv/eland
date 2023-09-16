@@ -163,7 +163,7 @@ class UsersEditController extends AbstractController
             $stored_user = $user_cache_service->get($id, $pp->schema());
             $stored_code = $stored_user['code'];
             $stored_name = $stored_user['name'];
-            $is_activated = isset($stored_user['adate']);
+            $is_activated = isset($stored_user['activated_at']);
 
             if ($transactions_enabled && $limits_enabled)
             {
@@ -500,7 +500,7 @@ class UsersEditController extends AbstractController
                 if (($is_add || ($is_edit && !$is_activated))
                     && $status === '1')
                 {
-                    $post_user['adate'] = gmdate('Y-m-d H:i:s');
+                    $post_user['activated_at'] = gmdate('Y-m-d H:i:s');
 
                     $password_hasher = $password_hasher_factory->getPasswordHasher(new User());
                     $post_user['password'] = $password_hasher->hash($password);

@@ -345,7 +345,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 			$stmt = $this->db->prepare('select u.id
 				from ' . $schema . '.users u
 				where u.status = 1
-					and u.adate > ?');
+					and u.activated_at > ?');
 
 			$time = ($block_options['new_users'] === 'recent') ? $treshold_time : $new_user_treshold;
 
@@ -508,7 +508,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 			{
 				$stmt = $this->db->prepare('select m.id,
 						m.subject, m.offer_want,
-						extract(epoch from coalesce(m.expires_at, now())) as expires_at_unix,
+						extract(epoch from coalesce(m.expires_at, now()))::int as expires_at_unix,
 						m.expires_at, m.created_at
 					from ' . $schema . '.messages m
 					where m.user_id = ?

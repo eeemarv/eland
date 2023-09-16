@@ -623,7 +623,7 @@ class UsersListController extends AbstractController
                 'periodic_overview_en'	=> 'Periodieke Overzichts E-mail',
                 'created_at'	        => 'Gecreëerd',
                 'last_edit_at'	        => 'Aangepast',
-                'adate'			        => 'Geactiveerd',
+                'activated_at'		    => 'Geactiveerd',
                 'last_login'		    => 'Laatst ingelogd',
             ];
         }
@@ -1512,7 +1512,7 @@ class UsersListController extends AbstractController
             'birthday'      => true,
             'created_at'    => true,
             'last_edit_at'	=> true,
-            'adate'			=> true,
+            'activated_at'  => true,
             'last_login'	=> true,
         ];
 
@@ -1640,11 +1640,11 @@ class UsersListController extends AbstractController
             $row_stat = $u['status'];
 
             if ($status === 'new'
-                || (isset($u['adate'])
+                || (isset($u['activated_at'])
                 && $u['status'] === 1
                 && $new_users_enabled
                 && $item_access_service->is_visible($new_users_access_list)
-                && $new_user_treshold->getTimestamp() < strtotime($u['adate'] . ' UTC')))
+                && $new_user_treshold->getTimestamp() < strtotime($u['activated_at'] . ' UTC')))
             {
                 $row_stat = 3;
             }
@@ -2157,7 +2157,7 @@ class UsersListController extends AbstractController
                 $status_def_ary['new'] = [
                     'lbl'	=> 'Instappers',
                     'sql'	=> [
-                        'where'     => ['u.status = 1 and u.adate > ?'],
+                        'where'     => ['u.status = 1 and u.activated_at > ?'],
                         'params'    => [$new_user_treshold],
                         'types'     => [Types::DATETIME_IMMUTABLE],
                     ],

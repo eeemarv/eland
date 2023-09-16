@@ -134,7 +134,7 @@ class MolliePaymentsAddController extends AbstractController
 
         $res = $db->executeQuery('select u.id,
                 u.name, u.full_name, u.code,
-                u.role, u.status, u.adate,
+                u.role, u.status, u.activated_at,
                 p1.is_paid, p1.is_canceled,
                 p1.created_at as last_created_at,
                 p1.amount, p1.description
@@ -380,10 +380,10 @@ class MolliePaymentsAddController extends AbstractController
         {
             $user_status = $user['status'];
 
-            if (isset($user['adate'])
+            if (isset($user['activated_at'])
                 && $user['status'] === 1
                 && $new_users_enabled
-                && $new_user_treshold->getTimestamp() < strtotime($user['adate'] . ' UTC'))
+                && $new_user_treshold->getTimestamp() < strtotime($user['activated_at'] . ' UTC'))
             {
                 $user_status = 3;
             }
