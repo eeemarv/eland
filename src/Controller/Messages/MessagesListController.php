@@ -24,6 +24,7 @@ use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\VarRouteService;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -220,7 +221,7 @@ class MessagesListController extends AbstractController
                 from ' . $pp->schema() . '.messages
                 where id in (?)',
                 [array_keys($selected_messages)],
-                [Db::PARAM_INT_ARRAY]);
+                [ArrayParameterType::INTEGER]);
 
             while ($row = $res->fetchAssociative())
             {

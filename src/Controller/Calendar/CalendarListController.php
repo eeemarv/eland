@@ -7,6 +7,7 @@ use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
+use Doctrine\DBAL\ArrayParameterType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
@@ -117,7 +118,7 @@ class CalendarListController extends AbstractController
 
         $access_ary = $item_access_service->get_visible_ary_for_page();
 
-        $res = $db->executeQuery($query, [$access_ary], [Db::PARAM_STR_ARRAY]);
+        $res = $db->executeQuery($query, [$access_ary], [ArrayParameterType::STRING]);
 
         while ($row = $res->fetchAssociative())
         {

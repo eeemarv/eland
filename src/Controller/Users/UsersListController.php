@@ -28,6 +28,7 @@ use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
+use Doctrine\DBAL\ArrayParameterType;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
@@ -286,7 +287,7 @@ class UsersListController extends AbstractController
                 $res = $db->executeQuery('select id
                     from ' . $pp->schema() . '.users
                     where id in (?)',
-                    [$user_ids], [Db::PARAM_INT_ARRAY]);
+                    [$user_ids], [ArrayParameterType::INTEGER]);
 
                 while ($row = $res->fetchAssociative())
                 {
@@ -308,7 +309,7 @@ class UsersListController extends AbstractController
                     set periodic_overview_en = ?
                     where id in (?)',
                     [$bulk_field_value, $user_ids],
-                    [\PDO::PARAM_BOOL, Db::PARAM_INT_ARRAY]);
+                    [\PDO::PARAM_BOOL, ArrayParameterType::INTEGER]);
 
                 foreach ($user_ids as $user_id)
                 {
@@ -375,7 +376,7 @@ class UsersListController extends AbstractController
                 $db->executeStatement('update ' . $pp->schema() . '.users
                     set ' . $bulk_submit_action . ' = ? where id in (?)',
                     [$store_value, $user_ids],
-                    [$field_type, Db::PARAM_INT_ARRAY]);
+                    [$field_type, ArrayParameterType::INTEGER]);
 
                 foreach ($user_ids as $user_id)
                 {
@@ -425,7 +426,7 @@ class UsersListController extends AbstractController
                         and u.id = c.user_id
                         and c.id_type_contact = tc.id
                         and tc.abbrev = \'mail\'',
-                        [$user_ids], [Db::PARAM_INT_ARRAY]);
+                        [$user_ids], [ArrayParameterType::INTEGER]);
 
                 while ($sel_user = $res->fetchAssociative())
                 {

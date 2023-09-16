@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -54,7 +55,7 @@ class DocRepository
 				group by dm.name, dm.id) s
 			where s.id = ?',
             [$visible_ary, $map_id],
-            [Db::PARAM_STR_ARRAY, \PDO::PARAM_INT]);
+            [ArrayParameterType::STRING, ArrayParameterType::INTEGER]);
 
 		if ($map === false)
 		{
@@ -123,7 +124,7 @@ class DocRepository
 			group by dm.name, dm.id
 			order by dm.name asc',
             [$visible_ary],
-            [Db::PARAM_STR_ARRAY]);
+            [ArrayParameterType::STRING]);
 
         return $res->fetchAllAssociative() ?: [];
 	}
@@ -137,7 +138,7 @@ class DocRepository
 				and map_id is null
 			order by name asc',
             [$visible_ary],
-            [Db::PARAM_STR_ARRAY]);
+            [ArrayParameterType::STRING]);
 
         return $res->fetchAllAssociative() ?: [];
 	}
@@ -158,7 +159,7 @@ class DocRepository
 				and map_id = ?
 			order by name, original_filename asc',
 			[$visible_ary, $map_id],
-			[Db::PARAM_STR_ARRAY, \PDO::PARAM_INT]);
+			[ArrayParameterType::STRING, \PDO::PARAM_INT]);
 
 		while ($row = $res->fetchAssociative())
 		{

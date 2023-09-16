@@ -18,6 +18,7 @@ use App\Service\MailAddrUserService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\UserCacheService;
+use Doctrine\DBAL\ArrayParameterType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -428,9 +429,10 @@ class MolliePaymentsController extends AbstractController
             if (!count($errors))
             {
                 $db->executeStatement('update ' . $pp->schema() . '.mollie_payments
-                    set canceled_by = ? where id in (?)',
+                    set canceled_by = ?
+                    where id in (?)',
                     [$su->id(), $cancel_ary],
-                    [\PDO::PARAM_INT, Db::PARAM_INT_ARRAY]);
+                    [\PDO::PARAM_INT, ArrayParameterType::INTEGER]);
 
                 foreach ($users_cancel_ary as $user_id => $dummy)
                 {

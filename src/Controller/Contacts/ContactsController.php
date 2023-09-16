@@ -16,6 +16,7 @@ use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\AlertService;
 use App\Service\FormTokenService;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -149,7 +150,7 @@ class ContactsController extends AbstractController
                     set access = ?
                     where id in (?)',
                     [$bulk_field_value, array_keys($selected_contacts)],
-                    [\PDO::PARAM_STR, Db::PARAM_INT_ARRAY]);
+                    [\PDO::PARAM_STR, ArrayParameterType::INTEGER]);
 
                 if (count($selected_contacts) > 1)
                 {

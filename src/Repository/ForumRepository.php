@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Command\Forum\ForumPostCommand;
 use App\Command\Forum\ForumTopicCommand;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -45,7 +46,7 @@ class ForumRepository
 				group by t.id) s
 			where s.id = ?',
             [$visible_ary, $topic_id],
-            [Db::PARAM_STR_ARRAY, \PDO::PARAM_INT]);
+            [ArrayParameterType::STRING, \PDO::PARAM_INT]);
 
 		if ($topic === false)
 		{
@@ -64,7 +65,7 @@ class ForumRepository
             group by t.id
             order by max(p.last_edit_at) desc',
             [$visible_ary],
-            [Db::PARAM_STR_ARRAY]);
+            [ArrayParameterType::STRING]);
 
         return $res->fetchAllAssociative() ?: [];
 	}

@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -45,7 +46,7 @@ class MessageRepository
             order by m.id asc
 			limit 1',
 			[$ref_id, $visible_ary],
-			[\PDO::PARAM_INT, Db::PARAM_STR_ARRAY]);
+			[\PDO::PARAM_INT, ArrayParameterType::STRING]);
 
 		return $res->fetchOne() ?: 0;
 	}
@@ -65,7 +66,7 @@ class MessageRepository
             order by m.id desc
 			limit 1',
 			[$ref_id, $visible_ary],
-			[\PDO::PARAM_INT, Db::PARAM_STR_ARRAY]);
+			[\PDO::PARAM_INT, ArrayParameterType::STRING]);
 
 		return $res->fetchOne() ?: 0;
 	}
