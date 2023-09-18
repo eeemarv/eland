@@ -80,6 +80,7 @@
         'user': account(id, schema),
     }) -}}
     {{- account_status(id, schema)|raw -}}
+    {#
     {%- if pp_has_role('admin') -%}
         {%- if intersystem_missing -%}
             &nbsp;
@@ -99,6 +100,7 @@
             </a>
         {%- endif -%}
     {%- endif -%}
+    #}
 {%- endblock heading_title -%}
 
 {%- block tags -%}

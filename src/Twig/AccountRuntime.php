@@ -2,7 +2,6 @@
 
 namespace App\Twig;
 
-use App\Cnst\StatusCnst;
 use App\Repository\AccountRepository;
 use App\Service\ConfigService;
 use App\Service\UserCacheService;
@@ -49,16 +48,40 @@ class AccountRuntime implements RuntimeExtensionInterface
 		return $this->account_repository->get_balance($id, $schema);
 	}
 
+	private function render_status(string $class, string $text):string
+	{
+		$out = '&nbsp;<small><span class="text-';
+		$out .= $class;
+		$out .= '">';
+		$out .= $text;
+		$out .= '</span></small>';
+		return $out;
+	}
+
 	public function get_status(int $id, string $schema):string
 	{
 
 		$user = $this->user_cache_service->get($id, $schema);
-		$status_id = $user['status'];
 
-        if (isset($user['activated_at'])
-            && $status_id === 1
-		)
-        {
+		if ($user['is_active'])
+		{
+			if (isset($user['remote_schema']))
+			{
+				return $this->render_status('warning', 'InterSysteem');
+			}
+
+			if (isset($user['remote_email']))
+			{
+				return $this->render_status('warning', 'InterSysteem');
+			}
+
+			$leaving_users_enabled = $this->config_service->get_bool('users.leaving.enabled', $schema);
+
+			if ($leaving_users_enabled && $user['is_leaving'])
+			{
+				return $this->render_status('danger', 'Uitstapper');
+			}
+
 			$new_users_enabled = $this->config_service->get_bool('users.new.enabled', $schema);
 
 			if ($new_users_enabled)
@@ -67,32 +90,18 @@ class AccountRuntime implements RuntimeExtensionInterface
 
 				if ($new_user_treshold->getTimestamp() < strtotime($user['activated_at'] . ' UTC'))
 				{
-					$status_id = 3;
+					return $this->render_status('success', 'Instapper');
 				}
 			}
-        }
 
-		if ($status_id === 1)
-		{
 			return '';
 		}
 
-		if ($status_id === 2)
+		if (isset($user['activated_at']))
 		{
-			$leaving_users_enabled = $this->config_service->get_bool('users.leaving.enabled', $schema);
-
-			if (!$leaving_users_enabled)
-			{
-				return '';
-			}
+			return $this->render_status('inactive', 'Post-actief');
 		}
 
-		$out = '&nbsp;<small><span class="text-';
-		$out .= StatusCnst::CLASS_ARY[$status_id];
-		$out .= '">';
-		$out .= StatusCnst::RENDER_ARY[$status_id];
-		$out .= '</span></small>';
-
-		return $out;
+		return $this->render_status('info', 'Pre-actief');
 	}
 }

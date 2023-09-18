@@ -11,7 +11,6 @@ class UserCacheService
 	const TTL = 2592000;
 
 	protected bool $is_cli;
-
 	protected array $local = [];
 
 	public function __construct(
@@ -19,7 +18,7 @@ class UserCacheService
 		protected Redis $predis
 	)
 	{
-		$this->is_cli = php_sapi_name() === 'cli' ? true : false;
+		$this->is_cli = php_sapi_name() === 'cli';
 	}
 
 	public function clear(int $id, string $schema):void
@@ -100,8 +99,8 @@ class UserCacheService
 			from ' . $schema . '.users u
 			left join ' . $schema . '.mollie_payments mp
 				on (u.id = mp.user_id
-					and mp.is_paid = \'f\'::bool
-					and mp.is_canceled = \'f\'::bool)
+					and not mp.is_paid
+					and not mp.is_canceled)
 			where u.id = ?', [$id], [\PDO::PARAM_INT]);
 
 		if ($user === false)

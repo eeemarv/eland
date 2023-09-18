@@ -17,7 +17,7 @@ class ContactsFilterCommand implements CommandInterface
 
     #[Sequentially(constraints: [
         new Type(type: 'string', groups: ['filter']),
-        new Choice(choices: ['active', 'new', 'leaving', 'inactive', 'ip', 'im', 'extern'], groups: ['filter']),
+        new Choice(choices: ['active', 'new', 'leaving', 'intersystem', 'pre-active', 'post-active'], groups: ['filter']),
     ])]
     public $ustatus;
 

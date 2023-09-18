@@ -32,7 +32,7 @@ class MolliePaymentsAddController extends AbstractController
         name: 'mollie_payments_add',
         methods: ['GET', 'POST'],
         requirements: [
-            'status'        => '%assert.account_status%',
+            'status'        => '%assert.account_status.all%',
             'system'        => '%assert.system%',
             'role_short'    => '%assert.role_short.admin%',
         ],

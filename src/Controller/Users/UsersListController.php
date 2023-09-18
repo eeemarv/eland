@@ -6,7 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Render\LinkRender;
-use App\Cnst\StatusCnst;
 use App\Cnst\RoleCnst;
 use App\Cnst\BulkCnst;
 use App\Form\Type\Filter\QTextSearchFilterType;
@@ -49,7 +48,7 @@ class UsersListController extends AbstractController
         methods: ['GET', 'POST'],
         priority: 20,
         requirements: [
-            'status'        => '%assert.account_status%',
+            'status'        => '%assert.account_status.all%',
             'system'        => '%assert.system%',
             'role_short'    => '%assert.role_short.guest%',
         ],
@@ -87,7 +86,7 @@ class UsersListController extends AbstractController
         #[Autowire(service: 'html_sanitizer.sanitizer.admin_email_sanitizer')] HtmlSanitizerInterface $html_sanitizer
     ):Response
     {
-        if (!$pp->is_admin() && !in_array($status, ['active', 'new', 'leaving']))
+        if (!$pp->is_admin() && !in_array($status, ['active', 'new', 'leaving', 'intersystem']))
         {
             throw new AccessDeniedHttpException('No access for status: ' . $status);
         }
@@ -111,9 +110,7 @@ class UsersListController extends AbstractController
         $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
         $new_users_days = $config_service->get_int('users.new.days', $pp->schema());
         $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
-        $new_users_access_list = $config_service->get_str('users.new.access_list', $pp->schema());
         $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
-        $leaving_users_access_list = $config_service->get_str('users.leaving.access_list', $pp->schema());
 
         $show_new_status = $new_users_enabled;
 
@@ -123,12 +120,28 @@ class UsersListController extends AbstractController
             $show_new_status = $item_access_service->is_visible($new_users_access);
         }
 
+        $show_new_list = $new_users_enabled;
+
+        if ($show_new_list)
+        {
+            $new_users_access_list = $config_service->get_str('users.new.access_list', $pp->schema());
+            $show_new_list = $item_access_service->is_visible($new_users_access_list);
+        }
+
         $show_leaving_status = $leaving_users_enabled;
 
         if ($show_leaving_status)
         {
             $leaving_users_access = $config_service->get_str('users.leaving.access', $pp->schema());
             $show_leaving_status = $item_access_service->is_visible($leaving_users_access);
+        }
+
+        $show_leaving_list = $leaving_users_enabled;
+
+        if ($show_leaving_list)
+        {
+            $leaving_users_access_list = $config_service->get_str('users.leaving.access_list', $pp->schema());
+            $show_leaving_list = $item_access_service->is_visible($leaving_users_access_list);
         }
 
         $errors = [];
@@ -287,7 +300,8 @@ class UsersListController extends AbstractController
                 $res = $db->executeQuery('select id
                     from ' . $pp->schema() . '.users
                     where id in (?)',
-                    [$user_ids], [ArrayParameterType::INTEGER]);
+                    [$user_ids],
+                    [ArrayParameterType::INTEGER]);
 
                 while ($row = $res->fetchAssociative())
                 {
@@ -383,10 +397,12 @@ class UsersListController extends AbstractController
                     $user_cache_service->clear($user_id, $pp->schema());
                 }
 
+/*
                 if ($bulk_field == 'status')
                 {
                     $response_cache_service->clear_cache($pp->schema());
                 }
+*/
 
                 $logger->info('bulk: Set ' . $bulk_submit_action .
                     ' to ' . $store_value .
@@ -571,7 +587,6 @@ class UsersListController extends AbstractController
 
         $sql_map = [
             'where'     => [],
-            'where_or'  => [],
             'params'    => [],
             'types'     => [],
         ];
@@ -588,6 +603,15 @@ class UsersListController extends AbstractController
         {
             foreach ($def_sql_ary as $def_val)
             {
+                if (is_array($def_val) && $st_def_key = 'where')
+                {
+                    $wh_or = '(';
+                    $wh_or .= implode(' or ', $def_val);
+                    $wh_or .= ')';
+                    $sql['status'][$st_def_key][] = $wh_or;
+                    continue;
+                }
+
                 $sql['status'][$st_def_key][] = $def_val;
             }
         }
@@ -1300,18 +1324,17 @@ class UsersListController extends AbstractController
                 $fc3 .= '</div>';
 
                 $typeahead_service->ini($pp)
-                    ->add('accounts', ['status' => 'active']);
+                    ->add('accounts', ['status' => 'active-user']);
 
                 if (!$pp->is_guest())
                 {
-                    $typeahead_service->add('accounts', ['status' => 'extern']);
+                    $typeahead_service->add('accounts', ['status' => 'intersystem']);
                 }
 
                 if ($pp->is_admin())
                 {
-                    $typeahead_service->add('accounts', ['status' => 'inactive'])
-                        ->add('accounts', ['status' => 'ip'])
-                        ->add('accounts', ['status' => 'im']);
+                    $typeahead_service->add('accounts', ['status' => 'pre-active']);
+                    $typeahead_service->add('accounts', ['status' => 'post-active']);
                 }
 
                 $fc3 .= '<div class="form-group">';
@@ -1631,41 +1654,58 @@ class UsersListController extends AbstractController
 
         foreach($users as $id => $u)
         {
-            if (($pp->is_user() || $pp->is_guest())
-                && ($u['status'] === 1 || $u['status'] === 2))
+            $is_remote = isset($u['remote_schema']) || isset($u['remote_email']);
+            $is_active = $u['is_active'];
+            $is_leaving = $u['is_leaving'];
+            $post_active = isset($u['activated_at']);
+            $is_new = false;
+            if ($post_active)
+            {
+                if ($new_user_treshold->getTimestamp() < strtotime($u['activated_at'] . ' UTC'))
+                {
+                    $is_new = true;
+                }
+            }
+
+            if ($is_active)
             {
                 $can_link = true;
             }
 
-            $row_stat = $u['status'];
+            $row_class = null;
 
-            if ($status === 'new'
-                || (isset($u['activated_at'])
-                && $u['status'] === 1
-                && $new_users_enabled
-                && $item_access_service->is_visible($new_users_access_list)
-                && $new_user_treshold->getTimestamp() < strtotime($u['activated_at'] . ' UTC')))
+            if ($is_active)
             {
-                $row_stat = 3;
+                if ($is_remote)
+                {
+                    $row_class = 'warning';
+                }
+                else if ($is_leaving && $show_leaving_list)
+                {
+                    $row_class = 'danger';
+                }
+                else if ($is_new && $show_new_list)
+                {
+                    $row_class = 'success';
+                }
             }
-
-            if ($status !== 'leaving'
-                && $row_stat === 2
-                && (!$leaving_users_enabled
-                    || !$item_access_service->is_visible($leaving_users_access_list)
-            ))
+            else if ($post_active)
             {
-                $row_stat = 1;
+                $row_class = 'inactive';
+            }
+            else
+            {
+                $row_class = 'info';
             }
 
             $first = true;
 
             $out .= '<tr';
 
-            if (isset(StatusCnst::CLASS_ARY[$row_stat]))
+            if (isset($row_class))
             {
                 $out .= ' class="';
-                $out .= StatusCnst::CLASS_ARY[$row_stat];
+                $out .= $row_class;
                 $out .= '"';
             }
 
@@ -1728,7 +1768,14 @@ class UsersListController extends AbstractController
                     }
                     else if ($key === 'role')
                     {
-                        $td .= RoleCnst::LABEL_ARY[$u['role']];
+                        if (isset($u['role']))
+                        {
+                            $td .= RoleCnst::LABEL_ARY[$u['role']];
+                        }
+                        else
+                        {
+                            $td .= '&nbsp;';
+                        }
                     }
                     else
                     {
@@ -2072,14 +2119,7 @@ class UsersListController extends AbstractController
                 }
                 else
                 {
-                    $options = '';
-
-                    if (isset($t['options']))
-                    {
-                        $tpl = BulkCnst::TPL_SELECT;
-                        $options = $select_render->get_options($t['options'], '');
-                    }
-                    else if (isset($t['type'])
+                    if (isset($t['type'])
                         && $t['type'] === 'checkbox')
                     {
                         $tpl = BulkCnst::TPL_CHECKBOX;
@@ -2093,7 +2133,6 @@ class UsersListController extends AbstractController
                         '%name%'        => $bulk_field_name,
                         '%label%'       => $t['lbl'],
                         '%type%'        => $t['type'] ?? '',
-                        '%options%'     => $options,
                         '%required%'    => isset($t['required']) ? ' required' : '',
                         '%fa%'          => $t['fa'] ?? '',
                         '%attr%'        => $t['attr'] ?? '',
@@ -2143,9 +2182,10 @@ class UsersListController extends AbstractController
         $status_def_ary['active'] = [
             'lbl'	=> $pp->is_admin() ? 'Actief' : 'Alle',
             'sql'	=> [
-                'where'     => ['u.status in (1, 2)'],
+                'where'     => [
+                    'u.is_active',
+                ],
             ],
-            'st'	=> [1, 2],
         ];
 
         if ($config_service->get_bool('users.new.enabled', $pp->schema()))
@@ -2157,12 +2197,17 @@ class UsersListController extends AbstractController
                 $status_def_ary['new'] = [
                     'lbl'	=> 'Instappers',
                     'sql'	=> [
-                        'where'     => ['u.status = 1 and u.activated_at > ?'],
+                        'where'     => [
+                            'u.remote_schema is null',
+                            'u.remote_email is null',
+                            'u.is_active',
+                            'not u.is_leaving',
+                            'u.activated_at > ?',
+                        ],
                         'params'    => [$new_user_treshold],
                         'types'     => [Types::DATETIME_IMMUTABLE],
                     ],
                     'cl'	=> 'success',
-                    'st'	=> 3,
                 ];
             }
         }
@@ -2176,50 +2221,57 @@ class UsersListController extends AbstractController
                 $status_def_ary['leaving'] = [
                     'lbl'	=> 'Uitstappers',
                     'sql'	=> [
-                        'where'     => ['u.status = 2'],
+                        'where'     => [
+                            'u.remote_schema is null',
+                            'u.remote_email is null',
+                            'u.is_active',
+                            'u.is_leaving',
+                        ],
                     ],
                     'cl'	=> 'danger',
-                    'st'	=> 2,
                 ];
             }
         }
 
-        if ($pp->is_admin())
+        if ($config_service->get_bool('intersystem.enabled', $pp->schema()))
         {
-            $status_def_ary['extern'] = [
-                'lbl'	=> 'Extern',
+            $status_def_ary['intersystem'] = [
+                'lbl'	=> 'InterSysteem',
                 'sql'	=> [
-                    'where'     => ['u.status = 7'],
+                    'where'     => [
+                        'u.is_active',
+                        [
+                            'u.remote_schema is not null',
+                            'u.remote_email is not null'
+                        ],
+                    ],
                 ],
                 'cl'	=> 'warning',
-                'st'	=> 7,
             ];
+        }
 
-            $status_def_ary['inactive'] = [
-                'lbl'	=> 'Inactief',
+        if ($pp->is_admin())
+        {
+            $status_def_ary['pre-active'] = [
+                'lbl'	=> 'Pre-actief',
                 'sql'	=> [
-                    'where'     => ['u.status = 0'],
-                ],
-                'cl'	=> 'inactive',
-                'st'	=> 0,
-            ];
-
-            $status_def_ary['ip'] = [
-                'lbl'	=> 'Info-pakket',
-                'sql'	=> [
-                    'where'     => ['u.status = 5'],
-                ],
-                'cl'	=> 'info-pack',
-                'st'	=> 5,
-            ];
-
-            $status_def_ary['im'] = [
-                'lbl'	=> 'Info-moment',
-                'sql'	=> [
-                    'where'     => ['u.status = 6'],
+                    'where'     => [
+                        'not u.is_active',
+                        'u.activated_at is null',
+                    ],
                 ],
                 'cl'	=> 'info',
-                'st'	=> 6
+            ];
+
+            $status_def_ary['post-active'] = [
+                'lbl'	=> 'Post-actief',
+                'sql'	=> [
+                    'where'     => [
+                        'not u.is_active',
+                        'u.activated_at is not null'
+                    ],
+                ],
+                'cl'	=> 'inactive',
             ];
 
             $status_def_ary['all'] = [

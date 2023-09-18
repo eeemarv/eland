@@ -390,6 +390,8 @@ class TransactionsController extends AbstractController
         $sql['pagination']['types'][] = \PDO::PARAM_INT;
 
         $sql_where = implode(' and ', array_merge(...array_column($sql, 'where')));
+        $sql_params = array_merge(...array_column($sql, 'params'));
+        $sql_types = array_merge(...array_column($sql, 'types'));
 
         $query = 'select t.*
             from ' . $pp->schema() . '.transactions t
@@ -398,9 +400,7 @@ class TransactionsController extends AbstractController
         $query .= $sort_asc ? 'asc ' : 'desc ';
         $query .= 'limit ? offset ?';
 
-        $res = $db->executeQuery($query,
-            array_merge(...array_column($sql, 'params')),
-            array_merge(...array_column($sql, 'types')));
+        $res = $db->executeQuery($query, $sql_params, $sql_types);
 
         $transactions = [];
         $inter_fetch = [];

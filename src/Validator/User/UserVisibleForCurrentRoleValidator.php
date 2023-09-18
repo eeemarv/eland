@@ -7,7 +7,6 @@ use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use App\Service\PageParamsService;
-use App\Validator\User\ActiveUser;
 
 // review
 class UserVisibleForCurrentRoleValidator extends ConstraintValidator
@@ -23,7 +22,7 @@ class UserVisibleForCurrentRoleValidator extends ConstraintValidator
     {
         if (!$constraint instanceof UserVisibleForCurrentRole)
         {
-            throw new UnexpectedTypeException($constraint, ActiveUser::class);
+            throw new UnexpectedTypeException($constraint, UserVisibleForCurrentRole::class);
         }
 
         if (!isset($user_id) || !$user_id)

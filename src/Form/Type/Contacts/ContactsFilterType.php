@@ -17,7 +17,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ContactsFilterType extends AbstractType
 {
-    const USTATUS = ['active', 'new', 'leaving', 'inactive', 'ip', 'im', 'extern'];
+    const USTATUS = ['active', 'new', 'leaving', 'intersystem', 'pre-active', 'post-active'];
 
     public function __construct(
         protected ConfigService $config_service,
@@ -59,6 +59,8 @@ class ContactsFilterType extends AbstractType
                 $label .= '_only';
             }
 
+            $label = strtr($label, ['-' => '_']);
+
             $ustatus_choices[$label] = $us;
         }
 
@@ -74,11 +76,10 @@ class ContactsFilterType extends AbstractType
         }
 
         $typeahead_accounts_add = [];
-        $typeahead_accounts_add[] = ['accounts', ['status' => 'active']];
-        $typeahead_accounts_add[] = ['accounts', ['status' => 'extern']];
-        $typeahead_accounts_add[] = ['accounts', ['status' => 'inactive']];
-        $typeahead_accounts_add[] = ['accounts', ['status' => 'im']];
-        $typeahead_accounts_add[] = ['accounts', ['status' => 'ip']];
+        $typeahead_accounts_add[] = ['accounts', ['status' => 'active-user']];
+        $typeahead_accounts_add[] = ['accounts', ['status' => 'intersystem']];
+        $typeahead_accounts_add[] = ['accounts', ['status' => 'pre-active']];
+        $typeahead_accounts_add[] = ['accounts', ['status' => 'post-active']];
 
         $builder->add('q', TextType::class, [
             'required' => false,

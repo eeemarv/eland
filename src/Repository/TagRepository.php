@@ -135,7 +135,7 @@ class TagRepository
             from ' . $schema . '.tags
             where tag_type = :tag_type
 				and (\'t\'::bool = :non_active_included
-				or is_active = \'t\'::bool)
+				or is_active)
 			order by pos asc');
 
         $stmt->bindValue('tag_type', $tag_type, \PDO::PARAM_STR);
@@ -164,7 +164,7 @@ class TagRepository
             from ' . $schema . '.tags
             where tag_type = :tag_type
 				and (\'t\'::bool = :non_active_included
-				or is_active = \'t\'::bool)
+				or is_active)
 			order by pos');
 
         $stmt->bindValue('tag_type', $tag_type, \PDO::PARAM_STR);
@@ -434,7 +434,7 @@ class TagRepository
 				inner join ' . $schema . '.users u
 					on u.id = ut.user_id
             where t.tag_type = \'users\'
-				and (\'t\'::bool = :non_active_included or t.is_active = \'t\'::bool)
+				and (\'t\'::bool = :non_active_included or t.is_active)
 				and u.id = :user_id
 			order by t.pos asc');
 
@@ -464,7 +464,7 @@ class TagRepository
 				inner join ' . $schema . '.messages m
 					on m.id = mt.message_id
             where t.tag_type = \'messages\'
-				and t.is_active = \'t\'::bool
+				and t.is_active
 				and m.id = :message_id
 			order by t.pos asc');
         $stmt->bindValue('message_id', $message_id, \PDO::PARAM_INT);

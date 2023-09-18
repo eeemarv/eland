@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use App\Cnst\StatusCnst;
 use App\Cnst\RoleCnst;
 use App\Command\Tags\TagsUsersCommand;
 use App\Controller\Contacts\ContactsUserShowInlineController;
@@ -46,7 +45,7 @@ class UsersShowController extends AbstractController
         priority: 10,
         requirements: [
             'id'            => '%assert.id%',
-            'status'        => '%assert.account_status%',
+            'status'        => '%assert.account_status.all%',
             'system'        => '%assert.system%',
             'role_short'    => '%assert.role_short.guest%',
         ],
@@ -106,7 +105,7 @@ class UsersShowController extends AbstractController
     ):Response
     {
         if (!$pp->is_admin()
-            && !in_array($status, ['active', 'new', 'leaving']))
+            && !in_array($status, ['active', 'new', 'leaving', 'intersystem']))
         {
             throw new AccessDeniedHttpException('No access for this user status');
         }
@@ -142,10 +141,12 @@ class UsersShowController extends AbstractController
                 'The user with id ' . $id . ' not found');
         }
 
-        if (!$pp->is_admin() && !in_array($user['status'], [1, 2]))
+        if (!$pp->is_admin() && !$user['is_active'])
         {
             throw new AccessDeniedHttpException('You have no access to this user account.');
         }
+
+        $is_intersystem = isset($user['remote_schema']) || isset($user['remote_email']);
 
         $tags_enabled = $config_service->get_bool('users.tags.enabled', $pp->schema());
 
@@ -179,7 +180,6 @@ class UsersShowController extends AbstractController
                 $tags_form->isValid())
             {
                 $tags_command = $tags_form->getData();
-                error_log(var_export($tags_command->tags, true));
 
                 $count_changes = $tag_repository->update_for_user($tags_command, $id, $su->id(), $pp->schema());
                 $response_cache_service->clear_cache($pp->schema());
@@ -279,30 +279,60 @@ class UsersShowController extends AbstractController
                 or id_to = ?',
                 [$id, $id], [\PDO::PARAM_INT, \PDO::PARAM_INT]);
 
-        $sql_next = [
-            'where'     => ['u.code > ?'],
-            'params'    => [$user['code']],
-            'types'     => [\PDO::PARAM_STR],
+        $params['status'] = $status;
+
+        /**
+         * prev - next
+         */
+
+        $sql_map = [
+            'where'     => [],
+            'params'    => [],
+            'types'     => [],
         ];
-        $sql_prev = [
-            'where'     => ['u.code < ?'],
-            'params'    => [$user['code']],
-            'types'     => [\PDO::PARAM_STR],
-        ];
+
+        $sql = [];
+
+        $sql['prev'] = $sql_map;
+        $sql['prev']['where'][] = 'u.code < ?';
+        $sql['prev']['params'][] = $user['code'];
+        $sql['prev']['types'][] = \PDO::PARAM_STR;
+
+        $sql['next'] = $sql_map;
+        $sql['next']['where'][] = 'u.code > ?';
+        $sql['next']['params'][] = $user['code'];
+        $sql['next']['types'][] = \PDO::PARAM_STR;
+
+        $sql['status'] = $sql_map;
 
         foreach ($status_def_ary[$status]['sql'] as $st_def_key => $def_sql_ary)
         {
             foreach ($def_sql_ary as $def_val)
             {
-                $sql_next[$st_def_key][] = $def_val;
-                $sql_prev[$st_def_key][] = $def_val;
+                if (is_array($def_val) && $st_def_key = 'where')
+                {
+                    $wh_or = '(';
+                    $wh_or .= implode(' or ', $def_val);
+                    $wh_or .= ')';
+                    $sql['status'][$st_def_key][] = $wh_or;
+                    continue;
+                }
+
+                $sql['status'][$st_def_key][] = $def_val;
             }
         }
 
-        $params['status'] = $status;
+        $sql_prev = $sql;
+        unset($sql_prev['next']);
+        $sql_prev_where = implode(' and ', array_merge(...array_column($sql_prev, 'where')));
+        $sql_prev_params = array_merge(...array_column($sql_prev, 'params'));
+        $sql_prev_types = array_merge(...array_column($sql_prev, 'types'));
 
-        $sql_next_where = implode(' and ', $sql_next['where']);
-        $sql_prev_where = implode(' and ', $sql_prev['where']);
+        $sql_next = $sql;
+        unset($sql_next['prev']);
+        $sql_next_where = implode(' and ', array_merge(...array_column($sql_next, 'where')));
+        $sql_next_params = array_merge(...array_column($sql_next, 'params'));
+        $sql_next_types = array_merge(...array_column($sql_next, 'types'));
 
         $next_id = $db->fetchOne('select id
             from ' . $pp->schema() . '.users u
@@ -310,8 +340,8 @@ class UsersShowController extends AbstractController
             ' . $sql_next_where . '
             order by u.code asc
             limit 1',
-            $sql_next['params'],
-            $sql_next['types']);
+            $sql_next_params,
+            $sql_next_types);
 
         $prev_id = $db->fetchOne('select id
             from ' . $pp->schema() . '.users u
@@ -319,30 +349,8 @@ class UsersShowController extends AbstractController
             ' . $sql_prev_where . '
             order by u.code desc
             limit 1',
-            $sql_prev['params'],
-            $sql_prev['types']);
-
-        $intersystem_missing = false;
-
-        if ($pp->is_admin()
-            && $user['role'] === 'guest'
-            && $config_service->get_intersystem_en($pp->schema()))
-        {
-            $intersystem_id = $db->fetchOne('select id
-                from ' . $pp->schema() . '.letsgroups
-                where localletscode = ?',
-                [$user['code']],
-                [\PDO::PARAM_STR]);
-
-            if (!$intersystem_id)
-            {
-                $intersystem_missing = true;
-            }
-        }
-        else
-        {
-            $intersystem_id = 0;
-        }
+            $sql_prev_params,
+            $sql_prev_types);
 
         if ($pp->is_admin())
         {
@@ -369,7 +377,7 @@ class UsersShowController extends AbstractController
         $contacts_content = $contacts_response->getContent();
 
         $out = '<div class="row">';
-        $out .= '<div class="col-md-6">';
+        $out .= '<div class="col-sm-4">';
 
         $out .= '<div class="panel panel-default">';
         $out .= '<div class="panel-body text-center ';
@@ -400,7 +408,9 @@ class UsersShowController extends AbstractController
         $out .= '<div id="no_img"';
         $out .= $no_user_img;
         $out .= '>';
-        $out .= '<i class="fa fa-user fa-5x text-muted"></i>';
+        $out .= '<i class="fa fa-';
+        $out .= $is_intersystem ? 'share-alt' : 'user';
+        $out .= ' fa-5x text-muted"></i>';
         $out .= '<br>Geen profielfoto/afbeelding</div>';
 
         $out .= '</div>';
@@ -465,13 +475,14 @@ class UsersShowController extends AbstractController
 
         $out .= '</div></div>';
 
-        $out .= '<div class="col-md-6">';
+        $out .= '<div class="col-sm-8">';
 
         $out .= '<div class="panel panel-default printview">';
         $out .= '<div class="panel-heading">';
+
         $out .= '<dl>';
 
-        if ($full_name_enabled)
+        if ($full_name_enabled && !$is_intersystem)
         {
             $full_name_access = $user['full_name_access'] ?? 'admin';
 
@@ -504,7 +515,7 @@ class UsersShowController extends AbstractController
             }
         }
 
-        if ($postcode_enabled)
+        if ($postcode_enabled && !$is_intersystem)
         {
             $out .= '<dt>';
             $out .= 'Postcode';
@@ -512,7 +523,7 @@ class UsersShowController extends AbstractController
             $out .= $this->get_dd($user['postcode'] ?? '');
         }
 
-        if ($birthday_enabled)
+        if ($birthday_enabled && !$is_intersystem)
         {
             if ($pp->is_admin() || $su->is_owner($id))
             {
@@ -531,7 +542,7 @@ class UsersShowController extends AbstractController
             }
         }
 
-        if ($hobbies_enabled)
+        if ($hobbies_enabled && !$is_intersystem)
         {
             $out .= '<dt>';
             $out .= 'Hobbies / Interesses';
@@ -568,28 +579,29 @@ class UsersShowController extends AbstractController
                 $out .= '<dd><i class="fa fa-times"></i></dd>';
             }
 
-            $out .= '<dt>';
-            $out .= 'Laatste login';
-            $out .= '</dt>';
-
-            if (isset($last_login))
+            if (!$is_intersystem)
             {
-                $out .= $this->get_dd($date_format_service->get($last_login, 'min', $pp->schema()));
+                $out .= '<dt>';
+                $out .= 'Laatste login';
+                $out .= '</dt>';
+
+                if (isset($last_login))
+                {
+                    $out .= $this->get_dd($date_format_service->get($last_login, 'min', $pp->schema()));
+                }
+                else
+                {
+                    $out .= '<dd><i class="fa fa-times"></i></dd>';
+                }
             }
-            else
+
+            if (!$is_intersystem)
             {
-                $out .= '<dd><i class="fa fa-times"></i></dd>';
+                $out .= '<dt>';
+                $out .= 'Rechten / rol';
+                $out .= '</dt>';
+                $out .= $this->get_dd(RoleCnst::LABEL_ARY[$user['role']]);
             }
-
-            $out .= '<dt>';
-            $out .= 'Rechten / rol';
-            $out .= '</dt>';
-            $out .= $this->get_dd(RoleCnst::LABEL_ARY[$user['role']]);
-
-            $out .= '<dt>';
-            $out .= 'Status';
-            $out .= '</dt>';
-            $out .= $this->get_dd(StatusCnst::LABEL_ARY[$user['status']]);
 
             if ($admin_comments_enabled)
             {
@@ -604,7 +616,7 @@ class UsersShowController extends AbstractController
         {
             $out .= '<dt>Saldo</dt>';
             $out .= '<dd>';
-            $out .= '<span class="label label-info">';
+            $out .= '<span class="label label-info label-lg">';
             $out .= $balance;
             $out .= '</span>&nbsp;';
             $out .= $currency;
@@ -617,14 +629,14 @@ class UsersShowController extends AbstractController
 
                 if (isset($min_limit))
                 {
-                    $out .= '<span class="label label-danger">';
+                    $out .= '<span class="label label-danger label-lg">';
                     $out .= $min_limit;
                     $out .= '</span>&nbsp;';
                     $out .= $currency;
                 }
                 else if (isset($system_min_limit))
                 {
-                    $out .= '<span class="label label-default">';
+                    $out .= '<span class="label label-default label-lg">';
                     $out .= $system_min_limit;
                     $out .= '</span>&nbsp;';
                     $out .= $currency;
@@ -642,14 +654,14 @@ class UsersShowController extends AbstractController
 
                 if (isset($max_limit))
                 {
-                    $out .= '<span class="label label-success">';
+                    $out .= '<span class="label label-success label-lg">';
                     $out .= $max_limit;
                     $out .= '</span>&nbsp;';
                     $out .= $currency;
                 }
                 else if (isset($system_max_limit))
                 {
-                    $out .= '<span class="label label-default">';
+                    $out .= '<span class="label label-default label-lg">';
                     $out .= $system_max_limit;
                     $out .= '</span>&nbsp;';
                     $out .= $currency;
@@ -665,18 +677,23 @@ class UsersShowController extends AbstractController
         }
 
         if ($periodic_mail_enabled
+            && !$is_intersystem
             && ($pp->is_admin() || $su->is_owner($id)))
         {
             $out .= '<dt>';
             $out .= 'Periodieke Overzichts E-mail';
             $out .= '</dt>';
+            $out .= '<span class="label label-lg label-';
+            $out .= $user['periodic_overview_en'] ? 'success' : 'danger';
+            $out .= '">';
             $out .= $user['periodic_overview_en'] ? 'Aan' : 'Uit';
+            $out .= '</span>';
             $out .= '</dl>';
         }
 
         $out .= '</div></div></div></div>';
 
-        if (!$is_self)
+        if (!$is_self || !$is_intersystem)
         {
             $out .= self::get_mail_form(
                 $id,
@@ -724,7 +741,9 @@ class UsersShowController extends AbstractController
             $out .= '</div>';
         }
 
-        if (!$is_self && ($messages_enabled || $transactions_enabled))
+        if (!$is_self
+            && !$is_intersystem
+            && ($messages_enabled || $transactions_enabled))
         {
             $out .= '<div class="row">';
             $out .= '<div class="col-md-12">';
@@ -786,8 +805,7 @@ class UsersShowController extends AbstractController
             'next_id'   => $next_id,
             'count_transactions'    => $count_transactions,
             'count_messages'        => $count_messages,
-            'intersystem_missing'   => $intersystem_missing,
-            'intersystem_id'        => $intersystem_id,
+            'is_intersystem'        => $is_intersystem,
             'tags_form'             => $tags_form,
             'render_tags'           => $render_tags,
         ]);

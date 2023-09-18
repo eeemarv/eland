@@ -121,59 +121,78 @@ jQuery(function(){
 
 				var filter = function(users){
 					return $.map(users, function(user){
-						var cl = '';
+						var cl = null;
+						var has_code = false;
+						var has_remote_schema = false;
+						var has_remote_email = false;
+						var has_activated_at = false;
 
-						switch (user.s){
-							case 0:
-								cl = ' class="inactive"';
-								break;
-							case 1:
-								if (show_new_status && (user.a && (user.a > new_users_treshold))){
-									cl = ' class="success"';
-								}
-								break;
-							case 2:
-								if (show_leaving_status){
-									cl = ' class="danger"';
-								}
-								break;
-							case 3:
-								cl = ' class="success"';
-								break;
-							case 5:
-								cl = ' class="info-pack"';
-								break;
-							case 6:
-								cl = ' class="info"';
-								break;
-							case 7:
-								cl = ' class="warning"';
-								break;
-							default:
-								break;
+						if (user.hasOwnProperty('code') && user.code !== null){
+							has_code = true;
+						}
+						if (user.hasOwnProperty('remote_schema') && user.remote_schema !== null){
+							has_remote_schema = true;
+						}
+						if (user.hasOwnProperty('remote_email') && user.remote_email !== null){
+							has_remote_email = true;
+						}
+						if (user.hasOwnProperty('activated_at') && user.activated_at !== null){
+							has_activated_at = true;
+						}
+
+						if (user.is_active){
+							if (has_remote_schema || has_remote_email){
+								cl = 'warning';
+							} else if (show_new_status
+								&& has_activated_at
+								&& (user.activated_at > new_users_treshold)){
+								cl = 'success';
+							} else if (show_leaving_status && user.is_leaving){
+								cl = 'danger';
+							}
+						} else if (has_activated_at){
+							cl = 'inactive';
+						} else {
+							cl = 'info';
+						}
+
+						var has_class = false;
+						if (cl !== null){
+							has_class = true;
 						}
 
 						var val = '';
 
-						if (user.c != undefined)
+						if (has_code)
 						{
-							val += user.c + ' ';
+							val += user.code + ' ';
 						}
 
-						val += user.n;
+						val += user.name;
 
-						if ('api' in user && user.api == 'mail')
-						{
-							val += ' (manueel interSysteem)';
-						}
-
-						return {
+						var ret = {
 							value: val,
-							code: user.c,
-							name: user.n,
-							class: cl,
-							api: user.api
+							name: user.name,
+							has_class: has_class,
+							has_code: has_code,
+							has_remote_schema: has_remote_schema,
+							has_remote_email: has_remote_email
 						};
+
+						if (has_class){
+							ret.class = cl;
+						}
+						if (has_code){
+							ret.code = user.code;
+						}
+						if (has_remote_schema){
+							ret.remote_schema = user.remote_schema;
+						}
+						if (has_remote_email){
+							ret.has_remote_email = user.remote_email;
+						}
+
+						return ret;
 					});
 				}
 
@@ -183,15 +202,21 @@ jQuery(function(){
 
 				var templates = {
 					suggestion: function(data) {
-						var tpl = '<p' + data.class + '>';
-						if (data.code != undefined){
-							tpl += '<strong>' + data.code + '</strong> ';
+						var tpl = '<p';
+						if (data.has_class){
+							tpl += ' class="';
+							tpl += data.class;
+							tpl += '"';
+						}
+						tpl += '>';
+						if (data.has_code){
+							tpl += '<strong>';
+							tpl += data.code;
+							tpl += '</strong> ';
 						}
 						tpl += data.name;
-						if (data.api != undefined){
-							tpl += ' <small>(manueel InterSysteem)</small>';
-						}
-						return tpl + '</p>';
+						tpl += '</p>';
+						return tpl;
 					}
 				};
 

@@ -35,18 +35,13 @@ class TransactionsFilterType extends AbstractType
 
         $typeahead_add = [];
 
-        $typeahead_add[] = ['accounts', ['status' => 'active']];
-
-        if (!$this->pp->is_guest())
-        {
-            $typeahead_add[] = ['accounts', ['status' => 'extern']];
-        }
+        $typeahead_add[] = ['accounts', ['status' => 'active-user']];
+        $typeahead_add[] = ['accounts', ['status' => 'intersystem']];
 
         if ($this->pp->is_admin())
         {
-            $typeahead_add[] = ['accounts', ['status' => 'inactive']];
-            $typeahead_add[] = ['accounts', ['status' => 'im']];
-            $typeahead_add[] = ['accounts', ['status' => 'ip']];
+            $typeahead_add[] = ['accounts', ['status' => 'pre-active']];
+            $typeahead_add[] = ['accounts', ['status' => 'post-active']];
         }
 
         $builder->add('q', TextType::class, [

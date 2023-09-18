@@ -9,6 +9,7 @@ use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
+use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
@@ -25,7 +26,7 @@ class UsersMapController extends AbstractController
         methods: ['GET'],
         priority: 20,
         requirements: [
-            'status'        => '%assert.account_status%',
+            'status'        => '%assert.account_status.all%',
             'system'        => '%assert.system%',
             'role_short'    => '%assert.role_short.guest%',
         ],
@@ -45,18 +46,18 @@ class UsersMapController extends AbstractController
         ConfigService $config_service,
         PageParamsService $pp,
         SessionUserService $su,
+        VarRouteService $vr,
         string $env_map_access_token,
         string $env_map_tiles_url
     ):Response
     {
         if (!$pp->is_admin()
-            && !in_array($status, ['active', 'new', 'leaving']))
+            && !in_array($status, ['active', 'new', 'leaving', 'intersystem']))
         {
             throw new AccessDeniedHttpException('No access for this user status');
         }
 
         $ref_geo = [];
-        $params = ['status' => $status];
 
         $status_def_ary = UsersListController::get_status_def_ary(
             $config_service,
@@ -64,28 +65,49 @@ class UsersMapController extends AbstractController
             $pp
         );
 
-        $sql = [
+        $params = [
+            'status'    => $status,
+        ];
+
+        $sql_map = [
             'where'     => [],
             'params'    => [],
             'types'     => [],
         ];
 
+        $sql = [];
+        $sql['common'] = $sql_map;
+        $sql['common']['where'][] = '1 = 1';
+
+        $sql['status'] = $sql_map;
+
         foreach ($status_def_ary[$status]['sql'] as $st_def_key => $def_sql_ary)
         {
             foreach ($def_sql_ary as $def_val)
             {
-                $sql[$st_def_key][] = $def_val;
+                if (is_array($def_val) && $st_def_key = 'where')
+                {
+                    $wh_or = '(';
+                    $wh_or .= implode(' or ', $def_val);
+                    $wh_or .= ')';
+                    $sql['status'][$st_def_key][] = $wh_or;
+                    continue;
+                }
+
+                $sql['status'][$st_def_key][] = $def_val;
             }
         }
 
-        $sql_where = ' and ' . implode(' and ', $sql['where']);
+        $sql_where = implode(' and ', array_merge(...array_column($sql, 'where')));
+        $sql_params = array_merge(...array_column($sql, 'params'));
+        $sql_types = array_merge(...array_column($sql, 'types'));
 
         $users = $db->fetchAllAssociative('select u.*
             from ' . $pp->schema() . '.users u
-            where 1 = 1 ' . $sql_where . '
+            where ' . $sql_where . '
             order by u.code asc',
-            $sql['params'],
-            $sql['types']);
+            $sql_params,
+            $sql_types);
 
         $adr_ary = [];
 
@@ -197,7 +219,16 @@ class UsersMapController extends AbstractController
             'tiles_url' => $env_map_tiles_url,
         ]);
 
-        $out = '<div class="row">';
+        $out = UsersListController::get_tab_selector(
+            $params,
+            $link_render,
+            $item_access_service,
+            $config_service,
+            $pp,
+            $vr
+        );
+
+        $out .= '<div class="row">';
         $out .= '<div class="col-md-12">';
         $out .= '<div class="users_map" id="map" ';
         $out .= 'data-map="';

@@ -5,7 +5,6 @@ namespace App\Controller\Users;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Cnst\StatusCnst;
 use App\Form\Type\Filter\QTextSearchFilterType;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
@@ -26,7 +25,7 @@ class UsersTilesController extends AbstractController
         methods: ['GET'],
         priority: 20,
         requirements: [
-            'status'        => '%assert.account_status%',
+            'status'        => '%assert.account_status.all%',
             'system'        => '%assert.system%',
             'role_short'    => '%assert.role_short.guest%',
         ],
@@ -48,7 +47,7 @@ class UsersTilesController extends AbstractController
         string $env_s3_url
     ):Response
     {
-        if (!$pp->is_admin() && !in_array($status, ['active', 'new', 'leaving']))
+        if (!$pp->is_admin() && !in_array($status, ['active', 'new', 'leaving', 'intersystem']))
         {
             throw new AccessDeniedHttpException('No access for status: ' . $status);
         }
@@ -59,6 +58,22 @@ class UsersTilesController extends AbstractController
 
         $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
 
+        $show_new_list = $new_users_enabled;
+
+        if ($show_new_list)
+        {
+            $new_users_access_list = $config_service->get_str('users.new.access_list', $pp->schema());
+            $show_new_list = $item_access_service->is_visible($new_users_access_list);
+        }
+
+        $show_leaving_list = $leaving_users_enabled;
+
+        if ($show_leaving_list)
+        {
+            $leaving_users_access_list = $config_service->get_str('users.leaving.access_list', $pp->schema());
+            $show_leaving_list = $item_access_service->is_visible($leaving_users_access_list);
+        }
+
         $filter_form = $this->createForm(QTextSearchFilterType::class);
         $filter_form->handleRequest($request);
 
@@ -66,27 +81,45 @@ class UsersTilesController extends AbstractController
 
         $status_def_ary = UsersListController::get_status_def_ary($config_service, $item_access_service, $pp);
 
-        $sql = [
+        $sql_map = [
             'where'     => [],
             'params'    => [],
             'types'     => [],
         ];
 
+        $sql = [];
+        $sql['common'] = $sql_map;
+        $sql['common']['where'][] = '1 = 1';
+
+        $sql['status'] = $sql_map;
+
         foreach ($status_def_ary[$status]['sql'] as $st_def_key => $def_sql_ary)
         {
             foreach ($def_sql_ary as $def_val)
             {
-                $sql[$st_def_key][] = $def_val;
+                if (is_array($def_val) && $st_def_key = 'where')
+                {
+                    $wh_or = '(';
+                    $wh_or .= implode(' or ', $def_val);
+                    $wh_or .= ')';
+                    $sql['status'][$st_def_key][] = $wh_or;
+                    continue;
+                }
+
+                $sql['status'][$st_def_key][] = $def_val;
             }
         }
 
-        $sql_where = ' and ' . implode(' and ', $sql['where']);
+        $sql_where = implode(' and ', array_merge(...array_column($sql, 'where')));
+        $sql_params = array_merge(...array_column($sql, 'params'));
+        $sql_types = array_merge(...array_column($sql, 'types'));
 
         $users = $db->fetchAllAssociative('select u.*
             from ' . $pp->schema() . '.users u
-            where 1 = 1 ' . $sql_where . '
+            where ' . $sql_where . '
             order by u.code asc',
-            $sql['params'], $sql['types']);
+            $sql_params,
+            $sql_types);
 
         $out = UsersListController::get_tab_selector(
             $params,
@@ -120,19 +153,44 @@ class UsersTilesController extends AbstractController
 
         foreach ($users as $u)
         {
-            $row_stat = $u['status'];
+            $is_remote = isset($u['remote_schema']) || isset($u['remote_email']);
+            $is_active = $u['is_active'];
+            $is_leaving = $u['is_leaving'];
+            $post_active = isset($u['activated_at']);
+            $is_new = false;
 
-            if (isset($u['activated_at'])
-                && $new_users_enabled
-                && $u['status'] == 1
-                && $new_user_treshold->getTimestamp() < strtotime($u['activated_at'] . ' UTC'))
+            if ($post_active)
             {
-                $row_stat = 3;
+                if ($new_user_treshold->getTimestamp() < strtotime($u['activated_at'] . ' UTC'))
+                {
+                    $is_new = true;
+                }
             }
 
-            if ($row_stat === 2 && !$leaving_users_enabled)
+            $tile_class = null;
+
+            if ($is_active)
             {
-                $row_stat = 1;
+                if ($is_remote)
+                {
+                    $tile_class = 'warning';
+                }
+                else if ($is_leaving && $show_leaving_list)
+                {
+                    $tile_class = 'danger';
+                }
+                else if ($is_new && $show_new_list)
+                {
+                    $tile_class = 'success';
+                }
+            }
+            else if ($post_active)
+            {
+                $tile_class = 'inactive';
+            }
+            else
+            {
+                $tile_class = 'info';
             }
 
             $url = $link_render->context_path('users_show', $pp->ary(),
@@ -141,10 +199,10 @@ class UsersTilesController extends AbstractController
             $out .= '<div class="col-xs-4 col-md-3 col-lg-2 tile">';
             $out .= '<div';
 
-            if (isset(StatusCnst::CLASS_ARY[$row_stat]))
+            if (isset($tile_class))
             {
                 $out .= ' class="bg-';
-                $out .= StatusCnst::CLASS_ARY[$row_stat];
+                $out .= $tile_class;
                 $out .= '"';
             }
 

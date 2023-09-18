@@ -69,8 +69,7 @@ class UsersDelController extends AbstractController
             where id_to = ? or id_from = ?',
             [$id, $id], [\PDO::PARAM_INT, \PDO::PARAM_INT]))
         {
-            throw new AccessDeniedHttpException('Een gebruiker met transacties
-                kan niet worden verwijderd.');
+            throw new AccessDeniedHttpException('An account with transactions can not get removed.');
         }
 
         $user = $user_cache_service->get($id, $pp->schema());

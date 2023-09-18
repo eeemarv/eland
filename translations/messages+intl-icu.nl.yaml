@@ -338,14 +338,14 @@ service_stuff:
 status:
   all: Alle
   active: Actief
-  extern: Extern
+  active_user: Actief
+  intersystem: InterSysteem
   leaving: Uitstappers
   leaving_only: Enkel uitstappers
-  im: Instap-moment
-  inactive: Inactief
-  ip: Instap-pakket
   new: Instappers
   new_only: Enkel instappers
+  post_active: Post-actief
+  pre_active: Pre-actief
 
 system_menu:
   linked_intersystem: Gekoppeld interSysteem

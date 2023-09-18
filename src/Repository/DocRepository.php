@@ -55,7 +55,7 @@ class DocRepository
 				group by dm.name, dm.id) s
 			where s.id = ?',
             [$visible_ary, $map_id],
-            [ArrayParameterType::STRING, ArrayParameterType::INTEGER]);
+            [ArrayParameterType::STRING, \PDO::PARAM_INT]);
 
 		if ($map === false)
 		{

@@ -212,7 +212,9 @@ class MessagesShowController extends AbstractController
 
         if (!$pp->is_admin())
         {
-            $sql_where[] = 'u.status in (1, 2)';
+            $sql_where[] = 'u.is_active';
+            $sql_where[] = 'u.remote_schema is null';
+            $sql_where[] = 'u.remote_email is null';
         }
 
         $sql_where = count($sql_where) ? ' and ' . implode(' and ', $sql_where) : '';

@@ -51,6 +51,10 @@ class ContactsController extends AbstractController
         ItemAccessService $item_access_service
     ):Response
     {
+        $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
+        $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
+        $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
+
         $filter_command = new ContactsFilterCommand();
 
         $uid = $request->query->get('uid');
@@ -179,7 +183,6 @@ class ContactsController extends AbstractController
 
         $sql_map = [
             'where'     => [],
-            'where_or'  => [],
             'params'    => [],
             'types'     => [],
         ];
@@ -216,30 +219,31 @@ class ContactsController extends AbstractController
         if (isset($filter_command->access))
         {
             $sql['access'] = $sql_map;
+            $wh_or = [];
 
             if (in_array('admin', $filter_command->access))
             {
-                $sql['access']['where_or'][] = 'c.access = \'admin\'';
+                $wh_or[] = 'c.access = \'admin\'';
             }
 
             if (in_array('user', $filter_command->access))
             {
-                $sql['access']['where_or'][] = 'c.access = \'user\'';
+                $wh_or[] = 'c.access = \'user\'';
 
                 if (!$intersystem_enabled)
                 {
-                    $sql['access']['where_or'][] = 'c.access = \'guest\'';
+                    $wh_or[] = 'c.access = \'guest\'';
                 }
             }
 
             if (in_array('guest', $filter_command->access) && $intersystem_enabled)
             {
-                $sql['access']['where_or'][] = 'c.access = \'guest\'';
+                $wh_or[] = 'c.access = \'guest\'';
             }
 
-            if (count($sql['access']['where_or']))
+            if (count($wh_or))
             {
-                $sql['access']['where'][] = ' (' . implode(' or ', $sql['access']['where_or']) . ') ';
+                $sql['access']['where'][] = ' (' . implode(' or ', $wh_or) . ') ';
             }
         }
 
@@ -249,28 +253,40 @@ class ContactsController extends AbstractController
 
             switch ($filter_command->ustatus)
             {
+                case 'active':
+                    $sql['ustatus']['where'][]= 'u.is_active';
+                    break;
                 case 'new':
-                    $sql['ustatus']['where'][]= 'u.activated_at > ? and u.status = 1';
+                    $sql['ustatus']['where'][]= 'u.activated_at > ?';
+                    $sql['ustatus']['where'][]= 'u.is_active';
+                    $sql['ustatus']['where'][]= 'not u.is_leaving';
+                    $sql['ustatus']['where'][]= 'u.remote_schema is null';
+                    $sql['ustatus']['where'][]= 'u.remote_email is null';
                     $sql['ustatus']['params'][]= $config_service->get_new_user_treshold($pp->schema());
                     $sql['ustatus']['types'][]= Types::DATETIME_IMMUTABLE;
                     break;
                 case 'leaving':
-                    $sql['ustatus']['where'][]= 'u.status = 2';
+                    $sql['ustatus']['where'][]= 'u.is_leaving';
+                    $sql['ustatus']['where'][]= 'u.is_active';
+                    $sql['ustatus']['where'][]= 'u.remote_schema is null';
+                    $sql['ustatus']['where'][]= 'u.remote_email is null';
                     break;
-                case 'active':
-                    $sql['ustatus']['where'][]= 'u.status in (1, 2)';
+                case 'intersystem':
+                    $wh_or = [
+                        'u.remote_schema is not null',
+                        'u.remote_email is not null',
+                    ];
+
+                    $sql['ustatus']['where'][]= 'u.is_active';
+                    $sql['ustatus']['where'][]= '(' . implode(' or ', $wh_or) . ')';
                     break;
-                case 'inactive':
-                    $sql['ustatus']['where'][]= 'u.status = 0';
+                case 'pre-active':
+                    $sql['ustatus']['where'][]= 'not u.is_active';
+                    $sql['ustatus']['where'][]= 'u.activated_at is null';
                     break;
-                case 'ip':
-                    $sql['ustatus']['where'][]= 'u.status = 5';
-                    break;
-                case 'im':
-                    $sql['ustatus']['where'][]= 'u.status = 6';
-                    break;
-                case 'extern':
-                    $sql['ustatus']['where'][]= 'u.status = 7';
+                case 'post-active':
+                    $sql['ustatus']['where'][]= 'not u.is_active';
+                    $sql['ustatus']['where'][]= 'u.activated_at is not null';
                     break;
                 default:
                     break;
@@ -289,7 +305,10 @@ class ContactsController extends AbstractController
         $sql_params = array_merge(...array_column($sql, 'params'));
         $sql_types = array_merge(...array_column($sql, 'types'));
 
-        $query = 'select c.*, tc.abbrev
+        $query = 'select c.*, tc.abbrev,
+            u.is_active, u.is_leaving,
+            u.remote_schema, u.remote_email,
+            u.activated_at
             from ' . $pp->schema() . '.contact c
             inner join ' . $pp->schema() . '.type_contact tc
                 on c.id_type_contact = tc.id
@@ -467,46 +486,109 @@ class ContactsController extends AbstractController
 
         foreach ($contacts as $c)
         {
-        	$td = [];
+            $is_remote = isset($c['remote_schema']) || isset($c['remote_email']);
+            $is_active = $c['is_active'];
+            $is_leaving = $c['is_leaving'];
+            $post_active = isset($c['activated_at']);
+            $is_new = false;
+            if ($post_active)
+            {
+                if ($new_user_treshold->getTimestamp() < strtotime($c['activated_at'] . ' UTC'))
+                {
+                    $is_new = true;
+                }
+            }
 
-            $td[] = strtr(BulkCnst::TPL_CHECKBOX_ITEM, [
+            $u_class = null;
+
+            if ($is_active)
+            {
+                if ($is_remote)
+                {
+                    $u_class = 'warning';
+                }
+                else if ($is_leaving && $leaving_users_enabled)
+                {
+                    $u_class = 'danger';
+                }
+                else if ($is_new && $new_users_enabled)
+                {
+                    $u_class = 'success';
+                }
+            }
+            else if ($post_active)
+            {
+                $u_class = 'inactive';
+            }
+            else
+            {
+                $u_class = 'info';
+            }
+
+            $out .= '<tr>';
+            $out .= '<td>';
+
+            $out .= strtr(BulkCnst::TPL_CHECKBOX_ITEM, [
                 '%id%'      => $c['id'],
                 '%attr%'    => isset($selected_contacts[$c['id']]) ? ' checked' : '',
                 '%label%'   => $c['abbrev'],
             ]);
 
+            $out .= '</td>';
+            $out .= '<td>';
+
             if (isset($c['value']))
             {
-                $td[] = $link_render->link_no_attr('contacts_edit', $pp->ary(),
+                $out .= $link_render->link_no_attr('contacts_edit', $pp->ary(),
                     ['id' => $c['id']], $c['value']);
             }
             else
             {
-                $td[] = '&nbsp;';
+                $out .= '&nbsp;';
             }
 
-            $td[] = $account_render->link($c['user_id'], $pp->ary());
+            $out .= '</td>';
+            $out .= '<td';
+
+            if (isset($u_class))
+            {
+                $out .= ' class="';
+                $out .= $u_class;
+                $out .= '"';
+            }
+
+            $out .= '>';
+
+            $out .= $account_render->link($c['user_id'], $pp->ary());
+
+            $out .= '</td>';
+            $out .= '<td>';
 
             if (isset($c['comments']))
             {
-                $td[] = $link_render->link_no_attr('contacts_edit', $pp->ary(),
+                $out .= $link_render->link_no_attr('contacts_edit', $pp->ary(),
                     ['id' => $c['id']], $c['comments']);
             }
             else
             {
-                $td[] = '&nbsp;';
+                $out .= '&nbsp;';
             }
 
-            $td[] = $item_access_service->get_label($c['access']);
+            $out .= '</td>';
+            $out .= '<td>';
 
-            $td[] = $link_render->link_fa('contacts_del_admin', $pp->ary(),
+            $out .= $item_access_service->get_label($c['access']);
+
+            $out .= '</td>';
+            $out .= '<td>';
+
+            $out .= $link_render->link_fa('contacts_del_admin', $pp->ary(),
                 ['id' => $c['id']], 'Verwijderen',
                 ['class' => 'btn btn-danger'],
                 'times');
 
-            $out .= '<tr><td>';
-            $out .= implode('</td><td>', $td);
-            $out .= '</td></tr>';
+            $out .= '</td>';
+            $out .= '</tr>';
         }
 
         $out .= '</tbody>';

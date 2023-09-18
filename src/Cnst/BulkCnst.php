@@ -34,6 +34,7 @@ class BulkCnst
             'string'	=> true,
             'fa'		=> 'comment-o',
         ],
+/*
         'role'		=> [
             'lbl'		=> 'Rechten',
             'options'	=> RoleCnst::LABEL_ARY,
@@ -45,6 +46,7 @@ class BulkCnst
             'options'	=> StatusCnst::LABEL_ARY,
             'fa'		=> 'star-o',
         ],
+*/
         'admin_comments'		=> [
             'lbl'		=> 'Commentaar van de Admin',
             'type'		=> 'text',

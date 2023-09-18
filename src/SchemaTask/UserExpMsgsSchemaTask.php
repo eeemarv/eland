@@ -71,7 +71,7 @@ class UserExpMsgsSchemaTask implements SchemaTaskInterface
 		if ($update)
 		{
 			$this->db->executeStatement('update ' . $schema . '.messages
-				set exp_user_warn = \'t\'
+				set exp_user_warn = \'t\'::bool
 				where expires_at < ?',
 				[$now], [Types::DATETIME_IMMUTABLE]);
 		}

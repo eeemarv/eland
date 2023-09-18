@@ -4,7 +4,6 @@ namespace App\Controller\Typeahead;
 
 use App\Service\PageParamsService;
 use App\Service\TypeaheadService;
-use Doctrine\DBAL\ArrayParameterType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
@@ -19,7 +18,7 @@ class TypeaheadAccountsController extends AbstractController
         name: 'typeahead_accounts',
         methods: ['GET'],
         requirements: [
-            'status'        => '%assert.account_status.primary%',
+            'status'        => '%assert.account_status.typeahead%',
             'system'        => '%assert.system%',
             'role_short'    => '%assert.role_short.guest%',
             'thumbprint'    => '%assert.thumbprint%',
@@ -37,12 +36,12 @@ class TypeaheadAccountsController extends AbstractController
         PageParamsService $pp
     ):Response
     {
-        if ($pp->is_guest() && $status !== 'active')
+        if ($pp->is_guest() && $status !== 'active-user')
         {
             return $this->json(['error' => 'No access.'], 403);
         }
 
-        if(!$pp->is_admin() && !in_array($status, ['active', 'extern']))
+        if(!$pp->is_admin() && !in_array($status, ['active-user', 'intersystem']))
         {
             return $this->json(['error' => 'No access.'], 403);
         }
@@ -58,47 +57,70 @@ class TypeaheadAccountsController extends AbstractController
             return new Response($cached, 200, ['Content-Type' => 'application/json']);
         }
 
-        $status_ary = [];
-
-        switch($status)
+        $wh_ary = match($status)
         {
-            case 'extern':
-                $status_ary[] = 7;
-                break;
-            case 'inactive':
-                $status_ary[] = 0;
-                break;
-            case 'ip':
-                $status_ary[] = 5;
-                break;
-            case 'im':
-                $status_ary[] = 6;
-                break;
-            case 'active':
-                $status_ary[] = 1;
-                $status_ary[] = 2;
-                break;
-            default:
-                return $this->json([
-                    'error' => 'Non existing or allowed status code.',
-                ], 404);
-                break;
+            'intersystem'   => [
+                [
+                    'u.remote_schema is not null',
+                    'u.remote_email is not null'
+                ],
+                'u.is_active',
+            ],
+            'active-user'  => [
+                'u.is_active',
+                'u.remote_schema is null',
+                'u.remote_email is null',
+            ],
+            'pre-active'    => [
+                'not u.is_active',
+                'u.activated_at is null',
+            ],
+            'post-active'    => [
+                'not u.is_active',
+                'u.activated_at is not null',
+            ],
+            default => [],
+        };
+
+        if (!count($wh_ary))
+        {
+            return $this->json([
+                'error' => 'Non existing or allowed status code.',
+            ], 404);
+        }
+
+        $sql_where = '';
+
+        foreach ($wh_ary as $wh)
+        {
+            if ($sql_where !== '')
+            {
+                $sql_where .= ' and ';
+            }
+
+            if (is_array($wh))
+            {
+                $sql_where .= '(';
+                $sql_where .= implode(' or ', $wh);
+                $sql_where .= ')';
+                continue;
+            }
+
+            $sql_where .= $wh;
         }
 
         $res = $db->executeQuery(
             'select id,
-                code as c,
-                name as n,
-                extract(epoch from activated_at)::int as a,
-                status as s,
+                code,
+                name,
+                extract(epoch from activated_at)::int as activated_at,
+                is_active,
+                is_leaving,
                 remote_schema,
                 remote_email
-            from ' . $pp->schema() . '.users
-            where status in (?)
-            order by id asc',
-            [$status_ary],
-            [ArrayParameterType::INTEGER]
-        );
+            from ' . $pp->schema() . '.users u
+            where ' . $sql_where . '
+            order by id asc');
 
         $accounts = [];
 

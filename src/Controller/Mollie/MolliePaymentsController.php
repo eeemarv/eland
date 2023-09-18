@@ -198,17 +198,17 @@ class MolliePaymentsController extends AbstractController
 
             if (in_array('open', $filter_command->status))
             {
-                $sql['status']['where_or'][] = '(p.is_paid = \'f\'::bool and p.is_canceled = \'f\'::bool)';
+                $sql['status']['where_or'][] = '(not p.is_paid and not p.is_canceled)';
             }
 
             if (in_array('paid', $filter_command->status))
             {
-                $sql['status']['where_or'][] = 'p.is_paid = \'t\'::bool';
+                $sql['status']['where_or'][] = 'p.is_paid';
             }
 
             if (in_array('canceled', $filter_command->status))
             {
-                $sql['status']['where_or'][] = 'p.is_canceled = \'t\'::bool';
+                $sql['status']['where_or'][] = 'p.is_canceled';
             }
 
             if (count($sql['status']['where_or']))
@@ -341,7 +341,7 @@ class MolliePaymentsController extends AbstractController
             inner join ' . $pp->schema() . '.users u
                 on p.user_id = u.id
             where ' . $sql_omit_status_where . '
-                and p.is_canceled = \'t\'::bool',
+                and p.is_canceled',
             $sql_omit_status_params,
             $sql_omit_status_types);
 

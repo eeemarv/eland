@@ -453,8 +453,9 @@ li.active-group a:visited, li.active-group a:hover
   color: white;
 }
 
-.label-sm {
-  font-size: 12px;
+.label-lg {
+  font-size: 18px;
+  line-height: 30px;
 }
 .no-radius {
   border-radius: 0;
