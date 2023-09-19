@@ -410,9 +410,6 @@
     "symfony/property-info": {
         "version": "v5.1.8"
     },
-    "symfony/proxy-manager-bridge": {
-        "version": "v5.1.7"
-    },
     "symfony/requirements-checker": {
         "version": "2.0",
         "recipe": {

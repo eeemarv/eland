@@ -11,17 +11,14 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class TagsListType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options):void
     {
-        $builder
-            ->add('tags', HiddenType::class)
-            ->add('submit', SubmitType::class);
+        $builder->add('tags', HiddenType::class);
+        $builder->add('submit', SubmitType::class);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver):void
     {
-        $resolver->setDefaults([
-            'data_class'    => TagsListCommand::class,
-        ]);
+        $resolver->setDefault('data_class', TagsListCommand::class);
     }
 }

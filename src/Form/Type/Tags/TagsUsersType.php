@@ -11,19 +11,16 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class TagsUsersType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options):void
     {
-        $builder
-            ->add('tags', TagsType::class, [
-                'tag_type'  => 'users',
-            ])
-            ->add('submit', SubmitType::class);
+        $builder->add('tags', TagsType::class, [
+            'tag_type'  => 'users',
+        ]);
+        $builder->add('submit', SubmitType::class);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver):void
     {
-        $resolver->setDefaults([
-            'data_class'    => TagsUsersCommand::class,
-        ]);
+        $resolver->setDefault('data_class', TagsUsersCommand::class);
     }
 }

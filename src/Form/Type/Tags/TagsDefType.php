@@ -21,7 +21,7 @@ class TagsDefType extends AbstractType
     {
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options):void
     {
         $opt_ary = [];
 
@@ -30,26 +30,23 @@ class TagsDefType extends AbstractType
             $opt_ary['disabled'] = true;
         }
 
-        $builder
-            ->add('txt', TypeaheadType::class, [
-                ...$opt_ary,
-                'render_omit'   => $options['txt_omit'],
-                'add'           => [['tags_text', ['tag_type' => $options['tag_type']]]],
-            ])
-            ->add('bg_color', ColorType::class, $opt_ary)
-            ->add('txt_color', ColorType::class, $opt_ary)
-            ->add('description', TextType::class, $opt_ary)
-            ->add('submit', SubmitType::class);
+        $builder->add('txt', TypeaheadType::class, [
+            ...$opt_ary,
+            'render_omit'   => $options['txt_omit'],
+            'add'           => [['tags_text', ['tag_type' => $options['tag_type']]]],
+        ]);
+        $builder->add('bg_color', ColorType::class, $opt_ary);
+        $builder->add('txt_color', ColorType::class, $opt_ary);
+        $builder->add('description', TextType::class, $opt_ary);
+        $builder->add('submit', SubmitType::class);
 
-        $builder
-            ->get('bg_color')
+        $builder->get('bg_color')
             ->addModelTransformer($this->color_transformer);
-        $builder
-            ->get('txt_color')
+        $builder->get('txt_color')
             ->addModelTransformer($this->color_transformer);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver):void
     {
         $resolver->setDefault('del', false);
         $resolver->setAllowedTypes('del', 'bool');
