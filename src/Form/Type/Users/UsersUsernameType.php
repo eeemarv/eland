@@ -22,7 +22,7 @@ class UsersUsernameType extends AbstractType
         $builder->add('submit', SubmitType::class);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver):void
     {
         $resolver->setDefault('data_class', UsersUsernameCommand::class);
     }
