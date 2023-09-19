@@ -27,11 +27,10 @@ class LogsFilterType extends AbstractType
 
         $builder->add('user', TypeaheadType::class, [
             'add'   => [
-                ['accounts', ['status' => 'active']],
-                ['accounts', ['status' => 'inactive']],
-                ['accounts', ['status' => 'ip']],
-                ['accounts', ['status' => 'im']],
-                ['accounts', ['status' => 'extern']],
+                ['accounts', ['status' => 'active-user']],
+                ['accounts', ['status' => 'intersystem']],
+                ['accounts', ['status' => 'pre-active']],
+                ['accounts', ['status' => 'post-active']],
             ],
             'filter'    => 'accounts',
             'required'  => false,
@@ -53,10 +52,8 @@ class LogsFilterType extends AbstractType
         return 'f';
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver):void
     {
-        $resolver->setDefaults([
-            'data_class'    => LogsFilterCommand::class,
-        ]);
+        $resolver->setDefault('data_class', LogsFilterCommand::class);
     }
 }

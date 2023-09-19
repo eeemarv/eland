@@ -127,27 +127,27 @@ jQuery(function(){
 						var has_remote_email = false;
 						var has_activated_at = false;
 
-						if (user.hasOwnProperty('code') && user.code !== null){
+						if (user.hasOwnProperty('c') && user.c !== null){
 							has_code = true;
 						}
-						if (user.hasOwnProperty('remote_schema') && user.remote_schema !== null){
+						if (user.hasOwnProperty('rs') && user.rs !== null){
 							has_remote_schema = true;
 						}
-						if (user.hasOwnProperty('remote_email') && user.remote_email !== null){
+						if (user.hasOwnProperty('re') && user.re !== null){
 							has_remote_email = true;
 						}
-						if (user.hasOwnProperty('activated_at') && user.activated_at !== null){
+						if (user.hasOwnProperty('aa') && user.aa !== null){
 							has_activated_at = true;
 						}
 
-						if (user.is_active){
+						if (user.ia){
 							if (has_remote_schema || has_remote_email){
 								cl = 'warning';
 							} else if (show_new_status
 								&& has_activated_at
-								&& (user.activated_at > new_users_treshold)){
+								&& (user.aa > new_users_treshold)){
 								cl = 'success';
-							} else if (show_leaving_status && user.is_leaving){
+							} else if (show_leaving_status && user.il){
 								cl = 'danger';
 							}
 						} else if (has_activated_at){
@@ -165,31 +165,27 @@ jQuery(function(){
 
 						if (has_code)
 						{
-							val += user.code + ' ';
+							val += user.c + ' ';
 						}
 
-						val += user.name;
+						val += user.n;
 
 						var ret = {
 							value: val,
-							name: user.name,
-							has_class: has_class,
-							has_code: has_code,
-							has_remote_schema: has_remote_schema,
-							has_remote_email: has_remote_email
+							n: user.n
 						};
 
 						if (has_class){
-							ret.class = cl;
+							ret.cl = cl;
 						}
 						if (has_code){
-							ret.code = user.code;
+							ret.c = user.c;
 						}
 						if (has_remote_schema){
-							ret.remote_schema = user.remote_schema;
+							ret.rs = user.rs;
 						}
 						if (has_remote_email){
-							ret.has_remote_email = user.remote_email;
+							ret.re = user.re;
 						}
 
 						return ret;
@@ -203,18 +199,18 @@ jQuery(function(){
 				var templates = {
 					suggestion: function(data) {
 						var tpl = '<p';
-						if (data.has_class){
+						if (data.hasOwnProperty('cl')){
 							tpl += ' class="';
-							tpl += data.class;
+							tpl += data.cl;
 							tpl += '"';
 						}
 						tpl += '>';
-						if (data.has_code){
+						if (data.hasOwnProperty('c')){
 							tpl += '<strong>';
-							tpl += data.code;
+							tpl += data.c;
 							tpl += '</strong> ';
 						}
-						tpl += data.name;
+						tpl += data.n;
 						tpl += '</p>';
 						return tpl;
 					}

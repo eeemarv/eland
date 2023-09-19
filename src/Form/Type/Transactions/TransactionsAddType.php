@@ -24,21 +24,21 @@ class TransactionsAddType extends AbstractType
     {
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options):void
     {
+        $service_stuff_enabled = $this->config_service->get_bool('transactions.fields.service_stuff.enabled', $this->pp->schema());
+
         $from_remote_account_options = [];
         $to_remote_account_options = [];
 
         $typeahead_add = [];
-        $typeahead_add[] = ['accounts', ['status' => 'active']];
-        $typeahead_add[] = ['accounts', ['status' => 'extern']];
+        $typeahead_add[] = ['accounts', ['status' => 'active-user']];
+        $typeahead_add[] = ['accounts', ['status' => 'intersystem']];
 
         if ($this->pp->is_admin())
         {
-
-            $typeahead_add[] = ['accounts', ['status' => 'inactive']];
-            $typeahead_add[] = ['accounts', ['status' => 'im']];
-            $typeahead_add[] = ['accounts', ['status' => 'ip']];
+            $typeahead_add[] = ['accounts', ['status' => 'pre-active']];
+            $typeahead_add[] = ['accounts', ['status' => 'post-active']];
         }
 
         $local_typeahead_options = [
@@ -55,32 +55,25 @@ class TransactionsAddType extends AbstractType
 
         $remote_amount_options = [];
 
-
-
-        // $service_stuff_enabled = $this->config_service->get_bool('transactions.fields.service_stuff.enabled', $this->pp->schema());
-
-        $builder
-            ->add('from_id', TypeaheadType::class, $from_id_options)
-            ->add('from_remote_account', TextType::class, $from_remote_account_options)
-            ->add('to_id', TypeaheadType::class, $to_id_options)
-            ->add('to_remote_id', TypeaheadType::class, $to_remote_id_options)
-            ->add('to_remote_account', TextType::class, $to_remote_account_options)
-            ->add('amount', IntegerType::class)
-            ->add('remote_amount', IntegerType::class)
-            ->add('description', TextType::class)
-            ->add('service_stuff', BtnChoiceType::class, [
+        $builder->add('from_id', TypeaheadType::class, $from_id_options);
+        $builder->add('from_remote_account', TextType::class, $from_remote_account_options);
+        $builder->add('to_id', TypeaheadType::class, $to_id_options);
+        $builder->add('to_remote_id', TypeaheadType::class, $to_remote_id_options);
+        $builder->add('to_remote_account', TextType::class, $to_remote_account_options);
+        $builder->add('amount', IntegerType::class);
+        $builder->add('remote_amount', IntegerType::class);
+        $builder->add('description', TextType::class);
+        $builder->add('service_stuff', BtnChoiceType::class, [
                 'choices'       => [
                     'service'               => 'service',
                     'stuff'                 => 'stuff',
                 ],
-            ])
-            ->add('submit', SubmitType::class);
+            ]);
+        $builder->add('submit', SubmitType::class);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver):void
     {
-        $resolver->setDefaults([
-            'data_class'        => TransactionsAddCommand::class,
-        ]);
+        $resolver->setDefault('data_class', TransactionsAddCommand::class);
     }
 }

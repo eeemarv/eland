@@ -12,22 +12,19 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 class LoginType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options):void
     {
-        $builder
-            ->add('login', TextType::class)
-            ->add('password', PasswordType::class)
-            ->add('submit', SubmitType::class);
+        $builder->add('login', TextType::class);
+        $builder->add('password', PasswordType::class);
+        $builder->add('submit', SubmitType::class);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver):void
     {
-        $resolver->setDefaults([
-            'data_class'    => LoginCommand::class,
-        ]);
+        $resolver->setDefault('data_class', LoginCommand::class);
     }
 
-    public function getBlockPrefix(): string
+    public function getBlockPrefix():string
     {
         return '';
     }

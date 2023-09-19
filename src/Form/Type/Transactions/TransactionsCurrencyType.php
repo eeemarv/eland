@@ -13,19 +13,16 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class TransactionsCurrencyType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options):void
     {
-        $builder
-            ->add('currency', TextType::class)
-            ->add('timebased_en', CheckboxType::class)
-            ->add('per_hour_ratio', IntegerType::class)
-            ->add('submit', SubmitType::class);
+        $builder->add('currency', TextType::class);
+        $builder->add('timebased_en', CheckboxType::class);
+        $builder->add('per_hour_ratio', IntegerType::class);
+        $builder->add('submit', SubmitType::class);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver):void
     {
-        $resolver->setDefaults([
-            'data_class'    => TransactionsCurrencyCommand::class,
-        ]);
+        $resolver->setDefault('data_class', TransactionsCurrencyCommand::class);
     }
 }

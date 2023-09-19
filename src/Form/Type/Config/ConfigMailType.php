@@ -12,18 +12,15 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ConfigMailType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options):void
     {
-        $builder
-            ->add('enabled', CheckboxType::class)
-            ->add('tag', TextType::class)
-            ->add('submit', SubmitType::class);
+        $builder->add('enabled', CheckboxType::class);
+        $builder->add('tag', TextType::class);
+        $builder->add('submit', SubmitType::class);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver):void
     {
-        $resolver->setDefaults([
-            'data_class'    => ConfigMailCommand::class,
-        ]);
+        $resolver->setDefault('data_class', ConfigMailCommand::class);
     }
 }

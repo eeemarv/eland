@@ -23,30 +23,27 @@ class DocsAddType extends AbstractType
     {
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options):void
     {
-        $data_typeahead = $this->typeahead_service->ini($this->pp)
-            ->add('doc_map_names', [])
-            ->str_raw();
+        $this->typeahead_service->ini($this->pp);
+        $this->typeahead_service->add('doc_map_names', []);
+        $data_typeahead = $this->typeahead_service->str_raw();
 
-        $builder
-            ->add('file', FileType::class)
-            ->add('name', TextType::class)
-            ->add('map_name', TextType::class, [
-                'attr'  => [
-                    'data-typeahead'    => $data_typeahead,
-                ],
-            ])
-            ->add('submit', SubmitType::class);
+        $builder->add('file', FileType::class);
+        $builder->add('name', TextType::class);
+        $builder->add('map_name', TextType::class, [
+            'attr'  => [
+                'data-typeahead'    => $data_typeahead,
+            ],
+        ]);
+        $builder->add('submit', SubmitType::class);
 
         $this->access_field_subscriber->add('access', ['admin', 'user', 'guest']);
         $builder->addEventSubscriber($this->access_field_subscriber);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver):void
     {
-        $resolver->setDefaults([
-            'data_class'    => DocsCommand::class,
-        ]);
+        $resolver->setDefault('data_class', DocsCommand::class);
     }
 }

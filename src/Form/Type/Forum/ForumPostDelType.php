@@ -15,19 +15,16 @@ class ForumPostDelType extends AbstractType
     {
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options):void
     {
-        $builder
-            ->add('content', SummernoteType::class, [
-                'disabled'  => true,
-            ])
-            ->add('submit', SubmitType::class);
+        $builder->add('content', SummernoteType::class, [
+            'disabled'  => true,
+        ]);
+        $builder->add('submit', SubmitType::class);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver):void
     {
-        $resolver->setDefaults([
-            'data_class'    => ForumPostCommand::class,
-        ]);
+        $resolver->setDefault('data_class', ForumPostCommand::class);
     }
 }

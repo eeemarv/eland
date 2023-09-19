@@ -21,23 +21,21 @@ class NewsType extends AbstractType
     {
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options):void
     {
-        $builder
-            ->add('subject', TextType::class)
-            ->add('location', TextType::class)
-            ->add('event_at', DatepickerType::class)
-            ->add('content', SummernoteType::class)
-            ->add('submit', SubmitType::class);
+        $builder->add('subject', TextType::class);
+        $builder->add('location', TextType::class);
+        $builder->add('event_at', DatepickerType::class);
+        $builder->add('content', SummernoteType::class);
+        $builder->add('submit', SubmitType::class);
 
-        $this->access_field_subscriber->add('access', ['admin', 'user', 'guest']);
+        $this->access_field_subscriber->add('access',
+            ['admin', 'user', 'guest']);
         $builder->addEventSubscriber($this->access_field_subscriber);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver):void
     {
-        $resolver->setDefaults([
-            'data_class'        => NewsCommand::class,
-        ]);
+        $resolver->setDefault('data_class', NewsCommand::class);
     }
 }

@@ -12,23 +12,21 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 
 class SendMessageCCType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options):void
     {
-        $builder
-            ->add('message', TextareaType::class, [
-                'attr'      => [
-                    'placeholder'   => $options['placeholder'],
-                ],
-            ])
-            ->add('cc', CheckboxType::class)
-            ->add('submit', SubmitType::class);
+        $builder->add('message', TextareaType::class, [
+            'attr'      => [
+                'placeholder'   => $options['placeholder'],
+            ],
+        ]);
+        $builder->add('cc', CheckboxType::class);
+        $builder->add('submit', SubmitType::class);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver):void
     {
-        $resolver->setDefaults([
-            'placeholder'   => null,
-            'data_class'    => SendMessageCCCommand::class,
-        ]);
+        $resolver->setAllowedTypes('placeholder', ['string', 'null']);
+        $resolver->setDefault('placeholder', null);
+        $resolver->setDefault('data_class', SendMessageCCCommand::class);
     }
 }

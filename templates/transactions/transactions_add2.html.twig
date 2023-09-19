@@ -19,7 +19,6 @@
 {%- endblock form_submit_btn -%}
 
 {%- block form_a -%}
-
     <div class="row">
         <div id="col_from_id" class="col-md-12">
             {{- form_row(form.from_id, {
@@ -32,7 +31,7 @@
     </div>
 
     <div class="row">
-        <div id="col_from_remote_account" class="col-md-12 alert-warning">
+        <div id="col_from_remote_account" class="col-md-12 alert-warning pb-1">
             {{- form_row(form.from_remote_account, {
                 'label': 'transactions_add.from_remote_account.label',
                 'pre_addon': {
@@ -54,7 +53,7 @@
     </div>
 
     <div class="row">
-        <div id="col_to_remote_id" class="col-md-12 alert-warning">
+        <div id="col_to_remote_id" class="col-md-12 alert-warning pb-1">
             {{- form_row(form.to_remote_id, {
                 'label': 'transactions_add.to_remote_id.label',
                 'pre_addon': {
@@ -65,7 +64,7 @@
     </div>
 
     <div class="row">
-        <div id="col_to_remote_account" class="col-md-12 alert-warning">
+        <div id="col_to_remote_account" class="col-md-12 alert-warning pb-1">
             {{- form_row(form.to_remote_account, {
                 'label': 'transactions_add.to_remote_account.label',
                 'pre_addon': {
@@ -81,6 +80,9 @@
                 'label': 'transactions_add.amount.label',
                 'pre_addon': {
                     'text': config_str('transactions.currency.name', schema)
+                },
+                'attr': {
+                    'min': '1',
                 }
             }) -}}
         </div>
@@ -90,7 +92,8 @@
                 'label': 'transactions_add.remote_amount.label',
                 'pre_addon': {
                     'text': ''
-                }
+                },
+                'help': 'kdklllsllls',
             }) -}}
         </div>
     </div>
@@ -101,6 +104,10 @@
                 'label': 'label.description',
                 'pre_addon': {
                     'fa': 'pencil'
+                },
+                'attr': {
+                    'minlength': '1',
+                    'maxlength': '60'
                 }
             }) -}}
         </div>

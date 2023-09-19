@@ -16,13 +16,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return (string) $this->username;
     }
 
-    public function setUsername(string $username): self
+    public function setUsername(string $username):self
     {
         $this->username = $username;
         return $this;
     }
 
-    public function getRoles(): array
+    public function getRoles():array
     {
         return array_unique($this->roles);
     }
@@ -34,7 +34,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getPassword(): string
+    public function getPassword():string
     {
         // hashed password
         return (string) $this->password;
@@ -47,18 +47,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getSalt(): ?string
+    public function getSalt():?string
     {
         return null;
         // not used
     }
 
-    public function eraseCredentials()
+    public function eraseCredentials():void
     {
         // obsolete, not used
     }
 
-    public function getUserIdentifier(): string
+    public function getUserIdentifier():string
     {
         // dummy
         return '';

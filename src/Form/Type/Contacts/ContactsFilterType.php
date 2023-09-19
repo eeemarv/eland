@@ -123,10 +123,8 @@ class ContactsFilterType extends AbstractType
         return 'f';
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver):void
     {
-        $resolver->setDefaults([
-            'data_class'    => ContactsFilterCommand::class,
-        ]);
+        $resolver->setDefault('data_class', ContactsFilterCommand::class);
     }
 }

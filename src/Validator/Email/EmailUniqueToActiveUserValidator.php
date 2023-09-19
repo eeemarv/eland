@@ -17,7 +17,7 @@ class EmailUniqueToActiveUserValidator extends ConstraintValidator
     {
     }
 
-    public function validate($email, Constraint $constraint)
+    public function validate($email, Constraint $constraint):void
     {
         if (!$constraint instanceof EmailUniqueToActiveUser)
         {

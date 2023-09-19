@@ -18,7 +18,7 @@ class UsersConfigNewType extends AbstractType
     {
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options):void
     {
         $builder->add('days', IntegerType::class);
 
@@ -30,10 +30,8 @@ class UsersConfigNewType extends AbstractType
         $builder->add('submit', SubmitType::class);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver):void
     {
-        $resolver->setDefaults([
-            'data_class'    => UsersConfigNewCommand::class,
-        ]);
+        $resolver->setDefault('data_class', UsersConfigNewCommand::class);
     }
 }

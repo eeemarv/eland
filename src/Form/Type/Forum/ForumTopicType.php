@@ -20,21 +20,18 @@ class ForumTopicType extends AbstractType
     {
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options):void
     {
-        $builder
-            ->add('subject', TextType::class)
-            ->add('content', SummernoteType::class)
-            ->add('submit', SubmitType::class);
+        $builder->add('subject', TextType::class);
+        $builder->add('content', SummernoteType::class);
+        $builder->add('submit', SubmitType::class);
 
         $this->access_field_subscriber->add('access', ['admin', 'user', 'guest']);
         $builder->addEventSubscriber($this->access_field_subscriber);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver):void
     {
-        $resolver->setDefaults([
-            'data_class'    => ForumTopicCommand::class,
-        ]);
+        $resolver->setDefault('data_class', ForumTopicCommand::class);
     }
 }

@@ -18,19 +18,16 @@ class ConfigDateFormatType extends AbstractType
     {
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options):void
     {
-        $builder
-            ->add('date_format', ChoiceType::class, [
+        $builder->add('date_format', ChoiceType::class, [
                 'choices'   => $this->date_format_service->get_choices(),
-            ])
-            ->add('submit', SubmitType::class);
+        ]);
+        $builder->add('submit', SubmitType::class);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver):void
     {
-        $resolver->setDefaults([
-            'data_class'    => ConfigDateFormatCommand::class,
-        ]);
+        $resolver->setDefault('data_class', ConfigDateFormatCommand::class);
     }
 }

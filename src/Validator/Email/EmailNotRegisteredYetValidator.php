@@ -17,7 +17,7 @@ class EmailNotRegisteredYetValidator extends ConstraintValidator
     {
     }
 
-    public function validate($email, Constraint $constraint)
+    public function validate($email, Constraint $constraint):void
     {
         if (!$constraint instanceof EmailNotRegisteredYet)
         {

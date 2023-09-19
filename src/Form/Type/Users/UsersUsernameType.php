@@ -16,7 +16,7 @@ class UsersUsernameType extends AbstractType
     {
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options):void
     {
         $builder->add('self_edit', CheckboxType::class);
         $builder->add('submit', SubmitType::class);
@@ -24,8 +24,6 @@ class UsersUsernameType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults([
-            'data_class'    => UsersUsernameCommand::class,
-        ]);
+        $resolver->setDefault('data_class', UsersUsernameCommand::class);
     }
 }

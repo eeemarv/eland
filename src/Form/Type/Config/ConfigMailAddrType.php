@@ -12,7 +12,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ConfigMailAddrType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options):void
     {
         $builder->add('admin', CollectionType::class, [
             'entry_type'        => EmailType::class,
@@ -20,21 +20,19 @@ class ConfigMailAddrType extends AbstractType
             'allow_delete'      => true,
             'delete_empty'      => true,
             'prototype'         => true,
-        ])
-        ->add('support', CollectionType::class, [
+        ]);
+        $builder->add('support', CollectionType::class, [
             'entry_type'        => EmailType::class,
             'allow_add'         => true,
             'allow_delete'      => true,
             'delete_empty'      => true,
             'prototype'         => true,
-        ])
-        ->add('submit', SubmitType::class);
+        ]);
+        $builder->add('submit', SubmitType::class);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver):void
     {
-        $resolver->setDefaults([
-            'data_class'    => ConfigMailAddrCommand::class,
-        ]);
+        $resolver->setDefault('data_class', ConfigMailAddrCommand::class);
     }
 }

@@ -47,11 +47,10 @@ class MessagesType extends AbstractType
         if ($this->pp->is_admin())
         {
             $typeahead_add = [];
-            $typeahead_add[] = ['accounts', ['status' => 'active']];
-            $typeahead_add[] = ['accounts', ['status' => 'extern']];
-            $typeahead_add[] = ['accounts', ['status' => 'inactive']];
-            $typeahead_add[] = ['accounts', ['status' => 'im']];
-            $typeahead_add[] = ['accounts', ['status' => 'ip']];
+            $typeahead_add[] = ['accounts', ['status' => 'active-user']];
+            $typeahead_add[] = ['accounts', ['status' => 'intersystem']];
+            $typeahead_add[] = ['accounts', ['status' => 'pre-active']];
+            $typeahead_add[] = ['accounts', ['status' => 'post-active']];
 
             $builder->add('user_id', TypeaheadType::class, [
                 'add'       => $typeahead_add,

@@ -11,22 +11,19 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class CmsEditType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options):void
     {
-        $builder
-            ->add('route', HiddenType::class)
-            ->add('route_en', HiddenType::class)
-            ->add('role', HiddenType::class)
-            ->add('role_en', HiddenType::class)
-            ->add('all_params', HiddenType::class)
-            ->add('content', HiddenType::class)
-            ->add('submit', SubmitType::class);
+        $builder->add('route', HiddenType::class);
+        $builder->add('route_en', HiddenType::class);
+        $builder->add('role', HiddenType::class);
+        $builder->add('role_en', HiddenType::class);
+        $builder->add('all_params', HiddenType::class);
+        $builder->add('content', HiddenType::class);
+        $builder->add('submit', SubmitType::class);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver):void
     {
-        $resolver->setDefaults([
-            'data_class'    => CmsEditCommand::class,
-        ]);
+        $resolver->setDefault('data_class', CmsEditCommand::class);
     }
 }

@@ -23,7 +23,7 @@ class RegisterFormType extends AbstractType
     {
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options):void
     {
         $postcode_enabled = $this->config_service->get_bool('users.fields.postcode.enabled', $this->pp->schema());
 
@@ -40,17 +40,15 @@ class RegisterFormType extends AbstractType
         $builder->add('phone', TelType::class);
         $builder->add('captcha', CaptchaType::class);
 /*
-            ->add('accept', CheckboxType::class, [
+            $builder->add('accept', CheckboxType::class, [
                 'constraints' => new Assert\IsTrue(),
-            ])
+            ]);
 */
         $builder->add('submit', SubmitType::class);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver):void
     {
-        $resolver->setDefaults([
-            'data_class'    => RegisterFormCommand::class,
-        ]);
+        $resolver->setDefault('data_class', RegisterFormCommand::class);
     }
 }

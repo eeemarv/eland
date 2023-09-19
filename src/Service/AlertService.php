@@ -25,7 +25,7 @@ class AlertService
 		$this->flash_bag = $session->getFlashBag();
 	}
 
-	protected function add(string $type, $message, bool $log_en):void
+	protected function add(string $type, string|array $message, bool $log_en):void
 	{
 		$uri = $this->request->getRequestUri();
 
@@ -59,22 +59,22 @@ class AlertService
 		]);
 	}
 
-	public function error($message, bool $log_en = true):void
+	public function error(string|array $message, bool $log_en = true):void
 	{
 		$this->add('error', $message, $log_en);
 	}
 
-	function success($message, bool $log_en = true):void
+	function success(string|array $message, bool $log_en = true):void
 	{
 		$this->add('success', $message, $log_en);
 	}
 
-	public function info($message, bool $log_en = true):void
+	public function info(string|array $message, bool $log_en = true):void
 	{
 		$this->add('info', $message, $log_en);
 	}
 
-	public function warning($message, bool $log_en = true):void
+	public function warning(string|array $message, bool $log_en = true):void
 	{
 		$this->add('warning', $message, $log_en);
 	}

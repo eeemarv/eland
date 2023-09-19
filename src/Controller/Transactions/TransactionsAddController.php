@@ -960,13 +960,13 @@ class TransactionsAddController extends AbstractController
         {
             $out .= 'data-typeahead="';
 
-            $out .= $typeahead_service->ini($pp)
-                ->add('accounts', ['status' => 'active'])
-                ->add('accounts', ['status' => 'inactive'])
-                ->add('accounts', ['status' => 'ip'])
-                ->add('accounts', ['status' => 'im'])
-                ->add('intersystem_mail_accounts', [])
-                ->str([
+            $typeahead_service->ini($pp);
+            $typeahead_service->add('accounts', ['status' => 'active-user']);
+            $typeahead_service->add('accounts', ['status' => 'intersystem']);
+            $typeahead_service->add('accounts', ['status' => 'pre-active']);
+            $typeahead_service->add('accounts', ['status' => 'post-active']);
+            $typeahead_service->add('intersystem_mail_accounts', []);
+            $out .= $typeahead_service->str([
                     'filter'        => 'accounts',
                     'new_users_days'        => $new_users_days,
                     'show_new_status'       => $show_new_status,
@@ -1029,13 +1029,13 @@ class TransactionsAddController extends AbstractController
                 {
                     $out .= 'id="group_self" ';
 
-                    $typeahead_service->add('accounts', ['status' => 'active']);
+                    $typeahead_service->add('accounts', ['status' => 'active-user']);
+                    $typeahead_service->add('accounts', ['status' => 'intersystem']);
 
                     if ($pp->is_admin())
                     {
-                        $typeahead_service->add('accounts', ['status' => 'inactive'])
-                            ->add('accounts', ['status' => 'ip'])
-                            ->add('accounts', ['status' => 'im']);
+                        $typeahead_service->add('accounts', ['status' => 'pre-active']);
+                        $typeahead_service->add('accounts', ['status' => 'post-active']);
                     }
 
                     $config_schema = $pp->schema();

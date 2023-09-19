@@ -12,18 +12,15 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ConfigNameType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options):void
     {
-        $builder
-            ->add('system_name', TextType::class)
-            ->add('home_header_enabled', CheckboxType::class)
-            ->add('submit', SubmitType::class);
+        $builder->add('system_name', TextType::class);
+        $builder->add('home_header_enabled', CheckboxType::class);
+        $builder->add('submit', SubmitType::class);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver):void
     {
-        $resolver->setDefaults([
-            'data_class'    => ConfigNameCommand::class,
-        ]);
+        $resolver->setDefault('data_class', ConfigNameCommand::class);
     }
 }

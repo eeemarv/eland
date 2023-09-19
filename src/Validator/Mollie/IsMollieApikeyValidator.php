@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 class IsMollieApikeyValidator extends ConstraintValidator
 {
-    public function validate($apikey, Constraint $constraint)
+    public function validate($apikey, Constraint $constraint):void
     {
         if (!$constraint instanceof IsMollieApikey)
         {

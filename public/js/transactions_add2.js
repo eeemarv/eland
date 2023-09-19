@@ -1,7 +1,6 @@
 jQuery(function(){
 
 	var $form = $('form');
-
 	var $remote_amount_container = $form.find('#remote_amount_container');
 	var $amount_container = $form.find('#amount_container');
 

@@ -52,7 +52,7 @@ class ContactsType extends AbstractType
     {
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options):void
     {
         $user_id_enabled = $options['user_id_enabled'];
 
@@ -91,11 +91,10 @@ class ContactsType extends AbstractType
         {
             $builder->add('user_id', TypeaheadType::class, [
                 'add'   => [
-                    ['accounts', ['status' => 'active']],
-                    ['accounts', ['status' => 'inactive']],
-                    ['accounts', ['status' => 'ip']],
-                    ['accounts', ['status' => 'im']],
-                    ['accounts', ['status' => 'extern']],
+                    ['accounts', ['status' => 'active-user']],
+                    ['accounts', ['status' => 'intersystem']],
+                    ['accounts', ['status' => 'pre-active']],
+                    ['accounts', ['status' => 'post-active']],
                 ],
                 'filter'    => 'accounts',
             ]);
@@ -120,11 +119,10 @@ class ContactsType extends AbstractType
         $builder->addEventSubscriber($this->access_field_subscriber);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver):void
     {
-        $resolver->setDefaults([
-            'user_id_enabled'   => false,
-            'data_class'        => ContactsCommand::class,
-        ]);
+        $resolver->setAllowedTypes('user_id_enabled', 'bool');
+        $resolver->setDefault('user_id_enabled', false);
+        $resolver->setDefault('data_class', ContactsCommand::class);
     }
 }

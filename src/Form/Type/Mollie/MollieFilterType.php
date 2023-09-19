@@ -3,14 +3,12 @@
 namespace App\Form\Type\Mollie;
 
 use App\Command\Mollie\MollieFilterCommand;
-use App\Command\Transactions\TransactionsFilterCommand;
 use App\Form\Type\Field\BtnChoiceType;
 use App\Form\Type\Field\DatepickerType;
 use App\Form\Type\Filter\FilterType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use App\Form\Type\Field\TypeaheadType;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -33,11 +31,10 @@ class MollieFilterType extends AbstractType
     ):void
     {
         $typeahead_add = [];
-        $typeahead_add[] = ['accounts', ['status' => 'active']];
-        $typeahead_add[] = ['accounts', ['status' => 'extern']];
-        $typeahead_add[] = ['accounts', ['status' => 'inactive']];
-        $typeahead_add[] = ['accounts', ['status' => 'im']];
-        $typeahead_add[] = ['accounts', ['status' => 'ip']];
+        $typeahead_add[] = ['accounts', ['status' => 'active-user']];
+        $typeahead_add[] = ['accounts', ['status' => 'intersystem']];
+        $typeahead_add[] = ['accounts', ['status' => 'pre-active']];
+        $typeahead_add[] = ['accounts', ['status' => 'post-active']];
 
         $builder->add('q', TextType::class, [
             'required' => false,
@@ -86,10 +83,8 @@ class MollieFilterType extends AbstractType
         return 'f';
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver):void
     {
-        $resolver->setDefaults([
-            'data_class'                => MollieFilterCommand::class,
-        ]);
+        $resolver->setDefault('data_class', MollieFilterCommand::class);
     }
 }

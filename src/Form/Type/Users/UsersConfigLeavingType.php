@@ -23,7 +23,7 @@ class UsersConfigLeavingType extends AbstractType
     {
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options):void
     {
         $transactions_enabled = $this->config_service->get_bool('transactions.enabled', $this->pp->schema());
 
@@ -40,10 +40,8 @@ class UsersConfigLeavingType extends AbstractType
         $builder->add('submit', SubmitType::class);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver):void
     {
-        $resolver->setDefaults([
-            'data_class'    => UsersConfigLeavingCommand::class,
-        ]);
+        $resolver->setDefault('data_class', UsersConfigLeavingCommand::class);
     }
 }

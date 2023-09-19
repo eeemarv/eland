@@ -111,13 +111,13 @@ class TypeaheadAccountsController extends AbstractController
 
         $res = $db->executeQuery(
             'select id,
-                code,
-                name,
-                extract(epoch from activated_at)::int as activated_at,
-                is_active,
-                is_leaving,
-                remote_schema,
-                remote_email
+                code as c,
+                name as n,
+                extract(epoch from activated_at)::int as aa,
+                is_active as ia,
+                is_leaving as il,
+                remote_schema as rs,
+                remote_email as re
             from ' . $pp->schema() . '.users u
             where ' . $sql_where . '
             order by id asc');
@@ -126,14 +126,14 @@ class TypeaheadAccountsController extends AbstractController
 
         while ($row = $res->fetchAssociative())
         {
-            if (!isset($row['remote_schema']))
+            if (!isset($row['rs']))
             {
-                unset($row['remote_schema']);
+                unset($row['rs']);
             }
 
-            if (!isset($row['remote_email']))
+            if (!isset($row['re']))
             {
-                unset($row['remote_email']);
+                unset($row['re']);
             }
 
             $accounts[] = $row;

@@ -11,17 +11,14 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class MollieConfigType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options):void
     {
-        $builder
-            ->add('apikey', TextType::class)
-            ->add('submit', SubmitType::class);
+        $builder->add('apikey', TextType::class);
+        $builder->add('submit', SubmitType::class);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver):void
     {
-        $resolver->setDefaults([
-            'data_class'    => MollieConfigCommand::class,
-        ]);
+        $resolver->setDefault('data_class', MollieConfigCommand::class);
     }
 }
