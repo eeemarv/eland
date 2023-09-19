@@ -25,8 +25,8 @@ class SendMessageCCType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver):void
     {
-        $resolver->setAllowedTypes('placeholder', ['string', 'null']);
         $resolver->setDefault('placeholder', null);
+        $resolver->setAllowedTypes('placeholder', ['string', 'null']);
         $resolver->setDefault('data_class', SendMessageCCCommand::class);
     }
 }

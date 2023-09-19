@@ -4,8 +4,7 @@ namespace App\Form\Type\Docs;
 
 use App\Command\Docs\DocsCommand;
 use App\Form\EventSubscriber\AccessFieldSubscriber;
-use App\Service\PageParamsService;
-use App\Service\TypeaheadService;
+use App\Form\Type\Field\TypeaheadType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -15,19 +14,13 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class DocsEditType extends AbstractType
 {
     public function __construct(
-        protected AccessFieldSubscriber $access_field_subscriber,
-        protected TypeaheadService $typeahead_service,
-        protected PageParamsService $pp
+        protected AccessFieldSubscriber $access_field_subscriber
     )
     {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options):void
     {
-        $this->typeahead_service->ini($this->pp);
-        $this->typeahead_service->add('doc_map_names', []);
-        $data_typeahead = $this->typeahead_service->str_raw();
-
         $builder->add('file_location', TextType::class, [
             'disabled'  => true,
         ]);
@@ -35,10 +28,8 @@ class DocsEditType extends AbstractType
             'disabled'  => true,
         ]);
         $builder->add('name', TextType::class);
-        $builder->add('map_name', TextType::class, [
-            'attr'  => [
-                'data-typeahead'    => $data_typeahead,
-            ],
+        $builder->add('map_name', TypeaheadType::class, [
+            'add'   => 'doc_map_names',
         ]);
         $builder->add('submit', SubmitType::class);
 

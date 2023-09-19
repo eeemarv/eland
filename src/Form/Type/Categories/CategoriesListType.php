@@ -19,8 +19,6 @@ class CategoriesListType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver):void
     {
-        $resolver->setDefaults([
-            'data_class'    => CategoriesListCommand::class,
-        ]);
+        $resolver->setDefault('data_class', CategoriesListCommand::class);
     }
 }

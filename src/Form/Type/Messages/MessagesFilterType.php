@@ -2,6 +2,7 @@
 
 namespace App\Form\Type\Messages;
 
+use App\Command\Messages\MessagesFilterCommand;
 use App\Form\EventSubscriber\AccessFieldSubscriber;
 use App\Form\Type\Field\BtnChoiceType;
 use App\Form\Type\Field\CategorySelectType;
@@ -16,6 +17,7 @@ use App\Service\VarRouteService;
 use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class MessagesFilterType extends AbstractType
@@ -171,5 +173,10 @@ class MessagesFilterType extends AbstractType
     public function getParent():string
     {
         return FilterType::class;
+    }
+
+    public function configureOptions(OptionsResolver $resolver):void
+    {
+        $resolver->setDefault('data_class', MessagesFilterCommand::class);
     }
 }

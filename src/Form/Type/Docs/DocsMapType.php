@@ -27,8 +27,8 @@ class DocsMapType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver):void
     {
-        $resolver->setAllowedTypes('render_omit', 'string');
-        $resolver->setDefault('render_omit', '');
         $resolver->setDefault('data_class', DocsMapCommand::class);
+        $resolver->setDefault('render_omit', null);
+        $resolver->setAllowedTypes('render_omit', ['null', 'string']);
     }
 }
