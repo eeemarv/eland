@@ -49,7 +49,8 @@ class TypeaheadIntersystemMailAccountsController extends AbstractController
                 \'mail\' as api
             from ' . $pp->schema() . '.users u,
                ' . $pp->schema() . '.letsgroups l
-            where u.status = 7
+            where u.remote_email is not null
+                and u.is_active
                 and l.apimethod = \'mail\'
                 and l.localletscode = u.code
             order by u.id asc', [], []

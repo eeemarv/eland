@@ -126,7 +126,9 @@ class ContactRepository
 			where c.id_type_contact = tc.id
 				and tc.abbrev = \'mail\'
 				and c.user_id = u.id
-				and u.status in (1, 2)
+				and u.is_active
+				and u.remote_schema is null
+				and u.remote_email is null
 				and u.id <> :user_id
 				and lower(c.value) = :email_lowercase');
 

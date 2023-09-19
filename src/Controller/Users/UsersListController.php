@@ -2184,6 +2184,8 @@ class UsersListController extends AbstractController
             'sql'	=> [
                 'where'     => [
                     'u.is_active',
+                    'u.remote_schema is null',
+                    'u.remote_email is null',
                 ],
             ],
         ];

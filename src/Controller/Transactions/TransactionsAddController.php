@@ -777,7 +777,9 @@ class TransactionsAddController extends AbstractController
                             from ' . $tus . '.messages m,
                                 '. $tus . '.users u
                             where u.id = m.user_id
-                                and u.status in (1, 2)
+                                and u.is_active
+                                and u.remote_schema is null
+                                and u.remote_email is null
                                 and m.id = ?',
                             [$mid], [\PDO::PARAM_INT]);
 
@@ -925,7 +927,7 @@ class TransactionsAddController extends AbstractController
                     $pp->schema() . '.users u
                 where l.apimethod = \'mail\'
                     and u.code = l.localletscode
-                    and u.status in (1, 2, 7)');
+                    and u.is_active');
 
             while ($sys = $res->fetchAssociative())
             {

@@ -105,14 +105,14 @@ class MolliePaymentsAddController extends AbstractController
 
         $sql_map = [
             'where'     => [],
-            'where_or'  => [],
             'params'    => [],
             'types'     => [],
         ];
 
         $sql = [];
         $sql['common'] = $sql_map;
-        $sql['common']['where'][] = '1 = 1';
+        $sql['common']['where'][] = 'u.remote_schema is null';
+        $sql['common']['where'][] = 'u.remote_email is null';
 
         $sql['status'] = $sql_map;
 
@@ -120,6 +120,15 @@ class MolliePaymentsAddController extends AbstractController
         {
             foreach ($def_sql_ary as $def_val)
             {
+                if (is_array($def_val) && $st_def_key = 'where')
+                {
+                    $wh_or = '(';
+                    $wh_or .= implode(' or ', $def_val);
+                    $wh_or .= ')';
+                    $sql['status'][$st_def_key][] = $wh_or;
+                    continue;
+                }
+
                 $sql['status'][$st_def_key][] = $def_val;
             }
         }
@@ -134,7 +143,9 @@ class MolliePaymentsAddController extends AbstractController
 
         $res = $db->executeQuery('select u.id,
                 u.name, u.full_name, u.code,
-                u.role, u.status, u.activated_at,
+                u.role, u.activated_at,
+                u.is_active, u.is_leaving,
+                u.remote_schema, u.remote_email,
                 p1.is_paid, p1.is_canceled,
                 p1.created_at as last_created_at,
                 p1.amount, p1.description
@@ -333,6 +344,11 @@ class MolliePaymentsAddController extends AbstractController
 
         foreach ($status_def_ary as $k => $tab)
         {
+            if ($k === 'intersystem')
+            {
+                continue;
+            }
+
             $nav_params['status'] = $k;
 
             $out .= '<li';
@@ -378,28 +394,55 @@ class MolliePaymentsAddController extends AbstractController
 
         foreach($users as $user_id => $user)
         {
-            $user_status = $user['status'];
-
-            if (isset($user['activated_at'])
-                && $user['status'] === 1
-                && $new_users_enabled
-                && $new_user_treshold->getTimestamp() < strtotime($user['activated_at'] . ' UTC'))
+            $is_remote = isset($user['remote_schema']) || isset($user['remote_email']);
+            $is_active = $user['is_active'];
+            $is_leaving = $user['is_leaving'];
+            $post_active = isset($user['activated_at']);
+            $is_new = false;
+            if ($post_active)
             {
-                $user_status = 3;
+                if ($new_user_treshold->getTimestamp() < strtotime($user['activated_at'] . ' UTC'))
+                {
+                    $is_new = true;
+                }
             }
 
-            if ($user['status'] === 2
-                && !$leaving_users_enabled)
+            $row_class = null;
+            $data_leaving_account = '';
+            $data_new_account = '';
+
+            if ($is_active)
             {
-                $user_status = 1;
+                if ($is_remote)
+                {
+                    $row_class = 'warning';
+                }
+                else if ($is_leaving && $leaving_users_enabled)
+                {
+                    $data_leaving_account = ' data-leaving-account';
+                    $row_class = 'danger';
+                }
+                else if ($is_new && $new_users_enabled)
+                {
+                    $data_new_account = ' data-new-account';
+                    $row_class = 'success';
+                }
+            }
+            else if ($post_active)
+            {
+                $row_class = 'inactive';
+            }
+            else
+            {
+                $row_class = 'info';
             }
 
             $out .= '<tr';
 
-            if (isset(StatusCnst::CLASS_ARY[$user_status]))
+            if (isset($row_class))
             {
                 $out .= ' class="';
-                $out .= StatusCnst::CLASS_ARY[$user_status];
+                $out .= $row_class;
                 $out .= '"';
             }
 
@@ -419,16 +462,8 @@ class MolliePaymentsAddController extends AbstractController
             $td_inp .= $amount[$user_id] ?? '';
             $td_inp .= '" ';
             $td_inp .= 'min="0"';
-
-            if ($user_status === 3)
-            {
-                $td_inp .= ' data-new-account';
-            }
-
-            if ($user_status === 2)
-            {
-                $td_inp .= ' data-leaving-account';
-            }
+            $td_inp .= $data_leaving_account;
+            $td_inp .= $data_new_account;
 
             $td_inp .= '>';
             $td_inp .= '</div>';
@@ -445,7 +480,7 @@ class MolliePaymentsAddController extends AbstractController
                 $payment_str .= ' @';
                 $payment_str .= $date_format_service->get($user['last_created_at'], 'day', $pp->schema());
                 $payment_str .= '" ';
-                $payment_str .= 'class="label label-';
+                $payment_str .= 'class="label label-lg label-';
 
                 if ($user['is_canceled'])
                 {
@@ -464,7 +499,7 @@ class MolliePaymentsAddController extends AbstractController
             }
             else
             {
-                $td[] = '<i class="fa fa-times" title="Geen betaalverzoeken"></i>';
+                $td[] = '<i class="fa fa-times fa-2x" title="Geen betaalverzoeken"></i>';
             }
 
             $out .= implode('</td><td>', $td);

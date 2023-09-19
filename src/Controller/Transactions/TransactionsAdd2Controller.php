@@ -959,7 +959,7 @@ class TransactionsAdd2Controller extends AbstractController
                     $pp->schema() . '.users u
                 where l.apimethod = \'mail\'
                     and u.code = l.localletscode
-                    and u.status in (1, 2, 7)');
+                    and u.is_active');
 
             while ($sys = $res->fetchAssociative())
             {

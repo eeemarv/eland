@@ -141,8 +141,9 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				u.code, u.postcode,
 				u.periodic_overview_en
 			from ' . $schema . '.users u
-			where u.status in (1, 2)
-				and u.role in (\'user\', \'admin\')');
+			where u.is_active
+				and u.remote_schema is null
+				and u.remote_email is null)');
 
 		$res = $stmt->executeQuery();
 
@@ -157,7 +158,9 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 			from ' . $schema . '.users u, ' .
 				$schema . '.contact c, ' .
 				$schema . '.type_contact tc
-			where u.status in (1, 2)
+			where u.is_active
+				and u.remote_schema is null
+				and u.remote_email is null
 				and u.id = c.user_id
 				and c.id_type_contact = tc.id
 				and tc.abbrev = \'mail\'');
@@ -189,7 +192,9 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				from ' . $schema . '.users u, ' .
 					$schema . '.contact c, ' .
 					$schema . '.type_contact tc
-				where u.status in (1, 2)
+				where u.is_active
+					and u.remote_schema is null
+					and u.remote_email is null
 					and u.id = c.user_id
 					and c.id_type_contact = tc.id
 					and tc.abbrev = \'adr\'');
@@ -213,7 +218,9 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				from ' . $schema . '.messages m, ' .
 					$schema . '.users u
 				where m.user_id = u.id
-					and u.status in (1, 2)
+					and u.is_active
+					and u.remote_schema is null
+					and u.remote_email is null
 					and m.created_at >= ?
 					and ((m.expires_at >= timezone(\'utc\', now())
 						or m.expires_at is null) or not ?)
@@ -274,7 +281,9 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 						$sch . '.users u
 					where m.user_id = u.id
 						and m.access = \'guest\'
-						and u.status in (1, 2)
+						and u.is_active
+						and u.remote_schema is null
+						and u.remote_email is null
 						and m.created_at >= ?
 						and ((m.expires_at >= timezone(\'utc\', now())
 							or m.expires_at is null) or not ?)
@@ -344,7 +353,10 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 			$stmt = $this->db->prepare('select u.id
 				from ' . $schema . '.users u
-				where u.status = 1
+				where u.is_active
+					and not u.is_leaving
+					and u.remote_schema is null
+					and u.remote_email is null
 					and u.activated_at > ?');
 
 			$time = ($block_options['new_users'] === 'recent') ? $treshold_time : $new_user_treshold;
@@ -364,7 +376,10 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 		{
 			$query = 'select u.id
 				from ' . $schema . '.users u
-				where u.status = 2';
+				where u.is_active
+					and u.is_leaving
+					and u.remote_schema is null
+					and u.remote_email is null';
 
 			if ($block_options['leaving_users'] === 'recent')
 			{

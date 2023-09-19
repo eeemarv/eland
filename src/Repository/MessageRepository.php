@@ -41,7 +41,9 @@ class MessageRepository
             from ' . $schema . '.messages m,
                 ' . $schema . '.users u
 			where m.id > ?
-				and u.status in (1, 2)
+				and u.is_active
+				and u.remote_schema is null
+				and u.remote_email is null
 				and m.access in (?)
             order by m.id asc
 			limit 1',
@@ -61,7 +63,9 @@ class MessageRepository
             from ' . $schema . '.messages m,
                 ' . $schema . '.users u
 			where m.id < ?
-				and u.status in (1, 2)
+				and u.is_active
+				and u.remote_schema is null
+				and u.remote_email is null
 				and m.access in (?)
             order by m.id desc
 			limit 1',

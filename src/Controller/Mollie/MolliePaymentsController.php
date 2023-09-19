@@ -168,7 +168,6 @@ class MolliePaymentsController extends AbstractController
 
         $sql_map = [
             'where'     => [],
-            'where_or'  => [],
             'params'    => [],
             'types'     => [],
         ];
@@ -194,26 +193,27 @@ class MolliePaymentsController extends AbstractController
 
         if (isset($filter_command->status) && $filter_command->status)
         {
-            $sql['status'] = $sql_map;;
+            $wh_or = [];
+            $sql['status'] = $sql_map;
 
             if (in_array('open', $filter_command->status))
             {
-                $sql['status']['where_or'][] = '(not p.is_paid and not p.is_canceled)';
+                $wh_or[] = '(not p.is_paid and not p.is_canceled)';
             }
 
             if (in_array('paid', $filter_command->status))
             {
-                $sql['status']['where_or'][] = 'p.is_paid';
+                $wh_or[] = 'p.is_paid';
             }
 
             if (in_array('canceled', $filter_command->status))
             {
-                $sql['status']['where_or'][] = 'p.is_canceled';
+                $wh_or[] = 'p.is_canceled';
             }
 
-            if (count($sql['status']['where_or']))
+            if (count($wh_or))
             {
-                $sql['status']['where'][] = '(' . implode(' or ', $sql['status']['where_or']) . ')';
+                $sql['status']['where'][] = '(' . implode(' or ', $wh_or) . ')';
             }
         }
 
@@ -253,7 +253,9 @@ class MolliePaymentsController extends AbstractController
 
         $res = $db->executeQuery('select p.*, r.description,
             u.code, u.name, u.full_name,
-            u.status, u.activated_at,
+            u.activated_at, u.is_active,
+            u.is_leaving,
+            u.remote_schema, u.remote_email,
             c.value as mail
             from ' . $pp->schema() . '.mollie_payments p
             inner join ' . $pp->schema() . '.mollie_payment_requests r
@@ -319,7 +321,7 @@ class MolliePaymentsController extends AbstractController
             inner join ' . $pp->schema() . '.users u
                 on p.user_id = u.id
             where ' . $sql_omit_status_where . '
-                and p.is_paid = \'f\'::bool and p.is_canceled = \'f\'::bool',
+                and not p.is_paid and not p.is_canceled',
             $sql_omit_status_params,
             $sql_omit_status_types);
 
@@ -330,7 +332,7 @@ class MolliePaymentsController extends AbstractController
             inner join ' . $pp->schema() . '.users u
                 on p.user_id = u.id
             where ' . $sql_omit_status_where . '
-                and p.is_paid = \'t\'::bool',
+                and p.is_paid',
             $sql_omit_status_params,
             $sql_omit_status_types);
 
@@ -731,21 +733,43 @@ class MolliePaymentsController extends AbstractController
 
         foreach($payments as $id => $payment)
         {
-            $user_status = $payment['status'];
-
-            if (isset($payment['activated_at'])
-                && $new_users_enabled
-                && $payment['status'] === 1
-                && $new_user_treshold->getTimestamp() < strtotime($payment['activated_at'] . ' UTC'))
+            $is_remote = isset($payment['remote_schema']) || isset($payment['remote_email']);
+            $is_active = $payment['is_active'];
+            $is_leaving = $payment['is_leaving'];
+            $post_active = isset($payment['activated_at']);
+            $is_new = false;
+            if ($post_active)
             {
-                $user_status = 3;
+                if ($new_user_treshold->getTimestamp() < strtotime($payment['activated_at'] . ' UTC'))
+                {
+                    $is_new = true;
+                }
             }
 
-            if ($payment['status'] === 2
-                && !$leaving_users_enabled
-            )
+            $user_class = null;
+
+            if ($is_active)
             {
-                $user_status = 1;
+                if ($is_remote)
+                {
+                    $user_class = 'warning';
+                }
+                else if ($is_leaving && $leaving_users_enabled)
+                {
+                    $user_class = 'danger';
+                }
+                else if ($is_new && $new_users_enabled)
+                {
+                    $user_class = 'success';
+                }
+            }
+            else if ($post_active)
+            {
+                $user_class = 'inactive';
+            }
+            else
+            {
+                $user_class = 'info';
             }
 
             $out .= '<tr><td>';
@@ -769,10 +793,10 @@ class MolliePaymentsController extends AbstractController
 
             $out .= '</td><td';
 
-            if (isset(StatusCnst::CLASS_ARY[$user_status]))
+            if (isset($user_class))
             {
                 $out .= ' class="';
-                $out .= StatusCnst::CLASS_ARY[$user_status];
+                $out .= $user_class;
                 $out .= '"';
             }
 
@@ -782,7 +806,7 @@ class MolliePaymentsController extends AbstractController
 
             $out .= '</td><td>';
 
-            $out .= '<span class="label label-';
+            $out .= '<span class="label label-lg label-';
 
             if ($payment['is_canceled'])
             {
@@ -809,7 +833,7 @@ class MolliePaymentsController extends AbstractController
 
             if (!isset($payment['has_email']))
             {
-                $td_emails .= '&nbsp;<span class="label label-danger" title="Er is geen ';
+                $td_emails .= '&nbsp;<span class="label label-lg label-danger" title="Er is geen ';
                 $td_emails .= 'E-mail adres ingesteld voor de gebruiker.">';
                 $td_emails .= '<i class="fa fa-exclamation-triangle"></i></span>';
             }

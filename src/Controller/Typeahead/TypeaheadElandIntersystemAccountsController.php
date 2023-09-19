@@ -68,7 +68,9 @@ class TypeaheadElandIntersystemAccountsController extends AbstractController
                 extract(epoch from activated_at)::int as a,
                 status as s
             from ' . $remote_schema . '.users
-            where status in (1, 2)
+            where is_active
+                and remote_schema is null
+                and remote_email is null
             order by id asc', [], []
         );
 

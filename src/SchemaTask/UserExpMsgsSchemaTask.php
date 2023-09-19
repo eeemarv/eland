@@ -35,7 +35,9 @@ class UserExpMsgsSchemaTask implements SchemaTaskInterface
 				$schema . '.users u
 			where m.exp_user_warn = \'f\'
 				and u.id = m.user_id
-				and u.status in (1, 2)
+				and u.is_active
+				and u.remote_schema is null
+				and u.remote_email is null
 				and m.expires_at < ?',
 				[$now], [Types::DATETIME_IMMUTABLE]);
 

@@ -66,13 +66,17 @@ class IntersystemsController extends AbstractController
 
                 $intersystems[$key]['user_count'] = $db->fetchOne('select count(*)
                     from ' . $sys_schema . '.users
-                    where status in (1, 2)', [], []);
+                    where is_active
+                        and remote_schema is null
+                        and remote_email is null', [], []);
             }
             else if ($sys['apimethod'] == 'internal')
             {
                 $intersystems[$key]['user_count'] = $db->fetchOne('select count(*)
                     from ' . $pp->schema() . '.users
-                    where status in (1, 2)', [], []);
+                    where is_active
+                        and remote_schema is null
+                        and remote_email is null', [], []);
             }
             else
             {
@@ -327,7 +331,9 @@ class IntersystemsController extends AbstractController
 
             $group_user_count_ary[$rem_schema] = $db->fetchOne('select count(*)
                 from ' . $rem_schema . '.users
-                where status in (1, 2)', [], []);
+                where is_active
+                    and remote_schema is null
+                    and remote_email is null', [], []);
 
             if ($rem_group)
             {

@@ -947,7 +947,9 @@ class MessagesListController extends AbstractController
             'common'   => $sql_map,
         ];
 
-        $sql['common']['where'][] = '1 = 1';
+        $sql['common']['where'][] = 'u.is_active';
+        $sql['common']['where'][] = 'u.remote_schema is null';
+        $sql['common']['where'][] = 'u.remote_email is null';
 
         $is_owner = isset($filter_command->user)
             && $su->is_owner($filter_command->user);
@@ -1051,31 +1053,29 @@ class MessagesListController extends AbstractController
 
         if ($filter_user_status)
         {
-            $sql_user_status_where = [];
+            $wh_or = [];
             $sql['user_status'] = $sql_map;
 
             if (in_array('new', $filter_command->us))
             {
-                $sql_user_status_where[] = '(u.activated_at > ? and u.status = 1)';
+                $wh_or[] = 'u.activated_at > ?';
                 $sql['user_status']['params'][] = $new_user_treshold;
                 $sql['user_status']['types'][] = Types::DATETIME_IMMUTABLE;
             }
 
             if (in_array('leaving', $filter_command->us))
             {
-                $sql_user_status_where[] = 'u.status = 2';
+                $wh_or[] = 'u.is_leaving';
             }
 
             if (in_array('active', $filter_command->us))
             {
-                $sql_user_status_where[] = '(u.activated_at <= ? and u.status = 1)';
-                $sql['user_status']['params'][] = $new_user_treshold;
-                $sql['user_status']['types'][] = Types::DATETIME_IMMUTABLE;
+                $wh_or[] = 'u.is_active';
             }
 
-            if (count($sql_user_status_where))
+            if (count($wh_or))
             {
-                $sql['user_status']['where'][] = '(' . implode(' or ', $sql_user_status_where) . ')';
+                $sql['user_status']['where'][] = '(' . implode(' or ', $wh_or) . ')';
             }
         }
 
@@ -1113,8 +1113,6 @@ class MessagesListController extends AbstractController
             $sql['is_guest'] = $sql_map;
             $sql['is_guest']['where'][] = 'm.access = \'guest\'';
         }
-
-        $sql['common']['where'][] = 'u.status in (1, 2)';
 
         $filter_category = isset($filter_command->cat)
             && $filter_command->cat
@@ -1292,9 +1290,18 @@ class MessagesListController extends AbstractController
 
         $count_user_status_query = 'select count(m.*),
                 (case
-                    when u.status = 2 then \'leaving\'
-                    when u.status = 1 and u.activated_at > ? then \'new\'
-                    when u.status = 1 then \'active\'
+                    when u.is_active
+                        and (u.remote_schema is not null
+                            or u.remote_email is not null)
+                                then \'intersystem\'
+                    when u.is_active
+                        and u.is_leaving
+                            then \'leaving\'
+                    when u.is_active
+                        and u.activated_at > ?
+                            then \'new\'
+                    when u.is_active
+                        then \'active\'
                     else \'inactive\'
                 end) as u_status
             from ' . $pp->schema() . '.messages m

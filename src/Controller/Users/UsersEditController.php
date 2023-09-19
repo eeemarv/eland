@@ -223,7 +223,9 @@ class UsersEditController extends AbstractController
                         and tc.abbrev = \'mail\'
                         and c.value = ?
                         and c.user_id = u.id
-                        and u.status in (1, 2)';
+                        and u.is_active
+                        and u.remote_schema is null
+                        and u.remote_email is null';
 
                 if ($is_edit)
                 {

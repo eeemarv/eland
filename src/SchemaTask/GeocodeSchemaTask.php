@@ -47,7 +47,9 @@ class GeocodeSchemaTask implements SchemaTaskInterface
 			where c.id_type_contact = tc.id
 				and tc.abbrev = \'adr\'
 				and c.user_id = u.id
-				and u.status in (1, 2)');
+				and u.is_active
+				and u.remote_schema is null
+				and u.remote_email is null');
 
 		$res = $stmt->executeQuery();
 

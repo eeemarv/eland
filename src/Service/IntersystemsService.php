@@ -55,7 +55,7 @@ class IntersystemsService
 				and u.code = g.localletscode
 				and u.code <> \'\'
 				and u.role = \'guest\'
-				and u.status in (1, 2, 7)');
+				and u.is_active');
 
 		$res = $stmt->executeQuery();
 
@@ -147,7 +147,7 @@ class IntersystemsService
 				where g.apimethod = \'elassoap\'
 					and u.code = g.localletscode
 					and u.code <> \'\'
-					and u.status in (1, 2, 7)
+					and u.is_active
 					and u.role = \'guest\'
 					and g.url = ?',
 				[$s_url], [\PDO::PARAM_STR]);
