@@ -3,6 +3,7 @@
 namespace App\Controller\Transactions;
 
 use App\Cnst\BulkCnst;
+use App\Controller\Users\UsersListController;
 use App\Form\Type\Filter\QTextSearchFilterType;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
@@ -32,66 +33,17 @@ use Symfony\Component\Routing\Annotation\Route;
 #[AsController]
 class TransactionsMassController extends AbstractController
 {
-    const STATUS_RENDER = [
-        'active'	=> [
-            'lbl'	=> 'Actief',
-            'st'	=> 1,
-            'hsh'	=> '58d267',
-        ],
-        'new'		=> [
-            'lbl'	=> 'Instappers',
-            'st'	=> 3,
-            'hsh'	=> 'e25b92',
-            'cl'	=> 'success',
-        ],
-        'leaving'	=> [
-            'lbl'	=> 'Uitstappers',
-            'st'	=> 2,
-            'hsh'	=> 'ea4d04',
-            'cl'	=> 'danger',
-        ],
-        'inactive'	=> [
-            'lbl'	=> 'Inactief',
-            'st'	=> 0,
-            'hsh'	=> '79a240',
-            'cl'	=> 'inactive',
-        ],
-        'info-packet'	=> [
-            'lbl'	=> 'Info-pakket',
-            'st'	=> 5,
-            'hsh'	=> '2ed157',
-            'cl'	=> 'info-pack',
-        ],
-        'info-moment'	=> [
-            'lbl'	=> 'Info-moment',
-            'st'	=> 6,
-            'hsh'	=> '065878',
-            'cl'	=> 'info',
-        ],
-        'all'		=> [
-            'lbl'	=> 'Alle',
-        ],
-    ];
-
-    const STATUS = [
-        0 	=> 'inactive',
-        1 	=> 'active',
-        2 	=> 'leaving',
-        3	=> 'new',
-        5	=> 'info-packet',
-        6	=> 'info-moment',
-        7	=> 'extern',
-    ];
-
     #[Route(
-        '/{system}/{role_short}/transactions/mass',
+        '/{system}/{role_short}/transactions/mass/{status}',
         name: 'transactions_mass',
         methods: ['GET', 'POST'],
         requirements: [
+            'status'        => '%assert.account_status.user%',
             'system'        => '%assert.system%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
+            'status'        => 'active',
             'module'        => 'transactions',
             'sub_module'    => 'mass_transaction',
         ],
@@ -100,11 +52,11 @@ class TransactionsMassController extends AbstractController
     public function __invoke(
         Request $request,
         Db $db,
+        string $status,
         AccountRepository $account_repository,
         LoggerInterface $logger,
         AlertService $alert_service,
         FormTokenService $form_token_service,
-        ItemAccessService $item_access_service,
         ConfigService $config_service,
         LinkRender $link_render,
         AccountRender $account_render,
@@ -115,6 +67,7 @@ class TransactionsMassController extends AbstractController
         AutoMinLimitService $autominlimit_service,
         AutoDeactivateService $auto_deactivate_service,
         TransactionService $transaction_service,
+        ItemAccessService $item_access_service,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
@@ -140,26 +93,8 @@ class TransactionsMassController extends AbstractController
         $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
         $limits_enabled = $config_service->get_bool('accounts.limits.enabled', $pp->schema());
 
-        $show_new_status = $new_users_enabled;
-
-        if ($show_new_status)
-        {
-            $new_users_access = $config_service->get_str('users.new.access', $pp->schema());
-            $show_new_status = $item_access_service->is_visible($new_users_access);
-        }
-
-        $show_leaving_status = $leaving_users_enabled;
-
-        if ($show_leaving_status)
-        {
-            $leaving_users_access = $config_service->get_str('users.leaving.access', $pp->schema());
-            $show_leaving_status = $item_access_service->is_visible($leaving_users_access);
-        }
-
         $filter_form = $this->createForm(QTextSearchFilterType::class);
         $filter_form->handleRequest($request);
-
-        $hsh = $request->get('hsh', '58d267');
 
         $selected_users = $request->request->get('selected_users', '');
         $selected_users = ltrim($selected_users, '.');
@@ -174,16 +109,70 @@ class TransactionsMassController extends AbstractController
             $max_limit_ary = $account_repository->get_max_limit_ary($pp->schema());
         }
 
+
+        /**
+         * Fetch columns list
+         */
+
+         $sql_map = [
+            'where'     => [],
+            'params'    => [],
+            'types'     => [],
+        ];
+
+        $sql = [];
+        $sql['common'] = $sql_map;
+        $sql['common']['where'][] = 'u.remote_schema is null';
+        $sql['common']['where'][] = 'u.remote_email is null';
+
+        $status_def_ary = UsersListController::get_status_def_ary($config_service, $item_access_service, $pp);
+
+        unset($status_def_ary['intersystem']);
+        unset($status_def_ary['all']);
+
+        if (!$new_users_enabled)
+        {
+            unset($status_def_ary['new']);
+        }
+
+        if (!$leaving_users_enabled)
+        {
+            unset($status_def_ary['leaving']);
+        }
+
+        $sql['status'] = $sql_map;
+
+        foreach ($status_def_ary[$status]['sql'] as $st_def_key => $def_sql_ary)
+        {
+            foreach ($def_sql_ary as $def_val)
+            {
+                if (is_array($def_val) && $st_def_key = 'where')
+                {
+                    $wh_or = '(';
+                    $wh_or .= implode(' or ', $def_val);
+                    $wh_or .= ')';
+                    $sql['status'][$st_def_key][] = $wh_or;
+                    continue;
+                }
+
+                $sql['status'][$st_def_key][] = $def_val;
+            }
+        }
+
+        $params = ['status'	=> $status];
+
+        $sql_where = implode(' and ', array_merge(...array_column($sql, 'where')));
+        $sql_params = array_merge(...array_column($sql, 'params'));
+        $sql_types = array_merge(...array_column($sql, 'types'));
+
+        $query = 'select u.*
+            from ' . $pp->schema() . '.users u
+            where ' . $sql_where . '
+            order by u.code asc';
+
         $users = [];
 
-        $stmt = $db->prepare(
-            'select id, name, code,
-                role, status, activated_at
-            from ' . $pp->schema() . '.users
-            where status IN (0, 1, 2, 5, 6)
-            order by code');
-
-        $res = $stmt->executeQuery();
+        $res = $db->executeQuery($query, $sql_params, $sql_types);
 
         while ($row = $res->fetchAssociative())
         {
@@ -732,36 +721,50 @@ class TransactionsMassController extends AbstractController
         $hfr .= '</div>';
         $hfr .= '</div>';
 
+        /****
+         * TABS
+         */
+
         $out = '<ul class="nav nav-tabs" id="nav-tabs">';
 
-        foreach (self::STATUS_RENDER as $k => $s)
+        $nav_params = $params;
+
+        foreach ($status_def_ary as $k => $tab)
         {
-            if ($k === 'new' && !$new_users_enabled)
+            $nav_params['status'] = $k;
+
+            $out .= '<li';
+            $out .= $params['status'] === $k ? ' class="active"' : '';
+            $out .= '>';
+
+            $out .= '<a href="';
+            $out .= $link_render->context_path('transactions_mass',
+                $pp->ary(), $nav_params);
+            $out .= '"';
+
+            if (isset($tab['cl']))
             {
-                continue;
+                $out .= ' class="bg-';
+                $out .= $tab['cl'];
+                $out .= '"';
             }
 
-            if ($k === 'leaving' && !$leaving_users_enabled)
-            {
-                continue;
-            }
+            $out .= '>';
+            $out .= $tab['lbl'];
+            $out .= '</a>';
+            $out .= '</li>';
+         }
 
-            $shsh = $s['hsh'] ?? '';
-            $class_li = $shsh == $hsh ? ' class="active"' : '';
-            $class_a  = $s['cl'] ?? 'white';
+         $out .= '</ul>';
 
-            $out .= '<li' . $class_li . '><a href="#" class="bg-' . $class_a . '" ';
-            $out .= 'data-filter="' . $shsh . '">' . $s['lbl'] . '</a></li>';
-        }
-
-        $out .= '</ul>';
+        /**
+         *
+         */
 
         $out .= '<form method="post" autocomplete="off">';
 
         $out .= '<input type="hidden" value="" id="combined-filter">';
-        $out .= '<input type="hidden" value="';
-        $out .= $hsh;
-        $out .= '" name="hsh" id="hsh">';
+
         $out .= '<input type="hidden" value="" ';
         $out .= 'name="selected_users" id="selected_users">';
 
@@ -770,15 +773,13 @@ class TransactionsMassController extends AbstractController
 
         $data_typeahead = $typeahead_service->ini($pp)
             ->add('accounts', ['status' => 'active'])
-            ->add('accounts', ['status' => 'inactive'])
-            ->add('accounts', ['status' => 'ip'])
-            ->add('accounts', ['status' => 'im'])
-            ->add('accounts', ['status' => 'extern'])
+            ->add('accounts', ['status' => 'pre-active'])
+            ->add('accounts', ['status' => 'post-active'])
             ->str([
                 'filter'        => 'accounts',
                 'new_users_days'        => $new_users_days,
-                'show_new_status'       => $show_new_status,
-                'show_leaving_status'   => $show_leaving_status,
+                'show_new_status'       => $new_users_enabled,
+                'show_leaving_status'   => $leaving_users_enabled,
             ]);
 
         $out .= '<div class="form-group">';
@@ -808,7 +809,7 @@ class TransactionsMassController extends AbstractController
 
         $out .= '<table class="table table-bordered table-striped ';
         $out .= 'table-hover panel-body footable" ';
-        $out .= 'data-filter="#combined-filter" data-filter-minimum="1" ';
+        $out .= 'data-filter="#q" data-filter-minimum="1" ';
         $out .= 'data-minlimit="';
         $out .= $system_min_limit;
         $out .= '" ';
@@ -836,30 +837,61 @@ class TransactionsMassController extends AbstractController
 
         foreach($users as $user_id => $user)
         {
-            $status_key = self::STATUS[$user['status']];
-
-            if (isset($user['activated_at'])
-                && $status_key === 'active'
-                && $new_users_enabled
-                && $new_user_treshold->getTimestamp() < strtotime($user['activated_at'] . ' UTC')
-            )
+            $is_remote = isset($user['remote_schema']) || isset($user['remote_email']);
+            $is_active = $user['is_active'];
+            $is_leaving = $user['is_leaving'];
+            $post_active = isset($user['activated_at']);
+            $is_new = false;
+            $is_status_new = false;
+            $is_status_leaving = false;
+            if ($post_active)
             {
-                $status_key = 'new';
+                if ($new_user_treshold->getTimestamp() < strtotime($user['activated_at'] . ' UTC'))
+                {
+                    $is_new = true;
+                }
             }
 
-            if ($status_key === 'leaving'
-                && !$leaving_users_enabled
-            )
+            $row_class = null;
+
+            if ($is_active)
             {
-                $status_key = 'active';
+                if ($is_remote)
+                {
+                    $row_class = 'warning';
+                }
+                else if ($is_leaving && $leaving_users_enabled)
+                {
+                    $row_class = 'danger';
+                    $is_status_leaving = true;
+                }
+                else if ($is_new && $new_users_enabled)
+                {
+                    $row_class = 'success';
+                    $is_status_new = true;
+                }
+            }
+            else if ($post_active)
+            {
+                $row_class = 'inactive';
+            }
+            else
+            {
+                $row_class = 'info';
             }
 
-            $hsh = self::STATUS_RENDER[$status_key]['hsh'] ?: '';
-            $hsh .= $status_key == 'leaving' || $status_key == 'new' ? self::STATUS_RENDER['active']['hsh'] : '';
+            $out .= '<tr';
 
-            $class = isset(self::STATUS_RENDER[$status_key]['cl']) ? ' class="' . self::STATUS_RENDER[$status_key]['cl'] . '"' : '';
+            if (isset($row_class))
+            {
+                $out .= ' class="';
+                $out .= $row_class;
+                $out .= '"';
+            }
 
-            $out .= '<tr' . $class . ' data-user-id="' . $user_id . '">';
+            $out .= ' data-user-id="';
+            $out .= $user_id;
+            $out .= '">';
 
             $out .= '<td>';
 
@@ -867,7 +899,7 @@ class TransactionsMassController extends AbstractController
 
             $out .= '</td>';
 
-            $out .= '<td data-value="' . $hsh . '">';
+            $out .= '<td>';
             $out .= '<input type="number" name="amount[' . $user_id . ']" ';
             $out .= 'class="form-control" ';
             $out .= 'value="';
@@ -879,12 +911,12 @@ class TransactionsMassController extends AbstractController
             $out .= 'data-balance="' . $user['balance'] . '" ';
             $out .= 'data-minlimit="' . ($user['min_limit'] ?? '') . '"';
 
-            if ($status_key === 'new')
+            if ($is_status_new)
             {
                 $out .= ' data-new-account';
             }
 
-            if ($status_key === 'leaving')
+            if ($is_status_leaving)
             {
                 $out .= ' data-leaving-account';
             }
@@ -913,8 +945,12 @@ class TransactionsMassController extends AbstractController
 
             if ($limits_enabled)
             {
-                $out .= '<td>' . ($user['min_limit'] ?? '') . '</td>';
-                $out .= '<td>' . ($user['max_limit'] ?? '') . '</td>';
+                $out .= '<td>';
+                $out .= $user['min_limit'] ?? '';
+                $out .= '</td>';
+                $out .= '<td>';
+                $out .= $user['max_limit'] ?? '';
+                $out .= '</td>';
             }
 
             $out .= '</tr>';

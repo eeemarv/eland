@@ -963,7 +963,7 @@ class TransactionsAddController extends AbstractController
             $out .= 'data-typeahead="';
 
             $typeahead_service->ini($pp);
-            $typeahead_service->add('accounts', ['status' => 'active-user']);
+            $typeahead_service->add('accounts', ['status' => 'active']);
             $typeahead_service->add('accounts', ['status' => 'intersystem']);
             $typeahead_service->add('accounts', ['status' => 'pre-active']);
             $typeahead_service->add('accounts', ['status' => 'post-active']);
@@ -1031,7 +1031,7 @@ class TransactionsAddController extends AbstractController
                 {
                     $out .= 'id="group_self" ';
 
-                    $typeahead_service->add('accounts', ['status' => 'active-user']);
+                    $typeahead_service->add('accounts', ['status' => 'active']);
                     $typeahead_service->add('accounts', ['status' => 'intersystem']);
 
                     if ($pp->is_admin())

@@ -36,12 +36,12 @@ class TypeaheadAccountsController extends AbstractController
         PageParamsService $pp
     ):Response
     {
-        if ($pp->is_guest() && $status !== 'active-user')
+        if ($pp->is_guest() && $status !== 'active')
         {
             return $this->json(['error' => 'No access.'], 403);
         }
 
-        if(!$pp->is_admin() && !in_array($status, ['active-user', 'intersystem']))
+        if(!$pp->is_admin() && !in_array($status, ['active', 'intersystem']))
         {
             return $this->json(['error' => 'No access.'], 403);
         }
@@ -66,7 +66,7 @@ class TypeaheadAccountsController extends AbstractController
                 ],
                 'u.is_active',
             ],
-            'active-user'  => [
+            'active'  => [
                 'u.is_active',
                 'u.remote_schema is null',
                 'u.remote_email is null',

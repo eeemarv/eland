@@ -17,8 +17,9 @@ parameters:
     assert.view: 'extended|list|map|tiles'
     assert.account_status: 'active|new|leaving|inactive|im|ip|extern|all'
     assert.account_status.all: 'active|new|leaving|intersystem|pre-active|post-active|all'
+    assert.account_status.user: 'active|new|leaving|pre-active|post-active'
     assert.account_status.primary: 'active|inactive|im|ip|extern'
-    assert.account_status.typeahead: 'active-user|intersystem|pre-active|post-active'
+    assert.account_status.typeahead: 'active|intersystem|pre-active|post-active'
     assert.message_image: '[a-z][a-z0-9]*_m_\d+_[a-f0-9]{40}'
     assert.image_ext: 'jpg|png|gif|webp|svg'
     assert.year: ^(19|20)[0-9]{2}$

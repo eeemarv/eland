@@ -76,7 +76,7 @@ class ContactsFilterType extends AbstractType
         }
 
         $typeahead_accounts_add = [];
-        $typeahead_accounts_add[] = ['accounts', ['status' => 'active-user']];
+        $typeahead_accounts_add[] = ['accounts', ['status' => 'active']];
         $typeahead_accounts_add[] = ['accounts', ['status' => 'intersystem']];
         $typeahead_accounts_add[] = ['accounts', ['status' => 'pre-active']];
         $typeahead_accounts_add[] = ['accounts', ['status' => 'post-active']];

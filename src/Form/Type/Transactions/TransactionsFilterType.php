@@ -35,7 +35,7 @@ class TransactionsFilterType extends AbstractType
 
         $typeahead_add = [];
 
-        $typeahead_add[] = ['accounts', ['status' => 'active-user']];
+        $typeahead_add[] = ['accounts', ['status' => 'active']];
         $typeahead_add[] = ['accounts', ['status' => 'intersystem']];
 
         if ($this->pp->is_admin())

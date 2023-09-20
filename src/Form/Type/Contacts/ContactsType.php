@@ -91,7 +91,7 @@ class ContactsType extends AbstractType
         {
             $builder->add('user_id', TypeaheadType::class, [
                 'add'   => [
-                    ['accounts', ['status' => 'active-user']],
+                    ['accounts', ['status' => 'active']],
                     ['accounts', ['status' => 'intersystem']],
                     ['accounts', ['status' => 'pre-active']],
                     ['accounts', ['status' => 'post-active']],

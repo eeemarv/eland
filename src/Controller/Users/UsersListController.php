@@ -1323,7 +1323,7 @@ class UsersListController extends AbstractController
                 $fc3 .= '</div>';
 
                 $typeahead_service->ini($pp)
-                    ->add('accounts', ['status' => 'active-user']);
+                    ->add('accounts', ['status' => 'active']);
 
                 if (!$pp->is_guest())
                 {

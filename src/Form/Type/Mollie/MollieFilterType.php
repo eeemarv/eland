@@ -31,7 +31,7 @@ class MollieFilterType extends AbstractType
     ):void
     {
         $typeahead_add = [];
-        $typeahead_add[] = ['accounts', ['status' => 'active-user']];
+        $typeahead_add[] = ['accounts', ['status' => 'active']];
         $typeahead_add[] = ['accounts', ['status' => 'intersystem']];
         $typeahead_add[] = ['accounts', ['status' => 'pre-active']];
         $typeahead_add[] = ['accounts', ['status' => 'post-active']];

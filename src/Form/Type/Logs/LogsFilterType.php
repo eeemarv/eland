@@ -27,7 +27,7 @@ class LogsFilterType extends AbstractType
 
         $builder->add('user', TypeaheadType::class, [
             'add'   => [
-                ['accounts', ['status' => 'active-user']],
+                ['accounts', ['status' => 'active']],
                 ['accounts', ['status' => 'intersystem']],
                 ['accounts', ['status' => 'pre-active']],
                 ['accounts', ['status' => 'post-active']],

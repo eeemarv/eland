@@ -73,7 +73,7 @@ class MessagesFilterType extends AbstractType
 
         $typeahead_add = [];
 
-        $typeahead_add[] = ['accounts', ['status' => 'active-user']];
+        $typeahead_add[] = ['accounts', ['status' => 'active']];
 
         if ($this->pp->is_user() || $this->pp->is_admin())
         {

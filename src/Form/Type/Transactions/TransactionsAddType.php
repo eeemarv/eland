@@ -32,7 +32,7 @@ class TransactionsAddType extends AbstractType
         $to_remote_account_options = [];
 
         $typeahead_add = [];
-        $typeahead_add[] = ['accounts', ['status' => 'active-user']];
+        $typeahead_add[] = ['accounts', ['status' => 'active']];
         $typeahead_add[] = ['accounts', ['status' => 'intersystem']];
 
         if ($this->pp->is_admin())
