@@ -6,7 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Render\LinkRender;
-use App\Cnst\RoleCnst;
 use App\Cnst\BulkCnst;
 use App\Form\Type\Filter\QTextSearchFilterType;
 use App\Queue\MailQueue;
@@ -1768,14 +1767,14 @@ class UsersListController extends AbstractController
                     }
                     else if ($key === 'role')
                     {
-                        if (isset($u['role']))
+                        $td .= '<span class="label label-li label-lg label-';
+                        $td .= match($u['role'])
                         {
-                            $td .= RoleCnst::LABEL_ARY[$u['role']];
-                        }
-                        else
-                        {
-                            $td .= '&nbsp;';
-                        }
+                            'user'  => 'white">Lid',
+                            'admin' => 'info">Admin',
+                            default => 'danger"><span class="fa fa-times"></span>',
+                        };
+                        $td .= '</span>';
                     }
                     else
                     {

@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use App\Cnst\StatusCnst;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
@@ -110,7 +109,19 @@ class UsersDelController extends AbstractController
                     $pp
                 );
 
-                $status = StatusCnst::THUMBPRINT_ARY[$user['status']];
+                $status = 'active';
+
+                if (!isset($user['is_active']))
+                {
+                    if (isset($user['activated_at']))
+                    {
+                        $status = 'post-active';
+                    }
+                    else
+                    {
+                        $status = 'pre-active';
+                    }
+                }
 
                 return $this->redirectToRoute($vr->get('users'), [
                     ...$pp->ary(),

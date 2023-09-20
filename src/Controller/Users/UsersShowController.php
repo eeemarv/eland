@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use App\Cnst\RoleCnst;
 use App\Command\Tags\TagsUsersCommand;
 use App\Controller\Contacts\ContactsUserShowInlineController;
 use App\Form\Type\Tags\TagsUsersType;
@@ -595,13 +594,17 @@ class UsersShowController extends AbstractController
                 }
             }
 
-            if (!$is_intersystem)
+            $out .= '<dt>';
+            $out .= 'Rechten / rol';
+            $out .= '</dt>';
+            $out .= '<span class="label label-li label-lg label-';
+            $out .= match($user['role'])
             {
-                $out .= '<dt>';
-                $out .= 'Rechten / rol';
-                $out .= '</dt>';
-                $out .= $this->get_dd(RoleCnst::LABEL_ARY[$user['role']]);
-            }
+                'user'  => 'white">Lid',
+                'admin' => 'info">Admin',
+                default => 'danger"><span class="fa fa-times"></span>',
+            };
+            $out .= '</span>';
 
             if ($admin_comments_enabled)
             {

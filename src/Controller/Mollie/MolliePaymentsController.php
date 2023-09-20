@@ -3,7 +3,6 @@
 namespace App\Controller\Mollie;
 
 use App\Cnst\BulkCnst;
-use App\Cnst\StatusCnst;
 use App\Command\Mollie\MollieFilterCommand;
 use App\Form\Type\Mollie\MollieFilterType;
 use App\Queue\MailQueue;

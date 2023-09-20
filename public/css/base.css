@@ -457,6 +457,14 @@ li.active-group a:visited, li.active-group a:hover
   font-size: 18px;
   line-height: 30px;
 }
+.label-white {
+  background-color: #fff;
+  color: #333;
+  border: #333 solid 1px;
+}
+.label-li {
+  font-weight: 100;
+}
 .no-radius {
   border-radius: 0;
 }

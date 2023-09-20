@@ -2,9 +2,6 @@
 
 namespace App\Cnst;
 
-use App\Cnst\RoleCnst;
-use App\Cnst\StatusCnst;
-
 class BulkCnst
 {
     const MOLLIE_TPL_VARS = [
@@ -34,19 +31,7 @@ class BulkCnst
             'string'	=> true,
             'fa'		=> 'comment-o',
         ],
-/*
-        'role'		=> [
-            'lbl'		=> 'Rechten',
-            'options'	=> RoleCnst::LABEL_ARY,
-            'string'	=> true,
-            'fa'		=> 'hand-paper-o',
-        ],
-        'status'			=> [
-            'lbl'		=> 'Status',
-            'options'	=> StatusCnst::LABEL_ARY,
-            'fa'		=> 'star-o',
-        ],
-*/
+
         'admin_comments'		=> [
             'lbl'		=> 'Commentaar van de Admin',
             'type'		=> 'text',
