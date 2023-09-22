@@ -77,6 +77,41 @@
     {%- endif -%}
 {%- endblock heading_append -%}
 
+{%- block sub_heading -%}
+    {{- category_info_raw|raw -}}
+{%- endblock sub_heading -%}
+
+{%- block content -%}
+    <div class="row">
+        <div class="col-sm-5">
+            {%- block images_panel -%}
+                {{- images_panel_raw|raw -}}
+            {%- endblock images_panel -%}
+        </div>
+        <div class="col-sm-7">
+            {%- block message_info_panel -%}
+                {{- message_info_panel_raw|raw -}}
+            {%- endblock message_info_panel -%}
+        </div>
+    </div>
+
+    {%- block mail_contact_form_panel -%}
+        <h3>
+            <span class="fa fa-envelope-o"></span>&nbsp;
+            {{- 'messages_show.mail_contact.title'|trans({
+                'to_user': account(message.user_id, schema)
+            }) -}}
+        </h3>
+        {%- embed 'embed/mail_contact_form.html.twig' -%}
+        {%- endembed -%}
+    {%- endblock mail_contact_form_panel -%}
+
+    {%- block user_contacts_table -%}
+        {{- user_contacts_table_raw|raw -}}
+    {%- endblock user_contacts_table -%}
+
+{%- endblock content -%}
+
 {%- block css -%}
     {{- parent() -}}
     {{- encore_entry_link_tags('fileupload') -}}

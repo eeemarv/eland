@@ -80,6 +80,7 @@
         'user': account(id, schema),
     }) -}}
     {{- account_status(id, schema)|raw -}}
+    {# intersystem link here #}
     {#
     {%- if pp_has_role('admin') -%}
         {%- if intersystem_missing -%}
@@ -108,6 +109,41 @@
         'help': 'tags_users.help.only_for_admins'
     } -%}
 {%- endblock tags -%}
+
+{%- block content -%}
+    <div class="row">
+        <div class="col-sm-4">
+            {%- block profile_image_panel -%}
+                {{- profile_image_panel_raw|raw -}}
+            {%- endblock profile_image_panel -%}
+        </div>
+        <div class="col-sm-8">
+            {%- block user_info_panel -%}
+                {{- user_info_panel_raw|raw -}}
+            {%- endblock user_info_panel -%}
+        </div>
+    </div>
+
+    {%- block mail_contact_form_panel -%}
+        <h3>
+            <span class="fa fa-envelope-o"></span>&nbsp;
+            {{- 'users_show.mail_contact.title'|trans({
+                'user': account(id, schema)
+            }) -}}
+        </h3>
+        {%- embed 'embed/mail_contact_form.html.twig' -%}
+        {%- endembed -%}
+    {%- endblock mail_contact_form_panel -%}
+
+    {%- block user_contacts_table -%}
+        {{- user_contacts_table_raw|raw -}}
+    {%- endblock user_contacts_table -%}
+
+    {%- block transactions_messages_panel -%}
+        {{- transactions_messages_raw|raw -}}
+    {%- endblock transactions_messages_panel -%}
+
+{%- endblock content -%}
 
 {%- block css -%}
     {{- parent() -}}

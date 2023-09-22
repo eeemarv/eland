@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Command\SupportForm;
+namespace App\Command\Messages;
 
 use App\Command\CommandInterface;
 use Symfony\Component\Validator\Constraints\Length;
@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Constraints\Type;
 
-class SupportFormCommand implements CommandInterface
+class MessagesMailContactCommand implements CommandInterface
 {
     #[Sequentially(constraints: [
         new NotBlank(),

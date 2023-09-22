@@ -9,8 +9,10 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Doctrine\DBAL\Connection as Db;
 use App\Cnst\MessageTypeCnst;
+use App\Command\Messages\MessagesMailContactCommand;
 use App\Controller\Contacts\ContactsUserShowInlineController;
 use App\Controller\Users\UsersShowController;
+use App\Form\Type\MailContact\MailContactType;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
@@ -83,8 +85,6 @@ class MessagesShowController extends AbstractController
 
         $transactions_enabled = $config_service->get_bool('transactions.enabled', $pp->schema());
 
-        $errors = [];
-
         $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
         $service_stuff_enabled = $config_service->get_bool('messages.fields.service_stuff.enabled', $pp->schema());
         $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
@@ -97,12 +97,6 @@ class MessagesShowController extends AbstractController
             $category = $category_repository->get($message['category_id'], $pp->schema());
         }
 
-        $user_mail_content = $request->request->get('user_mail_content', '');
-        $user_mail_cc = $request->request->get('user_mail_cc', '') ? true : false;
-        $user_mail_submit = $request->request->get('user_mail_submit', '') ? true : false;
-
-        $user_mail_cc = $request->isMethod('POST') ? $user_mail_cc : true;
-
         if ($message['access'] === 'user' && $pp->is_guest())
         {
             throw new AccessDeniedHttpException('Je hebt geen toegang tot dit bericht.');
@@ -110,93 +104,79 @@ class MessagesShowController extends AbstractController
 
         $user = $user_cache_service->get($message['user_id'], $pp->schema());
 
-        // process mail form
+        /**
+         * mail contact form
+         */
 
-        if ($user_mail_submit && $request->isMethod('POST'))
+        $mail_command = new MessagesMailContactCommand();
+
+        $mail_form = $this->createForm(MailContactType::class, $mail_command, [
+            'to_user_id'    => $message['user_id'],
+        ]);
+
+        $mail_form->handleRequest($request);
+
+        if ($mail_form->isSubmitted()
+            && $mail_form->isValid())
         {
+            $mail_command = $mail_form->getData();
+
+            $from_user = $user_cache_service->get($su->id(), $su->schema());
             $to_user = $user;
 
-            if (!$pp->is_admin() && !in_array($to_user['status'], [1, 2]))
+            if (!$pp->is_admin() && !$to_user['is_active'])
             {
                 throw new AccessDeniedHttpException('You dan\'t have enough rights
                     to send a message to a non-active user.');
             }
 
-            if ($su->is_master())
+            $vars = [
+                'from_user'			=> $from_user,
+                'from_schema'		=> $su->schema(),
+                'is_same_system'	=> $su->is_system_self(),
+                'to_user'			=> $to_user,
+                'to_schema'			=> $pp->schema(),
+                'msg_content'		=> $mail_command->message,
+                'message'			=> $message,
+            ];
+
+            $mail_template = $su->is_system_self()
+                ? 'message_msg/msg'
+                : 'message_msg/msg_intersystem';
+
+            $mail_queue->queue([
+                'schema'	=> $pp->schema(),
+                'to'		=> $mail_addr_user_service->get_active($to_user['id'], $pp->schema()),
+                'reply_to'	=> $mail_addr_user_service->get_active($su->id(), $su->schema()),
+                'template'	=> $mail_template,
+                'vars'		=> $vars,
+            ], 8500);
+
+            if ($mail_command->cc)
             {
-                throw new AccessDeniedHttpException('The master account can not send messages.');
-            }
-
-            $token_error = $form_token_service->get_error();
-
-            if ($token_error)
-            {
-                $errors[] = $token_error;
-            }
-
-            if (!$user_mail_content)
-            {
-                $errors[] = 'Fout: leeg bericht. E-mail niet verzonden.';
-            }
-
-            $reply_ary = $mail_addr_user_service->get_active($su->id(), $su->schema());
-
-            if (!count($reply_ary))
-            {
-                $errors[] = 'Fout: Je kan geen berichten naar een andere gebruiker
-                    verzenden als er geen E-mail adres is ingesteld voor je eigen account.';
-            }
-
-            if (!count($errors))
-            {
-                $from_user = $user_cache_service->get($su->id(), $su->schema());
-
-                $vars = [
-                    'from_user'			=> $from_user,
-                    'from_schema'		=> $su->schema(),
-                    'is_same_system'	=> $su->is_system_self(),
-                    'to_user'			=> $to_user,
-                    'to_schema'			=> $pp->schema(),
-                    'msg_content'		=> $user_mail_content,
-                    'message'			=> $message,
-                ];
-
                 $mail_template = $su->is_system_self()
-                    ? 'message_msg/msg'
-                    : 'message_msg/msg_intersystem';
+                    ? 'message_msg/copy'
+                    : 'message_msg/copy_intersystem';
 
                 $mail_queue->queue([
                     'schema'	=> $pp->schema(),
-                    'to'		=> $mail_addr_user_service->get_active($to_user['id'], $pp->schema()),
-                    'reply_to'	=> $reply_ary,
+                    'to'		=> $mail_addr_user_service->get_active($su->id(), $su->schema()),
                     'template'	=> $mail_template,
                     'vars'		=> $vars,
-                ], 8500);
-
-                if ($user_mail_cc)
-                {
-                    $mail_template = $su->is_system_self()
-                        ? 'message_msg/copy'
-                        : 'message_msg/copy_intersystem';
-
-                    $mail_queue->queue([
-                        'schema'	=> $pp->schema(),
-                        'to'		=> $mail_addr_user_service->get_active($su->id(), $su->schema()),
-                        'template'	=> $mail_template,
-                        'vars'		=> $vars,
-                    ], 8000);
-                }
-
-                $alert_service->success('Mail verzonden.');
-
-                return $this->redirectToRoute('messages_show', [
-                    ...$pp->ary(),
-                    'id' => $id,
-                ]);
+                ], 8000);
             }
 
-            $alert_service->error($errors);
+            $alert_service->success('Mail verzonden.');
+
+            return $this->redirectToRoute('messages_show', [
+                ...$pp->ary(),
+                'id' => $id,
+            ]);
         }
+
+        /**
+         *
+         */
 
         $data_images = [
             'base_url'      => $env_s3_url,
@@ -252,12 +232,12 @@ class MessagesShowController extends AbstractController
 
         $contacts_content = $contacts_response->getContent();
 
-        $out = '';
+        $cati = '';
 
         if ($category_enabled)
         {
-            $out .= '<p>Categorie: ';
-            $out .= '<strong><i>';
+            $cati .= '<p>Categorie: ';
+            $cati .= '<strong><i>';
 
             if (isset($category))
             {
@@ -265,65 +245,65 @@ class MessagesShowController extends AbstractController
                 $cat_name .= isset($category['parent_name']) ? ' > ' : '';
                 $cat_name .= $category['name'];
 
-                $out .= $link_render->link_no_attr($vr->get('messages'), $pp->ary(),
-                    ['f' => ['cid' => $category['id']]], $cat_name);
+                $cati .= $link_render->link_no_attr($vr->get('messages'), $pp->ary(),
+                    ['f' => ['cat' => $category['id']]], $cat_name);
             }
             else
             {
-                $out .= $link_render->link_no_attr($vr->get('messages'), $pp->ary(),
+                $cati .= $link_render->link_no_attr($vr->get('messages'), $pp->ary(),
                     ['f' => ['cid' => 'null']], '** zonder categorie **');
             }
 
-            $out .= '</i></strong>';
-            $out .= '</p>';
+            $cati .= '</i></strong>';
+            $cati .= '</p>';
         }
 
-        $out .= '<div class="row">';
+        /**
+         * Images panel
+         */
 
-        $out .= '<div class="col-md-6">';
+        $imp = '<div class="panel panel-default">';
+        $imp .= '<div class="panel-body img-upload">';
 
-        $out .= '<div class="panel panel-default">';
-        $out .= '<div class="panel-body img-upload">';
+        $imp .= '<div id="no_images" ';
+        $imp .= 'class="text-center center-body">';
+        $imp .= '<i class="fa fa-image fa-5x"></i> ';
+        $imp .= '<p>Er zijn geen afbeeldingen voor ';
+        $imp .= $message['label']['offer_want_this'] . '</p>';
+        $imp .= '</div>';
 
-        $out .= '<div id="no_images" ';
-        $out .= 'class="text-center center-body">';
-        $out .= '<i class="fa fa-image fa-5x"></i> ';
-        $out .= '<p>Er zijn geen afbeeldingen voor ';
-        $out .= $message['label']['offer_want_this'] . '</p>';
-        $out .= '</div>';
+        $imp .= '<div id="images_con" ';
+        $imp .= 'data-images="';
+        $imp .= htmlspecialchars(json_encode($data_images));
+        $imp .= '">';
+        $imp .= '</div>';
 
-        $out .= '<div id="images_con" ';
-        $out .= 'data-images="';
-        $out .= htmlspecialchars(json_encode($data_images));
-        $out .= '">';
-        $out .= '</div>';
-
-        $out .= '</div>';
+        $imp .= '</div>';
 
         if ($pp->is_admin() || $su->is_owner($message['user_id']))
         {
-            $out .= '<div class="panel-footer">';
-            $out .= '<span class="btn btn-success btn-lg btn-block fileinput-button">';
-            $out .= '<i class="fa fa-plus" id="img_plus"></i> Afbeelding opladen';
-            $out .= '<input type="file" name="images[]" ';
-            $out .= 'data-url="';
+            $imp .= '<div class="panel-footer">';
+            $imp .= '<span class="btn btn-success btn-lg btn-block fileinput-button">';
+            $imp .= '<i class="fa fa-plus" id="img_plus"></i> Afbeelding opladen';
+            $imp .= '<input type="file" name="images[]" ';
+            $imp .= 'data-url="';
 
-            $out .= $link_render->context_path('messages_images_upload',
+            $imp .= $link_render->context_path('messages_images_upload',
                 $pp->ary(), ['id' => $id]);
 
-            $out .= '" ';
-            $out .= 'data-fileupload ';
-            $out .= 'data-message-file-type-not-allowed="Bestandstype is niet toegelaten." ';
-            $out .= 'data-message-max-file-size="Het bestand is te groot." ';
-            $out .= 'data-message-min-file-size="Het bestand is te klein." ';
-            $out .= 'data-message-uploaded-bytes="Het bestand is te groot." ';
-            $out .= 'multiple></span>';
+            $imp .= '" ';
+            $imp .= 'data-fileupload ';
+            $imp .= 'data-message-file-type-not-allowed="Bestandstype is niet toegelaten." ';
+            $imp .= 'data-message-max-file-size="Het bestand is te groot." ';
+            $imp .= 'data-message-min-file-size="Het bestand is te klein." ';
+            $imp .= 'data-message-uploaded-bytes="Het bestand is te groot." ';
+            $imp .= 'multiple></span>';
 
-            $out .= '<p class="text-warning">';
-            $out .= 'Toegestane formaten: jpg/jpeg, png, wepb, gif, svg. ';
-            $out .= 'Je kan ook afbeeldingen hierheen verslepen.</p>';
+            $imp .= '<p class="text-warning">';
+            $imp .= 'Toegestane formaten: jpg/jpeg, png, wepb, gif, svg. ';
+            $imp .= 'Je kan ook afbeeldingen hierheen verslepen.</p>';
 
-            $out .= $link_render->link_fa('messages_images_del', $pp->ary(),
+            $imp .= $link_render->link_fa('messages_images_del', $pp->ary(),
                 ['id'		=> $id],
                 'Afbeeldingen verwijderen', [
                     'class'	=> 'btn btn-danger btn-lg btn-block',
@@ -333,162 +313,151 @@ class MessagesShowController extends AbstractController
                 'times'
             );
 
-            $out .= '</div>';
+            $imp .= '</div>';
         }
 
-        $out .= '</div>';
-        $out .= '</div>';
+        $imp .= '</div>';
 
-        $out .= '<div class="col-md-6">';
+        /**
+         * Message info
+         */
 
-        $out .= '<div class="panel panel-default printview">';
-        $out .= '<div class="panel-heading">';
+        $mip = '<div class="panel panel-default printview">';
+        $mip .= '<div class="panel-heading">';
 
-        $out .= '<p><b>Omschrijving</b></p>';
-        $out .= '</div>';
-        $out .= '<div class="panel-body">';
-        $out .= '<p>';
+        $mip .= '<p><b>Omschrijving</b></p>';
+        $mip .= '</div>';
+        $mip .= '<div class="panel-body">';
+        $mip .= '<p>';
 
         if ($message['content'])
         {
-            $out .= nl2br($message['content']);
+            $mip .= nl2br($message['content']);
         }
         else
         {
-            $out .= '<i>Er werd geen omschrijving ingegeven.</i>';
+            $mip .= '<i>Er werd geen omschrijving ingegeven.</i>';
         }
 
-        $out .= '</p>';
-        $out .= '</div></div>';
+        $mip .= '</p>';
+        $mip .= '</div></div>';
 
-        $out .= '<div class="panel panel-default printview">';
-        $out .= '<div class="panel-heading">';
+        $mip .= '<div class="panel panel-default printview">';
+        $mip .= '<div class="panel-heading">';
 
-        $out .= '<dl>';
+        $mip .= '<dl>';
 
         if ($units_enabled)
         {
-            $out .= '<dt>';
-            $out .= 'Richtprijs';
-            $out .= '</dt>';
-            $out .= '<dd>';
+            $mip .= '<dt>';
+            $mip .= 'Richtprijs';
+            $mip .= '</dt>';
+            $mip .= '<dd>';
 
             if (empty($message['amount']))
             {
-                $out .= 'niet opgegeven.';
+                $mip .= 'niet opgegeven.';
             }
             else
             {
-                $out .= $message['amount'] . ' ';
-                $out .= $currency;
-                $out .= $message['units'] ? ' per ' . $message['units'] : '';
+                $mip .= $message['amount'] . ' ';
+                $mip .= $currency;
+                $mip .= $message['units'] ? ' per ' . $message['units'] : '';
             }
 
-            $out .= '</dd>';
+            $mip .= '</dd>';
         }
 
-        $out .= '<dt>Van gebruiker: ';
-        $out .= '</dt>';
-        $out .= '<dd>';
-        $out .= $account_render->link($message['user_id'], $pp->ary());
-        $out .= '</dd>';
+        $mip .= '<dt>Van gebruiker: ';
+        $mip .= '</dt>';
+        $mip .= '<dd>';
+        $mip .= $account_render->link($message['user_id'], $pp->ary());
+        $mip .= '</dd>';
 
-        $out .= '<dt>Plaats</dt>';
-        $out .= '<dd>';
-        $out .= $user['postcode'];
-        $out .= '</dd>';
+        $mip .= '<dt>Plaats</dt>';
+        $mip .= '<dd>';
+        $mip .= $user['postcode'];
+        $mip .= '</dd>';
 
-        $out .= '<dt>Aangemaakt op</dt>';
-        $out .= '<dd>';
-        $out .= $date_format_service->get($message['created_at'], 'day', $pp->schema());
-        $out .= '</dd>';
+        $mip .= '<dt>Aangemaakt op</dt>';
+        $mip .= '<dd>';
+        $mip .= $date_format_service->get($message['created_at'], 'day', $pp->schema());
+        $mip .= '</dd>';
 
         if ($expires_at_enabled)
         {
-            $out .= '<dt>Geldig tot</dt>';
-            $out .= '<dd>';
+            $mip .= '<dt>Geldig tot</dt>';
+            $mip .= '<dd>';
 
             if (isset($message['expires_at']))
             {
-                $out .= $date_format_service->get($message['expires_at'], 'day', $pp->schema());
-                $out .= '</dd>';
+                $mip .= $date_format_service->get($message['expires_at'], 'day', $pp->schema());
+                $mip .= '</dd>';
 
                 if ($pp->is_admin() || $su->is_owner($message['user_id']))
                 {
-                    $out .= '<dt>Verlengen</dt>';
-                    $out .= '<dd>';
-                    $out .= self::btn_extend($link_render, $pp, $id, 30, '1 maand');
-                    $out .= '&nbsp;';
-                    $out .= self::btn_extend($link_render, $pp, $id, 180, '6 maanden');
-                    $out .= '&nbsp;';
-                    $out .= self::btn_extend($link_render, $pp, $id, 365, '1 jaar');
-                    $out .= '</dd>';
+                    $mip .= '<dt>Verlengen</dt>';
+                    $mip .= '<dd>';
+                    $mip .= self::btn_extend($link_render, $pp, $id, 30, '1 maand');
+                    $mip .= '&nbsp;';
+                    $mip .= self::btn_extend($link_render, $pp, $id, 180, '6 maanden');
+                    $mip .= '&nbsp;';
+                    $mip .= self::btn_extend($link_render, $pp, $id, 365, '1 jaar');
+                    $mip .= '</dd>';
                 }
             }
             else
             {
-                $out .= '<span class="text-danger"><em><b>* Dit bericht vervalt niet *</b></em></span>';
-                $out .= '</dd>';
+                $mip .= '<span class="text-danger"><em><b>* Dit bericht vervalt niet *</b></em></span>';
+                $mip .= '</dd>';
             }
         }
 
         if ($service_stuff_enabled)
         {
-            $out .= '<dt>Diensten / spullen</dt>';
-            $out .= '<dd>';
+            $mip .= '<dt>Diensten / spullen</dt>';
+            $mip .= '<dd>';
 
             if (isset($message['service_stuff']))
             {
                 $se_st = MessageTypeCnst::SERVICE_STUFF_TPL_ARY[$message['service_stuff']];
-                $out .= '<span class="btn btn-' . $se_st['btn_class'] . '">';
-                $out .= $se_st['label'];
-                $out .= '</span>';
+                $mip .= '<span class="btn btn-' . $se_st['btn_class'] . '">';
+                $mip .= $se_st['label'];
+                $mip .= '</span>';
             }
             else
             {
-                $out .= '<span class="text-danger"><b><em>* Onbepaald *</em></b></span>';
+                $mip .= '<span class="text-danger"><b><em>* Onbepaald *</em></b></span>';
             }
 
-            $out .= '</dd>';
+            $mip .= '</dd>';
         }
 
         if ($intersystems_service->get_count($pp->schema()))
         {
-            $out .= '<dt>Zichtbaarheid</dt>';
-            $out .= '<dd>';
-            $out .=  $item_access_service->get_label($message['access']);
-            $out .= '</dd>';
+            $mip .= '<dt>Zichtbaarheid</dt>';
+            $mip .= '<dd>';
+            $mip .=  $item_access_service->get_label($message['access']);
+            $mip .= '</dd>';
         }
 
-        $out .= '</dl>';
+        $mip .= '</dl>';
 
-        $out .= '</div>';
-        $out .= '</div>';
-
-        $out .= '</div>';
-        $out .= '</div>';
-
-        $out .= UsersShowController::get_mail_form(
-            $message['user_id'],
-            $user_mail_content,
-            $user_mail_cc,
-            $account_render,
-            $form_token_service,
-            $mail_addr_user_service,
-            $pp,
-            $su
-        );
-
-        $out .= $contacts_content;
+        $mip .= '</div>';
+        $mip .= '</div>';
 
         $message['is_expired'] = isset($message['expires_at']) && strtotime($message['expires_at'] . ' UTC') < time();
 
         return $this->render('messages/messages_show.html.twig', [
-            'content'   => $out,
             'message'   => $message,
             'id'        => $id,
+            'mail_form' => $mail_form,
             'prev_id'   => $prev_id,
             'next_id'   => $next_id,
+            'category_info_raw'         => $cati,
+            'images_panel_raw'          => $imp,
+            'message_info_panel_raw'    => $mip,
+            'user_contacts_table_raw'   => $contacts_content,
         ]);
     }
 

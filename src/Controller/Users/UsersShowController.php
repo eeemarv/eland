@@ -9,7 +9,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use App\Command\Tags\TagsUsersCommand;
+use App\Command\Users\UsersMailContactCommand;
 use App\Controller\Contacts\ContactsUserShowInlineController;
+use App\Form\Type\MailContact\MailContactType;
 use App\Form\Type\Tags\TagsUsersType;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
@@ -122,15 +124,7 @@ class UsersShowController extends AbstractController
         $admin_comments_enabled = $config_service->get_bool('users.fields.admin_comments.enabled', $pp->schema());
         $periodic_mail_enabled = $config_service->get_bool('periodic_mail.enabled', $pp->schema());
 
-        $errors = [];
-
         $tdays = $request->query->get('tdays', '365');
-
-        $user_mail_content = $request->request->get('user_mail_content', '');
-        $user_mail_cc = $request->request->get('user_mail_cc', '') ? true : false;
-        $user_mail_submit = $request->request->get('user_mail_submit', '') ? true : false;
-
-        $user_mail_cc = $request->isMethod('POST') ? $user_mail_cc : true;
 
         $user = $user_cache_service->get($id, $pp->schema());
 
@@ -192,79 +186,62 @@ class UsersShowController extends AbstractController
             $render_tags = true;
         }
 
-        if ($request->isMethod('POST') && $user_mail_submit)
+        $mail_command = new UsersMailContactCommand();
+
+        $mail_form = $this->createForm(MailContactType::class, $mail_command, [
+            'to_user_id'    => $id,
+        ]);
+
+        $mail_form->handleRequest($request);
+
+        if ($mail_form->isSubmitted()
+            && $mail_form->isValid())
         {
-            if ($su->is_master())
+            $mail_command = $mail_form->getData();
+
+            $from_user = $user_cache_service->get($su->id(), $su->schema());
+
+            $vars = [
+                'from_user'			=> $from_user,
+                'from_schema'		=> $su->schema(),
+                'to_user'			=> $user,
+                'to_schema'			=> $pp->schema(),
+                'is_same_system'	=> $su->is_system_self(),
+                'msg_content'		=> $mail_command->message,
+            ];
+
+            $mail_template = $su->is_system_self()
+                ? 'user_msg/msg'
+                : 'user_msg/msg_intersystem';
+
+            $mail_queue->queue([
+                'schema'	=> $pp->schema(),
+                'to'		=> $mail_addr_user_service->get($id, $pp->schema()),
+                'reply_to'	=> $mail_addr_user_service->get($su->id(), $su->schema()),
+                'template'	=> $mail_template,
+                'vars'		=> $vars,
+            ], 8000);
+
+            if ($mail_command->cc)
             {
-                throw new AccessDeniedHttpException('The master account can not send emails');
-            }
-
-            if ($error_token = $form_token_service->get_error())
-            {
-                $errors[] = $error_token;
-            }
-
-            if (!$user_mail_content)
-            {
-                $errors[] = 'Fout: leeg bericht. E-mail niet verzonden.';
-            }
-
-            $reply_ary = $mail_addr_user_service->get($su->id(), $su->schema());
-
-            if (!count($reply_ary))
-            {
-                $errors[] = 'Fout: Je kan geen berichten naar andere gebruikers
-                    verzenden als er geen E-mail adres is ingesteld voor je eigen account.';
-            }
-
-            if (!count($errors))
-            {
-                $from_user = $user_cache_service->get($su->id(), $su->schema());
-
-                $vars = [
-                    'from_user'			=> $from_user,
-                    'from_schema'		=> $su->schema(),
-                    'to_user'			=> $user,
-                    'to_schema'			=> $pp->schema(),
-                    'is_same_system'	=> $su->is_system_self(),
-                    'msg_content'		=> $user_mail_content,
-                ];
-
                 $mail_template = $su->is_system_self()
-                    ? 'user_msg/msg'
-                    : 'user_msg/msg_intersystem';
+                    ? 'user_msg/copy'
+                    : 'user_msg/copy_intersystem';
 
                 $mail_queue->queue([
                     'schema'	=> $pp->schema(),
-                    'to'		=> $mail_addr_user_service->get($id, $pp->schema()),
-                    'reply_to'	=> $reply_ary,
-                    'template'	=> $mail_template,
+                    'to' 		=> $mail_addr_user_service->get($su->id(), $su->schema()),
+                    'template' 	=> $mail_template,
                     'vars'		=> $vars,
                 ], 8000);
-
-                if ($user_mail_cc)
-                {
-                    $mail_template = $su->is_system_self()
-                        ? 'user_msg/copy'
-                        : 'user_msg/copy_intersystem';
-
-                    $mail_queue->queue([
-                        'schema'	=> $pp->schema(),
-                        'to' 		=> $mail_addr_user_service->get($su->id(), $su->schema()),
-                        'template' 	=> $mail_template,
-                        'vars'		=> $vars,
-                    ], 8000);
-                }
-
-                $alert_service->success('E-mail bericht verzonden.');
-
-                return $this->redirectToRoute('users_show', [
-                    ...$pp->ary(),
-                    'id' => $id,
-                ]);
             }
 
-            $alert_service->error($errors);
+            $alert_service->success('E-mail bericht verzonden.');
+
+            return $this->redirectToRoute('users_show', [
+                ...$pp->ary(),
+                'id' => $id,
+            ]);
         }
 
         $count_messages = $db->fetchOne('select count(*)
@@ -373,46 +350,43 @@ class UsersShowController extends AbstractController
             $env_map_tiles_url
         );
 
-        $contacts_content = $contacts_response->getContent();
+        $uct = $contacts_response->getContent();
 
-        $out = '<div class="row">';
-        $out .= '<div class="col-sm-4">';
-
-        $out .= '<div class="panel panel-default">';
-        $out .= '<div class="panel-body text-center ';
-        $out .= 'center-block img-upload" id="img_user">';
+        $pip = '<div class="panel panel-default">';
+        $pip .= '<div class="panel-body text-center ';
+        $pip .= 'center-block img-upload" id="img_user">';
 
         $show_img = $user['image_file'] ? true : false;
 
         $user_img = $show_img ? '' : ' style="display:none;"';
         $no_user_img = $show_img ? ' style="display:none;"' : '';
 
-        $out .= '<img id="img"';
-        $out .= $user_img;
-        $out .= ' class="img-rounded img-responsive center-block w-100" ';
-        $out .= 'src="';
+        $pip .= '<img id="img"';
+        $pip .= $user_img;
+        $pip .= ' class="img-rounded img-responsive center-block w-100" ';
+        $pip .= 'src="';
 
         if ($user['image_file'])
         {
-            $out .= $env_s3_url . $user['image_file'];
+            $pip .= $env_s3_url . $user['image_file'];
         }
         else
         {
-            $out .= $assets_service->get('1.gif');
+            $pip .= $assets_service->get('1.gif');
         }
 
-        $out .= '" ';
-        $out .= 'data-base-url="' . $env_s3_url . '">';
+        $pip .= '" ';
+        $pip .= 'data-base-url="' . $env_s3_url . '">';
 
-        $out .= '<div id="no_img"';
-        $out .= $no_user_img;
-        $out .= '>';
-        $out .= '<i class="fa fa-';
-        $out .= $is_intersystem ? 'share-alt' : 'user';
-        $out .= ' fa-5x text-muted"></i>';
-        $out .= '<br>Geen profielfoto/afbeelding</div>';
+        $pip .= '<div id="no_img"';
+        $pip .= $no_user_img;
+        $pip .= '>';
+        $pip .= '<i class="fa fa-';
+        $pip .= $is_intersystem ? 'share-alt' : 'user';
+        $pip .= ' fa-5x text-muted"></i>';
+        $pip .= '<br>Geen profielfoto/afbeelding</div>';
 
-        $out .= '</div>';
+        $pip .= '</div>';
 
         if ($pp->is_admin() || $su->is_owner($id))
         {
@@ -423,36 +397,36 @@ class UsersShowController extends AbstractController
                 $btn_del_attr['style'] = 'display:none;';
             }
 
-            $out .= '<div class="panel-footer">';
-            $out .= '<span class="btn btn-success btn-lg btn-block fileinput-button">';
-            $out .= '<i class="fa fa-plus" id="img_plus"></i> Afbeelding opladen';
-            $out .= '<input type="file" name="image" ';
-            $out .= 'data-url="';
+            $pip .= '<div class="panel-footer">';
+            $pip .= '<span class="btn btn-success btn-lg btn-block fileinput-button">';
+            $pip .= '<i class="fa fa-plus" id="img_plus"></i> Afbeelding opladen';
+            $pip .= '<input type="file" name="image" ';
+            $pip .= 'data-url="';
 
             if ($pp->is_admin())
             {
-                $out .= $link_render->context_path('users_image_upload_admin', $pp->ary(),
+                $pip .= $link_render->context_path('users_image_upload_admin', $pp->ary(),
                     ['id' => $id]);
             }
             else
             {
-                $out .= $link_render->context_path('users_image_upload', $pp->ary(), []);
+                $pip .= $link_render->context_path('users_image_upload', $pp->ary(), []);
             }
 
-            $out .= '" data-image-crop data-fileupload ';
-            $out .= 'data-message-file-type-not-allowed="Bestandstype is niet toegelaten." ';
-            $out .= 'data-message-max-file-size="Het bestand is te groot." ';
-            $out .= 'data-message-min-file-size="Het bestand is te klein." ';
-            $out .= 'data-message-uploaded-bytes="Het bestand is te groot." ';
-            $out .= '></span>';
+            $pip .= '" data-image-crop data-fileupload ';
+            $pip .= 'data-message-file-type-not-allowed="Bestandstype is niet toegelaten." ';
+            $pip .= 'data-message-max-file-size="Het bestand is te groot." ';
+            $pip .= 'data-message-min-file-size="Het bestand is te klein." ';
+            $pip .= 'data-message-uploaded-bytes="Het bestand is te groot." ';
+            $pip .= '></span>';
 
-            $out .= '<p class="text-warning">';
-            $out .= 'Toegestane formaten: jpg/jpeg, png, webp, gif, svg. ';
-            $out .= 'Je kan ook een afbeelding hierheen verslepen.</p>';
+            $pip .= '<p class="text-warning">';
+            $pip .= 'Toegestane formaten: jpg/jpeg, png, webp, gif, svg. ';
+            $pip .= 'Je kan ook een afbeelding hierheen verslepen.</p>';
 
             if ($pp->is_admin())
             {
-                $out .= $link_render->link_fa('users_image_del_admin', $pp->ary(),
+                $pip .= $link_render->link_fa('users_image_del_admin', $pp->ary(),
                     ['id' => $id], 'Afbeelding verwijderen', [
                         ...$btn_del_attr,
                         'class' => 'btn btn-danger btn-lg btn-block',
@@ -461,7 +435,7 @@ class UsersShowController extends AbstractController
             }
             else
             {
-                $out .= $link_render->link_fa('users_image_del', $pp->ary(),
+                $pip .= $link_render->link_fa('users_image_del', $pp->ary(),
                     [], 'Afbeelding verwijderen', [
                         ...$btn_del_attr,
                         'class' => 'btn btn-danger btn-lg btn-block',
@@ -469,213 +443,210 @@ class UsersShowController extends AbstractController
                     'times');
             }
 
-            $out .= '</div>';
+            $pip .= '</div>';
         }
+        $pip .= '</div>';
 
-        $out .= '</div></div>';
+        $uip = '<div class="panel panel-default printview">';
+        $uip .= '<div class="panel-heading">';
 
-        $out .= '<div class="col-sm-8">';
-
-        $out .= '<div class="panel panel-default printview">';
-        $out .= '<div class="panel-heading">';
-
-        $out .= '<dl>';
+        $uip .= '<dl>';
 
         if ($full_name_enabled && !$is_intersystem)
         {
             $full_name_access = $user['full_name_access'] ?? 'admin';
 
-            $out .= '<dt>';
-            $out .= 'Volledige naam';
-            $out .= '</dt>';
+            $uip .= '<dt>';
+            $uip .= 'Volledige naam';
+            $uip .= '</dt>';
 
             if ($pp->is_admin()
                 || $su->is_owner($id)
                 || $item_access_service->is_visible($full_name_access))
             {
-                $out .= $this->get_dd($user['full_name'] ?? '');
+                $uip .= $this->get_dd($user['full_name'] ?? '');
             }
             else
             {
-                $out .= '<dd>';
-                $out .= '<span class="btn btn-default">';
-                $out .= 'verborgen</span>';
-                $out .= '</dd>';
+                $uip .= '<dd>';
+                $uip .= '<span class="btn btn-default">';
+                $uip .= 'verborgen</span>';
+                $uip .= '</dd>';
             }
 
             if ($pp->is_admin() || $su->is_owner($id))
             {
-                $out .= '<dt>';
-                $out .= 'Zichtbaarheid Volledige Naam';
-                $out .= '</dt>';
-                $out .= '<dd>';
-                $out .= $item_access_service->get_label($full_name_access);
-                $out .= '</dd>';
+                $uip .= '<dt>';
+                $uip .= 'Zichtbaarheid Volledige Naam';
+                $uip .= '</dt>';
+                $uip .= '<dd>';
+                $uip .= $item_access_service->get_label($full_name_access);
+                $uip .= '</dd>';
             }
         }
 
         if ($postcode_enabled && !$is_intersystem)
         {
-            $out .= '<dt>';
-            $out .= 'Postcode';
-            $out .= '</dt>';
-            $out .= $this->get_dd($user['postcode'] ?? '');
+            $uip .= '<dt>';
+            $uip .= 'Postcode';
+            $uip .= '</dt>';
+            $uip .= $this->get_dd($user['postcode'] ?? '');
         }
 
         if ($birthday_enabled && !$is_intersystem)
         {
             if ($pp->is_admin() || $su->is_owner($id))
             {
-                $out .= '<dt>';
-                $out .= 'Geboortedatum';
-                $out .= '</dt>';
+                $uip .= '<dt>';
+                $uip .= 'Geboortedatum';
+                $uip .= '</dt>';
 
                 if (isset($user['birthday']))
                 {
-                    $out .= $date_format_service->get($user['birthday'], 'day', $pp->schema());
+                    $uip .= $date_format_service->get($user['birthday'], 'day', $pp->schema());
                 }
                 else
                 {
-                    $out .= '<dd><i class="fa fa-times"></i></dd>';
+                    $uip .= '<dd><i class="fa fa-times"></i></dd>';
                 }
             }
         }
 
         if ($hobbies_enabled && !$is_intersystem)
         {
-            $out .= '<dt>';
-            $out .= 'Hobbies / Interesses';
-            $out .= '</dt>';
-            $out .= $this->get_dd($user['hobbies'] ?? '');
+            $uip .= '<dt>';
+            $uip .= 'Hobbies / Interesses';
+            $uip .= '</dt>';
+            $uip .= $this->get_dd($user['hobbies'] ?? '');
         }
 
         if ($comments_enabled)
         {
-            $out .= '<dt>';
-            $out .= 'Commentaar';
-            $out .= '</dt>';
-            $out .= $this->get_dd($user['comments'] ?? '');
+            $uip .= '<dt>';
+            $uip .= 'Commentaar';
+            $uip .= '</dt>';
+            $uip .= $this->get_dd($user['comments'] ?? '');
         }
 
         if ($pp->is_admin())
         {
-            $out .= '<dt>';
-            $out .= 'Tijdstip aanmaak';
-            $out .= '</dt>';
+            $uip .= '<dt>';
+            $uip .= 'Tijdstip aanmaak';
+            $uip .= '</dt>';
 
-            $out .= $this->get_dd($date_format_service->get($user['created_at'], 'min', $pp->schema()));
+            $uip .= $this->get_dd($date_format_service->get($user['created_at'], 'min', $pp->schema()));
 
-            $out .= '<dt>';
-            $out .= 'Tijdstip activering';
-            $out .= '</dt>';
+            $uip .= '<dt>';
+            $uip .= 'Tijdstip activering';
+            $uip .= '</dt>';
 
             if (isset($user['activated_at']))
             {
-                $out .= $this->get_dd($date_format_service->get($user['activated_at'], 'min', $pp->schema()));
+                $uip .= $this->get_dd($date_format_service->get($user['activated_at'], 'min', $pp->schema()));
             }
             else
             {
-                $out .= '<dd><i class="fa fa-times"></i></dd>';
+                $uip .= '<dd><i class="fa fa-times"></i></dd>';
             }
 
             if (!$is_intersystem)
             {
-                $out .= '<dt>';
-                $out .= 'Laatste login';
-                $out .= '</dt>';
+                $uip .= '<dt>';
+                $uip .= 'Laatste login';
+                $uip .= '</dt>';
 
                 if (isset($last_login))
                 {
-                    $out .= $this->get_dd($date_format_service->get($last_login, 'min', $pp->schema()));
+                    $uip .= $this->get_dd($date_format_service->get($last_login, 'min', $pp->schema()));
                 }
                 else
                 {
-                    $out .= '<dd><i class="fa fa-times"></i></dd>';
+                    $uip .= '<dd><i class="fa fa-times"></i></dd>';
                 }
             }
 
-            $out .= '<dt>';
-            $out .= 'Rechten / rol';
-            $out .= '</dt>';
-            $out .= '<span class="label label-li label-lg label-';
-            $out .= match($user['role'])
+            $uip .= '<dt>';
+            $uip .= 'Rechten / rol';
+            $uip .= '</dt>';
+            $uip .= '<span class="label label-li label-lg label-';
+            $uip .= match($user['role'])
             {
                 'user'  => 'white">Lid',
                 'admin' => 'info">Admin',
                 default => 'danger"><span class="fa fa-times"></span>',
             };
-            $out .= '</span>';
+            $uip .= '</span>';
 
             if ($admin_comments_enabled)
             {
-                $out .= '<dt>';
-                $out .= 'Commentaar van de admin';
-                $out .= '</dt>';
-                $out .= $this->get_dd($user['admin_comments'] ?? '');
+                $uip .= '<dt>';
+                $uip .= 'Commentaar van de admin';
+                $uip .= '</dt>';
+                $uip .= $this->get_dd($user['admin_comments'] ?? '');
             }
         }
 
         if ($transactions_enabled)
         {
-            $out .= '<dt>Saldo</dt>';
-            $out .= '<dd>';
-            $out .= '<span class="label label-info label-lg">';
-            $out .= $balance;
-            $out .= '</span>&nbsp;';
-            $out .= $currency;
-            $out .= '</dd>';
+            $uip .= '<dt>Saldo</dt>';
+            $uip .= '<dd>';
+            $uip .= '<span class="label label-info label-lg">';
+            $uip .= $balance;
+            $uip .= '</span>&nbsp;';
+            $uip .= $currency;
+            $uip .= '</dd>';
 
             if ($limits_enabled)
             {
-                $out .= '<dt>Minimum limiet</dt>';
-                $out .= '<dd>';
+                $uip .= '<dt>Minimum limiet</dt>';
+                $uip .= '<dd>';
 
                 if (isset($min_limit))
                 {
-                    $out .= '<span class="label label-danger label-lg">';
-                    $out .= $min_limit;
-                    $out .= '</span>&nbsp;';
-                    $out .= $currency;
+                    $uip .= '<span class="label label-danger label-lg">';
+                    $uip .= $min_limit;
+                    $uip .= '</span>&nbsp;';
+                    $uip .= $currency;
                 }
                 else if (isset($system_min_limit))
                 {
-                    $out .= '<span class="label label-default label-lg">';
-                    $out .= $system_min_limit;
-                    $out .= '</span>&nbsp;';
-                    $out .= $currency;
-                    $out .= ' (Minimum Systeemslimiet)';
+                    $uip .= '<span class="label label-default label-lg">';
+                    $uip .= $system_min_limit;
+                    $uip .= '</span>&nbsp;';
+                    $uip .= $currency;
+                    $uip .= ' (Minimum Systeemslimiet)';
                 }
                 else
                 {
-                    $out .= '<i class="fa fa-times"></i>';
+                    $uip .= '<i class="fa fa-times"></i>';
                 }
 
-                $out .= '</dd>';
+                $uip .= '</dd>';
 
-                $out .= '<dt>Maximum limiet</dt>';
-                $out .= '<dd>';
+                $uip .= '<dt>Maximum limiet</dt>';
+                $uip .= '<dd>';
 
                 if (isset($max_limit))
                 {
-                    $out .= '<span class="label label-success label-lg">';
-                    $out .= $max_limit;
-                    $out .= '</span>&nbsp;';
-                    $out .= $currency;
+                    $uip .= '<span class="label label-success label-lg">';
+                    $uip .= $max_limit;
+                    $uip .= '</span>&nbsp;';
+                    $uip .= $currency;
                 }
                 else if (isset($system_max_limit))
                 {
-                    $out .= '<span class="label label-default label-lg">';
-                    $out .= $system_max_limit;
-                    $out .= '</span>&nbsp;';
-                    $out .= $currency;
-                    $out .= ' (Maximum Systeemslimiet)';
+                    $uip .= '<span class="label label-default label-lg">';
+                    $uip .= $system_max_limit;
+                    $uip .= '</span>&nbsp;';
+                    $uip .= $currency;
+                    $uip .= ' (Maximum Systeemslimiet)';
                 }
                 else
                 {
-                    $out .= '<i class="fa fa-times"></i>';
+                    $uip .= '<i class="fa fa-times"></i>';
                 }
 
-                $out .= '</dd>';
+                $uip .= '</dd>';
             }
         }
 
@@ -683,76 +654,62 @@ class UsersShowController extends AbstractController
             && !$is_intersystem
             && ($pp->is_admin() || $su->is_owner($id)))
         {
-            $out .= '<dt>';
-            $out .= 'Periodieke Overzichts E-mail';
-            $out .= '</dt>';
-            $out .= '<span class="label label-lg label-';
-            $out .= $user['periodic_overview_en'] ? 'success' : 'danger';
-            $out .= '">';
-            $out .= $user['periodic_overview_en'] ? 'Aan' : 'Uit';
-            $out .= '</span>';
-            $out .= '</dl>';
+            $uip .= '<dt>';
+            $uip .= 'Periodieke Overzichts E-mail';
+            $uip .= '</dt>';
+            $uip .= '<span class="label label-lg label-';
+            $uip .= $user['periodic_overview_en'] ? 'success' : 'danger';
+            $uip .= '">';
+            $uip .= $user['periodic_overview_en'] ? 'Aan' : 'Uit';
+            $uip .= '</span>';
+            $uip .= '</dl>';
         }
 
-        $out .= '</div></div></div></div>';
+        $uip .= '</div></div>';
 
-        if (!$is_self || !$is_intersystem)
-        {
-            $out .= self::get_mail_form(
-                $id,
-                $user_mail_content,
-                $user_mail_cc,
-                $account_render,
-                $form_token_service,
-                $mail_addr_user_service,
-                $pp,
-                $su
-            );
-        }
-
-        $out .= $contacts_content;
+        $tmi = '';
 
         if ($transactions_enabled)
         {
-            $out .= '<div class="row">';
-            $out .= '<div class="col-md-12">';
+            $tmi = '<div class="row">';
+            $tmi .= '<div class="col-md-12">';
 
-            $out .= '<h3>Huidig saldo: <span class="label label-info">';
-            $out .= $balance;
-            $out .= '</span> ';
-            $out .= $currency;
-            $out .= '</h3>';
-            $out .= '</div></div>';
+            $tmi .= '<h3>Huidig saldo: <span class="label label-info">';
+            $tmi .= $balance;
+            $tmi .= '</span> ';
+            $tmi .= $currency;
+            $tmi .= '</h3>';
+            $tmi .= '</div></div>';
 
-            $out .= '<div class="row print-hide">';
-            $out .= '<div class="col-md-6">';
-            $out .= '<div id="chartdiv" data-height="480px" data-width="960px" ';
+            $tmi .= '<div class="row print-hide">';
+            $tmi .= '<div class="col-md-6">';
+            $tmi .= '<div id="chartdiv" data-height="480px" data-width="960px" ';
 
-            $out .= 'data-transactions-plot-user="';
-            $out .= htmlspecialchars($link_render->context_path('transactions_plot_user',
+            $tmi .= 'data-transactions-plot-user="';
+            $tmi .= htmlspecialchars($link_render->context_path('transactions_plot_user',
                 $pp->ary(), ['user_id' => $id, 'days' => $tdays]));
 
-            $out .= '">';
-            $out .= '</div>';
-            $out .= '</div>';
+            $tmi .= '">';
+            $tmi .= '</div>';
+            $tmi .= '</div>';
 
-            $out .= '<div class="col-md-6">';
-            $out .= '<div id="donutdiv" data-height="480px" ';
-            $out .= 'data-width="960px"></div>';
-            $out .= '<h4>Interacties laatste jaar</h4>';
-            $out .= '</div>';
-            $out .= '</div>';
+            $tmi .= '<div class="col-md-6">';
+            $tmi .= '<div id="donutdiv" data-height="480px" ';
+            $tmi .= 'data-width="960px"></div>';
+            $tmi .= '<h4>Interacties laatste jaar</h4>';
+            $tmi .= '</div>';
+            $tmi .= '</div>';
         }
 
         if (!$is_self
             && !$is_intersystem
             && ($messages_enabled || $transactions_enabled))
         {
-            $out .= '<div class="row">';
-            $out .= '<div class="col-md-12">';
+            $tmi .= '<div class="row">';
+            $tmi .= '<div class="col-md-12">';
 
-            $out .= '<div class="panel panel-default">';
-            $out .= '<div class="panel-body">';
+            $tmi .= '<div class="panel panel-default">';
+            $tmi .= '<div class="panel-body">';
 
             $account_str = $account_render->str($id, $pp->schema());
 
@@ -773,7 +730,7 @@ class UsersShowController extends AbstractController
 
             if ($messages_enabled)
             {
-                $out .= $link_render->link_fa($vr->get('messages'),
+                $tmi .= $link_render->link_fa($vr->get('messages'),
                     $pp->ary(),
                     ['uid' => $id],
                     'Vraag en aanbod van ' . $account_str .
@@ -784,7 +741,7 @@ class UsersShowController extends AbstractController
 
             if ($transactions_enabled)
             {
-                $out .= $link_render->link_fa('transactions',
+                $tmi .= $link_render->link_fa('transactions',
                     $pp->ary(),
                     ['uid' => $id],
                     'Transacties van ' . $account_str .
@@ -793,14 +750,19 @@ class UsersShowController extends AbstractController
                     'exchange');
             }
 
-            $out .= '</div>';
-            $out .= '</div>';
-            $out .= '</div>';
-            $out .= '</div>';
+            $tmi .= '</div>';
+            $tmi .= '</div>';
+            $tmi .= '</div>';
+            $tmi .= '</div>';
         }
 
         return $this->render('users/users_show.html.twig', [
-            'content'   => $out,
+            'profile_image_panel_raw'   => $pip,
+            'user_info_panel_raw'       => $uip,
+            'user_contacts_table_raw'   => $uct,
+            'transactions_messages_raw' => $tmi,
+            'mail_form' => $mail_form,
+            'user'      => $user,
             'id'        => $id,
             'status'    => $status,
             'is_self'   => $is_self,
@@ -819,86 +781,6 @@ class UsersShowController extends AbstractController
         $out =  '<dd>';
         $out .=  $str ? htmlspecialchars($str, ENT_QUOTES) : '<span class="fa fa-times"></span>';
         $out .=  '</dd>';
-        return $out;
-    }
-
-    public static function get_mail_form(
-        int $user_id,
-        string $user_mail_content,
-        bool $user_mail_cc,
-        AccountRender $account_render,
-        FormTokenService $form_token_service,
-        MailAddrUserService $mail_addr_user_service,
-        PageParamsService $pp,
-        SessionUserService $su
-    ):string
-    {
-        $mail_from = $mail_addr_user_service->get($su->id(), $su->schema());
-        $mail_to = $mail_addr_user_service->get($user_id, $pp->schema());
-
-        $user_mail_disabled = true;
-
-        if ($su->is_master())
-        {
-            $placeholder = 'Het master account kan geen berichten versturen.';
-        }
-        else if ($su->is_owner($user_id))
-        {
-            $placeholder = 'Je kan geen E-mail berichten naar jezelf verzenden.';
-        }
-        else if (!count($mail_to))
-        {
-            $placeholder = 'Er is geen E-mail adres bekend van deze gebruiker.';
-        }
-        else if (!count($mail_from))
-        {
-            $placeholder = 'Om het E-mail formulier te gebruiken moet een E-mail adres ingesteld zijn voor je eigen Account.';
-        }
-        else
-        {
-            $placeholder = '';
-            $user_mail_disabled = false;
-        }
-
-        $out = '<h3><i class="fa fa-envelop-o"></i> ';
-        $out .= 'Stuur een bericht naar ';
-        $out .=  $account_render->link($user_id, $pp->ary());
-        $out .= '</h3>';
-        $out .= '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
-
-        $out .= '<form method="post"">';
-
-        $out .= '<div class="form-group">';
-        $out .= '<textarea name="user_mail_content" rows="6" placeholder="';
-        $out .= $placeholder . '" ';
-        $out .= 'class="form-control" required';
-        $out .= $user_mail_disabled ? ' disabled' : '';
-        $out .= '>';
-        $out .= $user_mail_content;
-        $out .= '</textarea>';
-        $out .= '</div>';
-
-        $user_mail_cc_attr = $user_mail_cc ? ' checked' : '';
-        $user_mail_cc_attr .= $user_mail_disabled ? ' disabled' : '';
-
-        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
-            '%name%'        => 'user_mail_cc',
-            '%label%'       => 'Stuur een kopie naar mijzelf',
-            '%attr%'        => $user_mail_cc_attr,
-        ]);
-
-        $out .= $form_token_service->get_hidden_input();
-        $out .= '<input type="submit" name="user_mail_submit" ';
-        $out .= 'value="Versturen" class="btn btn-info btn-lg"';
-        $out .= $user_mail_disabled ? ' disabled' : '';
-        $out .= '>';
-
-        $out .= '</form>';
-
-        $out .= '</div>';
-        $out .= '</div>';
-
         return $out;
     }
 }

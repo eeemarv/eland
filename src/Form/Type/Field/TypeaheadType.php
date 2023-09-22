@@ -163,7 +163,7 @@ class TypeaheadType extends AbstractType
         $resolver->setAllowedTypes('render_omit', ['null', 'string']);
         $resolver->setAllowedValues('filter', [null, 'accounts']);
 
-        $resolver->setDefault('invalid_message', function (Options $options) {
+        $resolver->setDefault('invalid_message', function(Options $options){
             if (isset($options['filter']) && $options['filter'] === 'accounts')
             {
                 return 'user.code_not_exists';

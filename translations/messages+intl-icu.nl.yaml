@@ -794,6 +794,25 @@ intersystems_show:
   title: >-
     InterSysteem {name}
 
+mail_contact:
+  disabled:
+    no_from: >-
+      Om het E-mail formulier te gebruiken
+      moet een E-mail adres ingesteld zijn
+      voor je eigen Account.
+    no_to: >-
+      Er is geen E-mail adres
+      bekend van deze gebruiker.
+    master: >-
+      Het master account kan geen
+      berichten versturen.
+    self: >-
+      Je kan geen E-mail berichten
+      naar jezelf verzenden.
+    system: >-
+      De email functionaliteit is
+      niet geactiveerd in dit systeem.
+
 messages:
   title: >-
     {self, select,
@@ -933,7 +952,7 @@ messages_show:
     1_month: 1 maand
     6_months: 6 maanden
     1_year: 1 jaar
-  mail_form:
+  mail_contact:
     title: >-
       Stuur een reactie naar {to_user}.
 
@@ -1122,7 +1141,7 @@ tags_users: # submodule
   title: Tags voor leden
   help:
     only_for_admins: >-
-      Deze "tags voor leden" zijn enkel zichtbaar voor admins.
+      Deze "leden-tags" zijn enkel zichtbaar voor admins.
     none: >-
       Er zijn geen tags gedefiniëerd voor dit lid.
 
@@ -1443,6 +1462,9 @@ users_show:
     De interSysteem-verbinding ontbreekt
   coupled_intersystem: >-
     Gekoppeld interSysteem
+  mail_contact:
+    title: >-
+      Stuur een bericht naar {user}
 
 users_username:
   title: >-

@@ -65,7 +65,6 @@ class SupportFormController extends AbstractController
         $command->cc = true;
 
         $form_options = [
-            'validation_groups'     => ['send'],
             'disabled'  => $form_disabled,
         ];
 
