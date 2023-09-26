@@ -468,6 +468,9 @@ li.active-group a:visited, li.active-group a:hover
 .no-radius {
   border-radius: 0;
 }
+.owner {
+  background-color: #eaeaea;
+}
 
 /***for inputs of horizontal form******/
 

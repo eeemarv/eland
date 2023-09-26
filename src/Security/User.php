@@ -11,7 +11,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     protected array $roles = [];
     protected string $password; // hashed password
 
-    public function getUsername(): string
+    public function getUsername():string
     {
         return (string) $this->username;
     }
@@ -47,7 +47,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getSalt():?string
+    public function getSalt():null|string
     {
         return null;
         // not used

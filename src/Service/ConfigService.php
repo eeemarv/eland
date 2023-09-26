@@ -97,7 +97,7 @@ class ConfigService
 		unset($this->local_cache[$schema]);
 	}
 
-	public function get_int(string $path, string $schema):?int
+	public function get_int(string $path, string $schema):null|int
 	{
 		if (!isset($this->local_cache[$schema]))
 		{
@@ -176,7 +176,7 @@ class ConfigService
 		return;
 	}
 
-	public function set_int(string $key, ?int $value, string $schema):void
+	public function set_int(string $key, null|int $value, string $schema):void
 	{
 		$current_value = $this->get_int($key, $schema);
 

@@ -1,0 +1,26 @@
+{%- if not is_intersystem and config_bool('users.fields.birthdate.enabled', schema) -%}
+{%- embed 'users/users_show/list_item.html.twig' -%}
+    {%- import 'macro/lbl.html.twig' as l -%}
+    {%- block item -%}
+        <dt>
+            {{- 'label.birthdate'|trans -}}
+        </dt>
+        <dd>
+            {{- user.birthdate|day_format(schema)|no_content -}}
+        </dd>
+        {#
+        {%- if pp_has_role('admin') or su_is_owner(user.id) -%}
+            <dt>
+                {{- 'users_full_name.visible.label'|trans -}}
+            </dt>
+            <dd>
+                {{- l.label(user.full_name_access) -}}
+            </dd>
+        {%- endif -%}
+        #}
+    {%- endblock item -%}
+    {%- block btn -%}
+
+    {%- endblock btn -%}
+{%- endembed -%}
+{%- endif -%}

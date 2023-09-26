@@ -121,7 +121,7 @@ class LinkRender
 		string $route,
 		array $params_context,
 		array $params,
-		?string $label
+		null|string $label
 	):string
 	{
 		$out = '<a href="';

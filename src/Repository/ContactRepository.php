@@ -181,7 +181,7 @@ class ContactRepository
 
 	public function insert(
 		ContactsCommand $command,
-		?int $created_by,
+		null|int $created_by,
 		string $schema
 	):int
 	{

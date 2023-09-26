@@ -113,14 +113,23 @@
 {%- block content -%}
     <div class="row">
         <div class="col-sm-4">
-            {%- block profile_image_panel -%}
-                {{- profile_image_panel_raw|raw -}}
-            {%- endblock profile_image_panel -%}
+            {%- include 'users/users_show/image_panel.html.twig' -%}
         </div>
         <div class="col-sm-8">
-            {%- block user_info_panel -%}
-                {{- user_info_panel_raw|raw -}}
-            {%- endblock user_info_panel -%}
+            <div class="panel panel-default">
+                <ul class="list-group">
+                    {%- include 'users/users_show/full_name.html.twig' -%}
+                    {%- include 'users/users_show/role.html.twig' -%}
+                    {%- include 'users/users_show/balance.html.twig' -%}
+                    {%- include 'users/users_show/postcode.html.twig' -%}
+                    {%- include 'users/users_show/birthdate.html.twig' -%}
+                    {%- include 'users/users_show/hobbies.html.twig' -%}
+                    {%- include 'users/users_show/comments.html.twig' -%}
+                    {%- include 'users/users_show/admin_comments.html.twig' -%}
+                    {%- include 'users/users_show/history.html.twig' -%}
+                    {%- include 'users/users_show/periodic_overview.html.twig' -%}
+                </ul>
+            </div>
         </div>
     </div>
 

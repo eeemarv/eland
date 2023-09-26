@@ -17,7 +17,7 @@ class AccountRender
 	{
 	}
 
-	public function get_str(?int $id, string $schema):string
+	public function get_str(null|int $id, string $schema):string
 	{
 		if (!isset($id) || !$id)
 		{
@@ -35,7 +35,7 @@ class AccountRender
 	}
 
 	public function str(
-		?int $id,
+		null|int $id,
 		string $schema
 	):string
 	{
@@ -48,7 +48,7 @@ class AccountRender
 	}
 
 	public function str_id(
-		?int $id,
+		null|int $id,
 		string $schema
 	):string
 	{
@@ -61,7 +61,7 @@ class AccountRender
 	}
 
 	public function link(
-		?int $id,
+		null|int $id,
 		array $pp_ary
 	):string
 	{

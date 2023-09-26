@@ -1,0 +1,16 @@
+{%- if pp_has_role('admin') and config_bool('users.fields.admin_comments.enabled', schema) -%}
+{%- embed 'users/users_show/list_item.html.twig' -%}
+    {%- block class %} list-group-item-info{% endblock class -%}
+    {%- block item -%}
+        <dt>
+            {{- 'label.admin_comments'|trans -}}
+        </dt>
+        <dd>
+            {{- user.admin_comments|no_content -}}
+        </dd>
+    {%- endblock item -%}
+    {%- block btn -%}
+
+    {%- endblock btn -%}
+{%- endembed -%}
+{%- endif -%}

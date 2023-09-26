@@ -10,92 +10,160 @@
     </dl>
 {%- endmacro dl -%}
 
-{%- macro btn(id, count) -%}
-    {%- set render = {
-        'anonymous': {
-            'class': 'danger',
-            'title' : 'access.anonymous.title',
-            'label': 'access.anonymous.label'
-        },
-        'guest': {
-            'class': 'warning',
-            'title': 'access.guest.title',
-            'label': 'access.guest.label'
-        },
-        'user': {
-            'class': 'default',
-            'title': 'access.user.title',
-            'label': 'access.user.label'
-        },
-        'admin': {
-            'class': 'info',
-            'title': 'access.admin.title',
-            'label': 'access.admin.label',
-        },
-        'offer': {
-            'class': 'default',
-            'label': 'label.offer',
-        },
-        'want': {
-            'class': 'default-2',
-            'label': 'label.want'
-        },
-        'temporal': {
-            'class': 'default',
-            'label': 'label.temporal'
-        },
-        'permanent': {
-            'class': 'default-2',
-            'label': 'label.permanent'
-        },
-        'valid': {
-            'class': 'default',
-            'label': 'label.valid'
-        },
-        'expired': {
-            'class': 'danger',
-            'label': 'label.expired'
-        },
-        'service': {
-            'class': 'default',
-            'label': 'service_stuff.service.label'
-        },
-        'stuff': {
-            'class': 'default-2',
-            'label': 'service_stuff.stuff.label'
-        },
-        'null_service_stuff': {
-            'class': 'danger',
-            'label': 'service_stuff.null_service_stuff.label',
-            'title': 'service_stuff.null_service_stuff.title'
-        },
-        'active': {
-            'class': 'default',
-            'label': 'status.active'
-        },
-        'new': {
-            'class': 'success',
-            'label': 'status.new'
-        },
-        'leaving': {
-            'class': 'danger',
-            'label': 'status.leaving'
-        },
-        'open': {
-            'class': 'warning',
-            'label': 'mollie.status.open'
-        },
-        'paid': {
-            'class': 'success',
-            'label': 'mollie.status.paid'
-        },
-        'canceled': {
-            'class': 'default-2',
-            'label': 'mollie.status.canceled'
-        }
-    } -%}
+{#- for local use -#}
+{%- macro _r_btnlbl(type, id, count) -%}
+{%- set render = {
+    'anonymous': {
+        'btn_class': 'danger',
+        'label_class': 'danger',
+        'class': 'danger',
+        'title' : 'access.anonymous.title',
+        'label': 'access.anonymous.label'
+    },
+    'guest': {
+        'btn_class': 'warning',
+        'label_class': 'warning',
+        'title': 'access.guest.title',
+        'label': 'access.guest.label'
+    },
+    'user': {
+        'btn_class': 'default',
+        'label_class': 'white',
+        'title': 'access.user.title',
+        'label': 'access.user.label'
+    },
+    'admin': {
+        'btn_class': 'info',
+        'label_class': 'info',
+        'title': 'access.admin.title',
+        'label': 'access.admin.label',
+    },
+    'user_role': {
+        'btn_class': 'default',
+        'label_class': 'white',
+        'label': 'label.user_role'
+    },
+    'admin_role': {
+        'btn_class': 'info',
+        'label_class': 'info',
+        'label': 'label.admin_role',
+    },
+    'offer': {
+        'btn_class': 'default',
+        'label_class': 'white',
+        'label': 'label.offer',
+    },
+    'want': {
+        'btn_class': 'default-2',
+        'label_class': 'default',
+        'label': 'label.want'
+    },
+    'temporal': {
+        'btn_class': 'default',
+        'label_class': 'white',
+        'label': 'label.temporal'
+    },
+    'permanent': {
+        'btn_class': 'default-2',
+        'label_class': 'default',
+        'label': 'label.permanent'
+    },
+    'valid': {
+        'btn_class': 'default',
+        'label_class': 'white',
+        'label': 'label.valid'
+    },
+    'expired': {
+        'btn_class': 'danger',
+        'label_class': 'danger',
+        'label': 'label.expired'
+    },
+    'service': {
+        'btn_class': 'default',
+        'label_class': 'white',
+        'label': 'service_stuff.service.label'
+    },
+    'stuff': {
+        'btn_class': 'default-2',
+        'label_class': 'default',
+        'label': 'service_stuff.stuff.label'
+    },
+    'null_service_stuff': {
+        'btn_class': 'danger',
+        'label_class': 'danger',
+        'label': 'service_stuff.null_service_stuff.label',
+        'title': 'service_stuff.null_service_stuff.title'
+    },
+    'active': {
+        'btn_class': 'default',
+        'label_class': 'white',
+        'label': 'status.active'
+    },
+    'new': {
+        'btn_class': 'success',
+        'label_class': 'success',
+        'label': 'status.new'
+    },
+    'leaving': {
+        'btn_class': 'danger',
+        'label_class': 'danger',
+        'label': 'status.leaving'
+    },
+    'open': {
+        'btn_class': 'warning',
+        'label_class': 'warning',
+        'label': 'mollie.status.open'
+    },
+    'paid': {
+        'btn_class': 'success',
+        'label_class': 'success',
+        'label': 'mollie.status.paid'
+    },
+    'canceled': {
+        'btn_class': 'default-2',
+        'label_class': 'default',
+        'label': 'mollie.status.canceled'
+    },
+    'hidden': {
+        'btn_class': 'default',
+        'label_class': 'white',
+        'label': 'label.hidden'
+    },
+    'enabled': {
+        'btn_class': 'success',
+        'label_class': 'success',
+        'label': 'label.enabled'
+    },
+    'disabled': {
+        'btn_class': 'danger',
+        'label_class': 'danger',
+        'label': 'label.disabled'
+    },
+} -%}
 
-    <span class="btn btn-{{- render[id].class -}}"{%- if render[id].title is defined %} title="{{- render[id].title|trans -}}"{%- endif -%}>
-        {{- render[id].label|trans -}}{%- if count %} ({{- count -}}){%- endif -%}
-    </span>
+<span class="{{- type }} {{ type -}}-{{- render[id][type ~ '_class'] -}}{%- if type == 'label' %} label-lg label-li{%- endif -%}"{%- if render[id].title is defined %} title="{{- render[id].title|trans -}}"{%- endif -%}>
+    {{- render[id].label|trans -}}{%- if count %} ({{- count -}}){%- endif -%}
+</span>
+{%- endmacro _r_btnlbl -%}
+
+{%- macro btn(id, count) -%}
+    {%- import _self as s -%}
+    {{- s._r_btnlbl('btn', id, count) -}}
 {%- endmacro btn -%}
+
+{%- macro label(id, count) -%}
+    {%- import _self as s -%}
+    {{- s._r_btnlbl('label', id, count) -}}
+{%- endmacro label -%}
+
+{%- macro balance(balance) -%}
+    <span class="label label-lg label-li label-info">
+        {{- balance -}}
+    </span>
+{%- endmacro balance -%}
+
+{%- macro txt_label(txt, style) -%}
+    <span class="label label-lg label-li label-{{- style|default('default') -}}">
+        {{- txt -}}
+    </span>
+{%- endmacro txt_label -%}

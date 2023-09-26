@@ -1,0 +1,16 @@
+{%- if not is_intersystem and config_bool('users.fields.hobbies.enabled', schema) -%}
+{%- embed 'users/users_show/list_item.html.twig' -%}
+    {%- import 'macro/lbl.html.twig' as l -%}
+    {%- block item -%}
+        <dt>
+            {{- 'label.hobbies_interests'|trans -}}
+        </dt>
+        <dd>
+            {{- user.hobbies|no_content -}}
+        </dd>
+    {%- endblock item -%}
+    {%- block btn -%}
+
+    {%- endblock btn -%}
+{%- endembed -%}
+{%- endif -%}

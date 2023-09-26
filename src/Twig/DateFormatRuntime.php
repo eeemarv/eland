@@ -24,44 +24,64 @@ class DateFormatRuntime implements RuntimeExtensionInterface
 	}
 
 	public function get_from_unix(
-		int $unix,
+		null|int $unix,
 		string $precision,
 		string $schema
-	):string
+	):null|string
 	{
+		if (!isset($ts))
+		{
+			return null;
+		}
 		return $this->date_format_service->get_from_unix($unix, $precision, $schema);
 	}
 
 	public function get(
-		string $ts,
+		null|string $ts,
 		string $precision,
 		string $schema
-	):string
+	):null|string
 	{
+		if (!isset($ts))
+		{
+			return null;
+		}
 		return $this->date_format_service->get($ts, $precision, $schema);
 	}
 
 	public function get_sec(
-		string $ts,
+		null|string $ts,
 		string $schema
-	):string
+	):null|string
 	{
+		if (!isset($ts))
+		{
+			return null;
+		}
 		return $this->date_format_service->get($ts, 'sec', $schema);
 	}
 
 	public function get_min(
-		string $ts,
+		null|string $ts,
 		string $schema
-	):string
+	):null|string
 	{
+		if (!isset($ts))
+		{
+			return null;
+		}
 		return $this->date_format_service->get($ts, 'min', $schema);
 	}
 
 	public function get_day(
-		string $ts,
+		null|string $ts,
 		string $schema
-	):string
+	):null|string
 	{
+		if (!isset($ts))
+		{
+			return null;
+		}
 		return $this->date_format_service->get($ts, 'day', $schema);
 	}
 

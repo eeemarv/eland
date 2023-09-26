@@ -1,0 +1,15 @@
+{%- if config_bool('users.fields.comments.enabled', schema) -%}
+{%- embed 'users/users_show/list_item.html.twig' -%}
+    {%- block item -%}
+        <dt>
+            {{- 'label.comments'|trans -}}
+        </dt>
+        <dd>
+            {{- user.comments|no_content -}}
+        </dd>
+    {%- endblock item -%}
+    {%- block btn -%}
+
+    {%- endblock btn -%}
+{%- endembed -%}
+{%- endif -%}

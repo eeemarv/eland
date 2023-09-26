@@ -87,12 +87,10 @@ class UsersShowController extends AbstractController
         AlertService $alert_service,
         AssetsService $assets_service,
         ConfigService $config_service,
-        FormTokenService $form_token_service,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
         MailAddrUserService $mail_addr_user_service,
         MailQueue $mail_queue,
-        DateFormatService $date_format_service,
         UserCacheService $user_cache_service,
         DistanceService $distance_service,
         PageParamsService $pp,
@@ -116,14 +114,6 @@ class UsersShowController extends AbstractController
             $id = $su->id();
         }
 
-        $full_name_enabled = $config_service->get_bool('users.fields.full_name.enabled', $pp->schema());
-        $postcode_enabled = $config_service->get_bool('users.fields.postcode.enabled', $pp->schema());
-        $birthday_enabled = $config_service->get_bool('users.fields.birthday.enabled', $pp->schema());
-        $hobbies_enabled = $config_service->get_bool('users.fields.hobbies.enabled', $pp->schema());
-        $comments_enabled = $config_service->get_bool('users.fields.comments.enabled', $pp->schema());
-        $admin_comments_enabled = $config_service->get_bool('users.fields.admin_comments.enabled', $pp->schema());
-        $periodic_mail_enabled = $config_service->get_bool('periodic_mail.enabled', $pp->schema());
-
         $tdays = $request->query->get('tdays', '365');
 
         $user = $user_cache_service->get($id, $pp->schema());
@@ -145,13 +135,10 @@ class UsersShowController extends AbstractController
 
         $messages_enabled = $config_service->get_bool('messages.enabled', $pp->schema());
         $transactions_enabled = $config_service->get_bool('transactions.enabled', $pp->schema());
-        $limits_enabled = $config_service->get_bool('accounts.limits.enabled', $pp->schema());
         $min_limit = $account_repository->get_min_limit($id, $pp->schema());
         $max_limit = $account_repository->get_max_limit($id, $pp->schema());
         $balance = $account_repository->get_balance($id, $pp->schema());
 
-        $system_min_limit = $config_service->get_int('accounts.limits.global.min', $pp->schema());
-        $system_max_limit = $config_service->get_int('accounts.limits.global.max', $pp->schema());
         $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
 
         $status_def_ary = UsersListController::get_status_def_ary($config_service, $item_access_service, $pp);
@@ -328,6 +315,8 @@ class UsersShowController extends AbstractController
             $sql_prev_params,
             $sql_prev_types);
 
+        $last_login = null;
+
         if ($pp->is_admin())
         {
             $last_login = $db->fetchOne('select max(created_at)
@@ -447,226 +436,6 @@ class UsersShowController extends AbstractController
         }
         $pip .= '</div>';
 
-        $uip = '<div class="panel panel-default printview">';
-        $uip .= '<div class="panel-heading">';
-
-        $uip .= '<dl>';
-
-        if ($full_name_enabled && !$is_intersystem)
-        {
-            $full_name_access = $user['full_name_access'] ?? 'admin';
-
-            $uip .= '<dt>';
-            $uip .= 'Volledige naam';
-            $uip .= '</dt>';
-
-            if ($pp->is_admin()
-                || $su->is_owner($id)
-                || $item_access_service->is_visible($full_name_access))
-            {
-                $uip .= $this->get_dd($user['full_name'] ?? '');
-            }
-            else
-            {
-                $uip .= '<dd>';
-                $uip .= '<span class="btn btn-default">';
-                $uip .= 'verborgen</span>';
-                $uip .= '</dd>';
-            }
-
-            if ($pp->is_admin() || $su->is_owner($id))
-            {
-                $uip .= '<dt>';
-                $uip .= 'Zichtbaarheid Volledige Naam';
-                $uip .= '</dt>';
-                $uip .= '<dd>';
-                $uip .= $item_access_service->get_label($full_name_access);
-                $uip .= '</dd>';
-            }
-        }
-
-        if ($postcode_enabled && !$is_intersystem)
-        {
-            $uip .= '<dt>';
-            $uip .= 'Postcode';
-            $uip .= '</dt>';
-            $uip .= $this->get_dd($user['postcode'] ?? '');
-        }
-
-        if ($birthday_enabled && !$is_intersystem)
-        {
-            if ($pp->is_admin() || $su->is_owner($id))
-            {
-                $uip .= '<dt>';
-                $uip .= 'Geboortedatum';
-                $uip .= '</dt>';
-
-                if (isset($user['birthday']))
-                {
-                    $uip .= $date_format_service->get($user['birthday'], 'day', $pp->schema());
-                }
-                else
-                {
-                    $uip .= '<dd><i class="fa fa-times"></i></dd>';
-                }
-            }
-        }
-
-        if ($hobbies_enabled && !$is_intersystem)
-        {
-            $uip .= '<dt>';
-            $uip .= 'Hobbies / Interesses';
-            $uip .= '</dt>';
-            $uip .= $this->get_dd($user['hobbies'] ?? '');
-        }
-
-        if ($comments_enabled)
-        {
-            $uip .= '<dt>';
-            $uip .= 'Commentaar';
-            $uip .= '</dt>';
-            $uip .= $this->get_dd($user['comments'] ?? '');
-        }
-
-        if ($pp->is_admin())
-        {
-            $uip .= '<dt>';
-            $uip .= 'Tijdstip aanmaak';
-            $uip .= '</dt>';
-
-            $uip .= $this->get_dd($date_format_service->get($user['created_at'], 'min', $pp->schema()));
-
-            $uip .= '<dt>';
-            $uip .= 'Tijdstip activering';
-            $uip .= '</dt>';
-
-            if (isset($user['activated_at']))
-            {
-                $uip .= $this->get_dd($date_format_service->get($user['activated_at'], 'min', $pp->schema()));
-            }
-            else
-            {
-                $uip .= '<dd><i class="fa fa-times"></i></dd>';
-            }
-
-            if (!$is_intersystem)
-            {
-                $uip .= '<dt>';
-                $uip .= 'Laatste login';
-                $uip .= '</dt>';
-
-                if (isset($last_login))
-                {
-                    $uip .= $this->get_dd($date_format_service->get($last_login, 'min', $pp->schema()));
-                }
-                else
-                {
-                    $uip .= '<dd><i class="fa fa-times"></i></dd>';
-                }
-            }
-
-            $uip .= '<dt>';
-            $uip .= 'Rechten / rol';
-            $uip .= '</dt>';
-            $uip .= '<span class="label label-li label-lg label-';
-            $uip .= match($user['role'])
-            {
-                'user'  => 'white">Lid',
-                'admin' => 'info">Admin',
-                default => 'danger"><span class="fa fa-times"></span>',
-            };
-            $uip .= '</span>';
-
-            if ($admin_comments_enabled)
-            {
-                $uip .= '<dt>';
-                $uip .= 'Commentaar van de admin';
-                $uip .= '</dt>';
-                $uip .= $this->get_dd($user['admin_comments'] ?? '');
-            }
-        }
-
-        if ($transactions_enabled)
-        {
-            $uip .= '<dt>Saldo</dt>';
-            $uip .= '<dd>';
-            $uip .= '<span class="label label-info label-lg">';
-            $uip .= $balance;
-            $uip .= '</span>&nbsp;';
-            $uip .= $currency;
-            $uip .= '</dd>';
-
-            if ($limits_enabled)
-            {
-                $uip .= '<dt>Minimum limiet</dt>';
-                $uip .= '<dd>';
-
-                if (isset($min_limit))
-                {
-                    $uip .= '<span class="label label-danger label-lg">';
-                    $uip .= $min_limit;
-                    $uip .= '</span>&nbsp;';
-                    $uip .= $currency;
-                }
-                else if (isset($system_min_limit))
-                {
-                    $uip .= '<span class="label label-default label-lg">';
-                    $uip .= $system_min_limit;
-                    $uip .= '</span>&nbsp;';
-                    $uip .= $currency;
-                    $uip .= ' (Minimum Systeemslimiet)';
-                }
-                else
-                {
-                    $uip .= '<i class="fa fa-times"></i>';
-                }
-
-                $uip .= '</dd>';
-
-                $uip .= '<dt>Maximum limiet</dt>';
-                $uip .= '<dd>';
-
-                if (isset($max_limit))
-                {
-                    $uip .= '<span class="label label-success label-lg">';
-                    $uip .= $max_limit;
-                    $uip .= '</span>&nbsp;';
-                    $uip .= $currency;
-                }
-                else if (isset($system_max_limit))
-                {
-                    $uip .= '<span class="label label-default label-lg">';
-                    $uip .= $system_max_limit;
-                    $uip .= '</span>&nbsp;';
-                    $uip .= $currency;
-                    $uip .= ' (Maximum Systeemslimiet)';
-                }
-                else
-                {
-                    $uip .= '<i class="fa fa-times"></i>';
-                }
-
-                $uip .= '</dd>';
-            }
-        }
-
-        if ($periodic_mail_enabled
-            && !$is_intersystem
-            && ($pp->is_admin() || $su->is_owner($id)))
-        {
-            $uip .= '<dt>';
-            $uip .= 'Periodieke Overzichts E-mail';
-            $uip .= '</dt>';
-            $uip .= '<span class="label label-lg label-';
-            $uip .= $user['periodic_overview_en'] ? 'success' : 'danger';
-            $uip .= '">';
-            $uip .= $user['periodic_overview_en'] ? 'Aan' : 'Uit';
-            $uip .= '</span>';
-            $uip .= '</dl>';
-        }
-
-        $uip .= '</div></div>';
-
         $tmi = '';
 
         if ($transactions_enabled)
@@ -758,29 +527,24 @@ class UsersShowController extends AbstractController
 
         return $this->render('users/users_show.html.twig', [
             'profile_image_panel_raw'   => $pip,
-            'user_info_panel_raw'       => $uip,
             'user_contacts_table_raw'   => $uct,
             'transactions_messages_raw' => $tmi,
-            'mail_form' => $mail_form,
-            'user'      => $user,
-            'id'        => $id,
-            'status'    => $status,
-            'is_self'   => $is_self,
-            'prev_id'   => $prev_id,
-            'next_id'   => $next_id,
+            'mail_form'             => $mail_form,
+            'user'                  => $user,
+            'balance'               => $balance,
+            'min_limit'             => $min_limit,
+            'max_limit'             => $max_limit,
+            'last_login'            => $last_login,
+            'id'                    => $id,
+            'status'                => $status,
+            'is_self'               => $is_self,
+            'prev_id'               => $prev_id,
+            'next_id'               => $next_id,
             'count_transactions'    => $count_transactions,
             'count_messages'        => $count_messages,
             'is_intersystem'        => $is_intersystem,
             'tags_form'             => $tags_form,
             'render_tags'           => $render_tags,
         ]);
-    }
-
-    private function get_dd(string $str):string
-    {
-        $out =  '<dd>';
-        $out .=  $str ? htmlspecialchars($str, ENT_QUOTES) : '<span class="fa fa-times"></span>';
-        $out .=  '</dd>';
-        return $out;
     }
 }

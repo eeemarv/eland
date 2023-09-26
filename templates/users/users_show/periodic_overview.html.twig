@@ -1,0 +1,21 @@
+{%- if not is_intersystem and (pp_has_role('admin') or su_is_owner(id)) -%}
+{%- embed 'users/users_show/list_item.html.twig' -%}
+    {%- import 'macro/lbl.html.twig' as l -%}
+    {% block class %} owner{% endblock class %}
+    {%- block item -%}
+        <dt>
+            {{- 'label.periodic_mail'|trans -}}
+        </dt>
+        <dd>
+            {%- if user.periodic_overview_en -%}
+                {{- l.label('enabled') -}}
+            {%- else -%}
+                {{- l.label('disabled') -}}
+            {%- endif -%}
+        </dd>
+    {%- endblock item -%}
+    {%- block btn -%}
+
+    {%- endblock btn -%}
+{%- endembed -%}
+{%- endif -%}

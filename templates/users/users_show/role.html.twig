@@ -1,0 +1,25 @@
+{%- if not is_intersystem and (pp_has_role('admin') or su_is_owner(id)) -%}
+{%- embed 'users/users_show/list_item.html.twig' -%}
+    {%- import 'macro/lbl.html.twig' as l -%}
+    {% block class -%}
+        {%- if pp_has_role('admin') %} list-group-item-info
+        {%- else %} owner
+        {%- endif -%}
+    {% endblock class %}
+    {%- block item -%}
+        <dt>
+            {{- 'label.permissions_role'|trans -}}
+        </dt>
+        <dd>
+            {%- if user.role is not defined or user.role == null -%}
+                {{- null|no_content -}}
+            {%- else -%}
+                {{- l.label(user.role ~ '_role') -}}
+            {%- endif -%}
+        </dd>
+    {%- endblock item -%}
+    {%- block btn -%}
+
+    {%- endblock btn -%}
+{%- endembed -%}
+{%- endif -%}

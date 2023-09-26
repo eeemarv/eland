@@ -22,6 +22,28 @@ access:
   visible_for: Zichtbaar voor
   visible_for_access: Zichtbaar voor {access}
 
+balance:
+  title: >-
+    Saldo van het account in {currency}
+  no_min: >-
+    Er is geen minimum limiet voor dit
+    account en er is ook geen minimum limiet
+    ingesteld voor het hele systeem.
+  min: >-
+    Minimum limiet geldig voor dit account
+  min_system: >-
+    De minimum limiet voor het hele systeem
+    is van toepassing op dit account
+  no_max: >-
+    Er is geen maximum limiet voor dit
+    account en er is ook geen maximum limiet
+    ingesteld voor het hele systeem.
+  max: >-
+    Maximum limiet geldig voor dit account
+  max_system: >-
+    De maximum limiet voor het hele systeem
+    is van toepassing op dit account
+
 btn:
   add: Toevoegen
   approve: Goedkeuren
@@ -138,10 +160,13 @@ label:
   actions: Acties
   actif: Actief
   activated: Geactiveerd
+  activation_time: Tijdstip activering
   activity: Activiteit
   admin: Admin
   admin_comment: Admin commentaar
+  admin_comments: Admin commentaar
   admin_functions: Admin functies
+  admin_role: Admin
   address: Adres
   already_exists: Bestaat reeds
   amount: Bedrag
@@ -150,20 +175,25 @@ label:
   balance_on_date: Saldo op datum
   balance_sum: "Totaal Saldo: {balance_sum}"
   bg_color: Achtergrondkleur
+  birthdate: Geboortedatum
   captcha: Anti-spam verificatiecode
   category: Categorie
   code: Code
   columns: Kolommen
   comment: Commentaar
+  comments: Commentaar
   contacts: Contacten
   contact_type: Contact type
   content: Inhoud
   created: Aanmaak
+  creation_time: Tijdstip aanmaak
   current_balance: Huidig saldo
+  enabled: Aan
   days: Dagen
   description: Omschrijving
   date: Datum
   date_of_birth: Geboortedatum
+  disabled: Uit
   download: Download
   email: E-mail
   email_tag: E-mail tag
@@ -182,14 +212,15 @@ label:
   from: Van
   from_date: Vanaf
   full_name: Volledige naam
+  hidden: Verborgen
   hobbies_interests: Hobbies/interesses
   image: Afbeelding
   images: Afbeeldingen
   image_upload: Afbeelding opladen
   images_remove: Afbeeldingen verwijderen
   in: In
-  keep_after_date: Behoud na Datum
-  last_login: Laatste Login
+  keep_after_date: Behoud na datum
+  last_login: Laatste login
   last_name: Achternaam
   leaving_users: Uitstappers
   link: Link
@@ -213,17 +244,18 @@ label:
   new_password: Nieuw paswoord
   offer: Aanbod
   offers: Aanbod
-  offers_and_wants: Vraag en Aanbod
+  offers_and_wants: Vraag en aanbod
   optional: Optioneel
   original_filename: Orginele bestandsnaam
   out: Uit
-  periodic_overview: Periodiek overzicht (e-mail)
-  parsed_address: Ontleed Adres
+  parsed_address: Ontleed adres
   password: Paswoord
   per_unit: Per (uur, stuk...)
-  period_days: Periode in Dagen
-  periodic_mail: Periodieke Overzichts E-mail
+  periodic_overview: Periodiek overzicht (e-mail)
+  period_days: Periode in dagen
+  periodic_mail: Periodieke overzichts e-mail
   permanent: Permanent
+  permissions_role: Rechten/rol
   phone: Telefoon
   postcode: Postcode
   prolong: Verlengen
@@ -253,6 +285,7 @@ label:
   txt_color: Tekstkleur
   upload: Opladen
   user: Gebruiker
+  user_role: Lid
   username: Gebruikersnaam
   value: Waarde
   valid: Geldig
@@ -1386,6 +1419,8 @@ users_del:
     worden verwijderd.
 
 users_full_name:
+  visible:
+    label: Volledige naam zichtbaar voor
   title: >-
     Volledige naam configuratie
   self_edit:

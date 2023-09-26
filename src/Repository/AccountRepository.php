@@ -13,7 +13,7 @@ class AccountRepository
 	{
 	}
 
-    public function get_min_limit(int $account_id, string $schema):?int
+    public function get_min_limit(int $account_id, string $schema):null|int
     {
         return $this->db->fetchOne('select m.min_limit
             from (values(0)) as d
@@ -25,7 +25,7 @@ class AccountRepository
             [\PDO::PARAM_INT]);
     }
 
-    public function update_min_limit(int $account_id, ?int $min_limit, ?int $created_by, string $schema):void
+    public function update_min_limit(int $account_id, null|int $min_limit, null|int $created_by, string $schema):void
     {
         $created_by = $created_by ?: null;
 
@@ -54,7 +54,7 @@ class AccountRepository
         return $min_limit_ary;
     }
 
-    public function get_max_limit(int $account_id, string $schema):?int
+    public function get_max_limit(int $account_id, string $schema):null|int
     {
         return $this->db->fetchOne('select m.max_limit
             from (values(0)) as d
@@ -65,7 +65,7 @@ class AccountRepository
             [$account_id], [\PDO::PARAM_INT]);
     }
 
-    public function update_max_limit(int $account_id, ?int $max_limit, ?int $created_by, string $schema):void
+    public function update_max_limit(int $account_id, null|int $max_limit, null|int $created_by, string $schema):void
     {
         $created_by = $created_by ?: null;
 
