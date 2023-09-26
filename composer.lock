@@ -187,16 +187,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.281.9",
+            "version": "3.281.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "9e744fd8925f7908fbc4dcea91bd785aba308587"
+                "reference": "4b5b8aab08ef0add75f086bc03c7651799d187db"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/9e744fd8925f7908fbc4dcea91bd785aba308587",
-                "reference": "9e744fd8925f7908fbc4dcea91bd785aba308587",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/4b5b8aab08ef0add75f086bc03c7651799d187db",
+                "reference": "4b5b8aab08ef0add75f086bc03c7651799d187db",
                 "shasum": ""
             },
             "require": {
@@ -276,9 +276,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.281.9"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.281.14"
             },
-            "time": "2023-09-18T18:11:01+00:00"
+            "time": "2023-09-26T18:15:48+00:00"
         },
         {
             "name": "bramus/ansi-php",
@@ -932,16 +932,16 @@
         },
         {
             "name": "doctrine/dbal",
-            "version": "3.6.6",
+            "version": "3.6.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "63646ffd71d1676d2f747f871be31b7e921c7864"
+                "reference": "8e0e268052b4a8974cb00215bb2892787021614f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/63646ffd71d1676d2f747f871be31b7e921c7864",
-                "reference": "63646ffd71d1676d2f747f871be31b7e921c7864",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/8e0e268052b4a8974cb00215bb2892787021614f",
+                "reference": "8e0e268052b4a8974cb00215bb2892787021614f",
                 "shasum": ""
             },
             "require": {
@@ -957,9 +957,9 @@
                 "doctrine/coding-standard": "12.0.0",
                 "fig/log-test": "^1",
                 "jetbrains/phpstorm-stubs": "2023.1",
-                "phpstan/phpstan": "1.10.29",
+                "phpstan/phpstan": "1.10.34",
                 "phpstan/phpstan-strict-rules": "^1.5",
-                "phpunit/phpunit": "9.6.9",
+                "phpunit/phpunit": "9.6.12",
                 "psalm/plugin-phpunit": "0.18.4",
                 "slevomat/coding-standard": "8.13.1",
                 "squizlabs/php_codesniffer": "3.7.2",
@@ -1025,7 +1025,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/dbal/issues",
-                "source": "https://github.com/doctrine/dbal/tree/3.6.6"
+                "source": "https://github.com/doctrine/dbal/tree/3.6.7"
             },
             "funding": [
                 {
@@ -1041,7 +1041,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-08-17T05:38:17+00:00"
+            "time": "2023-09-19T20:15:41+00:00"
         },
         {
             "name": "doctrine/deprecations",
@@ -2244,16 +2244,16 @@
         },
         {
             "name": "gregwar/captcha",
-            "version": "v1.2.0",
+            "version": "v1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Gregwar/Captcha.git",
-                "reference": "6e5b61b66ac89885b505153f4ef9a74ffa5b3074"
+                "reference": "229d3cdfe33d6f1349e0aec94a26e9205a6db08e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Gregwar/Captcha/zipball/6e5b61b66ac89885b505153f4ef9a74ffa5b3074",
-                "reference": "6e5b61b66ac89885b505153f4ef9a74ffa5b3074",
+                "url": "https://api.github.com/repos/Gregwar/Captcha/zipball/229d3cdfe33d6f1349e0aec94a26e9205a6db08e",
+                "reference": "229d3cdfe33d6f1349e0aec94a26e9205a6db08e",
                 "shasum": ""
             },
             "require": {
@@ -2295,9 +2295,9 @@
             ],
             "support": {
                 "issues": "https://github.com/Gregwar/Captcha/issues",
-                "source": "https://github.com/Gregwar/Captcha/tree/v1.2.0"
+                "source": "https://github.com/Gregwar/Captcha/tree/v1.2.1"
             },
-            "time": "2023-03-24T22:12:41+00:00"
+            "time": "2023-09-26T13:45:37+00:00"
         },
         {
             "name": "gregwar/captcha-bundle",
@@ -3755,12 +3755,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/utils.git",
-                "reference": "c67c9f33ab9b3026709c7e606d93f7044678f8df"
+                "reference": "cead6637226456b35e1175cc53797dd585d85545"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/utils/zipball/c67c9f33ab9b3026709c7e606d93f7044678f8df",
-                "reference": "c67c9f33ab9b3026709c7e606d93f7044678f8df",
+                "url": "https://api.github.com/repos/nette/utils/zipball/cead6637226456b35e1175cc53797dd585d85545",
+                "reference": "cead6637226456b35e1175cc53797dd585d85545",
                 "shasum": ""
             },
             "require": {
@@ -3833,7 +3833,7 @@
                 "issues": "https://github.com/nette/utils/issues",
                 "source": "https://github.com/nette/utils/tree/v4.0.2"
             },
-            "time": "2023-09-19T10:10:47+00:00"
+            "time": "2023-09-19T11:58:07+00:00"
         },
         {
             "name": "nyholm/psr7",
@@ -4498,16 +4498,16 @@
         },
         {
             "name": "psr/http-client",
-            "version": "1.0.2",
+            "version": "1.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/http-client.git",
-                "reference": "0955afe48220520692d2d09f7ab7e0f93ffd6a31"
+                "reference": "bb5906edc1c324c9a05aa0873d40117941e5fa90"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/http-client/zipball/0955afe48220520692d2d09f7ab7e0f93ffd6a31",
-                "reference": "0955afe48220520692d2d09f7ab7e0f93ffd6a31",
+                "url": "https://api.github.com/repos/php-fig/http-client/zipball/bb5906edc1c324c9a05aa0873d40117941e5fa90",
+                "reference": "bb5906edc1c324c9a05aa0873d40117941e5fa90",
                 "shasum": ""
             },
             "require": {
@@ -4544,9 +4544,9 @@
                 "psr-18"
             ],
             "support": {
-                "source": "https://github.com/php-fig/http-client/tree/1.0.2"
+                "source": "https://github.com/php-fig/http-client"
             },
-            "time": "2023-04-10T20:12:12+00:00"
+            "time": "2023-09-23T14:17:50+00:00"
         },
         {
             "name": "psr/http-factory",

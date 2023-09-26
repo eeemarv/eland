@@ -1,7 +1,7 @@
 {%- extends 'messages/base/messages_base.html.twig' -%}
 
 {%- block btn_top_add -%}
-    {%- if pp_has_role('admin')
+    {%- if pp_is_admin()
         and uid is not empty
         and not su_is_owner(uid) -%}
         {%- include 'include/btn_top/add.html.twig' with {
@@ -12,7 +12,7 @@
                 'user': account(uid, schema)
             }
         } -%}
-    {%- elseif pp_has_role('admin') or pp_has_role('user') -%}
+    {%- elseif pp_is_admin() or pp_is_user() -%}
         {%- include 'include/btn_top/add.html.twig' with {
             'btn_route': 'messages_add',
             'btn_title': 'messages_add.title'

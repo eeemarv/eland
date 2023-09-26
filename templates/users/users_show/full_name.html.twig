@@ -8,14 +8,14 @@
         <dd>
             {%- if item_visible(user.full_name_access)
                 or su_is_owner(user.id)
-                or pp_has_role('admin')
+                or pp_is_admin()
             -%}
                 {{- user.full_name|no_content -}}
             {%- else -%}
                 {{- l.label('hidden') -}}
             {%- endif -%}
         </dd>
-        {%- if pp_has_role('admin') or su_is_owner(user.id) -%}
+        {%- if pp_is_admin() or su_is_owner(user.id) -%}
             <dt>
                 {{- 'users_full_name.visible.label'|trans -}}
             </dt>

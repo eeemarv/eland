@@ -9,7 +9,7 @@
 {%- endblock assets_add -%}
 
 {%- block btn_top_bulk -%}
-    {%- if pp_has_role('admin') -%}
+    {%- if pp_is_admin() -%}
         {%- include 'include/btn_top/bulk.html.twig' -%}
     {%- endif -%}
 {%- endblock btn_top_bulk -%}

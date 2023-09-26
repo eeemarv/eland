@@ -75,7 +75,7 @@
                     <td>
                         {%- if config_bool('transactions.enabled', schema)
                             and config_bool('transactions.enabled', su_schema())
-                            and (pp_has_role('admin') or not su_is_owner(id))  -%}
+                            and (pp_is_admin() or not su_is_owner(id))  -%}
                             {%- include 'include/btn_top/transaction.html.twig' with {
                                 'btn_route': 'transactions_add',
                                 'btn_route_params': su_ary()|merge({'tuid': id, 'tus': schema}),
@@ -85,7 +85,7 @@
                                 }
                             } -%}
 
-                            {%- if pp_has_role('admin') -%}
+                            {%- if pp_is_admin() -%}
                             {%- include 'include/btn_top/edit.html.twig' with {
                                 'btn_route': 'users_edit'
                             } -%}

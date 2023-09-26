@@ -4,14 +4,14 @@
 
 {%- block assets_add -%}
     {{- parent() -}}
-    {%- if pp_has_role('admin') -%}
+    {%- if pp_is_admin() -%}
         {{- assets_add(['table_sel.js']) -}}
     {%- endif -%}
     {{- assets_add(['datepicker']) -}}
 {%- endblock assets_add -%}
 
 {%- block btn_top_add -%}
-    {%- if pp_has_role('admin') or pp_has_role('user') -%}
+    {%- if pp_is_admin() or pp_is_user() -%}
         {%- include 'include/btn_top/add.html.twig' with {
             'btn_route': 'transactions_add',
             'btn_title': 'transactions_add.title'
@@ -20,7 +20,7 @@
 {%- endblock btn_top_add -%}
 
 {%- block btn_top_bulk -%}
-    {%- if pp_has_role('admin') and bulk_actions_enabled -%}
+    {%- if pp_is_admin() and bulk_actions_enabled -%}
         {%- include 'include/btn_top/bulk.html.twig' -%}
     {%- endif -%}
 {%- endblock btn_top_bulk -%}

@@ -30,30 +30,18 @@ class PpRuntime implements RuntimeExtensionInterface
 		return $this->pp->role();
 	}
 
-	public function has_role(string $role):bool
+	public function is_admin():bool
 	{
-		switch($role)
-		{
-			case 'anonymous':
-				return $this->pp->is_anonymous();
-				break;
-			case 'guest':
-				return $this->pp->is_guest();
-				break;
-			case 'user':
-				return $this->pp->is_user();
-				break;
-			case 'admin':
-				return $this->pp->is_admin();
-				break;
-			case 'master':
-				return $this->su->is_master();
-				break;
-			default:
-				return false;
-				break;
-		}
+		return $this->pp->is_admin();
+	}
 
-		return false;
+	public function is_user():bool
+	{
+		return $this->pp->is_user();
+	}
+
+	public function is_guest():bool
+	{
+		return $this->pp->is_guest();
 	}
 }

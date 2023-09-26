@@ -27,8 +27,8 @@
 {%- endblock -%}
 
 {%- block body_attr %} class="body-navbar
-	{%- if pp_has_role('admin') %} admin
-	{%- elseif pp_has_role('guest') %} guest
+	{%- if pp_is_admin() %} admin
+	{%- elseif pp_is_guest() %} guest
 	{%- endif -%}"
 {%- endblock body_attr -%}
 
@@ -120,7 +120,7 @@
 	</div>
 
 	<div id="wrap">
-	<div id="main" class="container-fluid clear-top{%- if pp_has_role('admin') %} admin{%- endif -%}">
+	<div id="main" class="container-fluid clear-top{%- if pp_is_admin() %} admin{%- endif -%}">
 
 	{%- block alert -%}
 		{%- include 'include/alert.html.twig' -%}
@@ -175,7 +175,7 @@
 			{%- if block('btn_nav_top_right') -%}
 				<div class="pull-right">
 					{%- block btn_nav_top_right -%}
-						{%- if pp_has_role('admin') and block('local_admin_menu') -%}
+						{%- if pp_is_admin() and block('local_admin_menu') -%}
 							<div class="btn-group" role="group">
 								{%- block local_admin_menu -%}
 									{%- include 'include/menu/local_admin_menu.html.twig' -%}

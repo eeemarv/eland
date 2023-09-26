@@ -13,7 +13,9 @@ class PpExtension extends AbstractExtension
 			new TwigFunction('pp_ary', [PpRuntime::class, 'get_ary']),
 			new TwigFunction('pp_schema', [PpRuntime::class, 'get_schema']),
 			new TwigFunction('pp_role', [PpRuntime::class, 'get_role']),
-			new TwigFunction('pp_has_role', [PpRuntime::class, 'has_role']),
+			new TwigFunction('pp_is_admin', [PpRuntime::class, 'is_admin']),
+			new TwigFunction('pp_is_user', [PpRuntime::class, 'is_user']),
+			new TwigFunction('pp_is_guest', [PpRuntime::class, 'is_guest']),
 		];
 	}
 }

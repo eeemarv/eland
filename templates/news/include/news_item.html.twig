@@ -36,7 +36,7 @@
         </dl>
     {%- endblock footer_top -%}
     {%- block edit_btn -%}
-        {%- if pp_has_role('admin') -%}
+        {%- if pp_is_admin() -%}
             {%- include 'include/btn/edit.html.twig' with {
                 'btn_route': 'news_edit',
                 'id': post.id,
@@ -48,7 +48,7 @@
         {%- endif -%}
     {%- endblock edit_btn -%}
     {%- block del_btn -%}
-        {%- if pp_has_role('admin') -%}
+        {%- if pp_is_admin() -%}
             {%- include 'include/btn/del.html.twig' with {
                 'btn_route': 'news_del',
                 'id': post.id,

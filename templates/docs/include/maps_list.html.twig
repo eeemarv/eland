@@ -3,7 +3,7 @@
         <th data-sort-initial="true">
             {{- 'label.map'|trans -}}
         </th>
-        {%- if pp_has_role('admin') -%}
+        {%- if pp_is_admin() -%}
             <th data-sort-ignore="true">
                 &nbsp;
             </th>
@@ -17,7 +17,7 @@
                         {{- m.name }} ({{- m.doc_count -}})
                     </a>
                 </td>
-                {%- if pp_has_role('admin') -%}
+                {%- if pp_is_admin() -%}
                     <td>
                         {%- include 'include/btn/edit.html.twig' with {
                             'btn_route': 'docs_map_edit',

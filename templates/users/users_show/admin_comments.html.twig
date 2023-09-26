@@ -1,4 +1,4 @@
-{%- if pp_has_role('admin') and config_bool('users.fields.admin_comments.enabled', schema) -%}
+{%- if pp_is_admin() and config_bool('users.fields.admin_comments.enabled', schema) -%}
 {%- embed 'users/users_show/list_item.html.twig' -%}
     {%- block class %} list-group-item-info{% endblock class -%}
     {%- block item -%}
