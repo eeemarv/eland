@@ -46,9 +46,18 @@ class ConfigMaintenanceController extends AbstractController
             && $form->isValid())
         {
             $command = $form->getData();
-            $config_service->store_command($command, $pp->schema());
 
-            $alert_service->success('Onderhouds modus aangepast.');
+            $changed = $config_service->store_command($command, $pp->schema());
+
+            if ($changed)
+            {
+                $alert_service->success('Onderhoudsmodus aangepast');
+            }
+            else
+            {
+                $alert_service->warning('Onderhoudsmodus niet gewijzigd');
+            }
+
             return $this->redirectToRoute('config_maintenance', $pp->ary());
         }
 

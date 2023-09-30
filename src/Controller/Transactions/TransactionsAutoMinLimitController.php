@@ -58,9 +58,18 @@ class TransactionsAutoMinLimitController extends AbstractController
             && $form->isValid())
         {
             $command = $form->getData();
-            $config_service->store_command($command, $pp->schema());
 
-            $alert_service->success('De automatische minimum limiet instellingen zijn aangepast.');
+            $changed = $config_service->store_command($command, $pp->schema());
+
+            if ($changed)
+            {
+                $alert_service->success('De automatische minimum limiet instellingen aangepast');
+            }
+            else
+            {
+                $alert_service->warning('De automatische minimum limiet instellingen niet gewijzigd');
+            }
+
             return $this->redirectToRoute('transactions_autominlimit', $pp->ary());
         }
 

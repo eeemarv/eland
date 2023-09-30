@@ -46,9 +46,18 @@ class ConfigMailController extends AbstractController
             && $form->isValid())
         {
             $command = $form->getData();
-            $config_service->store_command($command, $pp->schema());
 
-            $alert_service->success('E-mail instellingen aangepast.');
+            $changed = $config_service->store_command($command, $pp->schema());
+
+            if ($changed)
+            {
+                $alert_service->success('E-mail instellingen aangepast');
+            }
+            else
+            {
+                $alert_service->warning('E-mail instellingen niet gewijzigd');
+            }
+
             return $this->redirectToRoute('config_mail', $pp->ary());
         }
 

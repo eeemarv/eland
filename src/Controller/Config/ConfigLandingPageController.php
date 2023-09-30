@@ -46,9 +46,18 @@ class ConfigLandingPageController extends AbstractController
             && $form->isValid())
         {
             $command = $form->getData();
-            $config_service->store_command($command, $pp->schema());
 
-            $alert_service->success('Landingspagina aangepast.');
+            $changed = $config_service->store_command($command, $pp->schema());
+
+            if ($changed)
+            {
+                $alert_service->success('Landingspagina aangepast');
+            }
+            else
+            {
+                $alert_service->warning('Landingspagina niet gewijzigd');
+            }
+
             return $this->redirectToRoute('config_landing_page', $pp->ary());
         }
 

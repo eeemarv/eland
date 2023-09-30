@@ -52,9 +52,18 @@ class NewsSortController extends AbstractController
             && $form->isValid())
         {
             $command = $form->getData();
-            $config_service->store_command($command, $pp->schema());
 
-            $alert_service->success('Sortering nieuws configuratie aangepast');
+            $changed = $config_service->store_command($command, $pp->schema());
+
+            if ($changed)
+            {
+                $alert_service->success('Sortering nieuws configuratie aangepast');
+            }
+            else
+            {
+                $alert_service->warning('Sortering nieuws configuratie niet gewijzigd');
+            }
+
             return $this->redirectToRoute('news_sort', $pp->ary());
         }
 

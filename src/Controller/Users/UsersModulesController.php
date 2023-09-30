@@ -47,9 +47,17 @@ class UsersModulesController extends AbstractController
             && $form->isValid())
         {
             $command = $form->getData();
-            $config_service->store_command($command, $pp->schema());
+            $changed = $config_service->store_command($command, $pp->schema());
 
-            $alert_service->success('Submodules/velden leden aangepast');
+            if ($changed)
+            {
+                $alert_service->success('Submodules/velden leden aangepast');
+            }
+            else
+            {
+                $alert_service->warning('Submodules/velden leden niet gewijzigd');
+            }
+
             return $this->redirectToRoute('users_modules', $pp->ary());
         }
 
