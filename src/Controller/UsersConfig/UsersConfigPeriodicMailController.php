@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller\Users;
+namespace App\Controller\UsersConfig;
 
 use App\Cnst\ConfigCnst;
-use App\Command\Users\UsersPeriodicMailCommand;
-use App\Form\Type\Users\UsersPeriodicMailType;
+use App\Command\UsersConfig\UsersConfigPeriodicMailCommand;
+use App\Form\Type\UsersConfig\UsersConfigPeriodicMailType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,11 +16,11 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
-class UsersPeriodicMailController extends AbstractController
+class UsersConfigPeriodicMailController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/users/periodic-mail',
-        name: 'users_periodic_mail',
+        '/{system}/{role_short}/users/config/periodic-mail',
+        name: 'users_config_periodic_mail',
         methods: ['GET', 'POST'],
         requirements: [
             'system'        => '%assert.system%',
@@ -148,26 +148,31 @@ class UsersPeriodicMailController extends AbstractController
             $block_select_options[$block] = $select;
         }
 
-        $users_periodic_mail_command = new UsersPeriodicMailCommand();
+        $command = new UsersConfigPeriodicMailCommand();
 
-        $users_periodic_mail_command->days = $config_service->get_int('periodic_mail.days', $pp->schema());
-        $users_periodic_mail_command->block_layout = json_encode($block_layout);
-        $users_periodic_mail_command->block_select_options = json_encode($block_select_options);
+        $command->days = $config_service->get_int('periodic_mail.days', $pp->schema());
+        $command->block_layout = json_encode($block_layout);
+        $command->block_select_options = json_encode($block_select_options);
 
-        $form = $this->createForm(UsersPeriodicMailType::class,
-            $users_periodic_mail_command)
+        $form = $this->createForm(UsersConfigPeriodicMailType::class,
+            $command)
             ->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $users_periodic_mail_command = $form->getData();
+            $command = $form->getData();
 
-            $days = $users_periodic_mail_command->days;
-            $posted_block_layout = json_decode($users_periodic_mail_command->block_layout, true);
-            $posted_block_select_options = json_decode($users_periodic_mail_command->block_select_options, true);
+            $days = $command->days;
+            $posted_block_layout = json_decode($command->block_layout, true);
+            $posted_block_select_options = json_decode($command->block_select_options, true);
 
-            $config_service->set_int('periodic_mail.days', $days, $pp->schema());
+            $changed = false;
+
+            if ($config_service->set_int('periodic_mail.days', $days, $pp->schema()))
+            {
+                $changed = true;
+            }
 
             $block_layout = [];
             foreach($posted_block_layout as $b)
@@ -192,15 +197,30 @@ class UsersPeriodicMailController extends AbstractController
                     $select = 'all';
                 }
 
-                $config_service->set_str('periodic_mail.user.render.' . $b . '.select', $select, $pp->schema());
+                if ($config_service->set_str('periodic_mail.user.render.' . $b . '.select', $select, $pp->schema()))
+                {
+                    $changed = true;
+                }
             }
-            $config_service->set_ary('periodic_mail.user.layout', $block_layout, $pp->schema());
 
-            $alert_service->success('Periodieke overzichts e-mail aangepast');
-            return $this->redirectToRoute('users_periodic_mail', $pp->ary());
+            if ($config_service->set_ary('periodic_mail.user.layout', $block_layout, $pp->schema()))
+            {
+                $changed = true;
+            }
+
+            if ($changed)
+            {
+                $alert_service->success('Configuratie periodieke overzichts e-mail aangepast');
+            }
+            else
+            {
+                $alert_service->warning('Configuratie periodieke overzichts e-mail niet gewijzigd');
+            }
+
+            return $this->redirectToRoute('users_config_periodic_mail', $pp->ary());
         }
 
-        return $this->render('users/users_periodic_mail.html.twig', [
+        return $this->render('users_config/users_config_periodic_mail.html.twig', [
             'form'                  => $form->createView(),
             'block_layout'          => $block_layout,
             'block_inactive_layout' => $block_inactive_layout,

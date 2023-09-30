@@ -1,16 +1,16 @@
-{%- extends 'users/base/users_form.html.twig' -%}
+{%- extends 'users_config/base/users_config_form.html.twig' -%}
 
 {%- block heading_fa -%}
     user
 {%- endblock heading_fa -%}
 
 {%- block heading_title -%}
-    {{- 'users_username.title'|trans -}}
+    {{- 'users_config_full_name.title'|trans -}}
 {%- endblock heading_title -%}
 
 {%- block form_a -%}
     {{- form_row(form.self_edit, {
-        'label': 'users_username.self_edit.label',
+        'label': 'users_config_full_name.self_edit.label',
         'required': false
     }) -}}
 {%- endblock form_a -%}

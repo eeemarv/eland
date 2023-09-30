@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller\Users;
+namespace App\Controller\UsersConfig;
 
-use App\Command\Users\UsersUsernameCommand;
-use App\Form\Type\Users\UsersUsernameType;
+use App\Command\UsersConfig\UsersConfigNameCommand;
+use App\Form\Type\UsersConfig\UsersConfigNameType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,11 +14,11 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
-class UsersUsernameController extends AbstractController
+class UsersConfigNameController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/users/username',
-        name: 'users_username',
+        '/{system}/{role_short}/users/config/name',
+        name: 'users_config_name',
         methods: ['GET', 'POST'],
         requirements: [
             'system'        => '%assert.system%',
@@ -36,24 +36,33 @@ class UsersUsernameController extends AbstractController
         PageParamsService $pp
     ):Response
     {
-        $command = new UsersUsernameCommand();
+        $command = new UsersConfigNameCommand();
         $config_service->load_command($command, $pp->schema());
 
-        $form = $this->createForm(UsersUsernameType::class, $command);
+        $form = $this->createForm(UsersConfigNameType::class, $command);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
             $command = $form->getData();
-            $config_service->store_command($command, $pp->schema());
 
-            $alert_service->success('Gebruikersnaam configuratie aangepast');
-            return $this->redirectToRoute('users_username', $pp->ary());
+            $changed = $config_service->store_command($command, $pp->schema());
+
+            if ($changed)
+            {
+                $alert_service->success('Gebruikersnaam configuratie aangepast');
+            }
+            else
+            {
+                $alert_service->warning('Gebruikersnaam configuratie niet gewijzigd');
+            }
+
+            return $this->redirectToRoute('users_config_name', $pp->ary());
         }
 
-        return $this->render('users/users_username.html.twig', [
-            'form'          => $form->createView(),
+        return $this->render('users_config/users_config_name.html.twig', [
+            'form'  => $form->createView(),
         ]);
     }
 }

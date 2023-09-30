@@ -1,5 +1,24 @@
-<a href="{{- path(btn_route, pp_ary()|merge(btn_route_params|default({}))) -}}" class="btn btn-{{- btn_class }}"{%- if btn_title is defined %} title="{{- btn_title|trans(btn_title_trans_params|default({})) -}}"{%- endif -%}{%- for n, v in btn_attr|default({}) %} {{ n -}}="{{- v -}}"{%- endfor -%}>
+<a href="
+{{- path(btn_route, pp_ary()|merge(btn_route_params|default({}))) -}}
+" class="btn btn-{{ btn_class -}}
+{%- if btn_lg is defined and btn_lg %} btn-lg{%- endif -%}
+"{%- if btn_title is defined %} title="{{- btn_title|trans(btn_title_trans_params|default({})) -}}"{%- endif -%}
+{%- for n, v in btn_attr|default({}) %} {{ n -}}="{{- v -}}"{%- endfor -%}
+>
     <i class="fa fa-{{- fa -}}"></i>
-    &nbsp;
-    {{- btn_label|trans -}}
+    {%- if btn_label_hidden is defined -%}
+        <span class="
+        {%- if btn_label_hidden == 'xs' -%}
+            hidden-xs
+        {%- elseif btn_label_hidden == 'sm' -%}
+            hidden-xs hidden-sm
+        {%- elseif btn_label_hidden == 'md' -%}
+            hidden-xs hidden-sm hidden-md
+        {%- endif -%}">
+        &nbsp;
+        {{- btn_label|trans -}}
+        </span>
+    {%- else -%}
+        {{- btn_label|trans -}}
+    {%- endif -%}
 </a>

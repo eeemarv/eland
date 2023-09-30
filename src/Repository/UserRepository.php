@@ -180,7 +180,6 @@ class UserRepository
 			);
 	}
 
-
 	public function get_by_typeahead_code(string $code, string $schema):int
 	{
 		$code_lowercase = strtolower($code);
@@ -327,6 +326,21 @@ class UserRepository
 		}
 
 		return $success;
+	}
+
+	public function update(
+		array $update_ary,
+		int $id,
+		string $schema
+	):int
+	{
+        $affected_row_count = (int) $this->db->update($schema . '.users',
+			$update_ary,
+            ['id' => $id]);
+
+        $this->user_cache_service->clear($id, $schema);
+
+		return $affected_row_count;
 	}
 
 	public function is_active(int $id, string $schema):bool

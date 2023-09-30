@@ -1,12 +1,12 @@
-{%- extends 'users/base/users_form.html.twig' -%}
+{%- extends 'users_config/base/users_config_form.html.twig' -%}
 
 {%- block assets_add -%}
     {{- parent() -}}
-    {{- assets_add(['sortable', 'users_periodic_mail.js']) -}}
+    {{- assets_add(['sortable', 'users_config_periodic_mail.js']) -}}
 {%- endblock assets_add -%}
 
 {%- block heading_title -%}
-    {{- 'users_periodic_mail.title'|trans -}}
+    {{- 'users_config_periodic_mail.title'|trans -}}
 {%- endblock heading_title -%}
 
 {%- block heading_fa -%}
@@ -16,7 +16,7 @@
 {%- block form_a -%}
 
     {{- form_row(form.days, {
-        'label': 'users_periodic_mail.days.label',
+        'label': 'users_config_periodic_mail.days.label',
         'attr': {
             'min': 1
         },
@@ -26,26 +26,26 @@
     }) -}}
 
     <p>
-        {{- 'users_periodic_mail.users_help'|trans -}}
+        {{- 'users_config_periodic_mail.users_help'|trans -}}
     </p>
 
     <h2>
-        {{- 'users_periodic_mail.layout.title'|trans -}}
+        {{- 'users_config_periodic_mail.layout.title'|trans -}}
     </h2>
 
     <p>
-        {{- 'users_periodic_mail.layout.help'|trans -}}
+        {{- 'users_config_periodic_mail.layout.help'|trans -}}
     </p>
 
     <div class="row">
         {%- include 'users/include/periodic_mail_list.html.twig' with {
-            'title': 'users_periodic_mail.layout.active.title',
+            'title': 'users_config_periodic_mail.layout.active.title',
             'list_attr': ' data-active-blocks',
             'block_list': block_layout,
             'item_class': 'bg-success'
         } -%}
         {%- include 'users/include/periodic_mail_list.html.twig' with {
-            'title': 'users_periodic_mail.layout.inactive.title',
+            'title': 'users_config_periodic_mail.layout.inactive.title',
             'list_attr': ' data-inactive-blocks',
             'block_list': block_inactive_layout,
             'item_class': 'bg-danger'

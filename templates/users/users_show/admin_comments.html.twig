@@ -10,7 +10,16 @@
         </dd>
     {%- endblock item -%}
     {%- block btn -%}
-
+        {%- include 'include/btn/edit.html.twig' with {
+            'btn_route': 'users_admin_comments_edit',
+            'btn_title': 'users_admin_comments_edit.title',
+            'btn_title_trans_params': {
+                'user': account(id, schema),
+                'self': is_self ? 'self' : 'some_user'
+            },
+            'btn_label_hidden': 'sm',
+            'btn_lg': true,
+        } -%}
     {%- endblock btn -%}
 {%- endembed -%}
 {%- endif -%}

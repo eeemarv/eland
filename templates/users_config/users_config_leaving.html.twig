@@ -1,4 +1,4 @@
-{%- extends 'users/base/users_form.html.twig' -%}
+{%- extends 'users_config/base/users_config_form.html.twig' -%}
 {%- import 'macro/anchor.html.twig' as a -%}
 
 {%- block heading_title -%}
@@ -49,7 +49,7 @@
     {%- if config_bool('periodic_mail.enabled', schema) -%}
         <p>
             {{- 'users_config_leaving.periodic_mail.help'|trans({
-                    'open_link': a.open_context_path('users_periodic_mail'),
+                    'open_link': a.open_context_path('users_config_periodic_mail'),
                     'close_link': a.close()
                 })|raw
             -}}

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Command\Users;
+namespace App\Command\UsersConfig;
 
 use App\Attributes\ConfigMap;
 use App\Command\CommandInterface;

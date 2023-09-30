@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller\Users;
+namespace App\Controller\UsersConfig;
 
-use App\Command\Users\UsersFullNameCommand;
-use App\Form\Type\Users\UsersFullNameType;
+use App\Command\UsersConfig\UsersConfigFullNameCommand;
+use App\Form\Type\UsersConfig\UsersConfigFullNameType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,11 +15,11 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
-class UsersFullNameController extends AbstractController
+class UsersConfigFullNameController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/users/full-name',
-        name: 'users_full_name',
+        '/{system}/{role_short}/users/config/full-name',
+        name: 'users_config_full_name',
         methods: ['GET', 'POST'],
         requirements: [
             'system'        => '%assert.system%',
@@ -42,10 +42,10 @@ class UsersFullNameController extends AbstractController
             throw new AccessDeniedHttpException('Full name module not enabled.');
         }
 
-        $command = new UsersFullNameCommand();
+        $command = new UsersConfigFullNameCommand();
         $config_service->load_command($command, $pp->schema());
 
-        $form = $this->createForm(UsersFullNameType::class, $command);
+        $form = $this->createForm(UsersConfigFullNameType::class, $command);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()
@@ -53,14 +53,22 @@ class UsersFullNameController extends AbstractController
         {
             $command = $form->getData();
 
-            $config_service->store_command($command, $pp->schema());
+            $changed = $config_service->store_command($command, $pp->schema());
 
-            $alert_service->success('Volledige naam configuratie aangepast');
-            return $this->redirectToRoute('users_full_name', $pp->ary());
+            if ($changed)
+            {
+                $alert_service->success('Volledige naam configuratie aangepast');
+            }
+            else
+            {
+                $alert_service->warning('Volledige naam configuratie niet gewijzigd');
+            }
+
+            return $this->redirectToRoute('users_config_full_name', $pp->ary());
         }
 
-        return $this->render('users/users_full_name.html.twig', [
-            'form'          => $form->createView(),
+        return $this->render('users_config/users_config_full_name.html.twig', [
+            'form'  => $form->createView(),
         ]);
     }
 }

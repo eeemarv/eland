@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Command\Users;
+namespace App\Command\UsersConfig;
 
 use App\Command\CommandInterface;
 use Symfony\Component\Validator\Constraints\Json;
@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Constraints\Type;
 
-class UsersPeriodicMailCommand implements CommandInterface
+class UsersConfigPeriodicMailCommand implements CommandInterface
 {
     #[Sequentially(constraints: [
         new NotNull(),

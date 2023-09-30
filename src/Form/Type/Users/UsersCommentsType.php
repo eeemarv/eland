@@ -2,28 +2,23 @@
 
 namespace App\Form\Type\Users;
 
-use App\Command\Users\UsersFullNameCommand;
+use App\Command\Users\UsersCommentsCommand;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class UsersFullNameType extends AbstractType
+class UsersCommentsType extends AbstractType
 {
-    public function __construct(
-    )
-    {
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options):void
     {
-        $builder->add('self_edit', CheckboxType::class);
-        $builder->add('submit', SubmitType::class);
+        $builder->add('comments', TextareaType::class);
+		$builder->add('submit', SubmitType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver):void
     {
-        $resolver->setDefault('data_class', UsersFullNameCommand::class);
+        $resolver->setDefault('data_class', UsersCommentsCommand::class);
     }
 }

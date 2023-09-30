@@ -176,43 +176,46 @@ class ConfigService
 		return;
 	}
 
-	public function set_int(string $key, null|int $value, string $schema):void
+	public function set_int(string $key, null|int $value, string $schema):bool
 	{
 		$current_value = $this->get_int($key, $schema);
 
 		if ($current_value === $value)
 		{
-			return;
+			return false;
 		}
 
 		$this->set_val($key, $value, $schema);
+		return true;
 	}
 
-	public function set_bool(string $key, bool $value, string $schema):void
+	public function set_bool(string $key, bool $value, string $schema):bool
 	{
 		$current_value = $this->get_bool($key, $schema);
 
 		if ($current_value === $value)
 		{
-			return;
+			return false;
 		}
 
 		$this->set_val($key, $value, $schema);
+		return true;
 	}
 
-	public function set_str(string $key, string $value, string $schema):void
+	public function set_str(string $key, string $value, string $schema):bool
 	{
 		$current_value = $this->get_str($key, $schema);
 
 		if ($current_value === $value)
 		{
-			return;
+			return false;
 		}
 
 		$this->set_val($key, $value, $schema);
+		return true;
 	}
 
-	public function set_ary(string $key, array $value, string $schema):void
+	public function set_ary(string $key, array $value, string $schema):bool
 	{
 		if (count(array_filter(array_keys($value), 'is_string')) > 0)
 		{
@@ -223,10 +226,11 @@ class ConfigService
 
 		if ($current_value === $value)
 		{
-			return;
+			return false;
 		}
 
 		$this->set_val($key, $value, $schema);
+		return true;
 	}
 
 	public function get_intersystem_en(string $schema):bool
@@ -246,8 +250,9 @@ class ConfigService
 		CommandInterface $command,
 		callable $callable,
 		string $schema
-	):void
+	):bool
 	{
+		$changed = false;
 		$reflection_class = new ReflectionClass($command);
 
 		foreach ($reflection_class->getProperties() as $property)
@@ -258,9 +263,14 @@ class ConfigService
 			foreach ($attributes as $attribute)
 			{
 				$config_map = $attribute->newInstance();
-				call_user_func($callable, $command, $property_name, $config_map, $schema);
+				$res = call_user_func($callable, $command, $property_name, $config_map, $schema);
+				if ($res === true)
+				{
+					$changed = true;
+				}
 			}
 		}
+		return $changed;
 	}
 
 	public function load_command(CommandInterface $command, string $schema):void
@@ -278,23 +288,26 @@ class ConfigService
 		$this->command_config_map_callback($command, $callable, $schema);
 	}
 
-	public function store_command(CommandInterface $command, string $schema):void
+	/**
+	 * @return bool value changed
+	 */
+	public function store_command(CommandInterface $command, string $schema):bool
 	{
 		$callable = function(
 			CommandInterface $command,
 			string $property_name,
 			ConfigMap $config_map,
 			string $schema
-		):void {
+		):bool {
 			$type = $config_map->type;
 			$set = 'set_' . $type;
 			$value = $command->$property_name;
 			$value = $type === 'str' && !isset($value) ? '' : $value;
 			// See #270, re-index to list
 			$value = $type === 'ary' ? array_values($value) : $value;
-			$this->$set($config_map->key, $value, $schema);
+			return $this->$set($config_map->key, $value, $schema);
 		};
 
-		$this->command_config_map_callback($command, $callable, $schema);
+		return $this->command_config_map_callback($command, $callable, $schema);
 	}
 }

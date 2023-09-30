@@ -1402,11 +1402,43 @@ users_config_new:
       de {open_link}opmaak-configuratie van
       de e-mail{close_link}.
 
-users_edit:
-  title: Gebruiker {user} aanpassen
+users_config_periodic_mail:
+  menu: >-
+    Periodieke overzichts e-mail
+  title: >-
+    Periodieke overzichts e-mail
+  days:
+    label: >-
+      Interval tot volgende overzichts e-mail
+  users_help: >-
+    Noot: Leden kunnen steeds ontvangst
+    van de Periodieke Overzichts E-mail
+    aan- of afzetten in hun profielinstellingen.
+  layout:
+    title: E-mail opmaak (versleep blokken)
+    help: >-
+      Verslepen gaat met muis of touchpad, maar
+      misschien niet met touch-screen. "Recent"
+      betekent "sinds de laatste periodieke
+      overzichtsmail".
+    active:
+      title: Inhoud
+    inactive:
+      title: Ongebruikte blokken
 
-users_edit_self:
-  title: Je profiel aanpassen
+users_config_full_name:
+  title: >-
+    Volledige naam configuratie
+  self_edit:
+    label: >-
+      Gebruikers kunnen zelf hun volledige naam aanpassen
+
+users_config_name:
+  title: >-
+    Gebruikersnaam configuratie
+  self_edit:
+    label: >-
+      Gebruikers kunnen zelf hun gebruikersnaam aanpassen
 
 users_del:
   title: Gebruiker {user} verwijderen?
@@ -1418,14 +1450,15 @@ users_del:
     Contacten en Afbeeldingen van {name}
     worden verwijderd.
 
+users_edit:
+  title: Gebruiker {user} aanpassen
+
+users_edit_self:
+  title: Je profiel aanpassen
+
 users_full_name:
   visible:
     label: Volledige naam zichtbaar voor
-  title: >-
-    Volledige naam configuratie
-  self_edit:
-    label: >-
-      Gebruikers kunnen zelf hun volledige naam aanpassen
 
 users_image_del:
   title: >-
@@ -1464,28 +1497,6 @@ users_password_edit:
         other {}
       }
 
-users_periodic_mail:
-  title: >-
-    Periodieke overzichts e-mail
-  days:
-    label: >-
-      Interval tot volgende overzichts e-mail
-  users_help: >-
-    Noot: Leden kunnen steeds ontvangst
-    van de Periodieke Overzichts E-mail
-    aan- of afzetten in hun profielinstellingen.
-  layout:
-    title: E-mail opmaak (versleep blokken)
-    help: >-
-      Verslepen gaat met muis of touchpad, maar
-      misschien niet met touch-screen. "Recent"
-      betekent "sinds de laatste periodieke
-      overzichtsmail".
-    active:
-      title: Inhoud
-    inactive:
-      title: Ongebruikte blokken
-
 users_show:
   title: >-
     {self, select,
@@ -1500,10 +1511,3 @@ users_show:
   mail_contact:
     title: >-
       Stuur een bericht naar {user}
-
-users_username:
-  title: >-
-    Gebruikersnaam configuratie
-  self_edit:
-    label: >-
-      Gebruikers kunnen zelf hun gebruikersnaam aanpassen

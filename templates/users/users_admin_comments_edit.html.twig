@@ -1,0 +1,14 @@
+{%- extends 'users/base/users_single_form.html.twig' -%}
+
+{%- block heading_title -%}
+    {{- 'users_admin_comments_edit.title'|trans -}}
+{%- endblock heading_title -%}
+
+{%- block form_a -%}
+    {{- form_row(form.admin_comments, {
+        'label': 'label.admin_comments',
+        'attr': {
+            'rows': 5
+        }
+    }) -}}
+{%- endblock form_a -%}
