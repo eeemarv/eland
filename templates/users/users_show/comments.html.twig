@@ -1,17 +1,18 @@
 {%- if config_bool('users.fields.comments.enabled', schema) -%}
 {%- embed 'users/users_show/list_item.html.twig' -%}
-    {%- block item -%}
+    {%- block dl -%}
         <dt>
             {{- 'label.comments'|trans -}}
         </dt>
         <dd>
             {{- user.comments|no_content -}}
         </dd>
-    {%- endblock item -%}
-    {%- block btn -%}
+    {%- endblock dl -%}
+    {%- block div_right -%}
         {%- if pp_is_admin() or su_is_owner(id) -%}
             {%- include 'include/btn/edit.html.twig' with {
-                'btn_route': 'users_comments_edit' ~ (su_is_owner(id) ? '_self' : ''),
+                'btn_route': 'users_comments_edit' ~ (is_self ? '_self' : ''),
+                'btn_route_params': is_self ? {} : {'id': id},
                 'btn_title': 'users_comments_edit.title',
                 'btn_title_trans_params': {
                     'user': account(id, schema),
@@ -21,6 +22,6 @@
                 'btn_lg': true,
             } -%}
         {%- endif -%}
-    {%- endblock btn -%}
+    {%- endblock div_right -%}
 {%- endembed -%}
 {%- endif -%}

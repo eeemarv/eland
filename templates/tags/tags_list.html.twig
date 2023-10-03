@@ -66,7 +66,7 @@
         <div class="pull-right">
             {%- include 'include/btn/edit.html.twig' with {
                 'btn_route': 'tags_' ~ tag_type ~ '_edit',
-                'id': tag.id,
+                'btn_route_params': {'id': tag.id},
                 'btn_title': 'tags.edit.title',
                 'btn_title_trans_params': {
                     'txt': tag.txt,
@@ -77,7 +77,7 @@
             {%- if tag.count == 0 -%}
                 {%- include 'include/btn/del.html.twig' with {
                     'btn_route': 'tags_' ~ tag_type ~ '_del',
-                    'id': tag.id,
+                    'btn_route_params': {'id': tag.id},
                     'btn_title': 'tags.del.title',
                     'btn_title_trans_params': {
                         'txt': tag.txt,

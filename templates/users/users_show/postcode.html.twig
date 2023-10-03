@@ -1,13 +1,13 @@
 {%- embed 'users/users_show/list_item.html.twig' -%}
-    {%- block item -%}
+    {%- block dl -%}
         <dt>
             {{- 'label.postcode'|trans -}}
         </dt>
         <dd>
             {{- user.postcode|no_content -}}
         </dd>
-    {%- endblock item -%}
-    {%- block btn -%}
+    {%- endblock dl -%}
+    {%- block div_right -%}
 
-    {%- endblock btn -%}
+    {%- endblock div_right -%}
 {%- endembed -%}

@@ -22,9 +22,7 @@ use App\Repository\TagRepository;
 use App\Service\AlertService;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
-use App\Service\DateFormatService;
 use App\Service\DistanceService;
-use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
 use App\Service\MailAddrUserService;
 use App\Service\PageParamsService;
@@ -58,9 +56,9 @@ class UsersShowController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/users/self',
+        '/{system}/{role_short}/users/self/{status}',
         name: 'users_show_self',
-        methods: ['GET'],
+        methods: ['GET', 'POST'],
         priority: 10,
         requirements: [
             'system'        => '%assert.system%',
@@ -109,7 +107,14 @@ class UsersShowController extends AbstractController
             throw new AccessDeniedHttpException('No access for this user status');
         }
 
-        if ($id === 0 && $is_self)
+        if (!$is_self
+            && $su->is_owner($id)
+        )
+        {
+            return $this->redirectToRoute('users_show_self', $pp->ary());
+        }
+
+        if ($is_self)
         {
             $id = $su->id();
         }
@@ -165,7 +170,12 @@ class UsersShowController extends AbstractController
                 $response_cache_service->clear_cache($pp->schema());
                 $alert_service->success('Wijzigingen van tags opgeslagen. (' . $count_changes . ')');
 
-                $this->redirectToRoute('users_show', [...$pp->ary(),
+                if ($is_self)
+                {
+                    return $this->redirectToRoute('users_show_self', $pp->ary());
+                }
+
+                return $this->redirectToRoute('users_show', [...$pp->ary(),
                     'id'    => $id,
                 ]);
             }
@@ -227,7 +237,8 @@ class UsersShowController extends AbstractController
 
             return $this->redirectToRoute('users_show', [
                 ...$pp->ary(),
-                'id' => $id,
+                'id'        => $id,
+                'status'    => $status,
             ]);
         }
 

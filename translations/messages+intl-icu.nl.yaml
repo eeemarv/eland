@@ -213,7 +213,7 @@ label:
   from_date: Vanaf
   full_name: Volledige naam
   hidden: Verborgen
-  hobbies_interests: Hobbies/interesses
+  hobbies: Hobbies/interesses
   image: Afbeelding
   images: Afbeeldingen
   image_upload: Afbeelding opladen
@@ -1343,6 +1343,20 @@ users:
 users_add:
   title: Gebruiker toevoegen
 
+users_admin_comments_edit:
+  title: >-
+    {self, select,
+      self {Admin commentaaar in je profiel aanpassen}
+      other {Admin commentaar voor {user} aanpassen}
+    }
+
+users_comments_edit:
+  title: >-
+    {self, select,
+      self {Commentaaar in je profiel aanpassen}
+      other {Commentaar voor {user} aanpassen}
+    }
+
 users_config_leaving:
   title: Configuratie Uitstappers
   equilibrium:
@@ -1441,10 +1455,11 @@ users_config_name:
       Gebruikers kunnen zelf hun gebruikersnaam aanpassen
 
 users_del:
-  title: Gebruiker {user} verwijderen?
+  title: >-
+    Gebruikersaccount {user} verwijderen?
   verify_label: >-
     Ik ben wis en waarachtig zeker dat
-    ik deze gebruiker wil verwijderen.
+    ik dit gebruikersaccount wil verwijderen.
   warning: >-
     Alle Gegevens, Vraag en aanbod,
     Contacten en Afbeeldingen van {name}
@@ -1459,6 +1474,13 @@ users_edit_self:
 users_full_name:
   visible:
     label: Volledige naam zichtbaar voor
+
+users_hobbies_edit:
+  title: >-
+    {self, select,
+      self {Hobbies/interesses in je profiel aanpassen}
+      other {Hobbies/interesses voor {user} aanpassen}
+    }
 
 users_image_del:
   title: >-
@@ -1510,4 +1532,4 @@ users_show:
     Gekoppeld interSysteem
   mail_contact:
     title: >-
-      Stuur een bericht naar {user}
+      Stuur een e-mail bericht naar {user}

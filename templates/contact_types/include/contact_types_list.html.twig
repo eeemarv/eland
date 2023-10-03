@@ -37,7 +37,7 @@
                     {%- else -%}
                         {%- include 'include/btn/del.html.twig' with {
                             'btn_route': 'contact_types_del',
-                            'id': ct.id
+                            'btn_route_params': {'id': ct.id},
                         } -%}
                     {%- endif -%}
                 </td>

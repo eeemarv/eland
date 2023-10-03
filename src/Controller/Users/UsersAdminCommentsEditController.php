@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
@@ -19,7 +20,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class UsersAdminCommentsEditController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/users/admin-comments/{id}/edit',
+        '/{system}/{role_short}/users/{id}/admin-comments/edit',
         name: 'users_admin_comments_edit',
         methods: ['GET', 'POST'],
         requirements: [
@@ -28,6 +29,22 @@ class UsersAdminCommentsEditController extends AbstractController
             'id'            => '%assert.id%',
         ],
         defaults: [
+            'is_self'       => false,
+            'module'        => 'users',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/users/self/admin-comments/edit',
+        name: 'users_admin_comments_edit_self',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.admin%',
+        ],
+        defaults: [
+            'is_self'       => true,
+            'id'            => 0,
             'module'        => 'users',
         ],
     )]
@@ -35,15 +52,28 @@ class UsersAdminCommentsEditController extends AbstractController
     public function __invoke(
         Request $request,
         int $id,
+        bool $is_self,
         UserRepository $user_repository,
         AlertService $alert_service,
         ConfigService $config_service,
-        PageParamsService $pp
+        PageParamsService $pp,
+        SessionUserService $su
     ):Response
     {
         if (!$config_service->get_bool('users.fields.admin_comments.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Admin comments submodule not enabled.');
+        }
+
+        if (!$is_self
+            && $su->is_owner($id))
+        {
+            return $this->redirectToRoute('users_admin_comments_edit_self', $pp->ary());
+        }
+
+        if ($is_self)
+        {
+            $id = $su->id();
         }
 
         $command = new UsersAdminCommentsCommand();
@@ -73,6 +103,11 @@ class UsersAdminCommentsEditController extends AbstractController
                 $alert_service->success('Admin commentaar aangepast');
             }
 
+            if ($is_self)
+            {
+                return $this->redirectToRoute('users_show_self', $pp->ary());
+            }
+
             return $this->redirectToRoute('users_show', [
                 ... $pp->ary(),
                 'id' => $id,
@@ -81,7 +116,9 @@ class UsersAdminCommentsEditController extends AbstractController
 
         return $this->render('users/users_admin_comments_edit.html.twig', [
             'form'              => $form->createView(),
+            'is_self'           => $is_self,
             'user'              => $user,
+            'id'                => $id,
             'is_intersystem'    => $is_intersystem,
         ]);
     }

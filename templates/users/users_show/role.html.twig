@@ -6,7 +6,7 @@
         {%- else %} owner
         {%- endif -%}
     {% endblock class %}
-    {%- block item -%}
+    {%- block dl -%}
         <dt>
             {{- 'label.permissions_role'|trans -}}
         </dt>
@@ -17,11 +17,12 @@
                 {{- l.label(user.role ~ '_role') -}}
             {%- endif -%}
         </dd>
-    {%- endblock item -%}
-    {%- block btn -%}
+    {%- endblock dl -%}
+    {%- block div_right -%}
         {%- if pp_is_admin() or su_is_owner(id) -%}
             {%- include 'include/btn/password.html.twig' with {
-                'btn_route': 'users_password_edit' ~ (su_is_owner(id) ? '_self' : ''),
+                'btn_route': 'users_password_edit' ~ (is_self ? '_self' : ''),
+                'btn_route_params': is_self ? {} : {'id': id},
                 'btn_title': 'users_password_edit.title',
                 'btn_title_trans_params': {
                     'user': account(id, schema),
@@ -31,6 +32,6 @@
                 'btn_lg': true,
             } -%}
         {%- endif -%}
-    {%- endblock btn -%}
+    {%- endblock div_right -%}
 {%- endembed -%}
 {%- endif -%}

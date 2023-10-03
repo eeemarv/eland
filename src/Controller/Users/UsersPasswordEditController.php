@@ -24,7 +24,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class UsersPasswordEditController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/users/{id}/password-edit',
+        '/{system}/{role_short}/users/{id}/password/edit',
         name: 'users_password_edit',
         methods: ['GET', 'POST'],
         requirements: [
@@ -39,7 +39,7 @@ class UsersPasswordEditController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/users/{id}/password-edit-self',
+        '/{system}/{role_short}/users/self/password/edit',
         name: 'users_password_edit_self',
         methods: ['GET', 'POST'],
         requirements: [
@@ -68,6 +68,12 @@ class UsersPasswordEditController extends AbstractController
         SessionUserService $su
     ):Response
     {
+        if (!$is_self
+            && $su->is_owner($id))
+        {
+            return $this->redirectToRoute('users_password_edit_self', $pp->ary());
+        }
+
         if ($is_self)
         {
             $id = $su->id();

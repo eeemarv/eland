@@ -1,7 +1,7 @@
 {%- if not is_intersystem and config_bool('users.fields.birthdate.enabled', schema) -%}
 {%- embed 'users/users_show/list_item.html.twig' -%}
     {%- import 'macro/lbl.html.twig' as l -%}
-    {%- block item -%}
+    {%- block dl -%}
         <dt>
             {{- 'label.birthdate'|trans -}}
         </dt>
@@ -18,9 +18,9 @@
             </dd>
         {%- endif -%}
         #}
-    {%- endblock item -%}
-    {%- block btn -%}
+    {%- endblock dl -%}
+    {%- block div_right -%}
 
-    {%- endblock btn -%}
+    {%- endblock div_right -%}
 {%- endembed -%}
 {%- endif -%}

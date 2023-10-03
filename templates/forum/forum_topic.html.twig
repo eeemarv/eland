@@ -58,7 +58,7 @@
             {%- block edit_btn -%}
                 {%- include 'include/btn/edit.html.twig' with {
                     'btn_route': loop.first ? 'forum_edit_topic' : 'forum_edit_post',
-                    'id': loop.first ? id : post.id,
+                    'btn_route_params': {'id': (loop.first ? id : post.id)},
                     'btn_title': loop.first ? 'forum_edit_topic.title' : 'forum_edit_post.title',
                     'btn_title_trans_params': {'self': 'other'}
                 } -%}
@@ -66,7 +66,7 @@
             {%- block del_btn -%}
                 {%- include 'include/btn/del.html.twig' with {
                     'btn_route': loop.first ? 'forum_del_topic' : 'forum_del_post',
-                    'id': loop.first ? id : post.id,
+                    'btn_route_params': {'id': (loop.first ? id : post.id)},
                     'btn_title': loop.first ? 'forum_del_topic.title' : 'forum_del_post.title',
                     'btn_title_trans_params': {'self': 'other'}
                 } -%}

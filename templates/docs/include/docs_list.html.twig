@@ -36,11 +36,11 @@
                     <td>
                         {%- include 'include/btn/edit.html.twig' with {
                             'btn_route': 'docs_edit',
-                            'id': d.id
+                            'btn_route_params': {'id': d.id},
                         } -%}
                         {%- include 'include/btn/del.html.twig' with {
                             'btn_route': 'docs_del',
-                            'id': d.id
+                            'btn_route_params': {'id': d.id},
                         } -%}
                     </td>
                 {%- endif -%}

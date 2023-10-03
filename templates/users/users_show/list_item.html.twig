@@ -1,14 +1,18 @@
 <li class="list-group-item{% block class %}{% endblock %}">
+    {%- block item -%}
     <div class="d-flex justify-content-between">
         <div>
-            <dl class="mb-1">
-                {%- block item -%}
-                {%- endblock item -%}
-            </dl>
+            {%- block div_left -%}
+                <dl class="mb-1">
+                    {%- block dl -%}
+                    {%- endblock dl -%}
+                </dl>
+            {%- endblock div_left -%}
         </div>
         <div>
-            {%- block btn -%}
-            {%- endblock btn -%}
+            {%- block div_right -%}
+            {%- endblock div_right -%}
         </div>
     </div>
+    {%- endblock item -%}
 </li>

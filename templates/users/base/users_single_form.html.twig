@@ -1,6 +1,6 @@
 {%- extends 'users/base/users_single_base.html.twig' -%}
 
-{%- set cancel_route = 'users_show' -%}
+{%- set cancel_route = 'users_show' ~ (is_self ? '_self' : '') -%}
 
 {%- block content -%}
 {%- endblock content -%}

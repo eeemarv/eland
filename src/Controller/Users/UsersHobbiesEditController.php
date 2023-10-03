@@ -13,7 +13,6 @@ use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -21,15 +20,31 @@ use Symfony\Component\Routing\Annotation\Route;
 class UsersHobbiesEditController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/users/hobbies/{id}/edit',
+        '/{system}/{role_short}/users/{id}/hobbies/edit',
         name: 'users_hobbies_edit',
         methods: ['GET', 'POST'],
         requirements: [
             'system'        => '%assert.system%',
-            'role_short'    => '%assert.role_short.user%',
+            'role_short'    => '%assert.role_short.admin%',
             'id'            => '%assert.id%',
         ],
         defaults: [
+            'is_self'       => false,
+            'module'        => 'users',
+        ],
+    )]
+
+    #[Route(
+        '/{system}/{role_short}/users/self/hobbies/edit',
+        name: 'users_hobbies_edit_self',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.user%',
+        ],
+        defaults: [
+            'id'            => 0,
+            'is_self'       => true,
             'module'        => 'users',
         ],
     )]
@@ -37,6 +52,7 @@ class UsersHobbiesEditController extends AbstractController
     public function __invoke(
         Request $request,
         int $id,
+        bool $is_self,
         UserRepository $user_repository,
         AlertService $alert_service,
         ConfigService $config_service,
@@ -49,11 +65,15 @@ class UsersHobbiesEditController extends AbstractController
             throw new NotFoundHttpException('Users hobbies submodule not enabled.');
         }
 
-        if (!$pp->is_admin()
-            && !$su->is_owner($id)
-        )
+        if (!$is_self
+            && $su->is_owner($id))
         {
-            throw new AccessDeniedHttpException('You have no access to this action.');
+            return $this->redirectToRoute('users_hobbies_edit_self', $pp->ary());
+        }
+
+        if ($is_self)
+        {
+            $id = $su->id();
         }
 
         $command = new UsersHobbiesCommand();
@@ -83,6 +103,11 @@ class UsersHobbiesEditController extends AbstractController
                 $alert_service->success('Hobbies/interesses aangepast');
             }
 
+            if ($is_self)
+            {
+                return $this->redirectToRoute('users_show_self', $pp->ary());
+            }
+
             return $this->redirectToRoute('users_show', [
                 ... $pp->ary(),
                 'id' => $id,
@@ -92,6 +117,8 @@ class UsersHobbiesEditController extends AbstractController
         return $this->render('users/users_hobbies_edit.html.twig', [
             'form'              => $form->createView(),
             'user'              => $user,
+            'id'                => $id,
+            'is_self'           => $is_self,
             'is_intersystem'    => $is_intersystem,
         ]);
     }

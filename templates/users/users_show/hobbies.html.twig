@@ -1,18 +1,19 @@
 {%- if not is_intersystem and config_bool('users.fields.hobbies.enabled', schema) -%}
 {%- embed 'users/users_show/list_item.html.twig' -%}
     {%- import 'macro/lbl.html.twig' as l -%}
-    {%- block item -%}
+    {%- block dl -%}
         <dt>
-            {{- 'label.hobbies_interests'|trans -}}
+            {{- 'label.hobbies'|trans -}}
         </dt>
         <dd>
             {{- user.hobbies|no_content -}}
         </dd>
-    {%- endblock item -%}
-    {%- block btn -%}
+    {%- endblock dl -%}
+    {%- block div_right -%}
         {%- if pp_is_admin() or su_is_owner(id) -%}
             {%- include 'include/btn/edit.html.twig' with {
-                'btn_route': 'users_hobbies_edit' ~ (su_is_owner(id) ? '_self' : ''),
+                'btn_route': 'users_hobbies_edit' ~ (is_self ? '_self' : ''),
+                'btn_route_params': is_self ? {} : {'id': id},
                 'btn_title': 'users_hobbies_edit.title',
                 'btn_title_trans_params': {
                     'user': account(id, schema),
@@ -22,6 +23,6 @@
                 'btn_lg': true,
             } -%}
         {%- endif -%}
-    {%- endblock btn -%}
+    {%- endblock div_right -%}
 {%- endembed -%}
 {%- endif -%}

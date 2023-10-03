@@ -2,7 +2,7 @@
 {%- embed 'users/users_show/list_item.html.twig' -%}
     {%- import 'macro/lbl.html.twig' as l -%}
     {% block class %} owner{% endblock class %}
-    {%- block item -%}
+    {%- block dl -%}
         <dt>
             {{- 'label.periodic_mail'|trans -}}
         </dt>
@@ -13,9 +13,9 @@
                 {{- l.label('disabled') -}}
             {%- endif -%}
         </dd>
-    {%- endblock item -%}
-    {%- block btn -%}
+    {%- endblock dl -%}
+    {%- block div_right -%}
 
-    {%- endblock btn -%}
+    {%- endblock div_right -%}
 {%- endembed -%}
 {%- endif -%}

@@ -1,17 +1,18 @@
 {%- if pp_is_admin() and config_bool('users.fields.admin_comments.enabled', schema) -%}
 {%- embed 'users/users_show/list_item.html.twig' -%}
     {%- block class %} list-group-item-info{% endblock class -%}
-    {%- block item -%}
+    {%- block dl -%}
         <dt>
             {{- 'label.admin_comments'|trans -}}
         </dt>
         <dd>
             {{- user.admin_comments|no_content -}}
         </dd>
-    {%- endblock item -%}
-    {%- block btn -%}
+    {%- endblock dl -%}
+    {%- block div_right -%}
         {%- include 'include/btn/edit.html.twig' with {
-            'btn_route': 'users_admin_comments_edit',
+            'btn_route': 'users_admin_comments_edit' ~ (is_self ? '_self' : ''),
+            'btn_route_params': is_self ? {} : {'id': id},
             'btn_title': 'users_admin_comments_edit.title',
             'btn_title_trans_params': {
                 'user': account(id, schema),
@@ -20,6 +21,6 @@
             'btn_label_hidden': 'sm',
             'btn_lg': true,
         } -%}
-    {%- endblock btn -%}
+    {%- endblock div_right -%}
 {%- endembed -%}
 {%- endif -%}

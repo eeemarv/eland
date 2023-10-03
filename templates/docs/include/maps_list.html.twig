@@ -21,7 +21,7 @@
                     <td>
                         {%- include 'include/btn/edit.html.twig' with {
                             'btn_route': 'docs_map_edit',
-                            'id': m.id
+                            'btn_route_params': {'id': m.id},
                         } -%}
                     </td>
                 {%- endif -%}
