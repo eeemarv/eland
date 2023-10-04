@@ -1,3 +1,4 @@
+{%- if config_bool('users.fields.postcode.enabled', schema) -%}
 {%- embed 'users/users_show/list_item.html.twig' -%}
     {%- block dl -%}
         <dt>
@@ -23,3 +24,4 @@
     {%- endif -%}
     {%- endblock div_right -%}
 {%- endembed -%}
+{%- endif -%}

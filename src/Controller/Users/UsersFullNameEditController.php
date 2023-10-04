@@ -2,8 +2,8 @@
 
 namespace App\Controller\Users;
 
-use App\Command\Users\UsersPostcodeCommand;
-use App\Form\Type\Users\UsersPostcodeType;
+use App\Command\Users\UsersFullNameCommand;
+use App\Form\Type\Users\UsersFullNameType;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,11 +17,11 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
-class UsersPostcodeEditController extends AbstractController
+class UsersFullNameEditController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/users/{id}/postcode/edit',
-        name: 'users_postcode_edit',
+        '/{system}/{role_short}/users/{id}/full-name/edit',
+        name: 'users_full_name_edit',
         methods: ['GET', 'POST'],
         requirements: [
             'system'        => '%assert.system%',
@@ -35,8 +35,8 @@ class UsersPostcodeEditController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/users/self/postcode/edit',
-        name: 'users_postcode_edit_self',
+        '/{system}/{role_short}/users/self/full-name/edit',
+        name: 'users_full_name_edit_self',
         methods: ['GET', 'POST'],
         requirements: [
             'system'        => '%assert.system%',
@@ -61,15 +61,15 @@ class UsersPostcodeEditController extends AbstractController
         SessionUserService $su
     ):Response
     {
-        if (!$config_service->get_bool('users.fields.postcode.enabled', $pp->schema()))
+        if (!$config_service->get_bool('users.fields.full_name.enabled', $pp->schema()))
         {
-            throw new NotFoundHttpException('Users postcode submodule not enabled.');
+            throw new NotFoundHttpException('Users full name submodule not enabled.');
         }
 
         if (!$is_self
             && $su->is_owner($id))
         {
-            return $this->redirectToRoute('users_postcode_edit_self', $pp->ary());
+            return $this->redirectToRoute('users_full_name_edit_self', $pp->ary());
         }
 
         if ($is_self)
@@ -77,13 +77,25 @@ class UsersPostcodeEditController extends AbstractController
             $id = $su->id();
         }
 
-        $command = new UsersPostcodeCommand();
+        $self_edit_en = $config_service->get_bool('users.fields.full_name.self_edit', $pp->schema());
+
+        $form_options = [];
+        $full_name_edit_en = true;
+
+        if ($is_self && !$pp->is_admin() && !$self_edit_en)
+        {
+            $full_name_edit_en = false;
+            $form_options['full_name_hidden'] = true;
+        }
+
+        $command = new UsersFullNameCommand();
 
         $user = $user_repository->get($id, $pp->schema());
         $is_intersystem = isset($user['remote_schema']) || isset($user['remote_email']);
-        $command->postcode = $user['postcode'];
+        $command->full_name = $user['full_name'];
+        $command->full_name_access = $user['full_name_access'];
 
-        $form = $this->createForm(UsersPostcodeType::class, $command);
+        $form = $this->createForm(UsersFullNameType::class, $command, $form_options);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()
@@ -91,17 +103,44 @@ class UsersPostcodeEditController extends AbstractController
         {
             $command = $form->getData();
 
-            if ($command->postcode === $user['postcode'])
+            $post_ary = [];
+
+            if ($full_name_edit_en)
             {
-                $alert_service->warning('Postcode niet gewijzigd');
+                if ($command->full_name !== $user['full_name'])
+                {
+                    $post_ary['full_name'] = $command->full_name;
+                }
+            }
+
+            if ($command->full_name_access !== $user['full_name_access'])
+            {
+                $post_ary['full_name_access'] = $command->full_name_access;
+            }
+
+            if (count($post_ary))
+            {
+                $user_repository->update($post_ary, $id, $pp->schema());
+
+                if ($full_name_edit_en)
+                {
+                    $alert_service->success('Volledige naam data aangepast');
+                }
+                else
+                {
+                    $alert_service->success('Zichtbaarheid volledige naam aangepast');
+                }
             }
             else
             {
-                $user_repository->update([
-                    'postcode'    => $command->postcode,
-                ], $id, $pp->schema());
-
-                $alert_service->success('Postcode aangepast');
+                if ($full_name_edit_en)
+                {
+                    $alert_service->warning('Volledige naam data niet gewijzigd');
+                }
+                else
+                {
+                    $alert_service->warning('Zichtbaarheid volledige naam niet gewijzigd');
+                }
             }
 
             if ($is_self)
@@ -115,10 +154,11 @@ class UsersPostcodeEditController extends AbstractController
             ]);
         }
 
-        return $this->render('users/users_postcode_edit.html.twig', [
+        return $this->render('users/users_full_name_edit.html.twig', [
             'form'              => $form->createView(),
             'user'              => $user,
             'id'                => $id,
+            'full_name_edit_en' => $full_name_edit_en,
             'is_self'           => $is_self,
             'is_intersystem'    => $is_intersystem,
         ]);

@@ -1482,6 +1482,16 @@ users_full_name:
   visible:
     label: Volledige naam zichtbaar voor
 
+users_full_name_edit:
+  title: >-
+    {self, select,
+      self {{edit, select,
+        access {Zichtbaarheid volledige naam in je profiel aanpassen}
+        other {Volledige naam in je profiel aanpassen}
+      }}
+      other {Volledige naam voor {user} aanpassen}
+    }
+
 users_hobbies_edit:
   title: >-
     {self, select,

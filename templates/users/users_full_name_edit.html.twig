@@ -1,0 +1,19 @@
+{%- extends 'users/base/users_single_form.html.twig' -%}
+
+{%- block heading_title -%}
+    {{- 'users_full_name_edit.title'|trans({
+        'self': is_self ? 'self' : 'some_user',
+        'edit': full_name_edit_en ? 'full_name' : 'access',
+        'user': account(id, schema)
+    }) -}}
+{%- endblock heading_title -%}
+
+{%- block form_a -%}
+    {{- form_row(form.full_name, {
+        'label': 'label.full_name',
+    }) -}}
+
+    {{- form_row(form.full_name_access, {
+        'label': 'users_full_name.visible.label',
+    }) -}}
+{%- endblock form_a -%}
