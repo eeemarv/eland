@@ -73,6 +73,7 @@
                     {%- endif -%}
 
                     <td>
+                        <div class="pull-right">
                         {%- if config_bool('transactions.enabled', schema)
                             and config_bool('transactions.enabled', su_schema())
                             and (pp_is_admin() or not su_is_owner(id))  -%}
@@ -96,7 +97,7 @@
                             } -%}
                         {%- endif -%}
                         {%- endif -%}
-
+                        </div>
                     </td>
                 </tr>
             </tbody>

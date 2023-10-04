@@ -1489,6 +1489,13 @@ users_hobbies_edit:
       other {Hobbies/interesses voor {user} aanpassen}
     }
 
+users_postcode_edit:
+  title: >-
+    {self, select,
+      self {Postcode in je profiel aanpassen}
+      other {Postcode voor {user} aanpassen}
+    }
+
 users_image_del:
   title: >-
     Profielfoto/-afbeelding van {user} verwijderen?
