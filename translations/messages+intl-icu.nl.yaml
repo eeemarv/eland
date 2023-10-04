@@ -1350,6 +1350,13 @@ users_admin_comments_edit:
       other {Admin commentaar voor {user} aanpassen}
     }
 
+users_birthdate_edit:
+  title: >-
+    {self, select,
+      self {Geboortedatum in je profiel aanpassen}
+      other {Geboortedatum voor {user} aanpassen}
+    }
+
 users_comments_edit:
   title: >-
     {self, select,

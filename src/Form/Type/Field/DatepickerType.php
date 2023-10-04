@@ -2,6 +2,8 @@
 
 namespace App\Form\Type\Field;
 
+use App\Form\DataTransformer\DatepickerDatetimeTransformer;
+use App\Form\DataTransformer\DatepickerDateTransformer;
 use App\Form\DataTransformer\DatepickerTransformer;
 use App\Service\DateFormatService;
 use App\Service\PageParamsService;
@@ -15,7 +17,8 @@ use Symfony\Component\Form\FormInterface;
 class DatepickerType extends AbstractType
 {
     public function __construct(
-        protected DatepickerTransformer $datepicker_transformer,
+        protected DatepickerDateTransformer $datepicker_date_transformer,
+        protected DatepickerDatetimeTransformer $datepicker_datetime_transformer,
         protected DateFormatService $date_format_service,
         protected PageParamsService $pp
     )
@@ -27,7 +30,14 @@ class DatepickerType extends AbstractType
         array $options
     ):void
     {
-        $builder->addModelTransformer($this->datepicker_transformer);
+        if ($options['transform'] === 'date')
+        {
+            $builder->addModelTransformer($this->datepicker_date_transformer);
+        }
+        else
+        {
+            $builder->addModelTransformer($this->datepicker_datetime_transformer);
+        }
     }
 
     public function buildView(FormView $view, FormInterface $form, array $options):void
@@ -48,6 +58,9 @@ class DatepickerType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver):void
     {
+        $resolver->setDefault('transform', 'datetime');
+        $resolver->setAllowedTypes('transform', 'string');
+        $resolver->setAllowedValues('transform', ['date', 'datetime']);
     }
 
     public function getParent():string

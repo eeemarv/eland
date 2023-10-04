@@ -10,7 +10,7 @@
         </dd>
     {%- endblock dl -%}
     {%- block div_right -%}
-        {%- if pp_is_admin() or su_is_owner(id) -%}
+        {%- if pp_is_admin() or is_self -%}
             {%- include 'include/btn/edit.html.twig' with {
                 'btn_route': 'users_hobbies_edit' ~ (is_self ? '_self' : ''),
                 'btn_route_params': is_self ? {} : {'id': id},
