@@ -123,10 +123,21 @@ class LoginValidator extends ConstraintValidator
             return;
         }
 
-        if (!in_array($user['status'], [1, 2]))
+        if (!$user['is_active'])
         {
             // should never happen
             $this->context->buildViolation('login.login.not_active')
+                ->atPath('login')
+                ->addViolation();
+            return;
+        }
+
+        if (!isset($user['role'])
+            || isset($user['remote_schema'])
+            || isset($user['remote_email'])
+        )
+        {
+            $this->context->buildViolation('login.login.no_role')
                 ->atPath('login')
                 ->addViolation();
             return;
@@ -143,7 +154,6 @@ class LoginValidator extends ConstraintValidator
 
         if (!in_array($user['role'], ['admin', 'user']))
         {
-            // no guest logins yet
             $this->context->buildViolation('login.login.guest_no_rights')
                 ->atPath('login')
                 ->addViolation();

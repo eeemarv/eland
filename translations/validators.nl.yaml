@@ -47,6 +47,8 @@ login:
       om in te loggen want deze is niet
       uniek aanwezig in dit Systeem. Gebruik
       je E-mail adres of gebruikersnaam.
+    no_role: >-
+      Geen geldige rol ingesteld voor deze gebruiker.
     not_known: >-
       Onbekend gebruikersaccount.
     not_active: >-
