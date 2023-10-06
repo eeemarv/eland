@@ -1,0 +1,28 @@
+{%- if pp_is_admin() -%}
+{%- embed 'users/users_show/list_item.html.twig' -%}
+    {%- import 'macro/lbl.html.twig' as l -%}
+    {%- block class %} list-group-item-info{% endblock class -%}
+    {%- block dl -%}
+        <dt>
+            {{- 'label.transaction_account'|trans -}}
+        </dt>
+        <dd>
+            {{- 'users_account_edit.no_account_yet'|trans -}}
+        </dd>
+    {%- endblock dl -%}
+    {%- block div_right -%}
+        {%- include 'include/btn/add.html.twig' with {
+            'btn_route': 'users_account_add' ~ (is_self ? '_self' : ''),
+            'btn_route_params': is_self ? {} : {'id': id},
+            'btn_title': 'users_account_edit.title',
+            'btn_title_trans_params': {
+                'user': account(id, schema),
+                'self': is_self ? 'self' : 'some_user',
+                'mode': 'add',
+            },
+            'btn_label_hidden': 'sm',
+            'btn_lg': true,
+        } -%}
+    {%- endblock div_right -%}
+{%- endembed -%}
+{%- endif -%}

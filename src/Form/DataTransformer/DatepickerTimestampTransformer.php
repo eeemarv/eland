@@ -7,7 +7,7 @@ use App\Service\PageParamsService;
 use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 
-class DatepickerDatetimeTransformer implements DataTransformerInterface
+class DatepickerTimestampTransformer implements DataTransformerInterface
 {
     public function __construct(
         protected DateFormatService $date_format_service,

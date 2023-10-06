@@ -231,11 +231,11 @@ label:
   map: Map
   map_name: Map naam
   max: Max
-  maximum_limit: Maximum Limiet
+  max_limit: Maximum Limiet
   menu: Menu
   message: Bericht
   min: Min
-  minimum_limit: Minimum Limiet
+  min_limit: Minimum Limiet
   modified: Aangepast
   mobile: GSM
   name: Naam
@@ -281,6 +281,7 @@ label:
   to_date: Tot
   type: Type
   transactions: Transacties
+  transaction_account: Transactie-account
   transaction_id: Transactie Id
   txt_color: Tekstkleur
   upload: Opladen
@@ -1339,6 +1340,23 @@ transactions_show:
 
 users:
   title: Leden
+
+users_account_edit:
+  title: >-
+    {self, select,
+      self {{mode, select,
+        add {Transactie-account voor jezelf aanmaken}
+        edit {Je transactie-account {user} aanpassen}
+        other {**ERR**}
+      }}
+      other {{mode, select,
+        add {Transactie-account voor {user} aanmaken}
+        edit {Transactie-account voor {user} aanpassen}
+        other {**ERR**}
+      }}
+    }
+  no_account_yet: >-
+    Nog geen account aangemaakt
 
 users_add:
   title: Gebruiker toevoegen

@@ -9,11 +9,15 @@
 {%- endblock heading_title -%}
 
 {%- block form_a -%}
-    {{- form_row(form.full_name, {
-        'label': 'label.full_name',
-    }) -}}
+    {%- if form.full_name is defined -%}
+        {{- form_row(form.full_name, {
+            'label': 'label.full_name',
+        }) -}}
+    {%- endif -%}
 
-    {{- form_row(form.full_name_access, {
-        'label': 'users_full_name.visible.label',
-    }) -}}
+    {%- if form.full_name_access is defined -%}
+        {{- form_row(form.full_name_access, {
+            'label': 'users_full_name.visible.label',
+        }) -}}
+    {%- endif -%}
 {%- endblock form_a -%}

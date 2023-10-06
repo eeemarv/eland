@@ -1,0 +1,38 @@
+{%- extends 'users/base/users_single_form.html.twig' -%}
+
+{%- block heading_title -%}
+    {{- 'users_account_edit.title'|trans({
+        'self': is_self ? 'self' : 'some_user',
+        'mode': mode,
+        'user': account(id, schema)
+    }) -}}
+{%- endblock heading_title -%}
+
+{%- block form_a -%}
+    {{- form_row(form.code, {
+        'label': 'label.account_code',
+        'pre_addon': {
+            'fa': 'credit-card',
+        }
+    }) -}}
+
+    {%- if form.min_limit is defined -%}
+        {{- form_row(form.min_limit, {
+            'label': 'label.min_limit',
+            'pre_addon': {
+                'fa': 'arrow-down',
+                'text': config_str('transactions.currency.name', schema),
+            }
+        }) -}}
+    {%- endif -%}
+
+    {%- if form.max_limit is defined -%}
+        {{- form_row(form.max_limit, {
+            'label': 'label.max_limit',
+            'pre_addon': {
+                'fa': 'arrow-up',
+                'text': config_str('transactions.currency.name', schema),
+            }
+        }) -}}
+    {%- endif -%}
+{%- endblock form_a -%}

@@ -5,6 +5,7 @@ namespace App\Repository;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App\Service\UserCacheService;
+use LogicException;
 
 class UserRepository
 {
@@ -43,6 +44,22 @@ class UserRepository
 			'agent'         => $agent,
 			'ip'            => $ip,
 		]);
+	}
+
+	public function get_last_login_datetime_str(int $id, string $schema):null|string
+	{
+		$last_login = $this->db->fetchOne('select max(created_at)
+			from ' . $schema . '.login
+			where user_id = ?',
+			[$id],
+			[\PDO::PARAM_INT]);
+
+		if ($last_login === false)
+		{
+			return null;
+		}
+
+		return $last_login;
 	}
 
 	public function count_email(
@@ -351,5 +368,48 @@ class UserRepository
 				and remote_schema is null
 				and remote_email is null
 				and id = ?', [$id], [\PDO::PARAM_INT]) ? true : false;
+	}
+
+	public function is_unique_code(
+		string $code,
+		null|int $except_id,
+		string $schema
+	):bool
+	{
+		if ($code === '')
+		{
+			throw new LogicException('Code can not be empty string.');
+		}
+
+		$lower_code = strtolower($code);
+
+		$query = 'select id
+			from ' . $schema . '.users
+			where code is not null
+				and lower(code) = :lower_code';
+
+		if (isset($except_id))
+		{
+			$query .= ' and id <> :except_id';
+		}
+
+		$stmt = $this->db->prepare($query);
+
+		$stmt->bindValue('lower_code', $lower_code, \PDO::PARAM_STR);
+
+		if (isset($except_id))
+		{
+			$stmt->bindValue('except_id', $except_id, \PDO::PARAM_INT);
+		}
+
+		$res = $stmt->executeQuery();
+		$id = $res->fetchOne();
+
+		if ($id === false)
+		{
+			return true;
+		}
+
+		return false;
 	}
 }

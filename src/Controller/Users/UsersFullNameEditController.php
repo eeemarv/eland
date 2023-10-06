@@ -13,7 +13,7 @@ use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -63,7 +63,7 @@ class UsersFullNameEditController extends AbstractController
     {
         if (!$config_service->get_bool('users.fields.full_name.enabled', $pp->schema()))
         {
-            throw new NotFoundHttpException('Users full name submodule not enabled.');
+            throw new AccessDeniedHttpException('Users full name submodule not enabled.');
         }
 
         if (!$is_self
@@ -85,7 +85,7 @@ class UsersFullNameEditController extends AbstractController
         if ($is_self && !$pp->is_admin() && !$self_edit_en)
         {
             $full_name_edit_en = false;
-            $form_options['full_name_hidden'] = true;
+            $form_options['full_name_edit_en'] = false;
         }
 
         $command = new UsersFullNameCommand();

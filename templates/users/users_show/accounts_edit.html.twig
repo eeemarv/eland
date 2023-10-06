@@ -1,0 +1,108 @@
+{%- embed 'users/users_show/list_item.html.twig' -%}
+    {%- import 'macro/lbl.html.twig' as l -%}
+    {%- block class %} p-0{% endblock class -%}
+    {%- block item -%}
+        <table class="table table-bordered table-striped mb-0">
+            <thead>
+                <tr>
+                    <th>
+                        {{- 'label.account_code'|trans -}}
+                    </th>
+                    <th>
+                        {{- 'label.balance'|trans -}}
+                    </th>
+                    {%- if config_bool('accounts.limits.enabled', schema) -%}
+                        <th>
+                            {{- 'label.min'|trans -}}
+                        </th>
+                        <th>
+                            {{- 'label.max'|trans -}}
+                        </th>
+                    {%- endif -%}
+
+                    <th>
+                        &nbsp;
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <em>
+                            <b>
+                                {{- user.code -}}
+                            </b>
+                        </em>
+                    </td>
+                    <td title="{{- 'balance.title'|trans({
+                        'currency': config_str('transactions.currency.name', schema)
+                    }) -}}">
+                        {{- l.txt_label(balance, 'info') -}}
+                    </td>
+                    {%- if config_bool('accounts.limits.enabled', schema) -%}
+
+                        {%- if min_limit is not null -%}
+                            <td title="{{- 'balance.min'|trans -}}">
+                                {{- l.txt_label(min_limit, 'danger') -}}
+                            </td>
+                        {%- elseif config_int('accounts.limits.global.min', schema) is not null -%}
+                            <td title="{{- 'balance.min_system'|trans -}}">
+                                {{- l.txt_label(config_int('accounts.limits.global.min', schema)) -}}
+                            </td>
+                        {%- else -%}
+                            <td title="{{- 'balance.no_min'|trans -}}">
+                                {{- null|no_content -}}
+                            </td>
+                        {%- endif -%}
+
+                        {%- if max_limit is not null -%}
+                            <td title="{{- 'balance.max'|trans -}}">
+                                {{- l.txt_label(max_limit, 'success') -}}
+                            </td>
+                        {%- elseif config_int('accounts.limits.global.max', schema) is not null -%}
+                            <td title="{{- 'balance.max_system'|trans -}}">
+                                {{- l.txt_label(config_int('accounts.limits.global.max', schema)) -}}
+                            </td>
+                        {%- else -%}
+                            <td title="{{- 'balance.no_max'|trans -}}">
+                                {{- null|no_content -}}
+                            </td>
+                        {%- endif -%}
+
+                    {%- endif -%}
+
+                    <td>
+                        <div class="pull-right">
+                        {%- if config_bool('transactions.enabled', schema)
+                            and config_bool('transactions.enabled', su_schema())
+                            and (pp_is_admin() or not su_is_owner(id))  -%}
+                            {%- include 'include/btn_top/transaction.html.twig' with {
+                                'btn_route': 'transactions_add',
+                                'btn_route_params': su_ary()|merge({'tuid': id, 'tus': schema}),
+                                'btn_title': 'btn.transaction_to',
+                                'btn_title_trans_params': {
+                                    'user': account(id, schema)
+                                }
+                            } -%}
+                        {%- endif -%}
+                        {%- if pp_is_admin() -%}
+                            {%- include 'include/btn/edit.html.twig' with {
+                                'btn_route': 'users_account_edit' ~ (is_self ? '_self' : ''),
+                                'btn_route_params': is_self ? {} : {'id': id},
+                                'btn_title': 'users_account_edit.title',
+                                'btn_title_trans_params': {
+                                    'user': account(id, schema),
+                                    'self': is_self ? 'self' : 'some_user',
+                                    'mode': 'edit',
+                                },
+                                'btn_label_hidden': 'sm',
+                                'btn_lg': true,
+                            } -%}
+                        {%- endif -%}
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    {%- endblock item -%}
+{%- endembed -%}

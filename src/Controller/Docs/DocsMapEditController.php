@@ -68,11 +68,18 @@ class DocsMapEditController extends AbstractController
         {
             $command = $form->getData();
 
-            $doc_repository->update_map_name($command->name, $id, $pp->schema());
+            if ($command->name === $doc_map['name'])
+            {
+                $alert_service->warning('Map naam niet gewijzigd');
+            }
+            else
+            {
+                $doc_repository->update_map_name($command->name, $id, $pp->schema());
 
-            $response_cache_service->clear_cache($pp->schema());
+                $response_cache_service->clear_cache($pp->schema());
 
-            $alert_service->success('Map naam aangepast.');
+                $alert_service->success('Map naam aangepast');
+            }
 
             return $this->redirectToRoute('docs_map', [
                 ...$pp->ary(),

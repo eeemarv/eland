@@ -2,7 +2,6 @@
 
 namespace App\Controller\Users;
 
-use App\Cnst\BulkCnst;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,6 +18,7 @@ use App\Render\LinkRender;
 use App\Repository\AccountRepository;
 use App\Repository\ContactRepository;
 use App\Repository\TagRepository;
+use App\Repository\UserRepository;
 use App\Service\AlertService;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
@@ -81,6 +81,7 @@ class UsersShowController extends AbstractController
         TagRepository $tag_repository,
         ContactRepository $contact_repository,
         AccountRepository $account_repository,
+        UserRepository $user_repository,
         AccountRender $account_render,
         AlertService $alert_service,
         AssetsService $assets_service,
@@ -145,6 +146,18 @@ class UsersShowController extends AbstractController
         $balance = $account_repository->get_balance($id, $pp->schema());
 
         $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
+
+        $full_name_edit_en = $config_service->get_bool('users.fields.full_name.self_edit', $pp->schema());
+
+        if (!$su->is_owner($id))
+        {
+            $full_name_edit_en = false;
+        }
+
+        if ($pp->is_admin())
+        {
+            $full_name_edit_en = true;
+        }
 
         $status_def_ary = UsersListController::get_status_def_ary($config_service, $item_access_service, $pp);
 
@@ -330,11 +343,7 @@ class UsersShowController extends AbstractController
 
         if ($pp->is_admin())
         {
-            $last_login = $db->fetchOne('select max(created_at)
-                from ' . $pp->schema() . '.login
-                where user_id = ?',
-                [$id],
-                [\PDO::PARAM_INT]);
+            $last_login = $user_repository->get_last_login_datetime_str($id, $pp->schema());
         }
 
         $contacts_response = $contacts_user_show_inline_controller(
@@ -549,6 +558,7 @@ class UsersShowController extends AbstractController
             'id'                    => $id,
             'status'                => $status,
             'is_self'               => $is_self,
+            'full_name_edit_en'     => $full_name_edit_en,
             'prev_id'               => $prev_id,
             'next_id'               => $next_id,
             'count_transactions'    => $count_transactions,

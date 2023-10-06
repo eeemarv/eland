@@ -13,7 +13,7 @@ use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -63,7 +63,7 @@ class UsersPostcodeEditController extends AbstractController
     {
         if (!$config_service->get_bool('users.fields.postcode.enabled', $pp->schema()))
         {
-            throw new NotFoundHttpException('Users postcode submodule not enabled.');
+            throw new AccessDeniedHttpException('Users postcode submodule not enabled.');
         }
 
         if (!$is_self

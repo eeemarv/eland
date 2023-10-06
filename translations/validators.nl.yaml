@@ -99,3 +99,7 @@ user:
     Gebruiker niet actief.
   code_not_exists: >-
     Deze gebruikers account code bestaat niet.
+
+users_account_edit:
+  code_not_unique: >-
+    Deze account code bestaat reeds in het systeem

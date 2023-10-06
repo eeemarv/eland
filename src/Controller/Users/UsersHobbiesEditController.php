@@ -13,7 +13,7 @@ use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -62,7 +62,7 @@ class UsersHobbiesEditController extends AbstractController
     {
         if (!$config_service->get_bool('users.fields.hobbies.enabled', $pp->schema()))
         {
-            throw new NotFoundHttpException('Users hobbies submodule not enabled.');
+            throw new AccessDeniedHttpException('Users hobbies submodule not enabled.');
         }
 
         if (!$is_self
