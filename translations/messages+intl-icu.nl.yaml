@@ -253,7 +253,7 @@ label:
   per_unit: Per (uur, stuk...)
   periodic_overview: Periodiek overzicht (e-mail)
   period_days: Periode in dagen
-  periodic_mail: Periodieke overzichts e-mail
+  periodic_overview_reception: Ontvangst periodieke overzichts e-mail
   permanent: Permanent
   permissions_role: Rechten/rol
   phone: Telefoon
@@ -1357,6 +1357,38 @@ users_account_edit:
     }
   no_account_yet: >-
     Nog geen account aangemaakt
+  min_limit:
+    help: >-
+      {system, select,
+        defined {Een algemene minimum limiet van {min_system} {currency} is
+          {open}ingesteld in dit systeem{close}. Deze geldt voor alle
+          accounts waar geen individuele minimum limiet is ingesteld.
+          Vul hier enkel een individuele minimum limiet in
+          als die moet afwijken van de algemeen geldende minimum
+          limiet van {min_system} {currency}.
+        }
+        null {Vul hier enkel een minimum limiet in als die
+          moet afwijken van de andere accounts. Een algemene
+          minimum limiet die geldt voor alle accounts kan
+          {open}hier{close} ingesteld worden.}
+        other {**ERR**}
+      }
+  max_limit:
+    help: >-
+      {system, select,
+        defined {Een algemene maximum limiet van {max_system} {currency} is
+          {open}ingesteld in dit systeem{close}. Deze geldt voor alle
+          accounts waar geen individuele maximum limiet is ingesteld.
+          Vul hier enkel een individuele maximum limiet in
+          als die moet afwijken van de algemeen geldende maximum
+          limiet van {max_system} {currency}.
+        }
+        null {Vul hier enkel een maximum limiet in als die
+          moet afwijken van de andere accounts. Een algemene
+          maximum limiet die geldt voor alle accounts kan
+          {open}hier{close} ingesteld worden.}
+        other {**ERR**}
+      }
 
 users_add:
   title: Gebruiker toevoegen
@@ -1515,6 +1547,13 @@ users_hobbies_edit:
     {self, select,
       self {Hobbies/interesses in je profiel aanpassen}
       other {Hobbies/interesses voor {user} aanpassen}
+    }
+
+users_periodic_overview_edit:
+  title: >-
+    {self, select,
+      self {Ontvangst periodieke overzichts e-mail voor je profiel aanpassen}
+      other {Ontvangst periodieke overzichts e-mail voor {user} aanpassen}
     }
 
 users_postcode_edit:

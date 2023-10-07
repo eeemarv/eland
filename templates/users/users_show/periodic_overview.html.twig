@@ -4,7 +4,7 @@
     {% block class %} owner{% endblock class %}
     {%- block dl -%}
         <dt>
-            {{- 'label.periodic_mail'|trans -}}
+            {{- 'label.periodic_overview_reception'|trans -}}
         </dt>
         <dd>
             {%- if user.periodic_overview_en -%}
@@ -15,7 +15,19 @@
         </dd>
     {%- endblock dl -%}
     {%- block div_right -%}
-
+    {%- if pp_is_admin() or is_self -%}
+        {%- include 'include/btn/edit.html.twig' with {
+            'btn_route': 'users_periodic_overview_edit' ~ (is_self ? '_self' : ''),
+            'btn_route_params': is_self ? {} : {'id': id},
+            'btn_title': 'users_periodic_overview_edit.title',
+            'btn_title_trans_params': {
+                'user': account(id, schema),
+                'self': is_self ? 'self' : 'some_user'
+            },
+            'btn_label_hidden': 'sm',
+            'btn_lg': true,
+        } -%}
+    {%- endif -%}
     {%- endblock div_right -%}
 {%- endembed -%}
 {%- endif -%}

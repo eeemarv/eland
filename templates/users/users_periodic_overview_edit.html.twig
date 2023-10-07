@@ -1,0 +1,14 @@
+{%- extends 'users/base/users_single_form.html.twig' -%}
+
+{%- block heading_title -%}
+    {{- 'users_periodic_overview_edit.title'|trans({
+        'self': is_self ? 'self' : 'some_user',
+        'user': account(id, schema)
+    }) -}}
+{%- endblock heading_title -%}
+
+{%- block form_a -%}
+    {{- form_row(form.enabled, {
+        'label': 'label.periodic_overview_reception',
+    }) -}}
+{%- endblock form_a -%}
