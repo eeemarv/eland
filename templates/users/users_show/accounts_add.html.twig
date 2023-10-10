@@ -7,14 +7,14 @@
             {{- 'label.transaction_account'|trans -}}
         </dt>
         <dd>
-            {{- 'users_account_edit.no_account_yet'|trans -}}
+            {{- 'users_account.no_account_yet'|trans -}}
         </dd>
     {%- endblock dl -%}
     {%- block div_right -%}
         {%- include 'include/btn/add.html.twig' with {
-            'btn_route': 'users_account_add' ~ (is_self ? '_self' : ''),
+            'btn_route': 'users_account_code_add' ~ (is_self ? '_self' : ''),
             'btn_route_params': is_self ? {} : {'id': id},
-            'btn_title': 'users_account_edit.title',
+            'btn_title': 'users_account_code_edit.title',
             'btn_title_trans_params': {
                 'user': account(id, schema),
                 'self': is_self ? 'self' : 'some_user',

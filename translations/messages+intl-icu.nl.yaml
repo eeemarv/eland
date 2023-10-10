@@ -58,6 +58,7 @@ btn:
   generate: Genereer
   generate_password_title: >-
     Genereer automatisch een paswoord
+  leaving: Uitstap
   login: Inloggen
   password: Paswoord
   password_reset: Reset Paswoord
@@ -370,6 +371,8 @@ service_stuff:
     title: Diensten of spullen onbepaald
 
 status:
+  account_leaving: Uitstapper
+  account_not_leaving: Geen uitstapper
   all: Alle
   active: Actief
   active_user: Actief
@@ -1341,22 +1344,61 @@ transactions_show:
 users:
   title: Leden
 
-users_account_edit:
+users_account:
+  no_account_yet: >-
+    Nog geen account aangemaakt
+
+users_account_code_edit:
   title: >-
     {self, select,
       self {{mode, select,
         add {Transactie-account voor jezelf aanmaken}
-        edit {Je transactie-account {user} aanpassen}
+        edit {Je account code {user} aanpassen}
         other {**ERR**}
       }}
       other {{mode, select,
         add {Transactie-account voor {user} aanmaken}
-        edit {Transactie-account voor {user} aanpassen}
+        edit {Account code voor {user} aanpassen}
         other {**ERR**}
       }}
     }
-  no_account_yet: >-
-    Nog geen account aangemaakt
+
+users_account_leaving_edit:
+  title: >-
+    {self, select,
+      self {{leaving, select,
+        yes {Status "uitstapper" voor je account {code} aanpassen}
+        no {Je account {code} de status "uitstapper" geven}
+        other {**ERR**}
+      }}
+      other {{leaving, select,
+        yes {Status "uitstapper" voor account {user} aanpassen}
+        no {Account {code} de status "uitstapper" geven}
+        other {**ERR**}
+      }}
+      other {**ERR**}
+    }
+  leaving:
+    label: >-
+      {self, select,
+        self {"Uitstapper" status voor je account {code}}
+        other {"Uitstapper" status voor account {user}}
+      }
+    help: >-
+      De uitstapper status wil zeggen dat het saldo van het
+      account enkel nog maar kan bewegen in de richting van
+      het geconfigureerde "uitstappers saldo". Dus kan het
+      het account enkel {currency} ontvangen OF uitgeven.
+      In het geval van dit account {user} met een saldo van
+      {balance} {currency} betekent dit dat het account enkel
+
+
+users_account_limits_edit:
+  title: >-
+    {self, select,
+      self {Limieten voor je account {code} aanpassen}
+      other {Limieten voor account {user} aanpassen}
+    }
   min_limit:
     help: >-
       {system, select,
@@ -1599,6 +1641,10 @@ users_password_edit:
           adres}
         other {}
       }
+
+users_role_edit:
+  title: >-
+    Rol/rechten voor {user} aanpassen
 
 users_show:
   title: >-

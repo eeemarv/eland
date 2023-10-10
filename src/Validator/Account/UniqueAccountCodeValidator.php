@@ -2,7 +2,7 @@
 
 namespace App\Validator\Account;
 
-use App\Command\Users\UsersAccountCommand;
+use App\Command\Users\UsersAccountCodeCommand;
 use App\Repository\UserRepository;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -25,9 +25,9 @@ class UniqueAccountCodeValidator extends ConstraintValidator
             throw new UnexpectedTypeException($constraint, Login::class);
         }
 
-        if (!$command instanceof UsersAccountCommand)
+        if (!$command instanceof UsersAccountCodeCommand)
         {
-            throw new UnexpectedTypeException($command, UsersAccountCommand::class);
+            throw new UnexpectedTypeException($command, UsersAccountCodeCommand::class);
         }
 
         $code = $command->code;

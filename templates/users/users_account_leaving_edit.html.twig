@@ -1,0 +1,30 @@
+{%- extends 'users/base/users_single_form.html.twig' -%}
+{%- import 'macro/anchor.html.twig' as a -%}
+
+{%- block heading_title -%}
+    {{- 'users_account_leaving_edit.title'|trans({
+        'self': is_self ? 'self' : 'some_user',
+        'leaving': user.is_leaving ? 'yes' : 'no',
+        'user': account(id, schema),
+        'code': user.code,
+    }) -}}
+{%- endblock heading_title -%}
+
+{%- block form_a -%}
+    {{- form_row(form.is_leaving, {
+        'label': 'users_account_leaving_edit.leaving.label',
+        'label_translation_parameters': {
+            'self': is_self ? 'self' : 'some_user',
+            'user': account(id, schema),
+            'code': user.code,
+        },
+        'help': 'users_account_leaving_edit.leaving.help',
+        'help_translation_parameters': {
+            'self': is_self ? 'self' : 'some_user',
+            'user': account(id, schema),
+            'code': user.code,
+            'balance': balance,
+            'currency': config_str('transactions.currency.name', schema),
+        }
+    }) -}}
+{%- endblock form_a -%}

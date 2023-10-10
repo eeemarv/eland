@@ -2,7 +2,7 @@
     {%- import 'macro/lbl.html.twig' as l -%}
     {%- block class %} p-0{% endblock class -%}
     {%- block item -%}
-        <table class="table table-bordered table-striped mb-0">
+        <table class="table table-bordered mb-0">
             <thead>
                 <tr>
                     <th>
@@ -26,7 +26,10 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
+                <tr
+                {%- if user.is_leaving %} class="bg-danger"
+                {%- elseif is_new %} class="bg-success"
+                {%- endif -%}>
                     <td>
                         <em>
                             <b>
@@ -73,8 +76,7 @@
 
                     <td>
                         <div class="pull-right">
-                        {%- if config_bool('transactions.enabled', schema)
-                            and config_bool('transactions.enabled', su_schema())
+                        {%- if config_bool('transactions.enabled', su_schema())
                             and (pp_is_admin() or not su_is_owner(id))  -%}
                             {%- include 'include/btn_top/transaction.html.twig' with {
                                 'btn_route': 'transactions_add',
@@ -85,23 +87,67 @@
                                 }
                             } -%}
                         {%- endif -%}
-                        {%- if pp_is_admin() -%}
-                            {%- include 'include/btn/edit.html.twig' with {
-                                'btn_route': 'users_account_edit' ~ (is_self ? '_self' : ''),
-                                'btn_route_params': is_self ? {} : {'id': id},
-                                'btn_title': 'users_account_edit.title',
-                                'btn_title_trans_params': {
-                                    'user': account(id, schema),
-                                    'self': is_self ? 'self' : 'some_user',
-                                    'mode': 'edit',
-                                },
-                                'btn_label_hidden': 'sm',
-                                'btn_lg': true,
-                            } -%}
-                        {%- endif -%}
                         </div>
                     </td>
                 </tr>
+                {%- if pp_is_admin() -%}
+                <tr class="bg-info">
+                    <td>
+                        {%- include 'include/btn/edit.html.twig' with {
+                            'btn_route': 'users_account_code_edit' ~ (is_self ? '_self' : ''),
+                            'btn_route_params': is_self ? {} : {'id': id},
+                            'btn_title': 'users_account_code_edit.title',
+                            'btn_title_trans_params': {
+                                'user': account(id, schema),
+                                'self': is_self ? 'self' : 'some_user',
+                                'mode': 'edit',
+                            },
+                            'btn_label_hidden': 'sm',
+                            'btn_lg': true,
+                        } -%}
+                    </td>
+                    <td>
+                        {%- if config_bool('users.leaving.enabled', schema) -%}
+                        {%- include 'include/btn/btn.html.twig' with {
+                            'btn_route': 'users_account_leaving_edit' ~ (is_self ? '_self' : ''),
+                            'btn_route_params': is_self ? {} : {'id': id},
+                            'btn_title': 'users_account_leaving_edit.title',
+                            'btn_title_trans_params': {
+                                'user': account(id, schema),
+                                'code': user.code,
+                                'self': is_self ? 'self' : 'some_user',
+                                'leaving': user.is_leaving ? 'yes' : 'no',
+                            },
+                            'btn_label': 'btn.leaving',
+                            'btn_label_hidden': 'sm',
+                            'btn_lg': true,
+                            'btn_class': ' btn-danger',
+                            'fa': 'sign-out',
+                        } -%}
+                        {%- else -%}
+                            &nbsp;
+                        {%- endif -%}
+                    </td>
+                    {%- if config_bool('accounts.limits.enabled', schema) -%}
+                    <td colspan="2">
+                        {%- include 'include/btn/edit.html.twig' with {
+                            'btn_route': 'users_account_limits_edit' ~ (is_self ? '_self' : ''),
+                            'btn_route_params': is_self ? {} : {'id': id},
+                            'btn_title': 'users_account_limits_edit.title',
+                            'btn_title_trans_params': {
+                                'user': account(id, schema),
+                                'self': is_self ? 'self' : 'some_user',
+                            },
+                            'btn_label_hidden': 'sm',
+                            'btn_lg': true,
+                        } -%}
+                    </td>
+                    {%- endif -%}
+                    <td>
+                        &nbsp;
+                    </td>
+                </tr>
+                {%- endif -%}
             </tbody>
         </table>
     {%- endblock item -%}

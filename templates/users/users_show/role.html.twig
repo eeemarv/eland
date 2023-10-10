@@ -32,6 +32,18 @@
                 'btn_lg': true,
             } -%}
         {%- endif -%}
+        {%- if pp_is_admin() and not is_self -%}
+            {%- include 'include/btn/edit.html.twig' with {
+                'btn_route': 'users_role_edit',
+                'btn_route_params': {'id': id},
+                'btn_title': 'users_role_edit.title',
+                'btn_title_trans_params': {
+                    'user': account(id, schema),
+                },
+                'btn_label_hidden': 'sm',
+                'btn_lg': true,
+            } -%}
+        {%- endif -%}
     {%- endblock div_right -%}
 {%- endembed -%}
 {%- endif -%}

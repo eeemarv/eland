@@ -1,0 +1,13 @@
+{%- extends 'users/base/users_single_form.html.twig' -%}
+
+{%- block heading_title -%}
+    {{- 'users_role_edit.title'|trans({
+        'user': account(id, schema)
+    }) -}}
+{%- endblock heading_title -%}
+
+{%- block form_a -%}
+    {{- form_row(form.role, {
+        'label': 'label.role',
+    }) -}}
+{%- endblock form_a -%}

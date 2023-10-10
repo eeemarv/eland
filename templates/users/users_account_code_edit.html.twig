@@ -1,0 +1,19 @@
+{%- extends 'users/base/users_single_form.html.twig' -%}
+{%- import 'macro/anchor.html.twig' as a -%}
+
+{%- block heading_title -%}
+    {{- 'users_account_code_edit.title'|trans({
+        'self': is_self ? 'self' : 'some_user',
+        'mode': mode,
+        'user': account(id, schema)
+    }) -}}
+{%- endblock heading_title -%}
+
+{%- block form_a -%}
+    {{- form_row(form.code, {
+        'label': 'label.account_code',
+        'pre_addon': {
+            'fa': 'credit-card',
+        }
+    }) -}}
+{%- endblock form_a -%}

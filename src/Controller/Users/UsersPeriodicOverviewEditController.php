@@ -97,10 +97,10 @@ class UsersPeriodicOverviewEditController extends AbstractController
             }
             else
             {
-                $update_enabled = $command->enabled ? 't' : 'f';
+                $pg_enabled = $command->enabled ? 't' : 'f';
 
                 $user_repository->update([
-                    'periodic_overview_en'    => $update_enabled,
+                    'periodic_overview_en'    => $pg_enabled,
                 ], $id, $pp->schema());
 
                 $alert_service->success('Ontvangst periodieke overzichts e-mail aangepast');

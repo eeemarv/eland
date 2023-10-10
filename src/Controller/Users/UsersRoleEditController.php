@@ -2,8 +2,8 @@
 
 namespace App\Controller\Users;
 
-use App\Command\Users\UsersCommentsCommand;
-use App\Form\Type\Users\UsersCommentsType;
+use App\Command\Users\UsersRoleCommand;
+use App\Form\Type\Users\UsersRoleType;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,7 +20,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class UsersRoleEditController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/users/{id}/account/edit',
+        '/{system}/{role_short}/users/{id}/role/edit',
         name: 'users_role_edit',
         methods: ['GET', 'POST'],
         requirements: [
@@ -48,13 +48,13 @@ class UsersRoleEditController extends AbstractController
             throw new AccessDeniedHttpException('You can\'t edit your own role');
         }
 
-        $command = new UsersCommentsCommand();
+        $command = new UsersRoleCommand();
 
         $user = $user_repository->get($id, $pp->schema());
         $is_intersystem = isset($user['remote_schema']) || isset($user['remote_email']);
-        $command->comments = $user['comments'];
+        $command->role = $user['role'];
 
-        $form = $this->createForm(UsersCommentsType::class, $command);
+        $form = $this->createForm(UsersRoleType::class, $command);
         $form->handleRequest($request);
 
         if ($form->isSubmitted()
@@ -62,17 +62,17 @@ class UsersRoleEditController extends AbstractController
         {
             $command = $form->getData();
 
-            if ($command->comments === $user['comments'])
+            if ($command->role === $user['role'])
             {
-                $alert_service->warning('Commentaar niet gewijzigd');
+                $alert_service->warning('Rol niet gewijzigd');
             }
             else
             {
                 $user_repository->update([
-                    'comments'    => $command->comments,
+                    'role'    => $command->role,
                 ], $id, $pp->schema());
 
-                $alert_service->success('Commentaar aangepast');
+                $alert_service->success('Rol aangepast');
             }
 
             return $this->redirectToRoute('users_show', [
@@ -81,7 +81,7 @@ class UsersRoleEditController extends AbstractController
             ]);
         }
 
-        return $this->render('users/users_comments_edit.html.twig', [
+        return $this->render('users/users_role_edit.html.twig', [
             'form'              => $form->createView(),
             'user'              => $user,
             'id'                => $id,

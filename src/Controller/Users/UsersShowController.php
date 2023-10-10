@@ -135,6 +135,16 @@ class UsersShowController extends AbstractController
             throw new AccessDeniedHttpException('You have no access to this user account.');
         }
 
+        $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
+
+        $is_new = false;
+
+        if (isset($user['activated_at'])
+            && $new_user_treshold->getTimestamp() < strtotime($user['activated_at'] . ' UTC'))
+        {
+            $is_new = true;
+        }
+
         $is_intersystem = isset($user['remote_schema']) || isset($user['remote_email']);
 
         $tags_enabled = $config_service->get_bool('users.tags.enabled', $pp->schema());
@@ -181,7 +191,15 @@ class UsersShowController extends AbstractController
 
                 $count_changes = $tag_repository->update_for_user($tags_command, $id, $su->id(), $pp->schema());
                 $response_cache_service->clear_cache($pp->schema());
-                $alert_service->success('Wijzigingen van tags opgeslagen. (' . $count_changes . ')');
+
+                if ($count_changes)
+                {
+                    $alert_service->success('Wijzigingen van tags opgeslagen (' . $count_changes . ')');
+                }
+                else
+                {
+                    $alert_service->warning('Tags niet gewijzigd');
+                }
 
                 if ($is_self)
                 {
@@ -564,6 +582,7 @@ class UsersShowController extends AbstractController
             'count_transactions'    => $count_transactions,
             'count_messages'        => $count_messages,
             'is_intersystem'        => $is_intersystem,
+            'is_new'                => $is_new,
             'tags_form'             => $tags_form,
             'render_tags'           => $render_tags,
         ]);
