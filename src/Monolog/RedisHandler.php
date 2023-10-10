@@ -2,9 +2,9 @@
 
 namespace App\Monolog;
 
+use Redis;
 use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\JsonFormatter;
-use Redis;
 use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\Logger;
 

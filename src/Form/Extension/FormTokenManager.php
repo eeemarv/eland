@@ -2,9 +2,9 @@
 
 namespace App\Form\Extension;
 
+use Redis;
 use App\Form\Extension\FormTokenManagerInterface;
 use App\Service\TokenGeneratorService;
-use Redis;
 
 class FormTokenManager implements FormTokenManagerInterface
 {

@@ -1,15 +1,19 @@
 category:
-  not_exists: De categorie bestaat niet.
+  not_exists: >-
+    De categorie bestaat niet.
   not_leaf: >-
     Deze categorie heeft subcategorieën en kan
     daarom geen berichten bevatten.
-  name_not_unique: Deze naam is niet uniek.
+  name_not_unique: >-
+    Deze naam is niet uniek.
 
 contact_types:
-  not_unique: Deze waarde is niet uniek
+  not_unique: >-
+    Deze waarde is niet uniek
 
 doc_map:
-  name_not_unique: Deze map naam bestaat reeds.
+  name_not_unique: >-
+    Deze map naam bestaat reeds.
 
 form:
   form_token:
@@ -105,3 +109,7 @@ user:
 users_account_edit:
   code_not_unique: >-
     Deze account code bestaat reeds in het systeem
+
+users_name_edit:
+  name_not_unique: >-
+    Deze gebruikersnaam bestaat reeds in het systeem

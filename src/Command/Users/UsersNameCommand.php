@@ -3,7 +3,7 @@
 namespace App\Command\Users;
 
 use App\Command\CommandInterface;
-use App\Validator\Account\UniqueAccountCode;
+use App\Validator\User\UniqueUserName;
 use Symfony\Component\Validator\Constraints\GroupSequence;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -11,18 +11,18 @@ use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Constraints\Type;
 
-#[UniqueAccountCode(groups:['unique'])]
-#[GroupSequence(groups:['UsersAccountCodeCommand', 'unique'])]
-class UsersAccountCodeCommand Implements CommandInterface
+#[UniqueUserName(groups:['unique'])]
+#[GroupSequence(groups:['UsersNameCommand', 'unique'])]
+class UsersNameCommand Implements CommandInterface
 {
     #[Type(type: 'int')]
-    public $user_id;
+    public $id;
 
     #[Sequentially(constraints: [
         new Type(type: 'string'),
-        new Length(max: 20),
+        new Length(max: 60),
         new NotNull(),
         new NotBlank(),
     ])]
-    public $code;
+    public $name;
 }

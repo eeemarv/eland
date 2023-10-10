@@ -2,9 +2,9 @@
 
 namespace App\Service;
 
+use Redis;
 use App\Monolog\RedisHandler;
 use Doctrine\DBAL\Connection as Db;
-use Redis;
 
 class LogDbService
 {

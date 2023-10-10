@@ -12,6 +12,9 @@
     {%- if form.full_name is defined -%}
         {{- form_row(form.full_name, {
             'label': 'label.full_name',
+            'pre_addon': {
+                'fa': 'user',
+            }
         }) -}}
     {%- endif -%}
 

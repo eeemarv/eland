@@ -1,0 +1,18 @@
+{%- extends 'users/base/users_single_form.html.twig' -%}
+
+{%- block heading_title -%}
+    {{- 'users_name_edit.title'|trans({
+        'self': is_self ? 'self' : 'some_user',
+        'user': account(id, schema),
+        'mode': mode,
+    }) -}}
+{%- endblock heading_title -%}
+
+{%- block form_a -%}
+    {{- form_row(form.name, {
+        'label': 'label.username',
+        'pre_addon': {
+            'fa': 'user',
+        }
+    }) -}}
+{%- endblock form_a -%}

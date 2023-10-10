@@ -1591,6 +1591,21 @@ users_hobbies_edit:
       other {Hobbies/interesses voor {user} aanpassen}
     }
 
+users_name_edit:
+  title: >-
+    {self, select,
+      self {{mode, select,
+        add {Gebruikersnaam voor jezelf instellen}
+        edit {Je gebruikersnaam {user} aanpassen}
+        other {**ERR**}
+      }}
+      other {{mode, select,
+        add {Gebruikersnaam instellen}
+        edit {Gebruikersnaam voor {user} aanpassen}
+        other {**ERR**}
+      }}
+    }
+
 users_periodic_overview_edit:
   title: >-
     {self, select,

@@ -2,6 +2,7 @@
 
 namespace App\Controller\Intersystems;
 
+use Redis;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -10,7 +11,6 @@ use Doctrine\DBAL\ArrayParameterType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
-use Redis;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;

@@ -109,7 +109,12 @@ class ResponseCacheService
 		}
 
 		$this->predis->hset($store_key, $new_thumbprint, $reponse_body);
-		$this->predis->hdel($store_key, $old_thumbprint);
+
+		if ($old_thumbprint !== false)
+		{
+			$this->predis->hdel($store_key, $old_thumbprint);
+		}
+
 		$this->predis->hset($store_key, $thumbprint_key, $new_thumbprint);
 		$this->predis->expire($store_key, self::TTL_STORE);
 

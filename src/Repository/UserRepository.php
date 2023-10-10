@@ -412,4 +412,47 @@ class UserRepository
 
 		return false;
 	}
+
+	public function is_unique_name(
+		string $name,
+		null|int $except_id,
+		string $schema
+	):bool
+	{
+		if ($name === '')
+		{
+			throw new LogicException('Code can not be empty string.');
+		}
+
+		$lower_name = strtolower($name);
+
+		$query = 'select id
+			from ' . $schema . '.users
+			where name is not null
+				and lower(name) = :lower_name';
+
+		if (isset($except_id))
+		{
+			$query .= ' and id <> :except_id';
+		}
+
+		$stmt = $this->db->prepare($query);
+
+		$stmt->bindValue('lower_name', $lower_name, \PDO::PARAM_STR);
+
+		if (isset($except_id))
+		{
+			$stmt->bindValue('except_id', $except_id, \PDO::PARAM_INT);
+		}
+
+		$res = $stmt->executeQuery();
+		$id = $res->fetchOne();
+
+		if ($id === false)
+		{
+			return true;
+		}
+
+		return false;
+	}
 }

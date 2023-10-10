@@ -2,11 +2,11 @@
 
 namespace App\Service;
 
+use Redis;
 use App\Attributes\ConfigMap;
 use App\Command\CommandInterface;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
-use Redis;
 use ReflectionClass;
 use Symfony\Component\Validator\Exception\LogicException;
 

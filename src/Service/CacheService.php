@@ -2,8 +2,8 @@
 
 namespace App\Service;
 
-use Doctrine\DBAL\Connection as Db;
 use Redis;
+use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
 
 /*
