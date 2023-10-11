@@ -2,7 +2,7 @@
 
 namespace App\Controller\Users;
 
-use App\Render\LinkRender;
+use App\Form\Type\Del\DelType;
 use App\Service\AlertService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -54,13 +54,16 @@ class UsersImageDelController extends AbstractController
         bool $is_self,
         Db $db,
         AlertService $alert_service,
-        LinkRender $link_render,
         UserCacheService $user_cache_service,
         PageParamsService $pp,
-        SessionUserService $su,
-        string $env_s3_url
+        SessionUserService $su
     ):Response
     {
+        if (!$is_self && $su->is_owner($id))
+        {
+            return $this->redirectToRoute('users_image_del_self', $pp->ary());
+        }
+
         if ($is_self)
         {
             $id = $su->id();
@@ -73,20 +76,32 @@ class UsersImageDelController extends AbstractController
             throw new NotFoundHttpException('User with id ' . $id . ' not found.');
         }
 
-        $file = $user['image_file'];
+        $image_file = $user['image_file'];
 
-        if ($file == '' || !$file)
+        if (!isset($image_file) || $image_file === '')
         {
             throw new NotFoundHttpException('No image file found for user with id ' . $id);
         }
 
-        if ($request->isMethod('POST'))
+        $form = $this->createForm(DelType::class);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted()
+            && $form->isValid())
         {
             $db->update($pp->schema() . '.users',
-                ['image_file' => ''],
+                ['image_file' => null],
                 ['id' => $id]);
 
             $user_cache_service->clear($id, $pp->schema());
+
+            if ($is_self)
+            {
+                $alert_service->success('Je profielfoto/afbeelding is verwijderd');
+
+                return $this->redirectToRoute('users_show_self', $pp->ary());
+            }
 
             $alert_service->success('Profielfoto/afbeelding verwijderd.');
 
@@ -96,34 +111,9 @@ class UsersImageDelController extends AbstractController
             ]);
         }
 
-        $out = '<div class="row">';
-        $out .= '<div class="col-xs-6">';
-        $out .= '<div class="thumbnail">';
-        $out .= '<img src="';
-        $out .= $env_s3_url . $file;
-        $out .= '" class="img-rounded">';
-        $out .= '</div>';
-        $out .= '</div>';
-
-        $out .= '</div>';
-
-        $out .= '<form method="post">';
-
-        $out .= '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
-
-        $out .= $link_render->btn_cancel('users_show', $pp->ary(), ['id' => $id]);
-
-        $out .= '&nbsp;';
-        $out .= '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger btn-lg">';
-
-        $out .= '</form>';
-
-        $out .= '</div>';
-        $out .= '</div>';
-
         return $this->render('users/users_image_del.html.twig', [
-            'content'   => $out,
+            'form'      => $form,
+            'user'      => $user,
             'id'        => $id,
             'is_self'   => $is_self,
         ]);

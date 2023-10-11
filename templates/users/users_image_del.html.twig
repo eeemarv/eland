@@ -1,4 +1,4 @@
-{%- extends 'users/base/users_single_base.html.twig' -%}
+{%- extends 'users/base/users_single_form.html.twig' -%}
 
 {%- block heading_title -%}
     {%- if is_self -%}
@@ -10,10 +10,16 @@
     {%- endif -%}
 {%- endblock heading_title -%}
 
-{%- block css -%}
-    {{- parent() -}}
-{%- endblock css -%}
+{%- block form_a -%}
+    <div class="row">
+        <div class="col-xs-6">
+            <div class="thumbnail">
+                <img src="{{- s3(user.image_file) -}}" class="img-rounded" alt="profile image">
+            </div>
+        </div>
+    </div>
+{%- endblock form_a -%}
 
-{%- block js -%}
-    {{- parent() -}}
-{%- endblock js -%}
+{%- block form_submit_btn -%}
+    {%- include 'form/submit_del_btn.html.twig' -%}
+{%- endblock form_submit_btn -%}

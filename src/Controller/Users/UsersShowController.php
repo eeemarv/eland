@@ -20,7 +20,6 @@ use App\Repository\ContactRepository;
 use App\Repository\TagRepository;
 use App\Repository\UserRepository;
 use App\Service\AlertService;
-use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\DistanceService;
 use App\Service\ItemAccessService;
@@ -29,7 +28,6 @@ use App\Service\PageParamsService;
 use App\Service\ResponseCacheService;
 use App\Service\SessionUserService;
 use App\Service\UserCacheService;
-use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -84,7 +82,6 @@ class UsersShowController extends AbstractController
         UserRepository $user_repository,
         AccountRender $account_render,
         AlertService $alert_service,
-        AssetsService $assets_service,
         ConfigService $config_service,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
@@ -94,10 +91,8 @@ class UsersShowController extends AbstractController
         DistanceService $distance_service,
         PageParamsService $pp,
         SessionUserService $su,
-        VarRouteService $vr,
         ResponseCacheService $response_cache_service,
         ContactsUserShowInlineController $contacts_user_show_inline_controller,
-        string $env_s3_url,
         string $env_map_access_token,
         string $env_map_tiles_url
     ):Response
@@ -149,13 +144,9 @@ class UsersShowController extends AbstractController
 
         $tags_enabled = $config_service->get_bool('users.tags.enabled', $pp->schema());
 
-        $messages_enabled = $config_service->get_bool('messages.enabled', $pp->schema());
-        $transactions_enabled = $config_service->get_bool('transactions.enabled', $pp->schema());
         $min_limit = $account_repository->get_min_limit($id, $pp->schema());
         $max_limit = $account_repository->get_max_limit($id, $pp->schema());
         $balance = $account_repository->get_balance($id, $pp->schema());
-
-        $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
 
         $full_name_edit_en = $config_service->get_bool('users.fields.full_name.self_edit', $pp->schema());
 
