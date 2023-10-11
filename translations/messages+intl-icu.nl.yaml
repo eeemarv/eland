@@ -60,6 +60,9 @@ btn:
     Genereer automatisch een paswoord
   leaving: Uitstap
   login: Inloggen
+  image:
+    upload: Afbeelding opladen
+    del: Afbeelding verwijderen
   password: Paswoord
   password_reset: Reset Paswoord
   register: Inschrijven
@@ -282,6 +285,7 @@ label:
   to_date: Tot
   type: Type
   transactions: Transacties
+  transactions_last_year: Transacties laatste jaar
   transaction_account: Transactie-account
   transaction_id: Transactie Id
   txt_color: Tekstkleur
@@ -354,6 +358,13 @@ unique_filter:
     Dit item bestaat reeds!
   existing_items: >-
     Reeds bestaand:
+
+upload:
+  error:
+    type: Bestandstype is niet toegelaten
+    size:
+      too_big: Het bestand is te groot
+      too_small: Het bestand is te klein
 
 view:
   list: lijst
@@ -1668,6 +1679,13 @@ users_show:
       other {{user}}
     }
   my_profile: Mijn profiel
+  image:
+    help: >-
+      Toegestane formaten: jpg/jpeg, png, webp, gif, svg.
+      Je kan ook een afbeelding hierheen verslepen.
+    none: Geen profielfoto/afbeelding
+    del:
+      label: afbeelding verwijderen
   intersystem_missing: >-
     De interSysteem-verbinding ontbreekt
   coupled_intersystem: >-
@@ -1675,3 +1693,8 @@ users_show:
   mail_contact:
     title: >-
       Stuur een e-mail bericht naar {user}
+  btn:
+    messages:
+      label: Vraag en aanbod van {user} ({count})
+    transactions:
+      label: Transacties van {user} ({count})

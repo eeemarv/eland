@@ -1,0 +1,44 @@
+<div class="row">
+<div class="col-md-12">
+
+<div class="panel panel-default">
+<div class="panel-body">
+
+{%- if config_bool('messages.enabled', schema) -%}
+
+    {%- include 'include/btn/btn.html.twig' with {
+        'btn_route': 'messages'|var_route,
+        'btn_route_params': {'uid': id},
+        'btn_class': ' btn-default btn-lg btn-block',
+        'btn_label': 'users_show.btn.messages.label',
+        'btn_label_trans_params': {
+            'count': count_messages,
+            'user': account(id, schema),
+        },
+        'btn_attr': count_messages ? {} : {'disabled': 'disabled'},
+        'fa': 'newspaper-o',
+    } -%}
+
+{%- endif -%}
+
+{%- if config_bool('transactions.enabled', schema) -%}
+
+    {%- include 'include/btn/btn.html.twig' with {
+        'btn_route': 'transactions',
+        'btn_route_params': {'uid': id},
+        'btn_class': ' btn-default btn-lg btn-block',
+        'btn_label': 'users_show.btn.transactions.label',
+        'btn_label_trans_params': {
+            'count': count_transactions,
+            'user': account(id, schema),
+        },
+        'btn_attr': count_transactions ? {} : {'disabled': 'disabled'},
+        'fa': 'exchange',
+    } -%}
+
+{%- endif -%}
+
+</div>
+</div>
+</div>
+</div>

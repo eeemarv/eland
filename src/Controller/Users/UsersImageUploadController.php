@@ -19,7 +19,7 @@ class UsersImageUploadController extends AbstractController
 {
     #[Route(
         '/{system}/{role_short}/users/{id}/image/upload',
-        name: 'users_image_upload_admin',
+        name: 'users_image_upload',
         methods: ['POST'],
         requirements: [
             'id'            => '%assert.id%',
@@ -27,14 +27,14 @@ class UsersImageUploadController extends AbstractController
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
-            'is_admin'      => true,
+            'is_self'       => false,
             'module'        => 'users',
         ],
     )]
 
     #[Route(
-        '/{system}/{role_short}/users/image/upload',
-        name: 'users_image_upload',
+        '/{system}/{role_short}/users/self/image/upload',
+        name: 'users_image_upload_self',
         methods: ['POST'],
         requirements: [
             'system'        => '%assert.system%',
@@ -42,7 +42,7 @@ class UsersImageUploadController extends AbstractController
         ],
         defaults: [
             'id'            => 0,
-            'is_admin'      => false,
+            'is_self'       => true,
             'module'        => 'users',
         ],
     )]
@@ -50,7 +50,7 @@ class UsersImageUploadController extends AbstractController
     public function __invoke(
         Request $request,
         int $id,
-        bool $is_admin,
+        bool $is_self,
         Db $db,
         LoggerInterface $logger,
         ImageUploadService $image_upload_service,
@@ -59,7 +59,7 @@ class UsersImageUploadController extends AbstractController
         SessionUserService $su
     ):Response
     {
-        if (!$is_admin)
+        if ($is_self)
         {
             $id = $su->id();
         }

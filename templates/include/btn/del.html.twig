@@ -1,5 +1,5 @@
 {%- include 'include/btn/btn.html.twig' with {
     'btn_class': 'danger' ~ btn_class|default(''),
-    'btn_label': 'btn.del',
+    'btn_label': btn_label|default('btn.del'),
     'fa': 'times'
 } -%}

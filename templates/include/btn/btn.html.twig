@@ -16,9 +16,10 @@
             hidden-xs hidden-sm hidden-md
         {%- endif -%}">
         &nbsp;
-        {{- btn_label|trans -}}
+        {{- btn_label|trans(btn_label_trans_params|default({})) -}}
         </span>
     {%- else -%}
-        {{- btn_label|trans -}}
+        &nbsp;
+        {{- btn_label|trans(btn_label_trans_params|default({})) -}}
     {%- endif -%}
 </a>

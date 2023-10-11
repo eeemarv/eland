@@ -1,1 +1,50 @@
-{{- profile_image_panel_raw|raw -}}
+{%- set show_img = user.image_file is not null and user.image_file != '' -%}
+<div class="panel panel-default">
+    <div class="panel-body text-center center-block img-upload" id="img_user">
+    <img id="img"
+    {%- if not show_img %} style="display:none;"{%- endif %}
+    class="img-rounded img-responsive center-block w-100"
+    src="{{- show_img ? s3(user.image_file) : assets('1.gif') -}}"
+    data-base-url="{{- s3() -}}">
+    <div id="no_img"
+    {%- if show_img %} style="display:none;"{%- endif -%}>
+        <i class="fa fa-{%- if is_intersystem -%}share-alt{%- else -%}user{%- endif %} fa-5x text-muted"></i>
+        <br>{{- 'users_show.image.none'|trans -}}
+    </div>
+</div>
+{%- if is_self or pp_is_admin() -%}
+<div class="panel-footer">
+    <span class="btn btn-success btn-lg btn-block fileinput-button">
+    <i class="fa fa-plus" id="img_plus"></i>
+    &nbsp;
+    {{- 'btn.image.upload'|trans -}}
+    <input type="file" name="image"
+    data-url="
+    {%- if is_self -%}
+        {{- path('users_image_upload_self', pp_ary()) -}}
+    {%- else -%}
+        {{- path('users_image_upload', pp_ary()|merge({'id': id})) -}}
+    {%- endif -%}"
+    data-image-crop
+    data-fileupload
+    data-message-file-type-not-allowed="{{- 'upload.error.type'|trans -}}"
+    data-message-max-file-size="{{- 'upload.error.size.too_big'|trans -}}"
+    data-message-min-file-size="{{- 'upload.error.size.too_small'|trans -}}"
+    data-message-uploaded-bytes="{{- 'upload.error.size.too_big'|trans -}}">
+    </span>
+
+    <p class="text-warning">
+        {{- 'users_show.image.help'|trans -}}
+    </p>
+
+    {%- include 'include/btn/del.html.twig' with {
+        'btn_route': 'users_image_del' ~ (is_self ? '_self' : ''),
+        'btn_route_params': is_self ? {} : {'id': id},
+        'btn_attr': show_img ? {} : {'style': 'display:none;'},
+        'btn_class': ' btn-lg btn-block',
+        'btn_label': 'btn.image.del',
+    } -%}
+
+    </div>
+{%- endif -%}
+</div>

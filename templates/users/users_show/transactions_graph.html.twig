@@ -1,0 +1,30 @@
+<div class="row">
+  <div class="col-md-12">
+    <h3>{{- 'label.current_balance'|trans -}}:
+        <span class="label label-info">
+            {{- balance -}}
+        </span>
+        &nbsp;
+        {{- config_str('transactions.currency.name', schema) -}}
+    </h3>
+  </div>
+</div>
+<div class="row print-hide">
+  <div class="col-md-6">
+    <div id="chartdiv" data-height="480px" data-width="960px"
+    data-transactions-plot-user="{{- path('transactions_plot_user', pp_ary()|merge({
+        'user_id': id,
+        'days': tdays,
+    })) -}}">
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div id="donutdiv"
+      data-height="480px"
+      data-width="960px">
+    </div>
+    <h4>
+        {{- 'label.transactions_last_year'|trans -}}
+    </h4>
+  </div>
+</div>

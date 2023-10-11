@@ -7,7 +7,6 @@ use App\Service\AlertService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\UserCacheService;
-use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +20,7 @@ class UsersImageDelController extends AbstractController
 {
     #[Route(
         '/{system}/{role_short}/users/{id}/image/del',
-        name: 'users_image_del_admin',
+        name: 'users_image_del',
         methods: ['GET', 'POST'],
         requirements: [
             'id'            => '%assert.id%',
@@ -35,8 +34,8 @@ class UsersImageDelController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/users/image/del',
-        name: 'users_image_del',
+        '/{system}/{role_short}/users/self/image/del',
+        name: 'users_image_del_self',
         methods: ['GET', 'POST'],
         requirements: [
             'system'        => '%assert.system%',
@@ -59,7 +58,6 @@ class UsersImageDelController extends AbstractController
         UserCacheService $user_cache_service,
         PageParamsService $pp,
         SessionUserService $su,
-        VarRouteService $vr,
         string $env_s3_url
     ):Response
     {

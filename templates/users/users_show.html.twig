@@ -143,9 +143,18 @@
         {{- user_contacts_table_raw|raw -}}
     {%- endblock user_contacts_table -%}
 
-    {%- block transactions_messages_panel -%}
-        {{- transactions_messages_raw|raw -}}
-    {%- endblock transactions_messages_panel -%}
+    {%- if config_bool('transactions.enabled', schema) -%}
+        {%- include 'users/users_show/transactions_graph.html.twig' -%}
+    {%- endif -%}
+
+    {%- if not is_self
+        and not is_intersystem
+        and (config_bool('transactions.enabled', schema)
+            or config_bool('messages.enabled', schema))
+
+    -%}
+        {%- include 'users/users_show/btns_transactions_messages.html.twig' -%}
+    {%- endif -%}
 
 {%- endblock content -%}
 

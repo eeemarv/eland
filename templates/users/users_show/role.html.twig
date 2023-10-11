@@ -1,5 +1,5 @@
 {%- if not is_intersystem and (pp_is_admin() or su_is_owner(id)) -%}
-{%- embed 'users/users_show/list_item.html.twig' -%}
+{%- embed 'embed/list_item.html.twig' -%}
     {%- import 'macro/lbl.html.twig' as l -%}
     {% block class -%}
         {%- if pp_is_admin() %} list-group-item-info

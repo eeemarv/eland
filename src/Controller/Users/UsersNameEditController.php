@@ -2,9 +2,7 @@
 
 namespace App\Controller\Users;
 
-use App\Command\Users\UsersAccountCodeCommand;
 use App\Command\Users\UsersNameCommand;
-use App\Form\Type\Users\UsersAccountCodeType;
 use App\Form\Type\Users\UsersNameType;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
