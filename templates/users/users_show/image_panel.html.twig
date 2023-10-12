@@ -40,7 +40,7 @@
     {%- include 'include/btn/del.html.twig' with {
         'btn_route': 'users_image_del' ~ (is_self ? '_self' : ''),
         'btn_route_params': is_self ? {} : {'id': id},
-        'btn_attr': show_img ? {} : {'style': 'display:none;'},
+        'btn_attr': {'id': 'btn_remove'}|merge(show_img ? {} : {'style': 'display:none;'}),
         'btn_class': ' btn-lg btn-block',
         'btn_label': 'btn.image.del',
     } -%}

@@ -2,7 +2,8 @@
 
 namespace App\Controller\Users;
 
-use App\Form\Type\Del\DelType;
+use App\Command\Users\UsersImageDelCommand;
+use App\Form\Type\Users\UsersImageDelType;
 use App\Service\AlertService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -83,7 +84,9 @@ class UsersImageDelController extends AbstractController
             throw new NotFoundHttpException('No image file found for user with id ' . $id);
         }
 
-        $form = $this->createForm(DelType::class);
+        $command = new UsersImageDelCommand();
+
+        $form = $this->createForm(UsersImageDelType::class);
 
         $form->handleRequest($request);
 

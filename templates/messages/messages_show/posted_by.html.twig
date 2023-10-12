@@ -1,0 +1,33 @@
+{%- embed 'embed/list_item.html.twig' -%}
+    {%- block dl -%}
+        <dt>
+            {{- 'label.posted_by'|trans -}}
+        </dt>
+        <dd>
+            {{- 'post.info'|trans({
+                'user': account(user.id, schema)|link('users_show', {'id': user.id}),
+                'created_at': message.created_at|date_format('day', schema),
+                'edit_count': message.edit_count,
+                'postcode_select': user.postcode is null ? 'without' : 'with',
+                'postcode': user.postcode ?? '',
+            })|raw -}}
+        </dd>
+    {%- endblock dl -%}
+    {%- block div_right -%}
+    {#
+        {%- if pp_is_admin() or su_is_owner(id) -%}
+            {%- include 'include/btn/edit.html.twig' with {
+                'btn_route': 'users_comments_edit' ~ (is_self ? '_self' : ''),
+                'btn_route_params': is_self ? {} : {'id': id},
+                'btn_title': 'users_comments_edit.title',
+                'btn_title_trans_params': {
+                    'user': account(id, schema),
+                    'self': is_self ? 'self' : 'some_user'
+                },
+                'btn_label_hidden': 'sm',
+                'btn_lg': true,
+            } -%}
+        {%- endif -%}
+        #}
+    {%- endblock div_right -%}
+{%- endembed -%}

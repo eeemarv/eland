@@ -11,7 +11,6 @@ use Doctrine\DBAL\Connection as Db;
 use App\Cnst\MessageTypeCnst;
 use App\Command\Messages\MessagesMailContactCommand;
 use App\Controller\Contacts\ContactsUserShowInlineController;
-use App\Controller\Users\UsersShowController;
 use App\Form\Type\MailContact\MailContactType;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
@@ -20,16 +19,13 @@ use App\Repository\CategoryRepository;
 use App\Repository\ContactRepository;
 use App\Service\AlertService;
 use App\Service\ConfigService;
-use App\Service\DateFormatService;
 use App\Service\DistanceService;
-use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
 use App\Service\ItemAccessService;
 use App\Service\MailAddrUserService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\UserCacheService;
-use App\Service\VarRouteService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -60,8 +56,6 @@ class MessagesShowController extends AbstractController
         AccountRender $account_render,
         AlertService $alert_service,
         ConfigService $config_service,
-        DateFormatService $date_format_service,
-        FormTokenService $form_token_service,
         IntersystemsService $intersystems_service,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
@@ -70,10 +64,8 @@ class MessagesShowController extends AbstractController
         UserCacheService $user_cache_service,
         PageParamsService $pp,
         SessionUserService $su,
-        VarRouteService $vr,
         DistanceService $distance_service,
         ContactsUserShowInlineController $contacts_user_show_inline_controller,
-        string $env_s3_url,
         string $env_map_access_token,
         string $env_map_tiles_url
     ):Response
@@ -83,14 +75,10 @@ class MessagesShowController extends AbstractController
             throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
         }
 
-        $transactions_enabled = $config_service->get_bool('transactions.enabled', $pp->schema());
-
-        $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
-        $service_stuff_enabled = $config_service->get_bool('messages.fields.service_stuff.enabled', $pp->schema());
         $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
-        $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
-        $units_enabled = $config_service->get_bool('messages.fields.units.enabled', $pp->schema());
         $message = self::get_message($db, $id, $pp->schema());
+
+        $category = null;
 
         if ($category_enabled && isset($message['category_id']))
         {
@@ -99,7 +87,7 @@ class MessagesShowController extends AbstractController
 
         if ($message['access'] === 'user' && $pp->is_guest())
         {
-            throw new AccessDeniedHttpException('Je hebt geen toegang tot dit bericht.');
+            throw new AccessDeniedHttpException('No sufficient rights to access this message');
         }
 
         $user = $user_cache_service->get($message['user_id'], $pp->schema());
@@ -178,11 +166,6 @@ class MessagesShowController extends AbstractController
          *
          */
 
-        $data_images = [
-            'base_url'      => $env_s3_url,
-            'files'         => array_values(json_decode($message['image_files'] ?? '[]', true)),
-        ];
-
         $sql_where = [];
 
         if ($pp->is_guest())
@@ -232,221 +215,8 @@ class MessagesShowController extends AbstractController
 
         $contacts_content = $contacts_response->getContent();
 
-        $cati = '';
-
-        if ($category_enabled)
-        {
-            $cati .= '<p>Categorie: ';
-            $cati .= '<strong><i>';
-
-            if (isset($category))
-            {
-                $cat_name = $category['parent_name'] ?? '';
-                $cat_name .= isset($category['parent_name']) ? ' > ' : '';
-                $cat_name .= $category['name'];
-
-                $cati .= $link_render->link_no_attr($vr->get('messages'), $pp->ary(),
-                    ['f' => ['cat' => $category['id']]], $cat_name);
-            }
-            else
-            {
-                $cati .= $link_render->link_no_attr($vr->get('messages'), $pp->ary(),
-                    ['f' => ['cid' => 'null']], '** zonder categorie **');
-            }
-
-            $cati .= '</i></strong>';
-            $cati .= '</p>';
-        }
-
-        /**
-         * Images panel
-         */
-
-        $imp = '<div class="panel panel-default">';
-        $imp .= '<div class="panel-body img-upload">';
-
-        $imp .= '<div id="no_images" ';
-        $imp .= 'class="text-center center-body">';
-        $imp .= '<i class="fa fa-image fa-5x"></i> ';
-        $imp .= '<p>Er zijn geen afbeeldingen voor ';
-        $imp .= $message['label']['offer_want_this'] . '</p>';
-        $imp .= '</div>';
-
-        $imp .= '<div id="images_con" ';
-        $imp .= 'data-images="';
-        $imp .= htmlspecialchars(json_encode($data_images));
-        $imp .= '">';
-        $imp .= '</div>';
-
-        $imp .= '</div>';
-
-        if ($pp->is_admin() || $su->is_owner($message['user_id']))
-        {
-            $imp .= '<div class="panel-footer">';
-            $imp .= '<span class="btn btn-success btn-lg btn-block fileinput-button">';
-            $imp .= '<i class="fa fa-plus" id="img_plus"></i> Afbeelding opladen';
-            $imp .= '<input type="file" name="images[]" ';
-            $imp .= 'data-url="';
-
-            $imp .= $link_render->context_path('messages_images_upload',
-                $pp->ary(), ['id' => $id]);
-
-            $imp .= '" ';
-            $imp .= 'data-fileupload ';
-            $imp .= 'data-message-file-type-not-allowed="Bestandstype is niet toegelaten." ';
-            $imp .= 'data-message-max-file-size="Het bestand is te groot." ';
-            $imp .= 'data-message-min-file-size="Het bestand is te klein." ';
-            $imp .= 'data-message-uploaded-bytes="Het bestand is te groot." ';
-            $imp .= 'multiple></span>';
-
-            $imp .= '<p class="text-warning">';
-            $imp .= 'Toegestane formaten: jpg/jpeg, png, wepb, gif, svg. ';
-            $imp .= 'Je kan ook afbeeldingen hierheen verslepen.</p>';
-
-            $imp .= $link_render->link_fa('messages_images_del', $pp->ary(),
-                ['id'		=> $id],
-                'Afbeeldingen verwijderen', [
-                    'class'	=> 'btn btn-danger btn-lg btn-block',
-                    'id'	=> 'btn_remove',
-                    'style'	=> 'display:none;',
-                ],
-                'times'
-            );
-
-            $imp .= '</div>';
-        }
-
-        $imp .= '</div>';
-
-        /**
-         * Message info
-         */
-
-        $mip = '<div class="panel panel-default printview">';
-        $mip .= '<div class="panel-heading">';
-
-        $mip .= '<p><b>Omschrijving</b></p>';
-        $mip .= '</div>';
-        $mip .= '<div class="panel-body">';
-        $mip .= '<p>';
-
-        if ($message['content'])
-        {
-            $mip .= nl2br($message['content']);
-        }
-        else
-        {
-            $mip .= '<i>Er werd geen omschrijving ingegeven.</i>';
-        }
-
-        $mip .= '</p>';
-        $mip .= '</div></div>';
-
-        $mip .= '<div class="panel panel-default printview">';
-        $mip .= '<div class="panel-heading">';
-
-        $mip .= '<dl>';
-
-        if ($units_enabled)
-        {
-            $mip .= '<dt>';
-            $mip .= 'Richtprijs';
-            $mip .= '</dt>';
-            $mip .= '<dd>';
-
-            if (empty($message['amount']))
-            {
-                $mip .= 'niet opgegeven.';
-            }
-            else
-            {
-                $mip .= $message['amount'] . ' ';
-                $mip .= $currency;
-                $mip .= $message['units'] ? ' per ' . $message['units'] : '';
-            }
-
-            $mip .= '</dd>';
-        }
-
-        $mip .= '<dt>Van gebruiker: ';
-        $mip .= '</dt>';
-        $mip .= '<dd>';
-        $mip .= $account_render->link($message['user_id'], $pp->ary());
-        $mip .= '</dd>';
-
-        $mip .= '<dt>Plaats</dt>';
-        $mip .= '<dd>';
-        $mip .= $user['postcode'];
-        $mip .= '</dd>';
-
-        $mip .= '<dt>Aangemaakt op</dt>';
-        $mip .= '<dd>';
-        $mip .= $date_format_service->get($message['created_at'], 'day', $pp->schema());
-        $mip .= '</dd>';
-
-        if ($expires_at_enabled)
-        {
-            $mip .= '<dt>Geldig tot</dt>';
-            $mip .= '<dd>';
-
-            if (isset($message['expires_at']))
-            {
-                $mip .= $date_format_service->get($message['expires_at'], 'day', $pp->schema());
-                $mip .= '</dd>';
-
-                if ($pp->is_admin() || $su->is_owner($message['user_id']))
-                {
-                    $mip .= '<dt>Verlengen</dt>';
-                    $mip .= '<dd>';
-                    $mip .= self::btn_extend($link_render, $pp, $id, 30, '1 maand');
-                    $mip .= '&nbsp;';
-                    $mip .= self::btn_extend($link_render, $pp, $id, 180, '6 maanden');
-                    $mip .= '&nbsp;';
-                    $mip .= self::btn_extend($link_render, $pp, $id, 365, '1 jaar');
-                    $mip .= '</dd>';
-                }
-            }
-            else
-            {
-                $mip .= '<span class="text-danger"><em><b>* Dit bericht vervalt niet *</b></em></span>';
-                $mip .= '</dd>';
-            }
-        }
-
-        if ($service_stuff_enabled)
-        {
-            $mip .= '<dt>Diensten / spullen</dt>';
-            $mip .= '<dd>';
-
-            if (isset($message['service_stuff']))
-            {
-                $se_st = MessageTypeCnst::SERVICE_STUFF_TPL_ARY[$message['service_stuff']];
-                $mip .= '<span class="btn btn-' . $se_st['btn_class'] . '">';
-                $mip .= $se_st['label'];
-                $mip .= '</span>';
-            }
-            else
-            {
-                $mip .= '<span class="text-danger"><b><em>* Onbepaald *</em></b></span>';
-            }
-
-            $mip .= '</dd>';
-        }
-
-        if ($intersystems_service->get_count($pp->schema()))
-        {
-            $mip .= '<dt>Zichtbaarheid</dt>';
-            $mip .= '<dd>';
-            $mip .=  $item_access_service->get_label($message['access']);
-            $mip .= '</dd>';
-        }
-
-        $mip .= '</dl>';
-
-        $mip .= '</div>';
-        $mip .= '</div>';
-
-        $message['is_expired'] = isset($message['expires_at']) && strtotime($message['expires_at'] . ' UTC') < time();
+        $is_expired = isset($message['expires_at']) && strtotime($message['expires_at'] . ' UTC') < time();
+        $show_access = $intersystems_service->get_count($pp->schema()) > 0;
 
         return $this->render('messages/messages_show.html.twig', [
             'message'   => $message,
@@ -454,10 +224,11 @@ class MessagesShowController extends AbstractController
             'mail_form' => $mail_form,
             'prev_id'   => $prev_id,
             'next_id'   => $next_id,
-            'category_info_raw'         => $cati,
-            'images_panel_raw'          => $imp,
-            'message_info_panel_raw'    => $mip,
-            'user_contacts_table_raw'   => $contacts_content,
+            'category'  => $category,
+            'image_files'   =>  array_values(json_decode($message['image_files'] ?? '[]', true)),
+            'user'          => $user,
+            'is_expired'    => $is_expired,
+            'show_access'   => $show_access,
         ]);
     }
 

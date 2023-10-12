@@ -1,0 +1,15 @@
+{%- set cat_filter = category == null ? 'null' : category.id -%}
+{%- set cat_select = category == null ? 'none' : (category.parent_name == null ? 'cat' : 'parent') -%}
+<p>{{- 'label.category'|trans -}}:
+  <strong>
+    <i>
+      <a href="{{- path('messages'|var_route, pp_ary()|merge({'f':{'cat': cat_filter}})) -}}">
+        {{- 'messages_show.category.info'|trans({
+            'cat_select': cat_select,
+            'name': category.name ?? '',
+            'parent_name': category.parent_name ?? '',
+        }) -}}
+      </a>
+    </i>
+  </strong>
+</p>

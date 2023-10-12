@@ -22,7 +22,9 @@
                 {{- 'post.info'|trans({
                     'user': account(post.user_id, schema)|link('users_show', {'id': post.user_id}),
                     'created_at': post.created_at|date_format('min', schema),
-                    'edit_count': post.edit_count
+                    'edit_count': post.edit_count,
+                    'postcode_select': 'without',
+                    'postcode': '',
                 })|raw -}}
             {%- endblock info -%}
 

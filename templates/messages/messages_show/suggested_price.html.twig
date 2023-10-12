@@ -1,0 +1,38 @@
+{%- if config_bool('messages.fields.units.enabled', schema) -%}
+{%- embed 'embed/list_item.html.twig' -%}
+    {%- block dl -%}
+        <dt>
+            {{- 'label.suggested_price'|trans -}}
+        </dt>
+        <dd>
+            {%- if message.amount is null -%}
+                {{- null|no_content -}}
+            {%- else -%}
+                {{- 'messages_show.suggested_price'|trans({
+                    'amount': message.amount,
+                    'units': message.units ?? '',
+                    'currency': config_str('transactions.currency.name', schema),
+                    'units_set': message.units == null or message.units == '' ? 'not_set' : 'set',
+                }) -}}
+            {%- endif -%}
+        </dd>
+    {%- endblock dl -%}
+    {%- block div_right -%}
+    {#
+        {%- if pp_is_admin() or su_is_owner(id) -%}
+            {%- include 'include/btn/edit.html.twig' with {
+                'btn_route': 'users_comments_edit' ~ (is_self ? '_self' : ''),
+                'btn_route_params': is_self ? {} : {'id': id},
+                'btn_title': 'users_comments_edit.title',
+                'btn_title_trans_params': {
+                    'user': account(id, schema),
+                    'self': is_self ? 'self' : 'some_user'
+                },
+                'btn_label_hidden': 'sm',
+                'btn_lg': true,
+            } -%}
+        {%- endif -%}
+        #}
+    {%- endblock div_right -%}
+{%- endembed -%}
+{%- endif -%}

@@ -71,27 +71,34 @@
 {%- endblock heading_title -%}
 
 {%- block heading_append -%}
-    {%- if message.is_expired -%}
+    {%- if is_expired -%}
         &nbsp;
         {%- include 'messages/include/messages_heading_expired.html.twig' -%}
     {%- endif -%}
 {%- endblock heading_append -%}
 
-{%- block sub_heading -%}
-    {{- category_info_raw|raw -}}
-{%- endblock sub_heading -%}
+{%- block heading_sub -%}
+    {%- if config_bool('messages.fields.category.enabled', schema) -%}
+        {%- include 'messages/messages_show/category_info.html.twig' -%}
+    {%- endif -%}
+{%- endblock heading_sub -%}
 
 {%- block content -%}
     <div class="row">
         <div class="col-sm-5">
-            {%- block images_panel -%}
-                {{- images_panel_raw|raw -}}
-            {%- endblock images_panel -%}
+            {%- include 'messages/messages_show/images_panel.html.twig' -%}
         </div>
         <div class="col-sm-7">
-            {%- block message_info_panel -%}
-                {{- message_info_panel_raw|raw -}}
-            {%- endblock message_info_panel -%}
+            <div class="panel panel-default">
+                <ul class="list-group">
+                    {%- include 'messages/messages_show/content.html.twig' -%}
+                    {%- include 'messages/messages_show/service_stuff.html.twig' -%}
+                    {%- include 'messages/messages_show/suggested_price.html.twig' -%}
+                    {%- include 'messages/messages_show/expires_at.html.twig' -%}
+                    {%- include 'messages/messages_show/posted_by.html.twig' -%}
+                    {%- include 'messages/messages_show/access.html.twig' -%}
+                </ul>
+            </div>
         </div>
     </div>
 
@@ -99,26 +106,11 @@
         <h3>
             <span class="fa fa-envelope-o"></span>&nbsp;
             {{- 'messages_show.mail_contact.title'|trans({
-                'to_user': account(message.user_id, schema)
-            }) -}}
+                'to_user': account(user.id, schema)|link('users_show', {'id': user.id})
+            })|raw -}}
         </h3>
         {%- embed 'embed/mail_contact_form.html.twig' -%}
         {%- endembed -%}
     {%- endblock mail_contact_form_panel -%}
 
-    {%- block user_contacts_table -%}
-        {{- user_contacts_table_raw|raw -}}
-    {%- endblock user_contacts_table -%}
-
 {%- endblock content -%}
-
-{%- block css -%}
-    {{- parent() -}}
-    {{- encore_entry_link_tags('fileupload') -}}
-{%- endblock css -%}
-
-{%- block js -%}
-    {{- parent() -}}
-	{{- encore_entry_script_tags('jssor') -}}
-	{{- encore_entry_script_tags('fileupload') -}}
-{%- endblock js -%}

@@ -1,0 +1,46 @@
+{%- if config_bool('messages.fields.expires_at.enabled', schema) -%}
+{%- embed 'embed/list_item.html.twig' -%}
+    {%- block class -%}
+        {%- if is_expired %} list-group-item-danger{%- endif -%}
+    {%- endblock class -%}
+    {%- block dl -%}
+        <dt>
+            {%- if is_expired -%}
+                {{- 'label.expired_at'|trans -}}
+            {%- else -%}
+                {{- 'label.valid_until'|trans -}}
+            {%- endif -%}
+        </dt>
+        <dd>
+            {%- if message.expires_at is null -%}
+                <span class="text-danger">
+                    <i>
+                        {{- 'messages_show.expires_at.never'|trans({
+                            'offer_want': message.offer_want,
+                        }) -}}
+                    </i>
+                </span>
+            {%- else -%}
+                {{- message.expires_at|date_format('day', schema) -}}
+            {%- endif -%}
+        </dd>
+    {%- endblock dl -%}
+    {%- block div_right -%}
+    {#
+        {%- if pp_is_admin() or su_is_owner(id) -%}
+            {%- include 'include/btn/edit.html.twig' with {
+                'btn_route': 'users_comments_edit' ~ (is_self ? '_self' : ''),
+                'btn_route_params': is_self ? {} : {'id': id},
+                'btn_title': 'users_comments_edit.title',
+                'btn_title_trans_params': {
+                    'user': account(id, schema),
+                    'self': is_self ? 'self' : 'some_user'
+                },
+                'btn_label_hidden': 'sm',
+                'btn_lg': true,
+            } -%}
+        {%- endif -%}
+        #}
+    {%- endblock div_right -%}
+{%- endembed -%}
+{%- endif -%}

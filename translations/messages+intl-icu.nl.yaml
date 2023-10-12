@@ -63,6 +63,9 @@ btn:
   image:
     upload: Afbeelding opladen
     del: Afbeelding verwijderen
+  images:
+    upload: Afbeeldingen opladen
+    del: Afbeeldingen verwijderen
   password: Paswoord
   password_reset: Reset Paswoord
   register: Inschrijven
@@ -205,6 +208,7 @@ label:
   example: Voorbeeld
   exclude_counterparties: Exclusief tegenpartijen
   expired: Vervallen
+  expired_at: Vervallen op
   expires_at: Vervaldatum
   file: Bestand
   file_location: Bestandslocatie
@@ -261,6 +265,7 @@ label:
   permanent: Permanent
   permissions_role: Rechten/rol
   phone: Telefoon
+  posted_by: Geplaatst door
   postcode: Postcode
   prolong: Verlengen
   replies: Reacties
@@ -270,6 +275,7 @@ label:
   send_cc: Stuur een kopie van het bericht naar mezelf
   send_notification_email: Stuur een notificatie E-mail
   services: Diensten
+  services_stuff: Diensten/spullen
   split_by_char: Split door Teken
   status: Status
   stuff: Spullen
@@ -295,6 +301,7 @@ label:
   username: Gebruikersnaam
   value: Waarde
   valid: Geldig
+  valid_until: Geldig tot
   validity: Geldigheid
   want: Vraag
   wants: Vraag
@@ -349,8 +356,16 @@ pagination:
 post:
   info: >-
     {edit_count, select,
-      0 {{user} @ {created_at}}
-      other {{user} @ {created_at}, Aangepast: {edit_count}}
+      0 {{postcode_select, select,
+        with {{user} (postcode {postcode}) @ {created_at}}
+        without {{user} @ {created_at}}
+        other {***ERR-0***}
+      }}
+      other {{postcode_select, select,
+        with {{user} (postcode {postcode}) @ {created_at}, Aangepast: {edit_count}}
+        without {{user} @ {created_at}, Aangepast: {edit_count}}
+        other {***ERR***}
+      }}
     }
 
 unique_filter:
@@ -978,20 +993,40 @@ messages_self:
   title: Mijn vraag en aanbod
 
 messages_show:
+  expires_at:
+    never: >-
+      {offer_want, select,
+        offer {Dit aanbod vervalt niet}
+        want {Deze vraag vervalt niet}
+        other {***ERR***}
+      }
   title: >-
     {offer_want, select,
       offer {Aanbod: {subject}}
       want {Vraag: {subject}}
       other {** ERR **}
     }
-  category: >-
-    Categorie: {category}
-  no_images: >-
-    {offer_want, select,
-      offer {Er zijn geen afbeeldingen voor dit aanbod.}
-      want {Er zijn geen afbeeldingen voor deze vraag.}
-      other {** ERR **}
+  category:
+    info: >-
+      {cat_select, select,
+        none {*** zonder categorie ***}
+        cat {{name}}
+        parent {{parent_name} > {name}}
+        other {***ERR***}
+      }
+  suggested_price: >-
+    {units_set, select,
+      set {{amount} {currency} per {units}}
+      not_set {{amount} {currency}}
+      other {***ERR***}
     }
+  images:
+    none: >-
+      {offer_want, select,
+        offer {Er zijn geen afbeeldingen voor dit aanbod.}
+        want {Er zijn geen afbeeldingen voor deze vraag.}
+        other {** ERR **}
+      }
   no_content: >-
     Er werd geen omschrijving ingegeven.
   no_expiration_defined: >-

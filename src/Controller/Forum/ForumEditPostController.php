@@ -73,6 +73,7 @@ class ForumEditPostController extends AbstractController
 
         $command = new ForumPostCommand();
         $command->content = $forum_post['content'];
+        $content = $forum_post['content'];
 
         $form_options = [
             'validation_groups' => ['edit'],
@@ -85,9 +86,18 @@ class ForumEditPostController extends AbstractController
             && $form->isValid())
         {
             $command = $form->getData();
-            $forum_repository->update_post($id, $command, $pp->schema());
 
-            $alert_service->success('Reactie aangepast.');
+            if ($command->content === $content)
+            {
+                $alert_service->Warning('Reactie niet gewijzigd');
+            }
+            else
+            {
+                $forum_repository->update_post($id, $command, $pp->schema());
+
+                $alert_service->success('Reactie aangepast');
+            }
+
             return $this->redirectToRoute('forum_topic', [
                 ...$pp->ary(),
                 'id' => $forum_topic['id'],

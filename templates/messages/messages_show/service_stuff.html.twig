@@ -1,0 +1,34 @@
+{%- if config_bool('messages.fields.service_stuff.enabled', schema) -%}
+{%- embed 'embed/list_item.html.twig' -%}
+    {%- import 'macro/lbl.html.twig' as l -%}
+    {%- block dl -%}
+        <dt>
+            {{- 'label.services_stuff'|trans -}}
+        </dt>
+        <dd>
+            {%- if message.service_stuff is not null and message.service_stuff != '' -%}
+                {{- l.label(message.service_stuff) -}}
+            {%- else -%}
+                {{- null|no_content -}}
+            {%- endif -%}
+        </dd>
+    {%- endblock dl -%}
+    {%- block div_right -%}
+    {#
+        {%- if pp_is_admin() or su_is_owner(id) -%}
+            {%- include 'include/btn/edit.html.twig' with {
+                'btn_route': 'users_comments_edit' ~ (is_self ? '_self' : ''),
+                'btn_route_params': is_self ? {} : {'id': id},
+                'btn_title': 'users_comments_edit.title',
+                'btn_title_trans_params': {
+                    'user': account(id, schema),
+                    'self': is_self ? 'self' : 'some_user'
+                },
+                'btn_label_hidden': 'sm',
+                'btn_lg': true,
+            } -%}
+        {%- endif -%}
+        #}
+    {%- endblock div_right -%}
+{%- endembed -%}
+{%- endif -%}

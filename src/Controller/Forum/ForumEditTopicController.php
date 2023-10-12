@@ -78,6 +78,10 @@ class ForumEditTopicController extends AbstractController
         $command->content = $forum_post['content'];
         $command->access = $forum_topic['access'];
 
+        $subject = $forum_topic['subject'];
+        $content = $forum_post['content'];
+        $access = $forum_topic['access'];
+
         $form_options = [
             'validation_groups' => ['edit'],
         ];
@@ -90,17 +94,32 @@ class ForumEditTopicController extends AbstractController
         {
             $command = $form->getData();
 
-            $forum_repository->update_topic($id, $command, $pp->schema());
+            $alert_success_ary = [];
 
-            if ($su->is_owner($forum_topic['user_id']))
+            if ($command->subject !== $subject)
             {
-                $alert_service->success('Je forum onderwerp is aangepast.');
+                $alert_success_ary[] = 'Onderwerp aangepast';
+            }
+
+            if ($command->content !== $content)
+            {
+                $alert_success_ary[] = 'Inhoud aangepast';
+            }
+
+            if ($command->access !== $access)
+            {
+                $alert_success_ary[] = 'Zichtbaarheid aangepast';
+            }
+
+            if (count($alert_success_ary))
+            {
+                $forum_repository->update_topic($id, $command, $pp->schema());
+
+                $alert_service->success($alert_success_ary);
             }
             else
             {
-                $alert_service->success('Forum onderwerp van ' .
-                    $account_render->get_str($forum_topic['user_id'], $pp->schema()) .
-                    ' aangepast.');
+                $alert_service->warning('Forum onderwerp niet gewijzigd');
             }
 
             return $this->redirectToRoute('forum_topic', [

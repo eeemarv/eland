@@ -1,0 +1,50 @@
+
+<div class="panel panel-default">
+  <div class="panel-body img-upload">
+    <div id="no_images" class="text-center center-body">
+      <i class="fa fa-image fa-5x"></i>
+      <p>
+        {{- 'messages_show.images.none'|trans({
+          'offer_want': message.offer_want,
+        }) -}}
+      </p>
+    </div>
+    <div id="images_con" data-images="{{-  {'base_url': s3(), 'files': image_files}|json_encode -}}">
+    </div>
+  </div>
+  {%- if pp_is_admin() or su_is_owner(message.user_id) -%}
+
+  <div class="panel-footer">
+    <span class="btn btn-success btn-lg btn-block fileinput-button">
+      <i class="fa fa-plus" id="img_plus"></i>
+      &nbsp;
+      {{- 'btn.images.upload'|trans -}}
+      <input
+        type="file"
+        name="images[]"
+        data-url="{{- path('messages_images_upload', pp_ary()|merge({'id': id})) -}}"
+        data-fileupload
+        data-message-file-type-not-allowed="{{- 'upload.error.type'|trans -}}"
+        data-message-max-file-size="{{- 'upload.error.size.too_big'|trans -}}"
+        data-message-min-file-size="{{- 'upload.error.size.too_small'|trans -}}"
+        data-message-uploaded-bytes="{{- 'upload.error.size.too_big'|trans -}}"
+        multiple>
+    </span>
+    <p class="text-warning">
+        {{- 'help.images_upload'|trans -}}
+    </p>
+
+    {%- include 'include/btn/del.html.twig' with {
+        'btn_route': 'messages_images_del',
+        'btn_route_params': {'id': id},
+        'btn_class': ' btn-lg btn-block',
+        'btn_attr': {
+            'id': 'btn_remove',
+            'style': 'display:none;',
+        },
+        'btn_label': 'btn.images.del',
+    } -%}
+  </div>
+
+  {%- endif -%}
+</div>
