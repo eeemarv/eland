@@ -452,7 +452,9 @@ li.active-group a:visited, li.active-group a:hover
   background-color: #666;
   color: white;
 }
-
+.label-md {
+  font-size: 1.2em;
+}
 .label-lg {
   font-size: 1.8em;
 }

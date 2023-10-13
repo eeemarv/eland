@@ -569,17 +569,25 @@ class MessagesListController extends AbstractController
 
             $out .= '<td>';
 
+            $ow_label = '<span class="label label-li label-md label-';
+            $ow_label .= match($msg['offer_want']){
+                'offer' => 'white">Aanbod',
+                'want'  => 'default">Vraag',
+                default => 'danger">***ERR**',
+            };
+            $ow_label .= '</span>';
+
             if ($bulk_actions_enabled && ($pp->is_admin() || $is_owner))
             {
                 $out .= strtr(BulkCnst::TPL_CHECKBOX_ITEM, [
                     '%id%'      => $msg['id'],
                     '%attr%'    => isset($selected_messages[$msg['id']]) ? ' checked' : '',
-                    '%label%'   => ucfirst($msg['label']['offer_want']),
+                    '%label%'   => $ow_label,
                 ]);
             }
             else
             {
-                $out .= ucfirst($msg['label']['offer_want']);
+                $out .= $ow_label;
             }
 
             $out .= '</td>';
@@ -1184,7 +1192,6 @@ class MessagesListController extends AbstractController
 
         while ($msg = $res->fetchAssociative())
         {
-            $msg['label'] = MessagesShowController::get_label($msg['offer_want']);
             $messages[] = $msg;
         }
 

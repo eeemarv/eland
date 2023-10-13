@@ -158,9 +158,24 @@ class MessagesExtendedController extends AbstractController
             $out .= '<div class="media-body">';
             $out .= '<h3 class="media-heading">';
 
-            $out .= $link_render->link_no_attr('messages_show', $pp->ary(),
-                ['id' => $msg['id']],
-                ucfirst($msg['label']['offer_want']) . ': ' . $msg['subject']);
+            $ow_label = '<span class="label label-li label-';
+            $ow_label .= match($msg['offer_want']){
+                'offer' => 'white">Aanbod',
+                'want'  => 'default">Vraag',
+                default => 'danger">***ERR**',
+            };
+            $ow_label .= '</span>';
+
+            $out .= '<a href="';
+            $out .= $link_render->path('messages_show', [
+                ...$pp->ary(),
+                'id' => $msg['id'],
+            ]);
+            $out .= '">';
+            $out .= $ow_label;
+            $out .= ' ';
+            $out .= htmlspecialchars($msg['subject'], ENT_QUOTES);
+            $out .= '</a>';
 
             if ($expired)
             {
