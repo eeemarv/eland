@@ -151,8 +151,14 @@
     },
 } -%}
 
-<span class="{{- type }} {{ type -}}-{{- render[id][type ~ '_class'] -}}{%- if type == 'label' %} label-lg label-li{%- endif -%}"{%- if render[id].title is defined %} title="{{- render[id].title|trans -}}"{%- endif -%}>
-    {{- render[id].label|trans -}}{%- if count %} ({{- count -}}){%- endif -%}
+<span class="
+    {{- type }} {{ type -}}-{{- render[id][type ~ '_class'] -}}
+    {%- if type == 'label' %} label-li{%- endif -%}"
+    {%- if render[id].title is defined %} title="{{- render[id].title|trans -}}"
+    {%- endif -%}>
+    {{- render[id].label|trans -}}
+    {%- if count %} ({{- count -}})
+    {%- endif -%}
 </span>
 {%- endmacro _r_btnlbl -%}
 
@@ -165,6 +171,13 @@
     {%- import _self as s -%}
     {{- s._r_btnlbl('label', id, count) -}}
 {%- endmacro label -%}
+
+{%- macro label_lg(id, count) -%}
+    {%- import _self as s -%}
+    <span class="label-lg">
+    {{- s._r_btnlbl('label', id, count) -}}
+    </span>
+{%- endmacro label_lg -%}
 
 {%- macro balance(balance) -%}
     <span class="label label-lg label-li label-info">

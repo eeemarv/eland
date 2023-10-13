@@ -454,8 +454,7 @@ li.active-group a:visited, li.active-group a:hover
 }
 
 .label-lg {
-  font-size: 18px;
-  line-height: 30px;
+  font-size: 1.8em;
 }
 .label-white {
   background-color: #fff;

@@ -5,12 +5,3 @@
     {{- assets_add(['messages_filter.js']) -}}
     {{- assets_add(['cat_count_ary.js']) -}}
 {%- endblock assets_add -%}
-
-{%- block css -%}
-    {{- parent() -}}
-{%- endblock css -%}
-
-{%- block js -%}
-    {{- parent() -}}
-	{{- encore_entry_script_tags('typeahead') -}}
-{%- endblock js -%}

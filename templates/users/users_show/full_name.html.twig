@@ -12,7 +12,7 @@
             -%}
                 {{- user.full_name|no_content -}}
             {%- else -%}
-                {{- l.label('hidden') -}}
+                {{- l.label_lg('hidden') -}}
             {%- endif -%}
         </dd>
         {%- if pp_is_admin() or su_is_owner(user.id) -%}
@@ -20,7 +20,7 @@
                 {{- 'users_full_name.visible.label'|trans -}}
             </dt>
             <dd>
-                {{- l.label(user.full_name_access) -}}
+                {{- l.label_lg(user.full_name_access) -}}
             </dd>
         {%- endif -%}
     {%- endblock dl -%}

@@ -35,12 +35,13 @@ class MessageRepository
 		int $ref_id,
 		array $visible_ary,
 		string $schema
-	):int
+	):null|int
 	{
         $res = $this->db->executeQuery('select m.id
             from ' . $schema . '.messages m,
                 ' . $schema . '.users u
 			where m.id > ?
+				and u.id = m.user_id
 				and u.is_active
 				and u.remote_schema is null
 				and u.remote_email is null
@@ -50,19 +51,27 @@ class MessageRepository
 			[$ref_id, $visible_ary],
 			[\PDO::PARAM_INT, ArrayParameterType::STRING]);
 
-		return $res->fetchOne() ?: 0;
+		$prev_id = $res->fetchOne();
+
+		if ($prev_id === false)
+		{
+			return null;
+		}
+
+		return $prev_id;
 	}
 
 	public function get_next_id(
 		int $ref_id,
 		array $visible_ary,
 		string $schema
-	):int
+	):null|int
 	{
         $res = $this->db->executeQuery('select m.id
             from ' . $schema . '.messages m,
                 ' . $schema . '.users u
 			where m.id < ?
+				and u.id = m.user_id
 				and u.is_active
 				and u.remote_schema is null
 				and u.remote_email is null
@@ -72,7 +81,14 @@ class MessageRepository
 			[$ref_id, $visible_ary],
 			[\PDO::PARAM_INT, ArrayParameterType::STRING]);
 
-		return $res->fetchOne() ?: 0;
+		$next_id = $res->fetchOne();
+
+		if ($next_id === false)
+		{
+			return null;
+		}
+
+		return $next_id;
 	}
 
 	public function del(int $id, string $schema):bool
@@ -87,9 +103,19 @@ class MessageRepository
 		return (int) $this->db->lastInsertId($schema . '.messages_id_seq');
 	}
 
-	public function update(array $message, int $id, string $schema):bool
+	public function update(
+		array $update_ary,
+		int $id,
+		string $schema
+	):int
 	{
-		return $this->db->update($schema . '.messages', $message, ['id' => $id]) ? true : false;
+		$count_affected_rows = $this->db->update(
+			$schema . '.messages',
+			$update_ary,
+			['id' => $id]
+		);
+
+		return $count_affected_rows;
 	}
 
 	public function get_count_for_user_id(

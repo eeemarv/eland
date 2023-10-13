@@ -7,7 +7,7 @@
         </dt>
         <dd>
             {%- if message.service_stuff is not null and message.service_stuff != '' -%}
-                {{- l.label(message.service_stuff) -}}
+                {{- l.label_lg(message.service_stuff) -}}
             {%- else -%}
                 {{- null|no_content -}}
             {%- endif -%}

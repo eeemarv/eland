@@ -1,8 +1,11 @@
 {%- extends 'messages/base/messages_base.html.twig' -%}
+{%- import 'macro/lbl.html.twig' as l -%}
 
 {%- block assets_add -%}
     {{- parent() -}}
+    {#
     {{- assets_add(['leaflet', 'contacts_user_map.js',]) -}}
+    #}
     {{- assets_add(['jssor', 'messages_show_images_slider.js',]) -}}
     {%- if pp_is_admin() or su_is_owner(message.user_id) -%}
         {{- assets_add(['fileupload', 'messages_show_images_upload.js',]) -}}
@@ -64,10 +67,9 @@
 {%- endblock btn_item_nav -%}
 
 {%- block heading_title -%}
-    {{- 'messages_show.title'|trans({
-        'offer_want': message.offer_want,
-        'subject': message.subject
-    }) -}}
+    {{- l.label(message.offer_want) -}}
+    &nbsp;
+    {{- message.subject -}}
 {%- endblock heading_title -%}
 
 {%- block heading_append -%}

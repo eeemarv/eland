@@ -17,6 +17,7 @@ use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Repository\CategoryRepository;
 use App\Repository\ContactRepository;
+use App\Repository\MessageRepository;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\DistanceService;
@@ -50,7 +51,7 @@ class MessagesShowController extends AbstractController
     public function __invoke(
         Request $request,
         int $id,
-        Db $db,
+        MessageRepository $message_repository,
         ContactRepository $contact_repository,
         CategoryRepository $category_repository,
         AccountRender $account_render,
@@ -76,7 +77,8 @@ class MessagesShowController extends AbstractController
         }
 
         $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
-        $message = self::get_message($db, $id, $pp->schema());
+
+        $message = $message_repository->get($id, $pp->schema());
 
         $category = null;
 
@@ -91,6 +93,11 @@ class MessagesShowController extends AbstractController
         }
 
         $user = $user_cache_service->get($message['user_id'], $pp->schema());
+
+        if (!$user['is_active'])
+        {
+            throw new AccessDeniedHttpException('Deactivated user account with id ' . $message['user_id']);
+        }
 
         /**
          * mail contact form
@@ -166,6 +173,12 @@ class MessagesShowController extends AbstractController
          *
          */
 
+        $visible_ary = $item_access_service->get_visible_ary_for_page();
+
+        $prev_id = $message_repository->get_prev_id($id, $visible_ary, $pp->schema());
+        $next_id = $message_repository->get_next_id($id, $visible_ary, $pp->schema());
+
+        /*
         $sql_where = [];
 
         if ($pp->is_guest())
@@ -199,7 +212,9 @@ class MessagesShowController extends AbstractController
             order by m.id desc
             limit 1',
             [$id], [\PDO::PARAM_INT]);
+        */
 
+        /*
         $contacts_response = $contacts_user_show_inline_controller(
             $user['id'],
             $contact_repository,
@@ -214,6 +229,7 @@ class MessagesShowController extends AbstractController
         );
 
         $contacts_content = $contacts_response->getContent();
+        */
 
         $is_expired = isset($message['expires_at']) && strtotime($message['expires_at'] . ' UTC') < time();
         $show_access = $intersystems_service->get_count($pp->schema()) > 0;

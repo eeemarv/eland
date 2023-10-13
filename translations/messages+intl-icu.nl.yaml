@@ -1000,12 +1000,6 @@ messages_show:
         want {Deze vraag vervalt niet}
         other {***ERR***}
       }
-  title: >-
-    {offer_want, select,
-      offer {Aanbod: {subject}}
-      want {Vraag: {subject}}
-      other {** ERR **}
-    }
   category:
     info: >-
       {cat_select, select,

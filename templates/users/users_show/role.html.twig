@@ -14,7 +14,7 @@
             {%- if user.role is not defined or user.role == null -%}
                 {{- null|no_content -}}
             {%- else -%}
-                {{- l.label(user.role ~ '_role') -}}
+                {{- l.label_lg(user.role ~ '_role') -}}
             {%- endif -%}
         </dd>
     {%- endblock dl -%}
