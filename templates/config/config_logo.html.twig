@@ -58,12 +58,3 @@
 {%- endblock form_content -%}
 
 {%- block form_end -%}{%- endblock -%}
-
-{%- block css -%}
-    {{- parent() -}}
-{%- endblock css -%}
-
-{%- block js -%}
-    {{- parent() -}}
-    {{- encore_entry_script_tags('fileupload') -}}
-{%- endblock js -%}

@@ -4,12 +4,3 @@
     {{- parent() -}}
     {{- assets_add(['leaflet', 'users_map.js']) -}}
 {%- endblock assets_add -%}
-
-{%- block css -%}
-    {{- parent() -}}
-{%- endblock css -%}
-
-{%- block js -%}
-    {{- parent() -}}
-	{{- encore_entry_script_tags('typeahead') -}}
-{%- endblock js -%}

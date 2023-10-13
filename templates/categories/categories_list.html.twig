@@ -91,13 +91,3 @@
         'attr': {'data-categories-input': ''}
     }) -}}
 {%- endblock form_a -%}
-
-{%- block css -%}
-    {{- parent() -}}
-{%- endblock css -%}
-
-{%- block js -%}
-    {{- encore_entry_script_tags('sortable') -}}
-    {{- encore_entry_script_tags('categories') -}}
-    {{- parent() -}}
-{%- endblock js -%}

@@ -17,12 +17,3 @@
 
 {%- set cancel_route = 'docs_map' -%}
 {%- set cancel_route_params = {'id': doc_map.id} -%}
-
-{%- block css -%}
-    {{- parent() -}}
-{%- endblock css -%}
-
-{%- block js -%}
-    {{- parent() -}}
-	{{- encore_entry_script_tags('typeahead') -}}
-{%- endblock js -%}

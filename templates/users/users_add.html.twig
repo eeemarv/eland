@@ -3,14 +3,3 @@
 {%- block heading_title -%}
     {{- 'users_add.title'|trans -}}
 {%- endblock heading_title -%}
-
-{%- block css -%}
-    {{- parent() -}}
-	{{- encore_entry_script_tags('datepicker') -}}
-{%- endblock css -%}
-
-{%- block js -%}
-    {{- parent() -}}
-	{{- encore_entry_script_tags('datepicker') -}}
-	{{- encore_entry_script_tags('typeahead') -}}
-{%- endblock js -%}

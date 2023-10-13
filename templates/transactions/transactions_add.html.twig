@@ -8,13 +8,3 @@
 {%- block heading_title -%}
     {{- 'transactions_add.title'|trans -}}
 {%- endblock heading_title -%}
-
-{%- block css -%}
-    {{- parent() -}}
-{%- endblock css -%}
-
-{%- block js -%}
-    {{- parent() -}}
-	{{- encore_entry_script_tags('typeahead') -}}
-	{{- encore_entry_script_tags('transactions_add') -}}
-{%- endblock js -%}

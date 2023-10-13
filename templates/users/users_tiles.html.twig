@@ -8,14 +8,3 @@
 {%- block filter_form_a -%}
     {%- include 'form/q_filter.html.twig' -%}
 {%- endblock filter_form_a -%}
-
-{%- block css -%}
-    {{- parent() -}}
-    {{- encore_entry_link_tags('footable') -}}
-{%- endblock css -%}
-
-{%- block js -%}
-    {{- parent() -}}
-	{{- encore_entry_script_tags('footable') -}}
-	{{- encore_entry_script_tags('typeahead') -}}
-{%- endblock js -%}

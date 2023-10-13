@@ -7,12 +7,3 @@
         'name': doc.name ?? doc.original_filename
     }) -}}
 {%- endblock heading_title -%}
-
-{%- block css -%}
-    {{- parent() -}}
-{%- endblock css -%}
-
-{%- block js -%}
-    {{- parent() -}}
-	{{- encore_entry_script_tags('typeahead') -}}
-{%- endblock js -%}

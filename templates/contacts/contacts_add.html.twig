@@ -15,15 +15,3 @@
 {%- block form_submit_btn -%}
     {%- include 'form/submit_add_btn.html.twig' -%}
 {%- endblock form_submit_btn -%}
-
-{%- block css -%}
-    {{- parent() -}}
-    {{- encore_entry_link_tags('datepicker') -}}
-    {{- encore_entry_link_tags('summernote') -}}
-{%- endblock css -%}
-
-{%- block js -%}
-    {{- parent() -}}
-	{{- encore_entry_script_tags('datepicker') -}}
-	{{- encore_entry_script_tags('summernote') -}}
-{%- endblock js -%}

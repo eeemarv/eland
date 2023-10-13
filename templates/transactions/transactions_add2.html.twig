@@ -122,13 +122,3 @@
     </div>
 
 {%- endblock form_a -%}
-
-{%- block css -%}
-    {{- parent() -}}
-{%- endblock css -%}
-
-{%- block js -%}
-    {{- parent() -}}
-	{{- encore_entry_script_tags('typeahead') -}}
-	{{- encore_entry_script_tags('transactions_add') -}}
-{%- endblock js -%}

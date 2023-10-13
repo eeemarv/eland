@@ -157,13 +157,3 @@
     {%- endif -%}
 
 {%- endblock content -%}
-
-{%- block css -%}
-    {{- parent() -}}
-    {{- encore_entry_link_tags('fileupload') -}}
-{%- endblock css -%}
-
-{%- block js -%}
-    {{- parent() -}}
-	{{- encore_entry_script_tags('fileupload') -}}
-{%- endblock js -%}
