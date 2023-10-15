@@ -1,0 +1,14 @@
+{%- extends 'messages/units/messages_units_edit.html.twig' -%}
+
+{%- block heading_title -%}
+    {{- 'messages_units_del.title'|trans({
+        'self': su_is_owner(user_id) ? 'self' : 'some_user',
+        'user': account(user_id, schema),
+        'subject': message.subject,
+        'offer_want': message.offer_want,
+    }) -}}
+{%- endblock heading_title -%}
+
+{%- block form_submit_btn -%}
+    {%- include 'form/submit_del_btn.html.twig' -%}
+{%- endblock form_submit_btn -%}

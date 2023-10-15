@@ -1,0 +1,21 @@
+{%- extends 'messages/base/messages_single_form.html.twig' -%}
+
+{%- block heading_title -%}
+    {{- 'messages_expires_at_del.title'|trans({
+        'self': su_is_owner(user_id) ? 'self' : 'some_user',
+        'user': account(user_id, schema),
+        'subject': message.subject,
+        'offer_want': message.offer_want,
+    }) -}}
+{%- endblock heading_title -%}
+
+{%- block form_a -%}
+    {{- form_row(form.expires_at, {
+        'label': 'label.expires_at',
+        'disabled': true,
+    }) -}}
+{%- endblock form_a -%}
+
+{%- block form_submit_btn -%}
+    {%- include 'form/submit_del_btn.html.twig' -%}
+{%- endblock form_submit_btn -%}

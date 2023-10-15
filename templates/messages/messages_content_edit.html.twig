@@ -1,0 +1,26 @@
+{%- extends 'messages/base/messages_single_form.html.twig' -%}
+
+{%- block assets_add -%}
+    {{- parent() -}}
+    {{- assets_add([
+        'summernote',
+        'summernote_forum_post.js',
+    ]) -}}
+{%- endblock assets_add -%}
+
+{%- block heading_title -%}
+    {{- 'messages_content_edit.title'|trans({
+        'self': su_is_owner(user_id) ? 'self' : 'some_user',
+        'user': account(user_id, schema),
+        'subject': message.subject,
+        'offer_want': message.offer_want,
+    }) -}}
+{%- endblock heading_title -%}
+
+{%- block form_a -%}
+
+    {{- form_row(form.content, {
+        'label': 'label.description',
+    }) -}}
+
+{%- endblock form_a -%}

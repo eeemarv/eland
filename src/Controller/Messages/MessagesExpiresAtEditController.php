@@ -32,6 +32,21 @@ class MessagesExpiresAtEditController extends AbstractController
     ];
 
     #[Route(
+        '/{system}/{role_short}/messages/{id}/expires-at/add',
+        name: 'messages_expires_at_add',
+        methods: ['GET', 'POST'],
+        requirements: [
+            'id'            => '%assert.id%',
+            'system'        => '%assert.system%',
+            'role_short'    => '%assert.role_short.user%',
+        ],
+        defaults: [
+            'mode'          => 'add',
+            'module'        => 'messages',
+        ],
+    )]
+
+    #[Route(
         '/{system}/{role_short}/messages/{id}/expires-at/edit',
         name: 'messages_expires_at_edit',
         methods: ['GET', 'POST'],
@@ -41,6 +56,7 @@ class MessagesExpiresAtEditController extends AbstractController
             'role_short'    => '%assert.role_short.user%',
         ],
         defaults: [
+            'mode'          => 'edit',
             'module'        => 'messages',
         ],
     )]
@@ -48,6 +64,7 @@ class MessagesExpiresAtEditController extends AbstractController
     public function __invoke(
         Request $request,
         int $id,
+        string $mode,
         AlertService $alert_service,
         MessageRepository $message_repository,
         ConfigService $config_service,
@@ -55,6 +72,11 @@ class MessagesExpiresAtEditController extends AbstractController
         SessionUserService $su
     ):Response
     {
+        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+        {
+            throw new NotFoundHttpException('Messages module not enabled in configuration');
+        }
+
         if (!$config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Expireation of messages not enabled in configuration');
@@ -67,6 +89,21 @@ class MessagesExpiresAtEditController extends AbstractController
         if (!$pp->is_admin() && !$su->is_owner($user_id))
         {
             throw new AccessDeniedHttpException('You are not allowed to modify this message');
+        }
+
+        if (isset($message['expires_at']))
+        {
+            if ($mode === 'add')
+            {
+                throw new NotAcceptableHttpException('Wrong route, choose "edit" route');
+            }
+        }
+        else
+        {
+            if ($mode === 'edit')
+            {
+                throw new NotAcceptableHttpException('Wrong route, choose "add" route');
+            }
         }
 
         $form_options = [];
@@ -96,9 +133,6 @@ class MessagesExpiresAtEditController extends AbstractController
         {
             /** @var Form $form */
             $btn = $form->getClickedButton()->getName();
-
-            error_log('----SUBMIT BTN ----');
-            error_log($btn);
 
             if ($btn === 'submit')
             {
@@ -178,11 +212,10 @@ class MessagesExpiresAtEditController extends AbstractController
 
         }
 
-        return $this->render('messages/messages_expires_at_edit.html.twig', [
+        return $this->render('messages/expires_at/messages_expires_at_' . $mode . '.html.twig', [
             'form'      => $form->createView(),
             'message'   => $message,
             'user_id'   => $user_id,
-            'mode'      => $mode,
         ]);
     }
 }

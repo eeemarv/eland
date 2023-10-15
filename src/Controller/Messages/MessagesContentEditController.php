@@ -2,14 +2,16 @@
 
 namespace App\Controller\Messages;
 
-use App\Command\Messages\MessagesExpiresAtCommand;
-use App\Form\Type\Messages\MessagesExpiresAtDelType;
+use App\Command\Messages\MessagesContentCommand;
+use App\Form\Type\Messages\MessagesContentEditType;
 use App\Repository\MessageRepository;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -18,11 +20,11 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
-class MessagesExpiresAtDelController extends AbstractController
+class MessagesContentEditController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/messages/{id}/expires-at/del',
-        name: 'messages_expires_at_del',
+        '/{system}/{role_short}/messages/{id}/content/edit',
+        name: 'messages_content_edit',
         methods: ['GET', 'POST'],
         requirements: [
             'id'            => '%assert.id%',
@@ -40,6 +42,7 @@ class MessagesExpiresAtDelController extends AbstractController
         AlertService $alert_service,
         MessageRepository $message_repository,
         ConfigService $config_service,
+        #[Autowire(service: 'html_sanitizer.sanitizer.user_post_sanitizer')] HtmlSanitizerInterface $html_sanitizer,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
@@ -49,22 +52,7 @@ class MessagesExpiresAtDelController extends AbstractController
             throw new NotFoundHttpException('Messages module not enabled in configuration');
         }
 
-        if (!$config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema()))
-        {
-            throw new NotFoundHttpException('Expireation of messages not enabled in configuration');
-        }
-
-        if ($config_service->get_bool('messages.fields.expires_at.required', $pp->schema()))
-        {
-            throw new NotFoundHttpException('Expireation of messages is required in configuration');
-        }
-
         $message = $message_repository->get($id, $pp->schema());
-
-        if (!isset($message['expires_at']))
-        {
-            throw new NotFoundHttpException('No expiration set for message ' . $id);
-        }
 
         $user_id = $message['user_id'];
 
@@ -73,32 +61,45 @@ class MessagesExpiresAtDelController extends AbstractController
             throw new AccessDeniedHttpException('You are not allowed to modify this message');
         }
 
-        $command = new MessagesExpiresAtCommand();
+        $command = new MessagesContentCommand();
 
-        $command->expires_at = $message['expires_at'];
+        $command->content = $message['content'];
+        $content = $message['content'];
 
-        $form = $this->createForm(MessagesExpiresAtDelType::class, $command);
+        $form = $this->createForm(MessagesContentEditType::class, $command);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $update_ary = [
-                'expires_at' => null,
-            ];
+            $command = $form->getData();
 
-            $message_repository->update($update_ary, $id, $pp->schema());
+            $content_sanitized = $html_sanitizer->sanitize($command->content);
 
-            $alert_service->success('De vervaldatum is verwijderd');
+            if ($content === $content_sanitized)
+            {
+                $alert_service->warning('Omschrijvng niet gewijzigd');
+            }
+            else
+            {
+                $update_ary = [
+                    'content'   => $content_sanitized,
+                ];
+
+                $message_repository->update($update_ary, $id, $pp->schema());
+
+                $alert_service->success('Omschrijvng aangepast');
+            }
 
             return $this->redirectToRoute('messages_show', [
                 ...$pp->ary(),
                 'id'    => $id,
             ]);
+
         }
 
-        return $this->render('messages/expires_at/messages_expires_at_del.html.twig', [
+        return $this->render('messages/messages_content_edit.html.twig', [
             'form'      => $form->createView(),
             'message'   => $message,
             'user_id'   => $user_id,

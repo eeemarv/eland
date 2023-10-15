@@ -1,0 +1,10 @@
+{%- extends 'messages/base/messages_single_form.html.twig' -%}
+
+{%- block form_b -%}
+    {{- form_row(form.expires_at, {
+        'label': 'label.expires_at',
+        'attr': {
+            'data-date-start-date': 'today',
+        }
+    }) -}}
+{%- endblock form_b -%}

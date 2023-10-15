@@ -965,6 +965,23 @@ messages_edit:
       other {** ERR **}
     }
 
+messages_expires_at_add:
+  title: >-
+    {self, select,
+      self {{offer_want, select,
+        offer {Bepaal een vervaldatum voor je aanbod "{subject}"}
+        want {Bepaal een vervaldatum voor je vraag "{subject}"}
+        other {***ERR ow 1***}
+      }}
+      other {{offer_want, select,
+        offer {Bepaal een vervaldatum voor het aanbod "{subject}" van {user}}
+        want {Bepaal een vervaldatum voor de vraag "{subject}" van {user}}
+        other {***ERR ow 2***}
+      }}
+    }
+  btn: >-
+    Bepaal een vervaldatum
+
 messages_expires_at_del:
   title: >-
     {self, select,
@@ -993,39 +1010,36 @@ messages_expires_at_edit:
   period: Laat het bericht vervallen over
   title: >-
     {self, select,
-      self {{mode, select,
-        edit {{offer_want, select,
-          offer {Vervaldatum voor je aanbod "{subject}" aanpassen}
-          want {Vervaldatum voor je vraag "{subject}" aanpassen}
-          other {***ERR ow1***}
-        }}
-        add {{offer_want, select,
-          offer {Bepaal een vervaldatum voor je aanbod "{subject}"}
-          want {Bepaal een vervaldatum voor je vraag "{subject}"}
-          other {***ERR ow2***}
-        }}
-        other {***ERR mode 1***}
+      self {{offer_want, select,
+        offer {Vervaldatum voor je aanbod "{subject}" aanpassen}
+        want {Vervaldatum voor je vraag "{subject}" aanpassen}
+        other {***ERR ow1***}
       }}
-      other {{mode, select,
-        edit {{offer_want, select,
-          offer {Vervaldatum voor het aanbod "{subject}" van {user} aanpassen}
-          want {Vervaldatum voor de vraag "{subject}" van {user} aanpassen}
-          other {***ERR ow3***}
-        }}
-        add {{offer_want, select,
-          offer {Bepaal een vervaldatum voor het aanbod "{subject}" van {user}}
-          want {Bepaal een vervaldatum voor de vraag "{subject}" van {user}}
-          other {***ERR ow4***}
-        }}
-        other {***ERR mode 2***}
+      other {{offer_want, select,
+        offer {Vervaldatum voor het aanbod "{subject}" van {user} aanpassen}
+        want {Vervaldatum voor de vraag "{subject}" van {user} aanpassen}
+        other {***ERR ow3***}
       }}
     }
   btn: >-
-    {mode, select,
-      edit {Vervaldatum aanpassen}
-      add {Bepaal een vervaldatum}
-      other {***ERR***}
+    Vervaldatum aanpassen
+
+messages_content_edit:
+  title: >-
+    {self, select,
+      self {{offer_want, select,
+        offer {Omschrijving van je aanbod "{subject}" aanpassen}
+        want {Omschrijving van je vraag "{subject}" aanpassen}
+        other {***ERR ow1***}
+      }}
+      other {{offer_want, select,
+        offer {Omschrijving van het aanbod "{subject}" van {user} aanpassen}
+        want {Omschrijving van de vraag "{subject}" van {user} aanpassen}
+        other {***ERR ow2***}
+      }}
     }
+  btn: >-
+    Omschrijving aanpassen
 
 messages_images_del:
   title: >-
@@ -1053,6 +1067,23 @@ messages_modules:
 
 messages_self:
   title: Mijn vraag en aanbod
+
+messages_service_stuff_edit:
+  title: >-
+    {self, select,
+      self {{offer_want, select,
+        offer {Keuze aanpassen diensten of spullen van je aanbod "{subject}"}
+        want {Keuze aanpassen diensten of spullen van je vraag "{subject}"}
+        other {***ERR ow1***}
+      }}
+      other {{offer_want, select,
+        offer {Keuze aanpassen diensten of spullen van het aanbod "{subject}" van {user}}
+        want {Keuze aanpassen diensten of spullen van de vraag "{subject}" van {user}}
+        other {***ERR ow2***}
+      }}
+    }
+  btn: >-
+    Keuze diensten of spullen aanpassen
 
 messages_show:
   expires_at:
@@ -1090,6 +1121,57 @@ messages_show:
   mail_contact:
     title: >-
       Stuur een reactie naar {to_user}.
+
+messages_units_add:
+  title: >-
+    {self, select,
+      self {{offer_want, select,
+        offer {Bepaal een richtprijs voor je aanbod "{subject}"}
+        want {Bepaal een richtprijs voor je vraag "{subject}"}
+        other {***ERR ow2***}
+      }}
+      other {{offer_want, select,
+        offer {Bepaal een richtprijs voor het aanbod "{subject}" van {user}}
+        want {Bepaal een richtprijs voor de vraag "{subject}" van {user}}
+        other {***ERR ow4***}
+      }}
+    }
+  btn: >-
+    Bepaal een richtprijs
+
+messages_units_del:
+  title: >-
+    {self, select,
+      self {{offer_want, select,
+        offer {Richtprijs verwijderen van je aanbod "{subject}"}
+        want {Richtprijs verwijderen van je vraag "{subject}"}
+        other {***ERR ow1***}
+      }}
+      other {{offer_want, select,
+        offer {Richtprijs verwijderen van het aanbod "{subject}" van {user}}
+        want {Richtprijs verwijderen van de vraag "{subject}" van {user}}
+        other {***ERR ow3***}
+      }}
+    }
+  btn: >-
+    Richtprijs verwijderen
+
+messages_units_edit:
+  title: >-
+    {self, select,
+      self {{offer_want, select,
+        offer {Richtprijs aanpassen voor je aanbod "{subject}"}
+        want {Richtprijs aanpassen voor je vraag "{subject}"}
+        other {***ERR ow1***}
+      }}
+      other {{offer_want, select,
+        offer {Richtprijs aanpassen voor het aanbod "{subject}" van {user}}
+        want {Richtprijs aanpassen voor de vraag "{subject}" van {user}}
+        other {***ERR ow3***}
+      }}
+    }
+  btn: >-
+    Richtprijs aanpassen
 
 mollie:
   status:

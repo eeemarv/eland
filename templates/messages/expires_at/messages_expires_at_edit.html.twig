@@ -1,4 +1,4 @@
-{%- extends 'messages/base/messages_single_form.html.twig' -%}
+{%- extends 'messages/expires_at/messages_expires_at_form.html.twig' -%}
 
 {%- block assets_add -%}
     {{- parent() -}}
@@ -42,10 +42,4 @@
 <div class="panel panel-info">
 <div class="panel-heading">
 
-    {{- form_row(form.expires_at, {
-        'label': 'label.expires_at',
-        'attr': {
-            'data-date-start-date': 'today',
-        }
-    }) -}}
 {%- endblock form_a -%}

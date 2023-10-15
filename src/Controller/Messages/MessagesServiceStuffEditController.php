@@ -2,8 +2,8 @@
 
 namespace App\Controller\Messages;
 
-use App\Command\Messages\MessagesExpiresAtCommand;
-use App\Form\Type\Messages\MessagesExpiresAtDelType;
+use App\Command\Messages\MessagesServiceStuffCommand;
+use App\Form\Type\Messages\MessagesServiceStuffEditType;
 use App\Repository\MessageRepository;
 use App\Service\AlertService;
 use App\Service\ConfigService;
@@ -18,11 +18,11 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
-class MessagesExpiresAtDelController extends AbstractController
+class MessagesServiceStuffEditController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/messages/{id}/expires-at/del',
-        name: 'messages_expires_at_del',
+        '/{system}/{role_short}/messages/{id}/service-stuff/edit',
+        name: 'messages_service_stuff_edit',
         methods: ['GET', 'POST'],
         requirements: [
             'id'            => '%assert.id%',
@@ -49,22 +49,12 @@ class MessagesExpiresAtDelController extends AbstractController
             throw new NotFoundHttpException('Messages module not enabled in configuration');
         }
 
-        if (!$config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema()))
+        if (!$config_service->get_bool('messages.fields.service_stuff.enabled', $pp->schema()))
         {
-            throw new NotFoundHttpException('Expireation of messages not enabled in configuration');
-        }
-
-        if ($config_service->get_bool('messages.fields.expires_at.required', $pp->schema()))
-        {
-            throw new NotFoundHttpException('Expireation of messages is required in configuration');
+            throw new NotFoundHttpException('service_stuff submodule not enabled in configuration');
         }
 
         $message = $message_repository->get($id, $pp->schema());
-
-        if (!isset($message['expires_at']))
-        {
-            throw new NotFoundHttpException('No expiration set for message ' . $id);
-        }
 
         $user_id = $message['user_id'];
 
@@ -73,32 +63,43 @@ class MessagesExpiresAtDelController extends AbstractController
             throw new AccessDeniedHttpException('You are not allowed to modify this message');
         }
 
-        $command = new MessagesExpiresAtCommand();
+        $command = new MessagesServiceStuffCommand();
 
-        $command->expires_at = $message['expires_at'];
+        $command->service_stuff = $message['service_stuff'];
+        $service_stuff = $message['service_stuff'];
 
-        $form = $this->createForm(MessagesExpiresAtDelType::class, $command);
+        $form = $this->createForm(MessagesServiceStuffEditType::class, $command);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted()
             && $form->isValid())
         {
-            $update_ary = [
-                'expires_at' => null,
-            ];
+            $command = $form->getData();
 
-            $message_repository->update($update_ary, $id, $pp->schema());
+            if ($service_stuff === $command->service_stuff)
+            {
+                $alert_service->warning('Keuze diensten of spullen niet gewijzigd');
+            }
+            else
+            {
+                $update_ary = [
+                    'service_stuff'   => $command->service_stuff,
+                ];
 
-            $alert_service->success('De vervaldatum is verwijderd');
+                $message_repository->update($update_ary, $id, $pp->schema());
+
+                $alert_service->success('Keuze diensten of spullen aangepast');
+            }
 
             return $this->redirectToRoute('messages_show', [
                 ...$pp->ary(),
                 'id'    => $id,
             ]);
+
         }
 
-        return $this->render('messages/expires_at/messages_expires_at_del.html.twig', [
+        return $this->render('messages/messages_service_stuff_edit.html.twig', [
             'form'      => $form->createView(),
             'message'   => $message,
             'user_id'   => $user_id,

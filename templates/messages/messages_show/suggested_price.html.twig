@@ -17,22 +17,43 @@
             {%- endif -%}
         </dd>
     {%- endblock dl -%}
+
     {%- block div_right -%}
-    {#
-        {%- if pp_is_admin() or su_is_owner(id) -%}
-            {%- include 'include/btn/edit.html.twig' with {
-                'btn_route': 'users_comments_edit' ~ (is_self ? '_self' : ''),
-                'btn_route_params': is_self ? {} : {'id': id},
-                'btn_title': 'users_comments_edit.title',
-                'btn_title_trans_params': {
-                    'user': account(id, schema),
-                    'self': is_self ? 'self' : 'some_user'
-                },
-                'btn_label_hidden': 'sm',
-                'btn_lg': true,
-            } -%}
+
+    {%- if pp_is_admin() or su_is_owner(user.id) -%}
+
+        {%- if message.amount == null -%}
+
+        {%- include 'include/btn/add.html.twig' with {
+            'btn_route': 'messages_units_add',
+            'btn_route_params': {'id': id},
+            'btn_title': 'messages_units_add.btn',
+            'btn_label_hidden': 'sm',
+            'btn_lg': true,
+        } -%}
+
+        {%- else -%}
+
+        {%- include 'include/btn/del.html.twig' with {
+            'btn_route': 'messages_units_del',
+            'btn_route_params': {'id': id},
+            'btn_title': 'messages_units_del.btn',
+            'btn_label_hidden': 'sm',
+            'btn_lg': true,
+        } -%}
+
+        {%- include 'include/btn/edit.html.twig' with {
+            'btn_route': 'messages_units_edit',
+            'btn_route_params': {'id': id},
+            'btn_title': 'messages_units_edit.btn',
+            'btn_label_hidden': 'sm',
+            'btn_lg': true,
+        } -%}
+
         {%- endif -%}
-        #}
+
+    {%- endif -%}
+
     {%- endblock div_right -%}
 {%- endembed -%}
 {%- endif -%}

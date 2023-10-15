@@ -1,0 +1,31 @@
+{%- extends 'messages/base/messages_single_form.html.twig' -%}
+
+{%- block heading_title -%}
+    {{- 'messages_units_edit.title'|trans({
+        'self': su_is_owner(user_id) ? 'self' : 'some_user',
+        'user': account(user_id, schema),
+        'subject': message.subject,
+        'offer_want': message.offer_want,
+        'mode': mode,
+    }) -}}
+{%- endblock heading_title -%}
+
+{%- block form_a -%}
+
+    {{- form_row(form.amount, {
+        'label': 'label.suggested_price',
+        'pre_addon': {
+            'text': config_str('transactions.currency.name', schema),
+        },
+        'disabled': mode == 'del',
+    }) -}}
+
+    {{- form_row(form.units, {
+        'label': 'label.per_unit',
+        'pre_addon': {
+            'fa': 'hourglass-half',
+        },
+        'disabled': mode == 'del',
+    }) -}}
+
+{%- endblock form_a -%}
