@@ -965,6 +965,68 @@ messages_edit:
       other {** ERR **}
     }
 
+messages_expires_at_del:
+  title: >-
+    {self, select,
+      self {{offer_want, select,
+        offer {Verwijder de vervaldatum van je aanbod "{subject}"}
+        want {Verwijder de vervaldatum van je vraag "{subject}"}
+        other {***ERR ow1***}
+      }}
+      other {{offer_want, select,
+        offer {Verwijder de vervaldatum van het aanbod "{subject}" van {user}}
+        want {Verwijder de vervaldatum van de vraag "{subject}" van {user}}
+        other {***ERR ow2***}
+      }}
+    }
+  btn: >-
+    Vervaldatum verwijderen
+
+messages_expires_at_edit:
+  1_week: 1 week
+  2_weeks: 2 weken
+  4_weeks: 4 weken
+  2_months: 2 maanden
+  6_months: 6 maanden
+  1_year: 1 jaar
+  5_years: 5 jaren
+  period: Laat het bericht vervallen over
+  title: >-
+    {self, select,
+      self {{mode, select,
+        edit {{offer_want, select,
+          offer {Vervaldatum voor je aanbod "{subject}" aanpassen}
+          want {Vervaldatum voor je vraag "{subject}" aanpassen}
+          other {***ERR ow1***}
+        }}
+        add {{offer_want, select,
+          offer {Bepaal een vervaldatum voor je aanbod "{subject}"}
+          want {Bepaal een vervaldatum voor je vraag "{subject}"}
+          other {***ERR ow2***}
+        }}
+        other {***ERR mode 1***}
+      }}
+      other {{mode, select,
+        edit {{offer_want, select,
+          offer {Vervaldatum voor het aanbod "{subject}" van {user} aanpassen}
+          want {Vervaldatum voor de vraag "{subject}" van {user} aanpassen}
+          other {***ERR ow3***}
+        }}
+        add {{offer_want, select,
+          offer {Bepaal een vervaldatum voor het aanbod "{subject}" van {user}}
+          want {Bepaal een vervaldatum voor de vraag "{subject}" van {user}}
+          other {***ERR ow4***}
+        }}
+        other {***ERR mode 2***}
+      }}
+    }
+  btn: >-
+    {mode, select,
+      edit {Vervaldatum aanpassen}
+      add {Bepaal een vervaldatum}
+      other {***ERR***}
+    }
+
 messages_images_del:
   title: >-
     {offer_want, select,
@@ -1025,10 +1087,6 @@ messages_show:
     Er werd geen omschrijving ingegeven.
   no_expiration_defined: >-
     Er is geen vervaldatum ingesteld.
-  extend:
-    1_month: 1 maand
-    6_months: 6 maanden
-    1_year: 1 jaar
   mail_contact:
     title: >-
       Stuur een reactie naar {to_user}.
@@ -1394,12 +1452,12 @@ users_account_code_edit:
       self {{mode, select,
         add {Transactie-account voor jezelf aanmaken}
         edit {Je account code {user} aanpassen}
-        other {**ERR**}
+        other {**ERR mode 0**}
       }}
       other {{mode, select,
         add {Transactie-account voor {user} aanmaken}
         edit {Account code voor {user} aanpassen}
-        other {**ERR**}
+        other {**ERR mode 1**}
       }}
     }
 

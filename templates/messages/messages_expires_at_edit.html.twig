@@ -1,0 +1,51 @@
+{%- extends 'messages/base/messages_single_form.html.twig' -%}
+
+{%- block assets_add -%}
+    {{- parent() -}}
+    {{- assets_add([
+        'datepicker'
+    ]) -}}
+{%- endblock assets_add -%}
+
+{%- block heading_title -%}
+    {{- 'messages_expires_at_edit.title'|trans({
+        'self': su_is_owner(user_id) ? 'self' : 'some_user',
+        'user': account(user_id, schema),
+        'mode': message.expires_at == null ? 'add' : 'edit',
+        'subject': message.subject,
+        'offer_want': message.offer_want,
+    }) -}}
+{%- endblock heading_title -%}
+
+{%- block form_a -%}
+<h3>
+    {{- 'messages_expires_at_edit.period'|trans -}}
+</h3>
+
+<div class="row">
+    {%- for k, ar in form.children -%}
+        {%- if k starts with 'submit_prolong_' -%}
+            <div class="col-md-3 col-sm-4 col-xs-6 mb-1">
+            {{- form_widget(form[k], {
+                'label': 'messages_expires_at_edit.' ~ (k|replace({'submit_prolong_': ''})),
+                'attr': {
+                    'class': 'btn-default btn-lg',
+                },
+            }) -}}
+            </div>
+        {%- endif -%}
+    {%- endfor -%}
+</div>
+
+</div>
+</div>
+<div class="panel panel-info">
+<div class="panel-heading">
+
+    {{- form_row(form.expires_at, {
+        'label': 'label.expires_at',
+        'attr': {
+            'data-date-start-date': 'today',
+        }
+    }) -}}
+{%- endblock form_a -%}
