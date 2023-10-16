@@ -283,7 +283,7 @@ class CategoryRepository
 	{
 		return $this->db->fetchAllAssociative('select *
 			from ' . $schema . '.categories
-			order by left_id asc') ?: [];
+			order by left_id asc');
 	}
 
     public function get(int $id, string $schema):array

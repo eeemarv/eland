@@ -14,20 +14,14 @@
         </dd>
     {%- endblock dl -%}
     {%- block div_right -%}
-    {#
-        {%- if pp_is_admin() or su_is_owner(id) -%}
+        {%- if pp_is_admin() -%}
             {%- include 'include/btn/edit.html.twig' with {
-                'btn_route': 'users_comments_edit' ~ (is_self ? '_self' : ''),
-                'btn_route_params': is_self ? {} : {'id': id},
-                'btn_title': 'users_comments_edit.title',
-                'btn_title_trans_params': {
-                    'user': account(id, schema),
-                    'self': is_self ? 'self' : 'some_user'
-                },
+                'btn_route': 'messages_user_edit',
+                'btn_route_params': {'id': id},
+                'btn_title': 'messages_user_edit.btn',
                 'btn_label_hidden': 'sm',
                 'btn_lg': true,
             } -%}
         {%- endif -%}
-        #}
     {%- endblock div_right -%}
 {%- endembed -%}

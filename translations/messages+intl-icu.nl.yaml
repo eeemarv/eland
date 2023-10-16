@@ -256,6 +256,7 @@ label:
   optional: Optioneel
   original_filename: Orginele bestandsnaam
   out: Uit
+  owner: Eigenaar
   parsed_address: Ontleed adres
   password: Paswoord
   per_unit: Per (uur, stuk...)
@@ -1024,6 +1025,23 @@ messages_expires_at_edit:
   btn: >-
     Vervaldatum aanpassen
 
+messages_category_edit:
+  title: >-
+    {self, select,
+      self {{offer_want, select,
+        offer {Categorie aanpassen voor je aanbod "{subject}"}
+        want {Categorie aanpassen voor je vraag "{subject}"}
+        other {***ERR ow1***}
+      }}
+      other {{offer_want, select,
+        offer {Categorie aanpassen voor het aanbod "{subject}" van {user}}
+        want {Categorie aanpassen voor de vraag "{subject}" van {user}}
+        other {***ERR ow3***}
+      }}
+    }
+  btn: >-
+    Categorie aanpassen
+
 messages_content_edit:
   title: >-
     {self, select,
@@ -1122,6 +1140,23 @@ messages_show:
     title: >-
       Stuur een reactie naar {to_user}.
 
+messages_subject_edit:
+  title: >-
+    {self, select,
+      self {{offer_want, select,
+        offer {Titel aanpassen voor je aanbod "{subject}"}
+        want {Titel aanpassen voor je vraag "{subject}"}
+        other {***ERR ow1***}
+      }}
+      other {{offer_want, select,
+        offer {Titel aanpassen voor het aanbod "{subject}" van {user}}
+        want {Titel aanpassen voor de vraag "{subject}" van {user}}
+        other {***ERR ow3***}
+      }}
+    }
+  btn: >-
+    Titel aanpassen
+
 messages_units_add:
   title: >-
     {self, select,
@@ -1172,6 +1207,23 @@ messages_units_edit:
     }
   btn: >-
     Richtprijs aanpassen
+
+messages_user_edit:
+  title: >-
+    {self, select,
+      self {{offer_want, select,
+        offer {Een andere eigenaar toewijzen aan je aanbod "{subject}"}
+        want {Een andere eigenaar toewijzen aan je vraag "{subject}"}
+        other {***ERR ow1***}
+      }}
+      other {{offer_want, select,
+        offer {Een andere eigenaar toewijzen aan het aanbod "{subject}" van {user}}
+        want {Een andere eigenaar toewijzen aan de vraag "{subject}" van {user}}
+        other {***ERR ow3***}
+      }}
+    }
+  btn: >-
+    Eigenaar aanpassen
 
 mollie:
   status:

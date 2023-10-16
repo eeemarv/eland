@@ -77,6 +77,18 @@
         &nbsp;
         {%- include 'messages/include/messages_heading_expired.html.twig' -%}
     {%- endif -%}
+
+    {%- if pp_is_admin() or su_is_owner(user.id) -%}
+    <div class="pull-right">
+        {%- include 'include/btn/edit.html.twig' with {
+            'btn_route': 'messages_subject_edit',
+            'btn_route_params': {'id': id},
+            'btn_title': 'messages_subject_edit.btn',
+            'btn_label_hidden': 'sm',
+            'btn_lg': true,
+        } -%}
+    </div>
+    {%- endif -%}
 {%- endblock heading_append -%}
 
 {%- block heading_sub -%}

@@ -48,9 +48,6 @@ class MessagesType extends AbstractType
         {
             $typeahead_add = [];
             $typeahead_add[] = ['accounts', ['status' => 'active']];
-            $typeahead_add[] = ['accounts', ['status' => 'intersystem']];
-            $typeahead_add[] = ['accounts', ['status' => 'pre-active']];
-            $typeahead_add[] = ['accounts', ['status' => 'post-active']];
 
             $builder->add('user_id', TypeaheadType::class, [
                 'add'       => $typeahead_add,

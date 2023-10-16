@@ -1,0 +1,21 @@
+{%- extends 'messages/base/messages_single_form.html.twig' -%}
+
+{%- block heading_title -%}
+    {{- 'messages_user_edit.title'|trans({
+        'self': su_is_owner(user_id) ? 'self' : 'some_user',
+        'user': account(user_id, schema),
+        'subject': message.subject,
+        'offer_want': message.offer_want,
+    }) -}}
+{%- endblock heading_title -%}
+
+{%- block form_a -%}
+
+    {{- form_row(form.user_id, {
+        'label': 'label.owner',
+        'pre_addon': {
+            'fa': 'user'
+        }
+    }) -}}
+
+{%- endblock form_a -%}
