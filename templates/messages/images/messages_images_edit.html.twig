@@ -1,0 +1,23 @@
+{%- extends 'messages/base/messages_single_form.html.twig' -%}
+
+{%- block assets_add -%}
+    {{- parent() -}}
+    {{- assets_add([
+        'fileupload',
+        'sortable',
+        'messages_edit_images_upload.js',
+    ]) -}}
+{%- endblock assets_add -%}
+
+{%- block heading_title -%}
+    {{- 'messages_images_edit.title'|trans({
+        'self': su_is_owner(user_id) ? 'self' : 'some_user',
+        'user': account(user_id, schema),
+        'subject': message.subject,
+        'offer_want': message.offer_want,
+    }) -}}
+{%- endblock heading_title -%}
+
+{%- block form_a -%}
+    {%- include 'messages/images/images_form_row.html.twig' -%}
+{%- endblock form_a -%}

@@ -1,0 +1,80 @@
+<div class="form-group">
+  <label for="fileupload" class="control-label">
+    {{- 'label.images'|trans -}}
+  </label>
+  <div class="row sortable">
+    <div class="col-xs-4 col-sm-3 col-md-2 thumbnail-col hidden"
+      data-thumbnail-model
+      data-s3-url="{{- s3() -}}">
+      <div class="thumbnail">
+        <img src="" alt="{{- 'label.image'|trans -}}">
+        <div class="caption">
+          <p>
+            <span
+            class="btn btn-danger img-delete"
+            role="button"
+            title="{{- 'btn.image.del'|trans -}}">
+              <i class="fa fa-times"></i>
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    {%- for img in image_ary -%}
+
+    <div class="col-sm-3 col-md-2 thumbnail-col" data-file="{{- img -}}">
+      <div class="thumbnail">
+        <img src="{{- s3(img) -}}" alt="{{- 'label.image'|trans -}}">
+        <div class="caption">
+          <p>
+            <span class="btn btn-danger img-delete"
+            role="button"
+            title="{{- 'btn.image.del'|trans -}}">
+              <i class="fa fa-times"></i>
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    {%- endfor -%}
+
+  </div>
+
+  <span class="btn btn-default fileinput-button">
+    <i class="fa fa-plus" data-icon-plus></i>
+    &nbsp;
+    {{- 'label.upload'|trans -}}
+    <input type="file"
+      name="images[]"
+      data-url="
+      {%- if mode == 'add' -%}
+        {#- image id is unknown yet -#}
+        {{- path('messages_add_images_upload', pp_ary()|merge({
+          'form_token': form_token,
+        })) -}}
+      {%- else -%}
+        {{- path('messages_edit_images_upload', pp_ary()|merge({
+          'id': id,
+          'form_token': form_token,
+        })) -}}
+      {%- endif -%}"
+      multiple
+      data-fileupload
+      data-message-file-type-not-allowed="{{- 'upload.error.type'|trans -}}"
+      data-message-max-file-size="{{- 'upload.error.size.too_big'|trans -}}"
+      data-message-min-file-size="{{- 'upload.error.size.too_small'|trans -}}"
+      data-message-uploaded-bytes="{{- 'upload.error.size.too_big'|trans -}}">
+  </span>
+    &nbsp
+  <p>
+    {{- 'messages.image_files.help'|trans -}}
+  </p>
+</div>
+
+{{- form_row(form.image_files, {
+  'attr': {
+    'data-input-image-files': null,
+  },
+}) -}}

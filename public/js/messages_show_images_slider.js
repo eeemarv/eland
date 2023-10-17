@@ -66,8 +66,5 @@ jQuery(function(){
 	var data_images = $images_con.data('images');
 	if (data_images.files.length){
 		jssor_init(data_images);
-		$('#btn_remove').css('display', 'inherit');
-	} else {
-		$('#no_images').css('display', 'inherit');
 	}
 });

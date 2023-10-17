@@ -896,7 +896,6 @@ messages:
         other {Vraag en aanbod}
       }}
     }
-
   image_files:
     help: >-
       Toegestane formaten: jpg/jpeg, png, webp, gif en svg.
@@ -1059,15 +1058,40 @@ messages_content_edit:
   btn: >-
     Omschrijving aanpassen
 
-messages_images_del:
+messages_images_add:
   title: >-
-    {offer_want, select,
-      offer {Afbeeldingen verwijderen van aanbod "{subject}"}
-      want {Afbeeldingen verwijderen van vraag "{subject}"}
-      other {** ERR **}
+    {self, select,
+      self {{offer_want, select,
+        offer {Afbeeldingen toevoegen aan je aanbod "{subject}"}
+        want {Afbeeldingen toevoegen aan je vraag "{subject}"}
+        other {***ERR ow1***}
+      }}
+      other {{offer_want, select,
+        offer {Afbeeldingen toevoegen aan het aanbod "{subject}" van {user}}
+        want {Afbeeldingen toevoegen aan de vraag "{subject}" van {user}}
+        other {***ERR ow2***}
+      }}
     }
-  user: >-
-    Gebruiker: {user}
+  btn: >-
+    Afbeeldingen toevoegen
+
+
+messages_images_edit:
+  title: >-
+    {self, select,
+      self {{offer_want, select,
+        offer {Afbeeldingen aanpassen bij je aanbod "{subject}"}
+        want {Afbeeldingen aanpassen bij je vraag "{subject}"}
+        other {***ERR ow1***}
+      }}
+      other {{offer_want, select,
+        offer {Afbeeldingen aanpassen bij het aanbod "{subject}" van {user}}
+        want {Afbeeldingen aanpassen bij de vraag "{subject}" van {user}}
+        other {***ERR ow2***}
+      }}
+    }
+  btn: >-
+    Afbeeldingen aanpassen
 
 messages_modules:
   title: >-

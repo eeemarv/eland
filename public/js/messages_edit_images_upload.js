@@ -1,9 +1,9 @@
 jQuery(function () {
 	var $form = $('form');
-	var $img_add_btn = $form.find('#img_plus');
-	var $model = $form.find('#thumbnail_model');
+	var $img_add_btn = $form.find('[data-icon-plus]');
+	var $model = $form.find('[data-thumbnail-model]');
 	var s3_url = $model.data('s3-url');
-	var $input_image_files = $form.find('input[name="image_files"]');
+	var $input_image_files = $form.find('input[data-input-image-files]');
 	var $sortable_div = $form.find('div.sortable');
 
 	function rewrite_image_files_input(){
@@ -60,7 +60,7 @@ jQuery(function () {
 		} else {
 			$.each(data.result.filenames, function (index, file) {
 				var $thumbnail = $model.clone();
-				$thumbnail.removeAttr('id');
+				$thumbnail.removeAttr('data-thumbnail-model');
 				$thumbnail.attr('data-file', file);
 				var $img = $thumbnail.find('img');
 				$img.attr('src', s3_url + file);
