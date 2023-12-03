@@ -454,12 +454,22 @@ class MolliePaymentsController extends AbstractController
 
                 foreach($cancel_ary as $payment_id)
                 {
-                    $payment = $payments[$payment_id];
-                    $cancel_str = $account_render->link($payment['user_id'], $pp->ary());
-                    $cancel_str .= ', ';
-                    $cancel_str .= strtr($payment['amount'], '.', ',') . ' EUR, "';
-                    $cancel_str .= htmlspecialchars($payment['description'], ENT_QUOTES);
-                    $cancel_str .= '"';
+                    // TO DO : get payments info (does not work when input was filtered)
+                    // fix when switch to Symfony form
+                    if (isset($payments[$payment_id]))
+                    {
+                        $payment = $payments[$payment_id];
+                        $cancel_str = $account_render->link($payment['user_id'], $pp->ary());
+                        $cancel_str .= ', ';
+                        $cancel_str .= strtr($payment['amount'], '.', ',') . ' EUR, "';
+                        $cancel_str .= htmlspecialchars($payment['description'], ENT_QUOTES);
+                        $cancel_str .= '"';                        
+                    }
+                    else
+                    {
+                        $cancel_str .= 'ID: ' . $payment_id;
+                    }
+
                     $success[] = $cancel_str;
                 }
 
