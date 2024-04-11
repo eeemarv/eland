@@ -1107,6 +1107,8 @@ transactions:
       some_user {Transacties van {account}}
       other {Transacties}
     }
+  account_count: >-
+    Aantal accounts: {account_count}
   amount_sum: >-
     Totaal: {amount_sum} {currency}
   valuation: >-

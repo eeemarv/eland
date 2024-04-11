@@ -58,6 +58,11 @@
 {%- block footnote -%}
     <ul>
         <li>
+            {{- 'transactions.account_count'|trans({
+                'account_count': account_count
+            }) -}}
+        </li>
+        <li>
             {{- 'transactions.amount_sum'|trans({
                 'amount_sum': amount_sum,
                 'currency': config_str('transactions.currency.name', schema)
