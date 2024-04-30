@@ -14,7 +14,6 @@ use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\TokenGeneratorService;
-use App\Service\UserCacheService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,6 +21,7 @@ use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 #[AsController]
 class MolliePaymentsAddController extends AbstractController
@@ -47,7 +47,6 @@ class MolliePaymentsAddController extends AbstractController
         string $status,
         Db $db,
         AlertService $alert_service,
-        UserCacheService $user_cache_service,
         FormTokenService $form_token_service,
         ConfigService $config_service,
         ItemAccessService $item_access_service,
@@ -56,7 +55,8 @@ class MolliePaymentsAddController extends AbstractController
         DateFormatService $date_format_service,
         PageParamsService $pp,
         SessionUserService $su,
-        TokenGeneratorService $token_generator_service
+        TokenGeneratorService $token_generator_service,
+        TagAwareCacheInterface $cache
     ):Response
     {
         if (!$config_service->get_bool('mollie.enabled', $pp->schema()))
@@ -245,7 +245,7 @@ class MolliePaymentsAddController extends AbstractController
                         'created_by'    => $su->id(),
                     ]);
 
-                    $user_cache_service->clear($user_id, $pp->schema());
+                    $cache->delete('users.' . $pp->schema() . '.' . $user_id);
                 }
 
                 $success = [];

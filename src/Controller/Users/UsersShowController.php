@@ -2,6 +2,7 @@
 
 namespace App\Controller\Users;
 
+use App\Cache\UserCache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,7 +28,6 @@ use App\Service\MailAddrUserService;
 use App\Service\PageParamsService;
 use App\Service\ResponseCacheService;
 use App\Service\SessionUserService;
-use App\Service\UserCacheService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -87,7 +87,7 @@ class UsersShowController extends AbstractController
         LinkRender $link_render,
         MailAddrUserService $mail_addr_user_service,
         MailQueue $mail_queue,
-        UserCacheService $user_cache_service,
+        UserCache $user_cache,
         DistanceService $distance_service,
         PageParamsService $pp,
         SessionUserService $su,
@@ -117,7 +117,7 @@ class UsersShowController extends AbstractController
 
         $tdays = $request->query->get('tdays', '365');
 
-        $user = $user_cache_service->get($id, $pp->schema());
+        $user = $user_cache->get($id, $pp->schema());
 
         if (!$user)
         {
@@ -218,7 +218,7 @@ class UsersShowController extends AbstractController
         {
             $mail_command = $mail_form->getData();
 
-            $from_user = $user_cache_service->get($su->id(), $su->schema());
+            $from_user = $user_cache->get($su->id(), $su->schema());
 
             $vars = [
                 'from_user'			=> $from_user,

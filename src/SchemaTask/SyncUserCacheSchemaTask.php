@@ -2,14 +2,14 @@
 
 namespace App\SchemaTask;
 
+use App\Cache\UserCache;
 use Doctrine\DBAL\Connection as Db;
-use App\Service\UserCacheService;
 
 class SyncUserCacheSchemaTask implements SchemaTaskInterface
 {
 	public function __construct(
 		protected Db $db,
-		protected UserCacheService $user_cache_service
+		protected UserCache $user_cache
 	)
 	{
 	}
@@ -35,7 +35,8 @@ class SyncUserCacheSchemaTask implements SchemaTaskInterface
 
 		foreach ($user_ids as $id)
 		{
-			$this->user_cache_service->sync($id, $schema);
+			// TO DO tag aware cache
+			// $this->user_cache->sync($id, $schema);
 		}
 	}
 

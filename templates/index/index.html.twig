@@ -23,7 +23,12 @@
 		{%- if schemas -%}
 			{%- set systems_per_col = (schemas|length / 3)|round(0, 'ceil') -%}
 
-			{%- for system, schema in schemas -%}
+			{%- for schema in schemas -%}
+
+				{#- -#}
+				{%- set system = schema -%}
+				{#- -#}
+
 				{%- if not (loop.index0 % systems_per_col) -%}
 				<div class="col-md-4">
 					<div class="panel panel-info">

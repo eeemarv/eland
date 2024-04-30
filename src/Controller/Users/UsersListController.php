@@ -2,6 +2,7 @@
 
 namespace App\Controller\Users;
 
+use App\Cache\UserCache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,7 +11,6 @@ use App\Cnst\BulkCnst;
 use App\Form\Type\Filter\QTextSearchFilterType;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
-use App\Render\SelectRender;
 use App\Repository\AccountRepository;
 use App\Service\AlertService;
 use App\Service\CacheService;
@@ -21,10 +21,8 @@ use App\Service\IntersystemsService;
 use App\Service\ItemAccessService;
 use App\Service\MailAddrUserService;
 use App\Service\PageParamsService;
-use App\Service\ResponseCacheService;
 use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
-use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\ArrayParameterType;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -75,10 +73,8 @@ class UsersListController extends AbstractController
         LinkRender $link_render,
         MailAddrUserService $mail_addr_user_service,
         MailQueue $mail_queue,
-        SelectRender $select_render,
-        ResponseCacheService $response_cache_service,
         TypeaheadService $typeahead_service,
-        UserCacheService $user_cache_service,
+        UserCache $user_cache,
         PageParamsService $pp,
         SessionUserService $su,
         VarRouteService $vr,
@@ -326,7 +322,7 @@ class UsersListController extends AbstractController
 
                 foreach ($user_ids as $user_id)
                 {
-                    $user_cache_service->clear($user_id, $pp->schema());
+                    $user_cache->clear($user_id, $pp->schema());
                 }
 
                 $log_value = $bulk_field_value ? 'on' : 'off';
@@ -393,7 +389,7 @@ class UsersListController extends AbstractController
 
                 foreach ($user_ids as $user_id)
                 {
-                    $user_cache_service->clear($user_id, $pp->schema());
+                    $user_cache->clear($user_id, $pp->schema());
                 }
 
 /*

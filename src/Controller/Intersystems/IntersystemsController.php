@@ -281,7 +281,9 @@ class IntersystemsController extends AbstractController
 
         $url_ary = [];
 
-        foreach ($systems_service->get_schemas() as $sys_schema)
+        $schemas = array_keys($systems_service->get_schema_ary());
+
+        foreach ($schemas as $sys_schema)
         {
             $url_ary[] = $systems_service->get_legacy_eland_origin($sys_schema);
         }
@@ -320,7 +322,7 @@ class IntersystemsController extends AbstractController
             $loc_account_ary[$u['code']] = $u;
         }
 
-        foreach ($systems_service->get_schemas() as $rem_schema)
+        foreach ($schemas as $rem_schema)
         {
             $rem_group = $db->fetchAssociative('select localletscode, url, id
                 from ' . $rem_schema . '.letsgroups
@@ -379,7 +381,7 @@ class IntersystemsController extends AbstractController
 
         $unavailable_explain = false;
 
-        foreach($systems_service->get_schemas() as $rem_schema)
+        foreach($schemas as $rem_schema)
         {
             $rem_origin = $systems_service->get_legacy_eland_origin($rem_schema);
 

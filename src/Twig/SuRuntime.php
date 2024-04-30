@@ -2,16 +2,16 @@
 
 namespace App\Twig;
 
+use App\Cache\UserCache;
 use App\Cnst\RoleCnst;
 use App\Service\SessionUserService;
-use App\Service\UserCacheService;
 use Twig\Extension\RuntimeExtensionInterface;
 
 class SuRuntime implements RuntimeExtensionInterface
 {
 	public function __construct(
 		protected SessionUserService $su,
-		protected UserCacheService $user_cache_service
+		protected UserCache $user_cache
 	)
 	{
 	}
@@ -63,7 +63,7 @@ class SuRuntime implements RuntimeExtensionInterface
 				continue;
 			}
 
-			$role = $this->user_cache_service->get($id, $schema)['role'];
+			$role = $this->user_cache->get($id, $schema)['role'];
 
 			$out_ary[$schema] = RoleCnst::SHORT[$role];
 		}

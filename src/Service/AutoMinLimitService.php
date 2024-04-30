@@ -2,10 +2,10 @@
 
 namespace App\Service;
 
+use App\Cache\UserCache;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
 use App\Service\ConfigService;
-use App\Service\UserCacheService;
 use App\Render\AccountRender;
 use App\Repository\AccountRepository;
 
@@ -14,7 +14,7 @@ class AutoMinLimitService
 	public function __construct(
 		protected Db $db,
 		protected LoggerInterface $logger,
-		protected UserCacheService $user_cache_service,
+		protected UserCache $user_cache,
 		protected AccountRepository $account_repository,
 		protected ConfigService $config_service,
 		protected SessionUserService $su,
@@ -86,7 +86,7 @@ class AutoMinLimitService
 			return;
 		}
 
-		$to_user = $this->user_cache_service->get($to_id, $schema);
+		$to_user = $this->user_cache->get($to_id, $schema);
 
 		if (!$to_user)
 		{
@@ -130,7 +130,7 @@ class AutoMinLimitService
 			return;
 		}
 
-		$from_user = $this->user_cache_service->get($from_id, $schema);
+		$from_user = $this->user_cache->get($from_id, $schema);
 
 		if (!$from_user || !is_array($from_user))
 		{

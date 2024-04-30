@@ -10,10 +10,10 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 class CaptchaService
 {
+	const TTL = 28800; // 8 hours
+
 	protected Request $request;
 	protected CaptchaBuilder $builder;
-
-	const TTL = 14400; // 4 hours
 
 	public function __construct(
 		RequestStack $request_stack,

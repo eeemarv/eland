@@ -2,10 +2,10 @@
 
 namespace App\SchemaTask;
 
+use App\Cache\UserCache;
 use Doctrine\DBAL\Connection as Db;
 use App\Queue\MailQueue;
 use App\Service\ConfigService;
-use App\Service\UserCacheService;
 use App\Service\MailAddrUserService;
 use Doctrine\DBAL\Types\Types;
 
@@ -15,7 +15,7 @@ class UserExpMsgsSchemaTask implements SchemaTaskInterface
 		protected Db $db,
 		protected MailQueue $mail_queue,
 		protected ConfigService $config_service,
-		protected UserCacheService $user_cache_service,
+		protected UserCache $user_cache,
 		protected MailAddrUserService $mail_addr_user_service
 	)
 	{
@@ -43,7 +43,7 @@ class UserExpMsgsSchemaTask implements SchemaTaskInterface
 
 		foreach ($warn_messages as $message)
 		{
-			$user = $this->user_cache_service->get($message['user_id'], $schema);
+			$user = $this->user_cache->get($message['user_id'], $schema);
 
 			if (!($user['status'] === 1 || $user['status'] === 2))
 			{

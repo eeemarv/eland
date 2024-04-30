@@ -8,7 +8,6 @@ use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\UserCacheService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -24,7 +23,6 @@ class CmsEditFormSubscriber implements EventSubscriberInterface
         protected FormFactoryInterface $form_factory,
         protected PageParamsService $pp,
         protected SessionUserService $su,
-        protected UserCacheService $user_cache_service,
         protected LinkRender $link_render,
         protected ConfigService $config_service
     )

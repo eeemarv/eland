@@ -38,8 +38,6 @@ class ProcessWorkerConsoleCommand extends Command
 
         $this->monitor_process_service->boot('worker');
 
-        $this->assets_service->write_file_hash_ary();
-
         error_log('+------------------------+');
         error_log('| Schema Tasks           |');
         error_log('+------------------------+');

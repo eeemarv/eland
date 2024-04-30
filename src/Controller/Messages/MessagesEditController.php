@@ -2,6 +2,7 @@
 
 namespace App\Controller\Messages;
 
+use App\Cache\UserCache;
 use App\Cnst\BulkCnst;
 use App\Cnst\MessageTypeCnst;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,7 +22,6 @@ use App\Service\PageParamsService;
 use App\Service\S3Service;
 use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
-use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -82,7 +82,7 @@ class MessagesEditController extends AbstractController
         PageParamsService $pp,
         SessionUserService $su,
         VarRouteService $vr,
-        UserCacheService $user_cache_service,
+        UserCache $user_cache,
         #[Autowire(service: 'html_sanitizer.sanitizer.user_post_sanitizer')] HtmlSanitizerInterface $html_sanitizer,
         S3Service $s3_service,
         string $env_s3_url
@@ -518,7 +518,7 @@ class MessagesEditController extends AbstractController
                     $validity_days = '';
                 }
 
-                $user = $user_cache_service->get($message['user_id'], $pp->schema());
+                $user = $user_cache->get($message['user_id'], $pp->schema());
 
                 $account_code = $user['code'] . ' ' . $user['name'];
             }
@@ -543,7 +543,7 @@ class MessagesEditController extends AbstractController
 
                     if ($uid > 0)
                     {
-                        $uid_user = $user_cache_service->get($uid, $pp->schema());
+                        $uid_user = $user_cache->get($uid, $pp->schema());
                     }
 
                     if (!isset($uid_user) || !$uid_user)

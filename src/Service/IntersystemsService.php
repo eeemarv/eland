@@ -37,7 +37,9 @@ class IntersystemsService
 		unset($this->eland_ary);
 		unset($this->eland_accounts_schemas);
 
-		foreach ($this->systems_service->get_schemas() as $schema)
+		$schemas = array_keys($this->systems_service->get_schema_ary());
+
+		foreach ($schemas as $schema)
 		{
 			$this->predis->del($schema . self::ELAND);
 			$this->predis->del($schema . self::ELAND_ACCOUNTS_SCHEMAS);

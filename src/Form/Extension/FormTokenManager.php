@@ -36,7 +36,7 @@ class FormTokenManager implements FormTokenManagerInterface
     public function get_error_message(
         string $value,
         bool $prevent_double
-    ):string
+    ):null|string
     {
         if (strlen($value) !== 12)
         {
@@ -58,7 +58,7 @@ class FormTokenManager implements FormTokenManagerInterface
                 $this->predis->decr($key);
             }
 
-            return '';
+            return null;
         }
 
         return 'form.form_token.double';

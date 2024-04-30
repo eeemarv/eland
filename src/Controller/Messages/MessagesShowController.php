@@ -2,6 +2,7 @@
 
 namespace App\Controller\Messages;
 
+use App\Cache\UserCache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,23 +11,18 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Doctrine\DBAL\Connection as Db;
 use App\Cnst\MessageTypeCnst;
 use App\Command\Messages\MessagesMailContactCommand;
-use App\Controller\Contacts\ContactsUserShowInlineController;
 use App\Form\Type\MailContact\MailContactType;
 use App\Queue\MailQueue;
-use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Repository\CategoryRepository;
-use App\Repository\ContactRepository;
 use App\Repository\MessageRepository;
 use App\Service\AlertService;
 use App\Service\ConfigService;
-use App\Service\DistanceService;
 use App\Service\IntersystemsService;
 use App\Service\ItemAccessService;
 use App\Service\MailAddrUserService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\UserCacheService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -52,23 +48,16 @@ class MessagesShowController extends AbstractController
         Request $request,
         int $id,
         MessageRepository $message_repository,
-        ContactRepository $contact_repository,
         CategoryRepository $category_repository,
-        AccountRender $account_render,
         AlertService $alert_service,
         ConfigService $config_service,
         IntersystemsService $intersystems_service,
         ItemAccessService $item_access_service,
-        LinkRender $link_render,
         MailAddrUserService $mail_addr_user_service,
         MailQueue $mail_queue,
-        UserCacheService $user_cache_service,
+        UserCache $user_cache,
         PageParamsService $pp,
-        SessionUserService $su,
-        DistanceService $distance_service,
-        ContactsUserShowInlineController $contacts_user_show_inline_controller,
-        string $env_map_access_token,
-        string $env_map_tiles_url
+        SessionUserService $su
     ):Response
     {
         if (!$config_service->get_bool('messages.enabled', $pp->schema()))
@@ -92,7 +81,7 @@ class MessagesShowController extends AbstractController
             throw new AccessDeniedHttpException('No sufficient rights to access this message');
         }
 
-        $user = $user_cache_service->get($message['user_id'], $pp->schema());
+        $user = $user_cache->get($message['user_id'], $pp->schema());
 
         if (!$user['is_active'])
         {
@@ -116,7 +105,7 @@ class MessagesShowController extends AbstractController
         {
             $mail_command = $mail_form->getData();
 
-            $from_user = $user_cache_service->get($su->id(), $su->schema());
+            $from_user = $user_cache->get($su->id(), $su->schema());
             $to_user = $user;
 
             if (!$pp->is_admin() && !$to_user['is_active'])

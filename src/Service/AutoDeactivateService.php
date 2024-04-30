@@ -2,11 +2,11 @@
 
 namespace App\Service;
 
+use App\Cache\UserCache;
 use Doctrine\DBAL\Connection as Db;
 use App\Queue\MailQueue;
 use Psr\Log\LoggerInterface;
 use App\Service\ConfigService;
-use App\Service\UserCacheService;
 use App\Render\AccountRender;
 use App\Repository\AccountRepository;
 
@@ -16,7 +16,7 @@ class AutoDeactivateService
 		protected Db $db,
 		protected AlertService $alert_service,
 		protected LoggerInterface $logger,
-		protected UserCacheService $user_cache_service,
+		protected UserCache $user_cache,
 		protected AccountRepository $account_repository,
 		protected MailQueue $mail_queue,
 		protected MailAddrSystemService $mail_addr_system_service,
@@ -44,7 +44,7 @@ class AutoDeactivateService
 			return;
 		}
 
-		$user = $this->user_cache_service->get($user_id, $schema);
+		$user = $this->user_cache->get($user_id, $schema);
 
 		if ($user['status'] !== 2)
 		{
@@ -60,7 +60,7 @@ class AutoDeactivateService
 		}
 
 		$this->db->update($schema . '.users', ['status'	=> 0], ['id' => $user_id]);
-		$this->user_cache_service->clear($user_id, $schema);
+		$this->user_cache->clear($user_id, $schema);
 		$this->response_cache_service->clear_cache($schema);
 
 		$this->logger->info('Auto-deactivated: user ' .

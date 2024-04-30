@@ -2,12 +2,12 @@
 
 namespace App\EventSubscriber;
 
+use App\Cache\UserCache;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\UserCacheService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -33,7 +33,7 @@ class MollieSubscriber implements EventSubscriberInterface
         protected AlertService $alert_service,
         protected PageParamsService $pp,
         protected SessionUserService $su,
-        protected UserCacheService $user_cache_service,
+        protected UserCache $user_cache,
         protected LinkRender $link_render,
         protected ConfigService $config_service
     )
@@ -98,7 +98,7 @@ class MollieSubscriber implements EventSubscriberInterface
         if (!$payments)
         {
             error_log('User sync no payments in subscriber. Clear cache ++');
-            $this->user_cache_service->clear($this->su->id(), $this->pp->schema());
+            $this->user_cache->clear($this->su->id(), $this->pp->schema());
             return;
         }
 

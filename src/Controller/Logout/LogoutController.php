@@ -61,11 +61,13 @@ class LogoutController extends AbstractController
 
         $alert_service->success('Je bent uitgelogd');
 
-        if ($pp->org_system() === '')
+        $org_system = $pp->org_system();
+
+        if (isset($org_system))
         {
-            return $this->redirectToRoute('login', ['system' => $pp->system()]);
+            return $this->redirectToRoute('login', ['system' => $org_system]);
         }
 
-        return $this->redirectToRoute('login', ['system' => $pp->org_system()]);
+        return $this->redirectToRoute('login', ['system' => $pp->system()]);
     }
 }

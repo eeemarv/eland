@@ -2,6 +2,7 @@
 
 namespace App\Controller\Users;
 
+use App\Cache\UserCache;
 use App\Command\Users\UsersPasswordEditCommand;
 use App\Form\Type\Users\UsersPasswordEditType;
 use App\Queue\MailQueue;
@@ -12,7 +13,6 @@ use App\Service\MailAddrSystemService;
 use App\Service\MailAddrUserService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\UserCacheService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -63,7 +63,7 @@ class UsersPasswordEditController extends AbstractController
         MailAddrSystemService $mail_addr_system_service,
         MailAddrUserService $mail_addr_user_service,
         MailQueue $mail_queue,
-        UserCacheService $user_cache_service,
+        UserCache $user_cache,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
@@ -79,7 +79,7 @@ class UsersPasswordEditController extends AbstractController
             $id = $su->id();
         }
 
-        $user = $user_cache_service->get($id, $pp->schema());
+        $user = $user_cache->get($id, $pp->schema());
         $is_active = $user['status'] === 1 || $user['status'] === 2;
 
         $to_mail_addr = $mail_addr_user_service->get_active($id, $pp->schema());

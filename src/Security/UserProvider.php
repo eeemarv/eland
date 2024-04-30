@@ -3,7 +3,6 @@
 namespace App\Security;
 
 use App\Service\SessionUserService;
-use App\Service\UserCacheService;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -12,7 +11,6 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 class UserProvider implements UserProviderInterface
 {
     public function __construct(
-        protected UserCacheService $user_cache_service,
         protected SessionUserService $su
     )
     {

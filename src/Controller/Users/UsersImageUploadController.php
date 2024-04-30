@@ -2,10 +2,10 @@
 
 namespace App\Controller\Users;
 
+use App\Cache\UserCache;
 use App\Service\ImageUploadService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\UserCacheService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -54,7 +54,7 @@ class UsersImageUploadController extends AbstractController
         Db $db,
         LoggerInterface $logger,
         ImageUploadService $image_upload_service,
-        UserCacheService $user_cache_service,
+        UserCache $user_cache,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
@@ -84,13 +84,13 @@ class UsersImageUploadController extends AbstractController
 
         $db->update($pp->schema() . '.users', [
             'image_file'	=> $res['filename'],
-        ],['id' => $id]);
+        ], ['id' => $id]);
 
         $logger->info('User image ' . $res['filename'] .
             ' uploaded. User: ' . $id,
             ['schema' => $pp->schema()]);
 
-        $user_cache_service->clear($id, $pp->schema());
+        $user_cache->clear($id, $pp->schema());
 
         return $this->json($res);
     }

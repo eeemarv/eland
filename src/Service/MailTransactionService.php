@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-use App\Service\UserCacheService;
+use App\Cache\UserCache;
 use App\Service\ConfigService;
 use App\Service\MailAddrSystemService;
 use App\Service\MailAddrUserService;
@@ -11,7 +11,7 @@ use App\Queue\MailQueue;
 class MailTransactionService
 {
 	public function __construct(
-		protected UserCacheService $user_cache_service,
+		protected UserCache $user_cache,
 		protected ConfigService $config_service,
 		protected MailAddrSystemService $mail_addr_system_service,
 		protected MailAddrUserService $mail_addr_user_service,
@@ -86,8 +86,8 @@ class MailTransactionService
 		$from_user_id = $transaction['id_from'];
 		$to_user_id = $transaction['id_to'];
 
-		$from_user = $this->user_cache_service->get($from_user_id, $schema);
-		$to_user = $this->user_cache_service->get($to_user_id, $schema);
+		$from_user = $this->user_cache->get($from_user_id, $schema);
+		$to_user = $this->user_cache->get($to_user_id, $schema);
 
 		$vars = [
 			'from_user_id' 		=> $from_user_id,

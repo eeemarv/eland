@@ -2,18 +2,20 @@
 
 namespace App\Service;
 
-use Redis;
 use App\Attributes\ConfigMap;
 use App\Command\CommandInterface;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
 use ReflectionClass;
 use Symfony\Component\Validator\Exception\LogicException;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class ConfigService
 {
-	const PREFIX = 'config_';
-	const TTL = 518400; // 60 days
+	const CACHE_PREFIX = 'config_';
+	const CACHE_TTL = 518400; // 60 days
+	const CACHE_BETA = 1;
 
 	protected bool $local_cache_en = false;
 	protected array $load_ary = [];
@@ -21,7 +23,7 @@ class ConfigService
 
 	public function __construct(
 		protected Db $db,
-		protected Redis $predis
+		protected TagAwareCacheInterface $cache,
 	)
 	{
 		$this->local_cache_en = php_sapi_name() !== 'cli';
@@ -62,25 +64,20 @@ class ConfigService
 		{
 			$this->flatten_load_ary($row['id'], json_decode($row['data'], true));
 		}
-		$key = self::PREFIX . $schema;
-		$this->predis->set($key, json_encode($this->load_ary));
-		$this->predis->expire($key, self::TTL);
+
 		return $this->load_ary;
 	}
 
 	public function read_all(string $schema):array
 	{
-		$key = self::PREFIX . $schema;
-		$data_json = $this->predis->get($key);
+		$data = $this->cache->get(self::CACHE_PREFIX . $schema, function(ItemInterface $item) use ($schema){
 
-		if (is_string($data_json))
-		{
-			$data = json_decode($data_json, true);
-		}
-		else
-		{
-			$data = $this->build_cache_from_db($schema);
-		}
+			$item->expiresAfter(self::CACHE_TTL);
+			$item->tag(['deploy', 'config', 'config_' . $schema]);
+
+			return $this->build_cache_from_db($schema);
+
+		}, self::CACHE_BETA);
 
 		if ($this->local_cache_en)
 		{
@@ -92,8 +89,7 @@ class ConfigService
 
 	public function clear_cache(string $schema):void
 	{
-		$key = self::PREFIX . $schema;
-		$this->predis->del($key);
+		$this->cache->invalidateTags(['config_' . $schema]);
 		unset($this->local_cache[$schema]);
 	}
 
@@ -235,7 +231,8 @@ class ConfigService
 
 	public function get_intersystem_en(string $schema):bool
 	{
-		return $this->get_bool('transactions.currency.timebased_en', $schema)
+		return $this->get_bool('transactions.enabled', $schema)
+			&& $this->get_bool('transactions.currency.timebased_en', $schema)
 			&& $this->get_bool('intersystem.enabled', $schema);
 	}
 

@@ -2,13 +2,13 @@
 
 namespace App\Controller\Mollie;
 
+use App\Cache\UserCache;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\PageParamsService;
-use App\Service\UserCacheService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -43,7 +43,7 @@ class MollieCheckoutController extends AbstractController
         Db $db,
         AlertService $alert_service,
         AccountRender $account_render,
-        UserCacheService $user_cache_service,
+        UserCache $user_cache,
         FormTokenService $form_token_service,
         ConfigService $config_service,
         LinkRender $link_render,
@@ -89,7 +89,7 @@ class MollieCheckoutController extends AbstractController
             }
         }
 
-        $user = $user_cache_service->get($mollie_payment['user_id'], $pp->schema());
+        $user = $user_cache->get($mollie_payment['user_id'], $pp->schema());
 
         $description = $user['code'] . ' ' . $mollie_payment['description'];
 

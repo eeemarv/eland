@@ -2,6 +2,7 @@
 
 namespace App\Controller\Users;
 
+use App\Cache\UserCache;
 use App\Cnst\BulkCnst;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,7 +30,6 @@ use App\Service\ResponseCacheService;
 use App\Service\SessionUserService;
 use App\Service\SystemsService;
 use App\Service\TypeaheadService;
-use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -110,7 +110,7 @@ class UsersEditController extends AbstractController
         SystemsService $systems_service,
         ResponseCacheService $response_cache_service,
         TypeaheadService $typeahead_service,
-        UserCacheService $user_cache_service,
+        UserCache $user_cache,
         MailAddrUserService $mail_addr_user_service,
         MailAddrSystemService $mail_addr_system_service,
         MailQueue $mail_queue,
@@ -160,7 +160,7 @@ class UsersEditController extends AbstractController
 
         if ($is_edit)
         {
-            $stored_user = $user_cache_service->get($id, $pp->schema());
+            $stored_user = $user_cache->get($id, $pp->schema());
             $stored_code = $stored_user['code'];
             $stored_name = $stored_user['name'];
             $is_activated = isset($stored_user['activated_at']);
@@ -585,7 +585,7 @@ class UsersEditController extends AbstractController
 
             if (!count($errors))
             {
-                $user_cache_service->clear($id, $pp->schema());
+                $user_cache->clear($id, $pp->schema());
 
                 if ($pp->is_admin())
                 {

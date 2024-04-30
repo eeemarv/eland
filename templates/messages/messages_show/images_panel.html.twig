@@ -1,7 +1,7 @@
 
 <div class="panel panel-default">
   <div class="panel-body img-upload">
-    <div id="no_images" class="text-center center-body">
+    <div data-no-images class="text-center center-body">
       <i class="fa fa-image fa-5x"></i>
       <p>
         {{- 'messages_show.images.none'|trans({
@@ -9,7 +9,7 @@
         }) -}}
       </p>
     </div>
-    <div id="images_con" data-images="{{-  {'base_url': s3(), 'files': image_files}|json_encode -}}">
+    <div data-images-container data-images="{{-  {'base_url': s3(), 'files': image_files}|json_encode -}}">
     </div>
   </div>
   {%- if pp_is_admin() or su_is_owner(message.user_id) -%}

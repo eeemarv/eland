@@ -2,6 +2,7 @@
 
 namespace App\Controller\Transactions;
 
+use App\Cache\UserCache;
 use App\Cnst\BulkCnst;
 use App\Cnst\MessageTypeCnst;
 use App\Command\Transactions\TransactionsAddCommand;
@@ -22,7 +23,6 @@ use App\Service\SessionUserService;
 use App\Service\SystemsService;
 use App\Service\TransactionService;
 use App\Service\TypeaheadService;
-use App\Service\UserCacheService;
 use Doctrine\DBAL\ArrayParameterType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -68,7 +68,7 @@ class TransactionsAddAccountInfoController extends AbstractController
         TypeaheadService $typeahead_service,
         AutoMinLimitService $autominlimit_service,
         AutoDeactivateService $auto_deactivate_service,
-        UserCacheService $user_cache_service,
+        UserCache $user_cache,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
@@ -838,7 +838,7 @@ class TransactionsAddAccountInfoController extends AbstractController
                     }
                     else if ($tuid)
                     {
-                        $tuid_to_user = $user_cache_service->get($tuid, $tus);
+                        $tuid_to_user = $user_cache->get($tuid, $tus);
 
                         if (in_array($tuid_to_user['status'], [1, 2]))
                         {
@@ -892,7 +892,7 @@ class TransactionsAddAccountInfoController extends AbstractController
             }
             else if ($tuid)
             {
-                $tuid_to_user = $user_cache_service->get($tuid, $pp->schema());
+                $tuid_to_user = $user_cache->get($tuid, $pp->schema());
 
                 if (in_array($tuid_to_user['status'], [1, 2]) || $pp->is_admin())
                 {

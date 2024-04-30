@@ -3,15 +3,15 @@
 namespace App\Service;
 
 use Symfony\Component\Finder\Finder;
-use App\Service\CacheService;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class AssetsService
 {
-	protected array $file_hash_ary = [];
-	protected array $include_ary = [];
-
-	const CACHE_HASH_KEY = 'assets_files_hashes';
+	const CACHE_KEY = 'asset_hashes';
+	const CACHE_TTL = 31536000; // 1 year;
+	const CACHE_BETA = 1;
 
 	const PROVIDER = [
 		'cloudflare'	=> 'https://cdnjs.cloudflare.com/ajax/libs/',
@@ -152,17 +152,19 @@ class AssetsService
 		],
 	];
 
+	protected array $file_hash_ary;
+	protected array $include_ary = [];
+
 	public function __construct(
-		protected CacheService $cache_service,
+		protected TagAwareCacheInterface $cache,
 		protected ResponseCacheService $response_cache_service,
 		protected UrlGeneratorInterface $url_generator,
 		protected SystemsService $systems_service
 	)
 	{
-		$this->file_hash_ary = $this->cache_service->get(self::CACHE_HASH_KEY);
 	}
 
-	public function write_file_hash_ary():void
+	private function get_file_hash_ary():array
 	{
 		$finder = new Finder();
 		$finder->files()
@@ -182,10 +184,10 @@ class AssetsService
 			]);
 
 		error_log('+-----------------------+');
-		error_log('| Set hashes for assets |');
+		error_log('| Get hashes for assets |');
 		error_log('+-----------------------+');
 
-		$new_file_hash_ary = [];
+		$file_hash_ary = [];
 
 		foreach ($finder as $file)
 		{
@@ -193,26 +195,12 @@ class AssetsService
 			$hash = hash('crc32b', $contents);
 			$name = $file->getRelativePathname();
 
-			if (!isset($this->file_hash_ary[$name]))
-			{
-				$comment = 'NEW';
-			}
-			else if ($this->file_hash_ary[$name] !== $hash)
-			{
-				$comment = 'NEW hash, OLD: ' . $this->file_hash_ary[$name];
-			}
-			else
-			{
-				$comment = 'unchanged';
-			}
+			error_log($name . ' :: ' . $hash);
 
-			error_log($name . ' :: ' . $hash . ' ' . $comment);
-
-			$new_file_hash_ary[$name] = $hash;
+			$file_hash_ary[$name] = $hash;
 		}
 
-		$this->file_hash_ary = $new_file_hash_ary;
-		$this->cache_service->set(self::CACHE_HASH_KEY, $this->file_hash_ary);
+		return $file_hash_ary;
 	}
 
 	public function add(array $asset_ary):void
@@ -252,6 +240,18 @@ class AssetsService
 
 	private function get_location(string $asset_name, string $type):string
 	{
+		if (!isset($this->file_hash_ary))
+		{
+			$this->file_hash_ary = $this->cache->get(self::CACHE_KEY, function(ItemInterface $item){
+
+				$item->tag(['deploy', 'assets']);
+				$item->expiresAfter(self::CACHE_TTL);
+
+				return $this->get_file_hash_ary();
+
+			}, self::CACHE_BETA);
+		}
+
 		return '/' . $type . '/' . $asset_name . '?' . $this->file_hash_ary[$asset_name];
 	}
 

@@ -60,7 +60,7 @@ class LogDbService
 				$schema = $this->systems_service->get_schema($system);
 			}
 
-			if (!$schema)
+			if (!isset($schema))
 			{
 				continue;
 			}
@@ -72,7 +72,7 @@ class LogDbService
 			{
 				$org_schema = $this->systems_service->get_schema($extra['os']);
 
-				if ($org_schema)
+				if (isset($org_schema))
 				{
 					$user_schema = $org_schema;
 				}

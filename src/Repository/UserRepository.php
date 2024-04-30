@@ -4,16 +4,21 @@ namespace App\Repository;
 
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use App\Service\UserCacheService;
 use LogicException;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class UserRepository
 {
 	public function __construct(
 		protected Db $db,
-		protected UserCacheService $user_cache_service
+		protected TagAwareCacheInterface $cache
 	)
 	{
+	}
+
+	private function clear_user_cache(int $id, string $schema):void
+	{
+		$this->cache->delete('users.' . $schema . '.' . $id);
 	}
 
 	public function get_account_str(int $id, string $schema):string
@@ -266,7 +271,7 @@ class UserRepository
 			['id' => $id],
 			['password' => \PDO::PARAM_STR]
 		);
-		$this->user_cache_service->clear($id, $schema);
+		$this->clear_user_cache($id, $schema);
 	}
 
 	public function register(array $user, string $schema):int
@@ -339,7 +344,7 @@ class UserRepository
             ['id' => $id]) ? true : false;
 		if ($success)
 		{
-        	$this->user_cache_service->clear($id, $schema);
+			$this->clear_user_cache($id, $schema);
 		}
 
 		return $success;
@@ -355,7 +360,7 @@ class UserRepository
 			$update_ary,
             ['id' => $id]);
 
-        $this->user_cache_service->clear($id, $schema);
+		$this->clear_user_cache($id, $schema);
 
 		return $affected_row_count;
 	}
@@ -454,5 +459,27 @@ class UserRepository
 		}
 
 		return false;
+	}
+
+	public function get_with_mollie_status(int $id, string $schema):array
+	{
+		$user = $this->db->fetchAssociative('select u.*,
+				case when mp.id is null
+					then \'f\'::bool
+					else \'t\'::bool
+					end has_open_mollie_payment
+			from ' . $schema . '.users u
+			left join ' . $schema . '.mollie_payments mp
+				on (u.id = mp.user_id
+					and not mp.is_paid
+					and not mp.is_canceled)
+			where u.id = ?', [$id], [\PDO::PARAM_INT]);
+
+		if ($user === false)
+		{
+			return [];
+		}
+
+		return $user;
 	}
 }

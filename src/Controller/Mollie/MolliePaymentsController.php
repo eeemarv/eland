@@ -16,7 +16,6 @@ use App\Service\ItemAccessService;
 use App\Service\MailAddrUserService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\UserCacheService;
 use Doctrine\DBAL\ArrayParameterType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,6 +28,7 @@ use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 #[AsController]
 class MolliePaymentsController extends AbstractController
@@ -76,7 +76,7 @@ class MolliePaymentsController extends AbstractController
         DateFormatService $date_format_service,
         PageParamsService $pp,
         SessionUserService $su,
-        UserCacheService $user_cache_service,
+        TagAwareCacheInterface $cache,
         #[Autowire(service: 'html_sanitizer.sanitizer.admin_email_sanitizer')] HtmlSanitizerInterface $html_sanitizer,
         LoggerInterface $logger
     ):Response
@@ -437,7 +437,7 @@ class MolliePaymentsController extends AbstractController
 
                 foreach ($users_cancel_ary as $user_id => $dummy)
                 {
-                    $user_cache_service->clear((int) $user_id, $pp->schema());
+                    $cache->delete('users.' . $pp->schema() . '.' . $user_id);
                 }
 
                 $success = [];
@@ -458,10 +458,10 @@ class MolliePaymentsController extends AbstractController
                 foreach($cancel_ary as $payment_id)
                 {
                     $payment = $payments[$payment_id];
-                    $cancel_str = $account_render->link($payment['user_id'], $pp->ary());
+                    $cancel_str = $account_render->link((int) $payment['user_id'], $pp->ary());
                     $cancel_str .= ', ';
-                    $cancel_str .= strtr($payment['amount'], '.', ',') . ' EUR, "';
-                    $cancel_str .= htmlspecialchars($payment['description'], ENT_QUOTES);
+                    $cancel_str .= strtr((string) $payment['amount'], '.', ',') . ' EUR, "';
+                    $cancel_str .= htmlspecialchars((string) $payment['description'], ENT_QUOTES);
                     $cancel_str .= '"';
                     $success[] = $cancel_str;
                 }
@@ -554,7 +554,7 @@ class MolliePaymentsController extends AbstractController
                         continue;
                     }
 
-                    $emails_sent = json_decode($payment['emails_sent'], true) ?? [];
+                    $emails_sent = json_decode((string) $payment['emails_sent'], true) ?? [];
                     $emails_sent[] = $email_id;
 
                     $db->update($pp->schema() . '.mollie_payments', [
@@ -776,7 +776,7 @@ class MolliePaymentsController extends AbstractController
             $out .= strtr(BulkCnst::TPL_CHECKBOX_ITEM, [
                 '%id%'      => $id,
                 '%attr%'    => isset($selected[$id]) ? ' checked' : '',
-                '%label%'   => strtr($payment['amount'], '.', ','),
+                '%label%'   => strtr((string) $payment['amount'], '.', ','),
             ]);
 
             $out .= '</td><td>';
@@ -788,7 +788,7 @@ class MolliePaymentsController extends AbstractController
                         'q' => $payment['description'],
                     ],
                 ],
-                $payment['description'], []);
+                (string) $payment['description'], []);
 
             $out .= '</td><td';
 
@@ -801,7 +801,7 @@ class MolliePaymentsController extends AbstractController
 
             $out .= '>';
 
-            $out .= $account_render->link($payment['user_id'], $pp->ary());
+            $out .= $account_render->link((int) $payment['user_id'], $pp->ary());
 
             $out .= '</td><td>';
 
@@ -824,11 +824,11 @@ class MolliePaymentsController extends AbstractController
 
             $out .= '</td><td>';
 
-            $out .= $date_format_service->get($payment['created_at'], 'day', $pp->schema());
+            $out .= $date_format_service->get((string) $payment['created_at'], 'day', $pp->schema());
 
             $out .= '</td><td>';
 
-            $td_emails = count(json_decode($payment['emails_sent'], true));
+            $td_emails = count(json_decode((string) $payment['emails_sent'], true));
 
             if (!isset($payment['has_email']))
             {

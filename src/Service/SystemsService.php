@@ -2,56 +2,41 @@
 
 namespace App\Service;
 
+use App\Repository\SystemRepository;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class SystemsService
 {
-	protected array $schemas = [];
-	protected array $systems = [];
+	const CACHE_KEY = 'systems';
+	const CACHE_TTL = 86400; // one day
+	const CACHE_BETA = 1;
 
-	const IGNORE = [
-		'xdb'					=> true,
-		'template'				=> true,
-		'public'				=> true,
-		'c'						=> true,
-		'e'						=> true,
-		'temp'					=> true,
-		'information_schema'	=> true,
-		'migration'				=> true,
-		'pg_catalog'			=> true,
-	];
+	protected array $schema_ary;
+	protected array $schemas;
+	protected array $systems;
 
 	public function __construct(
 		protected Db $db,
+		protected TagAwareCacheInterface $cache,
+		protected SystemRepository $system_repository,
 		#[Autowire('%env(LEGACY_ELAND_ORIGIN_PATTERN)%')]
 		protected string $env_legacy_eland_origin_pattern
 	)
 	{
-		$stmt = $this->db->prepare('select schema_name
-			from information_schema.schemata');
+	}
 
-		$res = $stmt->executeQuery();
+	private function load():void
+	{
+		$this->schema_ary = $this->cache->get(self::CACHE_KEY, function(ItemInterface $item){
 
-		while($row = $res->fetchAssociative())
-		{
-			$schema = $row['schema_name'];
+			$item->expiresAfter(self::CACHE_TTL);
+			$item->tag(['deploy', 'systems']);
 
-			if (isset(self::IGNORE[$schema]))
-			{
-				continue;
-			}
-
-			if (str_starts_with($schema, 'pg_'))
-			{
-				continue;
-			}
-
-			$system = $schema;
-
-			$this->schemas[$system] = $schema;
-			$this->systems[$schema] = $system;
-		}
+			return $this->system_repository->get_schema_ary();
+		}, self::CACHE_BETA);
 	}
 
 	public function get_legacy_eland_origin(string $schema):string
@@ -78,28 +63,59 @@ class SystemsService
 		return $this->schemas[$system] ?? '';
  	}
 
-	public function get_schemas():array
+	public function get_schema_ary():array
 	{
-		return $this->schemas;
+		if (!isset($this->schema_ary))
+		{
+			$this->load();
+		}
+
+		return $this->schema_ary;
 	}
 
-	public function get_systems():array
+	public function get_schema(string $system):null|string
 	{
-		return $this->systems;
+		if (!isset($this->schema_ary))
+		{
+			$this->load();
+		}
+
+		/** */
+		$schema = $system;
+
+		if (isset($this->schema_ary[$schema]))
+		{
+			return $schema;
+		}
+
+		return null;
 	}
 
-	public function get_schema(string $system):string
+	public function get_system(string $schema):null|string
 	{
-		return $this->schemas[$system] ?? '';
-	}
+		if (!isset($this->schema_ary))
+		{
+			$this->load();
+		}
 
-	public function get_system(string $schema):string
-	{
-		return $this->systems[$schema] ?? '';
+		if (isset($this->schema_ary[$schema]))
+		{
+			/** */
+			$system = $schema;
+
+			return $system;
+		}
+
+		return null;
 	}
 
 	public function count():int
 	{
-		return count($this->schemas);
+		if (!isset($this->schema_ary))
+		{
+			$this->load();
+		}
+
+		return count($this->schema_ary);
 	}
 }

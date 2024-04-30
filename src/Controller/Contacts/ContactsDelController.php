@@ -2,6 +2,7 @@
 
 namespace App\Controller\Contacts;
 
+use App\Cache\UserCache;
 use App\Command\Contacts\ContactsCommand;
 use App\Form\Type\Contacts\ContactsDelType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,7 +13,6 @@ use App\Service\AlertService;
 use App\Repository\ContactRepository;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\UserCacheService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -85,7 +85,7 @@ class ContactsDelController extends AbstractController
         bool $is_self,
         ContactRepository $contact_repository,
         AlertService $alert_service,
-        UserCacheService $user_cache_service,
+        UserCache $user_cache,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
@@ -177,7 +177,7 @@ class ContactsDelController extends AbstractController
         }
 
         if ($contact_type['abbrev'] === 'mail'
-            && $user_cache_service->is_active_user($user_id, $pp->schema()))
+            && $user_cache->is_active_user($user_id, $pp->schema()))
         {
             $mail_count = $contact_repository->get_mail_count_for_user($user_id, $pp->schema());
 

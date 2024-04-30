@@ -24,7 +24,7 @@ class IndexController extends AbstractController
         SystemsService $systems_service
     ):Response
     {
-        $schemas = $systems_service->get_schemas();
+        $schemas = array_keys($systems_service->get_schema_ary());
 
         asort($schemas);
 

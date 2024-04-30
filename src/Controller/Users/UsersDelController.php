@@ -2,6 +2,7 @@
 
 namespace App\Controller\Users;
 
+use App\Cache\UserCache;
 use App\Cnst\BulkCnst;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,7 +17,6 @@ use App\Service\IntersystemsService;
 use App\Service\PageParamsService;
 use App\Service\ResponseCacheService;
 use App\Service\SessionUserService;
-use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -48,7 +48,7 @@ class UsersDelController extends AbstractController
         AlertService $alert_service,
         AccountRender $account_render,
         LinkRender $link_render,
-        UserCacheService $user_cache_service,
+        UserCache $user_cache,
         IntersystemsService $intersystems_service,
         PageParamsService $pp,
         SessionUserService $su,
@@ -71,7 +71,7 @@ class UsersDelController extends AbstractController
             throw new AccessDeniedHttpException('An account with transactions can not get removed.');
         }
 
-        $user = $user_cache_service->get($id, $pp->schema());
+        $user = $user_cache->get($id, $pp->schema());
 
         if (!$user)
         {
@@ -105,7 +105,7 @@ class UsersDelController extends AbstractController
                     $alert_service,
                     $intersystems_service,
                     $response_cache_service,
-                    $user_cache_service,
+                    $user_cache,
                     $pp
                 );
 
@@ -174,7 +174,7 @@ class UsersDelController extends AbstractController
         AlertService $alert_service,
         IntersystemsService $intersystems_service,
         ResponseCacheService $response_cache_service,
-        UserCacheService $user_cache_service,
+        UserCache $user_cache,
         PageParamsService $pp
     ):void
     {
@@ -188,7 +188,7 @@ class UsersDelController extends AbstractController
         $db->delete($pp->schema() . '.users',
             ['id' => $id]);
 
-        $user_cache_service->clear($id, $pp->schema());
+        $user_cache->clear($id, $pp->schema());
 
         $alert_service->success('De gebruiker is verwijderd.');
 

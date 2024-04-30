@@ -2,7 +2,7 @@
 
 namespace App\Twig;
 
-use App\Service\UserCacheService;
+use App\Cache\UserCache;
 use App\Service\SystemsService;
 use App\Cnst\RoleCnst;
 use Twig\Extension\RuntimeExtensionInterface;
@@ -10,7 +10,7 @@ use Twig\Extension\RuntimeExtensionInterface;
 class MppAryRuntime implements RuntimeExtensionInterface
 {
 	public function __construct(
-		protected UserCacheService $user_cache_service,
+		protected UserCache $user_cache,
 		protected SystemsService $systems_service
 	)
 	{
@@ -43,7 +43,7 @@ class MppAryRuntime implements RuntimeExtensionInterface
 
 	public function get(array $context, int $id, string $schema):array
 	{
-		$role = $this->user_cache_service->get($id, $schema)['role'];
+		$role = $this->user_cache->get($id, $schema)['role'];
 		$role_short = RoleCnst::SHORT[$role] ?? '';
 
 		return $this->get_ary($role_short, $context['et'] ?? '', $schema);

@@ -3,8 +3,6 @@
 namespace App\Controller\Init;
 
 use App\Service\PageParamsService;
-use App\Service\SystemsService;
-use App\Service\UserCacheService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 #[AsController]
 class InitClearUsersCacheController extends AbstractController
@@ -28,8 +27,7 @@ class InitClearUsersCacheController extends AbstractController
     public function __invoke(
         Request $request,
         PageParamsService $pp,
-        SystemsService $systems_service,
-        UserCacheService $user_cache_service,
+        TagAwareCacheInterface $cache,
         #[Autowire('%env(APP_INIT_ENABLED)%')]
         string $env_app_init_enabled
     ):Response
@@ -41,14 +39,7 @@ class InitClearUsersCacheController extends AbstractController
 
         set_time_limit(300);
 
-        error_log('*** clear users cache ***');
-
-        $schemas = $systems_service->get_schemas();
-
-        foreach($schemas as $schema)
-        {
-            $user_cache_service->clear_all($schema);
-        }
+        $cache->invalidateTags(['users']);
 
         return $this->redirectToRoute('init', [
             ...$pp->ary(),

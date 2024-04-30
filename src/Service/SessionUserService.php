@@ -2,8 +2,8 @@
 
 namespace App\Service;
 
+use App\Cache\UserCache;
 use App\Cnst\RoleCnst;
-use App\Service\UserCacheService;
 use App\Service\PageParamsService;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -31,7 +31,7 @@ class SessionUserService
 	public function __construct(
 		protected RequestStack $request_stack,
 		protected PageParamsService $pp,
-		protected UserCacheService $user_cache_service
+		protected UserCache $user_cache
 	)
 	{
 		$this->session = $request_stack->getSession();
@@ -60,7 +60,7 @@ class SessionUserService
 
 		if ($this->id)
 		{
-			$this->user = $this->user_cache_service->get($this->id, $this->schema);
+			$this->user = $this->user_cache->get($this->id, $this->schema);
 			$role = $this->user['role'];
 			$role = in_array($role, ['user', 'admin', 'guest']) ? $role : 'anonymous';
 		}

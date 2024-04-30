@@ -2,95 +2,95 @@
 
 namespace App\Service;
 
-use Redis;
-use Doctrine\DBAL\Connection as Db;
+use App\Repository\StaticContentRepository;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class StaticContentService
 {
-	const PREFIX = 's_content_';
-	const TTL = 518400; // 60 days
+	const CACHE_PREFIX = 'static_content.';
+	const CACHE_TTL = 518400; // 60 days
+	const CACHE_BETA = 1;
 
 	protected $local_cache = [];
 
 	public function __construct(
-		protected Db $db,
-		protected Redis $predis
+		protected StaticContentRepository $static_content_repository,
+		protected TagAwareCacheInterface $cache
 	)
 	{
 	}
 
-	public function clear_cache(string $schema):void
+	public function clear_cache(null|string $schema):void
 	{
 		$this->local_cache = [];
-		$this->predis->del(self::PREFIX . $schema);
+
+		if (isset($schema))
+		{
+			$this->cache->invalidateTags(['static_content_' . $schema]);
+		}
+		else
+		{
+			$this->cache->invalidateTags(['static_content']);
+		}
 	}
 
-	private function get_sql(
-		string $lang,
-		string $role,
-		string $route,
-		string $block
-	):array
+	private function clear_block_cache(string $key, string $block):void
 	{
-		$sql = [
-			'where'	=> [
-				'lang = ?',
-				'block = ?',
-			],
-			'columns'	=> [
-				'lang',
-				'block',
-			],
-			'params' => [
-				$lang,
-				$block,
-			],
-			'types'	=> [
-				\PDO::PARAM_STR,
-				\PDO::PARAM_STR,
-			],
-		];
+		unset($this->local_cache[$key][$block]);
+		$this->cache->invalidateTags(['static_content_' . $key]);
+	}
 
-		if ($role === '')
-		{
-			$sql['where'][] = 'role is null';
-		}
-		else
-		{
-			$sql['where'][] = 'role = ?';
-			$sql['columns'][] = 'role';
-			$sql['params'][] = $role;
-			$sql['types'][] = \PDO::PARAM_STR;
-		}
-
-		if ($route === '')
-		{
-			$sql['where'][] = 'route is null';
-		}
-		else
-		{
-			$sql['where'][] = 'route = ?';
-			$sql['columns'][] = 'route';
-			$sql['params'][] = $route;
-			$sql['types'][] = \PDO::PARAM_STR;
-		}
-
-		return $sql;
+	private function get_cache_key(
+		string $lang,
+		null|string $role,
+		null|string $route,
+		string $schema
+	):string
+	{
+		$key = $schema;
+		$key .= '.' . $lang;
+		$key .= isset($role) ? '.' . $role : '.all_roles';
+		$key .= isset($route) ? '.' . $route : '.all_routes';
+		return $key;
 	}
 
 	public function set(
-		string $role,
-		string $route,
+		null|string $role,
+		null|string $route,
 		string $block,
 		string $content,
 		SessionUserService $su,
 		string $schema
 	):void
 	{
-		if (substr($route, -6) === '_admin')
+		$lang = 'nl';
+
+		/**
+		 * @depreciated empty string for $role and $route
+		 * (should be null)
+		 * */
+
+		if ($role === '')
+		{
+			$role = null;
+		}
+
+		if ($route === '')
+		{
+			$route = null;
+		}
+
+		/**
+		 * @depreciated _admin routes
+		 * */
+
+		if (isset($route) && substr($route, -6) === '_admin')
 		{
 			$route = substr($route, 0, strlen($route) - 6);
 		}
+
+		/** */
 
 		$current_content = $this->get($role, $route, $block, $schema);
 
@@ -99,104 +99,65 @@ class StaticContentService
 			return;
 		}
 
-		$lang = 'nl';
+		$key = $this->get_cache_key($lang, $role, $route, $schema);
 
-		$sql = $this->get_sql($lang, $role, $route, $block);
-		$sql_where = implode(' and ', $sql['where']);
+		$this->static_content_repository->set_content_block(
+			$lang, $role, $route, $block, $content, $su, $schema
+		);
 
-		if ($content === '')
-		{
-			$this->db->executeStatement('delete
-				from ' . $schema . '.s_content
-				where ' . $sql_where, $sql['params'], $sql['types']);
-		}
-		else
-		{
-			$sql_params = [$content, $su->id(), ...$sql['params']];
-			$sql_types = [\PDO::PARAM_STR, \PDO::PARAM_INT, ...$sql['types']];
-
-			$affected_rows = $this->db->executeStatement('update ' . $schema . '.s_content
-				set content = ?, last_edit_by = ?
-				where ' . $sql_where,
-				$sql_params, $sql_types
-			);
-
-			if ($affected_rows === 0)
-			{
-				$sql_columns = ['content', 'last_edit_by', ...$sql['columns']];
-				$insert_ary = array_combine($sql_columns, $sql_params);
-				$insert_ary['created_by'] = $su->id();
-				$sql_types[] = \PDO::PARAM_INT;
-
-				$this->db->insert($schema . '.s_content',
-					$insert_ary,
-					$sql_types
-				);
-			}
-		}
-
-		$key = self::PREFIX . $schema;
-		$field = $lang;
-		$field .= $role === '' ? '' : '.' . $role;
-		$field .= $route === '' ? '' : '.' . $route;
-		$field .= '.' . $block;
-
-		unset($this->local_cache[$field]);
-		$this->predis->hdel($key, $field);
-
+		$this->clear_block_cache($key, $block);
 		return;
 	}
 
 	public function get(
-		string $role,
-		string $route,
+		null|string $role,
+		null|string $route,
 		string $block,
 		string $schema
 	):string
 	{
 		$lang = 'nl';
 
-		if (substr($route, -6) === '_admin')
+		/**
+		 * @depreciated empty string for $role and $route
+		 * (should be null)
+		 * */
+
+		 if ($role === '')
+		 {
+			 $role = null;
+		 }
+
+		 if ($route === '')
+		 {
+			 $route = null;
+		 }
+
+		 /**
+		  * @depreciated _admin routes
+		  * */
+
+		if (isset($route) && substr($route, -6) === '_admin')
 		{
 			$route = substr($route, 0, strlen($route) - 6);
 		}
 
-		$key = self::PREFIX . $schema;
-		$field = $lang;
-		$field .= $role === '' ? '' : '.' . $role;
-		$field .= $route === '' ? '' : '.' . $route;
-		$field .= '.' . $block;
+		$key = $this->get_cache_key($lang, $role, $route, $schema);
 
-		if (isset($this->local_cache[$field]))
+		if (isset($this->local_cache[$key]))
 		{
-			return $this->local_cache[$field];
+			return $this->local_cache[$key][$block] ?? '';
 		}
 
-		$str = $this->predis->hget($key, $field);
+		$this->local_cache[$key] = $this->cache->get(self::CACHE_PREFIX . $key, function(ItemInterface $item) use ($schema, $key, $lang, $role, $route){
 
-		if (is_string($str))
-		{
-			$this->local_cache[$field] = $str;
-			return $str;
-		}
+			$item->tag(['deploy', 'static_content', 'static_content_' . $schema, 'static_content_' . $key]);
+			$item->expiresAfter(self::CACHE_TTL);
 
-		$sql = $this->get_sql($lang, $role, $route, $block);
+			return $this->static_content_repository->get_content_block_ary($lang, $role, $route, $schema);
 
-		$sql_where = implode(' and ', $sql['where']);
+		}, self::CACHE_BETA);
 
-		$content = $this->db->fetchOne('select content
-			from ' . $schema . '.s_content
-			where ' . $sql_where,
-			$sql['params'], $sql['types']
-		);
-
-		if ($content === false)
-		{
-			$content = '';
-		}
-
-		$this->local_cache[$field] = $content;
-		$this->predis->hset($key, $field, $content);
-		return $content;
+		return $this->local_cache[$key][$block] ?? '';
 	}
 }

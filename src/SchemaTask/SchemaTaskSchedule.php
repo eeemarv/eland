@@ -42,7 +42,7 @@ class SchemaTaskSchedule
 		$id_info = [];
 		$time = time();
 		$schema_task_names = $this->get_schema_task_names();
-		$schemas = $this->systems_service->get_schemas();
+        $schemas = array_keys($this->systems_service->get_schema_ary());
 
 		foreach ($schema_task_names as $schema_task_name)
 		{

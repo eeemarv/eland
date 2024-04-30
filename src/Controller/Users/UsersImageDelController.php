@@ -2,12 +2,12 @@
 
 namespace App\Controller\Users;
 
+use App\Cache\UserCache;
 use App\Command\Users\UsersImageDelCommand;
 use App\Form\Type\Users\UsersImageDelType;
 use App\Service\AlertService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\UserCacheService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -55,7 +55,7 @@ class UsersImageDelController extends AbstractController
         bool $is_self,
         Db $db,
         AlertService $alert_service,
-        UserCacheService $user_cache_service,
+        UserCache $user_cache,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
@@ -70,7 +70,7 @@ class UsersImageDelController extends AbstractController
             $id = $su->id();
         }
 
-        $user = $user_cache_service->get($id, $pp->schema());
+        $user = $user_cache->get($id, $pp->schema());
 
         if (!$user)
         {
@@ -97,7 +97,7 @@ class UsersImageDelController extends AbstractController
                 ['image_file' => null],
                 ['id' => $id]);
 
-            $user_cache_service->clear($id, $pp->schema());
+            $user_cache->clear($id, $pp->schema());
 
             if ($is_self)
             {

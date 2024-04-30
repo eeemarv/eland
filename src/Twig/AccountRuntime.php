@@ -2,16 +2,16 @@
 
 namespace App\Twig;
 
+use App\Cache\UserCache;
 use App\Repository\AccountRepository;
 use App\Service\ConfigService;
-use App\Service\UserCacheService;
 use Twig\Extension\RuntimeExtensionInterface;
 
 class AccountRuntime implements RuntimeExtensionInterface
 {
 	public function __construct(
 		protected AccountRepository $account_repository,
-		protected UserCacheService $user_cache_service,
+		protected UserCache $user_cache,
 		protected ConfigService $config_service
 	)
 	{
@@ -19,7 +19,7 @@ class AccountRuntime implements RuntimeExtensionInterface
 
 	public function get(int $id, string $schema):string
 	{
-		$user = $this->user_cache_service->get($id, $schema);
+		$user = $this->user_cache->get($id, $schema);
 		$code = $user['code'] ?? '***';
 		$name = $user['name'] ?? '***';
 		return $code . ' ' . $name;
@@ -27,19 +27,19 @@ class AccountRuntime implements RuntimeExtensionInterface
 
 	public function get_full_name(int $id, string $schema):string
 	{
-		$user = $this->user_cache_service->get($id, $schema);
+		$user = $this->user_cache->get($id, $schema);
 		return $user['full_name'];
 	}
 
 	public function get_name(int $id, string $schema):string
 	{
-		$user = $this->user_cache_service->get($id, $schema);
+		$user = $this->user_cache->get($id, $schema);
 		return $user['name'];
 	}
 
 	public function get_code(int $id, string $schema):string
 	{
-		$user = $this->user_cache_service->get($id, $schema);
+		$user = $this->user_cache->get($id, $schema);
 		return $user['code'];
 	}
 
@@ -61,7 +61,7 @@ class AccountRuntime implements RuntimeExtensionInterface
 	public function get_status(int $id, string $schema):string
 	{
 
-		$user = $this->user_cache_service->get($id, $schema);
+		$user = $this->user_cache->get($id, $schema);
 
 		if ($user['is_active'])
 		{
