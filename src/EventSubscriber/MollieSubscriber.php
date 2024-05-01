@@ -2,7 +2,7 @@
 
 namespace App\EventSubscriber;
 
-use App\Cache\UserCache;
+use App\Cache\UserInvalidateCache;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
@@ -33,7 +33,7 @@ class MollieSubscriber implements EventSubscriberInterface
         protected AlertService $alert_service,
         protected PageParamsService $pp,
         protected SessionUserService $su,
-        protected UserCache $user_cache,
+        protected UserInvalidateCache $user_invalidate_cache,
         protected LinkRender $link_render,
         protected ConfigService $config_service
     )
@@ -98,7 +98,7 @@ class MollieSubscriber implements EventSubscriberInterface
         if (!$payments)
         {
             error_log('User sync no payments in subscriber. Clear cache ++');
-            $this->user_cache->clear($this->su->id(), $this->pp->schema());
+            $this->user_invalidate_cache->user($this->su->id(), $this->pp->schema());
             return;
         }
 

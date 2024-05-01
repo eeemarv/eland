@@ -2,7 +2,7 @@
 
 namespace App\Controller\Users;
 
-use App\Cache\UserCache;
+use App\Cache\UserInvalidateCache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -74,7 +74,7 @@ class UsersListController extends AbstractController
         MailAddrUserService $mail_addr_user_service,
         MailQueue $mail_queue,
         TypeaheadService $typeahead_service,
-        UserCache $user_cache,
+        UserInvalidateCache $user_invalidate_cache,
         PageParamsService $pp,
         SessionUserService $su,
         VarRouteService $vr,
@@ -322,7 +322,7 @@ class UsersListController extends AbstractController
 
                 foreach ($user_ids as $user_id)
                 {
-                    $user_cache->clear($user_id, $pp->schema());
+                    $user_invalidate_cache->user($user_id, $pp->schema());
                 }
 
                 $log_value = $bulk_field_value ? 'on' : 'off';
@@ -389,7 +389,7 @@ class UsersListController extends AbstractController
 
                 foreach ($user_ids as $user_id)
                 {
-                    $user_cache->clear($user_id, $pp->schema());
+                    $user_invalidate_cache->user($user_id, $pp->schema());
                 }
 
 /*

@@ -2,6 +2,7 @@
 
 namespace App\ConsoleCommand;
 
+use App\Cache\UserInvalidateCache;
 use App\Service\ConfigService;
 use App\Service\ResponseCacheService;
 use App\Service\StaticContentService;
@@ -23,7 +24,8 @@ class ClearRedisCacheConsoleCommand extends Command
         protected ResponseCacheService $response_cache_service,
         protected StaticContentService $static_content_service,
         protected SystemsService $systems_service,
-        protected TagAwareCacheInterface $cache
+        protected TagAwareCacheInterface $cache,
+        protected UserInvalidateCache $user_invalidate_cache
     )
     {
         parent::__construct();
@@ -44,9 +46,10 @@ class ClearRedisCacheConsoleCommand extends Command
         $this->cache->invalidateTags([
             'response',
             'config',
-            'static_content',
-            'users'
+            'static_content'
         ]);
+
+        $this->user_invalidate_cache->all();
 
         return 0;
     }

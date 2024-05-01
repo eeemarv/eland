@@ -2,6 +2,7 @@
 
 namespace App\Controller\Mollie;
 
+use App\Cache\UserInvalidateCache;
 use App\Cnst\BulkCnst;
 use App\Controller\Users\UsersListController;
 use App\Render\AccountRender;
@@ -21,7 +22,6 @@ use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 #[AsController]
 class MolliePaymentsAddController extends AbstractController
@@ -56,7 +56,7 @@ class MolliePaymentsAddController extends AbstractController
         PageParamsService $pp,
         SessionUserService $su,
         TokenGeneratorService $token_generator_service,
-        TagAwareCacheInterface $cache
+        UserInvalidateCache $user_invalidate_cache
     ):Response
     {
         if (!$config_service->get_bool('mollie.enabled', $pp->schema()))
@@ -245,7 +245,7 @@ class MolliePaymentsAddController extends AbstractController
                         'created_by'    => $su->id(),
                     ]);
 
-                    $cache->delete('users.' . $pp->schema() . '.' . $user_id);
+                    $user_invalidate_cache->user($user_id, $pp->schema());
                 }
 
                 $success = [];

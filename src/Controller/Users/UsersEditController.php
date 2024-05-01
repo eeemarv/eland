@@ -3,6 +3,7 @@
 namespace App\Controller\Users;
 
 use App\Cache\UserCache;
+use App\Cache\UserInvalidateCache;
 use App\Cnst\BulkCnst;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -111,6 +112,7 @@ class UsersEditController extends AbstractController
         ResponseCacheService $response_cache_service,
         TypeaheadService $typeahead_service,
         UserCache $user_cache,
+        UserInvalidateCache $user_invalidate_cache,
         MailAddrUserService $mail_addr_user_service,
         MailAddrSystemService $mail_addr_system_service,
         MailQueue $mail_queue,
@@ -585,7 +587,7 @@ class UsersEditController extends AbstractController
 
             if (!count($errors))
             {
-                $user_cache->clear($id, $pp->schema());
+                $user_invalidate_cache->user($id, $pp->schema());
 
                 if ($pp->is_admin())
                 {

@@ -2,14 +2,14 @@
 
 namespace App\SchemaTask;
 
-use App\Cache\UserCache;
+use App\Cache\UserInvalidateCache;
 use Doctrine\DBAL\Connection as Db;
 
 class SyncUserCacheSchemaTask implements SchemaTaskInterface
 {
 	public function __construct(
 		protected Db $db,
-		protected UserCache $user_cache
+		protected UserInvalidateCache $user_invalidate_cache
 	)
 	{
 	}
@@ -21,6 +21,7 @@ class SyncUserCacheSchemaTask implements SchemaTaskInterface
 
 	public function run(string $schema, bool $update):void
 	{
+/*
 		$user_ids = [];
 
 		$stmt = $this->db->prepare('select id
@@ -35,9 +36,9 @@ class SyncUserCacheSchemaTask implements SchemaTaskInterface
 
 		foreach ($user_ids as $id)
 		{
-			// TO DO tag aware cache
 			// $this->user_cache->sync($id, $schema);
 		}
+*/
 	}
 
 	public function is_enabled(string $schema):bool

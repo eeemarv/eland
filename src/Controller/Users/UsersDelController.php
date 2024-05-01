@@ -3,6 +3,7 @@
 namespace App\Controller\Users;
 
 use App\Cache\UserCache;
+use App\Cache\UserInvalidateCache;
 use App\Cnst\BulkCnst;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -49,6 +50,7 @@ class UsersDelController extends AbstractController
         AccountRender $account_render,
         LinkRender $link_render,
         UserCache $user_cache,
+        UserInvalidateCache $user_invalidate_cache,
         IntersystemsService $intersystems_service,
         PageParamsService $pp,
         SessionUserService $su,
@@ -105,7 +107,7 @@ class UsersDelController extends AbstractController
                     $alert_service,
                     $intersystems_service,
                     $response_cache_service,
-                    $user_cache,
+                    $user_invalidate_cache,
                     $pp
                 );
 
@@ -174,7 +176,7 @@ class UsersDelController extends AbstractController
         AlertService $alert_service,
         IntersystemsService $intersystems_service,
         ResponseCacheService $response_cache_service,
-        UserCache $user_cache,
+        UserInvalidateCache $user_invalidate_cache,
         PageParamsService $pp
     ):void
     {
@@ -188,7 +190,7 @@ class UsersDelController extends AbstractController
         $db->delete($pp->schema() . '.users',
             ['id' => $id]);
 
-        $user_cache->clear($id, $pp->schema());
+        $user_invalidate_cache->user($id, $pp->schema());
 
         $alert_service->success('De gebruiker is verwijderd.');
 

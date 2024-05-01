@@ -3,6 +3,7 @@
 namespace App\Controller\Users;
 
 use App\Cache\UserCache;
+use App\Cache\UserInvalidateCache;
 use App\Command\Users\UsersImageDelCommand;
 use App\Form\Type\Users\UsersImageDelType;
 use App\Service\AlertService;
@@ -56,6 +57,7 @@ class UsersImageDelController extends AbstractController
         Db $db,
         AlertService $alert_service,
         UserCache $user_cache,
+        UserInvalidateCache $user_invalidate_cache,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
@@ -97,7 +99,7 @@ class UsersImageDelController extends AbstractController
                 ['image_file' => null],
                 ['id' => $id]);
 
-            $user_cache->clear($id, $pp->schema());
+            $user_invalidate_cache->user($id, $pp->schema());
 
             if ($is_self)
             {

@@ -2,6 +2,7 @@
 
 namespace App\Controller\Mollie;
 
+use App\Cache\UserInvalidateCache;
 use App\Cnst\BulkCnst;
 use App\Command\Mollie\MollieFilterCommand;
 use App\Form\Type\Mollie\MollieFilterType;
@@ -28,7 +29,6 @@ use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 #[AsController]
 class MolliePaymentsController extends AbstractController
@@ -76,7 +76,7 @@ class MolliePaymentsController extends AbstractController
         DateFormatService $date_format_service,
         PageParamsService $pp,
         SessionUserService $su,
-        TagAwareCacheInterface $cache,
+        UserInvalidateCache $user_invalidate_cache,
         #[Autowire(service: 'html_sanitizer.sanitizer.admin_email_sanitizer')] HtmlSanitizerInterface $html_sanitizer,
         LoggerInterface $logger
     ):Response
@@ -437,7 +437,7 @@ class MolliePaymentsController extends AbstractController
 
                 foreach ($users_cancel_ary as $user_id => $dummy)
                 {
-                    $cache->delete('users.' . $pp->schema() . '.' . $user_id);
+                    $user_invalidate_cache->user($user_id, $pp->schema());
                 }
 
                 $success = [];

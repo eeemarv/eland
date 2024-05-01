@@ -2,7 +2,7 @@
 
 namespace App\Controller\Users;
 
-use App\Cache\UserCache;
+use App\Cache\UserInvalidateCache;
 use App\Service\ImageUploadService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -54,7 +54,7 @@ class UsersImageUploadController extends AbstractController
         Db $db,
         LoggerInterface $logger,
         ImageUploadService $image_upload_service,
-        UserCache $user_cache,
+        UserInvalidateCache $user_invalidate_cache,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
@@ -90,7 +90,7 @@ class UsersImageUploadController extends AbstractController
             ' uploaded. User: ' . $id,
             ['schema' => $pp->schema()]);
 
-        $user_cache->clear($id, $pp->schema());
+        $user_invalidate_cache->user($id, $pp->schema());
 
         return $this->json($res);
     }

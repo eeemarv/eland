@@ -2,23 +2,18 @@
 
 namespace App\Repository;
 
+use App\Cache\UserInvalidateCache;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use LogicException;
-use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class UserRepository
 {
 	public function __construct(
 		protected Db $db,
-		protected TagAwareCacheInterface $cache
+		protected UserInvalidateCache $user_invalidate_cache
 	)
 	{
-	}
-
-	private function clear_user_cache(int $id, string $schema):void
-	{
-		$this->cache->delete('users.' . $schema . '.' . $id);
 	}
 
 	public function get_account_str(int $id, string $schema):string
@@ -271,7 +266,7 @@ class UserRepository
 			['id' => $id],
 			['password' => \PDO::PARAM_STR]
 		);
-		$this->clear_user_cache($id, $schema);
+		$this->user_invalidate_cache->user($id, $schema);
 	}
 
 	public function register(array $user, string $schema):int
@@ -344,7 +339,7 @@ class UserRepository
             ['id' => $id]) ? true : false;
 		if ($success)
 		{
-			$this->clear_user_cache($id, $schema);
+			$this->user_invalidate_cache->user($id, $schema);
 		}
 
 		return $success;
@@ -360,7 +355,7 @@ class UserRepository
 			$update_ary,
             ['id' => $id]);
 
-		$this->clear_user_cache($id, $schema);
+		$this->user_invalidate_cache->user($id, $schema);
 
 		return $affected_row_count;
 	}
