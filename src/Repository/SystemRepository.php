@@ -29,13 +29,13 @@ class SystemRepository
 				and s.schema_name = split_part(t.tableoid::regclass::text, \'.\', 1)
 			where not starts_with(s.schema_name, \'pg_\')
 			and not starts_with(s.schema_name, \'eland_\')
-			and schema_name not in (\'xdb\', \'c\', \'e\',
+			and s.schema_name not in (\'xdb\', \'c\', \'e\',
 				\'public\', \'template\', \'temp\',
 				\'migration\', \'information_schema\')');
 
 		$res = $stmt->executeQuery();
 
-		while($row = $res->fetchAssociative())
+		while ($row = $res->fetchAssociative())
 		{
 			$schema = $row['schema_name'];
 

@@ -8,12 +8,6 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class ResponseCacheService
 {
-	/*
-	const CACHE_PREFIX = 'response_';
-	const CACHE_TTL = 5184000; // 60 days
-	const CACHE_BETA = 1;
-	*/
-
 	const STORE_PREFIX = 'response_cache_';
 	const TTL_STORE = 5184000; // 60 days
 

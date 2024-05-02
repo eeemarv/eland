@@ -1,14 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace App\Service;
+namespace App\Cache;
 
 use App\Repository\SystemRepository;
-use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
-class SystemsService
+class SystemsCache
 {
 	const CACHE_KEY = 'systems';
 	const CACHE_TTL = 86400; // one day
@@ -19,7 +18,6 @@ class SystemsService
 	protected array $systems;
 
 	public function __construct(
-		protected Db $db,
 		protected TagAwareCacheInterface $cache,
 		protected SystemRepository $system_repository,
 		#[Autowire('%env(LEGACY_ELAND_ORIGIN_PATTERN)%')]
@@ -28,13 +26,10 @@ class SystemsService
 	{
 	}
 
-	private function load():void
+	public function load():array
 	{
-		$this->schema_ary = $this->cache->get(self::CACHE_KEY, function(ItemInterface $item){
-
+		return $this->cache->get(self::CACHE_KEY, function(ItemInterface $item){
 			$item->expiresAfter(self::CACHE_TTL);
-			$item->tag(['systems']);
-
 			return $this->system_repository->get_schema_ary();
 		}, self::CACHE_BETA);
 	}
