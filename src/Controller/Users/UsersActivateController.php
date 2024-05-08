@@ -3,9 +3,8 @@
 namespace App\Controller\Users;
 
 use App\Cache\ConfigCache;
-use App\Command\Users\UsersAccountCodeCommand;
+use App\Cache\ResponseCache;
 use App\Command\Users\UsersActivateCommand;
-use App\Form\Type\Users\UsersAccountCodeType;
 use App\Form\Type\Users\UsersActivateType;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -13,7 +12,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
 use App\Service\PageParamsService;
-use App\Service\ResponseCacheService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -40,7 +38,7 @@ class UsersActivateController extends AbstractController
     public function __invoke(
         Request $request,
         int $id,
-        ResponseCacheService $response_cache_service,
+        ResponseCache $response_cache,
         UserRepository $user_repository,
         AlertService $alert_service,
         ConfigCache $config_cache,
@@ -74,7 +72,7 @@ class UsersActivateController extends AbstractController
                 'is_active'    => 't',
             ], $id, $pp->schema());
 
-            $response_cache_service->clear_cache($pp->schema());
+            $response_cache->clear_cache($pp->schema());
 
             $alert_service->success('Het transactie-account is aangemaakt met code ' . $command->code);
 

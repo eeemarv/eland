@@ -3,6 +3,7 @@
 namespace App\Controller\Tags;
 
 use App\Cache\ConfigCache;
+use App\Cache\ResponseCache;
 use App\Command\Tags\TagsDefCommand;
 use App\Form\Type\Tags\TagsDefType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -11,7 +12,6 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
 use App\Repository\TagRepository;
 use App\Service\PageParamsService;
-use App\Service\ResponseCacheService;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -154,7 +154,7 @@ class TagsDelController extends AbstractController
         string $module,
         string $tag_type,
         TagRepository $tag_repository,
-        ResponseCacheService $response_cache_service,
+        ResponseCache $response_cache,
         AlertService $alert_service,
         ConfigCache $config_cache,
         PageParamsService $pp
@@ -198,7 +198,7 @@ class TagsDelController extends AbstractController
             && $form->isValid())
         {
             $tag_repository->del($id, $tag_type, $pp->schema());
-            $response_cache_service->clear_cache($pp->schema());
+            $response_cache->clear_cache($pp->schema());
 
             $alert_service->success('Tag "' . $command->txt . '" verwijderd.');
 

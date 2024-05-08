@@ -3,6 +3,7 @@
 namespace App\Controller\Docs;
 
 use App\Cache\ConfigCache;
+use App\Cache\ResponseCache;
 use App\Command\Docs\DocsCommand;
 use App\Form\Type\Docs\DocsAddType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -11,7 +12,6 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
 use App\Repository\DocRepository;
 use App\Service\PageParamsService;
-use App\Service\ResponseCacheService;
 use App\Service\S3Service;
 use App\Service\SessionUserService;
 use Psr\Log\LoggerInterface;
@@ -42,7 +42,7 @@ class DocsAddController extends AbstractController
         LoggerInterface $logger,
         AlertService $alert_service,
         S3Service $s3_service,
-        ResponseCacheService $response_cache_service,
+        ResponseCache $response_cache,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
@@ -116,7 +116,7 @@ class DocsAddController extends AbstractController
                 {
                     $map_id = $doc_repository->insert_map($map_name, $su->id(), $pp->schema());
                     $alert_success_msg[] = 'Nieuwe map "' . $map_name . '" gecreëerd.';
-                    $response_cache_service->clear_cache($pp->schema());
+                    $response_cache->clear_cache($pp->schema());
                 }
 
                 $doc['map_id'] = $map_id;

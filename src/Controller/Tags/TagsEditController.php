@@ -3,6 +3,7 @@
 namespace App\Controller\Tags;
 
 use App\Cache\ConfigCache;
+use App\Cache\ResponseCache;
 use App\Command\Tags\TagsDefCommand;
 use App\Form\Type\Tags\TagsDefType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -11,7 +12,6 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
 use App\Repository\TagRepository;
 use App\Service\PageParamsService;
-use App\Service\ResponseCacheService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
@@ -155,7 +155,7 @@ class TagsEditController extends AbstractController
         TagRepository $tag_repository,
         AlertService $alert_service,
         ConfigCache $config_cache,
-        ResponseCacheService $response_cache_service,
+        ResponseCache $response_cache,
         PageParamsService $pp,
     ):Response
     {
@@ -193,7 +193,7 @@ class TagsEditController extends AbstractController
         {
             $command = $form->getData();
             $tag_repository->update($command, $pp->schema());
-            $response_cache_service->clear_cache($pp->schema());
+            $response_cache->clear_cache($pp->schema());
 
             $alert_service->success('Tag "' . $command->txt . '" aangepast.');
 

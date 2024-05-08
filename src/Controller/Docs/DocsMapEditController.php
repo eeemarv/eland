@@ -3,6 +3,7 @@
 namespace App\Controller\Docs;
 
 use App\Cache\ConfigCache;
+use App\Cache\ResponseCache;
 use App\Command\Docs\DocsMapCommand;
 use App\Form\Type\Docs\DocsMapType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -11,7 +12,6 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
 use App\Repository\DocRepository;
 use App\Service\PageParamsService;
-use App\Service\ResponseCacheService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
@@ -39,7 +39,7 @@ class DocsMapEditController extends AbstractController
         DocRepository $doc_repository,
         ConfigCache $config_cache,
         AlertService $alert_service,
-        ResponseCacheService $response_cache_service,
+        ResponseCache $response_cache,
         PageParamsService $pp
     ):Response
     {
@@ -75,9 +75,7 @@ class DocsMapEditController extends AbstractController
             else
             {
                 $doc_repository->update_map_name($command->name, $id, $pp->schema());
-
-                $response_cache_service->clear_cache($pp->schema());
-
+                $response_cache->clear_cache($pp->schema());
                 $alert_service->success('Map naam aangepast');
             }
 

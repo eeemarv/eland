@@ -3,6 +3,7 @@
 namespace App\Controller\Users;
 
 use App\Cache\ConfigCache;
+use App\Cache\ResponseCache;
 use App\Cache\UserCache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,7 +27,6 @@ use App\Service\DistanceService;
 use App\Service\ItemAccessService;
 use App\Service\MailAddrUserService;
 use App\Service\PageParamsService;
-use App\Service\ResponseCacheService;
 use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -91,7 +91,7 @@ class UsersShowController extends AbstractController
         DistanceService $distance_service,
         PageParamsService $pp,
         SessionUserService $su,
-        ResponseCacheService $response_cache_service,
+        ResponseCache $response_cache,
         ContactsUserShowInlineController $contacts_user_show_inline_controller,
         string $env_map_access_token,
         string $env_map_tiles_url
@@ -181,7 +181,7 @@ class UsersShowController extends AbstractController
                 $tags_command = $tags_form->getData();
 
                 $count_changes = $tag_repository->update_for_user($tags_command, $id, $su->id(), $pp->schema());
-                $response_cache_service->clear_cache($pp->schema());
+                $response_cache->clear_cache($pp->schema());
 
                 if ($count_changes)
                 {

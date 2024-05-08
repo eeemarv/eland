@@ -3,11 +3,11 @@
 namespace App\Controller\Tags;
 
 use App\Cache\ConfigCache;
+use App\Cache\ResponseCache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\TagRepository;
 use App\Service\PageParamsService;
-use App\Service\ResponseCacheService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -32,7 +32,7 @@ class TagsStyleSheetController extends AbstractController
     public function __invoke(
         string $tag_type,
         string $thumbprint,
-        ResponseCacheService $response_cache_service,
+        ResponseCache $response_cache,
         TagRepository $tag_repository,
         ConfigCache $config_cache,
         PageParamsService $pp
@@ -52,7 +52,7 @@ class TagsStyleSheetController extends AbstractController
         }
 
         $thumbprint_key = 'tags_css.' . $tag_type;
-        $cached = $response_cache_service->get_response_body($thumbprint, $thumbprint_key, $pp->schema());
+        $cached = $response_cache->get_response_body($thumbprint, $thumbprint_key, $pp->schema());
 
         if ($cached !== false)
         {
@@ -68,7 +68,7 @@ class TagsStyleSheetController extends AbstractController
         ]);
 
         $response_body = $response->getContent();
-        $response_cache_service->store_response_body($thumbprint_key, $pp->schema(), $response_body);
+        $response_cache->store_response_body($thumbprint_key, $pp->schema(), $response_body);
 
         $response->setStatusCode(Response::HTTP_OK);
         $response->headers->set('Content-Type', 'text/css');

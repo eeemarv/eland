@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Cache\ResponseCache;
 use App\Cache\SystemsCache;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -158,7 +159,7 @@ class AssetsService
 
 	public function __construct(
 		protected TagAwareCacheInterface $cache,
-		protected ResponseCacheService $response_cache_service,
+		protected ResponseCache $response_cache,
 		protected UrlGeneratorInterface $url_generator,
 		protected SystemsCache $systems_cache
 	)
@@ -259,7 +260,7 @@ class AssetsService
 	public function add_var_css(string $thumbprint_key, string $schema):void
 	{
 		[$route, $type] = explode('.', $thumbprint_key);
-		$thumbprint = $this->response_cache_service->get_thumbprint_from_key($thumbprint_key, $schema);
+		$thumbprint = $this->response_cache->get_thumbprint_from_key($thumbprint_key, $schema);
 		$params = [
 			'thumbprint'	=> $thumbprint,
 			'system'		=> $this->systems_cache->get_system($schema),

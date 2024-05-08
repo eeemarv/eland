@@ -3,6 +3,7 @@
 namespace App\Controller\Users;
 
 use App\Cache\ConfigCache;
+use App\Cache\ResponseCache;
 use App\Cache\UserCache;
 use App\Cache\UserInvalidateCache;
 use App\Cnst\BulkCnst;
@@ -27,7 +28,6 @@ use App\Service\MailAddrSystemService;
 use App\Service\MailAddrUserService;
 use App\Service\PageParamsService;
 use App\Service\PasswordStrengthService;
-use App\Service\ResponseCacheService;
 use App\Service\SessionUserService;
 use App\Service\SystemsService;
 use App\Service\TypeaheadService;
@@ -109,7 +109,7 @@ class UsersEditController extends AbstractController
         PasswordStrengthService $password_strength_service,
         SelectRender $select_render,
         SystemsService $systems_service,
-        ResponseCacheService $response_cache_service,
+        ResponseCache $response_cache,
         TypeaheadService $typeahead_service,
         UserCache $user_cache,
         UserInvalidateCache $user_invalidate_cache,
@@ -719,7 +719,7 @@ class UsersEditController extends AbstractController
                     }
                 }
 
-                $response_cache_service->clear_cache($pp->schema());
+                $response_cache->clear_cache($pp->schema());
 
                 $intersystems_service->clear_cache();
 

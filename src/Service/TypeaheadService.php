@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Cache\ResponseCache;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class TypeaheadService
@@ -13,7 +14,7 @@ class TypeaheadService
 	protected array $fetch_ary;
 
 	public function __construct(
-		protected ResponseCacheService $response_cache_service,
+		protected ResponseCache $response_cache,
 		protected UrlGeneratorInterface $url_generator
 	)
 	{
@@ -41,7 +42,7 @@ class TypeaheadService
 
 		$thumbprint_key = $this->get_thumbprint_key($typeahead_route, $params);
 
-		$thumbprint = $this->response_cache_service->get_thumbprint_from_key($thumbprint_key, $schema);
+		$thumbprint = $this->response_cache->get_thumbprint_from_key($thumbprint_key, $schema);
 
 		$path = $this->url_generator->generate(
 			self::ROUTE_PREFIX . $typeahead_route, [
@@ -113,7 +114,7 @@ class TypeaheadService
 
 		$thumbprint_key = $this->get_thumbprint_key($typeahead_route, $params);
 
-		return $this->response_cache_service->get_response_body($thumbprint, $thumbprint_key, $schema);
+		return $this->response_cache->get_response_body($thumbprint, $thumbprint_key, $schema);
 	}
 
 	public function store_response_body(
@@ -127,6 +128,6 @@ class TypeaheadService
 		$typeahead_route = str_replace(self::ROUTE_PREFIX, '', $pp->route());
 		$thumbprint_key = $this->get_thumbprint_key($typeahead_route, $params);
 
-		$this->response_cache_service->store_response_body($thumbprint_key, $schema, $response_body);
+		$this->response_cache->store_response_body($thumbprint_key, $schema, $response_body);
 	}
 }

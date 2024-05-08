@@ -1,14 +1,14 @@
 <?php declare(strict_types=1);
 
-namespace App\Service;
+namespace App\Cache;
 
 use Redis;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
-class ResponseCacheService
+class ResponseCache
 {
-	const STORE_PREFIX = 'response_cache_';
+	const STORE_PREFIX = 'response_cache.';
 	const TTL_STORE = 5184000; // 60 days
 
 	public function __construct(

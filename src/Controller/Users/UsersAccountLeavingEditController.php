@@ -3,6 +3,7 @@
 namespace App\Controller\Users;
 
 use App\Cache\ConfigCache;
+use App\Cache\ResponseCache;
 use App\Command\Users\UsersAccountLeavingCommand;
 use App\Form\Type\Users\UsersAccountLeavingType;
 use App\Repository\AccountRepository;
@@ -12,7 +13,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
 use App\Service\PageParamsService;
-use App\Service\ResponseCacheService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -59,7 +59,7 @@ class UsersAccountLeavingEditController extends AbstractController
         bool $is_self,
         UserRepository $user_repository,
         AccountRepository $account_repository,
-        ResponseCacheService $response_cache_service,
+        ResponseCache $response_cache,
         AlertService $alert_service,
         ConfigCache $config_cache,
         PageParamsService $pp,
@@ -142,7 +142,7 @@ class UsersAccountLeavingEditController extends AbstractController
                     'is_leaving'    => $pg_is_leaving,
                 ], $id, $pp->schema());
 
-                $response_cache_service->clear_cache($pp->schema());
+                $response_cache->clear_cache($pp->schema());
             }
 
             if ($is_self)

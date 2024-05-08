@@ -3,6 +3,7 @@
 namespace App\Controller\Tags;
 
 use App\Cache\ConfigCache;
+use App\Cache\ResponseCache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,7 +12,6 @@ use App\Form\Type\Tags\TagsDefType;
 use App\Service\AlertService;
 use App\Repository\TagRepository;
 use App\Service\PageParamsService;
-use App\Service\ResponseCacheService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -145,7 +145,7 @@ class TagsAddController extends AbstractController
         string $tag_type,
         Request $request,
         TagRepository $tag_repository,
-        ResponseCacheService $response_cache_service,
+        ResponseCache $response_cache,
         AlertService $alert_service,
         ConfigCache $config_cache,
         PageParamsService $pp,
@@ -183,7 +183,7 @@ class TagsAddController extends AbstractController
             $created_by = $su->is_master() ? null : $su->id();
             $command->tag_type = $tag_type;
             $tag_repository->insert($command, $created_by, $pp->schema());
-            $response_cache_service->clear_cache($pp->schema());
+            $response_cache->clear_cache($pp->schema());
             $alert_service->success('Tag "' . $command->txt . '" opgeslagen.');
 
             return $this->redirectToRoute('tags_' . $tag_type, $pp->ary());

@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Cache\ConfigCache;
+use App\Cache\ResponseCache;
 use App\Cache\UserCache;
 use App\Cache\UserInvalidateCache;
 use Doctrine\DBAL\Connection as Db;
@@ -25,7 +26,7 @@ class AutoDeactivateService
 		protected MailAddrUserService $mail_addr_user_service,
 		protected ConfigCache $config_cache,
 		protected SessionUserService $su,
-		protected ResponseCacheService $response_cache_service,
+		protected ResponseCache $response_cache,
 		protected AccountRender $account_render
 	)
 	{
@@ -63,7 +64,7 @@ class AutoDeactivateService
 
 		$this->db->update($schema . '.users', ['status'	=> 0], ['id' => $user_id]);
 		$this->user_invalidate_cache->user($user_id, $schema);
-		$this->response_cache_service->clear_cache($schema);
+		$this->response_cache->clear_cache($schema);
 
 		$this->logger->info('Auto-deactivated: user ' .
 			$this->account_render->str($user_id, $schema),

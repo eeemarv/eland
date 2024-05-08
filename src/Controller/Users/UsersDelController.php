@@ -2,6 +2,7 @@
 
 namespace App\Controller\Users;
 
+use App\Cache\ResponseCache;
 use App\Cache\UserCache;
 use App\Cache\UserInvalidateCache;
 use App\Cnst\BulkCnst;
@@ -16,7 +17,6 @@ use App\Service\AlertService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
 use App\Service\PageParamsService;
-use App\Service\ResponseCacheService;
 use App\Service\SessionUserService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
@@ -44,7 +44,7 @@ class UsersDelController extends AbstractController
         Request $request,
         int $id,
         Db $db,
-        ResponseCacheService $response_cache_service,
+        ResponseCache $response_cache,
         FormTokenService $form_token_service,
         AlertService $alert_service,
         AccountRender $account_render,
@@ -106,7 +106,7 @@ class UsersDelController extends AbstractController
                     $db,
                     $alert_service,
                     $intersystems_service,
-                    $response_cache_service,
+                    $response_cache,
                     $user_invalidate_cache,
                     $pp
                 );
@@ -175,7 +175,7 @@ class UsersDelController extends AbstractController
         Db $db,
         AlertService $alert_service,
         IntersystemsService $intersystems_service,
-        ResponseCacheService $response_cache_service,
+        ResponseCache $response_cache,
         UserInvalidateCache $user_invalidate_cache,
         PageParamsService $pp
     ):void
@@ -194,7 +194,7 @@ class UsersDelController extends AbstractController
 
         $alert_service->success('De gebruiker is verwijderd.');
 
-        $response_cache_service->clear_cache($pp->schema());
+        $response_cache->clear_cache($pp->schema());
 
         $intersystems_service->clear_cache();
     }

@@ -4,8 +4,6 @@ namespace App\ConsoleCommand;
 
 use App\Cache\SystemsInvalidateCache;
 use App\Cache\UserInvalidateCache;
-use App\Service\ResponseCacheService;
-use App\Service\StaticContentService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -19,8 +17,6 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 class ClearRedisCacheConsoleCommand extends Command
 {
     public function __construct(
-        protected ResponseCacheService $response_cache_service,
-        protected StaticContentService $static_content_service,
         protected TagAwareCacheInterface $cache,
         protected UserInvalidateCache $user_invalidate_cache,
         protected SystemsInvalidateCache $systems_invalidate_cache
@@ -31,12 +27,6 @@ class ClearRedisCacheConsoleCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        foreach ([] as $schema)
-        {
-            $this->response_cache_service->clear_cache($schema);
-            $this->static_content_service->clear_cache($schema);
-        }
-
         $this->cache->invalidateTags([
             'response',
             'config',

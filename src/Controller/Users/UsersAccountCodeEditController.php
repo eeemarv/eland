@@ -3,6 +3,7 @@
 namespace App\Controller\Users;
 
 use App\Cache\ConfigCache;
+use App\Cache\ResponseCache;
 use App\Command\Users\UsersAccountCodeCommand;
 use App\Form\Type\Users\UsersAccountCodeType;
 use App\Repository\UserRepository;
@@ -11,7 +12,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
 use App\Service\PageParamsService;
-use App\Service\ResponseCacheService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -92,7 +92,7 @@ class UsersAccountCodeEditController extends AbstractController
         int $id,
         bool $is_self,
         string $mode,
-        ResponseCacheService $response_cache_service,
+        ResponseCache $response_cache,
         UserRepository $user_repository,
         AlertService $alert_service,
         ConfigCache $config_cache,
@@ -167,7 +167,7 @@ class UsersAccountCodeEditController extends AbstractController
                     'code'    => $command->code,
                 ], $id, $pp->schema());
 
-                $response_cache_service->clear_cache($pp->schema());
+                $response_cache->clear_cache($pp->schema());
 
                 if ($code_set_previously)
                 {
