@@ -2,6 +2,7 @@
 
 namespace App\Controller\Transactions;
 
+use App\Cache\SystemsCache;
 use App\Cache\UserCache;
 use App\Cnst\BulkCnst;
 use App\Cnst\MessageTypeCnst;
@@ -66,6 +67,7 @@ class TransactionsAdd2Controller extends AbstractController
         TransactionService $transaction_service,
         MailTransactionService $mail_transaction_service,
         SystemsService $systems_service,
+        SystemsCache $systems_cache,
         TypeaheadService $typeahead_service,
         AutoMinLimitService $autominlimit_service,
         AutoDeactivateService $auto_deactivate_service,

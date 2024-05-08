@@ -2,6 +2,7 @@
 
 namespace App\Controller\Transactions;
 
+use App\Cache\SystemsCache;
 use App\Cnst\MessageTypeCnst;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
@@ -12,7 +13,6 @@ use App\Service\DateFormatService;
 use App\Service\IntersystemsService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\SystemsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
@@ -48,7 +48,7 @@ class TransactionsShowController extends AbstractController
         AssetsService $assets_service,
         IntersystemsService $intersystems_service,
         LinkRender $link_render,
-        SystemsService $systems_service,
+        SystemsCache $systems_cache,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
@@ -342,7 +342,7 @@ class TransactionsShowController extends AbstractController
                     else
                     {
                         $out .= $link_render->link_no_attr('transactions_show', [
-                            'system'	    => $systems_service->get_system($inter_schema),
+                            'system'	    => $systems_cache->get_system($inter_schema),
                             'role_short'	=> 'g',
                             'os'            => $su->system(),
                         ], ['id' => $inter_transaction['id']], $str);
@@ -480,7 +480,7 @@ class TransactionsShowController extends AbstractController
                     else
                     {
                         $out .= $link_render->link_no_attr('transactions_show', [
-                            'system'	    => $systems_service->get_system($inter_schema),
+                            'system'	    => $systems_cache->get_system($inter_schema),
                             'role_short'	=> 'g',
                             'os'            => $su->system(),
                         ], ['id' => $inter_transaction['id']], $str);

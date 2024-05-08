@@ -259,7 +259,7 @@ class LogsController extends AbstractController
 
             $td[] = $date_format_service->get($row['ts'], 'sec', $pp->schema());
             $td[] = $row['type'];
-            $td[] .= $row['ip'];
+            $td[] = $row['ip'];
 
             if ($row['is_master'])
             {

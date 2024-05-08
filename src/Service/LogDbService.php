@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Cache\SystemsCache;
 use Redis;
 use App\Monolog\RedisHandler;
 use Doctrine\DBAL\Connection as Db;
@@ -13,7 +14,7 @@ class LogDbService
 	public function __construct(
 		protected Db $db,
 		protected Redis $predis,
-		protected SystemsService $systems_service
+		protected SystemsCache $systems_cache
 	)
 	{
 	}
@@ -57,7 +58,7 @@ class LogDbService
 				}
 
 				$system = $extra['system'];
-				$schema = $this->systems_service->get_schema($system);
+				$schema = $this->systems_cache->get_schema($system);
 			}
 
 			if (!isset($schema))
@@ -70,7 +71,7 @@ class LogDbService
 			if (isset($extra['os'])
 				&& $extra['os'])
 			{
-				$org_schema = $this->systems_service->get_schema($extra['os']);
+				$org_schema = $this->systems_cache->get_schema($extra['os']);
 
 				if (isset($org_schema))
 				{

@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Cache\SystemsCache;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -159,7 +160,7 @@ class AssetsService
 		protected TagAwareCacheInterface $cache,
 		protected ResponseCacheService $response_cache_service,
 		protected UrlGeneratorInterface $url_generator,
-		protected SystemsService $systems_service
+		protected SystemsCache $systems_cache
 	)
 	{
 	}
@@ -261,7 +262,7 @@ class AssetsService
 		$thumbprint = $this->response_cache_service->get_thumbprint_from_key($thumbprint_key, $schema);
 		$params = [
 			'thumbprint'	=> $thumbprint,
-			'system'		=> $this->systems_service->get_system($schema),
+			'system'		=> $this->systems_cache->get_system($schema),
 		];
 		switch ($route)
 		{

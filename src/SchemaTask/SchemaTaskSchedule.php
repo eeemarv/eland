@@ -2,8 +2,8 @@
 
 namespace App\SchemaTask;
 
+use App\Cache\SystemsCache;
 use App\Service\CacheService;
-use App\Service\SystemsService;
 
 class SchemaTaskSchedule
 {
@@ -14,7 +14,7 @@ class SchemaTaskSchedule
 
 	public function __construct(
 		protected CacheService $cache_service,
-		protected SystemsService $systems_service,
+		protected SystemsCache $systems_cache,
 		protected SchemaTaskCollection $schema_task_collection
 	)
 	{
@@ -42,7 +42,7 @@ class SchemaTaskSchedule
 		$id_info = [];
 		$time = time();
 		$schema_task_names = $this->get_schema_task_names();
-        $schemas = array_keys($this->systems_service->get_schema_ary());
+        $schemas = array_keys($this->systems_cache->get_schema_ary());
 
 		foreach ($schema_task_names as $schema_task_name)
 		{

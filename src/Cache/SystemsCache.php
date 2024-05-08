@@ -3,66 +3,34 @@
 namespace App\Cache;
 
 use App\Repository\SystemRepository;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class SystemsCache
 {
 	const CACHE_KEY = 'systems';
-	const CACHE_TTL = 86400; // one day
+	const CACHE_TTL = 86400;
 	const CACHE_BETA = 1;
 
 	protected array $schema_ary;
-	protected array $schemas;
-	protected array $systems;
+	protected bool $local_en;
 
 	public function __construct(
 		protected TagAwareCacheInterface $cache,
-		protected SystemRepository $system_repository,
-		#[Autowire('%env(LEGACY_ELAND_ORIGIN_PATTERN)%')]
-		protected string $env_legacy_eland_origin_pattern
+		protected SystemRepository $system_repository
 	)
 	{
+		$this->local_en = php_sapi_name() !== 'cli';
 	}
-
-	public function load():array
-	{
-		return $this->cache->get(self::CACHE_KEY, function(ItemInterface $item){
-			$item->expiresAfter(self::CACHE_TTL);
-			return $this->system_repository->get_schema_ary();
-		}, self::CACHE_BETA);
-	}
-
-	public function get_legacy_eland_origin(string $schema):string
-	{
-		if (!isset($this->systems[$schema]))
-		{
-			return '';
-		}
-
-		return str_replace('_', $this->systems[$schema], $this->env_legacy_eland_origin_pattern);
-	}
-
-	public function get_schema_from_legacy_eland_origin(string $origin):string
-	{
-		$host = strtolower(parse_url($origin, PHP_URL_HOST) ?? '');
-
-		if (!$host)
-		{
-			return '';
-		}
-
-		[$system] = explode('.', $host);
-
-		return $this->schemas[$system] ?? '';
- 	}
 
 	public function get_schema_ary():array
 	{
-		if (!isset($this->schema_ary))
+		if (!$this->local_en || !isset($this->schema_ary))
 		{
-			$this->load();
+			$this->schema_ary = $this->cache->get(self::CACHE_KEY, function(ItemInterface $item){
+				$item->expiresAfter(self::CACHE_TTL);
+				return $this->system_repository->get_schema_ary();
+			}, self::CACHE_BETA);
 		}
 
 		return $this->schema_ary;
@@ -70,15 +38,9 @@ class SystemsCache
 
 	public function get_schema(string $system):null|string
 	{
-		if (!isset($this->schema_ary))
-		{
-			$this->load();
-		}
-
-		/** */
 		$schema = $system;
 
-		if (isset($this->schema_ary[$schema]))
+		if (isset($this->get_schema_ary()[$schema]))
 		{
 			return $schema;
 		}
@@ -86,14 +48,52 @@ class SystemsCache
 		return null;
 	}
 
-	public function get_system(string $schema):null|string
+	/**
+	 * Returns an array with valid intersystem connections
+	 * on the same server. The inter system connections
+	 * must configured active in both systems in order
+	 * to be valid.
+	 */
+	public function get_inter_schema_ary(string $schema):array
 	{
-		if (!isset($this->schema_ary))
+		$schema_ary = $this->get_schema_ary();
+
+		if (!isset($schema_ary[$schema]))
 		{
-			$this->load();
+			return [];
 		}
 
-		if (isset($this->schema_ary[$schema]))
+		$inter_schema_ary = [];
+		$ary = $schema_ary[$schema];
+
+		foreach ($ary as $remote_schema => $remote_ary)
+		{
+			if (!isset($schema_ary[$remote_schema]))
+			{
+				continue;
+			}
+
+			if (!isset($schema_ary[$remote_schema][$schema]))
+			{
+				continue;
+			}
+
+			if (!$schema_ary[$remote_schema][$schema])
+			{
+				continue;
+			}
+
+			$inter_schema_ary[$remote_schema] = $remote_schema;
+		}
+
+		ksort($inter_schema_ary);
+
+		return $inter_schema_ary;
+	}
+
+	public function get_system(string $schema):null|string
+	{
+		if (isset($this->get_schema_ary()[$schema]))
 		{
 			/** */
 			$system = $schema;
@@ -106,11 +106,6 @@ class SystemsCache
 
 	public function count():int
 	{
-		if (!isset($this->schema_ary))
-		{
-			$this->load();
-		}
-
-		return count($this->schema_ary);
+		return count($this->get_schema_ary());
 	}
 }

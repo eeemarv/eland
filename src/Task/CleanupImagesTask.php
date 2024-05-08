@@ -2,11 +2,11 @@
 
 namespace App\Task;
 
+use App\Cache\SystemsCache;
 use App\Service\CacheService;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
 use App\Service\S3Service;
-use App\Service\SystemsService;
 
 class CleanupImagesTask
 {
@@ -17,7 +17,7 @@ class CleanupImagesTask
 		protected Db $db,
 		protected LoggerInterface $logger,
 		protected S3Service $s3_service,
-		protected SystemsService $systems_service
+		protected SystemsCache $systems_cache
 	)
 	{
 	}
@@ -66,7 +66,7 @@ class CleanupImagesTask
 			return;
 		}
 
-		if (!$this->systems_service->get_system($sch))
+		if (!$this->systems_cache->get_system($sch))
 		{
 			error_log('-> unknown schema. ' . $sch . ' (no delete)');
 			return;

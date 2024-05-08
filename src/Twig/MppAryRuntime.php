@@ -2,8 +2,8 @@
 
 namespace App\Twig;
 
+use App\Cache\SystemsCache;
 use App\Cache\UserCache;
-use App\Service\SystemsService;
 use App\Cnst\RoleCnst;
 use Twig\Extension\RuntimeExtensionInterface;
 
@@ -11,7 +11,7 @@ class MppAryRuntime implements RuntimeExtensionInterface
 {
 	public function __construct(
 		protected UserCache $user_cache,
-		protected SystemsService $systems_service
+		protected SystemsCache $systems_cache
 	)
 	{
 	}
@@ -22,7 +22,7 @@ class MppAryRuntime implements RuntimeExtensionInterface
 		string $schema
 	):array
 	{
-		$system = $this->systems_service->get_system($schema);
+		$system = $this->systems_cache->get_system($schema);
 
 		$mpp_ary = [
 			'system'	=> $system,

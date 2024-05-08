@@ -2,16 +2,16 @@
 
 namespace App\Render;
 
+use App\Cache\SystemsCache;
 use App\Cache\UserCache;
 use App\Render\LinkRender;
 use App\Service\SessionUserService;
-use App\Service\SystemsService;
 
 class AccountRender
 {
 	public function __construct(
 		protected LinkRender $link_render,
-		protected SystemsService $systems_service,
+		protected SystemsCache $systems_cache,
 		protected UserCache $user_cache
 	)
 	{
@@ -70,7 +70,7 @@ class AccountRender
 			return '*** leeg ***';
 		}
 
-		$schema = $this->systems_service->get_schema($pp_ary['system']);
+		$schema = $this->systems_cache->get_schema($pp_ary['system']);
 
 		if (!isset($schema))
 		{
@@ -86,7 +86,7 @@ class AccountRender
 		array $pp_ary
 	):string
 	{
-		$schema = $this->systems_service->get_schema($pp_ary['system']);
+		$schema = $this->systems_cache->get_schema($pp_ary['system']);
 
 		if (!isset($schema))
 		{
@@ -104,7 +104,7 @@ class AccountRender
 	):string
 	{
 		$pp_ary = [
-			'system'	=> $this->systems_service->get_system($schema),
+			'system'	=> $this->systems_cache->get_system($schema),
 		];
 
 		if ($su->schema() === $schema)

@@ -2,19 +2,19 @@
 
 namespace App\Twig;
 
-use App\Service\SystemsService;
+use App\Cache\SystemsCache;
 use Twig\Extension\RuntimeExtensionInterface;
 
 class SystemRuntime implements RuntimeExtensionInterface
 {
 	public function __construct(
-		protected SystemsService $systems_service
+		protected SystemsCache $systems_cache
 	)
 	{
 	}
 
 	public function get(string $schema):string
 	{
-		return $this->systems_service->get_system($schema);
+		return $this->systems_cache->get_system($schema);
 	}
 }

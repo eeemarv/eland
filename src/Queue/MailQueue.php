@@ -2,6 +2,7 @@
 
 namespace App\Queue;
 
+use App\Cache\SystemsCache;
 use App\HtmlProcess\HtmlToMarkdownConverter;
 use App\Queue\QueueInterface;
 use Psr\Log\LoggerInterface;
@@ -10,7 +11,6 @@ use App\Service\ConfigService;
 use App\Service\MailAddrSystemService;
 use App\Service\EmailVerifyService;
 use App\Service\QueueService;
-use App\Service\SystemsService;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mailer\Transport\Smtp\SmtpTransport;
@@ -28,7 +28,7 @@ class MailQueue implements QueueInterface
 		protected ConfigService $config_service,
 		protected MailAddrSystemService $mail_addr_system_service,
 		protected EmailVerifyService $email_verify_service,
-		protected SystemsService $systems_service,
+		protected SystemsCache $systems_cache,
 		protected HtmlToMarkdownConverter $html_to_markdown_converter,
 		protected MailerInterface $mailer,
 		protected TransportInterface $transport,
@@ -48,7 +48,7 @@ class MailQueue implements QueueInterface
 
 		$data['vars']['schema'] = $schema;
 
-		$system = $this->systems_service->get_system($schema);
+		$system = $this->systems_cache->get_system($schema);
 
 		$data['vars']['system'] = $system;
 

@@ -2,7 +2,7 @@
 
 namespace App\Controller\Index;
 
-use App\Service\SystemsService;
+use App\Cache\SystemsCache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,15 +21,15 @@ class IndexController extends AbstractController
 
     public function __invoke(
         Request $request,
-        SystemsService $systems_service
+        SystemsCache $systems_cache
     ):Response
     {
-        $schemas = array_keys($systems_service->get_schema_ary());
+        $schemas = array_keys($systems_cache->get_schema_ary());
 
         asort($schemas);
 
         $response = $this->render('index/index.html.twig', [
-            'schemas'       => $schemas,
+            'schemas'   => $schemas,
         ]);
 
         $response->setEtag(hash('crc32b', $response->getContent()), true);

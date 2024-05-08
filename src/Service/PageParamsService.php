@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Cache\SystemsCache;
 use App\Cnst\RoleCnst;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -31,7 +32,7 @@ class PageParamsService
 
 	public function __construct(
 		protected RequestStack $request_stack,
-		protected SystemsService $systems_service,
+		protected SystemsCache $systems_cache,
 		#[Autowire('%env(base64:APP_SYSTEM_REDIRECTS)%')]
 		protected string $env_app_system_redirects
 	)
@@ -66,7 +67,7 @@ class PageParamsService
 			throw new NotFoundHttpException('No system defined.');
 		}
 
-		$schema = $this->systems_service->get_schema($system);
+		$schema = $this->systems_cache->get_schema($system);
 
 		if (!isset($schema))
 		{
@@ -88,12 +89,12 @@ class PageParamsService
 
 		if ($this->org_system === $this->system
 			|| !$this->is_guest
-			|| !$this->systems_service->get_schema($this->org_system))
+			|| !$this->systems_cache->get_schema($this->org_system))
 		{
 			$this->org_system = null;
 		}
 
-		$this->org_schema = isset($this->org_system) ? $this->systems_service->get_schema($this->org_system) : null;
+		$this->org_schema = isset($this->org_system) ? $this->systems_cache->get_schema($this->org_system) : null;
 
 		$this->ary = [];
 

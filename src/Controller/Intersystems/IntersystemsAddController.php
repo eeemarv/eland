@@ -2,6 +2,7 @@
 
 namespace App\Controller\Intersystems;
 
+use App\Cache\SystemsCache;
 use App\Render\LinkRender;
 use App\Render\SelectRender;
 use App\Service\AlertService;
@@ -46,6 +47,7 @@ class IntersystemsAddController extends AbstractController
         LinkRender $link_render,
         SelectRender $select_render,
         SystemsService $systems_service,
+        SystemsCache $systems_cache,
         PageParamsService $pp,
         VarRouteService $vr
     ):Response
@@ -115,7 +117,7 @@ class IntersystemsAddController extends AbstractController
 
             if ($add_schema = $request->query->get('add_schema'))
             {
-                if ($systems_service->get_system($add_schema))
+                if ($systems_cache->get_system($add_schema))
                 {
                     $group['url'] = $systems_service->get_legacy_eland_origin($add_schema);
                     $group['groupname'] = $config_service->get_str('system.name', $add_schema);
