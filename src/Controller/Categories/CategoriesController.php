@@ -2,13 +2,13 @@
 
 namespace App\Controller\Categories;
 
+use App\Cache\ConfigCache;
 use App\Command\Categories\CategoriesListCommand;
 use App\Form\Type\Categories\CategoriesListType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\CategoryRepository;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -35,17 +35,17 @@ class CategoriesController extends AbstractController
     public function __invoke(
         Request $request,
         CategoryRepository $category_repository,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         AlertService $alert_service,
         PageParamsService $pp
     ):Response
     {
-        if (!$config_service->get_bool('messages.fields.category.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('messages.fields.category.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Categories module not enabled.');
         }
 
-        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('messages.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('messages (offer/want) module not enabled.');
         }

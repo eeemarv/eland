@@ -2,9 +2,9 @@
 
 namespace App\Form\Type\UsersConfig;
 
+use App\Cache\ConfigCache;
 use App\Command\UsersConfig\UsersConfigLeavingCommand;
 use App\Form\EventSubscriber\AccessFieldSubscriber;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -18,14 +18,14 @@ class UsersConfigLeavingType extends AbstractType
     public function __construct(
         protected AccessFieldSubscriber $access_field_subscriber,
         protected PageParamsService $pp,
-        protected ConfigService $config_service
+        protected ConfigCache $config_cache
     )
     {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options):void
     {
-        $transactions_enabled = $this->config_service->get_bool('transactions.enabled', $this->pp->schema());
+        $transactions_enabled = $this->config_cache->get_bool('transactions.enabled', $this->pp->schema());
 
         if ($transactions_enabled)
         {

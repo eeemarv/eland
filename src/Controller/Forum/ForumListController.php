@@ -2,9 +2,9 @@
 
 namespace App\Controller\Forum;
 
+use App\Cache\ConfigCache;
 use App\Form\Type\Filter\QTextSearchFilterType;
 use App\Repository\ForumRepository;
-use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -34,12 +34,12 @@ class ForumListController extends AbstractController
     public function __invoke(
         Request $request,
         ForumRepository $forum_repository,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         ItemAccessService $item_access_service,
         PageParamsService $pp,
     ):Response
     {
-        if (!$config_service->get_bool('forum.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('forum.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Forum module not enabled.');
         }
@@ -51,7 +51,7 @@ class ForumListController extends AbstractController
         $topics = $forum_repository->get_topics_with_reply_count($visible_ary, $pp->schema());
 
         $show_access = (!$pp->is_guest()
-                && $config_service->get_intersystem_en($pp->schema()))
+                && $config_cache->get_intersystem_en($pp->schema()))
             || $pp->is_admin();
 
         return $this->render('forum/forum_list.html.twig', [

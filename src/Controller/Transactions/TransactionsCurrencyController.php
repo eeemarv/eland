@@ -2,10 +2,10 @@
 
 namespace App\Controller\Transactions;
 
+use App\Cache\ConfigCache;
 use App\Command\Transactions\TransactionsCurrencyCommand;
 use App\Form\Type\Transactions\TransactionsCurrencyType;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,17 +33,17 @@ class TransactionsCurrencyController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         PageParamsService $pp
     ):Response
     {
-        if (!$config_service->get_bool('transactions.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('transactions.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Transactions module not enabled.');
         }
 
         $command = new TransactionsCurrencyCommand();
-        $config_service->load_command($command, $pp->schema());
+        $config_cache->load_command($command, $pp->schema());
 
         $form = $this->createForm(TransactionsCurrencyType::class, $command);
         $form->handleRequest($request);
@@ -53,7 +53,7 @@ class TransactionsCurrencyController extends AbstractController
         {
             $command = $form->getData();
 
-            $changed = $config_service->store_command($command, $pp->schema());
+            $changed = $config_cache->store_command($command, $pp->schema());
 
             if ($changed)
             {

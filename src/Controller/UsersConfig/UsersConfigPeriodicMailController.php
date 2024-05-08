@@ -2,6 +2,7 @@
 
 namespace App\Controller\UsersConfig;
 
+use App\Cache\ConfigCache;
 use App\Cnst\ConfigCnst;
 use App\Command\UsersConfig\UsersConfigPeriodicMailCommand;
 use App\Form\Type\UsersConfig\UsersConfigPeriodicMailType;
@@ -9,7 +10,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -34,23 +34,23 @@ class UsersConfigPeriodicMailController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         PageParamsService $pp
     ):Response
     {
-        if (!$config_service->get_bool('periodic_mail.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('periodic_mail.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Periodic mail module not enabled');
         }
 
-        $mollie_enabled = $config_service->get_bool('mollie.enabled', $pp->schema());
-        $messages_enabled = $config_service->get_bool('messages.enabled', $pp->schema());
-        $transactions_enabled = $config_service->get_bool('transactions.enabled', $pp->schema());
-        $news_enabled = $config_service->get_bool('news.enabled', $pp->schema());
-        $docs_enabled = $config_service->get_bool('docs.enabled', $pp->schema());
-        $forum_enabled = $config_service->get_bool('forum.enabled', $pp->schema());
-		$new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
-		$leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
+        $mollie_enabled = $config_cache->get_bool('mollie.enabled', $pp->schema());
+        $messages_enabled = $config_cache->get_bool('messages.enabled', $pp->schema());
+        $transactions_enabled = $config_cache->get_bool('transactions.enabled', $pp->schema());
+        $news_enabled = $config_cache->get_bool('news.enabled', $pp->schema());
+        $docs_enabled = $config_cache->get_bool('docs.enabled', $pp->schema());
+        $forum_enabled = $config_cache->get_bool('forum.enabled', $pp->schema());
+		$new_users_enabled = $config_cache->get_bool('users.new.enabled', $pp->schema());
+		$leaving_users_enabled = $config_cache->get_bool('users.leaving.enabled', $pp->schema());
 
         $block_ary = ConfigCnst::BLOCK_ARY;
 
@@ -96,12 +96,12 @@ class UsersConfigPeriodicMailController extends AbstractController
             unset($block_ary['leaving_users']);
         }
 
-        if (!$config_service->get_intersystem_en($pp->schema()))
+        if (!$config_cache->get_intersystem_en($pp->schema()))
         {
             unset($block_ary['intersystem']);
         }
 
-        $layout_ary = $config_service->get_ary('periodic_mail.user.layout', $pp->schema());
+        $layout_ary = $config_cache->get_ary('periodic_mail.user.layout', $pp->schema());
 
         $block_select_options = [];
         $block_layout = [];
@@ -133,7 +133,7 @@ class UsersConfigPeriodicMailController extends AbstractController
             }
             else
             {
-                $read_select = $config_service->get_str('periodic_mail.user.render.' . $block . '.select', $pp->schema());
+                $read_select = $config_cache->get_str('periodic_mail.user.render.' . $block . '.select', $pp->schema());
 
                 if (isset($block_options[$read_select]))
                 {
@@ -150,7 +150,7 @@ class UsersConfigPeriodicMailController extends AbstractController
 
         $command = new UsersConfigPeriodicMailCommand();
 
-        $command->days = $config_service->get_int('periodic_mail.days', $pp->schema());
+        $command->days = $config_cache->get_int('periodic_mail.days', $pp->schema());
         $command->block_layout = json_encode($block_layout);
         $command->block_select_options = json_encode($block_select_options);
 
@@ -169,7 +169,7 @@ class UsersConfigPeriodicMailController extends AbstractController
 
             $changed = false;
 
-            if ($config_service->set_int('periodic_mail.days', $days, $pp->schema()))
+            if ($config_cache->set_int('periodic_mail.days', $days, $pp->schema()))
             {
                 $changed = true;
             }
@@ -197,13 +197,13 @@ class UsersConfigPeriodicMailController extends AbstractController
                     $select = 'all';
                 }
 
-                if ($config_service->set_str('periodic_mail.user.render.' . $b . '.select', $select, $pp->schema()))
+                if ($config_cache->set_str('periodic_mail.user.render.' . $b . '.select', $select, $pp->schema()))
                 {
                     $changed = true;
                 }
             }
 
-            if ($config_service->set_ary('periodic_mail.user.layout', $block_layout, $pp->schema()))
+            if ($config_cache->set_ary('periodic_mail.user.layout', $block_layout, $pp->schema()))
             {
                 $changed = true;
             }

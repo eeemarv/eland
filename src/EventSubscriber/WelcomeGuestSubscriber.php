@@ -2,8 +2,8 @@
 
 namespace App\EventSubscriber;
 
+use App\Cache\ConfigCache;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
@@ -26,7 +26,7 @@ class WelcomeGuestSubscriber implements EventSubscriberInterface
     public function __construct(
         protected AlertService $alert_service,
         protected PageParamsService $pp,
-        protected ConfigService $config_service
+        protected ConfigCache $config_cache
     )
     {
     }
@@ -62,16 +62,16 @@ class WelcomeGuestSubscriber implements EventSubscriberInterface
 
         $schema = $this->pp->schema();
 
-        if (!$this->config_service->get_intersystem_en($schema))
+        if (!$this->config_cache->get_intersystem_en($schema))
         {
             return;
         }
 
-        $system_name = $this->config_service->get_str('system.name', $schema);
-        $currency = $this->config_service->get_str('transactions.currency.name', $schema);
-        $per_hour_ratio = $this->config_service->get_int('transactions.currency.per_hour_ratio', $schema);
-        $timebased_enabled = $this->config_service->get_bool('transactions.currency.timebased_en', $schema);
-        $transactions_enabled = $this->config_service->get_bool('transactions.enabled', $schema);
+        $system_name = $this->config_cache->get_str('system.name', $schema);
+        $currency = $this->config_cache->get_str('transactions.currency.name', $schema);
+        $per_hour_ratio = $this->config_cache->get_int('transactions.currency.per_hour_ratio', $schema);
+        $timebased_enabled = $this->config_cache->get_bool('transactions.currency.timebased_en', $schema);
+        $transactions_enabled = $this->config_cache->get_bool('transactions.enabled', $schema);
 
         $msg = strtr(self::MSG_WELCOME, [
             '%system_name%'     => $system_name,

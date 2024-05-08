@@ -2,10 +2,10 @@
 
 namespace App\Controller\UsersConfig;
 
+use App\Cache\ConfigCache;
 use App\Command\UsersConfig\UsersConfigLeavingCommand;
 use App\Form\Type\UsersConfig\UsersConfigLeavingType;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,18 +33,18 @@ class UsersConfigLeavingController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         PageParamsService $pp
     ):Response
     {
-        if (!$config_service->get_bool('users.leaving.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('users.leaving.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Leaving users not enabled.');
         }
 
         $command = new UsersConfigLeavingCommand();
 
-        $config_service->load_command($command, $pp->schema());
+        $config_cache->load_command($command, $pp->schema());
 
         $form = $this->createForm(UsersConfigLeavingType::class, $command);
         $form->handleRequest($request);
@@ -53,7 +53,7 @@ class UsersConfigLeavingController extends AbstractController
             && $form->isValid())
         {
             $command = $form->getData();
-            $changed = $config_service->store_command($command, $pp->schema());
+            $changed = $config_cache->store_command($command, $pp->schema());
 
             if ($changed)
             {

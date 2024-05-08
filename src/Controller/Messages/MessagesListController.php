@@ -2,6 +2,7 @@
 
 namespace App\Controller\Messages;
 
+use App\Cache\ConfigCache;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,7 +17,6 @@ use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Render\SelectRender;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
@@ -124,13 +124,13 @@ class MessagesListController extends AbstractController
         ItemAccessService $item_access_service,
         LinkRender $link_render,
         SelectRender $select_render,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         PageParamsService $pp,
         SessionUserService $su,
         VarRouteService $vr
     ):Response
     {
-        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('messages.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
         }
@@ -139,11 +139,11 @@ class MessagesListController extends AbstractController
 
         $errors = [];
 
-        $service_stuff_enabled = $config_service->get_bool('messages.fields.service_stuff.enabled', $pp->schema());
-        $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
-        $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
-        $postcode_enabled = $config_service->get_bool('users.fields.postcode.enabled', $pp->schema());
-        $intersytem_en = $config_service->get_intersystem_en($pp->schema());
+        $service_stuff_enabled = $config_cache->get_bool('messages.fields.service_stuff.enabled', $pp->schema());
+        $category_enabled = $config_cache->get_bool('messages.fields.category.enabled', $pp->schema());
+        $expires_at_enabled = $config_cache->get_bool('messages.fields.expires_at.enabled', $pp->schema());
+        $postcode_enabled = $config_cache->get_bool('users.fields.postcode.enabled', $pp->schema());
+        $intersytem_en = $config_cache->get_intersystem_en($pp->schema());
         $bulk_actions_enabled = $category_enabled || $expires_at_enabled || $intersytem_en;
 
         $selected_messages = $request->request->all('sel');
@@ -386,7 +386,7 @@ class MessagesListController extends AbstractController
             $request,
             $db,
             $is_self,
-            $config_service,
+            $config_cache,
             $pp,
             $su
         );
@@ -892,16 +892,16 @@ class MessagesListController extends AbstractController
         Request $request,
         Db $db,
         bool $is_self,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         PageParamsService $pp,
         SessionUserService $su
     ):array
     {
-        $service_stuff_enabled = $config_service->get_bool('messages.fields.service_stuff.enabled', $pp->schema());
-        $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
-        $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
+        $service_stuff_enabled = $config_cache->get_bool('messages.fields.service_stuff.enabled', $pp->schema());
+        $category_enabled = $config_cache->get_bool('messages.fields.category.enabled', $pp->schema());
+        $expires_at_enabled = $config_cache->get_bool('messages.fields.expires_at.enabled', $pp->schema());
 
-        $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
+        $new_user_treshold = $config_cache->get_new_user_treshold($pp->schema());
 
         $filter_command = new MessagesFilterCommand();
 

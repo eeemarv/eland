@@ -2,8 +2,8 @@
 
 namespace App\Controller\Calendar;
 
+use App\Cache\ConfigCache;
 use App\Render\LinkRender;
-use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
@@ -19,27 +19,27 @@ class CalendarListController extends AbstractController
 {
     public function __invoke(
         Db $db,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         ItemAccessService $item_access_service,
         DateFormatService $date_format_service,
         LinkRender $link_render,
         PageParamsService $pp
     ):Response
     {
-        if (!$config_service->get_bool('calendar.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('calendar.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Calendar module not enabled.');
         }
 
         $news = self::get_data(
             $db,
-            $config_service,
+            $config_cache,
             $item_access_service,
             $pp
         );
 
         $show_visibility = ($pp->is_user()
-                && $config_service->get_intersystem_en($pp->schema()))
+                && $config_cache->get_intersystem_en($pp->schema()))
             || $pp->is_admin();
 
         $out = '<div class="panel panel-warning printview">';
@@ -102,7 +102,7 @@ class CalendarListController extends AbstractController
 
     public static function get_data(
         Db $db,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         ItemAccessService $item_access_service,
         PageParamsService $pp
     ):array
@@ -114,7 +114,7 @@ class CalendarListController extends AbstractController
         $query .= 'where ci.access in (?) ';
 
         $query .= 'order by event_at ';
-        $query .= $config_service->get_bool('news.sort.asc', $pp->schema()) ? 'asc' : 'desc';
+        $query .= $config_cache->get_bool('news.sort.asc', $pp->schema()) ? 'asc' : 'desc';
 
         $access_ary = $item_access_service->get_visible_ary_for_page();
 

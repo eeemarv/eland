@@ -2,6 +2,7 @@
 
 namespace App\Controller\Users;
 
+use App\Cache\ConfigCache;
 use App\Command\Users\UsersNameCommand;
 use App\Form\Type\Users\UsersNameType;
 use App\Repository\UserRepository;
@@ -9,13 +10,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\ResponseCacheService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -95,7 +94,7 @@ class UsersNameEditController extends AbstractController
         ResponseCacheService $response_cache_service,
         UserRepository $user_repository,
         AlertService $alert_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
@@ -112,7 +111,7 @@ class UsersNameEditController extends AbstractController
         }
 
         if (!$pp->is_admin()
-            && !$config_service->get_bool('users.fields.username.self_edit', $pp->schema()))
+            && !$config_cache->get_bool('users.fields.username.self_edit', $pp->schema()))
         {
             throw new AccessDeniedHttpException('Changing own username not accepted by configuration.');
         }

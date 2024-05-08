@@ -2,11 +2,11 @@
 
 namespace App\Controller\Docs;
 
+use App\Cache\ConfigCache;
 use App\Command\Docs\DocsCommand;
 use App\Form\Type\Docs\DocsDelType;
 use App\Repository\DocRepository;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\ResponseCacheService;
 use App\Service\S3Service;
@@ -39,7 +39,7 @@ class DocsDelController extends AbstractController
         Request $request,
         int $id,
         DocRepository $doc_repository,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         LoggerInterface $logger,
         AlertService $alert_service,
         S3Service $s3_service,
@@ -48,7 +48,7 @@ class DocsDelController extends AbstractController
         string $env_s3_url
     ):Response
     {
-        if (!$config_service->get_bool('docs.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('docs.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Documents module not enabled.');
         }

@@ -2,12 +2,12 @@
 
 namespace App\Controller\Transactions;
 
+use App\Cache\ConfigCache;
 use App\Cnst\BulkCnst;
 use App\Cnst\MessageTypeCnst;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
@@ -48,7 +48,7 @@ class TransactionsEditController extends AbstractController
         FormTokenService $form_token_service,
         AccountRender $account_render,
         AlertService $alert_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         DateFormatService $date_format_service,
         LinkRender $link_render,
         IntersystemsService $intersystems_service,
@@ -56,14 +56,14 @@ class TransactionsEditController extends AbstractController
         SessionUserService $su
     ):Response
     {
-        if (!$config_service->get_bool('transactions.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('transactions.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Transactions module not enabled.');
         }
 
         $errors = [];
 
-        $service_stuff_enabled = $config_service->get_bool('transactions.fields.service_stuff.enabled', $pp->schema());
+        $service_stuff_enabled = $config_cache->get_bool('transactions.fields.service_stuff.enabled', $pp->schema());
 
         $intersystem_account_schemas = $intersystems_service->get_eland_accounts_schemas($pp->schema());
 
@@ -303,7 +303,7 @@ class TransactionsEditController extends AbstractController
         $out .= '<dt>Waarde</dt>';
         $out .= '<dd>';
         $out .= $transaction['amount'] . ' ';
-        $out .= $config_service->get_str('transactions.currency.name', $pp->schema());
+        $out .= $config_cache->get_str('transactions.currency.name', $pp->schema());
         $out .= '</dd>';
 
         $out .= '<dt>Omschrijving</dt>';

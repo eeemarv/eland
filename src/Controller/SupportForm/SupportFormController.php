@@ -2,11 +2,11 @@
 
 namespace App\Controller\SupportForm;
 
+use App\Cache\ConfigCache;
 use App\Command\SupportForm\SupportFormCommand;
 use App\Form\Type\SupportForm\SupportFormType;
 use App\Queue\MailQueue;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\MailAddrSystemService;
 use App\Service\MailAddrUserService;
 use App\Service\PageParamsService;
@@ -39,7 +39,7 @@ class SupportFormController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         MailQueue $mail_queue,
         MailAddrUserService $mail_addr_user_service,
         PageParamsService $pp,
@@ -48,13 +48,13 @@ class SupportFormController extends AbstractController
         MailAddrSystemService $mail_addr_system_service
     ):Response
     {
-        if (!$config_service->get_bool('support_form.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('support_form.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Support form not enabled.');
         }
 
         $is_master = $su->is_master();
-        $mail_enabled = $config_service->get_bool('mail.enabled', $pp->schema());
+        $mail_enabled = $config_cache->get_bool('mail.enabled', $pp->schema());
         $support_addr = $mail_addr_system_service->get_support($pp->schema());
         $form_disabled = !$mail_enabled || count($support_addr) < 1 || $is_master;
 

@@ -2,6 +2,7 @@
 
 namespace App\Form\Type\Messages;
 
+use App\Cache\ConfigCache;
 use App\Command\Messages\MessagesFilterCommand;
 use App\Form\EventSubscriber\AccessFieldSubscriber;
 use App\Form\Type\Field\BtnChoiceType;
@@ -10,7 +11,6 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use App\Form\Type\Filter\FilterType;
 use App\Form\Type\Field\TypeaheadType;
-use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\VarRouteService;
@@ -23,7 +23,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class MessagesFilterType extends AbstractType
 {
     public function __construct(
-        protected ConfigService $config_service,
+        protected ConfigCache $config_cache,
         protected ItemAccessService $item_access_service,
         protected UrlGeneratorInterface $url_generator,
         protected AccessFieldSubscriber $access_field_subscriber,
@@ -35,18 +35,18 @@ class MessagesFilterType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options):void
     {
-        $service_stuff_enabled = $this->config_service->get_bool('messages.fields.service_stuff.enabled', $this->pp->schema());
-        $category_enabled = $this->config_service->get_bool('messages.fields.category.enabled', $this->pp->schema());
-        $expires_at_enabled = $this->config_service->get_bool('messages.fields.expires_at.enabled', $this->pp->schema());
+        $service_stuff_enabled = $this->config_cache->get_bool('messages.fields.service_stuff.enabled', $this->pp->schema());
+        $category_enabled = $this->config_cache->get_bool('messages.fields.category.enabled', $this->pp->schema());
+        $expires_at_enabled = $this->config_cache->get_bool('messages.fields.expires_at.enabled', $this->pp->schema());
 
-        $new_users_enabled = $this->config_service->get_bool('users.new.enabled', $this->pp->schema());
-        $leaving_users_enabled = $this->config_service->get_bool('users.leaving.enabled', $this->pp->schema());
+        $new_users_enabled = $this->config_cache->get_bool('users.new.enabled', $this->pp->schema());
+        $leaving_users_enabled = $this->config_cache->get_bool('users.leaving.enabled', $this->pp->schema());
 
         $show_new_status = $new_users_enabled;
 
         if ($show_new_status)
         {
-            $new_users_access = $this->config_service->get_str('users.new.access', $this->pp->schema());
+            $new_users_access = $this->config_cache->get_str('users.new.access', $this->pp->schema());
             $show_new_status = $this->item_access_service->is_visible($new_users_access);
         }
 
@@ -54,7 +54,7 @@ class MessagesFilterType extends AbstractType
 
         if ($show_leaving_status)
         {
-            $leaving_users_access = $this->config_service->get_str('users.leaving.access', $this->pp->schema());
+            $leaving_users_access = $this->config_cache->get_str('users.leaving.access', $this->pp->schema());
             $show_leaving_status = $this->item_access_service->is_visible($leaving_users_access);
         }
 

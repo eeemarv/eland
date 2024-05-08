@@ -2,9 +2,9 @@
 
 namespace App\Controller\Intersystems;
 
+use App\Cache\ConfigCache;
 use App\Render\LinkRender;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
 use App\Service\PageParamsService;
@@ -38,7 +38,7 @@ class IntersystemsDelController extends AbstractController
         Request $request,
         int $id,
         Db $db,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         IntersystemsService $intersystems_service,
         LinkRender $link_render,
         AlertService $alert_service,
@@ -46,7 +46,7 @@ class IntersystemsDelController extends AbstractController
         PageParamsService $pp
     ):Response
     {
-        if (!$config_service->get_bool('intersystem.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('intersystem.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Intersystem submodule (users) not enabled.');
         }

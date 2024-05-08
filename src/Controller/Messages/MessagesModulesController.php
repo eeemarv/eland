@@ -2,13 +2,13 @@
 
 namespace App\Controller\Messages;
 
+use App\Cache\ConfigCache;
 use App\Command\Messages\MessagesModulesCommand;
 use App\Form\Type\Messages\MessagesModulesType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -33,17 +33,17 @@ class MessagesModulesController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         PageParamsService $pp
     ):Response
     {
-        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('messages.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
         }
 
         $command = new MessagesModulesCommand();
-        $config_service->load_command($command, $pp->schema());
+        $config_cache->load_command($command, $pp->schema());
 
         $form = $this->createForm(MessagesModulesType::class, $command);
 
@@ -54,7 +54,7 @@ class MessagesModulesController extends AbstractController
         {
             $command = $form->getData();
 
-            $changed = $config_service->store_command($command, $pp->schema());
+            $changed = $config_cache->store_command($command, $pp->schema());
 
             if ($changed)
             {

@@ -2,6 +2,7 @@
 
 namespace App\Controller\Contacts;
 
+use App\Cache\ConfigCache;
 use App\Cnst\BulkCnst;
 use App\Command\Contacts\ContactsFilterCommand;
 use App\Form\Type\Contacts\ContactsFilterType;
@@ -11,7 +12,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use App\Render\LinkRender;
-use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\AlertService;
@@ -45,15 +45,15 @@ class ContactsController extends AbstractController
         AlertService $alert_service,
         LinkRender $link_render,
         FormTokenService $form_token_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         AccountRender $account_render,
         PageParamsService $pp,
         ItemAccessService $item_access_service
     ):Response
     {
-        $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
-        $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
-        $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
+        $new_users_enabled = $config_cache->get_bool('users.new.enabled', $pp->schema());
+        $leaving_users_enabled = $config_cache->get_bool('users.leaving.enabled', $pp->schema());
+        $new_user_treshold = $config_cache->get_new_user_treshold($pp->schema());
 
         $filter_command = new ContactsFilterCommand();
 
@@ -73,7 +73,7 @@ class ContactsController extends AbstractController
         $f_params = $request->query->all('f');
         $filter_form_error = isset($f_params['user']) && !isset($filter_command->user);
 
-        $intersystem_enabled = $config_service->get_bool('intersystem.enabled', $pp->schema());
+        $intersystem_enabled = $config_cache->get_bool('intersystem.enabled', $pp->schema());
 
         $selected_contacts = $request->request->all('sel');
         $bulk_field = $request->request->all('bulk_field');
@@ -262,7 +262,7 @@ class ContactsController extends AbstractController
                     $sql['ustatus']['where'][]= 'not u.is_leaving';
                     $sql['ustatus']['where'][]= 'u.remote_schema is null';
                     $sql['ustatus']['where'][]= 'u.remote_email is null';
-                    $sql['ustatus']['params'][]= $config_service->get_new_user_treshold($pp->schema());
+                    $sql['ustatus']['params'][]= $config_cache->get_new_user_treshold($pp->schema());
                     $sql['ustatus']['types'][]= Types::DATETIME_IMMUTABLE;
                     break;
                 case 'leaving':

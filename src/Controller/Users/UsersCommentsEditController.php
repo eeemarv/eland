@@ -2,6 +2,7 @@
 
 namespace App\Controller\Users;
 
+use App\Cache\ConfigCache;
 use App\Command\Users\UsersCommentsCommand;
 use App\Form\Type\Users\UsersCommentsType;
 use App\Repository\UserRepository;
@@ -9,7 +10,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -56,12 +56,12 @@ class UsersCommentsEditController extends AbstractController
         bool $is_self,
         UserRepository $user_repository,
         AlertService $alert_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
     {
-        if (!$config_service->get_bool('users.fields.comments.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('users.fields.comments.enabled', $pp->schema()))
         {
             throw new AccessDeniedHttpException('Users comments submodule not enabled.');
         }

@@ -2,6 +2,7 @@
 
 namespace App\Controller\Transactions;
 
+use App\Cache\ConfigCache;
 use App\Cnst\BulkCnst;
 use App\Controller\Users\UsersListController;
 use App\Form\Type\Filter\QTextSearchFilterType;
@@ -12,7 +13,6 @@ use App\Repository\AccountRepository;
 use App\Service\AlertService;
 use App\Service\AutoDeactivateService;
 use App\Service\AutoMinLimitService;
-use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
 use App\Service\MailAddrSystemService;
@@ -57,7 +57,7 @@ class TransactionsMassController extends AbstractController
         LoggerInterface $logger,
         AlertService $alert_service,
         FormTokenService $form_token_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         LinkRender $link_render,
         AccountRender $account_render,
         MailQueue $mail_queue,
@@ -72,26 +72,26 @@ class TransactionsMassController extends AbstractController
         SessionUserService $su
     ):Response
     {
-        if (!$config_service->get_bool('transactions.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('transactions.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Transactions module not enabled.');
         }
 
-        if (!$config_service->get_bool('transactions.mass.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('transactions.mass.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Submodule mass-transaction not enabled.');
         }
 
         $errors = [];
 
-        $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
-        $system_min_limit = $config_service->get_int('accounts.limits.global.min', $pp->schema());
-        $system_max_limit = $config_service->get_int('accounts.limits.global.max', $pp->schema());
-        $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
-        $new_users_days = $config_service->get_int('users.new.days', $pp->schema());
-        $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
-        $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
-        $limits_enabled = $config_service->get_bool('accounts.limits.enabled', $pp->schema());
+        $currency = $config_cache->get_str('transactions.currency.name', $pp->schema());
+        $system_min_limit = $config_cache->get_int('accounts.limits.global.min', $pp->schema());
+        $system_max_limit = $config_cache->get_int('accounts.limits.global.max', $pp->schema());
+        $new_user_treshold = $config_cache->get_new_user_treshold($pp->schema());
+        $new_users_days = $config_cache->get_int('users.new.days', $pp->schema());
+        $new_users_enabled = $config_cache->get_bool('users.new.enabled', $pp->schema());
+        $leaving_users_enabled = $config_cache->get_bool('users.leaving.enabled', $pp->schema());
+        $limits_enabled = $config_cache->get_bool('accounts.limits.enabled', $pp->schema());
 
         $filter_form = $this->createForm(QTextSearchFilterType::class);
         $filter_form->handleRequest($request);
@@ -125,7 +125,7 @@ class TransactionsMassController extends AbstractController
         $sql['common']['where'][] = 'u.remote_schema is null';
         $sql['common']['where'][] = 'u.remote_email is null';
 
-        $status_def_ary = UsersListController::get_status_def_ary($config_service, $item_access_service, $pp);
+        $status_def_ary = UsersListController::get_status_def_ary($config_cache, $item_access_service, $pp);
 
         unset($status_def_ary['intersystem']);
         unset($status_def_ary['all']);

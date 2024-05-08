@@ -2,11 +2,11 @@
 
 namespace App\Controller\Forum;
 
+use App\Cache\ConfigCache;
 use App\Command\Forum\ForumPostCommand;
 use App\Form\Type\Forum\ForumPostType;
 use App\Repository\ForumRepository;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -40,13 +40,13 @@ class ForumTopicController extends AbstractController
         int $id,
         ForumRepository $forum_repository,
         AlertService $alert_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         ItemAccessService $item_access_service,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
     {
-        if (!$config_service->get_bool('forum.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('forum.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Forum module not enabled.');
         }
@@ -81,7 +81,7 @@ class ForumTopicController extends AbstractController
         $posts = $forum_repository->get_topic_posts($id, $pp->schema());
 
         $show_access = ($pp->is_user()
-                && $config_service->get_intersystem_en($pp->schema()))
+                && $config_cache->get_intersystem_en($pp->schema()))
             || $pp->is_admin();
 
         return $this->render('forum/forum_topic.html.twig', [

@@ -2,15 +2,14 @@
 
 namespace App\Controller\Forum;
 
+use App\Cache\ConfigCache;
 use App\Command\Forum\ForumTopicCommand;
 use App\Form\Type\Forum\ForumTopicType;
-use App\Render\AccountRender;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\ForumRepository;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -41,14 +40,13 @@ class ForumEditTopicController extends AbstractController
         int $id,
         ForumRepository $forum_repository,
         AlertService $alert_service,
-        AccountRender $account_render,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         ItemAccessService $item_access_service,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
     {
-        if (!$config_service->get_bool('forum.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('forum.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Forum module not enabled.');
         }

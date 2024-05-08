@@ -2,11 +2,11 @@
 
 namespace App\Controller\Messages;
 
+use App\Cache\ConfigCache;
 use App\Command\Messages\MessagesUnitsCommand;
 use App\Form\Type\Messages\MessagesUnitsEditType;
 use App\Repository\MessageRepository;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -72,17 +72,17 @@ class MessagesUnitsEditController extends AbstractController
         string $mode,
         AlertService $alert_service,
         MessageRepository $message_repository,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
     {
-        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('messages.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Messages module not enabled in configuration');
         }
 
-        if (!$config_service->get_bool('messages.fields.units.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('messages.fields.units.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Units submodule not enabled in configuration');
         }

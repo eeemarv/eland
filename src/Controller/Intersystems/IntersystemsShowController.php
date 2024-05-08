@@ -2,9 +2,9 @@
 
 namespace App\Controller\Intersystems;
 
+use App\Cache\ConfigCache;
 use App\Render\LinkRender;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SystemsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -37,12 +37,12 @@ class IntersystemsShowController extends AbstractController
         Db $db,
         AlertService $alert_service,
         LinkRender $link_render,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         SystemsService $systems_service,
         PageParamsService $pp
     ):Response
     {
-        if (!$config_service->get_bool('intersystem.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('intersystem.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Intersystem submodule (users) not enabled.');
         }
@@ -81,14 +81,14 @@ class IntersystemsShowController extends AbstractController
         {
             $out .= '<dd><span class="btn btn-info">eLAND server</span>';
 
-            if (!$config_service->get_bool('transactions.currency.timebased_en', $group_schema))
+            if (!$config_cache->get_bool('transactions.currency.timebased_en', $group_schema))
             {
                 $out .= ' <span class="btn btn-danger">';
                 $out .= '<i class="fa fa-exclamation-triangle"></i> ';
                 $out .= 'Niet geconfigureerd als Tijdbank</span>';
             }
 
-            if (!$config_service->get_bool('intersystem.enabled', $group_schema))
+            if (!$config_cache->get_bool('intersystem.enabled', $group_schema))
             {
                 $out .= ' <span class="btn btn-danger">';
                 $out .= '<i class="fa fa-exclamation-triangle"></i> ';
@@ -175,7 +175,7 @@ class IntersystemsShowController extends AbstractController
 
         $out .= IntersystemsController::get_schemas_groups(
             $db,
-            $config_service,
+            $config_cache,
             $systems_service,
             $pp,
             $link_render

@@ -2,13 +2,13 @@
 
 namespace App\Controller\Transactions;
 
+use App\Cache\ConfigCache;
 use App\Cache\SystemsCache;
 use App\Cnst\MessageTypeCnst;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Repository\TransactionRepository;
 use App\Service\AssetsService;
-use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\IntersystemsService;
 use App\Service\PageParamsService;
@@ -42,7 +42,7 @@ class TransactionsShowController extends AbstractController
         int $id,
         Db $db,
         TransactionRepository $transaction_repository,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         DateFormatService $date_format_service,
         AccountRender $account_render,
         AssetsService $assets_service,
@@ -53,13 +53,13 @@ class TransactionsShowController extends AbstractController
         SessionUserService $su
     ):Response
     {
-        if (!$config_service->get_bool('transactions.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('transactions.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Transactions module not enabled.');
         }
 
-        $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
-        $service_stuff_enabled = $config_service->get_bool('transactions.fields.service_stuff.enabled', $pp->schema());
+        $currency = $config_cache->get_str('transactions.currency.name', $pp->schema());
+        $service_stuff_enabled = $config_cache->get_bool('transactions.fields.service_stuff.enabled', $pp->schema());
 
         $intersystem_account_schemas = $intersystems_service->get_eland_accounts_schemas($pp->schema());
         $eland_intersystem_ary = $intersystems_service->get_eland($pp->schema());
@@ -89,7 +89,7 @@ class TransactionsShowController extends AbstractController
                 where t.transid = ?',
                 [$transaction['transid']], [\PDO::PARAM_STR]);
 
-            $inter_transactions_enabled = $config_service->get_bool('transactions.enabled', $inter_schema);
+            $inter_transactions_enabled = $config_cache->get_bool('transactions.enabled', $inter_schema);
         }
         else
         {
@@ -102,7 +102,7 @@ class TransactionsShowController extends AbstractController
         $real_to = $transaction['real_to'] ? true : false;
         $real_from = $transaction['real_from'] ? true : false;
 
-        $intersystem_trans = ($real_from || $real_to) && $config_service->get_intersystem_en($pp->schema());
+        $intersystem_trans = ($real_from || $real_to) && $config_cache->get_intersystem_en($pp->schema());
 
         $out = '<div class="panel panel-';
         $out .= $intersystem_trans ? 'warning' : 'default';

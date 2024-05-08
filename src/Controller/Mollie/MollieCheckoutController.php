@@ -2,11 +2,11 @@
 
 namespace App\Controller\Mollie;
 
+use App\Cache\ConfigCache;
 use App\Cache\UserCache;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -45,12 +45,12 @@ class MollieCheckoutController extends AbstractController
         AccountRender $account_render,
         UserCache $user_cache,
         FormTokenService $form_token_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         LinkRender $link_render,
         PageParamsService $pp
     ):Response
     {
-        if (!$config_service->get_bool('mollie.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('mollie.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Mollie submodule (users) not enabled.');
         }
@@ -69,7 +69,7 @@ class MollieCheckoutController extends AbstractController
             throw new NotFoundHttpException('Payment request not found.');
         }
 
-        $mollie_apikey = $config_service->get_str('mollie.apikey', $pp->schema());
+        $mollie_apikey = $config_cache->get_str('mollie.apikey', $pp->schema());
 
         if (!($mollie_payment['is_paid'] || $mollie_payment['is_canceled']))
         {
@@ -164,7 +164,7 @@ class MollieCheckoutController extends AbstractController
         $out .= 'Aan';
         $out .= '</dt>';
         $out .= '<dd>';
-        $out .= $config_service->get_str('system.name', $pp->schema());
+        $out .= $config_cache->get_str('system.name', $pp->schema());
         $out .= '</dd>';
         $out .= '<dt>';
         $out .= 'Bedrag';

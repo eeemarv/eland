@@ -2,9 +2,9 @@
 
 namespace App\Form\Type\Users;
 
+use App\Cache\ConfigCache;
 use App\Command\Users\UsersAccountCommand;
 use App\Form\Type\Field\TypeaheadType;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -15,7 +15,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class UsersAccountType extends AbstractType
 {
     public function __construct(
-        protected ConfigService $config_service,
+        protected ConfigCache $config_cache,
         protected PageParamsService $pp
     )
     {
@@ -23,7 +23,7 @@ class UsersAccountType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options):void
     {
-        $limits_enabled = $this->config_service->get_bool('accounts.limits.enabled', $this->pp->schema());
+        $limits_enabled = $this->config_cache->get_bool('accounts.limits.enabled', $this->pp->schema());
 
         $builder->add('code', TypeaheadType::class, [
             'add'           => 'account_codes',

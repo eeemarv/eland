@@ -2,10 +2,10 @@
 
 namespace App\Controller\Tags;
 
+use App\Cache\ConfigCache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\TagRepository;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\ResponseCacheService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -34,14 +34,14 @@ class TagsStyleSheetController extends AbstractController
         string $thumbprint,
         ResponseCacheService $response_cache_service,
         TagRepository $tag_repository,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         PageParamsService $pp
     ):Response
     {
         switch ($tag_type)
         {
             case 'users':
-                if (!$config_service->get_bool('users.tags.enabled', $pp->schema()))
+                if (!$config_cache->get_bool('users.tags.enabled', $pp->schema()))
                 {
                     throw new NotFoundHttpException('Tags for users not enabled.');
                 }

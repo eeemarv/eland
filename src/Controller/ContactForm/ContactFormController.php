@@ -2,6 +2,7 @@
 
 namespace App\Controller\ContactForm;
 
+use App\Cache\ConfigCache;
 use App\Command\ContactForm\ContactFormCommand;
 use App\Form\Type\ContactForm\ContactFormType;
 use App\Queue\MailQueue;
@@ -9,7 +10,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\DataTokenService;
 use App\Service\PageParamsService;
 use Psr\Log\LoggerInterface;
@@ -38,19 +38,19 @@ class ContactFormController extends AbstractController
         Request $request,
         LoggerInterface $logger,
         AlertService $alert_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         DataTokenService $data_token_service,
         PageParamsService $pp,
         MailQueue $mail_queue
     ):Response
     {
-        if (!$config_service->get_bool('contact_form.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('contact_form.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Contact form module not enabled.');
         }
 
-        $support_email_addr = $config_service->get_ary('mail.addresses.support', $pp->schema());
-        $mail_enabled = $config_service->get_bool('mail.enabled', $pp->schema());
+        $support_email_addr = $config_cache->get_ary('mail.addresses.support', $pp->schema());
+        $mail_enabled = $config_cache->get_bool('mail.enabled', $pp->schema());
         $form_disabled = !$mail_enabled || count($support_email_addr) < 1;
 
         $command = new ContactFormCommand();

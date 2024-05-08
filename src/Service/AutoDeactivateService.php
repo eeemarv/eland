@@ -2,12 +2,12 @@
 
 namespace App\Service;
 
+use App\Cache\ConfigCache;
 use App\Cache\UserCache;
 use App\Cache\UserInvalidateCache;
 use Doctrine\DBAL\Connection as Db;
 use App\Queue\MailQueue;
 use Psr\Log\LoggerInterface;
-use App\Service\ConfigService;
 use App\Render\AccountRender;
 use App\Repository\AccountRepository;
 
@@ -23,7 +23,7 @@ class AutoDeactivateService
 		protected MailQueue $mail_queue,
 		protected MailAddrSystemService $mail_addr_system_service,
 		protected MailAddrUserService $mail_addr_user_service,
-		protected ConfigService $config_service,
+		protected ConfigCache $config_cache,
 		protected SessionUserService $su,
 		protected ResponseCacheService $response_cache_service,
 		protected AccountRender $account_render
@@ -36,12 +36,12 @@ class AutoDeactivateService
 		string $schema
 	):void
 	{
-		if (!$this->config_service->get_bool('users.leaving.enabled', $schema))
+		if (!$this->config_cache->get_bool('users.leaving.enabled', $schema))
 		{
 			return;
 		}
 
-		if (!$this->config_service->get_bool('users.leaving.auto_deactivate', $schema))
+		if (!$this->config_cache->get_bool('users.leaving.auto_deactivate', $schema))
 		{
 			return;
 		}
@@ -53,7 +53,7 @@ class AutoDeactivateService
 			return;
 		}
 
-        $balance_equilibrium = $this->config_service->get_int('accounts.equilibrium', $schema) ?? 0;
+        $balance_equilibrium = $this->config_cache->get_int('accounts.equilibrium', $schema) ?? 0;
 		$balance = $this->account_repository->get_balance($user_id, $schema);
 
 		if ($balance !== $balance_equilibrium)

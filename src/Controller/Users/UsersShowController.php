@@ -2,6 +2,7 @@
 
 namespace App\Controller\Users;
 
+use App\Cache\ConfigCache;
 use App\Cache\UserCache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,7 +22,6 @@ use App\Repository\ContactRepository;
 use App\Repository\TagRepository;
 use App\Repository\UserRepository;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\DistanceService;
 use App\Service\ItemAccessService;
 use App\Service\MailAddrUserService;
@@ -82,7 +82,7 @@ class UsersShowController extends AbstractController
         UserRepository $user_repository,
         AccountRender $account_render,
         AlertService $alert_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
         MailAddrUserService $mail_addr_user_service,
@@ -130,7 +130,7 @@ class UsersShowController extends AbstractController
             throw new AccessDeniedHttpException('You have no access to this user account.');
         }
 
-        $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
+        $new_user_treshold = $config_cache->get_new_user_treshold($pp->schema());
 
         $is_new = false;
 
@@ -142,13 +142,13 @@ class UsersShowController extends AbstractController
 
         $is_intersystem = isset($user['remote_schema']) || isset($user['remote_email']);
 
-        $tags_enabled = $config_service->get_bool('users.tags.enabled', $pp->schema());
+        $tags_enabled = $config_cache->get_bool('users.tags.enabled', $pp->schema());
 
         $min_limit = $account_repository->get_min_limit($id, $pp->schema());
         $max_limit = $account_repository->get_max_limit($id, $pp->schema());
         $balance = $account_repository->get_balance($id, $pp->schema());
 
-        $full_name_edit_en = $config_service->get_bool('users.fields.full_name.self_edit', $pp->schema());
+        $full_name_edit_en = $config_cache->get_bool('users.fields.full_name.self_edit', $pp->schema());
 
         if (!$su->is_owner($id))
         {
@@ -160,7 +160,7 @@ class UsersShowController extends AbstractController
             $full_name_edit_en = true;
         }
 
-        $status_def_ary = UsersListController::get_status_def_ary($config_service, $item_access_service, $pp);
+        $status_def_ary = UsersListController::get_status_def_ary($config_cache, $item_access_service, $pp);
 
         $tags_form = null;
         $render_tags = false;

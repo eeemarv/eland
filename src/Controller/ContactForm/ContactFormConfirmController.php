@@ -2,11 +2,11 @@
 
 namespace App\Controller\ContactForm;
 
+use App\Cache\ConfigCache;
 use App\Queue\MailQueue;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\DataTokenService;
 use App\Service\MailAddrSystemService;
 use App\Service\PageParamsService;
@@ -34,7 +34,7 @@ class ContactFormConfirmController extends AbstractController
 
     public function __invoke(
         string $token,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         AlertService $alert_service,
         DataTokenService $data_token_service,
         MailAddrSystemService $mail_addr_system_service,
@@ -42,7 +42,7 @@ class ContactFormConfirmController extends AbstractController
         MailQueue $mail_queue
     ):Response
     {
-        if (!$config_service->get_bool('contact_form.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('contact_form.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Contact form module not enabled.');
         }

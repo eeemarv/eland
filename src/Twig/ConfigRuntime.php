@@ -2,34 +2,34 @@
 
 namespace App\Twig;
 
-use App\Service\ConfigService;
+use App\Cache\ConfigCache;
 use Twig\Extension\RuntimeExtensionInterface;
 
 class ConfigRuntime implements RuntimeExtensionInterface
 {
 	public function __construct(
-		protected ConfigService $config_service
+		protected ConfigCache $config_cache
 	)
 	{
 	}
 
 	public function get_str(string $path, string $schema)
 	{
-		return $this->config_service->get_str($path, $schema);
+		return $this->config_cache->get_str($path, $schema);
 	}
 
 	public function get_bool(string $path, string $schema)
 	{
-		return $this->config_service->get_bool($path, $schema);
+		return $this->config_cache->get_bool($path, $schema);
 	}
 
 	public function get_int(string $path, string $schema)
 	{
-		return $this->config_service->get_int($path, $schema);
+		return $this->config_cache->get_int($path, $schema);
 	}
 
 	public function get_ary(string $path, string $schema)
 	{
-		return $this->config_service->get_ary($path, $schema);
+		return $this->config_cache->get_ary($path, $schema);
 	}
 }

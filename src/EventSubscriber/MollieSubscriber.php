@@ -2,10 +2,10 @@
 
 namespace App\EventSubscriber;
 
+use App\Cache\ConfigCache;
 use App\Cache\UserInvalidateCache;
 use App\Render\LinkRender;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -35,7 +35,7 @@ class MollieSubscriber implements EventSubscriberInterface
         protected SessionUserService $su,
         protected UserInvalidateCache $user_invalidate_cache,
         protected LinkRender $link_render,
-        protected ConfigService $config_service
+        protected ConfigCache $config_cache
     )
     {
     }
@@ -69,7 +69,7 @@ class MollieSubscriber implements EventSubscriberInterface
             return;
         }
 
-        if (!($this->config_service->get_bool('mollie.enabled', $this->pp->schema())))
+        if (!($this->config_cache->get_bool('mollie.enabled', $this->pp->schema())))
         {
             return;
         }

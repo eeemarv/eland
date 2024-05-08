@@ -2,12 +2,12 @@
 
 namespace App\Controller\Docs;
 
+use App\Cache\ConfigCache;
 use App\Form\Type\Filter\QTextSearchFilterType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\DocRepository;
-use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -35,11 +35,11 @@ class DocsController extends AbstractController
         Request $request,
         DocRepository $doc_repository,
         ItemAccessService $item_access_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         PageParamsService $pp
     ):Response
     {
-        if (!$config_service->get_bool('docs.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('docs.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Documents module not enabled.');
         }
@@ -52,7 +52,7 @@ class DocsController extends AbstractController
         $filter_form->handleRequest($request);
 
         $show_access = ($pp->is_user()
-                && $config_service->get_intersystem_en($pp->schema()))
+                && $config_cache->get_intersystem_en($pp->schema()))
             || $pp->is_admin();
 
         return $this->render('docs/docs.html.twig', [

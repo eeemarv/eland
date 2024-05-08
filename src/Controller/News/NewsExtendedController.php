@@ -2,8 +2,8 @@
 
 namespace App\Controller\News;
 
+use App\Cache\ConfigCache;
 use App\Repository\NewsRepository;
-use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -31,21 +31,21 @@ class NewsExtendedController extends AbstractController
 
     public function __invoke(
         NewsRepository $news_repository,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         ItemAccessService $item_access_service,
         PageParamsService $pp
     ):Response
     {
-        if (!$config_service->get_bool('news.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('news.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('News module not enabled.');
         }
 
         $show_access = ($pp->is_user()
-                && $config_service->get_intersystem_en($pp->schema()))
+                && $config_cache->get_intersystem_en($pp->schema()))
             || $pp->is_admin();
 
-        $sort_asc = $config_service->get_bool('news.sort.asc', $pp->schema());
+        $sort_asc = $config_cache->get_bool('news.sort.asc', $pp->schema());
         $visible_ary = $item_access_service->get_visible_ary_for_page();
         $news_items = $news_repository->get_all($sort_asc, $visible_ary, $pp->schema());
 

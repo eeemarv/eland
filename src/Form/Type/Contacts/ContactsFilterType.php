@@ -2,6 +2,7 @@
 
 namespace App\Form\Type\Contacts;
 
+use App\Cache\ConfigCache;
 use App\Command\Contacts\ContactsFilterCommand;
 use App\Form\EventSubscriber\AccessFieldSubscriber;
 use App\Form\Type\Filter\FilterType;
@@ -11,7 +12,6 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use App\Form\Type\Field\TypeaheadType;
 use App\Repository\ContactRepository;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -20,7 +20,7 @@ class ContactsFilterType extends AbstractType
     const USTATUS = ['active', 'new', 'leaving', 'intersystem', 'pre-active', 'post-active'];
 
     public function __construct(
-        protected ConfigService $config_service,
+        protected ConfigCache $config_cache,
         protected ContactRepository $contact_repository,
         protected AccessFieldSubscriber $access_field_subscriber,
         protected PageParamsService $pp
@@ -41,7 +41,7 @@ class ContactsFilterType extends AbstractType
 
             if ($us === 'new')
             {
-                if (!$this->config_service->get_bool('users.new.enabled', $this->pp->schema()))
+                if (!$this->config_cache->get_bool('users.new.enabled', $this->pp->schema()))
                 {
                     continue;
                 }
@@ -51,7 +51,7 @@ class ContactsFilterType extends AbstractType
 
             if ($us === 'leaving')
             {
-                if (!$this->config_service->get_bool('users.leaving.enabled', $this->pp->schema()))
+                if (!$this->config_cache->get_bool('users.leaving.enabled', $this->pp->schema()))
                 {
                     continue;
                 }

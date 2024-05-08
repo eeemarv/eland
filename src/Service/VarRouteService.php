@@ -2,8 +2,8 @@
 
 namespace App\Service;
 
+use App\Cache\ConfigCache;
 use App\Cnst\PagesCnst;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -18,7 +18,7 @@ class VarRouteService
 	public function __construct(
 		protected RequestStack $request_stack,
 		protected PageParamsService $pp,
-		protected ConfigService $config_service
+		protected ConfigCache $config_cache
 	)
 	{
 		$this->session = $this->request_stack->getSession();
@@ -51,9 +51,9 @@ class VarRouteService
 			'news'			=> 'news_' . $view_ary['news'],
 		];
 
-		$default = $this->config_service->get_str('system.default_landing_page', $this->pp->schema());
+		$default = $this->config_cache->get_str('system.default_landing_page', $this->pp->schema());
 
-		if (!$this->config_service->get_bool($default . '.enabled', $this->pp->schema()))
+		if (!$this->config_cache->get_bool($default . '.enabled', $this->pp->schema()))
 		{
 			$default = 'users';
 		}
@@ -70,7 +70,7 @@ class VarRouteService
 	{
 		if (isset(PagesCnst::LANDING[$active_menu]))
 		{
-			$route_enabled = $this->config_service->get_bool($active_menu . '.enabled', $schema);
+			$route_enabled = $this->config_cache->get_bool($active_menu . '.enabled', $schema);
 		}
 		else
 		{
@@ -79,8 +79,8 @@ class VarRouteService
 
 		if (!$route_enabled)
 		{
-			$default_route = $this->config_service->get_str('system.default_landing_page', $schema);
-			$default_enabled = $this->config_service->get_bool($default_route . '.enabled', $schema);
+			$default_route = $this->config_cache->get_str('system.default_landing_page', $schema);
+			$default_enabled = $this->config_cache->get_bool($default_route . '.enabled', $schema);
 			$active_menu = $default_enabled ? $default_route : 'users';
 		}
 
@@ -91,7 +91,7 @@ class VarRouteService
 	{
 		if (isset(PagesCnst::LANDING[$menu_route]))
 		{
-			$route_enabled = $this->config_service->get_bool($menu_route . '.enabled', $remote_schema);
+			$route_enabled = $this->config_cache->get_bool($menu_route . '.enabled', $remote_schema);
 		}
 		else
 		{
@@ -100,8 +100,8 @@ class VarRouteService
 
 		if (!$route_enabled)
 		{
-			$default_route = $this->config_service->get_str('system.default_landing_page', $remote_schema);
-			$default_enabled = $this->config_service->get_bool($default_route . '.enabled', $remote_schema);
+			$default_route = $this->config_cache->get_str('system.default_landing_page', $remote_schema);
+			$default_enabled = $this->config_cache->get_bool($default_route . '.enabled', $remote_schema);
 			$menu_route = $default_enabled ? $default_route : 'users';
 		}
 

@@ -2,6 +2,7 @@
 
 namespace App\Form\Type\Transactions;
 
+use App\Cache\ConfigCache;
 use App\Command\Transactions\TransactionsFilterCommand;
 use App\Form\Type\Field\BtnChoiceType;
 use App\Form\Type\Field\DatepickerType;
@@ -11,7 +12,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use App\Form\Type\Field\TypeaheadType;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -19,7 +19,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class TransactionsFilterType extends AbstractType
 {
     public function __construct(
-        protected ConfigService $config_service,
+        protected ConfigCache $config_cache,
         protected PageParamsService $pp,
         protected UrlGeneratorInterface $url_generator
     )
@@ -31,7 +31,7 @@ class TransactionsFilterType extends AbstractType
         array $options
     ):void
     {
-        $service_stuff_enabled = $this->config_service->get_bool('transactions.fields.service_stuff.enabled', $this->pp->schema());
+        $service_stuff_enabled = $this->config_cache->get_bool('transactions.fields.service_stuff.enabled', $this->pp->schema());
 
         $typeahead_add = [];
 

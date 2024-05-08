@@ -2,10 +2,10 @@
 
 namespace App\SchemaTask;
 
+use App\Cache\ConfigCache;
 use App\Cache\UserCache;
 use Doctrine\DBAL\Connection as Db;
 use App\Queue\MailQueue;
-use App\Service\ConfigService;
 use App\Service\MailAddrUserService;
 use Doctrine\DBAL\Types\Types;
 
@@ -14,7 +14,7 @@ class UserExpMsgsSchemaTask implements SchemaTaskInterface
 	public function __construct(
 		protected Db $db,
 		protected MailQueue $mail_queue,
-		protected ConfigService $config_service,
+		protected ConfigCache $config_cache,
 		protected UserCache $user_cache,
 		protected MailAddrUserService $mail_addr_user_service
 	)
@@ -81,8 +81,8 @@ class UserExpMsgsSchemaTask implements SchemaTaskInterface
 
 	public function is_enabled(string $schema):bool
 	{
-		return $this->config_service->get_bool('messages.fields.expires_at.enabled', $schema)
-			&& $this->config_service->get_bool('messages.expire.notify', $schema);
+		return $this->config_cache->get_bool('messages.fields.expires_at.enabled', $schema)
+			&& $this->config_cache->get_bool('messages.expire.notify', $schema);
 	}
 
 	public function get_interval(string $schema):int

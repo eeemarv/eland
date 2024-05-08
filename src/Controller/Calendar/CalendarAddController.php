@@ -2,12 +2,12 @@
 
 namespace App\Controller\Calendar;
 
+use App\Cache\ConfigCache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Render\LinkRender;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
@@ -24,7 +24,7 @@ class CalendarAddController extends AbstractController
     public function __invoke(
         Request $request,
         Db $db,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         DateFormatService $date_format_service,
         AlertService $alert_service,
         FormTokenService $form_token_service,
@@ -35,7 +35,7 @@ class CalendarAddController extends AbstractController
         VarRouteService $vr
     ):Response
     {
-        if (!$config_service->get_bool('calendar.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('calendar.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Calendar module not enabled.');
         }

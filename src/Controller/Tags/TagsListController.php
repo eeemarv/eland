@@ -2,13 +2,13 @@
 
 namespace App\Controller\Tags;
 
+use App\Cache\ConfigCache;
 use App\Command\Tags\TagsListCommand;
 use App\Form\Type\Tags\TagsListType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\TagRepository;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\AlertService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -144,14 +144,14 @@ class TagsListController extends AbstractController
         Request $request,
         TagRepository $tag_repository,
         AlertService $alert_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         PageParamsService $pp
     ):Response
     {
         switch ($tag_type)
         {
             case 'users':
-                if (!$config_service->get_bool('users.tags.enabled', $pp->schema()))
+                if (!$config_cache->get_bool('users.tags.enabled', $pp->schema()))
                 {
                     throw new NotFoundHttpException('Tags for users not enabled.');
                 }

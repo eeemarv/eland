@@ -2,6 +2,7 @@
 
 namespace App\Controller\Tags;
 
+use App\Cache\ConfigCache;
 use App\Command\Tags\TagsDefCommand;
 use App\Form\Type\Tags\TagsDefType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -9,7 +10,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
 use App\Repository\TagRepository;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\ResponseCacheService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -154,7 +154,7 @@ class TagsEditController extends AbstractController
         string $tag_type,
         TagRepository $tag_repository,
         AlertService $alert_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         ResponseCacheService $response_cache_service,
         PageParamsService $pp,
     ):Response
@@ -162,7 +162,7 @@ class TagsEditController extends AbstractController
         switch ($tag_type)
         {
             case 'users':
-                if (!$config_service->get_bool('users.tags.enabled', $pp->schema()))
+                if (!$config_cache->get_bool('users.tags.enabled', $pp->schema()))
                 {
                     throw new NotFoundHttpException('Tags for users not enabled.');
                 }

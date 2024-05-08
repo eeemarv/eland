@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Service;
+namespace App\Cache;
 
 use App\Attributes\ConfigMap;
 use App\Command\CommandInterface;
@@ -11,10 +11,10 @@ use Symfony\Component\Validator\Exception\LogicException;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
-class ConfigService
+class ConfigCache
 {
-	const CACHE_PREFIX = 'config_';
-	const CACHE_TTL = 518400; // 60 days
+	const CACHE_PREFIX = 'config.';
+	const CACHE_TTL = 86400;
 	const CACHE_BETA = 1;
 
 	protected bool $local_cache_en = false;
@@ -71,12 +71,9 @@ class ConfigService
 	public function read_all(string $schema):array
 	{
 		$data = $this->cache->get(self::CACHE_PREFIX . $schema, function(ItemInterface $item) use ($schema){
-
 			$item->expiresAfter(self::CACHE_TTL);
-			$item->tag(['deploy', 'config', 'config_' . $schema]);
-
+			$item->tag(['config']);
 			return $this->build_cache_from_db($schema);
-
 		}, self::CACHE_BETA);
 
 		if ($this->local_cache_en)

@@ -2,6 +2,7 @@
 
 namespace App\Controller\Messages;
 
+use App\Cache\ConfigCache;
 use App\Cache\UserCache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,7 +18,6 @@ use App\Render\LinkRender;
 use App\Repository\CategoryRepository;
 use App\Repository\MessageRepository;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\IntersystemsService;
 use App\Service\ItemAccessService;
 use App\Service\MailAddrUserService;
@@ -50,7 +50,7 @@ class MessagesShowController extends AbstractController
         MessageRepository $message_repository,
         CategoryRepository $category_repository,
         AlertService $alert_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         IntersystemsService $intersystems_service,
         ItemAccessService $item_access_service,
         MailAddrUserService $mail_addr_user_service,
@@ -60,12 +60,12 @@ class MessagesShowController extends AbstractController
         SessionUserService $su
     ):Response
     {
-        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('messages.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
         }
 
-        $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
+        $category_enabled = $config_cache->get_bool('messages.fields.category.enabled', $pp->schema());
 
         $message = $message_repository->get($id, $pp->schema());
 

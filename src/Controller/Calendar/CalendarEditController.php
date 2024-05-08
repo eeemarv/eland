@@ -2,12 +2,12 @@
 
 namespace App\Controller\Calendar;
 
+use App\Cache\ConfigCache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Render\LinkRender;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
@@ -23,7 +23,7 @@ class CalendarEditController extends AbstractController
         Request $request,
         int $id,
         Db $db,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         AlertService $alert_service,
         DateFormatService $date_format_service,
         FormTokenService $form_token_service,
@@ -32,7 +32,7 @@ class CalendarEditController extends AbstractController
         PageParamsService $pp
     ):Response
     {
-        if (!$config_service->get_bool('calendar.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('calendar.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Calendar module not enabled.');
         }

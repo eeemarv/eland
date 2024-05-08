@@ -2,12 +2,12 @@
 
 namespace App\Controller\Forum;
 
+use App\Cache\ConfigCache;
 use App\Command\Forum\ForumPostCommand;
 use App\Form\Type\Forum\ForumPostDelType;
 use App\Render\AccountRender;
 use App\Repository\ForumRepository;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -41,14 +41,14 @@ class ForumDelPostController extends AbstractController
         int $id,
         ForumRepository $forum_repository,
         AccountRender $account_render,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         AlertService $alert_service,
         PageParamsService $pp,
         SessionUserService $su,
         ItemAccessService $item_access_service
     ):Response
     {
-        if (!$config_service->get_bool('forum.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('forum.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Forum module not enabled.');
         }

@@ -2,9 +2,9 @@
 
 namespace App\SchemaTask;
 
+use App\Cache\ConfigCache;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
-use App\Service\ConfigService;
 use Doctrine\DBAL\ArrayParameterType;
 
 class CleanupMessagesSchemaTask implements SchemaTaskInterface
@@ -12,7 +12,7 @@ class CleanupMessagesSchemaTask implements SchemaTaskInterface
 	public function __construct(
 		protected Db $db,
 		protected LoggerInterface $logger,
-		protected ConfigService $config_service
+		protected ConfigCache $config_cache
 	)
 	{
 	}
@@ -24,7 +24,7 @@ class CleanupMessagesSchemaTask implements SchemaTaskInterface
 
 	public function run(string $schema, bool $update):void
 	{
-		$after_days = $this->config_service->get_int('messages.cleanup.after_days', $schema);
+		$after_days = $this->config_cache->get_int('messages.cleanup.after_days', $schema);
 		$msgs = '';
 		$testdate = gmdate('Y-m-d H:i:s', time() - ($after_days * 86400));
 
@@ -87,7 +87,7 @@ class CleanupMessagesSchemaTask implements SchemaTaskInterface
 
 	public function is_enabled(string $schema):bool
 	{
-		return $this->config_service->get_bool('messages.cleanup.enabled', $schema);
+		return $this->config_cache->get_bool('messages.cleanup.enabled', $schema);
 	}
 
 	public function get_interval(string $schema):int

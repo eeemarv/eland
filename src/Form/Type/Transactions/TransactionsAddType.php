@@ -2,10 +2,10 @@
 
 namespace App\Form\Type\Transactions;
 
+use App\Cache\ConfigCache;
 use App\Command\Transactions\TransactionsAddCommand;
 use App\Form\Type\Field\BtnChoiceType;
 use App\Form\Type\Field\TypeaheadType;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -18,7 +18,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 class TransactionsAddType extends AbstractType
 {
     public function __construct(
-        protected ConfigService $config_service,
+        protected ConfigCache $config_cache,
         protected PageParamsService $pp
     )
     {
@@ -26,7 +26,7 @@ class TransactionsAddType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options):void
     {
-        $service_stuff_enabled = $this->config_service->get_bool('transactions.fields.service_stuff.enabled', $this->pp->schema());
+        $service_stuff_enabled = $this->config_cache->get_bool('transactions.fields.service_stuff.enabled', $this->pp->schema());
 
         $from_remote_account_options = [];
         $to_remote_account_options = [];

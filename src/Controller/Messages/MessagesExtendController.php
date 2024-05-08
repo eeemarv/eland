@@ -2,11 +2,11 @@
 
 namespace App\Controller\Messages;
 
+use App\Cache\ConfigCache;
 use App\Repository\MessageRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
@@ -60,23 +60,23 @@ class MessagesExtendController extends AbstractController
         bool $expire,
         Db $db,
         MessageRepository $message_repository,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         AlertService $alert_service,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
     {
-        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('messages.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
         }
 
-        if (!$config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('messages.fields.expires_at.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Expire messages submodule not enabled.');
         }
 
-        if (!$expire && $config_service->get_bool('messages.fields.expires_at.required', $pp->schema()))
+        if (!$expire && $config_cache->get_bool('messages.fields.expires_at.required', $pp->schema()))
         {
             throw new NotFoundHttpException('Configuration requires expiration of messages. Removing expiration is not allowed.');
         }

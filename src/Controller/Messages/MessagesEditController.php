@@ -2,6 +2,7 @@
 
 namespace App\Controller\Messages;
 
+use App\Cache\ConfigCache;
 use App\Cache\UserCache;
 use App\Cnst\BulkCnst;
 use App\Cnst\MessageTypeCnst;
@@ -14,7 +15,6 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Psr\Log\LoggerInterface;
 use App\Render\LinkRender;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
 use App\Service\ItemAccessService;
@@ -73,7 +73,7 @@ class MessagesEditController extends AbstractController
         Db $db,
         LoggerInterface $logger,
         AlertService $alert_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         FormTokenService $form_token_service,
         IntersystemsService $intersystems_service,
         ItemAccessService $item_access_service,
@@ -88,7 +88,7 @@ class MessagesEditController extends AbstractController
         string $env_s3_url
     ):Response
     {
-        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('messages.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
         }
@@ -98,18 +98,18 @@ class MessagesEditController extends AbstractController
         $edit_mode = $mode === 'edit';
         $add_mode = $mode === 'add';
 
-        $expires_at_required = $config_service->get_bool('messages.fields.expires_at.required', $pp->schema());
-        $expires_at_days_default = $config_service->get_int('messages.fields.expires_at.days_default', $pp->schema());
-        $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
-        $new_users_days = $config_service->get_int('users.new.days', $pp->schema());
-        $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
-        $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
+        $expires_at_required = $config_cache->get_bool('messages.fields.expires_at.required', $pp->schema());
+        $expires_at_days_default = $config_cache->get_int('messages.fields.expires_at.days_default', $pp->schema());
+        $currency = $config_cache->get_str('transactions.currency.name', $pp->schema());
+        $new_users_days = $config_cache->get_int('users.new.days', $pp->schema());
+        $new_users_enabled = $config_cache->get_bool('users.new.enabled', $pp->schema());
+        $leaving_users_enabled = $config_cache->get_bool('users.leaving.enabled', $pp->schema());
 
         $show_new_status = $new_users_enabled;
 
         if ($show_new_status)
         {
-            $new_users_access = $config_service->get_str('users.new.access', $pp->schema());
+            $new_users_access = $config_cache->get_str('users.new.access', $pp->schema());
             $show_new_status = $item_access_service->is_visible($new_users_access);
         }
 
@@ -117,15 +117,15 @@ class MessagesEditController extends AbstractController
 
         if ($show_leaving_status)
         {
-            $leaving_users_access = $config_service->get_str('users.leaving.access', $pp->schema());
+            $leaving_users_access = $config_cache->get_str('users.leaving.access', $pp->schema());
             $show_leaving_status = $item_access_service->is_visible($leaving_users_access);
         }
 
-        $service_stuff_enabled = $config_service->get_bool('messages.fields.service_stuff.enabled', $pp->schema());
-        $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
-        $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
-        $expires_at_switch_enabled = $config_service->get_bool('messages.fields.expires_at.switch_enabled', $pp->schema());
-        $units_enabled = $config_service->get_bool('messages.fields.units.enabled', $pp->schema());
+        $service_stuff_enabled = $config_cache->get_bool('messages.fields.service_stuff.enabled', $pp->schema());
+        $category_enabled = $config_cache->get_bool('messages.fields.category.enabled', $pp->schema());
+        $expires_at_enabled = $config_cache->get_bool('messages.fields.expires_at.enabled', $pp->schema());
+        $expires_at_switch_enabled = $config_cache->get_bool('messages.fields.expires_at.switch_enabled', $pp->schema());
+        $units_enabled = $config_cache->get_bool('messages.fields.units.enabled', $pp->schema());
 
         $validity_days = $request->request->get('validity_days', '');
         $expires_at_switch = $request->request->get('expires_at_switch', '');

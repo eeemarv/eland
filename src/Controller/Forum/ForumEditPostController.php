@@ -2,6 +2,7 @@
 
 namespace App\Controller\Forum;
 
+use App\Cache\ConfigCache;
 use App\Command\Forum\ForumPostCommand;
 use App\Form\Type\Forum\ForumPostType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -40,13 +41,13 @@ class ForumEditPostController extends AbstractController
         int $id,
         ForumRepository $forum_repository,
         AlertService $alert_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         ItemAccessService $item_access_service,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
     {
-        if (!$config_service->get_bool('forum.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('forum.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Forum module not enabled.');
         }

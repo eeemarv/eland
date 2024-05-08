@@ -2,11 +2,11 @@
 
 namespace App\Controller\RegisterForm;
 
+use App\Cache\ConfigCache;
 use App\Command\RegisterForm\RegisterFormCommand;
 use App\Form\Type\RegisterForm\RegisterFormType;
 use App\Queue\MailQueue;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\DataTokenService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -39,17 +39,17 @@ class RegisterFormController extends AbstractController
         LoggerInterface $logger,
         MailQueue $mail_queue,
         DataTokenService $data_token_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         AlertService $alert_service,
         PageParamsService $pp
     ):Response
     {
-        if (!$config_service->get_bool('register_form.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('register_form.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Register form not enabled.');
         }
 
-        $postcode_enabled = $config_service->get_bool('users.fields.postcode.enabled', $pp->schema());
+        $postcode_enabled = $config_cache->get_bool('users.fields.postcode.enabled', $pp->schema());
 
         $command = new RegisterFormCommand();
 

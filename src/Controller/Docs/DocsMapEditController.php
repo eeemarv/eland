@@ -2,6 +2,7 @@
 
 namespace App\Controller\Docs;
 
+use App\Cache\ConfigCache;
 use App\Command\Docs\DocsMapCommand;
 use App\Form\Type\Docs\DocsMapType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -9,7 +10,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
 use App\Repository\DocRepository;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\ResponseCacheService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -37,13 +37,13 @@ class DocsMapEditController extends AbstractController
         Request $request,
         int $id,
         DocRepository $doc_repository,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         AlertService $alert_service,
         ResponseCacheService $response_cache_service,
         PageParamsService $pp
     ):Response
     {
-        if (!$config_service->get_bool('docs.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('docs.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Documents module not enabled.');
         }

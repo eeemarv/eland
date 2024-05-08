@@ -2,12 +2,11 @@
 
 namespace App\Form\Type\Messages;
 
+use App\Cache\ConfigCache;
 use App\Command\Messages\MessagesAccessCommand;
 use App\Form\DataTransformer\ValidityDaysTransformer;
 use App\Form\EventSubscriber\AccessFieldSubscriber;
 use App\Form\EventSubscriber\CategoryFieldSubscriber;
-use App\Form\Type\Field\BtnChoiceType;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -20,7 +19,7 @@ class MessagesAccessType extends AbstractType
         protected AccessFieldSubscriber $access_field_subscriber,
         protected CategoryFieldSubscriber $category_field_subscriber,
         protected ValidityDaysTransformer $validity_days_transformer,
-        protected ConfigService $config_service,
+        protected ConfigCache $config_cache,
         protected PageParamsService $pp
     )
     {

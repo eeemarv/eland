@@ -2,12 +2,12 @@
 
 namespace App\Controller\Messages;
 
+use App\Cache\ConfigCache;
 use App\Command\Messages\MessagesUserCommand;
 use App\Form\Type\Messages\MessagesUserEditType;
 use App\Render\AccountRender;
 use App\Repository\MessageRepository;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -39,11 +39,11 @@ class MessagesUserEditController extends AbstractController
         AlertService $alert_service,
         AccountRender $account_render,
         MessageRepository $message_repository,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         PageParamsService $pp
     ):Response
     {
-        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('messages.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Messages module not enabled in configuration');
         }

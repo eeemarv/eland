@@ -2,10 +2,10 @@
 
 namespace App\Service;
 
+use App\Cache\ConfigCache;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
 use App\Service\AutoMinLimitService;
-use App\Service\ConfigService;
 use App\Render\AccountRender;
 use App\Repository\AccountRepository;
 
@@ -17,7 +17,7 @@ class TransactionService
 		protected LoggerInterface $logger,
 		protected AutoMinLimitService $autominlimit_service,
 		protected AutoDeactivateService $auto_deactivate_service,
-		protected ConfigService $config_service,
+		protected ConfigCache $config_cache,
 		protected AccountRender $account_render
 	)
 	{
@@ -58,7 +58,7 @@ class TransactionService
 
 		$this->logger->info('Transaction ' . $transaction['transid'] . ' saved: ' .
 			$amount . ' ' .
-			$this->config_service->get_str('transactions.currency.name', $schema) .
+			$this->config_cache->get_str('transactions.currency.name', $schema) .
 			' from user ' .
 			$this->account_render->str_id($from_id, $schema) .
 			' to user ' .

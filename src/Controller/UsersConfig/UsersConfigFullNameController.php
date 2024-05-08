@@ -2,13 +2,13 @@
 
 namespace App\Controller\UsersConfig;
 
+use App\Cache\ConfigCache;
 use App\Command\UsersConfig\UsersConfigFullNameCommand;
 use App\Form\Type\UsersConfig\UsersConfigFullNameType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -33,17 +33,17 @@ class UsersConfigFullNameController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         PageParamsService $pp
     ):Response
     {
-        if (!$config_service->get_bool('users.fields.full_name.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('users.fields.full_name.enabled', $pp->schema()))
         {
             throw new AccessDeniedHttpException('Full name module not enabled.');
         }
 
         $command = new UsersConfigFullNameCommand();
-        $config_service->load_command($command, $pp->schema());
+        $config_cache->load_command($command, $pp->schema());
 
         $form = $this->createForm(UsersConfigFullNameType::class, $command);
         $form->handleRequest($request);
@@ -53,7 +53,7 @@ class UsersConfigFullNameController extends AbstractController
         {
             $command = $form->getData();
 
-            $changed = $config_service->store_command($command, $pp->schema());
+            $changed = $config_cache->store_command($command, $pp->schema());
 
             if ($changed)
             {

@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Cache\ConfigCache;
 use App\Cnst\AccessCnst;
 use App\Cnst\BulkCnst;
 
@@ -9,7 +10,7 @@ class ItemAccessService
 {
 	public function __construct(
 		protected PageParamsService $pp,
-		protected ConfigService $config_service
+		protected ConfigCache $config_cache
 	)
 	{
 	}
@@ -39,7 +40,7 @@ class ItemAccessService
 		}
 		else if ($this->pp->is_guest())
 		{
-			if ($this->config_service->get_intersystem_en($this->pp->schema())
+			if ($this->config_cache->get_intersystem_en($this->pp->schema())
 				&& $access === 'guest')
 			{
 				return true;
@@ -91,7 +92,7 @@ class ItemAccessService
 	):string
 	{
 		$access = $access === 'guest'
-			&& !$this->config_service->get_intersystem_en($this->pp->schema()) ? 'user' : $access;
+			&& !$this->config_cache->get_intersystem_en($this->pp->schema()) ? 'user' : $access;
 
 		$out = '<span class="btn btn-';
 		$out .= AccessCnst::LABEL[$access]['class'];
@@ -114,7 +115,7 @@ class ItemAccessService
 	{
 		$ary = AccessCnst::ARY;
 
-		if (!$this->config_service->get_intersystem_en($this->pp->schema()))
+		if (!$this->config_cache->get_intersystem_en($this->pp->schema()))
 		{
 			unset($ary['guest']);
 			$selected = $selected === 'guest' ? 'user' : $selected;

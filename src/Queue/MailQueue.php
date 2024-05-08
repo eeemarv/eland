@@ -2,12 +2,12 @@
 
 namespace App\Queue;
 
+use App\Cache\ConfigCache;
 use App\Cache\SystemsCache;
 use App\HtmlProcess\HtmlToMarkdownConverter;
 use App\Queue\QueueInterface;
 use Psr\Log\LoggerInterface;
 use Twig\Environment as Twig;
-use App\Service\ConfigService;
 use App\Service\MailAddrSystemService;
 use App\Service\EmailVerifyService;
 use App\Service\QueueService;
@@ -25,7 +25,7 @@ class MailQueue implements QueueInterface
 		protected QueueService $queue_service,
 		protected LoggerInterface $logger,
 		protected Twig $twig,
-		protected ConfigService $config_service,
+		protected ConfigCache $config_cache,
 		protected MailAddrSystemService $mail_addr_system_service,
 		protected EmailVerifyService $email_verify_service,
 		protected SystemsCache $systems_cache,
@@ -227,7 +227,7 @@ class MailQueue implements QueueInterface
 			return true;
 		}
 
-		if (!$this->config_service->get_bool('mail.enabled', $schema))
+		if (!$this->config_cache->get_bool('mail.enabled', $schema))
 		{
 			$this->logger->info($log_prefix .
 				': mail functions are not enabled in config. ' .

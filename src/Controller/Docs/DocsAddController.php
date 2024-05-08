@@ -2,6 +2,7 @@
 
 namespace App\Controller\Docs;
 
+use App\Cache\ConfigCache;
 use App\Command\Docs\DocsCommand;
 use App\Form\Type\Docs\DocsAddType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -9,12 +10,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
 use App\Repository\DocRepository;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\ResponseCacheService;
 use App\Service\S3Service;
 use App\Service\SessionUserService;
-use App\Service\TypeaheadService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -39,7 +38,7 @@ class DocsAddController extends AbstractController
     public function __invoke(
         Request $request,
         DocRepository $doc_repository,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         LoggerInterface $logger,
         AlertService $alert_service,
         S3Service $s3_service,
@@ -48,7 +47,7 @@ class DocsAddController extends AbstractController
         SessionUserService $su
     ):Response
     {
-        if (!$config_service->get_bool('docs.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('docs.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Documents module not enabled.');
         }

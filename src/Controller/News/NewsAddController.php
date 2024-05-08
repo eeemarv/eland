@@ -2,6 +2,7 @@
 
 namespace App\Controller\News;
 
+use App\Cache\ConfigCache;
 use App\Command\News\NewsCommand;
 use App\Form\Type\News\NewsType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -9,7 +10,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\NewsRepository;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -35,13 +35,13 @@ class NewsAddController extends AbstractController
     public function __invoke(
         Request $request,
         NewsRepository $news_repository,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         AlertService $alert_service,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
     {
-        if (!$config_service->get_bool('news.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('news.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('News module not enabled.');
         }

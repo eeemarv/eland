@@ -2,6 +2,7 @@
 
 namespace App\Controller\Users;
 
+use App\Cache\ConfigCache;
 use App\Command\Users\UsersAccountLeavingCommand;
 use App\Form\Type\Users\UsersAccountLeavingType;
 use App\Repository\AccountRepository;
@@ -10,7 +11,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\ResponseCacheService;
 use App\Service\SessionUserService;
@@ -61,17 +61,17 @@ class UsersAccountLeavingEditController extends AbstractController
         AccountRepository $account_repository,
         ResponseCacheService $response_cache_service,
         AlertService $alert_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
     {
-        if (!$config_service->get_bool('transactions.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('transactions.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Users account edit not possible: transactions module not enabled.');
         }
 
-        if (!$config_service->get_bool('users.leaving.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('users.leaving.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('"Leaving" functionality not enabled in the configuration.');
         }

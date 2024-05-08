@@ -2,8 +2,8 @@
 
 namespace App\Service;
 
+use App\Cache\ConfigCache;
 use App\Cache\UserCache;
-use App\Service\ConfigService;
 use App\Service\MailAddrSystemService;
 use App\Service\MailAddrUserService;
 use App\Queue\MailQueue;
@@ -12,7 +12,7 @@ class MailTransactionService
 {
 	public function __construct(
 		protected UserCache $user_cache,
-		protected ConfigService $config_service,
+		protected ConfigCache $config_cache,
 		protected MailAddrSystemService $mail_addr_system_service,
 		protected MailAddrUserService $mail_addr_user_service,
 		protected MailQueue $mail_queue
@@ -25,7 +25,7 @@ class MailTransactionService
 		string $schema
 	):void
 	{
-		$dec_hours = $transaction['amount'] / $this->config_service->get_int('transactions.currency.per_hour_ratio', $schema);
+		$dec_hours = $transaction['amount'] / $this->config_cache->get_int('transactions.currency.per_hour_ratio', $schema);
 		$seconds = $dec_hours * 3600;
 		$hours = floor($dec_hours);
 		$seconds -= $hours * 3600;

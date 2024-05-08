@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-use App\Service\ConfigService;
+use App\Cache\ConfigCache;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 
 class DateFormatService
@@ -51,7 +51,7 @@ class DateFormatService
 	];
 
 	public function __construct(
-		protected ConfigService $config_service
+		protected ConfigCache $config_cache
 	)
 	{
 	}
@@ -61,7 +61,7 @@ class DateFormatService
 		string $schema
 	):string
 	{
-		$format = $this->config_service->get_str('system.date_format', $schema);
+		$format = $this->config_cache->get_str('system.date_format', $schema);
 
 		if (!$format || !isset(self::FORMATS[$format]))
 		{

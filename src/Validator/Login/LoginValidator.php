@@ -2,6 +2,7 @@
 
 namespace App\Validator\Login;
 
+use App\Cache\ConfigCache;
 use App\Command\Login\LoginCommand;
 use App\Repository\UserRepository;
 use Symfony\Component\Validator\Constraint;
@@ -9,7 +10,6 @@ use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use App\Service\PageParamsService;
 use App\Security\User;
-use App\Service\ConfigService;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 
@@ -18,7 +18,7 @@ class LoginValidator extends ConstraintValidator
     public function __construct(
         protected PasswordHasherFactoryInterface $password_hasher_factory,
         protected UserRepository $user_repository,
-        protected ConfigService $config_service,
+        protected ConfigCache $config_cache,
         protected PageParamsService $pp,
         #[Autowire('%env(base64:MASTER_PASSWORD)%')]
         protected string $env_master_password
@@ -143,7 +143,7 @@ class LoginValidator extends ConstraintValidator
             return;
         }
 
-        $maintenance_en = $this->config_service->get_bool('system.maintenance_en', $this->pp->schema());
+        $maintenance_en = $this->config_cache->get_bool('system.maintenance_en', $this->pp->schema());
 
         if ($maintenance_en && $user['role'] !== 'admin')
         {
@@ -160,7 +160,7 @@ class LoginValidator extends ConstraintValidator
             return;
         }
 
-        $intersystem_en = $this->config_service->get_intersystem_en($this->pp->schema());
+        $intersystem_en = $this->config_cache->get_intersystem_en($this->pp->schema());
 
         if (!$intersystem_en && !in_array($user['role'], ['admin', 'user']))
         {

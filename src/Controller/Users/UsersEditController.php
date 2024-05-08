@@ -2,6 +2,7 @@
 
 namespace App\Controller\Users;
 
+use App\Cache\ConfigCache;
 use App\Cache\UserCache;
 use App\Cache\UserInvalidateCache;
 use App\Cnst\BulkCnst;
@@ -18,7 +19,6 @@ use App\Render\SelectRender;
 use App\Repository\AccountRepository;
 use App\Security\User;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
@@ -99,7 +99,7 @@ class UsersEditController extends AbstractController
         AccountRepository $account_repository,
         PasswordHasherFactoryInterface $password_hasher_factory,
         AlertService $alert_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         DateFormatService $date_format_service,
         FormTokenService $form_token_service,
         GeocodeQueue $geocode_queue,
@@ -121,13 +121,13 @@ class UsersEditController extends AbstractController
         VarRouteService $vr
     ):Response
     {
-        $full_name_enabled = $config_service->get_bool('users.fields.full_name.enabled', $pp->schema());
-        $postcode_enabled = $config_service->get_bool('users.fields.postcode.enabled', $pp->schema());
-        $birthday_enabled = $config_service->get_bool('users.fields.birthday.enabled', $pp->schema());
-        $hobbies_enabled = $config_service->get_bool('users.fields.hobbies.enabled', $pp->schema());
-        $comments_enabled = $config_service->get_bool('users.fields.comments.enabled', $pp->schema());
-        $admin_comments_enabled = $config_service->get_bool('users.fields.admin_comments.enabled', $pp->schema());
-        $periodic_mail_enabled = $config_service->get_bool('periodic_mail.enabled', $pp->schema());
+        $full_name_enabled = $config_cache->get_bool('users.fields.full_name.enabled', $pp->schema());
+        $postcode_enabled = $config_cache->get_bool('users.fields.postcode.enabled', $pp->schema());
+        $birthday_enabled = $config_cache->get_bool('users.fields.birthday.enabled', $pp->schema());
+        $hobbies_enabled = $config_cache->get_bool('users.fields.hobbies.enabled', $pp->schema());
+        $comments_enabled = $config_cache->get_bool('users.fields.comments.enabled', $pp->schema());
+        $admin_comments_enabled = $config_cache->get_bool('users.fields.admin_comments.enabled', $pp->schema());
+        $periodic_mail_enabled = $config_cache->get_bool('periodic_mail.enabled', $pp->schema());
 
         $is_edit = !$is_add;
         $errors = [];
@@ -150,12 +150,12 @@ class UsersEditController extends AbstractController
         $template .= $is_edit ? 'edit' : 'add';
         $template .= '.html.twig';
 
-        $transactions_enabled = $config_service->get_bool('transactions.enabled', $pp->schema());
-        $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
-        $mail_enabled = $config_service->get_bool('mail.enabled', $pp->schema());
-        $limits_enabled = $config_service->get_bool('accounts.limits.enabled', $pp->schema());
-        $system_min_limit = $config_service->get_int('accounts.limits.global.min', $pp->schema());
-        $system_max_limit = $config_service->get_int('accounts.limits.global.max', $pp->schema());
+        $transactions_enabled = $config_cache->get_bool('transactions.enabled', $pp->schema());
+        $currency = $config_cache->get_str('transactions.currency.name', $pp->schema());
+        $mail_enabled = $config_cache->get_bool('mail.enabled', $pp->schema());
+        $limits_enabled = $config_cache->get_bool('accounts.limits.enabled', $pp->schema());
+        $system_min_limit = $config_cache->get_int('accounts.limits.global.min', $pp->schema());
+        $system_max_limit = $config_cache->get_int('accounts.limits.global.max', $pp->schema());
 
         $stored_min_limit = null;
         $stored_max_limit = null;
@@ -204,8 +204,8 @@ class UsersEditController extends AbstractController
         }
         else if ($is_owner)
         {
-            $username_edit_en = $config_service->get_bool('users.fields.username.self_edit', $pp->schema());
-            $full_name_edit_en = $config_service->get_bool('users.fields.full_name.self_edit', $pp->schema());
+            $username_edit_en = $config_cache->get_bool('users.fields.username.self_edit', $pp->schema());
+            $full_name_edit_en = $config_cache->get_bool('users.fields.full_name.self_edit', $pp->schema());
         }
 
         if ($request->isMethod('POST'))
@@ -775,7 +775,7 @@ class UsersEditController extends AbstractController
                     {
                         $remote_schema = $systems_service->get_schema_from_legacy_eland_origin($group['url']);
 
-                        $admin_mail = $config_service->get_ary('mail.addresses.admin', $remote_schema)[0];
+                        $admin_mail = $config_cache->get_ary('mail.addresses.admin', $remote_schema)[0];
 
                         foreach ($contact as $k => $c)
                         {
@@ -787,7 +787,7 @@ class UsersEditController extends AbstractController
                         }
 
                         // name from source is preferable
-                        $name = $full_name = $config_service->get_str('system.name', $remote_schema);
+                        $name = $full_name = $config_cache->get_str('system.name', $remote_schema);
                     }
                 }
 

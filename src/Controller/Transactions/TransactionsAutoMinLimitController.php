@@ -2,13 +2,13 @@
 
 namespace App\Controller\Transactions;
 
+use App\Cache\ConfigCache;
 use App\Command\Transactions\TransactionsAutoMinLimitCommand;
 use App\Form\Type\Transactions\TransactionsAutoMinLimitType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -35,21 +35,21 @@ class TransactionsAutoMinLimitController extends AbstractController
         Request $request,
         AlertService $alert_service,
         PageParamsService $pp,
-        ConfigService $config_service
+        ConfigCache $config_cache
     ):Response
     {
-        if (!$config_service->get_bool('transactions.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('transactions.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Transactions module not enabled.');
         }
 
-        if (!$config_service->get_bool('accounts.limits.auto_min.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('accounts.limits.auto_min.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Submodule auto min limit not enabled.');
         }
 
         $command = new TransactionsAutoMinLimitCommand();
-        $config_service->load_command($command, $pp->schema());
+        $config_cache->load_command($command, $pp->schema());
 
         $form = $this->createForm(TransactionsAutoMinLimitType::class, $command);
         $form->handleRequest($request);
@@ -59,7 +59,7 @@ class TransactionsAutoMinLimitController extends AbstractController
         {
             $command = $form->getData();
 
-            $changed = $config_service->store_command($command, $pp->schema());
+            $changed = $config_cache->store_command($command, $pp->schema());
 
             if ($changed)
             {

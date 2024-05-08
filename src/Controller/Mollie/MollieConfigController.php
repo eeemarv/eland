@@ -2,13 +2,13 @@
 
 namespace App\Controller\Mollie;
 
+use App\Cache\ConfigCache;
 use App\Command\Mollie\MollieConfigCommand;
 use App\Form\Type\Mollie\MollieConfigType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -33,18 +33,18 @@ class MollieConfigController extends AbstractController
 
     public function __invoke(
         Request $request,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         AlertService $alert_service,
         PageParamsService $pp
     ):Response
     {
-        if (!$config_service->get_bool('mollie.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('mollie.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Mollie submodule (users) not enabled.');
         }
 
         $command = new MollieConfigCommand();
-        $config_service->load_command($command, $pp->schema());
+        $config_cache->load_command($command, $pp->schema());
 
         $form = $this->createForm(MollieConfigType::class, $command);
         $form->handleRequest($request);
@@ -53,7 +53,7 @@ class MollieConfigController extends AbstractController
             && $form->isValid())
         {
             $command = $form->getData();
-            $config_service->store_command($command, $pp->schema());
+            $config_cache->store_command($command, $pp->schema());
 
             $alert_service->success('De Mollie Apikey is aangepast.');
             return $this->redirectToRoute('mollie_payments', $pp->ary());

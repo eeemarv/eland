@@ -2,9 +2,9 @@
 
 namespace App\Controller\Transactions;
 
+use App\Cache\ConfigCache;
 use App\Render\LinkRender;
 use App\Repository\AccountRepository;
-use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\PageParamsService;
 use App\Service\SystemsService;
@@ -38,14 +38,14 @@ class TransactionsPlotUserController extends AbstractController
         int $days,
         Db $db,
         AccountRepository $account_repository,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         DateFormatService $date_format_service,
         LinkRender $link_render,
         PageParamsService $pp,
         SystemsService $systems_service
     ):Response
     {
-        $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
+        $currency = $config_cache->get_str('transactions.currency.name', $pp->schema());
         $end_unix = time();
         $begin_unix = $end_unix - (86400 * $days);
         $end_datetime = \DateTimeImmutable::createFromFormat('U', (string) $end_unix);
@@ -73,7 +73,7 @@ class TransactionsPlotUserController extends AbstractController
 
             if ($sys_schema)
             {
-                $name = $config_service->get_str('system.name', $sys_schema);
+                $name = $config_cache->get_str('system.name', $sys_schema);
             }
             else
             {

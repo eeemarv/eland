@@ -2,10 +2,10 @@
 
 namespace App\Controller\Calendar;
 
+use App\Cache\ConfigCache;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
@@ -25,18 +25,18 @@ class CalendarDelController extends AbstractController
         Request $request,
         int $id,
         Db $db,
-        ConfigService $config_service,
         FormTokenService $form_token_service,
         AccountRender $account_render,
         AlertService $alert_service,
         DateFormatService $date_format_service,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
+        ConfigCache $config_cache,
         PageParamsService $pp,
         VarRouteService $vr
     ):Response
     {
-        if (!$config_service->get_bool('calendar.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('calendar.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Calendar module not enabled.');
         }

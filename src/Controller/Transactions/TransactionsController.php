@@ -2,6 +2,7 @@
 
 namespace App\Controller\Transactions;
 
+use App\Cache\ConfigCache;
 use App\Cnst\BulkCnst;
 use App\Cnst\MessageTypeCnst;
 use App\Command\Transactions\TransactionsFilterCommand;
@@ -12,7 +13,6 @@ use App\Service\AlertService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
@@ -67,7 +67,7 @@ class TransactionsController extends AbstractController
         AccountRender $account_render,
         AlertService $alert_service,
         FormTokenService $form_token_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         DateFormatService $date_format_service,
         IntersystemsService $intersystems_service,
         LinkRender $link_render,
@@ -75,7 +75,7 @@ class TransactionsController extends AbstractController
         SessionUserService $su
     ):Response
     {
-        if (!$config_service->get_bool('transactions.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('transactions.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Transactions module not enabled.');
         }
@@ -89,7 +89,7 @@ class TransactionsController extends AbstractController
         $su_intersystem_ary = $intersystems_service->get_eland($su->schema());
         $su_intersystem_ary[$su->schema()] = true;
 
-        $service_stuff_enabled = $config_service->get_bool('transactions.fields.service_stuff.enabled', $pp->schema());
+        $service_stuff_enabled = $config_cache->get_bool('transactions.fields.service_stuff.enabled', $pp->schema());
         $bulk_actions_enabled = $service_stuff_enabled;
 
         $filter_command = new TransactionsFilterCommand();
@@ -456,14 +456,14 @@ class TransactionsController extends AbstractController
         $row_count = $row['count'];
         $amount_sum = $row['sum'];
 
-        $account_count = $db->fetchOne('select count(*) from 
-            (select t.id_from  
+        $account_count = $db->fetchOne('select count(*) from
+            (select t.id_from
                 from ' . $pp->schema() . '.transactions t
-                where ' . $sql_omit_pagination_where . ' 
+                where ' . $sql_omit_pagination_where . '
             union
             select t.id_to
                 from ' . $pp->schema() . '.transactions t
-                where ' . $sql_omit_pagination_where . '             
+                where ' . $sql_omit_pagination_where . '
             )',
             array_merge(...$sql_omit_pagination_params, ...$sql_omit_pagination_params),
             array_merge(...$sql_omit_pagination_types, ...$sql_omit_pagination_types));
@@ -508,7 +508,7 @@ class TransactionsController extends AbstractController
             ],
             'amount' => [
                 ...$asc_preset_ary,
-                'lbl' => $config_service->get_str('transactions.currency.name', $pp->schema()),
+                'lbl' => $config_cache->get_str('transactions.currency.name', $pp->schema()),
             ],
             'created_at'	=> [
                 ...$asc_preset_ary,
@@ -618,7 +618,7 @@ class TransactionsController extends AbstractController
             {
                 $out .= '<tr';
 
-                if ($config_service->get_intersystem_en($pp->schema()) && ($t['real_to'] || $t['real_from']))
+                if ($config_cache->get_intersystem_en($pp->schema()) && ($t['real_to'] || $t['real_from']))
                 {
                     $out .= ' class="warning"';
                 }
@@ -740,7 +740,7 @@ class TransactionsController extends AbstractController
             {
                 $out .= '<tr';
 
-                if ($config_service->get_intersystem_en($pp->schema()) && ($t['real_to'] || $t['real_from']))
+                if ($config_cache->get_intersystem_en($pp->schema()) && ($t['real_to'] || $t['real_from']))
                 {
                     $out .= ' class="warning"';
                 }

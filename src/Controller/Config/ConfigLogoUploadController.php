@@ -2,7 +2,7 @@
 
 namespace App\Controller\Config;
 
-use App\Service\ConfigService;
+use App\Cache\ConfigCache;
 use App\Service\ImageUploadService;
 use App\Service\PageParamsService;
 use Psr\Log\LoggerInterface;
@@ -32,7 +32,7 @@ class ConfigLogoUploadController extends AbstractController
     public function __invoke(
         Request $request,
         LoggerInterface $logger,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         PageParamsService $pp,
         ImageUploadService $image_upload_service
     ):Response
@@ -49,7 +49,7 @@ class ConfigLogoUploadController extends AbstractController
 
         if (isset($res['filename']))
         {
-            $config_service->set_str('system.logo', $res['filename'], $pp->schema());
+            $config_cache->set_str('system.logo', $res['filename'], $pp->schema());
 
             $logger->info('Logo ' . $res['filename'] .
                 ' uploaded.',

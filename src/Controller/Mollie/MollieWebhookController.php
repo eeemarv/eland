@@ -2,8 +2,8 @@
 
 namespace App\Controller\Mollie;
 
+use App\Cache\ConfigCache;
 use App\Queue\MailQueue;
-use App\Service\ConfigService;
 use App\Service\MailAddrUserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -35,20 +35,20 @@ class MollieWebhookController extends AbstractController
     public function __invoke(
         Request $request,
         Db $db,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         PageParamsService $pp,
         MailQueue $mail_queue,
         MailAddrUserService $mail_addr_user_service
     ):Response
     {
-        if (!$config_service->get_bool('mollie.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('mollie.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Mollie submodule (users) not enabled.');
         }
 
         $id = $request->request->get('id', '');
 
-        $mollie_apikey = $config_service->get_str('mollie.apikey', $pp->schema());
+        $mollie_apikey = $config_cache->get_str('mollie.apikey', $pp->schema());
 
         $mollie = new MollieApiClient();
         $mollie->setApiKey($mollie_apikey);

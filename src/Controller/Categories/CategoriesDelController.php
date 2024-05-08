@@ -2,15 +2,14 @@
 
 namespace App\Controller\Categories;
 
+use App\Cache\ConfigCache;
 use App\Command\Categories\CategoriesNameCommand;
 use App\Form\Type\Categories\CategoriesNameType;
-use App\Form\Type\Del\DelType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
 use App\Repository\CategoryRepository;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
@@ -39,17 +38,17 @@ class CategoriesDelController extends AbstractController
         Request $request,
         int $id,
         CategoryRepository $category_repository,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         AlertService $alert_service,
         PageParamsService $pp
     ):Response
     {
-        if (!$config_service->get_bool('messages.fields.category.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('messages.fields.category.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Categories module not enabled.');
         }
 
-        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('messages.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('messages (offer/want) module not enabled.');
         }

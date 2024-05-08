@@ -2,8 +2,8 @@
 
 namespace App\Form\Type\MailContact;
 
+use App\Cache\ConfigCache;
 use App\Command\Users\UsersMailContactCommand;
-use App\Service\ConfigService;
 use App\Service\MailAddrUserService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -24,7 +24,7 @@ class MailContactType extends AbstractType
 {
     public function __construct(
         protected TranslatorInterface $translator,
-        protected ConfigService $config_service,
+        protected ConfigCache $config_cache,
         protected PageParamsService $pp,
         protected SessionUserService $su,
         protected MailAddrUserService $mail_addr_user_service
@@ -43,7 +43,7 @@ class MailContactType extends AbstractType
         {
             $form = $event->getForm();
 
-            if (!$this->config_service->get_bool('mail.enabled', $this->pp->schema()))
+            if (!$this->config_cache->get_bool('mail.enabled', $this->pp->schema()))
             {
                 $this->add_error($form, 'mail_contact.disabled.system');
                 return;
@@ -91,7 +91,7 @@ class MailContactType extends AbstractType
         $resolver->setAllowedTypes('to_user_id', 'int');
 
         $resolver->setDefault('disabled', function(Options $options){
-            if (!$this->config_service->get_bool('mail.enabled', $this->pp->schema()))
+            if (!$this->config_cache->get_bool('mail.enabled', $this->pp->schema()))
             {
                 return true;
             }

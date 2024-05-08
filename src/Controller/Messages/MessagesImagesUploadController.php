@@ -2,10 +2,10 @@
 
 namespace App\Controller\Messages;
 
+use App\Cache\ConfigCache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\ImageUploadService;
 use App\Service\PageParamsService;
@@ -75,14 +75,14 @@ class MessagesImagesUploadController extends AbstractController
         string $form_token,
         Db $db,
         FormTokenService $form_token_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         LoggerInterface $logger,
         PageParamsService $pp,
         SessionUserService $su,
         ImageUploadService $image_upload_service
     ):Response
     {
-        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('messages.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
         }

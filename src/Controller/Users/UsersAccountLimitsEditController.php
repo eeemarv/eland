@@ -2,6 +2,7 @@
 
 namespace App\Controller\Users;
 
+use App\Cache\ConfigCache;
 use App\Command\Users\UsersAccountLimitsCommand;
 use App\Form\Type\Users\UsersAccountLimitsType;
 use App\Repository\AccountRepository;
@@ -10,7 +11,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -59,17 +59,17 @@ class UsersAccountLimitsEditController extends AbstractController
         UserRepository $user_repository,
         AccountRepository $account_repository,
         AlertService $alert_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
     {
-        if (!$config_service->get_bool('transactions.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('transactions.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Users account edit not possible: transactions module not enabled.');
         }
 
-        if (!$config_service->get_bool('accounts.limits.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('accounts.limits.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Limits on transaction accounts are not enabled in the configuration.');
         }
@@ -92,7 +92,7 @@ class UsersAccountLimitsEditController extends AbstractController
             throw new AccessDeniedHttpException('No account code set for this user, limits can not be edited.');
         }
 
-        $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
+        $currency = $config_cache->get_str('transactions.currency.name', $pp->schema());
 
         $command = new UsersAccountLimitsCommand();
 

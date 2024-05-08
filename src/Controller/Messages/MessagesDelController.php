@@ -2,6 +2,7 @@
 
 namespace App\Controller\Messages;
 
+use App\Cache\ConfigCache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,7 +11,6 @@ use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Repository\CategoryRepository;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
@@ -52,21 +52,21 @@ class MessagesDelController extends AbstractController
         IntersystemsService $intersystems_service,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         DateFormatService $date_format_service,
         PageParamsService $pp,
         SessionUserService $su,
         VarRouteService $vr
     ):Response
     {
-        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('messages.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
         }
 
         $message = MessagesShowController::get_message($db, $id, $pp->schema());
-        $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
-        $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
+        $category_enabled = $config_cache->get_bool('messages.fields.category.enabled', $pp->schema());
+        $expires_at_enabled = $config_cache->get_bool('messages.fields.expires_at.enabled', $pp->schema());
 
         if ($category_enabled && isset($message['category_id']))
         {
@@ -135,7 +135,7 @@ class MessagesDelController extends AbstractController
             $out .= '</dd>';
         }
 
-        if ($config_service->get_intersystem_en($pp->schema()) && $intersystems_service->get_count($pp->schema()))
+        if ($config_cache->get_intersystem_en($pp->schema()) && $intersystems_service->get_count($pp->schema()))
         {
             $out .= '<dt>Zichtbaarheid</dt>';
             $out .= '<dd>';

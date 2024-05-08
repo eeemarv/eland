@@ -2,9 +2,9 @@
 
 namespace App\Form\EventSubscriber;
 
+use App\Cache\ConfigCache;
 use App\Cnst\AccessCnst;
 use App\Form\Type\Field\BtnChoiceType;
-use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -22,7 +22,7 @@ class AccessFieldSubscriber implements EventSubscriberInterface
     public function __construct(
         protected ItemAccessService $item_access_service,
         protected PageParamsService $pp,
-        protected ConfigService $config_service
+        protected ConfigCache $config_cache
     )
     {
     }
@@ -43,7 +43,7 @@ class AccessFieldSubscriber implements EventSubscriberInterface
     {
         $access_options = array_combine($access_options, $access_options);
 
-		if (!$this->config_service->get_intersystem_en($this->pp->schema()))
+		if (!$this->config_cache->get_intersystem_en($this->pp->schema()))
 		{
             unset($access_options['guest']);
         }
@@ -105,7 +105,7 @@ class AccessFieldSubscriber implements EventSubscriberInterface
             if (isset($data->$name))
             {
                 if ($data->$name === 'guest'
-                    && !$this->config_service->get_intersystem_en($this->pp->schema())
+                    && !$this->config_cache->get_intersystem_en($this->pp->schema())
                 )
                 {
                     $options['data'] = 'user';

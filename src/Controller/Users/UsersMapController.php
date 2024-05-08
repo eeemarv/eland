@@ -2,10 +2,10 @@
 
 namespace App\Controller\Users;
 
+use App\Cache\ConfigCache;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Service\CacheService;
-use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -43,7 +43,7 @@ class UsersMapController extends AbstractController
         CacheService $cache_service,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         PageParamsService $pp,
         SessionUserService $su,
         VarRouteService $vr,
@@ -60,7 +60,7 @@ class UsersMapController extends AbstractController
         $ref_geo = [];
 
         $status_def_ary = UsersListController::get_status_def_ary(
-            $config_service,
+            $config_cache,
             $item_access_service,
             $pp
         );
@@ -223,7 +223,7 @@ class UsersMapController extends AbstractController
             $params,
             $link_render,
             $item_access_service,
-            $config_service,
+            $config_cache,
             $pp,
             $vr
         );

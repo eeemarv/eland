@@ -2,6 +2,7 @@
 
 namespace App\Controller\Login;
 
+use App\Cache\ConfigCache;
 use App\Command\Login\LoginCommand;
 use App\Form\Type\Login\LoginType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -10,7 +11,6 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Render\AccountRender;
 use App\Repository\UserRepository;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\VarRouteService;
@@ -34,7 +34,7 @@ class LoginController extends AbstractController
     public function __invoke(
         Request $request,
         UserRepository $user_repository,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         AlertService $alert_service,
         LoggerInterface $logger,
         AccountRender $account_render,
@@ -127,7 +127,7 @@ class LoginController extends AbstractController
             return $this->redirectToRoute($vr->get('default'), $su->ary());
         }
 
-        if($config_service->get_bool('system.maintenance_en', $pp->schema()))
+        if($config_cache->get_bool('system.maintenance_en', $pp->schema()))
         {
             $alert_service->warning('De website is niet beschikbaar
                 wegens onderhoudswerken.  Enkel admins kunnen inloggen', false);

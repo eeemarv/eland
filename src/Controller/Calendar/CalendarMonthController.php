@@ -2,9 +2,9 @@
 
 namespace App\Controller\Calendar;
 
+use App\Cache\ConfigCache;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
-use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
@@ -21,7 +21,7 @@ class CalendarMonthController extends AbstractController
         int $year,
         int $month,
         Db $db,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         ItemAccessService $item_access_service,
         AccountRender $account_render,
         DateFormatService $date_format_service,
@@ -29,20 +29,20 @@ class CalendarMonthController extends AbstractController
         PageParamsService $pp
     ):Response
     {
-        if (!$config_service->get_bool('calendar.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('calendar.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Calendar module not enabled.');
         }
 
         $news = CalendarListController::get_data(
             $db,
-            $config_service,
+            $config_cache,
             $item_access_service,
             $pp
         );
 
         $show_access = ($pp->is_user()
-                && $config_service->get_intersystem_en($pp->schema()))
+                && $config_cache->get_intersystem_en($pp->schema()))
             || $pp->is_admin();
 
         $out = '';

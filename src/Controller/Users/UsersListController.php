@@ -2,6 +2,7 @@
 
 namespace App\Controller\Users;
 
+use App\Cache\ConfigCache;
 use App\Cache\UserInvalidateCache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,7 +15,6 @@ use App\Render\AccountRender;
 use App\Repository\AccountRepository;
 use App\Service\AlertService;
 use App\Service\CacheService;
-use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
@@ -65,7 +65,7 @@ class UsersListController extends AbstractController
         AccountRender $account_render,
         AlertService $alert_service,
         CacheService $cache_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         DateFormatService $date_format_service,
         FormTokenService $form_token_service,
         IntersystemsService $intersystems_service,
@@ -88,30 +88,30 @@ class UsersListController extends AbstractController
 
         $session = $request_stack->getSession();
 
-        $full_name_enabled = $config_service->get_bool('users.fields.full_name.enabled', $pp->schema());
-        $postcode_enabled = $config_service->get_bool('users.fields.postcode.enabled', $pp->schema());
-        $birthday_enabled = $config_service->get_bool('users.fields.birthday.enabled', $pp->schema());
-        $hobbies_enabled = $config_service->get_bool('users.fields.hobbies.enabled', $pp->schema());
-        $comments_enabled = $config_service->get_bool('users.fields.comments.enabled', $pp->schema());
-        $admin_comments_enabled = $config_service->get_bool('users.fields.admin_comments.enabled', $pp->schema());
-        $periodic_mail_enabled = $config_service->get_bool('periodic_mail.enabled', $pp->schema());
+        $full_name_enabled = $config_cache->get_bool('users.fields.full_name.enabled', $pp->schema());
+        $postcode_enabled = $config_cache->get_bool('users.fields.postcode.enabled', $pp->schema());
+        $birthday_enabled = $config_cache->get_bool('users.fields.birthday.enabled', $pp->schema());
+        $hobbies_enabled = $config_cache->get_bool('users.fields.hobbies.enabled', $pp->schema());
+        $comments_enabled = $config_cache->get_bool('users.fields.comments.enabled', $pp->schema());
+        $admin_comments_enabled = $config_cache->get_bool('users.fields.admin_comments.enabled', $pp->schema());
+        $periodic_mail_enabled = $config_cache->get_bool('periodic_mail.enabled', $pp->schema());
 
-        $tags_enabled = $config_service->get_bool('users.tags.enabled', $pp->schema());
-        $mollie_enabled = $config_service->get_bool('mollie.enabled', $pp->schema());
-        $messages_enabled = $config_service->get_bool('messages.enabled', $pp->schema());
-        $transactions_enabled = $config_service->get_bool('transactions.enabled', $pp->schema());
-        $limits_enabled = $config_service->get_bool('accounts.limits.enabled', $pp->schema());
+        $tags_enabled = $config_cache->get_bool('users.tags.enabled', $pp->schema());
+        $mollie_enabled = $config_cache->get_bool('mollie.enabled', $pp->schema());
+        $messages_enabled = $config_cache->get_bool('messages.enabled', $pp->schema());
+        $transactions_enabled = $config_cache->get_bool('transactions.enabled', $pp->schema());
+        $limits_enabled = $config_cache->get_bool('accounts.limits.enabled', $pp->schema());
 
-        $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
-        $new_users_days = $config_service->get_int('users.new.days', $pp->schema());
-        $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
-        $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
+        $currency = $config_cache->get_str('transactions.currency.name', $pp->schema());
+        $new_users_days = $config_cache->get_int('users.new.days', $pp->schema());
+        $new_users_enabled = $config_cache->get_bool('users.new.enabled', $pp->schema());
+        $leaving_users_enabled = $config_cache->get_bool('users.leaving.enabled', $pp->schema());
 
         $show_new_status = $new_users_enabled;
 
         if ($show_new_status)
         {
-            $new_users_access = $config_service->get_str('users.new.access', $pp->schema());
+            $new_users_access = $config_cache->get_str('users.new.access', $pp->schema());
             $show_new_status = $item_access_service->is_visible($new_users_access);
         }
 
@@ -119,7 +119,7 @@ class UsersListController extends AbstractController
 
         if ($show_new_list)
         {
-            $new_users_access_list = $config_service->get_str('users.new.access_list', $pp->schema());
+            $new_users_access_list = $config_cache->get_str('users.new.access_list', $pp->schema());
             $show_new_list = $item_access_service->is_visible($new_users_access_list);
         }
 
@@ -127,7 +127,7 @@ class UsersListController extends AbstractController
 
         if ($show_leaving_status)
         {
-            $leaving_users_access = $config_service->get_str('users.leaving.access', $pp->schema());
+            $leaving_users_access = $config_cache->get_str('users.leaving.access', $pp->schema());
             $show_leaving_status = $item_access_service->is_visible($leaving_users_access);
         }
 
@@ -135,7 +135,7 @@ class UsersListController extends AbstractController
 
         if ($show_leaving_list)
         {
-            $leaving_users_access_list = $config_service->get_str('users.leaving.access_list', $pp->schema());
+            $leaving_users_access_list = $config_cache->get_str('users.leaving.access_list', $pp->schema());
             $show_leaving_list = $item_access_service->is_visible($leaving_users_access_list);
         }
 
@@ -156,7 +156,7 @@ class UsersListController extends AbstractController
         $bulk_verify = $request->request->all('bulk_verify');
         $bulk_submit = $request->request->all('bulk_submit');
 
-        $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
+        $new_user_treshold = $config_cache->get_new_user_treshold($pp->schema());
 
         $user_tabs = BulkCnst::USER_TABS;
 
@@ -249,7 +249,7 @@ class UsersListController extends AbstractController
 
             if (in_array($bulk_submit_action, ['mail', 'mail_test']))
             {
-                if (!$config_service->get_bool('mail.enabled', $pp->schema()))
+                if (!$config_cache->get_bool('mail.enabled', $pp->schema()))
                 {
                     $errors[] = 'De E-mail functies zijn niet ingeschakeld. Zie instellingen.';
                 }
@@ -590,7 +590,7 @@ class UsersListController extends AbstractController
         $sql['common'] = $sql_map;
         $sql['common']['where'][] = '1 = 1';
 
-        $status_def_ary = self::get_status_def_ary($config_service, $item_access_service, $pp);
+        $status_def_ary = self::get_status_def_ary($config_cache, $item_access_service, $pp);
 
         $sql['status'] = $sql_map;
 
@@ -1493,7 +1493,7 @@ class UsersListController extends AbstractController
             $params,
             $link_render,
             $item_access_service,
-            $config_service,
+            $config_cache,
             $pp,
             $vr
         );
@@ -2165,12 +2165,12 @@ class UsersListController extends AbstractController
     }
 
     static public function get_status_def_ary(
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         ItemAccessService $item_access_service,
         PageParamsService $pp
     ):array
     {
-        $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
+        $new_user_treshold = $config_cache->get_new_user_treshold($pp->schema());
 
         $status_def_ary = [];
 
@@ -2185,9 +2185,9 @@ class UsersListController extends AbstractController
             ],
         ];
 
-        if ($config_service->get_bool('users.new.enabled', $pp->schema()))
+        if ($config_cache->get_bool('users.new.enabled', $pp->schema()))
         {
-            $new_users_access_pane = $config_service->get_str('users.new.access_pane', $pp->schema());
+            $new_users_access_pane = $config_cache->get_str('users.new.access_pane', $pp->schema());
 
             if ($item_access_service->is_visible($new_users_access_pane))
             {
@@ -2209,9 +2209,9 @@ class UsersListController extends AbstractController
             }
         }
 
-        if ($config_service->get_bool('users.leaving.enabled', $pp->schema()))
+        if ($config_cache->get_bool('users.leaving.enabled', $pp->schema()))
         {
-            $leaving_users_access_pane = $config_service->get_str('users.leaving.access_pane', $pp->schema());
+            $leaving_users_access_pane = $config_cache->get_str('users.leaving.access_pane', $pp->schema());
 
             if ($item_access_service->is_visible($leaving_users_access_pane))
             {
@@ -2230,7 +2230,7 @@ class UsersListController extends AbstractController
             }
         }
 
-        if ($config_service->get_bool('intersystem.enabled', $pp->schema()))
+        if ($config_cache->get_bool('intersystem.enabled', $pp->schema()))
         {
             $status_def_ary['intersystem'] = [
                 'lbl'	=> 'InterSysteem',
@@ -2284,12 +2284,12 @@ class UsersListController extends AbstractController
         array $params,
         LinkRender $link_render,
         ItemAccessService $item_access_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         PageParamsService $pp,
         VarRouteService $vr
     ):string
     {
-        $status_def_ary = self::get_status_def_ary($config_service, $item_access_service, $pp);
+        $status_def_ary = self::get_status_def_ary($config_cache, $item_access_service, $pp);
 
         $out = '<div class="pull-right hidden-xs hidden-sm print-hide">';
         $out .= 'Totaal: <span id="total"></span>';

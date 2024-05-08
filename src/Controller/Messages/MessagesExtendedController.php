@@ -2,12 +2,12 @@
 
 namespace App\Controller\Messages;
 
+use App\Cache\ConfigCache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
@@ -54,26 +54,26 @@ class MessagesExtendedController extends AbstractController
         bool $is_self,
         MessagesListController $messages_list_controller,
         AccountRender $account_render,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         LinkRender $link_render,
         PageParamsService $pp,
         SessionUserService $su,
         string $env_s3_url
     ):Response
     {
-        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('messages.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
         }
 
-        $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
-        $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
+        $expires_at_enabled = $config_cache->get_bool('messages.fields.expires_at.enabled', $pp->schema());
+        $category_enabled = $config_cache->get_bool('messages.fields.category.enabled', $pp->schema());
 
         $fetch_and_filter = $messages_list_controller->fetch_and_filter(
             $request,
             $db,
             $is_self,
-            $config_service,
+            $config_cache,
             $pp,
             $su
         );

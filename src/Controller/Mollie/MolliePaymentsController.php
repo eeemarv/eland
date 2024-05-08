@@ -2,6 +2,7 @@
 
 namespace App\Controller\Mollie;
 
+use App\Cache\ConfigCache;
 use App\Cache\UserInvalidateCache;
 use App\Cnst\BulkCnst;
 use App\Command\Mollie\MollieFilterCommand;
@@ -10,7 +11,6 @@ use App\Queue\MailQueue;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
@@ -68,7 +68,7 @@ class MolliePaymentsController extends AbstractController
         AlertService $alert_service,
         AccountRender $account_render,
         FormTokenService $form_token_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
         MailQueue $mail_queue,
@@ -81,22 +81,22 @@ class MolliePaymentsController extends AbstractController
         LoggerInterface $logger
     ):Response
     {
-        if (!$config_service->get_bool('mollie.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('mollie.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Mollie submodule (users) not enabled.');
         }
 
         $errors = [];
 
-        $new_users_days = $config_service->get_int('users.new.days', $pp->schema());
-        $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
-        $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
+        $new_users_days = $config_cache->get_int('users.new.days', $pp->schema());
+        $new_users_enabled = $config_cache->get_bool('users.new.enabled', $pp->schema());
+        $leaving_users_enabled = $config_cache->get_bool('users.leaving.enabled', $pp->schema());
 
         $show_new_status = $new_users_enabled;
 
         if ($show_new_status)
         {
-            $new_users_access = $config_service->get_str('users.new.access', $pp->schema());
+            $new_users_access = $config_cache->get_str('users.new.access', $pp->schema());
             $show_new_status = $item_access_service->is_visible($new_users_access);
         }
 
@@ -104,7 +104,7 @@ class MolliePaymentsController extends AbstractController
 
         if ($show_leaving_status)
         {
-            $leaving_users_access = $config_service->get_str('users.leaving.access', $pp->schema());
+            $leaving_users_access = $config_cache->get_str('users.leaving.access', $pp->schema());
             $show_leaving_status = $item_access_service->is_visible($leaving_users_access);
         }
 
@@ -129,7 +129,7 @@ class MolliePaymentsController extends AbstractController
         $bulk_cancel_verify = $request->request->has('bulk_cancel_verify');
         $bulk_cancel_submit = $request->request->has('bulk_cancel_submit');
 
-        $mollie_apikey = $config_service->get_str('mollie.apikey', $pp->schema());
+        $mollie_apikey = $config_cache->get_str('mollie.apikey', $pp->schema());
 
         if (!$mollie_apikey ||
             !(str_starts_with($mollie_apikey, 'test_')
@@ -489,7 +489,7 @@ class MolliePaymentsController extends AbstractController
             $sent_to_ary = [];
             $not_sent_ary = [];
 
-            if (!$config_service->get_bool('mail.enabled', $pp->schema()))
+            if (!$config_cache->get_bool('mail.enabled', $pp->schema()))
             {
                 $errors[] = 'De E-mail functies zijn niet ingeschakeld. Zie instellingen.';
             }
@@ -738,7 +738,7 @@ class MolliePaymentsController extends AbstractController
         $out .= '</thead>';
         $out .= '<tbody>';
 
-        $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
+        $new_user_treshold = $config_cache->get_new_user_treshold($pp->schema());
 
         foreach($payments as $id => $payment)
         {

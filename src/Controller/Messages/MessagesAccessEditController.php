@@ -2,11 +2,11 @@
 
 namespace App\Controller\Messages;
 
+use App\Cache\ConfigCache;
 use App\Command\Messages\MessagesAccessCommand;
 use App\Form\Type\Messages\MessagesAccessType;
 use App\Repository\MessageRepository;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -39,17 +39,17 @@ class MessagesAccessEditController extends AbstractController
         int $id,
         AlertService $alert_service,
         MessageRepository $message_repository,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
     {
-        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('messages.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Messages module not enabled in configuration');
         }
 
-        if (!$config_service->get_bool('intersystem.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('intersystem.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('InterSystem module not enabled in configuration');
         }

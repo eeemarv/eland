@@ -2,6 +2,7 @@
 
 namespace App\Controller\Transactions;
 
+use App\Cache\ConfigCache;
 use App\Cache\UserCache;
 use App\Cnst\BulkCnst;
 use App\Cnst\MessageTypeCnst;
@@ -11,7 +12,6 @@ use App\Repository\AccountRepository;
 use App\Service\AlertService;
 use App\Service\AutoDeactivateService;
 use App\Service\AutoMinLimitService;
-use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
 use App\Service\ItemAccessService;
@@ -57,7 +57,7 @@ class TransactionsAddController extends AbstractController
         AccountRender $account_render,
         AlertService $alert_service,
         ItemAccessService $item_access_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         FormTokenService $form_token_service,
         IntersystemsService $intersystems_service,
         LinkRender $link_render,
@@ -72,7 +72,7 @@ class TransactionsAddController extends AbstractController
         SessionUserService $su
     ):Response
     {
-        if (!$config_service->get_bool('transactions.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('transactions.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Transactions module not enabled.');
         }
@@ -83,24 +83,24 @@ class TransactionsAddController extends AbstractController
         $tuid = (int) $request->query->get('tuid', 0);
         $tus = $request->query->get('tus', '');
 
-        $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
-        $currency_ratio = $config_service->get_int('transactions.currency.per_hour_ratio', $pp->schema());
-        $timebased_enabled = $config_service->get_bool('transactions.currency.timebased_en', $pp->schema());
-        $system_name = $config_service->get_str('system.name', $pp->schema());
-        $system_min_limit = $config_service->get_int('accounts.limits.global.min', $pp->schema());
-        $system_max_limit = $config_service->get_int('accounts.limits.global.max', $pp->schema());
-        $balance_equilibrium = $config_service->get_int('accounts.equilibrium', $pp->schema()) ?? 0;
-        $service_stuff_enabled = $config_service->get_bool('transactions.fields.service_stuff.enabled', $pp->schema());
-        $limits_enabled = $config_service->get_bool('accounts.limits.enabled', $pp->schema());
-        $new_users_days = $config_service->get_int('users.new.days', $pp->schema()) ?? 0;
-        $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
-        $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
+        $currency = $config_cache->get_str('transactions.currency.name', $pp->schema());
+        $currency_ratio = $config_cache->get_int('transactions.currency.per_hour_ratio', $pp->schema());
+        $timebased_enabled = $config_cache->get_bool('transactions.currency.timebased_en', $pp->schema());
+        $system_name = $config_cache->get_str('system.name', $pp->schema());
+        $system_min_limit = $config_cache->get_int('accounts.limits.global.min', $pp->schema());
+        $system_max_limit = $config_cache->get_int('accounts.limits.global.max', $pp->schema());
+        $balance_equilibrium = $config_cache->get_int('accounts.equilibrium', $pp->schema()) ?? 0;
+        $service_stuff_enabled = $config_cache->get_bool('transactions.fields.service_stuff.enabled', $pp->schema());
+        $limits_enabled = $config_cache->get_bool('accounts.limits.enabled', $pp->schema());
+        $new_users_days = $config_cache->get_int('users.new.days', $pp->schema()) ?? 0;
+        $new_users_enabled = $config_cache->get_bool('users.new.enabled', $pp->schema());
+        $leaving_users_enabled = $config_cache->get_bool('users.leaving.enabled', $pp->schema());
 
         $show_new_status = $new_users_enabled;
 
         if ($show_new_status)
         {
-            $new_users_access = $config_service->get_str('users.new.access', $pp->schema());
+            $new_users_access = $config_cache->get_str('users.new.access', $pp->schema());
             $show_new_status = $item_access_service->is_visible($new_users_access);
         }
 
@@ -108,7 +108,7 @@ class TransactionsAddController extends AbstractController
 
         if ($show_leaving_status)
         {
-            $leaving_users_access = $config_service->get_str('users.leaving.access', $pp->schema());
+            $leaving_users_access = $config_cache->get_str('users.leaving.access', $pp->schema());
             $show_leaving_status = $item_access_service->is_visible($leaving_users_access);
         }
 
@@ -474,7 +474,7 @@ class TransactionsAddController extends AbstractController
 
                 $remote_schema = $systems_service->get_schema_from_legacy_eland_origin($group['url']);
 
-                if (!$config_service->get_bool('transactions.enabled', $remote_schema))
+                if (!$config_cache->get_bool('transactions.enabled', $remote_schema))
                 {
                     $errors[] = 'De transactie module is niet actief in het andere systeem.';
                 }
@@ -545,13 +545,13 @@ class TransactionsAddController extends AbstractController
                     $from_remote_id = $from_remote_user['id'];
                 }
 
-                $remote_currency = $config_service->get_str('transactions.currency.name', $remote_schema);
-                $remote_currency_ratio = $config_service->get_int('transactions.currency.per_hour_ratio', $remote_schema);
-                $remote_balance_equilibrium = $config_service->get_int('accounts.equilibrium', $remote_schema) ?? 0;
-                $remote_system_min_limit = $config_service->get_int('accounts.limits.global.min', $remote_schema);
-                $remote_system_max_limit = $config_service->get_int('accounts.limits.global.max', $remote_schema);
-                $remote_limits_enabled = $config_service->get_bool('accounts.limits.enabled', $remote_schema);
-                $remote_leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $remote_schema);
+                $remote_currency = $config_cache->get_str('transactions.currency.name', $remote_schema);
+                $remote_currency_ratio = $config_cache->get_int('transactions.currency.per_hour_ratio', $remote_schema);
+                $remote_balance_equilibrium = $config_cache->get_int('accounts.equilibrium', $remote_schema) ?? 0;
+                $remote_system_min_limit = $config_cache->get_int('accounts.limits.global.min', $remote_schema);
+                $remote_system_max_limit = $config_cache->get_int('accounts.limits.global.max', $remote_schema);
+                $remote_limits_enabled = $config_cache->get_bool('accounts.limits.enabled', $remote_schema);
+                $remote_leaving_users_enabled = $config_cache->get_bool('users.leaving.enabled', $remote_schema);
 
                 if (!count($errors) && $currency_ratio < 1)
                 {
@@ -785,7 +785,7 @@ class TransactionsAddController extends AbstractController
 
                         if ($row)
                         {
-                            $tus_currency_ratio = $config_service->get_int('transactions.currency.per_hour_ratio', $tus);
+                            $tus_currency_ratio = $config_cache->get_int('transactions.currency.per_hour_ratio', $tus);
 
                             $code_to = $row['code'] . ' ' . $row['name'];
                             $description =  substr($row['subject'], 0, 60);
@@ -797,7 +797,7 @@ class TransactionsAddController extends AbstractController
                                 $amount = (int) round($amount);
                             }
 
-                            $tus_messages_service_stuff_enabled = $config_service->get_bool('messages.fields.service_stuff.enabled', $tus);
+                            $tus_messages_service_stuff_enabled = $config_cache->get_bool('messages.fields.service_stuff.enabled', $tus);
 
                             if ($tus_messages_service_stuff_enabled)
                             {
@@ -830,7 +830,7 @@ class TransactionsAddController extends AbstractController
 
                 if ($row)
                 {
-                    $messages_service_stuff_enabled = $config_service->get_bool('messages.fields.service_stuff.enabled', $pp->schema());
+                    $messages_service_stuff_enabled = $config_cache->get_bool('messages.fields.service_stuff.enabled', $pp->schema());
 
                     if ($row['status'] === 1 || $row['status'] === 2)
                     {
@@ -910,17 +910,17 @@ class TransactionsAddController extends AbstractController
                 $sys['eland'] = true;
                 $sys['remote_schema'] = $map_eland_schema_url[$sys['url']];
 
-                if (!$config_service->get_bool('transactions.enabled', $sys['remote_schema']))
+                if (!$config_cache->get_bool('transactions.enabled', $sys['remote_schema']))
                 {
                     continue;
                 }
 
-                $sys['groupname'] = $config_service->get_str('system.name', $sys['remote_schema']);
+                $sys['groupname'] = $config_cache->get_str('system.name', $sys['remote_schema']);
                 $systems[] = $sys;
             }
         }
 
-        if ($config_service->get_intersystem_en($pp->schema()))
+        if ($config_cache->get_intersystem_en($pp->schema()))
         {
             $res = $db->executeQuery('select l.id, l.groupname
                 from ' . $pp->schema() . '.letsgroups l, ' .
@@ -1062,34 +1062,34 @@ class TransactionsAddController extends AbstractController
                 if (isset($config_schema))
                 {
                     $out .= ' data-minlimit="';
-                    $out .= $config_service->get_int('accounts.limits.global.min', $config_schema);
+                    $out .= $config_cache->get_int('accounts.limits.global.min', $config_schema);
                     $out .= '"';
                     $out .= ' data-maxlimit="';
-                    $out .= $config_service->get_int('accounts.limits.global.max', $config_schema);
+                    $out .= $config_cache->get_int('accounts.limits.global.max', $config_schema);
                     $out .= '"';
                     $out .= ' data-currency="';
-                    $out .= $config_service->get_str('transactions.currency.name', $config_schema);
+                    $out .= $config_cache->get_str('transactions.currency.name', $config_schema);
                     $out .= '"';
                     $out .= ' data-currencyratio="';
-                    $out .= $config_service->get_int('transactions.currency.per_hour_ratio', $config_schema);
+                    $out .= $config_cache->get_int('transactions.currency.per_hour_ratio', $config_schema);
                     $out .= '"';
                     $out .= ' data-balance-equilibrium="';
-                    $out .= $config_service->get_int('accounts.equilibrium', $config_schema);
+                    $out .= $config_cache->get_int('accounts.equilibrium', $config_schema);
                     $out .= '"';
 
-                    $typeahead_process_ary['new_users_days'] = $config_service->get_int('users.new.days', $config_schema) ?? 0;
-                    $typeahead_process_ary['show_new_status'] = $config_service->get_bool('users.new.enabled', $config_schema);
-                    $typeahead_process_ary['show_leaving_status'] = $config_service->get_bool('users.leaving.enabled', $config_schema);
+                    $typeahead_process_ary['new_users_days'] = $config_cache->get_int('users.new.days', $config_schema) ?? 0;
+                    $typeahead_process_ary['show_new_status'] = $config_cache->get_bool('users.new.enabled', $config_schema);
+                    $typeahead_process_ary['show_leaving_status'] = $config_cache->get_bool('users.leaving.enabled', $config_schema);
 
                     if ($typeahead_process_ary['show_new_status'])
                     {
-                        $rem_new_users_access = $config_service->get_str('users.new.access', $config_schema);
+                        $rem_new_users_access = $config_cache->get_str('users.new.access', $config_schema);
                         $typeahead_process_ary['show_new_status'] = $item_access_service->is_visible_for_guest($rem_new_users_access);
                     }
 
                     if ($typeahead_process_ary['show_leaving_status'])
                     {
-                        $rem_leaving_users_access = $config_service->get_str('users.leaving.access', $config_schema);
+                        $rem_leaving_users_access = $config_cache->get_str('users.leaving.access', $config_schema);
                         $typeahead_process_ary['show_leaving_status'] = $item_access_service->is_visible_for_guest($rem_leaving_users_access);
                     }
                 }
@@ -1217,7 +1217,7 @@ class TransactionsAddController extends AbstractController
 
         $out .= '<ul>';
 
-        $out .= self::get_valuation($config_service, $pp->schema());
+        $out .= self::get_valuation($config_cache, $pp->schema());
 
         $out .= '<li id="info_remote_amount_unknown" ';
         $out .= 'class="hidden">De omrekening ';
@@ -1231,7 +1231,7 @@ class TransactionsAddController extends AbstractController
             $out .= '<li id="info_admin_limit">';
             $out .= 'Admins kunnen over en onder limieten gaan';
 
-            if ($config_service->get_intersystem_en($pp->schema()))
+            if ($config_cache->get_intersystem_en($pp->schema()))
             {
                 $out .= ' in het eigen Systeem.';
             }
@@ -1321,19 +1321,19 @@ class TransactionsAddController extends AbstractController
     }
 
     static public function get_valuation(
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         string $schema
     ):string
     {
         $out = '';
 
-        if ($config_service->get_bool('transactions.currency.timebased_en', $schema)
-            && $config_service->get_int('transactions.currency.per_hour_ratio', $schema) > 0)
+        if ($config_cache->get_bool('transactions.currency.timebased_en', $schema)
+            && $config_cache->get_int('transactions.currency.per_hour_ratio', $schema) > 0)
         {
             $out .= '<li id="info_ratio">Valuatie: <span class="num">';
-            $out .= $config_service->get_int('transactions.currency.per_hour_ratio', $schema);
+            $out .= $config_cache->get_int('transactions.currency.per_hour_ratio', $schema);
             $out .= '</span> ';
-            $out .= $config_service->get_str('transactions.currency.name', $schema);
+            $out .= $config_cache->get_str('transactions.currency.name', $schema);
             $out .= ' per uur</li>';
         }
 

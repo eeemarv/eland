@@ -2,9 +2,9 @@
 
 namespace App\Controller\Intersystems;
 
+use App\Cache\ConfigCache;
 use Redis;
 use App\Render\LinkRender;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SystemsService;
 use Doctrine\DBAL\ArrayParameterType;
@@ -35,13 +35,13 @@ class IntersystemsController extends AbstractController
     public function __invoke(
         Db $db,
         Redis $predis,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         LinkRender $link_render,
         PageParamsService $pp,
         SystemsService $systems_service
     ):Response
     {
-        if (!$config_service->get_bool('intersystem.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('intersystem.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Intersystem submodule (users) not enabled.');
         }
@@ -191,7 +191,7 @@ class IntersystemsController extends AbstractController
                     $out .= ' <span class="btn btn-info" title="Dit Systeem bevindt zich op dezelfde eland-server">';
                     $out .= 'eLAND</span>';
 
-                    if (!$config_service->get_bool('transactions.currency.timebased_en', $sys['schema']))
+                    if (!$config_cache->get_bool('transactions.currency.timebased_en', $sys['schema']))
                     {
                         $out .= ' <span class="label label-danger" ';
                         $out .= 'title="Dit Systeem is niet geconfigureerd als Tijdbank.">';
@@ -199,7 +199,7 @@ class IntersystemsController extends AbstractController
                         $out .= 'geen Tijdbank</span>';
                     }
 
-                    if (!$config_service->get_bool('intersystem.enabled', $sys['schema']))
+                    if (!$config_cache->get_bool('intersystem.enabled', $sys['schema']))
                     {
                         $out .= ' <span class="label label-danger" ';
                         $out .= 'title="InterSysteem-mogelijkheid is niet ';
@@ -235,7 +235,7 @@ class IntersystemsController extends AbstractController
 
         $out .= self::get_schemas_groups(
             $db,
-            $config_service,
+            $config_cache,
             $systems_service,
             $pp,
             $link_render
@@ -248,7 +248,7 @@ class IntersystemsController extends AbstractController
 
     public static function get_schemas_groups(
         Db $db,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         SystemsService $systems_service,
         PageParamsService $pp,
         LinkRender $link_render
@@ -387,7 +387,7 @@ class IntersystemsController extends AbstractController
 
             $out .= '<tr';
 
-            if (!$config_service->get_intersystem_en($rem_schema))
+            if (!$config_cache->get_intersystem_en($rem_schema))
             {
                 $out .= ' class="danger"';
 
@@ -397,9 +397,9 @@ class IntersystemsController extends AbstractController
             $out .= '>';
 
             $out .= '<td>';
-            $out .= $config_service->get_str('system.name', $rem_schema);
+            $out .= $config_cache->get_str('system.name', $rem_schema);
 
-            if (!$config_service->get_bool('transactions.currency.timebased_en', $rem_schema))
+            if (!$config_cache->get_bool('transactions.currency.timebased_en', $rem_schema))
             {
                 $out .= ' <span class="label label-danger" ';
                 $out .= 'title="Dit Systeem is niet ';
@@ -408,7 +408,7 @@ class IntersystemsController extends AbstractController
                 $out .= '</i></span>';
             }
 
-            if (!$config_service->get_bool('intersystem.enabled', $rem_schema))
+            if (!$config_cache->get_bool('intersystem.enabled', $rem_schema))
             {
                 $out .= ' <span class="label label-danger" ';
                 $out .= 'title="interSysteem is niet ';
@@ -448,7 +448,7 @@ class IntersystemsController extends AbstractController
                 }
                 else
                 {
-                    if ($config_service->get_intersystem_en($rem_schema))
+                    if ($config_cache->get_intersystem_en($rem_schema))
                     {
                         $out .= $link_render->link('intersystems_add', $pp->ary(),
                             ['add_schema' => $rem_schema], 'Creëer',

@@ -2,6 +2,7 @@
 
 namespace App\Form\Type\Messages;
 
+use App\Cache\ConfigCache;
 use App\Command\Messages\MessagesCommand;
 use App\Form\DataTransformer\ValidityDaysTransformer;
 use App\Form\EventSubscriber\AccessFieldSubscriber;
@@ -9,7 +10,6 @@ use App\Form\EventSubscriber\CategoryFieldSubscriber;
 use App\Form\Input\LblChoiceType;
 use App\Form\Type\Field\SummernoteType;
 use App\Form\Type\Field\TypeaheadType;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -25,7 +25,7 @@ class MessagesType extends AbstractType
         protected AccessFieldSubscriber $access_field_subscriber,
         protected CategoryFieldSubscriber $category_field_subscriber,
         protected ValidityDaysTransformer $validity_days_transformer,
-        protected ConfigService $config_service,
+        protected ConfigCache $config_cache,
         protected PageParamsService $pp
     )
     {
@@ -36,13 +36,13 @@ class MessagesType extends AbstractType
         array $options
     ):void
     {
-        $expires_at_required = $this->config_service->get_bool('messages.fields.expires_at.required', $this->pp->schema());
-        $expires_at_days_default = $this->config_service->get_int('messages.fields.expires_at.days_default', $this->pp->schema());
-        $service_stuff_enabled = $this->config_service->get_bool('messages.fields.service_stuff.enabled', $this->pp->schema());
-        $category_enabled = $this->config_service->get_bool('messages.fields.category.enabled', $this->pp->schema());
-        $expires_at_enabled = $this->config_service->get_bool('messages.fields.expires_at.enabled', $this->pp->schema());
-        $expires_at_switch_enabled = $this->config_service->get_bool('messages.fields.expires_at.switch_enabled', $this->pp->schema());
-        $units_enabled = $this->config_service->get_bool('messages.fields.units.enabled', $this->pp->schema());
+        $expires_at_required = $this->config_cache->get_bool('messages.fields.expires_at.required', $this->pp->schema());
+        $expires_at_days_default = $this->config_cache->get_int('messages.fields.expires_at.days_default', $this->pp->schema());
+        $service_stuff_enabled = $this->config_cache->get_bool('messages.fields.service_stuff.enabled', $this->pp->schema());
+        $category_enabled = $this->config_cache->get_bool('messages.fields.category.enabled', $this->pp->schema());
+        $expires_at_enabled = $this->config_cache->get_bool('messages.fields.expires_at.enabled', $this->pp->schema());
+        $expires_at_switch_enabled = $this->config_cache->get_bool('messages.fields.expires_at.switch_enabled', $this->pp->schema());
+        $units_enabled = $this->config_cache->get_bool('messages.fields.units.enabled', $this->pp->schema());
 
         if ($this->pp->is_admin())
         {

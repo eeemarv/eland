@@ -2,12 +2,12 @@
 
 namespace App\Controller\Users;
 
+use App\Cache\ConfigCache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Form\Type\Filter\QTextSearchFilterType;
 use App\Render\LinkRender;
-use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\VarRouteService;
@@ -41,7 +41,7 @@ class UsersTilesController extends AbstractController
         Db $db,
         LinkRender $link_render,
         ItemAccessService $item_access_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         PageParamsService $pp,
         VarRouteService $vr,
         string $env_s3_url
@@ -52,17 +52,17 @@ class UsersTilesController extends AbstractController
             throw new AccessDeniedHttpException('No access for status: ' . $status);
         }
 
-        $postcode_enabled = $config_service->get_bool('users.fields.postcode.enabled', $pp->schema());
-        $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
-        $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
+        $postcode_enabled = $config_cache->get_bool('users.fields.postcode.enabled', $pp->schema());
+        $new_users_enabled = $config_cache->get_bool('users.new.enabled', $pp->schema());
+        $leaving_users_enabled = $config_cache->get_bool('users.leaving.enabled', $pp->schema());
 
-        $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
+        $new_user_treshold = $config_cache->get_new_user_treshold($pp->schema());
 
         $show_new_list = $new_users_enabled;
 
         if ($show_new_list)
         {
-            $new_users_access_list = $config_service->get_str('users.new.access_list', $pp->schema());
+            $new_users_access_list = $config_cache->get_str('users.new.access_list', $pp->schema());
             $show_new_list = $item_access_service->is_visible($new_users_access_list);
         }
 
@@ -70,7 +70,7 @@ class UsersTilesController extends AbstractController
 
         if ($show_leaving_list)
         {
-            $leaving_users_access_list = $config_service->get_str('users.leaving.access_list', $pp->schema());
+            $leaving_users_access_list = $config_cache->get_str('users.leaving.access_list', $pp->schema());
             $show_leaving_list = $item_access_service->is_visible($leaving_users_access_list);
         }
 
@@ -79,7 +79,7 @@ class UsersTilesController extends AbstractController
 
         $params = ['status'	=> $status];
 
-        $status_def_ary = UsersListController::get_status_def_ary($config_service, $item_access_service, $pp);
+        $status_def_ary = UsersListController::get_status_def_ary($config_cache, $item_access_service, $pp);
 
         $sql_map = [
             'where'     => [],
@@ -125,7 +125,7 @@ class UsersTilesController extends AbstractController
             $params,
             $link_render,
             $item_access_service,
-            $config_service,
+            $config_cache,
             $pp,
             $vr
         );

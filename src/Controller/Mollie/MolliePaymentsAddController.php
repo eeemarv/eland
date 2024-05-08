@@ -2,13 +2,13 @@
 
 namespace App\Controller\Mollie;
 
+use App\Cache\ConfigCache;
 use App\Cache\UserInvalidateCache;
 use App\Cnst\BulkCnst;
 use App\Controller\Users\UsersListController;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\ItemAccessService;
@@ -48,7 +48,7 @@ class MolliePaymentsAddController extends AbstractController
         Db $db,
         AlertService $alert_service,
         FormTokenService $form_token_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
         AccountRender $account_render,
@@ -59,7 +59,7 @@ class MolliePaymentsAddController extends AbstractController
         UserInvalidateCache $user_invalidate_cache
     ):Response
     {
-        if (!$config_service->get_bool('mollie.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('mollie.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Mollie submodule (users) not enabled.');
         }
@@ -72,9 +72,9 @@ class MolliePaymentsAddController extends AbstractController
         $description = trim($request->request->get('description', ''));
         $verify = $request->request->get('verify');
 
-        $mollie_apikey = $config_service->get_str('mollie.apikey', $pp->schema());
-        $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
-        $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
+        $mollie_apikey = $config_cache->get_str('mollie.apikey', $pp->schema());
+        $new_users_enabled = $config_cache->get_bool('users.new.enabled', $pp->schema());
+        $leaving_users_enabled = $config_cache->get_bool('users.leaving.enabled', $pp->schema());
 
         if (!$mollie_apikey ||
             !(str_starts_with($mollie_apikey, 'test_')
@@ -100,7 +100,7 @@ class MolliePaymentsAddController extends AbstractController
             }
         }
 
-        $status_def_ary = UsersListController::get_status_def_ary($config_service, $item_access_service, $pp);
+        $status_def_ary = UsersListController::get_status_def_ary($config_cache, $item_access_service, $pp);
 
         $sql_map = [
             'where'     => [],
@@ -389,7 +389,7 @@ class MolliePaymentsAddController extends AbstractController
         $out .= '</thead>';
         $out .= '<tbody>';
 
-        $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
+        $new_user_treshold = $config_cache->get_new_user_treshold($pp->schema());
 
         foreach($users as $user_id => $user)
         {

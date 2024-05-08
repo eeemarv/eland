@@ -2,6 +2,7 @@
 
 namespace App\Controller\Users;
 
+use App\Cache\ConfigCache;
 use App\Command\Users\UsersAccountCodeCommand;
 use App\Command\Users\UsersActivateCommand;
 use App\Form\Type\Users\UsersAccountCodeType;
@@ -11,7 +12,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\ResponseCacheService;
 use App\Service\SessionUserService;
@@ -43,7 +43,7 @@ class UsersActivateController extends AbstractController
         ResponseCacheService $response_cache_service,
         UserRepository $user_repository,
         AlertService $alert_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         PageParamsService $pp,
         SessionUserService $su
     ):Response

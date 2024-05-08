@@ -2,10 +2,10 @@
 
 namespace App\Service;
 
+use App\Cache\ConfigCache;
 use Redis;
 use Doctrine\DBAL\Connection as Db;
 use App\Service\SystemsService;
-use App\Service\ConfigService;
 
 class IntersystemsService
 {
@@ -22,7 +22,7 @@ class IntersystemsService
 		protected Db $db,
 		protected Redis $predis,
 		protected SystemsService $systems_service,
-		protected ConfigService $config_service
+		protected ConfigCache $config_cache
 	)
 	{
 	}
@@ -69,7 +69,7 @@ class IntersystemsService
 
 			if ($interschema = $this->systems_service->get_schema($system))
 			{
-				if (!$this->config_service->get_intersystem_en($interschema))
+				if (!$this->config_cache->get_intersystem_en($interschema))
 				{
 					continue;
 				}

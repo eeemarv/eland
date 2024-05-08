@@ -2,9 +2,9 @@
 
 namespace App\Twig;
 
+use App\Cache\ConfigCache;
 use App\Cache\UserCache;
 use App\Repository\AccountRepository;
-use App\Service\ConfigService;
 use Twig\Extension\RuntimeExtensionInterface;
 
 class AccountRuntime implements RuntimeExtensionInterface
@@ -12,7 +12,7 @@ class AccountRuntime implements RuntimeExtensionInterface
 	public function __construct(
 		protected AccountRepository $account_repository,
 		protected UserCache $user_cache,
-		protected ConfigService $config_service
+		protected ConfigCache $config_cache
 	)
 	{
 	}
@@ -75,18 +75,18 @@ class AccountRuntime implements RuntimeExtensionInterface
 				return $this->render_status('warning', 'InterSysteem');
 			}
 
-			$leaving_users_enabled = $this->config_service->get_bool('users.leaving.enabled', $schema);
+			$leaving_users_enabled = $this->config_cache->get_bool('users.leaving.enabled', $schema);
 
 			if ($leaving_users_enabled && $user['is_leaving'])
 			{
 				return $this->render_status('danger', 'Uitstapper');
 			}
 
-			$new_users_enabled = $this->config_service->get_bool('users.new.enabled', $schema);
+			$new_users_enabled = $this->config_cache->get_bool('users.new.enabled', $schema);
 
 			if ($new_users_enabled)
 			{
-				$new_user_treshold = $this->config_service->get_new_user_treshold($schema);
+				$new_user_treshold = $this->config_cache->get_new_user_treshold($schema);
 
 				if ($new_user_treshold->getTimestamp() < strtotime($user['activated_at'] . ' UTC'))
 				{

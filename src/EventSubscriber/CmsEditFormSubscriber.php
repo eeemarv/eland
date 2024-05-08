@@ -2,10 +2,10 @@
 
 namespace App\EventSubscriber;
 
+use App\Cache\ConfigCache;
 use App\Command\Cms\CmsEditCommand;
 use App\Form\Type\Cms\CmsEditType;
 use App\Render\LinkRender;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -24,7 +24,7 @@ class CmsEditFormSubscriber implements EventSubscriberInterface
         protected PageParamsService $pp,
         protected SessionUserService $su,
         protected LinkRender $link_render,
-        protected ConfigService $config_service
+        protected ConfigCache $config_cache
     )
     {
     }

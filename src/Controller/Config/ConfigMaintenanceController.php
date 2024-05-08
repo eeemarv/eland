@@ -2,13 +2,13 @@
 
 namespace App\Controller\Config;
 
+use App\Cache\ConfigCache;
 use App\Command\Config\ConfigMaintenanceCommand;
 use App\Form\Type\Config\ConfigMaintenanceType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -32,12 +32,12 @@ class ConfigMaintenanceController extends AbstractController
     public function __invoke(
         Request $request,
         AlertService $alert_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         PageParamsService $pp
     ):Response
     {
         $command = new ConfigMaintenanceCommand();
-        $config_service->load_command($command, $pp->schema());
+        $config_cache->load_command($command, $pp->schema());
 
         $form = $this->createForm(ConfigMaintenanceType::class, $command);
         $form->handleRequest($request);
@@ -47,7 +47,7 @@ class ConfigMaintenanceController extends AbstractController
         {
             $command = $form->getData();
 
-            $changed = $config_service->store_command($command, $pp->schema());
+            $changed = $config_cache->store_command($command, $pp->schema());
 
             if ($changed)
             {

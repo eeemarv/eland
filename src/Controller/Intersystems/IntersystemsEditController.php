@@ -2,10 +2,10 @@
 
 namespace App\Controller\Intersystems;
 
+use App\Cache\ConfigCache;
 use App\Render\LinkRender;
 use App\Render\SelectRender;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
 use App\Service\PageParamsService;
@@ -47,12 +47,12 @@ class IntersystemsEditController extends AbstractController
         PageParamsService $pp,
         FormTokenService $form_token_service,
         SelectRender $select_render,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         SystemsService $systems_service,
         VarRouteService $vr
     ):Response
     {
-        if (!$config_service->get_bool('intersystem.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('intersystem.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Intersystem submodule (users) not enabled.');
         }
@@ -132,7 +132,7 @@ class IntersystemsEditController extends AbstractController
             $db,
             $select_render,
             $form_token_service,
-            $config_service,
+            $config_cache,
             $link_render,
             $systems_service,
             $pp,
@@ -187,7 +187,7 @@ class IntersystemsEditController extends AbstractController
         Db $db,
         SelectRender $select_render,
         FormTokenService $form_token_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         LinkRender $link_render,
         SystemsService $systems_service,
         PageParamsService $pp
@@ -284,7 +284,7 @@ class IntersystemsEditController extends AbstractController
 
         $out .= IntersystemsController::get_schemas_groups(
             $db,
-            $config_service,
+            $config_cache,
             $systems_service,
             $pp,
             $link_render

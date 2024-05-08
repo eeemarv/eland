@@ -2,8 +2,8 @@
 
 namespace App\Form\Type\RegisterForm;
 
+use App\Cache\ConfigCache;
 use App\Command\RegisterForm\RegisterFormCommand;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -17,7 +17,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 class RegisterFormType extends AbstractType
 {
     public function __construct(
-        protected ConfigService $config_service,
+        protected ConfigCache $config_cache,
         protected PageParamsService $pp
     )
     {
@@ -25,7 +25,7 @@ class RegisterFormType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options):void
     {
-        $postcode_enabled = $this->config_service->get_bool('users.fields.postcode.enabled', $this->pp->schema());
+        $postcode_enabled = $this->config_cache->get_bool('users.fields.postcode.enabled', $this->pp->schema());
 
         $builder->add('email', EmailType::class);
         $builder->add('first_name', TextType::class);

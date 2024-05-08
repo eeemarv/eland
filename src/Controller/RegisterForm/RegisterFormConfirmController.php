@@ -2,12 +2,12 @@
 
 namespace App\Controller\RegisterForm;
 
+use App\Cache\ConfigCache;
 use App\Cnst\PagesCnst;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use App\Queue\MailQueue;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\DataTokenService;
 use App\Service\MailAddrSystemService;
 use App\Service\PageParamsService;
@@ -41,7 +41,7 @@ class RegisterFormConfirmController extends AbstractController
         string $token,
         Db $db,
         Request $request,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         StaticContentService $static_content_service,
         AlertService $alert_service,
         DataTokenService $data_token_service,
@@ -51,12 +51,12 @@ class RegisterFormConfirmController extends AbstractController
         SessionUserService $su
     ):Response
     {
-        if (!$config_service->get_bool('register_form.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('register_form.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Register form not enabled.');
         }
 
-        $postcode_enabled = $config_service->get_bool('users.fields.postcode.enabled', $pp->schema());
+        $postcode_enabled = $config_cache->get_bool('users.fields.postcode.enabled', $pp->schema());
 
         if ($pp->edit_en()
             && $token === PagesCnst::CMS_TOKEN

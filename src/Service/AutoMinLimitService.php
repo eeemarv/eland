@@ -2,10 +2,10 @@
 
 namespace App\Service;
 
+use App\Cache\ConfigCache;
 use App\Cache\UserCache;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
-use App\Service\ConfigService;
 use App\Render\AccountRender;
 use App\Repository\AccountRepository;
 
@@ -16,7 +16,7 @@ class AutoMinLimitService
 		protected LoggerInterface $logger,
 		protected UserCache $user_cache,
 		protected AccountRepository $account_repository,
-		protected ConfigService $config_service,
+		protected ConfigCache $config_cache,
 		protected SessionUserService $su,
 		protected AccountRender $account_render
 	)
@@ -30,24 +30,24 @@ class AutoMinLimitService
 		string $schema
 	):void
 	{
-		if (!$this->config_service->get_bool('accounts.limits.auto_min.enabled', $schema))
+		if (!$this->config_cache->get_bool('accounts.limits.auto_min.enabled', $schema))
 		{
 			$this->logger->debug('autominlimit not enabled',
 				['schema' => $schema]);
 			return;
 		}
 
-		if (!$this->config_service->get_bool('accounts.limits.enabled', $schema))
+		if (!$this->config_cache->get_bool('accounts.limits.enabled', $schema))
 		{
 			$this->logger->debug('no autominlimit: limits not enabled',
 				['schema' => $schema]);
 			return;
 		}
 
-		$global_min_limit = $this->config_service->get_int('accounts.limits.global.min', $schema);
-		$percentage = $this->config_service->get_int('accounts.limits.auto_min.percentage', $schema);
-		$exclude_to_str = $this->config_service->get_str('accounts.limits.auto_min.exclude.to', $schema);
-		$exclude_from_str = $this->config_service->get_str('accounts.limits.auto_min.exclude.from', $schema);
+		$global_min_limit = $this->config_cache->get_int('accounts.limits.global.min', $schema);
+		$percentage = $this->config_cache->get_int('accounts.limits.auto_min.percentage', $schema);
+		$exclude_to_str = $this->config_cache->get_str('accounts.limits.auto_min.exclude.to', $schema);
+		$exclude_from_str = $this->config_cache->get_str('accounts.limits.auto_min.exclude.from', $schema);
 
 		$exclude_to_ary = explode(',', $exclude_to_str);
 		$exclude_from_ary = explode(',', $exclude_from_str);

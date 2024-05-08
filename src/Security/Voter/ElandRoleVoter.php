@@ -2,9 +2,9 @@
 
 namespace App\Security\Voter;
 
+use App\Cache\ConfigCache;
 use App\Cnst\AccessCnst;
 use App\Cnst\RoleCnst;
-use App\Service\ConfigService;
 use App\Service\IntersystemsService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -17,7 +17,7 @@ class ElandRoleVoter extends Voter
     public function __construct(
         protected SessionUserService $su,
         protected PageParamsService $pp,
-        protected ConfigService $config_service,
+        protected ConfigCache $config_cache,
         protected SystemsService $systems_service,
         protected IntersystemsService $intersystems_service
     )
@@ -45,14 +45,14 @@ class ElandRoleVoter extends Voter
                 return false;
             }
 
-            if ($this->config_service->get_bool('system.maintenance_en', $schema))
+            if ($this->config_cache->get_bool('system.maintenance_en', $schema))
             {
                 return false;
             }
 
             if ($attribute === 'guest')
             {
-                if (!$this->config_service->get_intersystem_en($schema))
+                if (!$this->config_cache->get_intersystem_en($schema))
                 {
                     return false;
                 }

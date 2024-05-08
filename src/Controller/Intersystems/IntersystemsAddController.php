@@ -2,11 +2,11 @@
 
 namespace App\Controller\Intersystems;
 
+use App\Cache\ConfigCache;
 use App\Cache\SystemsCache;
 use App\Render\LinkRender;
 use App\Render\SelectRender;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
 use App\Service\PageParamsService;
@@ -41,7 +41,7 @@ class IntersystemsAddController extends AbstractController
         Request $request,
         Db $db,
         AlertService $alert_service,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         FormTokenService $form_token_service,
         IntersystemsService $intersystems_service,
         LinkRender $link_render,
@@ -52,7 +52,7 @@ class IntersystemsAddController extends AbstractController
         VarRouteService $vr
     ):Response
     {
-        if (!$config_service->get_bool('intersystem.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('intersystem.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Intersystem submodule (users) not enabled.');
         }
@@ -120,8 +120,8 @@ class IntersystemsAddController extends AbstractController
                 if ($systems_cache->get_system($add_schema))
                 {
                     $group['url'] = $systems_service->get_legacy_eland_origin($add_schema);
-                    $group['groupname'] = $config_service->get_str('system.name', $add_schema);
-                    $group['localletscode'] = $config_service->get_str('mail.tag', $add_schema);
+                    $group['groupname'] = $config_cache->get_str('system.name', $add_schema);
+                    $group['localletscode'] = $config_cache->get_str('mail.tag', $add_schema);
                 }
             }
         }
@@ -137,7 +137,7 @@ class IntersystemsAddController extends AbstractController
             $db,
             $select_render,
             $form_token_service,
-            $config_service,
+            $config_cache,
             $link_render,
             $systems_service,
             $pp,

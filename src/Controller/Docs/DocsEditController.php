@@ -2,6 +2,7 @@
 
 namespace App\Controller\Docs;
 
+use App\Cache\ConfigCache;
 use App\Command\Docs\DocsCommand;
 use App\Form\Type\Docs\DocsEditType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -9,7 +10,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\DocRepository;
 use App\Service\AlertService;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\ResponseCacheService;
 use App\Service\SessionUserService;
@@ -38,7 +38,7 @@ class DocsEditController extends AbstractController
         Request $request,
         int $id,
         DocRepository $doc_repository,
-        ConfigService $config_service,
+        ConfigCache $config_cache,
         AlertService $alert_service,
         ResponseCacheService $response_cache_service,
         PageParamsService $pp,
@@ -46,7 +46,7 @@ class DocsEditController extends AbstractController
         string $env_s3_url
     ):Response
     {
-        if (!$config_service->get_bool('docs.enabled', $pp->schema()))
+        if (!$config_cache->get_bool('docs.enabled', $pp->schema()))
         {
             throw new NotFoundHttpException('Documents module not enabled.');
         }

@@ -2,8 +2,8 @@
 
 namespace App\Form\Type\Field;
 
+use App\Cache\ConfigCache;
 use App\Form\DataTransformer\TypeaheadUserTransformer;
-use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\TypeaheadService;
@@ -22,7 +22,7 @@ class TypeaheadType extends AbstractType
     public function __construct(
         protected TypeaheadService $typeahead_service,
         protected PageParamsService $pp,
-        protected ConfigService $config_service,
+        protected ConfigCache $config_cache,
         protected ItemAccessService $item_access_service,
         protected TypeaheadUserTransformer $typeahead_user_transformer
     )
@@ -110,15 +110,15 @@ class TypeaheadType extends AbstractType
 
             $schema = $remote_schema ?? $this->pp->schema();
 
-            $new_users_days = $this->config_service->get_int('users.new.days', $schema);
-            $new_users_enabled = $this->config_service->get_bool('users.new.enabled', $schema);
-            $leaving_users_enabled = $this->config_service->get_bool('users.leaving.enabled', $schema);
+            $new_users_days = $this->config_cache->get_int('users.new.days', $schema);
+            $new_users_enabled = $this->config_cache->get_bool('users.new.enabled', $schema);
+            $leaving_users_enabled = $this->config_cache->get_bool('users.leaving.enabled', $schema);
 
             $show_new_status = $new_users_enabled;
 
             if ($show_new_status)
             {
-                $new_users_access = $this->config_service->get_str('users.new.access', $schema);
+                $new_users_access = $this->config_cache->get_str('users.new.access', $schema);
                 $show_new_status = $this->item_access_service->is_visible($new_users_access);
             }
 
@@ -126,7 +126,7 @@ class TypeaheadType extends AbstractType
 
             if ($show_leaving_status)
             {
-                $leaving_users_access = $this->config_service->get_str('users.leaving.access', $schema);
+                $leaving_users_access = $this->config_cache->get_str('users.leaving.access', $schema);
                 $show_leaving_status = $this->item_access_service->is_visible($leaving_users_access);
             }
 
