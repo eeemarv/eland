@@ -456,7 +456,7 @@ class TransactionsController extends AbstractController
         $row_count = $row['count'];
         $amount_sum = $row['sum'];
 
-        $account_count = $db->fetchOne('select count(*) from
+        $account_count = $db->fetchOne('select count(tt.*) from
             (select t.id_from
                 from ' . $pp->schema() . '.transactions t
                 where ' . $sql_omit_pagination_where . '
@@ -464,7 +464,7 @@ class TransactionsController extends AbstractController
             select t.id_to
                 from ' . $pp->schema() . '.transactions t
                 where ' . $sql_omit_pagination_where . '
-            )',
+            ) tt',
             array_merge(...$sql_omit_pagination_params, ...$sql_omit_pagination_params),
             array_merge(...$sql_omit_pagination_types, ...$sql_omit_pagination_types));
 
