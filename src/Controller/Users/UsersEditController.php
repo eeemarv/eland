@@ -336,10 +336,10 @@ class UsersEditController extends AbstractController
                 $code_sql['query'] .= ' and id <> ?';
                 $code_sql['params'][] = $id;
                 $code_sql['types'][] = \PDO::PARAM_INT;
-                $name_sql['query'] .= 'and id <> ?';
+                $name_sql['query'] .= ' and id <> ?';
                 $name_sql['params'][] = $id;
                 $name_sql['types'][] = \PDO::PARAM_INT;
-                $full_name_sql['query'] .= 'and id <> ?';
+                $full_name_sql['query'] .= ' and id <> ?';
                 $full_name_sql['params'][] = $id;
                 $full_name_sql['types'][] = \PDO::PARAM_INT;
             }

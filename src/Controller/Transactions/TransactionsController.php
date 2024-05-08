@@ -444,15 +444,29 @@ class TransactionsController extends AbstractController
         $sql_omit_pagination = $sql;
         unset($sql_omit_pagination['pagination']);
         $sql_omit_pagination_where = implode(' and ', array_merge(...array_column($sql_omit_pagination, 'where')));
+        $sql_omit_pagination_params = array_column($sql_omit_pagination, 'params');
+        $sql_omit_pagination_types = array_column($sql_omit_pagination, 'types');
 
         $row = $db->fetchAssociative('select count(t.*), sum(t.amount)
             from ' . $pp->schema() . '.transactions t
             where ' . $sql_omit_pagination_where,
-            array_merge(...array_column($sql_omit_pagination, 'params')),
-            array_merge(...array_column($sql_omit_pagination, 'types')));
+            array_merge(...$sql_omit_pagination_params),
+            array_merge(...$sql_omit_pagination_types));
 
         $row_count = $row['count'];
         $amount_sum = $row['sum'];
+
+        $account_count = $db->fetchOne('select count(*) from 
+            (select t.id_from  
+                from ' . $pp->schema() . '.transactions t
+                where ' . $sql_omit_pagination_where . ' 
+            union
+            select t.id_to
+                from ' . $pp->schema() . '.transactions t
+                where ' . $sql_omit_pagination_where . '             
+            )',
+            array_merge(...$sql_omit_pagination_params, ...$sql_omit_pagination_params),
+            array_merge(...$sql_omit_pagination_types, ...$sql_omit_pagination_types));
 
         $count_ary = [
             'service'               => 0,
@@ -914,6 +928,7 @@ class TransactionsController extends AbstractController
             'bulk_actions_raw'      => $blk ?? '',
             'row_count'             => $row_count,
             'amount_sum'            => $amount_sum,
+            'account_count'         => $account_count,
             'is_self'               => $is_self,
             'bulk_actions_enabled'  => $bulk_actions_enabled,
             'uid'                   => $uid ?? null,
