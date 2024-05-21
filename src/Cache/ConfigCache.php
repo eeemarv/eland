@@ -86,7 +86,7 @@ class ConfigCache
 
 	public function clear_cache(string $schema):void
 	{
-		$this->cache->invalidateTags(['config_' . $schema]);
+		$this->cache->delete(self::CACHE_PREFIX . $schema);
 		unset($this->local_cache[$schema]);
 	}
 

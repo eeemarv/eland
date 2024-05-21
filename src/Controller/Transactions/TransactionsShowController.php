@@ -2,13 +2,13 @@
 
 namespace App\Controller\Transactions;
 
+use App\Cache\AssetsCache;
 use App\Cache\ConfigCache;
 use App\Cache\SystemsCache;
 use App\Cnst\MessageTypeCnst;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Repository\TransactionRepository;
-use App\Service\AssetsService;
 use App\Service\DateFormatService;
 use App\Service\IntersystemsService;
 use App\Service\PageParamsService;
@@ -45,7 +45,7 @@ class TransactionsShowController extends AbstractController
         ConfigCache $config_cache,
         DateFormatService $date_format_service,
         AccountRender $account_render,
-        AssetsService $assets_service,
+        AssetsCache $assets_cache,
         IntersystemsService $intersystems_service,
         LinkRender $link_render,
         SystemsCache $systems_cache,
@@ -286,11 +286,11 @@ class TransactionsShowController extends AbstractController
 
             if ($real_from)
             {
-                $out .= $assets_service->get('there-from-inter.png');
+                $out .= $assets_cache->get('there-from-inter.png');
             }
             else
             {
-                $out .= $assets_service->get('here-to-inter.png');
+                $out .= $assets_cache->get('here-to-inter.png');
             }
 
             $out .= '">';
@@ -404,11 +404,11 @@ class TransactionsShowController extends AbstractController
 
             if ($real_from)
             {
-                $out .= $assets_service->get('here-from-inter.png');
+                $out .= $assets_cache->get('here-from-inter.png');
             }
             else
             {
-                $out .= $assets_service->get('there-to-inter.png');
+                $out .= $assets_cache->get('there-to-inter.png');
             }
 
             $out .= '">';

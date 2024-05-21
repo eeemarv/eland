@@ -3,7 +3,6 @@
 namespace App\ConsoleCommand;
 
 use App\SchemaTask\SchemaTaskSchedule;
-use App\Service\AssetsService;
 use App\Service\MonitorProcessService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -19,7 +18,6 @@ class ProcessWorkerConsoleCommand extends Command
 {
     public function __construct(
         protected MonitorProcessService $monitor_process_service,
-        protected AssetsService $assets_service,
         protected SchemaTaskSchedule $schema_task_schedule
     )
     {

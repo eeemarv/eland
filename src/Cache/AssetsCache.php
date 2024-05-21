@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Service;
+namespace App\Cache;
 
 use App\Cache\ResponseCache;
 use App\Cache\SystemsCache;
@@ -9,7 +9,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
-class AssetsService
+class AssetsCache
 {
 	const CACHE_KEY = 'asset_hashes';
 	const CACHE_TTL = 31536000; // 1 year;
@@ -245,12 +245,9 @@ class AssetsService
 		if (!isset($this->file_hash_ary))
 		{
 			$this->file_hash_ary = $this->cache->get(self::CACHE_KEY, function(ItemInterface $item){
-
-				$item->tag(['deploy', 'assets']);
+				$item->tag(['assets']);
 				$item->expiresAfter(self::CACHE_TTL);
-
 				return $this->get_file_hash_ary();
-
 			}, self::CACHE_BETA);
 		}
 
