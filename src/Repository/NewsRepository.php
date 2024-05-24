@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Command\News\NewsCommand;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection as Db;
 use LogicException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -52,7 +53,7 @@ class NewsRepository
 				where access in (?)) n
             where n.id = ?',
 			[$visible_ary, $id],
-			[Db::PARAM_STR_ARRAY, \PDO::PARAM_INT]
+			[ArrayParameterType::STRING, \PDO::PARAM_INT]
 		);
 
 		if ($news === false)
@@ -82,7 +83,7 @@ class NewsRepository
 			where access in (?)
 			order by ' . $order . 'created_at desc',
 			[$visible_ary],
-			[Db::PARAM_STR_ARRAY]);
+			[ArrayParameterType::STRING]);
 
 		return $res->fetchAllAssociative() ?: [];
 	}

@@ -6,6 +6,7 @@ use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SystemsService;
+use Doctrine\DBAL\ArrayParameterType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
@@ -85,7 +86,7 @@ class IntersystemsController extends AbstractController
             from ' . $pp->schema() . '.users
             where code in (?)',
             [$codes],
-            [Db::PARAM_INT_ARRAY]);
+            [ArrayParameterType::INTEGER]);
 
         while ($u = $res->fetchAssociative())
         {
@@ -294,7 +295,7 @@ class IntersystemsController extends AbstractController
             from ' . $pp->schema() . '.letsgroups
             where url in (?)',
             [$url_ary],
-            [Db::PARAM_STR_ARRAY]);
+            [ArrayParameterType::STRING]);
 
         while ($group = $res->fetchAssociative())
         {
@@ -308,7 +309,7 @@ class IntersystemsController extends AbstractController
             from ' . $pp->schema() . '.users
             where code in (?)',
             [$loc_letscode_ary],
-            [Db::PARAM_STR_ARRAY]);
+            [ArrayParameterType::STRING]);
 
         while ($u = $res->fetchAssociative())
         {

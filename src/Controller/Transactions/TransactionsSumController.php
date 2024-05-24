@@ -3,6 +3,7 @@
 namespace App\Controller\Transactions;
 
 use App\Service\PageParamsService;
+use Doctrine\DBAL\ArrayParameterType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -75,7 +76,7 @@ class TransactionsSumController extends AbstractController
         {
             $sql_where[] = 'u.code not in (?)';
             $sql_params[] = $ex_codes;
-            $sql_types[] = Db::PARAM_STR_ARRAY;
+            $sql_types[] = ArrayParameterType::STRING;
         }
 
         $query = 'select sum(t.amount), t.id_' . $res . ' as uid

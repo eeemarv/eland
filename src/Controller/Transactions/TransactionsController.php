@@ -18,6 +18,7 @@ use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
@@ -206,7 +207,7 @@ class TransactionsController extends AbstractController
                     from ' . $pp->schema() . '.transactions
                     where id in (?)',
                     [array_keys($selected_transactions)],
-                    [Db::PARAM_INT_ARRAY]);
+                    [ArrayParameterType::INTEGER]);
 
                 while ($row = $res->fetchAssociative())
                 {

@@ -18,6 +18,7 @@ use App\Service\MailAddrUserService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\UserCacheService;
+use Doctrine\DBAL\ArrayParameterType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -430,7 +431,7 @@ class MolliePaymentsController extends AbstractController
                 $db->executeStatement('update ' . $pp->schema() . '.mollie_payments
                     set canceled_by = ? where id in (?)',
                     [$su->id(), $cancel_ary],
-                    [\PDO::PARAM_INT, Db::PARAM_INT_ARRAY]);
+                    [\PDO::PARAM_INT, ArrayParameterType::INTEGER]);
 
                 foreach ($users_cancel_ary as $user_id => $dummy)
                 {
@@ -463,7 +464,7 @@ class MolliePaymentsController extends AbstractController
                         $cancel_str .= ', ';
                         $cancel_str .= strtr($payment['amount'], '.', ',') . ' EUR, "';
                         $cancel_str .= htmlspecialchars($payment['description'], ENT_QUOTES);
-                        $cancel_str .= '"';                        
+                        $cancel_str .= '"';
                     }
                     else
                     {

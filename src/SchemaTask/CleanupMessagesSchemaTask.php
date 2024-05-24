@@ -5,6 +5,7 @@ namespace App\SchemaTask;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
 use App\Service\ConfigService;
+use Doctrine\DBAL\ArrayParameterType;
 
 class CleanupMessagesSchemaTask implements SchemaTaskInterface
 {
@@ -80,7 +81,7 @@ class CleanupMessagesSchemaTask implements SchemaTaskInterface
 				from ' . $schema . '.messages
 				where user_id in (?)',
 				[$user_ids],
-				[Db::PARAM_INT_ARRAY]);
+				[ArrayParameterType::INTEGER]);
 		}
 	}
 

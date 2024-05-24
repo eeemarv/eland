@@ -21,6 +21,7 @@ use App\Service\SystemsService;
 use App\Service\TransactionService;
 use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
+use Doctrine\DBAL\ArrayParameterType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -900,7 +901,7 @@ class TransactionsAddController extends AbstractController
             $res = $db->executeQuery('select id, url
                 from ' . $pp->schema() . '.letsgroups
                 where apimethod = \'elassoap\'
-                    and url in (?)', [$eland_urls], [Db::PARAM_STR_ARRAY]);
+                    and url in (?)', [$eland_urls], [ArrayParameterType::STRING]);
 
             while ($sys = $res->fetchAssociative())
             {

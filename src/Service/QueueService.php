@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection as Db;
 
 /*
@@ -48,7 +49,7 @@ class QueueService
 		{
 			$sql_where[] = 'topic in (?)';
 			$sql_params[] = $topics;
-			$sql_types[] = Db::PARAM_STR_ARRAY;
+			$sql_types[] = ArrayParameterType::STRING;
 		}
 
 		$sql_where = count($sql_where) ? ' where ' . implode(' and ', $sql_where) : '';
