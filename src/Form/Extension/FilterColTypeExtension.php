@@ -17,13 +17,17 @@ class FilterColTypeExtension extends AbstractTypeExtension
         yield ButtonType::class;
     }
 
-    public function configureOptions(OptionsResolver $resolver): void
+    public function configureOptions(OptionsResolver $resolver):void
     {
         $resolver->setDefault('col', null);
         $resolver->setAllowedTypes('col', ['null', 'string']);
     }
 
-    public function buildView(FormView $view, FormFormInterface $form, array $options): void
+    public function buildView(
+        FormView $view,
+        FormFormInterface $form,
+        array $options
+    ):void
     {
         if (isset($options['col']))
         {

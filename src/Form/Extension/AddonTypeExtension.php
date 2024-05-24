@@ -15,7 +15,7 @@ class AddonTypeExtension extends AbstractTypeExtension
         yield TextType::class;
     }
 
-    public function configureOptions(OptionsResolver $resolver): void
+    public function configureOptions(OptionsResolver $resolver):void
     {
         $resolver->setDefault('pre_addon', null);
         $resolver->setAllowedTypes('pre_addon', ['null', 'array']);
@@ -27,7 +27,7 @@ class AddonTypeExtension extends AbstractTypeExtension
         FormView $view,
         FormInterface $form,
         array $options
-    ): void
+    ):void
     {
         if (isset($options['pre_addon']))
         {

@@ -12,7 +12,10 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 
 class SendMessageCCType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(
+        FormBuilderInterface $builder,
+        array $options
+    ):void
     {
         $builder
             ->add('message', TextareaType::class, [
@@ -24,7 +27,7 @@ class SendMessageCCType extends AbstractType
             ->add('submit', SubmitType::class);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver):void
     {
         $resolver->setDefaults([
             'placeholder'   => null,

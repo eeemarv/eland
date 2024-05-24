@@ -21,7 +21,10 @@ class TagsDefType extends AbstractType
     {
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(
+        FormBuilderInterface $builder,
+        array $options
+    ):void
     {
         $opt_ary = [];
 
@@ -49,7 +52,7 @@ class TagsDefType extends AbstractType
             ->addModelTransformer($this->color_transformer);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver):void
     {
         $resolver->setDefault('del', false);
         $resolver->setAllowedTypes('del', 'bool');

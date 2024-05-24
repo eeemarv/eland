@@ -26,7 +26,7 @@ class RedisHandler extends AbstractProcessingHandler
         return new JsonFormatter();
     }
 
-    protected function write(array $record): void
+    protected function write(array $record):void
     {
         if (!isset($record['context']['schema']))
         {

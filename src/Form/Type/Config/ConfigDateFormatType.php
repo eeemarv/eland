@@ -18,7 +18,10 @@ class ConfigDateFormatType extends AbstractType
     {
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(
+        FormBuilderInterface $builder,
+        array $options
+    ):void
     {
         $builder
             ->add('date_format', ChoiceType::class, [
@@ -27,7 +30,7 @@ class ConfigDateFormatType extends AbstractType
             ->add('submit', SubmitType::class);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver):void
     {
         $resolver->setDefaults([
             'data_class'    => ConfigDateFormatCommand::class,

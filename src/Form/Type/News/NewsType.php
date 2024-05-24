@@ -21,7 +21,10 @@ class NewsType extends AbstractType
     {
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(
+        FormBuilderInterface $builder,
+        array $options
+    ):void
     {
         $builder
             ->add('subject', TextType::class)
@@ -34,7 +37,7 @@ class NewsType extends AbstractType
         $builder->addEventSubscriber($this->access_field_subscriber);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver):void
     {
         $resolver->setDefaults([
             'data_class'        => NewsCommand::class,

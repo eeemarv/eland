@@ -15,7 +15,7 @@ class CountAryTypeExtension extends AbstractTypeExtension
         yield ChoiceType::class;
     }
 
-    public function configureOptions(OptionsResolver $resolver): void
+    public function configureOptions(OptionsResolver $resolver):void
     {
         $resolver->setDefault('count_ary', null);
         $resolver->setAllowedTypes('count_ary', ['null', 'array']);
@@ -25,7 +25,7 @@ class CountAryTypeExtension extends AbstractTypeExtension
         FormView $view,
         FormInterface $form,
         array $options
-    ): void
+    ):void
     {
         if (isset($options['count_ary']))
         {

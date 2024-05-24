@@ -25,7 +25,7 @@ class FormTypeFormTokenExtension extends AbstractTypeExtension
     public function buildForm(
         FormBuilderInterface $builder,
         array $options
-    )
+    ):void
     {
         if (!$options[FormTokenManagerInterface::OPTION_ENABLED])
         {
@@ -62,7 +62,7 @@ class FormTypeFormTokenExtension extends AbstractTypeExtension
         }
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver):void
     {
         $resolver->setDefaults([
             FormTokenManagerInterface::OPTION_ENABLED => true,

@@ -29,7 +29,10 @@ class TypeaheadType extends AbstractType
     {
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options):void
+    public function buildForm(
+        FormBuilderInterface $builder,
+        array $options
+    ):void
     {
         parent::buildForm($builder, $options);
 
@@ -39,7 +42,11 @@ class TypeaheadType extends AbstractType
         }
     }
 
-    public function buildView(FormView $view, FormInterface $form, array $options):void
+    public function buildView(
+        FormView $view,
+        FormInterface $form,
+        array $options
+    ):void
     {
         $add = $options['add'];
 

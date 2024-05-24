@@ -31,7 +31,10 @@ class MessagesFilterType extends AbstractType
     {
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(
+        FormBuilderInterface $builder,
+        array $options
+    ):void
     {
         $service_stuff_enabled = $this->config_service->get_bool('messages.fields.service_stuff.enabled', $this->pp->schema());
         $category_enabled = $this->config_service->get_bool('messages.fields.category.enabled', $this->pp->schema());

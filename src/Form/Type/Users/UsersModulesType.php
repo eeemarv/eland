@@ -11,7 +11,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class UsersModulesType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(
+        FormBuilderInterface $builder,
+        array $options
+    ):void
     {
         $builder->add('full_name_enabled', CheckboxType::class);
         $builder->add('postcode_enabled', CheckboxType::class);
@@ -27,7 +30,7 @@ class UsersModulesType extends AbstractType
         $builder->add('submit', SubmitType::class);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver):void
     {
         $resolver->setDefaults([
             'data_class'    => UsersModulesCommand::class,

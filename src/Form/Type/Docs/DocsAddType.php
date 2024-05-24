@@ -23,7 +23,10 @@ class DocsAddType extends AbstractType
     {
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(
+        FormBuilderInterface $builder,
+        array $options
+    ):void
     {
         $data_typeahead = $this->typeahead_service->ini($this->pp)
             ->add('doc_map_names', [])
@@ -43,7 +46,7 @@ class DocsAddType extends AbstractType
         $builder->addEventSubscriber($this->access_field_subscriber);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver):void
     {
         $resolver->setDefaults([
             'data_class'    => DocsCommand::class,
