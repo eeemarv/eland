@@ -42,7 +42,7 @@ class FormTypeFormTokenExtension extends AbstractTypeExtension
         FormView $view,
         FormInterface $form,
         array $options
-    )
+    ):void
     {
         if ($options[FormTokenManagerInterface::OPTION_ENABLED] && !$view->parent && $options['compound'])
         {

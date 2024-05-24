@@ -26,7 +26,7 @@ class LoginValidator extends ConstraintValidator
     {
     }
 
-    public function validate($command, Constraint $constraint)
+    public function validate($command, Constraint $constraint):void
     {
         if (!$constraint instanceof Login)
         {

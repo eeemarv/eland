@@ -19,7 +19,7 @@ class UserVisibleForCurrentRoleValidator extends ConstraintValidator
     {
     }
 
-    public function validate($user_id, Constraint $constraint)
+    public function validate($user_id, Constraint $constraint):void
     {
         if (!$constraint instanceof UserVisibleForCurrentRole)
         {

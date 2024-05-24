@@ -17,7 +17,7 @@ class CategoryIsLeafValidator extends ConstraintValidator
     {
     }
 
-    public function validate($category_id, Constraint $constraint)
+    public function validate($category_id, Constraint $constraint):void
     {
         if (!$constraint instanceof CategoryIsLeaf)
         {
