@@ -32,8 +32,6 @@ class ConfigDateFormatType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver):void
     {
-        $resolver->setDefaults([
-            'data_class'    => ConfigDateFormatCommand::class,
-        ]);
+        $resolver->setDefault('data_class', ConfigDateFormatCommand::class);
     }
 }

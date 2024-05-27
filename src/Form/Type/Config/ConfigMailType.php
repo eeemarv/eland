@@ -25,8 +25,6 @@ class ConfigMailType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver):void
     {
-        $resolver->setDefaults([
-            'data_class'    => ConfigMailCommand::class,
-        ]);
+        $resolver->setDefault('data_class', ConfigMailCommand::class);
     }
 }

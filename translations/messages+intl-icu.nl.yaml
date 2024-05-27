@@ -51,7 +51,7 @@ btn:
 
 captcha:
   label: Anti-spam verificatiecode
-  help: Typ de code die hieronder getoond wordt.
+  help: Geef de code in die hieronder getoond wordt.
 
 date_format:
   technical:
@@ -117,6 +117,10 @@ help:
   email_validation_link: >-
     Er wordt een aan te klikken validatielink
     naar je E-mailbox verstuurd.
+  email_privacy: >-
+    Privacy: je E-mail adres wordt voor
+    geen ander doel gebruikt dan je terug te kunnen
+    contacteren.
   images_upload: >-
     Toegestane formaten: jpg/jpeg, png, webp, gif en svg.
     Je kan ook afbeeldingen hierheen verslepen.

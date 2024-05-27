@@ -1,15 +1,17 @@
 <?php declare(strict_types=1);
 
-namespace App\Form\Type\Config;
+namespace App\Form\Type\Index;
 
-use App\Command\Config\ConfigMaintenanceCommand;
+use App\Command\Index\IndexContactFormCommand;
+use App\Form\Type\Field\CaptchaType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 
-class ConfigMaintenanceType extends AbstractType
+class IndexContactFormType extends AbstractType
 {
     public function buildForm(
         FormBuilderInterface $builder,
@@ -17,12 +19,14 @@ class ConfigMaintenanceType extends AbstractType
     ):void
     {
         $builder
-            ->add('maintenance_en', CheckboxType::class)
+            ->add('email', EmailType::class)
+            ->add('message', TextareaType::class)
+            ->add('captcha', CaptchaType::class)
             ->add('submit', SubmitType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver):void
     {
-        $resolver->setDefault('data_class', ConfigMaintenanceCommand::class);
+        $resolver->setDefault('data_class', IndexContactFormCommand::class);
     }
 }

@@ -1,10 +1,6 @@
-{%- extends 'base/base.html.twig' -%}
+{%- extends 'index/base/index_base.html.twig' -%}
 
-{%- block title -%}eLAND{%- endblock -%}
-{%- block navbar -%}{%- endblock -%}
-
-{%- block page_container -%}
-
+{%- block jumbotron -%}
 	<div class="row">
 		<div class="col-md-12">
 			<div class="jumbotron eland-index">
@@ -16,39 +12,36 @@
 			</div>
 		</div>
 	</div>
+{%- endblock jumbotron -%}
 
-	<div class="container">
-		<div class="row">
+{%- block container -%}
+	<div class="row">
 
-		{%- if schemas -%}
-			{%- set systems_per_col = (schemas|length / 3)|round(0, 'ceil') -%}
+	{%- if schemas -%}
+		{%- set systems_per_col = (schemas|length / 3)|round(0, 'ceil') -%}
 
-			{%- for system, schema in schemas -%}
-				{%- if not (loop.index0 % systems_per_col) -%}
-				<div class="col-md-4">
-					<div class="panel panel-info">
-						<ul class="list-group">
-				{%- endif -%}
-							<li class="list-group-item">
-								<a href="{{- path('home', {'system': system}) -}}">{{- config_str('system.name', schema) -}}</a>
-							</li>
-				{% if loop.last or not (loop.index % systems_per_col) -%}
-						</ul>
-					</div>
+		{%- for system, schema in schemas -%}
+			{%- if not (loop.index0 % systems_per_col) -%}
+			<div class="col-md-4">
+				<div class="panel panel-info">
+					<ul class="list-group">
+			{%- endif -%}
+						<li class="list-group-item">
+							<a href="{{- path('home', {'system': system}) -}}">{{- config_str('system.name', schema) -}}</a>
+						</li>
+			{% if loop.last or not (loop.index % systems_per_col) -%}
+					</ul>
 				</div>
-				{%- endif -%}
-			{%- endfor -%}
+			</div>
+			{%- endif -%}
+		{%- endfor -%}
 
-		{%- endif -%}
-		</div>
+	{%- endif -%}
+	</div>
 
 	{%- embed 'include/hosting.html.twig' -%}
 	{%- endembed -%}
-
-	</div>
-
-	<br><br>
-{%- endblock page_container -%}
+{%- endblock container -%}
 
 {%- block index_link -%}
 	<p>

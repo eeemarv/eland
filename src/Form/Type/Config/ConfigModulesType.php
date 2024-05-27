@@ -31,8 +31,6 @@ class ConfigModulesType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver):void
     {
-        $resolver->setDefaults([
-            'data_class'    => ConfigModulesCommand::class,
-        ]);
+        $resolver->setDefault('data_class', ConfigModulesCommand::class);
     }
 }

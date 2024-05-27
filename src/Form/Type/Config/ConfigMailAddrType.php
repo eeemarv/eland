@@ -36,8 +36,6 @@ class ConfigMailAddrType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver):void
     {
-        $resolver->setDefaults([
-            'data_class'    => ConfigMailAddrCommand::class,
-        ]);
+        $resolver->setDefault('data_class', ConfigMailAddrCommand::class);
     }
 }

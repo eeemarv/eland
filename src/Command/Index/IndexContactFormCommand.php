@@ -3,6 +3,7 @@
 namespace App\Command\Index;
 
 use App\Command\CommandInterface;
+use App\Validator\Captcha\Captcha;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -21,4 +22,7 @@ class IndexContactFormCommand implements CommandInterface
         new Length(min: 10, max: 5000, groups: ['send']),
     ])]
     public $message;
+
+    #[Captcha(groups: ['send'])]
+    public $captcha;
 }
