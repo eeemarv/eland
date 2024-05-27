@@ -21,7 +21,7 @@ class ConfigService
 
 	public function __construct(
 		protected Db $db,
-		protected Redis $predis
+		protected Redis $redis
 	)
 	{
 		$this->local_cache_en = php_sapi_name() !== 'cli';
@@ -63,15 +63,14 @@ class ConfigService
 			$this->flatten_load_ary($row['id'], json_decode($row['data'], true));
 		}
 		$key = self::PREFIX . $schema;
-		$this->predis->set($key, json_encode($this->load_ary));
-		$this->predis->expire($key, self::TTL);
+		$this->redis->set($key, json_encode($this->load_ary), self::TTL);
 		return $this->load_ary;
 	}
 
 	public function read_all(string $schema):array
 	{
 		$key = self::PREFIX . $schema;
-		$data_json = $this->predis->get($key);
+		$data_json = $this->redis->get($key);
 
 		if (is_string($data_json))
 		{
@@ -93,7 +92,7 @@ class ConfigService
 	public function clear_cache(string $schema):void
 	{
 		$key = self::PREFIX . $schema;
-		$this->predis->del($key);
+		$this->redis->del($key);
 		unset($this->local_cache[$schema]);
 	}
 

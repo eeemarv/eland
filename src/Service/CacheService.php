@@ -20,11 +20,11 @@ Indexes:
 
 class CacheService
 {
-	const PREFIX = 'cache_';
+	const PREFIX = 'cache.';
 
 	public function __construct(
 		protected Db $db,
-		protected Redis $predis,
+		protected Redis $redis,
 		protected LoggerInterface $logger
 	)
 	{
@@ -43,11 +43,13 @@ class CacheService
 			throw new \LogicException('Cache: no id set for data ' . $data);
 		}
 
-		$this->predis->set(self::PREFIX . $id, $data);
+		$key = self::PREFIX . $id;
+
+		$this->redis->set($key, $data);
 
 		if ($expires > 0)
 		{
-			$this->predis->expire(self::PREFIX . $id, $expires);
+			$this->redis->expire($key, $expires);
 		}
 
 		$insert = [
@@ -90,7 +92,7 @@ class CacheService
 			throw new \LogicException('No id for cache get()');
 		}
 
-		$data = $this->predis->get(self::PREFIX . $id);
+		$data = $this->redis->get(self::PREFIX . $id);
 
 		if (is_string($data))
 		{
@@ -108,12 +110,12 @@ class CacheService
 		{
 			$data = $row['data'];
 
-			$this->predis->set(self::PREFIX . $id, $data);
+			$this->redis->set(self::PREFIX . $id, $data);
 
 			if (isset($data['expires']))
 			{
-				$expireat = strtotime($data['expires'] . ' UTC');
-				$this->predis->expireat(self::PREFIX . $id, $expireat);
+				$expire_at = strtotime($data['expires'] . ' UTC');
+				$this->redis->expireAt(self::PREFIX . $id, $expire_at);
 			}
 
 			return $data;
@@ -129,7 +131,7 @@ class CacheService
 			throw new \LogicException('No id set for cache::exists()');
 		}
 
-		if ($this->predis->exists(self::PREFIX . $id))
+		if ($this->redis->exists(self::PREFIX . $id))
 		{
 			return true;
 		}
@@ -156,7 +158,7 @@ class CacheService
 			throw new \LogicException('No id set for cache::expire()');
 		}
 
-		$this->predis->expire(self::PREFIX . $id, $time);
+		$this->redis->expire(self::PREFIX . $id, $time);
 
 		$time = gmdate('Y-m-d H:i:s', $time);
 
@@ -170,7 +172,7 @@ class CacheService
 			throw new \LogicException('No id set for cache::del()');
 		}
 
-		$this->predis->del(self::PREFIX . $id);
+		$this->redis->del(self::PREFIX . $id);
 
 		$this->db->delete('xdb.cache', ['id' => $id]);
 	}

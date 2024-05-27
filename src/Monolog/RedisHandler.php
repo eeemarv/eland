@@ -13,7 +13,7 @@ class RedisHandler extends AbstractProcessingHandler
     const KEY = 'monolog_logs';
 
     public function __construct(
-        protected Redis $predis,
+        protected Redis $redis,
         $level = Logger::DEBUG,
         $bubble = true
     )
@@ -34,6 +34,6 @@ class RedisHandler extends AbstractProcessingHandler
             return;
         }
 
-        $this->predis->rpush(self::KEY, $record['formatted']);
+        $this->redis->rpush(self::KEY, $record['formatted']);
     }
 }

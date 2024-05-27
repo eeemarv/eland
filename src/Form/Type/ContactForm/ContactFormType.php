@@ -3,12 +3,12 @@
 namespace App\Form\Type\ContactForm;
 
 use App\Command\ContactForm\ContactFormCommand;
+use App\Form\Type\Field\CaptchaType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Gregwar\CaptchaBundle\Type\CaptchaType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 
 class ContactFormType extends AbstractType

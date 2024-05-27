@@ -16,7 +16,7 @@ class MonitorProcessService
 
 	public function __construct(
 		protected Db $db,
-		protected Redis $predis,
+		protected Redis $redis,
 		protected CacheService $cache_service
 	)
 	{
@@ -61,7 +61,7 @@ class MonitorProcessService
 		}
 
 		$now = time();
-		$monitor = $this->predis->get('monitor_processes');
+		$monitor = $this->redis->get('monitor_processes');
 
 		if (is_string($monitor))
 		{
@@ -94,8 +94,7 @@ class MonitorProcessService
 
 		$monitor[$this->process_name] = $process_ary;
 
-		$this->predis->set('monitor_processes', json_encode($monitor));
-		$this->predis->expire('monitor_processes', 86400);
+		$this->redis->set('monitor_processes', json_encode($monitor), 86400);
 
 		sleep(ProcessCnst::INTERVAL[$this->process_name]['wait']);
 
@@ -138,13 +137,13 @@ class MonitorProcessService
 
 		try
 		{
-			$this->predis->incr('eland_monitor');
-			$this->predis->expire('eland_monitor', 300);
-			$monitor_count = $this->predis->get('eland_monitor');
+			$this->redis->incr('eland_monitor');
+			$this->redis->expire('eland_monitor', 300);
+			$monitor_count = $this->redis->get('eland_monitor');
 
 			if ($monitor_count > 2)
 			{
-				$monitor_processes = $this->predis->get('monitor_processes');
+				$monitor_processes = $this->redis->get('monitor_processes');
 
 				if (!$monitor_processes)
 				{

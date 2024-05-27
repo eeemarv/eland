@@ -17,7 +17,7 @@ class CaptchaService
 
 	public function __construct(
 		RequestStack $request_stack,
-		protected Redis $predis,
+		protected Redis $redis,
 		protected FormTokenService $form_token_service
 	)
 	{
@@ -29,8 +29,7 @@ class CaptchaService
 		$this->builder->build();
 
 		$key = $this->get_key($this->form_token_service->get(), $this->builder->getPhrase());
-		$this->predis->set($key, '1');
-		$this->predis->expire($key, self::TTL);
+		$this->redis->set($key, '1', self::TTL);
 	}
 
 	public function get_posted()
@@ -67,7 +66,7 @@ class CaptchaService
 	public function validate():bool
 	{
 		$key = $this->get_key($this->form_token_service->get_posted(), $this->get_posted());
-		return $this->predis->get($key) ? true : false;
+		return $this->redis->get($key) ? true : false;
 	}
 
 	public function get_key(string $form_token, string $phrase):string

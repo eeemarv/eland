@@ -14,7 +14,7 @@ class StaticContentService
 
 	public function __construct(
 		protected Db $db,
-		protected Redis $predis
+		protected Redis $redis
 	)
 	{
 	}
@@ -22,7 +22,7 @@ class StaticContentService
 	public function clear_cache(string $schema):void
 	{
 		$this->local_cache = [];
-		$this->predis->del(self::PREFIX . $schema);
+		$this->redis->del(self::PREFIX . $schema);
 	}
 
 	private function get_sql(
@@ -142,7 +142,7 @@ class StaticContentService
 		$field .= '.' . $block;
 
 		unset($this->local_cache[$field]);
-		$this->predis->hdel($key, $field);
+		$this->redis->hdel($key, $field);
 
 		return;
 	}
@@ -172,7 +172,7 @@ class StaticContentService
 			return $this->local_cache[$field];
 		}
 
-		$str = $this->predis->hget($key, $field);
+		$str = $this->redis->hget($key, $field);
 
 		if (is_string($str))
 		{
@@ -196,7 +196,7 @@ class StaticContentService
 		}
 
 		$this->local_cache[$field] = $content;
-		$this->predis->hset($key, $field, $content);
+		$this->redis->hset($key, $field, $content);
 		return $content;
 	}
 }

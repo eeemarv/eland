@@ -11,7 +11,7 @@ class FormTokenManager implements FormTokenManagerInterface
     protected string $token;
 
     public function __construct(
-        protected Redis $predis,
+        protected Redis $redis,
         protected TokenGeneratorService $token_generator_service
     )
     {
@@ -27,8 +27,7 @@ class FormTokenManager implements FormTokenManagerInterface
         $this->token = $this->token_generator_service->gen();
 
         $key = FormTokenManagerInterface::STORE_PREFIX . $this->token;
-        $this->predis->set($key, '1');
-        $this->predis->expire($key, FormTokenManagerInterface::TTL);
+        $this->redis->set($key, '1', FormTokenManagerInterface::TTL);
 
         return $this->token;
     }
@@ -44,7 +43,7 @@ class FormTokenManager implements FormTokenManagerInterface
         }
 
         $key = FormTokenManagerInterface::STORE_PREFIX . $value;
-        $count = $this->predis->incr($key);
+        $count = $this->redis->incr($key);
 
         if ($count === 1)
         {
@@ -55,7 +54,7 @@ class FormTokenManager implements FormTokenManagerInterface
         {
             if (!$prevent_double)
             {
-                $this->predis->decr($key);
+                $this->redis->decr($key);
             }
 
             return '';

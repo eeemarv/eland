@@ -17,7 +17,7 @@ class TypeaheadService
 	protected array $fetch_ary;
 
 	public function __construct(
-		protected Redis $predis,
+		protected Redis $redis,
 		protected LoggerInterface $logger,
 		protected UrlGeneratorInterface $url_generator
 	)
@@ -52,14 +52,14 @@ class TypeaheadService
 		]);
 
 		$field = $this->get_field_for_thumbprint($typeahead_route, $params);
-		$thumbprint = $this->predis->hget($store_key, $field);
+		$thumbprint = $this->redis->hget($store_key, $field);
 
 		if ($thumbprint)
 		{
 			if (strlen($thumbprint) !== 8 || $ttl_client === 0)
 			{
 				unset($thumbprint);
-				$this->predis->hdel($store_key, $field);
+				$this->redis->hdel($store_key, $field);
 			}
 		}
 
@@ -124,7 +124,7 @@ class TypeaheadService
 			'%schema%' => $schema,
 		]);
 
-		$this->predis->del($store_key);
+		$this->redis->del($store_key);
 	}
 
 	/**
@@ -165,7 +165,7 @@ class TypeaheadService
 			return false;
 		}
 
-		$data = $this->predis->hget($store_key, $thumbprint);
+		$data = $this->redis->hget($store_key, $thumbprint);
 
 		if (!isset($data) || !$data)
 		{
@@ -196,14 +196,14 @@ class TypeaheadService
 			'%schema%' => $schema,
 		]);
 
-		$this->predis->hset($store_key, $new_thumbprint, $data);
-		$this->predis->hdel($store_key, $current_thumbprint);
+		$this->redis->hset($store_key, $new_thumbprint, $data);
+		$this->redis->hdel($store_key, $current_thumbprint);
 
 		$typeahead_route = str_replace(self::ROUTE_PREFIX, '', $pp->route());
 		$thumbprint_field = $this->get_field_for_thumbprint($typeahead_route, $params);
 
-		$this->predis->hset($store_key, $thumbprint_field, $new_thumbprint);
-		$this->predis->expire($store_key, self::TTL_STORE);
+		$this->redis->hset($store_key, $thumbprint_field, $new_thumbprint);
+		$this->redis->expire($store_key, self::TTL_STORE);
 
 		$this->logger->debug('typeahead NEW thumbprint SET (calculated) ' .
 			$new_thumbprint . ' for ' .

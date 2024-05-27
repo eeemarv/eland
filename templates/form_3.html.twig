@@ -131,8 +131,9 @@
 {%- block captcha_row -%}
     <div class="form-group">
     {{- block('form_row') -}}
-    <img src="{{- captcha_code -}}" title="captcha" width="{{- captcha_width -}}" height="{{- captcha_height -}}">
+    <img src="{{- captcha_image -}}" title="captcha" width="{{- captcha_width -}}" height="{{- captcha_height -}}" alt="captcha">
     </div>
+    <input type="hidden" name="captcha_token" value="{{- captcha_token -}}">
 {%- endblock captcha_row -%}
 
 {%- block typeahead_help -%}

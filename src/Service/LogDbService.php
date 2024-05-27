@@ -12,7 +12,7 @@ class LogDbService
 
 	public function __construct(
 		protected Db $db,
-		protected Redis $predis,
+		protected Redis $redis,
 		protected SystemsService $systems_service
 	)
 	{
@@ -22,7 +22,7 @@ class LogDbService
 	{
 		for ($i = 0; $i < self::MAX_POP; $i++)
 		{
-			$log_json = $this->predis->lpop(RedisHandler::KEY);
+			$log_json = $this->redis->lpop(RedisHandler::KEY);
 
 			if (!$log_json)
 			{

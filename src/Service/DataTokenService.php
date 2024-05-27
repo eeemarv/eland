@@ -10,7 +10,7 @@ class DataTokenService
 	const KEY = 'data_token_%token%_%name%_%schema%';
 
 	public function __construct(
-		protected Redis $predis,
+		protected Redis $redis,
 		protected TokenGeneratorService $token_generator_service
 	)
 	{
@@ -29,8 +29,7 @@ class DataTokenService
 	{
 		$token = $this->token_generator_service->gen();
 		$key = $this->get_redis_key($token, $name, $schema);
-		$this->predis->set($key, serialize($data));
-		$this->predis->expire($key, $ttl);
+		$this->redis->set($key, serialize($data), $ttl);
 
 		return $token;
 	}
@@ -38,7 +37,7 @@ class DataTokenService
 	public function retrieve(string $token, string $name, string $schema):array
 	{
 		$key = $this->get_redis_key($token, $name, $schema);
-		$data = $this->predis->get($key);
+		$data = $this->redis->get($key);
 
 		if (!$data)
 		{
@@ -51,6 +50,6 @@ class DataTokenService
 	public function del(string $token, string $name, string $schema):void
 	{
 		$key = $this->get_redis_key($token, $name, $schema);
-		$this->predis->del($key);
+		$this->redis->del($key);
 	}
 }

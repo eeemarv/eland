@@ -16,7 +16,7 @@ class UserCacheService
 
 	public function __construct(
 		protected Db $db,
-		protected Redis $predis
+		protected Redis $redis
 	)
 	{
 		$this->is_cli = php_sapi_name() === 'cli' ? true : false;
@@ -30,7 +30,7 @@ class UserCacheService
 		}
 
 		$redis_key = self::KEY_PREFIX . $schema;
-		$this->predis->hdel($redis_key, (string) $id);
+		$this->redis->hdel($redis_key, (string) $id);
 
 		unset($this->local[$schema][$id]);
 
@@ -40,7 +40,7 @@ class UserCacheService
 	public function clear_all(string $schema):void
 	{
 		$redis_key = self::KEY_PREFIX . $schema;
-		$this->predis->del($redis_key);
+		$this->redis->del($redis_key);
 
 		unset($this->local[$schema]);
 
@@ -73,17 +73,17 @@ class UserCacheService
 		$redis_key = self::KEY_PREFIX . $schema;
 		$redis_field = (string) $id;
 
-		if ($this->predis->hexists($redis_key, $redis_field))
+		if ($this->redis->hexists($redis_key, $redis_field))
 		{
-			return $this->local[$schema][$id] = json_decode($this->predis->hget($redis_key, $redis_field), true);
+			return $this->local[$schema][$id] = json_decode($this->redis->hget($redis_key, $redis_field), true);
 		}
 
 		$user = $this->read_from_db($id, $schema);
 
 		if (count($user))
 		{
-			$this->predis->hset($redis_key, $redis_field, json_encode($user));
-			$this->predis->expire($redis_key, self::TTL);
+			$this->redis->hset($redis_key, $redis_field, json_encode($user));
+			$this->redis->expire($redis_key, self::TTL);
 			$this->local[$schema][$id] = $user;
 		}
 
@@ -129,16 +129,16 @@ class UserCacheService
 		$redis_key = self::KEY_PREFIX . $schema;
 		$redis_field = (string) $id;
 
-		if ($this->predis->hexists($redis_key, $redis_field))
+		if ($this->redis->hexists($redis_key, $redis_field))
 		{
-			if ($this->predis->hget($redis_key, $redis_field) === $user)
+			if ($this->redis->hget($redis_key, $redis_field) === $user)
 			{
 				return;
 			}
 		}
 
-		$this->predis->hset($redis_key, $redis_field, $user);
-		$this->predis->expire($redis_key, self::TTL);
+		$this->redis->hset($redis_key, $redis_field, $user);
+		$this->redis->expire($redis_key, self::TTL);
 		unset($this->local[$schema][$id]);
 	}
 }
