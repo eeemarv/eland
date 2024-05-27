@@ -750,6 +750,10 @@ index_contact_form:
     explain: >-
       Er wordt spoedig contact met je opgenomen.
 
+index_contact_confirm:
+  success: Je bericht is verzonden.
+  back_to_index: Terug naar het overzicht
+
 index:
   title: eLAND index
   sub_title: Server gemeenschapsmunten

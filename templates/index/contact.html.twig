@@ -1,20 +1,4 @@
-{%- extends 'index/base/index_base.html.twig' -%}
-
-{%- block title -%}eLAND Contact{%- endblock -%}
-
-{%- block jumbotron -%}
-	<div class="jumbotron">
-		<div class="container eland-jumbo">
-
-		<h1>eLAND Contact</h1>
-		<p>Server gemeenschapsmunten.</p>
-		</div>
-
-		<div class="container eland-jumbo-image">
-			<div class="eland-contact"></div>
-		</div>
-	</div>
-{%- endblock jumbotron -%}
+{%- extends 'index/base/index_contact.html.twig' -%}
 
 {%- set email_help -%}
 	<ul>
@@ -33,7 +17,10 @@
 			{{- form_row(form.email, {
 				'label': 'label.your_email',
 				'help_html': true,
-				'help': email_help,
+				'help': 'var',
+				'help_translation_parameters': {
+					'var': email_help
+				},
 				'pre_addon': {
 					'fa': 'envelope-o'
 				}
