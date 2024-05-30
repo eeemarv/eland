@@ -1,0 +1,30 @@
+{%- apply inky_to_html|inline_css(source('@style/foundation-emails.css')) -%}
+<container>
+    <callout class="primary">
+        <h1>eLAND contact</h1>
+    </callout>
+    <row>
+        <columns>
+            <button href="{{- url('index_contact_confirm', {'token': token}) -}}">
+                Bevestig je bericht
+            </button>
+            <p>Je bericht wordt pas verzonden wanneer
+                je je email adres bevestigd hebt door
+                op bovenstaande link te klikken,
+            </p>
+            <p>Deze link blijft 24 geldig.</p>
+        </columns>
+    </row>
+    <callout class="secondary">
+        <p>Als je niet het
+            <a href="{{- url('index_contact') -}}">eLAND contactformulier</a>
+            hebt gebruikt, gelieve dan deze email te negeren.
+        </p>
+    </callout>
+    <row>
+        <columns>
+            <a href="{{- url('index') -}}">eLAND</a>
+        </columns>
+    </row>
+</container>
+{%- endapply -%}

@@ -15,7 +15,7 @@ class IndexContactFormCommand implements CommandInterface
         new NotBlank(groups: ['send']),
         new Email(groups: ['send']),
     ])]
-    public $email;
+    public $email_address;
 
     #[Sequentially(constraints: [
         new NotBlank(groups: ['send']),

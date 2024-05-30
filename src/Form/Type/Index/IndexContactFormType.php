@@ -19,7 +19,7 @@ class IndexContactFormType extends AbstractType
     ):void
     {
         $builder
-            ->add('email', EmailType::class)
+            ->add('email_address', EmailType::class)
             ->add('message', TextareaType::class)
             ->add('captcha', CaptchaType::class)
             ->add('submit', SubmitType::class);

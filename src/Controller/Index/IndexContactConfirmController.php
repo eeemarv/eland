@@ -2,18 +2,14 @@
 
 namespace App\Controller\Index;
 
-use App\Cnst\PagesCnst;
-use App\Command\Index\IndexContactFormCommand;
-use App\Form\Type\Index\IndexContactFormType;
-use App\Service\AlertService;
 use App\Service\DataTokenService;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Email;
+use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -29,10 +25,8 @@ class IndexContactConfirmController extends AbstractController
     )]
 
     public function __invoke(
-        Request $request,
         string $token,
         DataTokenService $data_token_service,
-        AlertService $alert_service,
         MailerInterface $mailer,
         #[Autowire('%env(MAIL_HOSTER_ADDRESS)%')]
         string $env_mail_hoster_address,
@@ -40,21 +34,25 @@ class IndexContactConfirmController extends AbstractController
         string $env_mail_from_address,
     ):Response
     {
-        if ($token !== PagesCnst::CMS_TOKEN)
-        {
-            $data = $data_token_service->retrieve($token, 'index_contact_form', null);
+        $data = $data_token_service->retrieve($token, 'index_contact_form', null);
 
-            if (!$data)
-            {
-                $alert_service->error('Ongeldig of verlopen token.');
-                return $this->redirectToRoute('index_contact_form');
-            }
+        if (!$data)
+        {
+            $this->addFlash('alert', [
+                'type'      => 'error',
+                'message'   => 'Ongeldig of verlopen token.',
+            ]);
+            return $this->redirectToRoute('index_contact');
         }
 
-        /**
-         * send emails
-         */
-
+        $email = new TemplatedEmail();
+        $email->from(new Address($env_mail_from_address, 'eLAND contact'));
+        $email->to(new Address($env_mail_hoster_address));
+        $email->subject('Bericht van eLAND contactformulier');
+        $email->htmlTemplate('@email/index/index_contact.html.twig');
+        $email->context($data);
+        $email->replyTo(new Address($data['email_address']));
+        $mailer->send($email);
 
         return $this->render('index/contact_confirm.html.twig');
     }
