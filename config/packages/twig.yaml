@@ -1,5 +1,7 @@
 twig:
     default_path: '%kernel.project_dir%/templates'
+    paths:
+      tpl_email: email
     debug: '%kernel.debug%'
     strict_variables: '%kernel.debug%'
     form_themes: ['form_3.html.twig']

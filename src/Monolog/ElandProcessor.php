@@ -2,6 +2,7 @@
 
 namespace App\Monolog;
 
+use Monolog\LogRecord;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
@@ -12,12 +13,12 @@ class ElandProcessor implements EventSubscriberInterface
 {
     private $extra = [];
 
-    public function __invoke(array $record):array
+    public function __invoke(LogRecord $record):LogRecord
     {
         if (isset($this->extra))
         {
-            $record['extra'] = [
-                ...$record['extra'],
+            $record->extra = [
+                ...$record->extra,
                 ...$this->extra,
             ];
         }

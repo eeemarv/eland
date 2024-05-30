@@ -9,7 +9,8 @@ monolog:
             #channels: ["app"]
         redis:
             type: service
-            id: App\Monolog\RedisHandler
+            #id: App\Monolog\RedisHandler
+            id: snc_redis.monolog.handler
             level: debug
             channels: ["app"]
         console:

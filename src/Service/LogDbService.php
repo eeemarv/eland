@@ -2,13 +2,13 @@
 
 namespace App\Service;
 
-use App\Monolog\RedisHandler;
 use Doctrine\DBAL\Connection as Db;
 use Redis;
 
 class LogDbService
 {
 	const MAX_POP = 500;
+	const KEY = 'monolog';
 
 	public function __construct(
 		protected Db $db,
@@ -22,7 +22,16 @@ class LogDbService
 	{
 		for ($i = 0; $i < self::MAX_POP; $i++)
 		{
-			$log_json = $this->redis->lpop(RedisHandler::KEY);
+			$log_json = $this->redis->lpop(self::KEY);
+
+			if ($log_json === false)
+			{
+				error_log('no logs');
+				return;
+			}
+
+			error_log('log');
+			error_log($log_json);
 
 			if (!$log_json)
 			{
@@ -53,7 +62,7 @@ class LogDbService
 			{
 				if (!isset($extra['system']))
 				{
-					return;
+					continue;
 				}
 
 				$system = $extra['system'];
@@ -84,7 +93,7 @@ class LogDbService
 				$user_id = $extra['logins'][$user_schema];
 			}
 
-			$datetime = new \DateTime($log['datetime']['date'], new \DateTimeZone($log['datetime']['timezone']));
+			$datetime = new \DateTime($log['datetime']);
 			$datetime->setTimezone(new \DateTimeZone('UTC'));
 			$ts = $datetime->format("Y-m-d H:i:s");
 

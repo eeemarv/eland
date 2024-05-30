@@ -1,5 +1,5 @@
 framework:
     cache:
-        prefix_seed: app_
+        prefix_seed: app.
         app: cache.adapter.redis
         default_redis_provider: snc_redis.default
