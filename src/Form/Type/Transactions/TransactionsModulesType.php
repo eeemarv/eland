@@ -11,7 +11,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class TransactionsModulesType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options):void
+    public function buildForm(
+        FormBuilderInterface $builder,
+        array $options
+    ):void
     {
         $builder->add('service_stuff_enabled', CheckboxType::class);
         $builder->add('limits_enabled', CheckboxType::class);

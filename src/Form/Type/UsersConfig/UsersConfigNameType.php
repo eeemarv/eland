@@ -16,7 +16,10 @@ class UsersConfigNameType extends AbstractType
     {
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options):void
+    public function buildForm(
+        FormBuilderInterface $builder,
+        array $options
+    ):void
     {
         $builder->add('self_edit', CheckboxType::class);
         $builder->add('submit', SubmitType::class);

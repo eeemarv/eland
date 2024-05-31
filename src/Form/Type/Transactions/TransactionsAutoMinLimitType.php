@@ -12,7 +12,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class TransactionsAutoMinLimitType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options):void
+    public function buildForm(
+        FormBuilderInterface $builder,
+        array $options
+    ):void
     {
         $builder->add('percentage', IntegerType::class);
         $builder->add('exclude_to', TextType::class);

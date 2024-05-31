@@ -11,7 +11,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class CategoriesListType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options):void
+    public function buildForm(
+        FormBuilderInterface $builder,
+        array $options
+    ):void
     {
         $builder->add('categories', HiddenType::class);
         $builder->add('submit', SubmitType::class);

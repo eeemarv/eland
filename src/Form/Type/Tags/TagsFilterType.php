@@ -11,7 +11,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class TagsFilterType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options):void
+    public function buildForm(
+        FormBuilderInterface $builder,
+        array $options
+    ):void
     {
         $builder->add('contact_type_id', TextType::class, [
             'disabled'      => true,

@@ -20,7 +20,7 @@ class IntersystemsService
 
 	public function __construct(
 		protected Db $db,
-		protected Redis $predis,
+		protected Redis $redis,
 		protected SystemsService $systems_service,
 		protected ConfigCache $config_cache
 	)
@@ -41,8 +41,8 @@ class IntersystemsService
 
 		foreach ($schemas as $schema)
 		{
-			$this->predis->del($schema . self::ELAND);
-			$this->predis->del($schema . self::ELAND_ACCOUNTS_SCHEMAS);
+			$this->redis->del($schema . self::ELAND);
+			$this->redis->del($schema . self::ELAND_ACCOUNTS_SCHEMAS);
 		}
 	}
 
@@ -94,17 +94,17 @@ class IntersystemsService
 
 		$redis_key = $schema . self::ELAND_ACCOUNTS_SCHEMAS;
 
-		if ($this->predis->exists($redis_key))
+		if ($this->redis->exists($redis_key))
 		{
-			$this->predis->expire($redis_key, self::TTL_ELAND_ACCOUNTS_SCHEMAS);
+			$this->redis->expire($redis_key, self::TTL_ELAND_ACCOUNTS_SCHEMAS);
 
-			return $this->eland_accounts_schemas[$schema] = json_decode($this->predis->get($redis_key), true);
+			return $this->eland_accounts_schemas[$schema] = json_decode($this->redis->get($redis_key), true);
 		}
 
 		$this->load_eland_intersystems_from_db($schema);
 
-		$this->predis->set($redis_key, json_encode($this->eland_accounts_schemas[$schema]));
-		$this->predis->expire($redis_key, self::TTL_ELAND_ACCOUNTS_SCHEMAS);
+		$this->redis->set($redis_key, json_encode($this->eland_accounts_schemas[$schema]), );
+		$this->redis->expire($redis_key, self::TTL_ELAND_ACCOUNTS_SCHEMAS);
 
 		return $this->eland_accounts_schemas[$schema];
 	}
@@ -123,11 +123,11 @@ class IntersystemsService
 
 		$redis_key = $s_schema . self::ELAND;
 
-		if ($this->predis->exists($redis_key))
+		if ($this->redis->exists($redis_key))
 		{
-			$this->predis->expire($redis_key, self::TTL);
+			$this->redis->expire($redis_key, self::TTL);
 
-			return $this->eland_ary[$s_schema] = json_decode($this->predis->get($redis_key), true);
+			return $this->eland_ary[$s_schema] = json_decode($this->redis->get($redis_key), true);
 		}
 
 		if (!isset($this->eland_intersystems[$s_schema]))
@@ -162,8 +162,8 @@ class IntersystemsService
 			$this->eland_ary[$s_schema][$interschema] = $intersystem;
 		}
 
-		$this->predis->set($redis_key, json_encode($this->eland_ary[$s_schema]));
-		$this->predis->expire($redis_key, self::TTL);
+		$this->redis->set($redis_key, json_encode($this->eland_ary[$s_schema]));
+		$this->redis->expire($redis_key, self::TTL);
 
 		return $this->eland_ary[$s_schema];
 	}

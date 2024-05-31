@@ -12,7 +12,7 @@ class IsMollieApikeyValidator extends ConstraintValidator
     {
         if (!$constraint instanceof IsMollieApikey)
         {
-            throw new UnexpectedTypeException($constraint, CategoryIsLeaf::class);
+            throw new UnexpectedTypeException($constraint, IsMollieApikey::class);
         }
 
         if (!isset($apikey) || $apikey === '')

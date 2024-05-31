@@ -1,5 +1,6 @@
 # see https://symfony.com/doc/current/reference/configuration/framework.html
 framework:
+    handle_all_throwables: true
     # the IP address (or range) of your proxy
     trusted_proxies: '127.0.0.1,172.17.0.0/8'
     # trust *all* "X-Forwarded-*" headers

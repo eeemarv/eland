@@ -34,7 +34,7 @@ class IntersystemsController extends AbstractController
 
     public function __invoke(
         Db $db,
-        Redis $predis,
+        Redis $redis,
         ConfigCache $config_cache,
         LinkRender $link_render,
         PageParamsService $pp,
@@ -80,7 +80,7 @@ class IntersystemsController extends AbstractController
             }
             else
             {
-                $intersystems[$key]['user_count'] = $predis->get($sys_host . '_active_user_count') ?: 0;
+                $intersystems[$key]['user_count'] = $redis->get($sys_host . '_active_user_count') ?: 0;
             }
         }
 

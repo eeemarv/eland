@@ -23,7 +23,10 @@ class UsersConfigLeavingType extends AbstractType
     {
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options):void
+    public function buildForm(
+        FormBuilderInterface $builder,
+        array $options
+    ):void
     {
         $transactions_enabled = $this->config_cache->get_bool('transactions.enabled', $this->pp->schema());
 

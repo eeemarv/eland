@@ -20,7 +20,10 @@ class ForumTopicDelType extends AbstractType
     {
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options):void
+    public function buildForm(
+        FormBuilderInterface $builder,
+        array $options
+    ):void
     {
         $builder->add('subject', TextType::class, [
             'disabled'  => true,

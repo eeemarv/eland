@@ -15,7 +15,10 @@ class ForumPostDelType extends AbstractType
     {
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options):void
+    public function buildForm(
+        FormBuilderInterface $builder,
+        array $options
+    ):void
     {
         $builder->add('content', SummernoteType::class, [
             'disabled'  => true,

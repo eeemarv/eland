@@ -3,6 +3,7 @@
 namespace App\Command\RegisterForm;
 
 use App\Command\CommandInterface;
+use App\Validator\Captcha\Captcha;
 use App\Validator\Email\EmailNotRegisteredYet;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Length;
@@ -33,4 +34,7 @@ class RegisterFormCommand implements CommandInterface
     public $mobile;
 
     public $phone;
+
+    #[Captcha(groups: ['send'])]
+    public $captcha;
 }

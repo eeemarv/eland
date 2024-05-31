@@ -12,7 +12,10 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 
 class SupportFormType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options):void
+    public function buildForm(
+        FormBuilderInterface $builder,
+        array $options
+    ):void
     {
         $builder->add('message', TextareaType::class);
         $builder->add('cc', CheckboxType::class);

@@ -18,7 +18,10 @@ class UsersFullNameType extends AbstractType
     {
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options):void
+    public function buildForm(
+        FormBuilderInterface $builder,
+        array $options
+    ):void
     {
         if ($options['full_name_edit_en'])
         {

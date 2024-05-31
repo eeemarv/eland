@@ -9,7 +9,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class DelType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options):void
+    public function buildForm(
+        FormBuilderInterface $builder,
+        array $options
+    ):void
     {
         $builder->add('submit', SubmitType::class);
     }

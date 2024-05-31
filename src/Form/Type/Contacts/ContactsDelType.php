@@ -24,7 +24,10 @@ class ContactsDelType extends AbstractType
     {
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options):void
+    public function buildForm(
+        FormBuilderInterface $builder,
+        array $options
+    ):void
     {
         $fa = ContactsType::FORMAT[$options['contact_type_abbrev']]['fa'] ?? 'chevron-right';
 

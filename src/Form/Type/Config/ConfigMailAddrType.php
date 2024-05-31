@@ -12,7 +12,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ConfigMailAddrType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options):void
+    public function buildForm(
+        FormBuilderInterface $builder,
+        array $options
+    ):void
     {
         $builder->add('admin', CollectionType::class, [
             'entry_type'        => EmailType::class,

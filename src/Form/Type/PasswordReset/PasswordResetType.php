@@ -11,7 +11,10 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 
 class PasswordResetType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options):void
+    public function buildForm(
+        FormBuilderInterface $builder,
+        array $options
+    ):void
     {
         $builder->add('email', EmailType::class);
         $builder->add('submit', SubmitType::class);

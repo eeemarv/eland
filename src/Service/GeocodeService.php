@@ -78,7 +78,7 @@ class GeocodeService
         }
 
         error_log('-- GEOCDDE parsed address ---');
-        error_log('street_nmae: ' . $street_name);
+        error_log('street_name: ' . $street_name);
         error_log('street_number: ' . $street_number);
         error_log('street_bus: ' . $street_bus);
         error_log('postal_code' . $postal_code);

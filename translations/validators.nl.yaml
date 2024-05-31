@@ -1,3 +1,8 @@
+captcha:
+  no_token: Fout in formulier
+  not_correct: De ingevulde code is niet juist
+  token_not_found: Fout in formulier
+
 category:
   not_exists: >-
     De categorie bestaat niet.
@@ -81,6 +86,8 @@ mollie:
   not_live_nor_test: >-
     De Mollie apikey moet beginnen met
     live_ of test_
+
+not_empty: Deze waarde mag niet leeg zijn
 
 password_strength:
   Het paswoord is niet sterk genoeg.

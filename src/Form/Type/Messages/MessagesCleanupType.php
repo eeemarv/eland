@@ -12,7 +12,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class MessagesCleanupType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options):void
+    public function buildForm(
+        FormBuilderInterface $builder,
+        array $options
+    ):void
     {
         $builder->add('cleanup_enabled', CheckboxType::class);
         $builder->add('cleanup_after_days', IntegerType::class);

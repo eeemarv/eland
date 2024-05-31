@@ -64,7 +64,6 @@ class ConfigCache
 		{
 			$this->flatten_load_ary($row['id'], json_decode($row['data'], true));
 		}
-
 		return $this->load_ary;
 	}
 

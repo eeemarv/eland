@@ -12,7 +12,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ConfigLandingPageType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options):void
+    public function buildForm(
+        FormBuilderInterface $builder,
+        array $options
+    ):void
     {
         $choices = [];
         $choice_translation_parameters = [];

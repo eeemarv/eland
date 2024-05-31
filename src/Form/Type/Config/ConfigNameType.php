@@ -12,7 +12,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ConfigNameType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options):void
+    public function buildForm(
+        FormBuilderInterface $builder,
+        array $options
+    ):void
     {
         $builder->add('system_name', TextType::class);
         $builder->add('home_header_enabled', CheckboxType::class);

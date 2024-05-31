@@ -67,7 +67,6 @@ class PasswordResetConfirmController extends AbstractController
             if (!$data)
             {
                 $alert_service->error('Het reset-token is niet meer geldig.');
-
                 return $this->redirectToRoute('password_reset', $pp->ary());
             }
 

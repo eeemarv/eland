@@ -13,7 +13,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class TransactionsCurrencyType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options):void
+    public function buildForm(
+        FormBuilderInterface $builder,
+        array $options
+    ):void
     {
         $builder->add('currency', TextType::class);
         $builder->add('timebased_en', CheckboxType::class);

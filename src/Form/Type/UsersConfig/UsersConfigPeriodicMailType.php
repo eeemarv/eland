@@ -17,7 +17,10 @@ class UsersConfigPeriodicMailType extends AbstractType
     {
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options):void
+    public function buildForm(
+        FormBuilderInterface $builder,
+        array $options
+    ):void
     {
         $builder->add('days', IntegerType::class);
         $builder->add('block_layout', HiddenType::class);

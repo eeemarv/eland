@@ -1,0 +1,15 @@
+{%- extends 'base/base.html.twig' -%}
+
+{%- block title -%}eLAND{%- endblock -%}
+{%- block navbar -%}{%- endblock -%}
+
+{%- block page_container -%}
+	{%- block jumbotron -%}{%- endblock -%}
+
+	<div class="container">
+		{%- include 'include/alert.html.twig' -%}
+		{%- block container -%}{%- endblock -%}
+	</div>
+
+	<br><br>
+{%- endblock page_container -%}

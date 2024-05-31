@@ -12,7 +12,10 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 class LoginType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options):void
+    public function buildForm(
+        FormBuilderInterface $builder,
+        array $options
+    ):void
     {
         $builder->add('login', TextType::class);
         $builder->add('password', PasswordType::class);

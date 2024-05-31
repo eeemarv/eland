@@ -18,7 +18,7 @@ class FormTokenService
 
 	public function __construct(
 		RequestStack $request_stack,
-		protected Redis $predis,
+		protected Redis $redis,
 		protected TokenGeneratorService $token_generator_service
 	)
 	{
@@ -36,8 +36,7 @@ class FormTokenService
 		{
 			$this->token = $this->token_generator_service->gen();
 			$key = self::STORE_PREFIX . $this->token;
-			$this->predis->set($key, '1');
-			$this->predis->expire($key, self::TTL);
+			$this->redis->set($key, '1', self::TTL);
 		}
 
 		return $this->token;
@@ -57,7 +56,7 @@ class FormTokenService
 
 		$key = self::STORE_PREFIX . $this->get_posted();
 
-		$value = $this->predis->get($key);
+		$value = $this->redis->get($key);
 
 		if (!$value)
 		{
@@ -66,13 +65,13 @@ class FormTokenService
 
 		if ($value > 1)
 		{
-			$this->predis->incr($key);
+			$this->redis->incr($key);
 			return 'Een dubbele ingave van het formulier werd voorkomen.';
 		}
 
 		if ($incr)
 		{
-			$this->predis->incr($key);
+			$this->redis->incr($key);
 		}
 
 		return '';
@@ -89,7 +88,7 @@ class FormTokenService
 		{
 			return 'Geen form token gedefiniëerd.';
 		}
-		else if (!$this->predis->get(self::STORE_PREFIX . $form_token))
+		else if (!$this->redis->get(self::STORE_PREFIX . $form_token))
 		{
 			return 'Formulier verlopen of ongeldig.';
 		}
