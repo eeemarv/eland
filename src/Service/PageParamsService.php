@@ -16,8 +16,8 @@ class PageParamsService
 	protected Request $request;
 	protected null|string $role_short;
 	protected string $role;
-	protected string $system;
-	protected string $schema;
+	protected null|string $system;
+	protected null|string $schema;
 	protected array $edit;
 	protected array $ary;
 
@@ -60,30 +60,32 @@ class PageParamsService
 		$this->is_guest = $this->role === 'guest';
 		$this->is_anonymous = $this->role === 'anonymous';
 
-		$system = $this->request->attributes->get('system');
+		if ($this->is_anonymous)
+		{
+			unset($this->role_short);
+		}
 
-		if (!isset($system) || $system === '')
+		$this->system = $this->request->attributes->get('system');
+
+		if (!isset($this->system))
 		{
 			throw new NotFoundHttpException('No system defined.');
 		}
 
-		$schema = $this->systems_cache->get_schema($system);
+		$this->schema = $this->systems_cache->get_schema($this->system);
 
-		if (!isset($schema))
+		if (!isset($this->schema))
 		{
 			$system_redirects = json_decode($this->env_app_system_redirects, true) ?? [];
 
-			if (isset($system_redirects[$system]))
+			if (isset($system_redirects[$this->system]))
 			{
-				header('Location: ' . $system_redirects[$system]);
+				header('Location: ' . $system_redirects[$this->system]);
 				exit;
 			}
 
-			throw new NotFoundHttpException('Could not find system "' . $system . '"');
+			throw new NotFoundHttpException('Could not find system "' . $this->system . '"');
 		}
-
-		$this->system = $system;
-		$this->schema = $schema;
 
 		$this->org_system = $this->request->query->get('os');
 
@@ -98,38 +100,41 @@ class PageParamsService
 
 		$this->ary = [];
 
-		$this->ary['system'] = $this->system;
-
-		if (isset($this->org_system))
+		if (isset($this->system))
 		{
-			$this->ary['os'] = $this->org_system;
-		}
-		else
-		{
-			$edit = $this->request->query->all('edit');
+			$this->ary['system'] = $this->system;
 
-			if ($edit && isset($edit['en']) && $edit['en'] === '1')
+			if (isset($this->org_system))
 			{
-				$this->edit['en'] = '1';
-				if (isset($edit['route']) && $edit['route'] === '1')
-				{
-					$this->edit['route'] = '1';
-				}
-				if (isset($edit['role']) && $edit['role'] === '1')
-				{
-					$this->edit['role'] = '1';
-				}
-				if (isset($edit['inline']) && $edit['inline'] === '1')
-				{
-					$this->edit['inline'] = '1';
-				}
-				$this->ary['edit'] = $this->edit;
+				$this->ary['os'] = $this->org_system;
 			}
-		}
+			else
+			{
+				$edit = $this->request->query->all('edit');
 
-		if (isset($this->role_short))
-		{
-			$this->ary['role_short'] = $this->role_short;
+				if ($edit && isset($edit['en']) && $edit['en'] === '1')
+				{
+					$this->edit['en'] = '1';
+					if (isset($edit['route']) && $edit['route'] === '1')
+					{
+						$this->edit['route'] = '1';
+					}
+					if (isset($edit['role']) && $edit['role'] === '1')
+					{
+						$this->edit['role'] = '1';
+					}
+					if (isset($edit['inline']) && $edit['inline'] === '1')
+					{
+						$this->edit['inline'] = '1';
+					}
+					$this->ary['edit'] = $this->edit;
+				}
+			}
+
+			if (isset($this->role_short))
+			{
+				$this->ary['role_short'] = $this->role_short;
+			}
 		}
 	}
 

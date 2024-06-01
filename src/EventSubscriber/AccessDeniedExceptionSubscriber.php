@@ -25,21 +25,25 @@ class AccessDeniedExceptionSubscriber implements EventSubscriberInterface
 
         if ($exception instanceof AccessDeniedException)
         {
-            if ($this->pp->schema() !== '')
+            $schema = $this->pp->schema();
+
+            if (isset($schema))
             {
                 $request = $this->request_stack->getCurrentRequest();
 
-                if ($this->pp->org_schema() === '')
+                $org_schema = $this->pp->org_schema();
+
+                if (isset($org_schema))
                 {
                     $this->link_render->redirect('login', [
-                        'system' => $this->pp->system(),
+                        'system' => $this->pp->org_system(),
                     ], [
                         'location'  => $request->getRequestUri(),
                     ]);
                 }
 
                 $this->link_render->redirect('login', [
-                    'system' => $this->pp->org_system(),
+                    'system' => $this->pp->system(),
                 ], [
                     'location'  => $request->getRequestUri(),
                 ]);
