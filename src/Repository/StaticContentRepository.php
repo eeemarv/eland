@@ -17,6 +17,7 @@ class StaticContentRepository
 		string $lang,
 		null|string $role,
 		null|string $route,
+		null|int $page_id,
 		null|string $block
 	):array
 	{
@@ -59,6 +60,18 @@ class StaticContentRepository
 			$sql['where'][] = 'route is null';
 		}
 
+		if (isset($page_id))
+		{
+			$sql['where'][] = 'page_id = ?';
+			$sql['columns'][] = 'page_id';
+			$sql['params'][] = $page_id;
+			$sql['types'][] = \PDO::PARAM_INT;
+		}
+		else
+		{
+			$sql['where'][] = 'page_id is null';
+		}
+
 		if (isset($block))
 		{
 			$sql['where'][] = 'block = ?';
@@ -74,13 +87,14 @@ class StaticContentRepository
 		string $lang,
 		null|string $role,
 		null|string $route,
+		null|int $page_id,
 		string $block,
 		string $content,
 		SessionUserService $su,
 		string $schema
 	):void
 	{
-		$sql = $this->get_sql($lang, $role, $route, $block);
+		$sql = $this->get_sql($lang, $role, $route, $page_id, $block);
 
 		$sql_where = implode(' and ', $sql['where']);
 
@@ -124,10 +138,11 @@ class StaticContentRepository
 		string $lang,
 		null|string $role,
 		null|string $route,
+		null|int $page_id,
 		string $schema
 	):array
 	{
-		$sql = $this->get_sql($lang, $role, $route, null);
+		$sql = $this->get_sql($lang, $role, $route, $page_id, null);
 
 		$sql_where = implode(' and ', $sql['where']);
 

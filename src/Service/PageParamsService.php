@@ -29,6 +29,7 @@ class PageParamsService
 	protected null|string $org_system;
 	protected null|string $org_schema;
 	protected string $route;
+	protected null|int $page_id;
 
 	public function __construct(
 		protected RequestStack $request_stack,
@@ -97,6 +98,9 @@ class PageParamsService
 		}
 
 		$this->org_schema = isset($this->org_system) ? $this->systems_cache->get_schema($this->org_system) : null;
+
+		$page_id = $this->request->attributes->get('page_id');
+		$this->page_id = isset($page_id) ? (int) $page_id : null;
 
 		$this->ary = [];
 
@@ -221,5 +225,10 @@ class PageParamsService
 	public function ary():array
 	{
 		return $this->ary;
+	}
+
+	public function page_id():null|int
+	{
+		return $this->page_id;
 	}
 }

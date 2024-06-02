@@ -17,7 +17,10 @@ class StaticContentRuntime implements RuntimeExtensionInterface
 
 	public function has(bool $with_role, bool $with_route, string $block):bool
 	{
-		if ($this->static_content_service->get($with_role ? $this->pp->role() : '', $with_route ? $this->pp->route() : '', $block, $this->pp->schema()) !== '')
+		$role = $with_role ? $this->pp->role() : null;
+		$route = $with_route ? $this->pp->route() : null;
+
+		if ($this->static_content_service->get($role, $route, $this->pp->page_id(), $block, $this->pp->schema()) !== '')
 		{
 			return true;
 		}
@@ -42,11 +45,9 @@ class StaticContentRuntime implements RuntimeExtensionInterface
 
 	public function get(bool $with_role, bool $with_route, string $block):string
 	{
-		return $this->static_content_service->get(
-			$with_role ? $this->pp->role() : '',
-			$with_route ? $this->pp->route() : '',
-			$block,
-			$this->pp->schema()
-		);
+		$role = $with_role ? $this->pp->role() : null;
+		$route = $with_route ? $this->pp->route() : null;
+
+		return $this->static_content_service->get($role, $route, $this->pp->page_id(), $block, $this->pp->schema());
 	}
 }

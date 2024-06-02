@@ -64,8 +64,15 @@ class CmsEditController extends AbstractController
             $role = $command->role;
             $role_enabled = $command->role_en === '1';
 
-            $sel_route = $route_enabled ? $route : '';
-            $sel_role = $role_enabled ? $role : '';
+            $sel_route = $route_enabled ? $route : null;
+            $sel_role = $role_enabled ? $role : null;
+
+            $page_id = null;
+
+            if (isset($sel_route) && isset($all_params['page_id']))
+            {
+                $page_id = (int) $all_params['page_id'];
+            }
 
             $count_updated = 0;
 
@@ -84,11 +91,11 @@ class CmsEditController extends AbstractController
 
                 error_log('SET block ' . $block . ' -- ' . $set);
 
+                $get = $static_content_service->get($sel_role, $sel_route, $page_id, $block, $pp->schema());
 
-                $get = $static_content_service->get($sel_role, $sel_route, $block, $pp->schema());
                 if($get !== $set)
                 {
-                    $static_content_service->set($sel_role, $sel_route, $block, $set, $su, $pp->schema());
+                    $static_content_service->set($sel_role, $sel_route, $page_id, $block, $set, $su, $pp->schema());
                     $count_updated++;
                 }
             }
