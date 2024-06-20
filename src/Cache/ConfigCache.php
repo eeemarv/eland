@@ -221,35 +221,6 @@ class ConfigCache
 			);
 		}
 
-		/*
-		$id = array_shift($path_ary);
-		$path = implode(',', $path_ary);
-
-		if ($path === '')
-		{
-			throw new LogicException('Config path not set for id ' . $id);
-		}
-
-		if (isset($value))
-		{
-			$this->db->executeStatement('update ' . $schema . '.config
-				set data = jsonb_set(data, \'{' . $path . '}\',  ?)
-				where id = ?',
-				[$value, $id],
-				[Types::JSON, \PDO::PARAM_STR]
-			);
-		}
-		else
-		{
-			$this->db->executeStatement('update ' . $schema . '.config
-				set data = jsonb_set(data, \'{' . $path . '}\',  \'null\'::jsonb)
-				where id = ?',
-				[$id],
-				[\PDO::PARAM_STR]
-			);
-		}
-		*/
-
 		$this->clear_cache($schema);
 		return;
 	}
