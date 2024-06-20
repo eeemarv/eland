@@ -119,7 +119,7 @@ class UsersEditController extends AbstractController
     {
         $full_name_enabled = $config_service->get_bool('users.fields.full_name.enabled', $pp->schema());
         $postcode_enabled = $config_service->get_bool('users.fields.postcode.enabled', $pp->schema());
-        $birthday_enabled = $config_service->get_bool('users.fields.birthday.enabled', $pp->schema());
+        $birthdate_enabled = $config_service->get_bool('users.fields.birthdate.enabled', $pp->schema());
         $hobbies_enabled = $config_service->get_bool('users.fields.hobbies.enabled', $pp->schema());
         $comments_enabled = $config_service->get_bool('users.fields.comments.enabled', $pp->schema());
         $admin_comments_enabled = $config_service->get_bool('users.fields.admin_comments.enabled', $pp->schema());
@@ -177,7 +177,7 @@ class UsersEditController extends AbstractController
         $full_name = trim($request->request->get('full_name', ''));
         $full_name_access = $request->request->get('full_name_access', '');
         $postcode = trim($request->request->get('postcode', ''));
-        $birthday = trim($request->request->get('birthday', ''));
+        $birthdate = trim($request->request->get('birthdate', ''));
         $hobbies = trim($request->request->get('hobbies', ''));
         $comments = trim($request->request->get('comments', ''));
         $role = $request->request->get('role', '');
@@ -415,11 +415,11 @@ class UsersEditController extends AbstractController
                 }
             }
 
-            if ($birthday && $birthday_enabled)
+            if ($birthdate && $birthdate_enabled)
             {
-                $birthday = $date_format_service->reverse($birthday, $pp->schema());
+                $birthdate = $date_format_service->reverse($birthdate, $pp->schema());
 
-                if ($birthday === '')
+                if ($birthdate === '')
                 {
                     $errors[] = 'Fout in formaat geboortedag.';
                 }
@@ -475,9 +475,9 @@ class UsersEditController extends AbstractController
                     $post_user['postcode'] = $postcode;
                 }
 
-                if ($birthday_enabled)
+                if ($birthdate_enabled)
                 {
-                    $post_user['birthday'] = $birthday === '' ? null : $birthday;
+                    $post_user['birthdate'] = $birthdate === '' ? null : $birthdate;
                 }
 
                 if ($hobbies_enabled)
@@ -739,7 +739,7 @@ class UsersEditController extends AbstractController
             $full_name = '';
             $full_name_access = '';
             $postcode = '';
-            $birthday = '';
+            $birthdate = '';
             $hobbies = '';
             $comments = '';
             $role = 'user';
@@ -798,7 +798,7 @@ class UsersEditController extends AbstractController
                 $full_name = $stored_user['full_name'] ?? '';
                 $full_name_access = $stored_user['full_name_access'] ?? 'admin';
                 $postcode = $stored_user['postcode'] ?? '';
-                $birthday = $stored_user['birthday'] ?? '';
+                $birthdate = $stored_user['birthdate'] ?? '';
                 $hobbies = $stored_user['hobbies'] ?? '';
                 $comments = $stored_user['comments'] ?? '';
                 $role = $stored_user['role'] ?? 'user';
@@ -977,21 +977,21 @@ class UsersEditController extends AbstractController
             $out .= '</div>';
         }
 
-        if ($birthday_enabled)
+        if ($birthdate_enabled)
         {
             $out .= '<div class="form-group">';
-            $out .= '<label for="birthday" class="control-label">';
+            $out .= '<label for="birthdate" class="control-label">';
             $out .= 'Geboortedatum</label>';
             $out .= '<div class="input-group">';
             $out .= '<span class="input-group-addon">';
             $out .= '<span class="fa fa-calendar"></span></span>';
             $out .= '<input type="text" class="form-control" ';
-            $out .= 'id="birthday" name="birthday" ';
+            $out .= 'id="birthdate" name="birthdate" ';
             $out .= 'value="';
 
-            if ($birthday)
+            if ($birthdate)
             {
-                $out .= $date_format_service->get($birthday, 'day', $pp->schema());
+                $out .= $date_format_service->get($birthdate, 'day', $pp->schema());
             }
 
             $out .= '" ';

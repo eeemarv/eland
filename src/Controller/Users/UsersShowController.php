@@ -112,7 +112,7 @@ class UsersShowController extends AbstractController
 
         $full_name_enabled = $config_service->get_bool('users.fields.full_name.enabled', $pp->schema());
         $postcode_enabled = $config_service->get_bool('users.fields.postcode.enabled', $pp->schema());
-        $birthday_enabled = $config_service->get_bool('users.fields.birthday.enabled', $pp->schema());
+        $birthdate_enabled = $config_service->get_bool('users.fields.birthdate.enabled', $pp->schema());
         $hobbies_enabled = $config_service->get_bool('users.fields.hobbies.enabled', $pp->schema());
         $comments_enabled = $config_service->get_bool('users.fields.comments.enabled', $pp->schema());
         $admin_comments_enabled = $config_service->get_bool('users.fields.admin_comments.enabled', $pp->schema());
@@ -475,7 +475,7 @@ class UsersShowController extends AbstractController
             $out .= $this->get_dd($user['postcode'] ?? '');
         }
 
-        if ($birthday_enabled)
+        if ($birthdate_enabled)
         {
             if ($pp->is_admin() || $su->is_owner($id))
             {
@@ -483,9 +483,9 @@ class UsersShowController extends AbstractController
                 $out .= 'Geboortedatum';
                 $out .= '</dt>';
 
-                if (isset($user['birthday']))
+                if (isset($user['birthdate']))
                 {
-                    $out .= $date_format_service->get($user['birthday'], 'day', $pp->schema());
+                    $out .= $date_format_service->get($user['birthdate'], 'day', $pp->schema());
                 }
                 else
                 {

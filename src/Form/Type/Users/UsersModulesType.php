@@ -18,7 +18,7 @@ class UsersModulesType extends AbstractType
     {
         $builder->add('full_name_enabled', CheckboxType::class);
         $builder->add('postcode_enabled', CheckboxType::class);
-        $builder->add('birthday_enabled', CheckboxType::class);
+        $builder->add('birthdate_enabled', CheckboxType::class);
         $builder->add('hobbies_enabled', CheckboxType::class);
         $builder->add('comments_enabled', CheckboxType::class);
         $builder->add('admin_comments_enabled', CheckboxType::class);
