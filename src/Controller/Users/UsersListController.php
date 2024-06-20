@@ -90,7 +90,7 @@ class UsersListController extends AbstractController
 
         $full_name_enabled = $config_cache->get_bool('users.fields.full_name.enabled', $pp->schema());
         $postcode_enabled = $config_cache->get_bool('users.fields.postcode.enabled', $pp->schema());
-        $birthday_enabled = $config_cache->get_bool('users.fields.birthday.enabled', $pp->schema());
+        $birthdate_enabled = $config_cache->get_bool('users.fields.birthdate.enabled', $pp->schema());
         $hobbies_enabled = $config_cache->get_bool('users.fields.hobbies.enabled', $pp->schema());
         $comments_enabled = $config_cache->get_bool('users.fields.comments.enabled', $pp->schema());
         $admin_comments_enabled = $config_cache->get_bool('users.fields.admin_comments.enabled', $pp->schema());
@@ -637,7 +637,7 @@ class UsersListController extends AbstractController
         if ($pp->is_admin())
         {
             $columns['u'] += [
-                'birthday'              => 'Geboortedatum',
+                'birthdate'              => 'Geboortedatum',
                 'admin_comments'	    => 'Admin commentaar',
                 'periodic_overview_en'	=> 'Periodieke Overzichts E-mail',
                 'created_at'	        => 'Gecreëerd',
@@ -728,9 +728,9 @@ class UsersListController extends AbstractController
             unset($columns['u']['hobbies']);
         }
 
-        if (!$birthday_enabled)
+        if (!$birthdate_enabled)
         {
-            unset($columns['u']['birthday']);
+            unset($columns['u']['birthdate']);
         }
 
         if (!$admin_comments_enabled)
@@ -838,9 +838,9 @@ class UsersListController extends AbstractController
             unset($show_columns['u']['hobbies']);
         }
 
-        if (!$birthday_enabled)
+        if (!$birthdate_enabled)
         {
-            unset($show_columns['u']['birthday']);
+            unset($show_columns['u']['birthdate']);
         }
 
         if (!$admin_comments_enabled)
@@ -1527,7 +1527,7 @@ class UsersListController extends AbstractController
         ];
 
         $date_keys = [
-            'birthday'      => true,
+            'birthdate'      => true,
             'created_at'    => true,
             'last_edit_at'	=> true,
             'activated_at'  => true,

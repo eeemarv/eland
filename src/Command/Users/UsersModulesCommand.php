@@ -21,8 +21,8 @@ class UsersModulesCommand implements CommandInterface
     public $postcode_enabled;
 
     #[Type(type: 'bool')]
-    #[ConfigMap(type: 'bool', key: 'users.fields.birthday.enabled')]
-    public $birthday_enabled;
+    #[ConfigMap(type: 'bool', key: 'users.fields.birthdate.enabled')]
+    public $birthdate_enabled;
 
     #[Type(type: 'bool')]
     #[ConfigMap(type: 'bool', key: 'users.fields.hobbies.enabled')]
