@@ -53,6 +53,31 @@ class ConfigService
 	{
 		$this->load_ary = [];
 
+		/** get data from flattened  */
+
+		$fid = $this->db->fetchOne('select id
+			from ' . $schema . '.config
+			where flattened = \'t\'::bool
+			limit 1');
+
+		if ($fid !== false)
+		{
+			$stmt = $this->db->prepare('select id, data
+				from ' . $schema . '.config
+				where flattened = \'t\'::bool');
+
+			$res = $stmt->executeQuery();
+
+			while ($row = $res->fetchAssociative())
+			{
+				$this->load_ary[$row['id']] = json_decode($row['data'], true);
+			}
+
+			return $this->load_ary;
+		}
+
+		/** */
+
 		$stmt = $this->db->prepare('select id, data
 			from ' . $schema . '.config');
 
@@ -85,6 +110,48 @@ class ConfigService
 		{
 			$this->local_cache[$schema] = $data;
 		}
+
+		/** flatten config data  */
+
+		$fid = $this->db->fetchOne('select id
+			from ' . $schema . '.config
+			where flattened = \'t\'::bool
+			limit 1');
+
+		if ($fid !== false)
+		{
+			return $data;
+		}
+
+		$stmt = $this->db->prepare('select id, created_at, last_edit_at, edit_count
+			from ' . $schema . '.config
+			where flattened = \'f\'::bool');
+
+		$res = $stmt->executeQuery();
+
+		$e_data = [];
+
+		while ($row = $res->fetchAssociative())
+		{
+			$e_data[$row['id']] = $row;
+		}
+
+		foreach ($data as $id => $value)
+		{
+			[$oid] = explode('.', $id);
+
+			$ins = [
+				'id'	=> $id,
+				'data'	=> json_encode($value),
+				'flattened'	=> 't',
+				'created_at'	=> $e_data[$oid]['created_at'],
+				'last_edit_at'	=> $e_data[$oid]['last_edit_at'],
+				'edit_count'	=> $e_data[$oid]['edit_count']
+			];
+			$this->db->insert($schema . '.config', $ins);
+		}
+
+		/** */
 
 		return $data;
 	}
@@ -132,9 +199,11 @@ class ConfigService
 		return  $this->local_cache[$schema][$path];
 	}
 
-	protected function set_val(string $key, $value, string $schema):void
+	protected function set_val(string $id, $value, string $schema):void
 	{
-		$path_ary = explode('.', $key);
+		$user_id = null;
+
+		$path_ary = explode('.', $id);
 
 		foreach($path_ary as $p)
 		{
@@ -143,6 +212,29 @@ class ConfigService
 				throw new LogicException('Unacceptable path');
 			}
 		}
+
+		if (isset($value))
+		{
+			$this->db->executeStatement('update ' . $schema . '.config
+				set data = ?, last_edit_by = ?
+				where id = ?
+					and flattened = \'t\'::bool',
+				[$value, $user_id, $id],
+				[Types::JSON, \PDO::PARAM_INT, \PDO::PARAM_STR]
+			);
+		}
+		else
+		{
+			$this->db->executeStatement('update ' . $schema . '.config
+				set data = \'null\'::jsonb, last_edit_by = ?
+				where id = ?
+					and flattened = \'t\'::bool',
+				[$user_id, $id],
+				[\PDO::PARAM_INT, \PDO::PARAM_STR]
+			);
+		}
+
+		/*
 
 		$id = array_shift($path_ary);
 		$path = implode(',', $path_ary);
@@ -170,6 +262,7 @@ class ConfigService
 				[\PDO::PARAM_STR]
 			);
 		}
+		*/
 
 		$this->clear_cache($schema);
 		return;
