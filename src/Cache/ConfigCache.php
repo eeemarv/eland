@@ -57,14 +57,14 @@ class ConfigCache
 
 		$fid = $this->db->fetchOne('select id
 			from ' . $schema . '.config
-			where flattened = \'t\'::bool
+			where flattened
 			limit 1');
 
 		if ($fid !== false)
 		{
 			$stmt = $this->db->prepare('select id, data
 				from ' . $schema . '.config
-				where flattened = \'t\'::bool');
+				where flattened');
 
 			$res = $stmt->executeQuery();
 
@@ -105,7 +105,7 @@ class ConfigCache
 
 		$fid = $this->db->fetchOne('select id
 			from ' . $schema . '.config
-			where flattened = \'t\'::bool
+			where flattened
 			limit 1');
 
 		if ($fid !== false)
@@ -115,7 +115,7 @@ class ConfigCache
 
 		$stmt = $this->db->prepare('select id, created_at, last_edit_at, edit_count
 			from ' . $schema . '.config
-			where flattened = \'f\'::bool');
+			where not flattened');
 
 		$res = $stmt->executeQuery();
 
@@ -205,7 +205,7 @@ class ConfigCache
 			$this->db->executeStatement('update ' . $schema . '.config
 				set data = ?, last_edit_by = ?
 				where id = ?
-					and flattened = \'t\'::bool',
+					and flattened',
 				[$value, $user_id, $id],
 				[Types::JSON, \PDO::PARAM_INT, \PDO::PARAM_STR]
 			);
@@ -215,7 +215,7 @@ class ConfigCache
 			$this->db->executeStatement('update ' . $schema . '.config
 				set data = \'null\'::jsonb, last_edit_by = ?
 				where id = ?
-					and flattened = \'t\'::bool',
+					and flattened',
 				[$user_id, $id],
 				[\PDO::PARAM_INT, \PDO::PARAM_STR]
 			);

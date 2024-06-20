@@ -9,6 +9,6 @@ use Symfony\Component\Validator\Constraints\Type;
 class UsersConfigNameCommand implements CommandInterface
 {
     #[Type(type: 'bool')]
-    #[ConfigMap(type: 'bool', key: 'users.fields.username.self_edit')]
+    #[ConfigMap(type: 'bool', key: 'users.fields.name.self_edit')]
     public $self_edit;
 }

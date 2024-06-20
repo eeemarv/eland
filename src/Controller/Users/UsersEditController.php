@@ -204,7 +204,7 @@ class UsersEditController extends AbstractController
         }
         else if ($is_owner)
         {
-            $username_edit_en = $config_cache->get_bool('users.fields.username.self_edit', $pp->schema());
+            $username_edit_en = $config_cache->get_bool('users.fields.name.self_edit', $pp->schema());
             $full_name_edit_en = $config_cache->get_bool('users.fields.full_name.self_edit', $pp->schema());
         }
 
