@@ -218,7 +218,7 @@ class RegisterFormConfirmController extends AbstractController
             $vars[$k] = $data[$v];
         }
 
-        $pre_html_template = $static_content_service->get('', 'register_form_confirm', 'mail', $pp->schema());
+        $pre_html_template = $static_content_service->get(null, 'register_form_confirm', null, 'mail', $pp->schema());
 
         if ($pre_html_template !== '')
         {
