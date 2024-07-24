@@ -38,7 +38,6 @@ class DataTokenService
 	{
 		$key = $this->get_key($token, $name, $schema);
 		$data = $this->redis->get($key);
-		$this->redis->del($key);
 
 		if (!$data)
 		{
