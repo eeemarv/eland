@@ -24,6 +24,7 @@
 		"doctrine/doctrine-bundle": "^2",
 		"doctrine/doctrine-migrations-bundle": "^3",
 		"doctrine/orm": "^2",
+		"enshrined/svg-sanitize": "^0.19.0",
 		"geo6/geocoder-php-bpost-provider": "^1.4",
 		"imagine/imagine": "^0.6",
 		"intervention/image": "^2.7",
