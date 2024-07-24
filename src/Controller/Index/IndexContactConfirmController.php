@@ -45,6 +45,8 @@ class IndexContactConfirmController extends AbstractController
             return $this->redirectToRoute('index_contact');
         }
 
+        $data_token_service->del($token, 'index_contact_form', null);
+
         $email = new TemplatedEmail();
         $email->from(new Address($env_mail_from_address, 'eLAND contact'));
         $email->to(new Address($env_mail_hoster_address));
