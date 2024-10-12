@@ -31,8 +31,7 @@ class ConfigService
 		$ary = [];
 
 		$stmt = $this->db->prepare('select id, data
-			from ' . $schema . '.config
-			where flattened');
+			from ' . $schema . '.config');
 
 		$res = $stmt->executeQuery();
 
@@ -127,8 +126,7 @@ class ConfigService
 		{
 			$this->db->executeStatement('update ' . $schema . '.config
 				set data = ?, last_edit_by = ?
-				where id = ?
-					and flattened',
+				where id = ?',
 				[$value, $user_id, $id],
 				[Types::JSON, \PDO::PARAM_INT, \PDO::PARAM_STR]
 			);
@@ -137,8 +135,7 @@ class ConfigService
 		{
 			$this->db->executeStatement('update ' . $schema . '.config
 				set data = \'null\'::jsonb, last_edit_by = ?
-				where id = ?
-					and flattened',
+				where id = ?',
 				[$user_id, $id],
 				[\PDO::PARAM_INT, \PDO::PARAM_STR]
 			);
