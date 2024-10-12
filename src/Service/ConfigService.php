@@ -16,7 +16,6 @@ class ConfigService
 	const TTL = 518400; // 60 days
 
 	protected bool $local_cache_en = false;
-	protected array $load_ary = [];
 	protected array $local_cache = [];
 
 	public function __construct(
@@ -27,69 +26,22 @@ class ConfigService
 		$this->local_cache_en = php_sapi_name() !== 'cli';
 	}
 
-	protected function flatten_load_ary(string $prefix, array $ary):void
+	public function get_from_db(string $schema):array
 	{
-		foreach($ary as $key => $value)
-		{
-			$id = $prefix . '.' . $key;
-
-			if (!is_array($value))
-			{
-				$this->load_ary[$id] = $value;
-				continue;
-			}
-
-			if (array_is_list($value))
-			{
-				$this->load_ary[$id] = $value;
-				continue;
-			}
-
-			$this->flatten_load_ary($id, $value);
-		}
-	}
-
-	public function build_cache_from_db(string $schema):array
-	{
-		$this->load_ary = [];
-
-		/** get data from flattened  */
-
-		$fid = $this->db->fetchOne('select id
-			from ' . $schema . '.config
-			where flattened
-			limit 1');
-
-		if ($fid !== false)
-		{
-			$stmt = $this->db->prepare('select id, data
-				from ' . $schema . '.config
-				where flattened');
-
-			$res = $stmt->executeQuery();
-
-			while ($row = $res->fetchAssociative())
-			{
-				$this->load_ary[$row['id']] = json_decode($row['data'], true);
-			}
-
-			return $this->load_ary;
-		}
-
-		/** */
+		$ary = [];
 
 		$stmt = $this->db->prepare('select id, data
-			from ' . $schema . '.config');
+			from ' . $schema . '.config
+			where flattened');
 
 		$res = $stmt->executeQuery();
 
 		while ($row = $res->fetchAssociative())
 		{
-			$this->flatten_load_ary($row['id'], json_decode($row['data'], true));
+			$ary[$row['id']] = json_decode($row['data'], true);
 		}
-		$key = self::PREFIX . $schema;
-		$this->redis->set($key, json_encode($this->load_ary), self::TTL);
-		return $this->load_ary;
+
+		return $ary;
 	}
 
 	public function read_all(string $schema):array
@@ -103,55 +55,13 @@ class ConfigService
 		}
 		else
 		{
-			$data = $this->build_cache_from_db($schema);
+			$data = $this->get_from_db($schema);
 		}
 
 		if ($this->local_cache_en)
 		{
 			$this->local_cache[$schema] = $data;
 		}
-
-		/** flatten config data  */
-
-		$fid = $this->db->fetchOne('select id
-			from ' . $schema . '.config
-			where flattened
-			limit 1');
-
-		if ($fid !== false)
-		{
-			return $data;
-		}
-
-		$stmt = $this->db->prepare('select id, created_at, last_edit_at, edit_count
-			from ' . $schema . '.config
-			where not flattened');
-
-		$res = $stmt->executeQuery();
-
-		$e_data = [];
-
-		while ($row = $res->fetchAssociative())
-		{
-			$e_data[$row['id']] = $row;
-		}
-
-		foreach ($data as $id => $value)
-		{
-			[$oid] = explode('.', $id);
-
-			$ins = [
-				'id'	=> $id,
-				'data'	=> json_encode($value),
-				'flattened'	=> 't',
-				'created_at'	=> $e_data[$oid]['created_at'],
-				'last_edit_at'	=> $e_data[$oid]['last_edit_at'],
-				'edit_count'	=> $e_data[$oid]['edit_count']
-			];
-			$this->db->insert($schema . '.config', $ins);
-		}
-
-		/** */
 
 		return $data;
 	}
@@ -233,36 +143,6 @@ class ConfigService
 				[\PDO::PARAM_INT, \PDO::PARAM_STR]
 			);
 		}
-
-		/*
-
-		$id = array_shift($path_ary);
-		$path = implode(',', $path_ary);
-
-		if ($path === '')
-		{
-			throw new LogicException('Config path not set for id ' . $id);
-		}
-
-		if (isset($value))
-		{
-			$this->db->executeStatement('update ' . $schema . '.config
-				set data = jsonb_set(data, \'{' . $path . '}\',  ?)
-				where id = ?',
-				[$value, $id],
-				[Types::JSON, \PDO::PARAM_STR]
-			);
-		}
-		else
-		{
-			$this->db->executeStatement('update ' . $schema . '.config
-				set data = jsonb_set(data, \'{' . $path . '}\',  \'null\'::jsonb)
-				where id = ?',
-				[$id],
-				[\PDO::PARAM_STR]
-			);
-		}
-		*/
 
 		$this->clear_cache($schema);
 		return;
