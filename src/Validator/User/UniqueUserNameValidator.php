@@ -22,7 +22,7 @@ class UniqueUserNameValidator extends ConstraintValidator
     {
         if (!$constraint instanceof UniqueUserName)
         {
-            throw new UnexpectedTypeException($constraint, Login::class);
+            throw new UnexpectedTypeException($constraint, UniqueUserName::class);
         }
 
         if (!$command instanceof UsersNameCommand)

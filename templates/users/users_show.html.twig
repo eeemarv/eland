@@ -79,7 +79,7 @@
 {%- block heading_append -%}
     {%- if pp_is_admin()
         or (su_is_owner(id)
-        and config_bool('users.fields.username.self_edit', schema))
+        and config_bool('users.fields.name.self_edit', schema))
     -%}
     <div class="pull-right">
         {%- set mode_name_edit = user.name is null or user.name == '' ? 'add' : 'edit' -%}

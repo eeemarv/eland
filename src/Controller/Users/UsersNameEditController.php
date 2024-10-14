@@ -111,7 +111,7 @@ class UsersNameEditController extends AbstractController
         }
 
         if (!$pp->is_admin()
-            && !$config_cache->get_bool('users.fields.username.self_edit', $pp->schema()))
+            && !$config_cache->get_bool('users.fields.name.self_edit', $pp->schema()))
         {
             throw new AccessDeniedHttpException('Changing own username not accepted by configuration.');
         }
