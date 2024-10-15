@@ -151,8 +151,11 @@ class UsersPeriodicMailController extends AbstractController
         $users_periodic_mail_command = new UsersPeriodicMailCommand();
 
         $users_periodic_mail_command->days = $config_service->get_int('periodic_mail.days', $pp->schema());
+        $users_periodic_mail_command->user_new_default_enabled = $config_service->get_bool('periodic_mail.user.new.default.enabled', $pp->schema());
         $users_periodic_mail_command->block_layout = json_encode($block_layout);
         $users_periodic_mail_command->block_select_options = json_encode($block_select_options);
+
+        $config_service->load_command($users_periodic_mail_command, $pp->schema());
 
         $form = $this->createForm(UsersPeriodicMailType::class,
             $users_periodic_mail_command)
@@ -164,10 +167,12 @@ class UsersPeriodicMailController extends AbstractController
             $users_periodic_mail_command = $form->getData();
 
             $days = $users_periodic_mail_command->days;
+            $user_new_default_enabled = $users_periodic_mail_command->user_new_default_enabled;
             $posted_block_layout = json_decode($users_periodic_mail_command->block_layout, true);
             $posted_block_select_options = json_decode($users_periodic_mail_command->block_select_options, true);
 
             $config_service->set_int('periodic_mail.days', $days, $pp->schema());
+            $config_service->set_bool('periodic_mail.user.new.default.enabled', $user_new_default_enabled, $pp->schema());
 
             $block_layout = [];
             foreach($posted_block_layout as $b)

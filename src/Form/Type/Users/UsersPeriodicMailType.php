@@ -4,6 +4,7 @@ namespace App\Form\Type\Users;
 
 use App\Command\Users\UsersPeriodicMailCommand;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -23,6 +24,7 @@ class UsersPeriodicMailType extends AbstractType
     ):void
     {
         $builder->add('days', IntegerType::class);
+        $builder->add('user_new_default_enabled', CheckboxType::class);
         $builder->add('block_layout', HiddenType::class);
         $builder->add('block_select_options', HiddenType::class);
         $builder->add('submit', SubmitType::class);

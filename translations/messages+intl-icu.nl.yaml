@@ -1400,6 +1400,9 @@ users_periodic_mail:
       title: Inhoud
     inactive:
       title: Ongebruikte blokken
+  user_new_default_enabled:
+    label: >-
+      Standaard AAN bij nieuwe gebruikers
 
 users_show:
   title: >-

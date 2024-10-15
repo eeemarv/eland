@@ -124,6 +124,7 @@ class UsersEditController extends AbstractController
         $comments_enabled = $config_service->get_bool('users.fields.comments.enabled', $pp->schema());
         $admin_comments_enabled = $config_service->get_bool('users.fields.admin_comments.enabled', $pp->schema());
         $periodic_mail_enabled = $config_service->get_bool('periodic_mail.enabled', $pp->schema());
+        $periodic_mail_default_enabled = $config_service->get_bool('periodic_mail.user.new.default.enabled', $pp->schema());
 
         $is_edit = !$is_add;
         $errors = [];
@@ -747,7 +748,7 @@ class UsersEditController extends AbstractController
             $admin_comments = '';
             $min_limit = '';
             $max_limit = '';
-            $periodic_overview_en	= true;
+            $periodic_overview_en = $periodic_mail_default_enabled;
 
             $contact = $db->fetchAllAssociative('select name, abbrev,
                 \'\' as value, 0 as id
