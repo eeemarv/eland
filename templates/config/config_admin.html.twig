@@ -1,0 +1,22 @@
+{%- extends 'config/base/config_form.html.twig' -%}
+
+{%- block config_title_sub -%}
+    <p>
+        {{- 'config_admin.help'|trans -}}
+    </p>
+{%- endblock config_title_sub -%}
+
+{%- block form_a -%}
+    {{- form_row(form.login_as_admin_enabled, {
+        'label': 'config_admin.login_as_admin_enabled.label',
+        'required': false
+    }) -}}
+{%- endblock form_a -%}
+
+{%- block css -%}
+    {{- parent() -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+{%- endblock js -%}
