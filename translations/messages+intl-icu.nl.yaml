@@ -519,6 +519,13 @@ cms_edit:
 config:
   title: Instellingen
 
+config_admin:
+  title: Admin
+  help: Voor gebruikers die admin rechten hebben
+  login_as_admin_enabled:
+    label: >-
+      Na login direct in admin rol (i.p.v gebruikers rol)
+
 config_date_format:
   title: Datum en tijd
   date_format:
@@ -1804,6 +1811,9 @@ users_config_periodic_mail:
       title: Inhoud
     inactive:
       title: Ongebruikte blokken
+  user_new_default_enabled:
+    label: >-
+      Standaard AAN bij nieuwe gebruikers
 
 users_config_full_name:
   title: >-

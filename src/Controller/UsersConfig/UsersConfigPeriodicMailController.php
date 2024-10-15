@@ -151,6 +151,7 @@ class UsersConfigPeriodicMailController extends AbstractController
         $command = new UsersConfigPeriodicMailCommand();
 
         $command->days = $config_cache->get_int('periodic_mail.days', $pp->schema());
+        $command->user_new_default_enabled = $config_cache->get_bool('periodic_mail.user.new.default.enabled', $pp->schema());
         $command->block_layout = json_encode($block_layout);
         $command->block_select_options = json_encode($block_select_options);
 
@@ -164,12 +165,18 @@ class UsersConfigPeriodicMailController extends AbstractController
             $command = $form->getData();
 
             $days = $command->days;
+            $user_new_default_enabled = $command->user_new_default_enabled;
             $posted_block_layout = json_decode($command->block_layout, true);
             $posted_block_select_options = json_decode($command->block_select_options, true);
 
             $changed = false;
 
             if ($config_cache->set_int('periodic_mail.days', $days, $pp->schema()))
+            {
+                $changed = true;
+            }
+
+            if ($config_cache->set_bool('periodic_mail.user.new.default.enabled', $user_new_default_enabled, $pp->schema()))
             {
                 $changed = true;
             }

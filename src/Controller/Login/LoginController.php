@@ -124,7 +124,16 @@ class LoginController extends AbstractController
                 return $this->redirect($location);
             }
 
-            return $this->redirectToRoute($vr->get('default'), $su->ary());
+            $su_ary = $su->ary();
+
+            if ($su->is_admin()
+                && !$config_cache->get_bool('users.admin.login.as_admin.enabled', $pp->schema())
+            )
+            {
+                $su_ary['role_short'] = 'u';
+            }
+
+            return $this->redirectToRoute($vr->get('default'), $su_ary);
         }
 
         if($config_cache->get_bool('system.maintenance_en', $pp->schema()))
