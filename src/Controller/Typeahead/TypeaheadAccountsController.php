@@ -18,7 +18,7 @@ class TypeaheadAccountsController extends AbstractController
         name: 'typeahead_accounts',
         methods: ['GET'],
         requirements: [
-            'status'        => '%assert.account_status.typeahead%',
+            'status'        => '%assert.account_status%',
             'system'        => '%assert.system%',
             'role_short'    => '%assert.role_short.guest%',
             'thumbprint'    => '%assert.thumbprint%',
@@ -59,6 +59,7 @@ class TypeaheadAccountsController extends AbstractController
 
         $wh_ary = match($status)
         {
+/*
             'intersystem'   => [
                 [
                     'u.remote_schema is not null',
@@ -66,10 +67,9 @@ class TypeaheadAccountsController extends AbstractController
                 ],
                 'u.is_active',
             ],
+*/
             'active'  => [
                 'u.is_active',
-                'u.remote_schema is null',
-                'u.remote_email is null',
             ],
             'pre-active'    => [
                 'not u.is_active',

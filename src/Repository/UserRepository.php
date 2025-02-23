@@ -94,8 +94,6 @@ class UserRepository
 				and tc.abbrev = \'mail\'
 				and c.user_id = u.id
 				and u.is_active
-				and u.remote_schema is null
-				and u.remote_email is null
 				and lower(c.value) = ?',
 				[$email_lowercase],
 				[\PDO::PARAM_STR]);
@@ -116,8 +114,6 @@ class UserRepository
 				and tc.abbrev = \'mail\'
 				and c.user_id = u.id
 				and u.is_active
-				and u.remote_schema is null
-				and u.remote_email is null
 				and lower(c.value) = ?',
 				[$email_lowercase],
 				[\PDO::PARAM_STR]);
@@ -152,8 +148,6 @@ class UserRepository
 		return $this->db->fetchOne('select count(u.*)
 			from ' . $schema . '.users u
 			where u.is_active
-				and u.remote_schema is null
-				and u.remote_email is null
 				and lower(u.name) = ?',
 				[$name_lowercase],
 				[\PDO::PARAM_STR]
@@ -167,8 +161,6 @@ class UserRepository
 		$id = $this->db->fetchOne('select u.id
 			from ' . $schema . '.users u
 			where u.is_active
-				and u.remote_schema is null
-				and u.remote_email is null
 				and lower(u.name) = ?',
 				[$name_lowercase],
 				[\PDO::PARAM_STR]
@@ -189,8 +181,6 @@ class UserRepository
 		return $this->db->fetchOne('select count(u.*)
 			from ' . $schema . '.users u
 			where u.is_active
-				and u.remote_schema is null
-				and u.remote_email is null
 				and lower(u.code) = ?',
 				[$code_lowercase],
 				[\PDO::PARAM_STR]
@@ -223,8 +213,6 @@ class UserRepository
 		$id = $this->db->fetchOne('select u.id
 			from ' . $schema . '.users u
 			where u.is_active
-				and u.remote_schema is null
-				and u.remote_email is null
 				and lower(u.code) = ?',
 				[$code_lowercase],
 				[\PDO::PARAM_STR]
@@ -365,8 +353,6 @@ class UserRepository
 		return $this->db->fetchOne('select id
 			from ' . $schema . '.users
 			where is_active
-				and remote_schema is null
-				and remote_email is null
 				and id = ?', [$id], [\PDO::PARAM_INT]) ? true : false;
 	}
 

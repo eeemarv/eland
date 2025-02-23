@@ -422,6 +422,9 @@ system_menu:
   own_systems: Eigen systemen
   system: Systeem
 
+accounts:
+  title: Accounts
+
 calendar:
   title: >-
     Kalender

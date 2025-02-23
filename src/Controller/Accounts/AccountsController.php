@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller\Users;
+namespace App\Controller\Accounts;
 
 use App\Cache\ConfigCache;
 use App\Cache\UserInvalidateCache;
@@ -37,21 +37,21 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
-class UsersListController extends AbstractController
+class AccountsController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/users/{status}',
-        name: 'users_list',
+        '/{system}/{role_short}/accounts/{status}',
+        name: 'accounts',
         methods: ['GET', 'POST'],
         priority: 20,
         requirements: [
-            'status'        => '%assert.user_status%|all',
+            'status'        => '%assert.account_status%|all',
             'system'        => '%assert.system%',
             'role_short'    => '%assert.role_short.guest%',
         ],
         defaults: [
             'status'        => 'active',
-            'module'        => 'users',
+            'module'        => 'accounts',
         ],
     )]
 

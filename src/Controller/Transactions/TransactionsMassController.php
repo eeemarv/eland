@@ -38,7 +38,7 @@ class TransactionsMassController extends AbstractController
         name: 'transactions_mass',
         methods: ['GET', 'POST'],
         requirements: [
-            'status'        => '%assert.account_status.user%',
+            'status'        => '%assert.account_status%',
             'system'        => '%assert.system%',
             'role_short'    => '%assert.role_short.admin%',
         ],

@@ -241,9 +241,7 @@ class MessagesEditController extends AbstractController
                     $user_id = $db->fetchOne('select id
                         from ' . $pp->schema() . '.users
                         where code = ?
-                            and is_active
-                            and remote_schema is null
-                            and remote_email is null',
+                            and is_active',
                         [$account_code_expl], [\PDO::PARAM_STR]);
 
                     if (!$user_id)
@@ -344,10 +342,7 @@ class MessagesEditController extends AbstractController
 
             if(!($db->fetchOne('select id
                 from ' . $pp->schema() . '.users
-                where id = ?
-                    and is_active
-                    and remote_schema is null
-                    and remote_email is null',
+                where id = ? and is_active',
                 [$user_id], [\PDO::PARAM_INT])))
             {
                 $errors[] = 'Gebruiker bestaat niet of is niet actief.';

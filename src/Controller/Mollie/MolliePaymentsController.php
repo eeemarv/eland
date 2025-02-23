@@ -253,8 +253,6 @@ class MolliePaymentsController extends AbstractController
         $res = $db->executeQuery('select p.*, r.description,
             u.code, u.name, u.full_name,
             u.activated_at, u.is_active,
-            u.is_leaving,
-            u.remote_schema, u.remote_email,
             c.value as mail
             from ' . $pp->schema() . '.mollie_payments p
             inner join ' . $pp->schema() . '.mollie_payment_requests r
@@ -742,9 +740,7 @@ class MolliePaymentsController extends AbstractController
 
         foreach($payments as $id => $payment)
         {
-            $is_remote = isset($payment['remote_schema']) || isset($payment['remote_email']);
             $is_active = $payment['is_active'];
-            $is_leaving = $payment['is_leaving'];
             $post_active = isset($payment['activated_at']);
             $is_new = false;
             if ($post_active)
@@ -759,15 +755,7 @@ class MolliePaymentsController extends AbstractController
 
             if ($is_active)
             {
-                if ($is_remote)
-                {
-                    $user_class = 'warning';
-                }
-                else if ($is_leaving && $leaving_users_enabled)
-                {
-                    $user_class = 'danger';
-                }
-                else if ($is_new && $new_users_enabled)
+                if ($is_new && $new_users_enabled)
                 {
                     $user_class = 'success';
                 }

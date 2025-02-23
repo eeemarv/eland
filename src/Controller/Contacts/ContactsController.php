@@ -260,25 +260,12 @@ class ContactsController extends AbstractController
                     $sql['ustatus']['where'][]= 'u.activated_at > ?';
                     $sql['ustatus']['where'][]= 'u.is_active';
                     $sql['ustatus']['where'][]= 'not u.is_leaving';
-                    $sql['ustatus']['where'][]= 'u.remote_schema is null';
-                    $sql['ustatus']['where'][]= 'u.remote_email is null';
                     $sql['ustatus']['params'][]= $config_cache->get_new_user_treshold($pp->schema());
                     $sql['ustatus']['types'][]= Types::DATETIME_IMMUTABLE;
                     break;
                 case 'leaving':
                     $sql['ustatus']['where'][]= 'u.is_leaving';
                     $sql['ustatus']['where'][]= 'u.is_active';
-                    $sql['ustatus']['where'][]= 'u.remote_schema is null';
-                    $sql['ustatus']['where'][]= 'u.remote_email is null';
-                    break;
-                case 'intersystem':
-                    $wh_or = [
-                        'u.remote_schema is not null',
-                        'u.remote_email is not null',
-                    ];
-
-                    $sql['ustatus']['where'][]= 'u.is_active';
-                    $sql['ustatus']['where'][]= '(' . implode(' or ', $wh_or) . ')';
                     break;
                 case 'pre-active':
                     $sql['ustatus']['where'][]= 'not u.is_active';
@@ -307,7 +294,6 @@ class ContactsController extends AbstractController
 
         $query = 'select c.*, tc.abbrev,
             u.is_active, u.is_leaving,
-            u.remote_schema, u.remote_email,
             u.activated_at
             from ' . $pp->schema() . '.contact c
             inner join ' . $pp->schema() . '.type_contact tc
@@ -486,7 +472,6 @@ class ContactsController extends AbstractController
 
         foreach ($contacts as $c)
         {
-            $is_remote = isset($c['remote_schema']) || isset($c['remote_email']);
             $is_active = $c['is_active'];
             $is_leaving = $c['is_leaving'];
             $post_active = isset($c['activated_at']);
@@ -503,11 +488,7 @@ class ContactsController extends AbstractController
 
             if ($is_active)
             {
-                if ($is_remote)
-                {
-                    $u_class = 'warning';
-                }
-                else if ($is_leaving && $leaving_users_enabled)
+                if ($is_leaving && $leaving_users_enabled)
                 {
                     $u_class = 'danger';
                 }

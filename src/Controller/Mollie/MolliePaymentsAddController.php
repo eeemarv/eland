@@ -31,7 +31,7 @@ class MolliePaymentsAddController extends AbstractController
         name: 'mollie_payments_add',
         methods: ['GET', 'POST'],
         requirements: [
-            'status'        => '%assert.account_status.all%',
+            'status'        => '%assert.user_status%',
             'system'        => '%assert.system%',
             'role_short'    => '%assert.role_short.admin%',
         ],
@@ -110,8 +110,6 @@ class MolliePaymentsAddController extends AbstractController
 
         $sql = [];
         $sql['common'] = $sql_map;
-        $sql['common']['where'][] = 'u.remote_schema is null';
-        $sql['common']['where'][] = 'u.remote_email is null';
 
         $sql['status'] = $sql_map;
 
@@ -143,8 +141,7 @@ class MolliePaymentsAddController extends AbstractController
         $res = $db->executeQuery('select u.id,
                 u.name, u.full_name, u.code,
                 u.role, u.activated_at,
-                u.is_active, u.is_leaving,
-                u.remote_schema, u.remote_email,
+                u.is_active,
                 p1.is_paid, p1.is_canceled,
                 p1.created_at as last_created_at,
                 p1.amount, p1.description
@@ -393,7 +390,6 @@ class MolliePaymentsAddController extends AbstractController
 
         foreach($users as $user_id => $user)
         {
-            $is_remote = isset($user['remote_schema']) || isset($user['remote_email']);
             $is_active = $user['is_active'];
             $is_leaving = $user['is_leaving'];
             $post_active = isset($user['activated_at']);
@@ -412,11 +408,7 @@ class MolliePaymentsAddController extends AbstractController
 
             if ($is_active)
             {
-                if ($is_remote)
-                {
-                    $row_class = 'warning';
-                }
-                else if ($is_leaving && $leaving_users_enabled)
+                if ($is_leaving && $leaving_users_enabled)
                 {
                     $data_leaving_account = ' data-leaving-account';
                     $row_class = 'danger';

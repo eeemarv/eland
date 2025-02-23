@@ -26,7 +26,7 @@ class UsersMapController extends AbstractController
         methods: ['GET'],
         priority: 20,
         requirements: [
-            'status'        => '%assert.account_status.all%',
+            'status'        => '%assert.user_status%',
             'system'        => '%assert.system%',
             'role_short'    => '%assert.role_short.guest%',
         ],

@@ -956,8 +956,6 @@ class MessagesListController extends AbstractController
         ];
 
         $sql['common']['where'][] = 'u.is_active';
-        $sql['common']['where'][] = 'u.remote_schema is null';
-        $sql['common']['where'][] = 'u.remote_email is null';
 
         $is_owner = isset($filter_command->user)
             && $su->is_owner($filter_command->user);
@@ -1297,13 +1295,6 @@ class MessagesListController extends AbstractController
 
         $count_user_status_query = 'select count(m.*),
                 (case
-                    when u.is_active
-                        and (u.remote_schema is not null
-                            or u.remote_email is not null)
-                                then \'intersystem\'
-                    when u.is_active
-                        and u.is_leaving
-                            then \'leaving\'
                     when u.is_active
                         and u.activated_at > ?
                             then \'new\'
