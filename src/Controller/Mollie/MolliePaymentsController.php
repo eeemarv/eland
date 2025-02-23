@@ -88,7 +88,6 @@ class MolliePaymentsController extends AbstractController
 
         $errors = [];
 
-        $new_users_days = $config_cache->get_int('users.new.days', $pp->schema());
         $new_users_enabled = $config_cache->get_bool('users.new.enabled', $pp->schema());
         $leaving_users_enabled = $config_cache->get_bool('users.leaving.enabled', $pp->schema());
 
