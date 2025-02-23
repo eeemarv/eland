@@ -5,6 +5,7 @@ namespace App\EventSubscriber;
 use App\Render\LinkRender;
 use App\Service\AlertService;
 use App\Service\ConfigService;
+use App\Service\FormTokenService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\UserCacheService;
@@ -16,21 +17,35 @@ use Doctrine\DBAL\Connection as Db;
 class MollieSubscriber implements EventSubscriberInterface
 {
     const MSG = <<<'TPL'
-    Je hebt een openstaand verzoek tot betaling:
+    <h3>Je hebt een openstaand verzoek tot betaling</h3>
     TPL;
 
     const MSG_MULTI = <<<'TPL'
-    Je hebt openstaande verzoeken tot betaling:
+    <h3>Je hebt openstaande verzoeken tot betaling</h3>
+    TPL;
+
+    const PAYMENT_REQUEST__ = <<<'TPL'
+    <a href="%link%"><dl><dt>Omschrijving<dt><dd>%description%</dd>
+    <dt>Bedrag</dt><dd>%amount% EUR</dd></dl></a>
     TPL;
 
     const PAYMENT_REQUEST = <<<'TPL'
-    <a href="%link%"><dl><dt>Omschrijving<dt><dd>%description%</dd>
-    <dt>Bedrag</dt><dd>%amount% EUR</dd></dl></a>
+    <form action="%link%" method="post">
+    <dl>
+    <dt><td>Omschrijving</dt><dd>%description%</dd>
+    <dt><td>Bedrag</dt><dd>%amount% EUR</dd>
+    </dl>
+    <br>
+    <input type="submit" name="pay" value="Online betalen" class="btn btn-lg btn-primary">
+    <p>Je wordt geleid naar het beveiligde Mollie platform voor online betalen.</p>
+    %form_token_hidden_input%
+    </form>';
     TPL;
 
     public function __construct(
         protected Db $db,
         protected AlertService $alert_service,
+        protected FormTokenService $form_token_service,
         protected PageParamsService $pp,
         protected SessionUserService $su,
         protected UserCacheService $user_cache_service,
@@ -114,6 +129,7 @@ class MollieSubscriber implements EventSubscriberInterface
                     ['token' => $payment['token']]),
                 '%description%'     => htmlspecialchars($description, ENT_QUOTES),
                 '%amount%'          => strtr($payment['amount'], '.', ','),
+                '%form_token_hidden_input%' => $this->form_token_service->get_hidden_input(),
             ]);
         }
 

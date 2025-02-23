@@ -89,7 +89,6 @@ class MolliePaymentsController extends AbstractController
 
         $errors = [];
 
-        $new_users_days = $config_service->get_int('users.new.days', $pp->schema());
         $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
         $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
 
@@ -468,7 +467,7 @@ class MolliePaymentsController extends AbstractController
                     }
                     else
                     {
-                        $cancel_str .= 'ID: ' . $payment_id;
+                        $cancel_str = 'ID: ' . $payment_id;
                     }
 
                     $success[] = $cancel_str;
