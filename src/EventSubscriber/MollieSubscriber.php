@@ -24,11 +24,6 @@ class MollieSubscriber implements EventSubscriberInterface
     <h3>Je hebt openstaande verzoeken tot betaling</h3>
     TPL;
 
-    const PAYMENT_REQUEST__ = <<<'TPL'
-    <a href="%link%"><dl><dt>Omschrijving<dt><dd>%description%</dd>
-    <dt>Bedrag</dt><dd>%amount% EUR</dd></dl></a>
-    TPL;
-
     const PAYMENT_REQUEST = <<<'TPL'
     <form action="%link%" method="post">
     <dl>
