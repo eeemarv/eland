@@ -72,6 +72,11 @@ class MollieWebhookController extends AbstractController
 
         if ($payment->isPaid())
         {
+            $db->update($pp->schema() . '.mollie_payments',[
+                'mollie_status'     => $payment->status,
+                'is_paid'           => 't',
+            ], ['token' => $token], [\PDO::PARAM_STR]);
+
             $amount = strtr($mollie_payment['amount'], '.', ',');
             $description = $mollie_payment['code'] . ' ' . $mollie_payment['description'];
 
@@ -87,11 +92,6 @@ class MollieWebhookController extends AbstractController
                 'vars'		=> $vars,
                 'to'		=> $mail_addr_user_service->get($mollie_payment['user_id'], $pp->schema()),
             ], 8500);
-
-            $db->update($pp->schema() . '.mollie_payments',[
-                'mollie_status'     => $payment->status,
-                'is_paid'           => 't',
-            ], ['token' => $token], [\PDO::PARAM_STR]);
         }
 
         return new Response('');
