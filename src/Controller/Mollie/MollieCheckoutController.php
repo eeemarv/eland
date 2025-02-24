@@ -52,8 +52,6 @@ class MollieCheckoutController extends AbstractController
             throw new NotFoundHttpException('Mollie submodule (users) not enabled.');
         }
 
-        $redirected_from_mollie = $request->query->has('red');
-
         $mollie_payment = $mollie_repository->get_payment_by_token($token, $pp->schema());
 
         if (!$mollie_payment)
@@ -83,17 +81,6 @@ class MollieCheckoutController extends AbstractController
 
         $description = $mollie_payment['code'] . ' ' . $mollie_payment['description'];
 
-        $retry = 0;
-
-        while ($redirected_from_mollie
-            && !$mollie_payment['is_paid']
-            && $retry < 5)
-        {
-            sleep(2);
-            $mollie_payment = $mollie_repository->get_payment_by_token($token, $pp->schema());
-            $retry++;
-        }
-
         $form = $form_factory->create(MollieCheckoutType::class);
 
         $form->handleRequest($request);
@@ -111,7 +98,7 @@ class MollieCheckoutController extends AbstractController
                 ],
                 'locale'        => 'nl_BE',
                 'description' => $description,
-                'redirectUrl' => $link_render->context_url('mollie_checkout', $pp->ary(), ['token' => $token, 'red' => '1']),
+                'redirectUrl' => $link_render->context_url('mollie_checkout', $pp->ary(), ['token' => $token]),
                 'webhookUrl'  => $link_render->context_url('mollie_webhook', ['system' => $pp->system()], []),
                 'metadata' => [
                     'token' => $mollie_payment['token'],
