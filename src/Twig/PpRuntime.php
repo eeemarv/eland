@@ -3,12 +3,14 @@
 namespace App\Twig;
 
 use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use Twig\Extension\RuntimeExtensionInterface;
 
 class PpRuntime implements RuntimeExtensionInterface
 {
 	public function __construct(
-		protected PageParamsService $pp
+		protected PageParamsService $pp,
+		protected SessionUserService $su
 	)
 	{
 	}

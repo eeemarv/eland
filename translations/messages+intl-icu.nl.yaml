@@ -960,6 +960,20 @@ mollie_checkout:
     Deze betaling is geannuleerd.
   paid: >-
     Betaling geslaagd.
+  amount: Bedrag
+  description: Omschrijving
+  from_user: Van
+  to_destination: Aan
+  btn: Online betalen
+  explain: >-
+    Je wordt geleid naar het beveiligde Mollie
+    platform voor online betalen.
+  title_ary: >-
+    {count, plural,
+      =0 {Je hebt geen verzoek tot betaling.}
+      =1 {Je hebt een openstaand verzoek tot betaling.}
+      other {Je hebt # openstaande verzoeken tot betaling.}
+    }
 
 mollie_config:
   title: Mollie configuratie

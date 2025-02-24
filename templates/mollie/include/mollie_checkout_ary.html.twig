@@ -1,0 +1,15 @@
+<div class="panel panel-info mt-1">
+  <div class="panel-heading">
+    <h3>{{- 'mollie_checkout.title_ary'|trans({
+      'count': mollie_checkout_ary|length
+    }) -}}</h3>
+    {%- for mc in mollie_checkout_ary -%}
+      {%- include 'mollie/include/mollie_checkout_form.html.twig' with {
+        'form': mc.form,
+        'from_user_id': mc.from_user_id,
+        'amount': mc.amount,
+        'description': mc.description
+      } -%}
+    {%- endfor -%}
+  </div>
+</div>

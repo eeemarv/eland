@@ -1,0 +1,10 @@
+<dl>
+    <dt>{{- 'mollie_checkout.amount'|trans -}}</dt>
+    <dd>{{- amount }}</dd>
+    <dt>{{- 'mollie_checkout.from_user'|trans -}}</dt>
+    <dd>{{- username(from_user_id, schema) -}}</dd>
+    <dt>{{- 'mollie_checkout.to_destination'|trans -}}</dt>
+    <dd>{{- config_str('system.name', schema) -}}</dd>
+    <dt>{{- 'mollie_checkout.description'|trans -}}</dt>
+    <dd>{{- description -}}</dd>
+</dl>
