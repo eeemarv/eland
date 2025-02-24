@@ -2359,7 +2359,7 @@ class UsersListController extends AbstractController
             {
                 if ($item_access_service->is_visible($contact['access']))
                 {
-                    $ret .= sprintf($tpl, htmlspecialchars($contact['value'], ENT_QUOTES));
+                    $ret .= sprintf($tpl, htmlspecialchars($contact['value'] ?? '', ENT_QUOTES));
 
                     if ($key === $end)
                     {
