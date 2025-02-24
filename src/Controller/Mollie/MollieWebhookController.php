@@ -4,11 +4,11 @@ namespace App\Controller\Mollie;
 
 use App\Cache\ConfigCache;
 use App\Queue\MailQueue;
+use App\Repository\MollieRepository;
 use App\Service\MailAddrUserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\PageParamsService;
-use Doctrine\DBAL\Connection as Db;
 use Mollie\Api\MollieApiClient;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -34,11 +34,11 @@ class MollieWebhookController extends AbstractController
 
     public function __invoke(
         Request $request,
-        Db $db,
         ConfigCache $config_cache,
         PageParamsService $pp,
         MailQueue $mail_queue,
-        MailAddrUserService $mail_addr_user_service
+        MailAddrUserService $mail_addr_user_service,
+        MollieRepository $mollie_repository
     ):Response
     {
         if (!$config_cache->get_bool('mollie.enabled', $pp->schema()))
@@ -56,22 +56,17 @@ class MollieWebhookController extends AbstractController
         $payment = $mollie->payments->get($id);
         $token = $payment->metadata->token;
 
-        $mollie_payment = $db->fetchAssociative('select p.*, r.description, u.code
-            from ' . $pp->schema() . '.mollie_payments p,
-                ' . $pp->schema() . '.mollie_payment_requests r,
-                ' . $pp->schema() . '.users u
-            where p.request_id = r.id
-                and u.id = p.user_id
-                and p.token = ?',
-            [$token], [\PDO::PARAM_STR]);
+        $mollie_payment = $mollie_repository->get_payment_by_token($token, $pp->schema());
 
-        if ($mollie_payment === false)
+        if (!$mollie_payment)
         {
             throw new NotFoundHttpException('Payment request not found');
         }
 
         if ($payment->isPaid())
         {
+            $mollie_repository->set_paid_by_token($token, $payment->status, $pp->schema());
+
             $amount = strtr($mollie_payment['amount'], '.', ',');
             $description = $mollie_payment['code'] . ' ' . $mollie_payment['description'];
 
@@ -87,11 +82,6 @@ class MollieWebhookController extends AbstractController
                 'vars'		=> $vars,
                 'to'		=> $mail_addr_user_service->get($mollie_payment['user_id'], $pp->schema()),
             ], 8500);
-
-            $db->update($pp->schema() . '.mollie_payments',[
-                'mollie_status'     => $payment->status,
-                'is_paid'           => 't',
-            ], ['token' => $token], [\PDO::PARAM_STR]);
         }
 
         return new Response('');

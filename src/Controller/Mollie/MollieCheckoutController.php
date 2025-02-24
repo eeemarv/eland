@@ -3,17 +3,16 @@
 namespace App\Controller\Mollie;
 
 use App\Cache\ConfigCache;
-use App\Cache\UserCache;
-use App\Render\AccountRender;
+use App\Form\Type\Mollie\MollieCheckoutType;
 use App\Render\LinkRender;
+use App\Repository\MollieRepository;
 use App\Service\AlertService;
-use App\Service\FormTokenService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Doctrine\DBAL\Connection as Db;
 use Mollie\Api\MollieApiClient;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -40,13 +39,11 @@ class MollieCheckoutController extends AbstractController
     public function __invoke(
         Request $request,
         string $token,
-        Db $db,
         AlertService $alert_service,
-        AccountRender $account_render,
-        UserCache $user_cache,
-        FormTokenService $form_token_service,
         ConfigCache $config_cache,
         LinkRender $link_render,
+        FormFactoryInterface $form_factory,
+        MollieRepository $mollie_repository,
         PageParamsService $pp
     ):Response
     {
@@ -55,14 +52,7 @@ class MollieCheckoutController extends AbstractController
             throw new NotFoundHttpException('Mollie submodule (users) not enabled.');
         }
 
-        $errors = [];
-
-        $mollie_payment = $db->fetchAssociative('select p.*, r.description
-            from ' . $pp->schema() . '.mollie_payments p,
-                ' . $pp->schema() . '.mollie_payment_requests r
-            where p.request_id = r.id
-                and p.token = ?',
-                [$token], [\PDO::PARAM_STR]);
+        $mollie_payment = $mollie_repository->get_payment_by_token($token, $pp->schema());
 
         if (!$mollie_payment)
         {
@@ -89,115 +79,42 @@ class MollieCheckoutController extends AbstractController
             }
         }
 
-        $user = $user_cache->get($mollie_payment['user_id'], $pp->schema());
+        $description = $mollie_payment['code'] . ' ' . $mollie_payment['description'];
 
-        $description = $user['code'] . ' ' . $mollie_payment['description'];
+        $form = $form_factory->create(MollieCheckoutType::class);
 
-        if ($request->isMethod('POST'))
+        $form->handleRequest($request);
+
+        if (!($mollie_payment['is_paid'] || $mollie_payment['is_canceled'])
+            && $form->isSubmitted() && $form->isValid())
         {
-            if ($error_token = $form_token_service->get_error())
-            {
-                $errors[] = $error_token;
-            }
+            $mollie = new MollieApiClient();
+            $mollie->setApiKey($mollie_apikey);
 
-            if (!count($errors))
-            {
-                $mollie = new MollieApiClient();
-                $mollie->setApiKey($mollie_apikey);
+            $payment = $mollie->payments->create([
+                'amount' => [
+                    'currency'  => 'EUR',
+                    'value'     => $mollie_payment['amount'],
+                ],
+                'locale'        => 'nl_BE',
+                'description' => $description,
+                'redirectUrl' => $link_render->context_url('mollie_checkout', $pp->ary(), ['token' => $token]),
+                'webhookUrl'  => $link_render->context_url('mollie_webhook', ['system' => $pp->system()], []),
+                'metadata' => [
+                    'token' => $mollie_payment['token'],
+                ],
+            ]);
 
-                $payment = $mollie->payments->create([
-                    'amount' => [
-                        'currency'  => 'EUR',
-                        'value'     => $mollie_payment['amount'],
-                    ],
-                    'locale'        => 'nl_BE',
-                    'description' => $description,
-                    'redirectUrl' => $link_render->context_url('mollie_checkout', $pp->ary(), ['token' => $token]),
-                    'webhookUrl'  => $link_render->context_url('mollie_webhook', ['system' => $pp->system()], []),
-                    'metadata' => [
-                        'token' => $mollie_payment['token'],
-                    ],
-                ]);
+            $mollie_repository->update_mollie_payment_id($token, $payment->id, $pp->schema());
 
-                $db->update($pp->schema() . '.mollie_payments', [
-                    'mollie_payment_id' => $payment->id,
-                ], ['token' => $token]);
-
-                return $this->redirect($payment->getCheckoutUrl(), 303);
-            }
-
-            $alert_service->error($errors);
+            return $this->redirect($payment->getCheckoutUrl(), 303);
         }
-
-        $out = '<div class="panel panel-';
-
-        if ($mollie_payment['is_canceled'])
-        {
-            $out .= 'default';
-        }
-        else if ($mollie_payment['is_paid'])
-        {
-            $out .= 'success';
-        }
-        else
-        {
-            $out .= 'info';
-        }
-
-        $out .= '">';
-        $out .= '<div class="panel-heading">';
-
-        if (!($mollie_payment['is_paid'] || $mollie_payment['is_canceled']))
-        {
-            $out .= '<form method="post">';
-            $out .= '<p>Je kreeg het volgende verzoek tot betaling:</p>';
-        }
-
-        $out .= '<dl>';
-        $out .= '<dt>';
-        $out .= 'Van';
-        $out .= '</dt>';
-        $out .= '<dd>';
-        $out .= $account_render->str($mollie_payment['user_id'], $pp->schema());
-        $out .= '</dd>';
-        $out .= '<dt>';
-        $out .= 'Aan';
-        $out .= '</dt>';
-        $out .= '<dd>';
-        $out .= $config_cache->get_str('system.name', $pp->schema());
-        $out .= '</dd>';
-        $out .= '<dt>';
-        $out .= 'Bedrag';
-        $out .= '</dt>';
-        $out .= '<dd>';
-        $out .= strtr($mollie_payment['amount'], '.', ',') . ' EUR';
-        $out .= '</dd>';
-        $out .= '<dt>';
-        $out .= 'Omschrijving';
-        $out .= '</dt>';
-        $out .= '<dd>';
-        $out .= $description;
-        $out .= '</dd>';
-        $out .= '</dd>';
-
-        if (!($mollie_payment['is_paid'] || $mollie_payment['is_canceled']))
-        {
-            $out .= '<br>';
-
-            $out .= '<input type="submit" name="pay" ';
-            $out .= 'value="Online betalen" class="btn btn-lg btn-primary">';
-            $out .= '<p>Je wordt geleid naar het beveiligde Mollie ';
-            $out .= 'platform voor online betalen.</p>';
-
-            $out .= $form_token_service->get_hidden_input();
-            $out .= '</form>';
-        }
-
-        $out .= '</div>';
-        $out .= '</div>';
 
         return $this->render('mollie/mollie_checkout.html.twig', [
-            'content'       => $out,
+            'form'          => $form->createView(),
+            'from_user_id'  => $mollie_payment['user_id'],
+            'description'   => $description,
+            'amount'        => strtr($mollie_payment['amount'], '.', ',') . ' EUR',
             'is_paid'       => $mollie_payment['is_paid'],
             'is_canceled'   => $mollie_payment['is_canceled'],
         ]);

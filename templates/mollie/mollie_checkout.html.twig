@@ -6,6 +6,9 @@
     eur
 {%- endblock heading_fa -%}
 
+{%- block content -%}
+{%- endblock content -%}
+
 {%- block heading_title -%}
     {%- if is_canceled -%}
         {{- 'mollie_checkout.canceled'|trans -}}
@@ -15,3 +18,23 @@
         {{- 'mollie_checkout.title'|trans -}}
     {%- endif -%}
 {%- endblock heading_title -%}
+
+{%- block form -%}
+    <div class="panel panel-{{- is_canceled ? 'default' : is_paid ? 'success' : 'info' -}}">
+        <div class="panel-heading">
+        {%- if is_canceled or is_paid -%}
+            {%- include 'mollie/include/mollie_checkout_info.html.twig' -%}
+        {%- else -%}
+            {%- include 'mollie/include/mollie_checkout_form.html.twig' -%}
+        {%- endif -%}
+        </div>
+    </div>
+{%- endblock form -%}
+
+{%- block css -%}
+    {{- parent() -}}
+{%- endblock css -%}
+
+{%- block js -%}
+    {{- parent() -}}
+{%- endblock js -%}

@@ -122,6 +122,10 @@
 	<div id="wrap">
 	<div id="main" class="container-fluid clear-top{%- if pp_is_admin() %} admin{%- endif -%}">
 
+	{%- if mollie_checkout_ary is defined -%}
+		{%- include 'mollie/include/mollie_checkout_ary.html.twig' -%}
+	{%- endif -%}
+
 	{%- block alert -%}
 		{%- include 'include/alert.html.twig' -%}
 	{%- endblock alert -%}
