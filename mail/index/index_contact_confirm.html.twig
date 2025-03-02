@@ -1,0 +1,30 @@
+{%- extends '@mail/base/base.html.twig' -%}
+{%- trans_default_domain 'mail' -%}
+
+{%- block header -%}
+    {{- 'index_contact_confirm.header'|trans -}}
+{%- endblock header -%}
+
+{%- block content -%}
+    <row>
+        <columns>
+            <button href="{{- url('index_contact_confirm', {'token': token}) -}}" class="radius">
+                {{- 'index_contact_confirm.btn'|trans -}}
+            </button>
+            <p>
+                {{- 'index_contact_confirm.btn_explain'|trans -}}
+            </p>
+            <p>
+                {{- 'index_contact_confirm.validity'|trans -}}
+            </p>
+        </columns>
+    </row>
+    <callout class="secondary">
+        <p>
+            {{- 'index_contact_confirm.ignore'|trans({
+                '%ao_0%': a_open('index_contact'),
+                '%ac%': '</a>'
+            })|raw -}}
+        </p>
+    </callout>
+{%- endblock content -%}

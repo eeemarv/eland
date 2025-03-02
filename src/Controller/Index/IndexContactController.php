@@ -29,8 +29,6 @@ class IndexContactController extends AbstractController
         Request $request,
         DataTokenService $data_token_service,
         MailerInterface $mailer,
-        #[Autowire('%env(MAIL_HOSTER_ADDRESS)%')]
-        string $env_mail_hoster_address,
         #[Autowire('%env(MAIL_FROM_ADDRESS)%')]
         string $env_mail_from_address,
     ):Response
@@ -67,7 +65,7 @@ class IndexContactController extends AbstractController
             $email->from(new Address($env_mail_from_address, 'eLAND contact'));
             $email->to(new Address($email_address));
             $email->subject('Bevestig je bericht');
-            $email->htmlTemplate('@email/index/index_contact_confirm.html.twig');
+            $email->htmlTemplate('@mail/index/index_contact_confirm.html.twig');
             $email->context([
                 'token' => $token,
             ]);
@@ -85,77 +83,6 @@ class IndexContactController extends AbstractController
 
             return $this->redirectToRoute('index_contact');
         }
-
-        /*
-
-        $errors = [];
-
-        $mail = $request->request->get('mail', '');
-        $message = $request->request->get('message', '');
-        $form_ok = $request->query->get('form_ok', '');
-
-        if ($request->isMethod('POST'))
-        {
-            $session = $request_stack->getSession();
-
-            $to = $env_mail_hoster_address;
-            $from = $env_mail_from_address;
-
-            if (!$to || !$from)
-            {
-                throw new HttpException(500, 'Interne configuratie fout.');
-            }
-
-            if (!$captcha_service->validate())
-            {
-                $errors[] = 'De anti-spam verifiactiecode is niet juist ingevuld.';
-            }
-
-            $form_error = $form_token_service->get_error();
-
-            if ($form_error)
-            {
-                $errors[] = $form_error;
-            }
-
-            if (!filter_var($mail, FILTER_VALIDATE_EMAIL))
-            {
-                $errors[] = 'Geen geldig E-mail adres ingevuld.';
-            }
-
-            if (!$message)
-            {
-                $errors[] = 'Het bericht is leeg.';
-            }
-
-            if (!count($errors))
-            {
-                $text = $message . "\r\n\r\n\r\n" . 'browser: ';
-                $text .= $request->headers->get('User-Agent') . "\n";
-                $text .= 'form_token: ' . $form_token_service->get();
-
-                $email = new Email();
-                $email->from($from);
-                $email->to($to);
-                $email->text($text);
-                $email->subject('eLAND Contact Formulier');
-                $email->replyTo($mail);
-
-                $mailer->send($email);
-
-                return $this->redirectToRoute('index_contact', ['form_ok' => '1']);
-            }
-
-            foreach ($errors as $error)
-            {
-                 @var Session $session
-                $session->getFlashBag()->add('alert', [
-                    'type'      => 'error',
-                    'message'	=> $error,
-                ]);
-            }
-        }
-        */
 
         return $this->render('index/contact.html.twig', [
             'form'      => $form,

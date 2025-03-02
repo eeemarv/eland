@@ -1,0 +1,28 @@
+{%- trans_default_domain 'mail' -%}
+{%- apply inky_to_html|inline_css(source('@style/foundation-email.css'), source('@style/eland-email.css')) -%}
+
+<container>
+    {%- block no_reply -%}{%- endblock -%}
+    <callout class="primary">
+        <h1>
+            {%- block header -%}{%- endblock -%}
+        </h1>
+        {%- block sub_header -%}{%- endblock -%}
+    </callout>
+    {%- block content -%}{%- endblock -%}
+    {%- block sender_info_footer -%}{%- endblock -%}
+    {%- block account_info_footer -%}{%- endblock -%}
+    {%- block unsubscribe_info_footer -%}{%- endblock -%}
+    {%- block system_info_footer -%}{%- endblock -%}
+    {%- block admin_info_footer -%}{%- endblock -%}
+    <row>
+        <columns>
+            <center>
+                <a href="{{- url('index') -}}">
+                    {{- 'index.link'|trans -}}
+                </a>
+            </center>
+        </columns>
+    </row>
+</container>
+{%- endapply -%}

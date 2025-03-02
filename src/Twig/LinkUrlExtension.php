@@ -12,6 +12,7 @@ class LinkUrlExtension extends AbstractExtension
 		return [
 			new TwigFunction('context_url', [LinkUrlRuntime::class, 'context_url']),
 			new TwigFunction('context_url_open', [LinkUrlRuntime::class, 'context_url_open']),
+			new TwigFunction('a_open', [LinkUrlRuntime::class, 'a_open']),
 		];
 	}
 }
