@@ -175,8 +175,8 @@ contact_confirm:
   explain: >-
     Gelieve deze mail te negeren wanneer je niet
     zelf een bericht hebt verstuurd
-    via %ao_0%het contactformulier
-    van %system_name%%ac%.
+    via %link_open%het contactformulier
+    van %system_name%%link_close%.
 
 contact_copy:
   subject: >-
@@ -188,7 +188,7 @@ contact_support:
   subject: Bericht van het contactformulier
   explain: >-
     Dit bericht werd ingegeven in het
-    contactformulier van %ao_0%%system_name%%ac%.
+    contactformulier van %link_open%%system_name%%link_close%.
     Gebruik "Reply" om het eventueel te beantwoorden.
 
 index:
