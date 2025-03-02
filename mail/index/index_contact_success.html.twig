@@ -1,0 +1,16 @@
+{%- extends '@mail/base/base.html.twig' -%}
+{%- trans_default_domain 'mail' -%}
+
+{%- block header -%}
+    {{- 'index_contact_success.header'|trans -}}
+{%- endblock header -%}
+
+{%- block sub_header -%}
+    <p>
+        {{- 'index_contact_success.sub_header'|trans -}}
+    </p>
+{%- endblock sub_header -%}
+
+{%- block content -%}
+    {%- include '@mail/include/message.html.twig' -%}
+{%- endblock content -%}

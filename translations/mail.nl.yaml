@@ -96,6 +96,12 @@ reply:
     %from_account% [%from_system_name%]
     door deze E-mail te beantwoorden (Reply).
 
+sender_info:
+  title: Info Verzender
+  email: E-mail
+  ip: IP
+  agent: Agent
+
 account_activation:
   subject: >-
     Activatie van je Account bij %system_name%
@@ -169,8 +175,9 @@ contact_confirm:
   explain: >-
     Gelieve deze mail te negeren wanneer je niet
     zelf een bericht hebt verstuurd
-    via %link_open%het contactformulier
-    van %system_name%%link_close%.
+    via %ao_0%het contactformulier
+    van %system_name%%ac%.
+
 contact_copy:
   subject: >-
     Kopie van je bericht aan %system_name%
@@ -181,8 +188,38 @@ contact_support:
   subject: Bericht van het contactformulier
   explain: >-
     Dit bericht werd ingegeven in het
-    contactformulier van %link_open%%system_name%%link_close%.
+    contactformulier van %ao_0%%system_name%%ac%.
     Gebruik "Reply" om het eventueel te beantwoorden.
+
+index:
+  link: eLAND
+
+index_contact:
+  subject: Bericht van het contactformulier
+  header: eLAND
+  sub_header: Bericht van het contactformulier
+
+index_contact_confirm:
+  subject: Bevestig je bericht
+  header: eLAND Contact
+  btn: Bevestig je bericht
+  btn_explain: >-
+    Je bericht wordt pas verzonden wanneer
+    je je email adres bevestigd hebt door
+    op bovenstaande link te klikken,
+  validity: Deze link blijft 24 uur geldig.
+  ignore: >-
+    Als je niet het
+    %ao_0%eLAND contactformulier%ac%
+    hebt gebruikt, gelieve dan deze email te negeren.
+
+index_contact_success:
+  subject: Bericht verzonden
+  header: eLAND Contact
+  sub_header: >-
+    Je bericht is succesvol verzonden naar de
+    administratie van de eLAND server. Hieronder
+    vind je een kopie van je bericht.
 
 mollie:
   is_paid:

@@ -43,4 +43,14 @@ class LinkUrlRuntime implements RuntimeExtensionInterface
 			$route, [...$params, ...$params_context],
 			UrlGeneratorInterface::ABSOLUTE_URL) . '">';
 	}
+
+	public function a_open(
+		string $route,
+		array $params = []
+	):string
+	{
+        return '<a href="' . $this->url_generator->generate(
+			$route, $params,
+			UrlGeneratorInterface::ABSOLUTE_URL) . '">';
+	}
 }
