@@ -3,7 +3,7 @@
 
 {% block subject_line -%}
     {{- 'contact_copy.subject'|trans({
-        '%system_name%': config_str('system.name', schema)
+        'system_name': config_str('system.name', schema)
     }) -}}
 {%- endblock -%}
 
@@ -18,7 +18,7 @@
 
     {%- set info -%}
         {{- 'contact_copy.explain'|trans({
-            '%system_name%': config_str('system.name', schema)
+            'system_name': config_str('system.name', schema)
         }) -}}
     {%- endset -%}
 
@@ -46,7 +46,7 @@
 {% autoescape false %}
 
 {{ 'contact_copy.explain'|trans({
-    '%system_name%': config_str('system.name', schema)
+    'system_name': config_str('system.name', schema)
 }) }}
 - - - - - -
 

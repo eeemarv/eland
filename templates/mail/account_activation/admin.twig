@@ -3,7 +3,7 @@
 
 {%- block subject_line -%}
 {{- 'account_activation_admin.subject'|trans({
-    '%account_name%': account(user_id, schema)
+    'account': account(user_id, schema)
 }) -}}
 {%- endblock subject_line %}
 
@@ -18,9 +18,9 @@
 
     {%- include 'mail/include/info_panel.html.twig' with {
             'info': 'account_activation_admin.message'|trans({
-            '%link_open%': context_url_open('users_show', mpp_admin_ary(schema), {'id': user_id}),
-            '%link_close%': '</a>',
-            '%account_name%': account(user_id, schema),
+            'ao': context_url_open('users_show', mpp_admin_ary(schema), {'id': user_id}),
+            'ac': '</a>',
+            'account': account(user_id, schema),
         })|raw}
     -%}
 
@@ -43,9 +43,9 @@
 {% block text_content %}
 {% autoescape false %}
 {{ 'account_activation_admin.message'|trans({
-    '%link_open%': '',
-    '%link_close%': '',
-    '%account_name%': account(user_id, schema),
+    'ao': '',
+    'ac': '',
+    'account': account(user_id, schema),
 }) }}
 
 {{ context_url('users_show', mpp_admin_ary(schema), {'id': user_id}) }}

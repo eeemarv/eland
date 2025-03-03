@@ -3,7 +3,7 @@
 
 {% block subject_line -%}
 {{- 'auto_deactivate.subject'|trans({
-    '%system_name%': config_str('system.name', schema)
+    'system_name': config_str('system.name', schema)
 }) -}}
 {%- endblock subject_line %}
 
@@ -16,7 +16,7 @@
 
 {%- include 'mail/include/info_panel.html.twig' with {
     'info': 'label.dear_username'|trans({
-        '%username%': username(user_id, schema)
+        'username': username(user_id, schema)
     })
 } -%}
 
@@ -24,9 +24,9 @@
 
 {%- include 'mail/include/info_panel.html.twig' with {
     'info': 'auto_deactivate.message'|trans({
-        '%link_open%': context_url_open('home', mpp_anon_ary(schema), {}),
-        '%link_close%': '</a>',
-        '%system_name%': config_str('system.name', schema)
+        'ao': context_url_open('home', mpp_anon_ary(schema), {}),
+        'ac': '</a>',
+        'system_name': config_str('system.name', schema)
     })|raw
 } -%}
 
@@ -67,13 +67,13 @@
 
 
 {{ 'label.dear_username'|trans({
-    '%username%': username(user_id, schema)
+    'username': username(user_id, schema)
 }) }}
 
 {{ 'auto_deactivate.message'|trans({
-    '%link_open%': '',
-    '%link_close%': '',
-    '%system_name%': config_str('system.name', schema)
+    'ao': '',
+    'ac': '',
+    'system_name': config_str('system.name', schema)
 }) }}
 
 {{ 'label.account_code'|trans|raw }}: {{ account_code(user_id, schema)|raw }}

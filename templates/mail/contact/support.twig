@@ -17,10 +17,10 @@
 
     {%- set info -%}
         {{- 'contact_support.explain'|trans({
-            '%link_open%': context_url_open(
+            'ao': context_url_open(
                 'home', mpp_anon_ary(schema), {}),
-            '%link_close%': '</a>',
-            '%system_name%': config_str('system.name', schema)
+            'ac': '</a>',
+            'system_name': config_str('system.name', schema)
         })|raw -}}
     {%- endset -%}
 
@@ -51,9 +51,9 @@
 
 - - - - - -
 {{ 'contact_support.explain'|trans({
-    '%link_open%': '',
-    '%link_close%': '',
-    '%system_name%': config_str('system.name', schema)
+    'ao': '',
+    'ac': '',
+    'system_name': config_str('system.name', schema)
 }) }}
 
 {{ context_url('home', mpp_anon_ary(schema), {}) }}

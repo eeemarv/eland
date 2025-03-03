@@ -20,23 +20,22 @@
 	{%- if schemas -%}
 		{%- set systems_per_col = (schemas|length / 3)|round(0, 'ceil') -%}
 
-			{%- for schema in schemas -%}
+		{%- for schema in schemas -%}
 
-				{#- -#}
-				{%- set system = schema -%}
-				{#- -#}
+			{#- -#}
+			{%- set system = schema -%}
+			{#- -#}
 
-				{%- if not (loop.index0 % systems_per_col) -%}
-				<div class="col-md-4">
-					<div class="panel panel-info">
-						<ul class="list-group">
-				{%- endif -%}
-							<li class="list-group-item">
-								<a href="{{- path('home', {'system': system}) -}}">{{- config_str('system.name', schema) -}}</a>
-							</li>
-				{% if loop.last or not (loop.index % systems_per_col) -%}
-						</ul>
-					</div>
+			{%- if not (loop.index0 % systems_per_col) -%}
+			<div class="col-md-4">
+				<div class="panel panel-info">
+					<ul class="list-group">
+			{%- endif -%}
+				<li class="list-group-item">
+					<a href="{{- path('home', {'system': system}) -}}">{{- config_str('system.name', schema) -}}</a>
+				</li>
+			{% if loop.last or not (loop.index % systems_per_col) -%}
+					</ul>
 				</div>
 			</div>
 			{%- endif -%}
