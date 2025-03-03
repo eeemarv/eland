@@ -3,9 +3,9 @@
 {{ 'b.support.title'|trans|underline|raw }}
 
 {{ 'b.support.explain'|trans({
-    '%link_open%': '',
-    '%link_close%': '',
-    '%system_name%': config_str('system.name', schema)
+    'ao': '',
+    'ac': '',
+    'system_name': config_str('system.name', schema)
 })|raw }}:
 
 {{ context_url('support_form', mpp_ary(user_id, schema), {})|raw }}

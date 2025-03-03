@@ -14,7 +14,7 @@
 
 {%- include 'mail/include/info_panel.html.twig' with {
     'info': 'b.support.reply_admin'|trans({
-        '%system_name%': config_str('system.name', schema)
+        'system_name': config_str('system.name', schema)
     })|raw
 } -%}
 

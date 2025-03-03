@@ -57,11 +57,11 @@
 
     {%- include 'mail/include/info_panel.html.twig' with {
         'info': 'periodic_overview.unsubscribe'|trans({
-            '%link_open%': context_url_open(
+            'ao': context_url_open(
                 'users_show',
                 mpp_ary(user_id, schema),
                 {'id': user_id}),
-            '%link_close%': '</a>'
+            'ac': '</a>'
         })|raw
     } -%}
 
@@ -109,8 +109,8 @@
 {% autoescape false %}
 
 {{ 'periodic_overview.unsubscribe'|trans({
-    '%link_open%': '',
-    '%link_close%': ''
+    'ao': '',
+    'ac': ''
 }) }}
 
 {{ context_url('users_show', mpp_ary(user_id, schema), {'id': user_id}) }}

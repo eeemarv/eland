@@ -3,8 +3,8 @@
 
 {% block subject_line -%}
     {{- 'transaction_to_intersystem_mail_type_admin.subject'|trans({
-        '%system_name%': config_str('system.name', schema),
-        '%remote_system_name%': user_full_name(to_user_id, schema)
+        'system_name': config_str('system.name', schema),
+        'remote_system_name': user_full_name(to_user_id, schema)
     })|raw -}}
 {%- endblock subject_line -%}
 
@@ -17,7 +17,7 @@
 {%- block html_content_explain -%}
     {%- include 'mail/include/info_bgcolor_panel.html.twig' with {
         'info': 'transaction_to_intersystem_mail_type_admin.explain'|trans({
-                '%remote_system_name%': user_full_name(to_user_id, schema)
+                'remote_system_name': user_full_name(to_user_id, schema)
             }),
         'bgcolor': 'fff8cf'
     } -%}
@@ -27,9 +27,9 @@
     <tr>
         <td>
             {{- 'transaction_to_intersystem_mail_type_admin.amount_time_explain'|trans({
-                '%amount%': transaction.amount,
-                '%currency%': config_str('transactions.currency.name', schema),
-                '%dec_hours%': amount_time.dec_hours
+                'amount': transaction.amount,
+                'currency': config_str('transactions.currency.name', schema),
+                'dec_hours': amount_time.dec_hours
             }) -}}
         </td>
     </tr>
@@ -58,7 +58,7 @@
 {% include 'mail/include/no_reply_auto.text.twig' %}
 
 {{ 'transaction_to_intersystem_mail_type_admin.explain'|trans({
-    '%remote_system_name%': user_full_name(to_user_id, schema)
+    'remote_system_name': user_full_name(to_user_id, schema)
 })|raw }}
 
 {% endblock text_pretext %}
@@ -68,9 +68,9 @@
 {% block text_amount_time_explain %}
 
 {{ 'transaction_to_intersystem_mail_type_admin.amount_time_explain'|trans({
-    '%amount%': transaction.amount,
-    '%currency%': config_str('transactions.currency.name', schema),
-    '%dec_hours%': amount_time.dec_hours
+    'amount': transaction.amount,
+    'currency': config_str('transactions.currency.name', schema),
+    'dec_hours': amount_time.dec_hours
 })|raw }}
 
 {% endblock text_amount_time_explain %}

@@ -10,8 +10,8 @@
 	{%- if not c.forum -%}
 		{%- include 'mail/include/info_bgcolor_panel.html.twig' with {
 			'info': 'periodic_overview.forum.none'|trans({
-				'%link_open%': context_url_open('forum', mpp_ary(c.user_id, c.schema), {}),
-				'%link_close%': '</a>'
+				'ao': context_url_open('forum', mpp_ary(c.user_id, c.schema), {}),
+				'ac': '</a>'
 			})|raw,
 			'bgcolor': 'ffff99'
 		} -%}
@@ -50,8 +50,8 @@
 * {{ f.subject }} {{ context_url('forum_topic', mpp_ary(c.user_id, c.schema), {'id': f.id}) }}
 {% else %}
 {{ 'periodic_overview.forum.none'|trans({
-	'%link_open%' : '',
-	'%link_close%' : ''
+	'ao' : '',
+	'ac' : ''
 }) }}
 {% endfor %}
 {% endautoescape %}

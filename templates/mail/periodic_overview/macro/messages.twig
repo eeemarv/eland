@@ -10,18 +10,18 @@
 	{%- if c.messages -%}
 		{%- include 'mail/include/info_bgcolor_panel.html.twig' with {
 			'info': 'periodic_overview.messages.explain'|trans({
-				'%link_open%': context_url_open('messages_extended', mpp_ary(c.user_id, c.schema), {}),
-				'%link_close%': '</a>',
-				'%days%': config_int('periodic_mail.days', c.schema)
+				'ao': context_url_open('messages_extended', mpp_ary(c.user_id, c.schema), {}),
+				'ac': '</a>',
+				'days': config_int('periodic_mail.days', c.schema)
 				})|raw,
 			'bgcolor': 'eeeeee'
 		} -%}
 	{%- else -%}
 		{%- include 'mail/include/info_bgcolor_panel.html.twig' with {
 			'info': 'periodic_overview.messages.none'|trans({
-				'%link_open%': context_url_open('messages_extended',
+				'ao': context_url_open('messages_extended',
 					mpp_ary(c.user_id, c.schema), {}),
-				'%link_close%': '</a>'
+				'ac': '</a>'
 				})|raw,
 			'bgcolor': 'eeeeee'
 		} -%}
@@ -138,8 +138,8 @@
 		{%- block td_style %}font-size: 16px;{%- endblock -%}
 		{%- block td_content -%}
 		{{- 'periodic_overview.messages.add'|trans({
-			'%link_open%': context_url_open('messages_add', mpp_ary(c.user_id, c.schema), {}),
-			'%link_close%': '</a>'
+			'ao': context_url_open('messages_add', mpp_ary(c.user_id, c.schema), {}),
+			'ac': '</a>'
 		})|raw -}}
 		{%- endblock td_content -%}
 	{%- endembed -%}
@@ -154,9 +154,9 @@
 
 {% if c.messages %}
 {{ 'periodic_overview.messages.explain'|trans({
-	'%link_open%': '',
-	'%link_close%': '',
-	'%days%': config_int('periodic_mail.days', c.schema)
+	'ao': '',
+	'ac': '',
+	'days': config_int('periodic_mail.days', c.schema)
 }) }}
 {% for msg in c.messages %}
 
@@ -167,15 +167,15 @@
 {% endfor %}
 {% else %}
 {{ 'periodic_overview.messages.none'|trans({
-	'%link_open%': '',
-	'%link_close%': '',
-	'%days%': config_int('periodic_mail.days', c.schema)
+	'ao': '',
+	'ac': '',
+	'days': config_int('periodic_mail.days', c.schema)
 }) }}
 {% endif %}
 
 {{- 'periodic_overview.messages.add'|trans({
-	'%link_open%': '',
-	'%link_close%': ''
+	'ao': '',
+	'ac': ''
 }) }}
 {{ context_url('messages_add', mpp_ary(c.user_id, c.schema), {}) }}
 {% endautoescape %}

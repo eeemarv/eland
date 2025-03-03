@@ -26,9 +26,9 @@
 				<div class="panel panel-info">
 					<ul class="list-group">
 			{%- endif -%}
-						<li class="list-group-item">
-							<a href="{{- path('home', {'system': system}) -}}">{{- config_str('system.name', schema) -}}</a>
-						</li>
+				<li class="list-group-item">
+					<a href="{{- path('home', {'system': system}) -}}">{{- config_str('system.name', schema) -}}</a>
+				</li>
 			{% if loop.last or not (loop.index % systems_per_col) -%}
 					</ul>
 				</div>

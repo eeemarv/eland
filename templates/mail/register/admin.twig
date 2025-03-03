@@ -3,7 +3,7 @@
 
 {% block subject_line -%}
     {{- 'register_admin.subject'|trans({
-        '%full_name%': user_full_name(user_id, schema)
+        'full_name': user_full_name(user_id, schema)
     }) -}}
 {% endblock subject_line %}
 

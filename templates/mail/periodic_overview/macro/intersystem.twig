@@ -29,18 +29,18 @@
 	{%- if i.messages -%}
 		{%- include 'mail/include/info_bgcolor_panel.html.twig' with {
 			'info': 'periodic_overview.intersystem.system_messages_explain'|trans({
-				'%system_name%': config_str('system.name', i.schema),
-				'%link_open%': context_url_open('messages_extended', mpp_guest_ary(i.schema), {'os': org_system}),
-				'%link_close%': '</a>'
+				'system_name': config_str('system.name', i.schema),
+				'ao': a_open('messages_extended', mpp_guest_ary(i.schema)|merge({'os': org_system})),
+				'ac': '</a>'
 			})|raw,
 			'bgcolor': 'fee898'
 		} -%}
 	{%- else -%}
 		{%- include 'mail/include/info_bgcolor_panel.html.twig' with {
 			'info': 'periodic_overview.intersystem.system_messages_none_explain'|trans({
-				'%system_name%': config_str('system.name', i.schema),
-				'%link_open%': context_url_open('messages_extended', mpp_guest_ary(i.schema), {'os': org_system}),
-				'%link_close%': '</a>'
+				'system_name': config_str('system.name', i.schema),
+				'ao': a_open('messages_extended', mpp_guest_ary(i.schema)|merge({'os': org_system})),
+				'ac': '</a>'
 			})|raw,
 			'bgcolor': 'fee898'
 		} -%}
@@ -70,7 +70,7 @@
 				<td width="30">
 				</td>
 				<td align="left" valign="top">
-					{{- context_url_open('messages_show', mpp_guest_ary(i.schema), {'id': msg.id, 'os': org_system})|raw -}}
+					{{- a_open('messages_show', mpp_guest_ary(i.schema)|merge({'id': msg.id, 'os': org_system}))|raw -}}
 					{{ msg.subject -}}
 					</a>
 				</td>
@@ -95,14 +95,13 @@
 			<tr>
 				<td>
 					{{- 'periodic_overview.intersystem.account'|trans({
-						'%account%': account(msg.user_id, i.schema),
-						'%account_link_open%': context_url_open('users_show', mpp_guest_ary(i.schema),
+						'account': account(msg.user_id, i.schema),
+						'ao_account': context_url_open('users_show', mpp_guest_ary(i.schema),
 								{'id': msg.user_id, 'os': org_system}),
-						'%account_link_close%': '</a>',
-						'%system_name%': config_str('system.name', i.schema),
-						'%system_link_open%': context_url_open('messages_extended', mpp_guest_ary(i.schema),
-							{'os': org_system}),
-						'%system_link_close%': '</a>'
+						'ac': '</a>',
+						'system_name': config_str('system.name', i.schema),
+						'ao_system': context_url_open('messages_extended', mpp_guest_ary(i.schema),
+							{'os': org_system})
 					})|raw -}}
 				</td>
 			</tr>
@@ -125,27 +124,26 @@
 {% for i in c.intersystem %}
 
 ** {{ 'periodic_overview.intersystem.system_name'|trans({
-		'%name%': i.system_name ?? config_str('system.name', i.schema),
+		'system_name': i.system_name ?? config_str('system.name', i.schema),
 }) }}
 
 {%  if not i.messages %}
 {{ 'periodic_overview.intersystem.system_messages_none_explain_text'|trans({
-	'%system_name%': config_str('system.name', i.schema)
+	'system_name': config_str('system.name', i.schema)
 }) }}
 {% endif %}
 {% for msg in i.messages %}
 
 {{ ('periodic_overview.intersystem.' ~ msg.offer_want)|trans({
-	'%msg%': msg.subject
+	'msg': msg.subject
 }) }}
 {{ context_url('messages_show', mpp_guest_ary(i.schema), {'id': msg.id, 'os': org_system}) }}
 {{ 'periodic_overview.intersystem.account'|trans({
-	'%account%': account(msg.user_id, i.schema),
-	'%account_link_open%' : '',
-	'%account_link_close%' : '',
-	'%system_name%': config_str('system.name', i.schema),
-	'%system_link_open%': '',
-	'%system_link_close%': '',
+	'account': account(msg.user_id, i.schema),
+	'ao_account' : '',
+	'ac' : '',
+	'system_name': config_str('system.name', i.schema),
+	'au_system': ''
 }) }}
 
 {% endfor %}

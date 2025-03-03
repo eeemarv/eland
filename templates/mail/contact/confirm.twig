@@ -3,7 +3,7 @@
 
 {%- block subject_line -%}
     {{- 'contact_confirm.subject'|trans({
-        '%system_name%': config_str('system.name', schema)}) -}}
+        'system_name': config_str('system.name', schema)}) -}}
 {%- endblock subject_line %}
 
 {%- block bgcolor_system_name -%}009900{%- endblock -%}
@@ -38,10 +38,10 @@
         <tr>
             <td>
                 {{- 'contact_confirm.explain'|trans({
-                    '%system_name%': config_str('system.name', schema),
-                    '%link_open%': context_url_open(
+                    'system_name': config_str('system.name', schema),
+                    'ao': context_url_open(
                         'contact_form', mpp_anon_ary(schema), {}),
-                    '%link_close%': '</a>'
+                    'ac': '</a>'
                 })|raw -}}
             </td>
         </tr>
@@ -69,9 +69,9 @@
 {{ 'expiration.1_day'|trans }}
 
 {{ 'contact_confirm.explain'|trans({
-    '%system_name%': config_str('system.name', schema),
-    '%link_open%': '',
-    '%link_close%': ''
+    'system_name': config_str('system.name', schema),
+    'ao': '',
+    'ac': ''
 }) }}
 
 {{ context_url('contact_form', mpp_anon_ary(schema), {}) }}

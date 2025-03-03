@@ -3,21 +3,21 @@
 
 {% block subject_line -%}
     {{- 'user_msg_intersystem.subject'|trans({
-        '%from_account%': account(from_user.id, from_schema),
-        '%from_system_name%': config_str('system.name', from_schema)
+        'from_account': account(from_user.id, from_schema),
+        'from_system_name': config_str('system.name', from_schema)
     })|raw -}}
 {%- endblock subject_line %}
 
 {% block html_explain -%}
     {{- 'user_msg_intersystem.explain'|trans({
-        '%from_account%': account(from_user.id, from_schema),
-        '%from_system_name%': config_str('system.name', from_schema)
+        'from_account': account(from_user.id, from_schema),
+        'from_system_name': config_str('system.name', from_schema)
     })|raw -}}
 {%- endblock html_explain -%}
 
 {% block text_explain %}
 {{ 'user_msg_intersystem.explain'|trans({
-    '%from_account%': account(from_user.id, from_schema),
-    '%from_system_name%': config_str('system.name', from_schema)
+    'from_account': account(from_user.id, from_schema),
+    'from_system_name': config_str('system.name', from_schema)
 })|raw }}
 {% endblock text_explain %}
