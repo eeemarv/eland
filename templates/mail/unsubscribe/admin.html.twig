@@ -2,10 +2,10 @@
 
 {%- include 'mail/include/info_panel.html.twig' with {
     'info': 'subscribed.admin'|trans({
-        '%link_open%': context_url_open('config_mail_addr',
+        'ao': context_url_open('config_mail_addr',
             mpp_admin_ary(schema),
             {}),
-        '%link_close%': '</a>',
+        'ac': '</a>',
     })|raw
 } -%}
 

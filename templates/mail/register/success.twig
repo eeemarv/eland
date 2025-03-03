@@ -3,7 +3,7 @@
 
 {% block subject_line -%}
     {{- 'register_success.subject'|trans({
-        '%system_name%': config_str('system.name', schema)
+        'system_name': config_str('system.name', schema)
     }) -}}
 {%- endblock -%}
 

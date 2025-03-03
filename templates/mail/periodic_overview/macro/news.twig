@@ -78,9 +78,9 @@
 	<tr>
 		<td>
 			{{- 'periodic_overview.news.creator'|trans({
-				'%link_open%': context_url_open('users_show', mpp_ary(c.user_id, c.schema), {'id': n.user_id}),
-				'%link_close%': '</a>',
-				'%account%': account(n.user_id, c.schema)
+				'ao': context_url_open('users_show', mpp_ary(c.user_id, c.schema), {'id': n.user_id}),
+				'ac': '</a>',
+				'account': account(n.user_id, c.schema)
 			})|raw -}}
 		</td>
 	</tr>
@@ -106,8 +106,8 @@
 {% autoescape false %}
 
 {{- 'periodic_overview.news.title'|trans({
-	'%link_open%': '',
-	'%link_close%': ''
+	'ao': '',
+	'ac': ''
 })|underline }}
 {% if c.news %}
 {% for n in c.news %}
@@ -123,9 +123,9 @@
 {{ 'label.date'|trans }}: {{ n.event_at|date_format('day', c.schema) }}
 {% endif %}
 {{ 'periodic_overview.news.creator'|trans({
-	'%link_open%': '',
-	'%link_close%': '',
-	'%account%': account(n.user_id, c.schema)
+	'ao': '',
+	'ac': '',
+	'account': account(n.user_id, c.schema)
 }) }}
 {% endfor %}
 {% else %}

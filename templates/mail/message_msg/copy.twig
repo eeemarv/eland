@@ -3,28 +3,26 @@
 
 {% block subject_line -%}
     {{- ('message_msg_copy.subject_' ~ message.offer_want)|trans({
-        '%message_subject%': message.subject
+        'message_subject': message.subject
     })|raw -}}
 {%- endblock subject_line %}
 
 {% block html_explain -%}
     {{- ('message_msg_copy.explain_' ~ message.offer_want)|trans({
-        '%to_account%': account(to_user.id, to_schema),
-        '%link_to_account_open%': context_url_open('users_show', mpp_ary(from_user.id, from_schema), {'id': to_user.id}),
-        '%link_to_account_close%': '</a>',
-        '%message_subject%': message.subject,
-        '%link_message_open%': context_url_open('messages_show', mpp_ary(from_user.id, from_schema), {'id': message.id}),
-        '%link_message_close%': '</a>'
+        'to_account': account(to_user.id, to_schema),
+        'ao_to_account': context_url_open('users_show', mpp_ary(from_user.id, from_schema), {'id': to_user.id}),
+        'ac': '</a>',
+        'message_subject': message.subject,
+        'ao_message': context_url_open('messages_show', mpp_ary(from_user.id, from_schema), {'id': message.id}),
     })|raw -}}
 {%- endblock html_explain -%}
 
 {% block text_explain %}
 {{ ('message_msg_copy.explain_' ~ message.offer_want)|trans({
-    '%to_account%': account(to_user.id, to_schema),
-    '%link_to_account_open%': '',
-    '%link_to_account_close%': '',
-    '%message_subject%': message.subject,
-    '%link_message_open%': '',
-    '%link_message_close%': ''
+    'to_account': account(to_user.id, to_schema),
+    'ao_to_account': '',
+    'ac': '',
+    'message_subject': message.subject,
+    'ao_message': '',
 })|raw }}
 {% endblock text_explain %}

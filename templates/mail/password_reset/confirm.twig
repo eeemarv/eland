@@ -26,7 +26,7 @@
         <tr>
             <td>
                 {{- 'password_reset_confirm.html_msg'|trans({
-                    '%system_name%': config_str('system.name', schema),
+                    'system_name': config_str('system.name', schema),
                 }) -}}
             </td>
         </tr>
@@ -39,9 +39,9 @@
         <tr>
             <td>
                 {{- 'password_reset_confirm.explain'|trans({
-                    '%system_name%': config_str('system.name', schema),
-                    '%link_open%': context_url_open('home', mpp_anon_ary(schema), {}),
-                    '%link_close%': '</a>'
+                    'system_name': config_str('system.name', schema),
+                    'ao': context_url_open('home', mpp_anon_ary(schema), {}),
+                    'ac': '</a>'
                 })|raw -}}
             </td>
         </tr>
@@ -63,7 +63,7 @@
 {% autoescape false %}
 
 {{ 'password_reset_confirm.text_msg'|trans({
-    '%system_name%': config_str('system.name', schema)
+    'system_name': config_str('system.name', schema)
 }) }}
 
 {{ context_url('password_reset_confirm', mpp_anon_ary(schema), {'token': token}) }}
@@ -71,9 +71,9 @@
 {{ 'expiration.1_day'|trans }}
 
 {{ 'password_reset_confirm.explain'|trans({
-    '%system_name%': config_str('system.name', schema),
-    '%link_open%': '',
-    '%link_close%': ''
+    'system_name': config_str('system.name', schema),
+    'ao': '',
+    'ac': ''
 }) }}
 
 {% endautoescape %}

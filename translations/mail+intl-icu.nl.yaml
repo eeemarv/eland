@@ -1,0 +1,593 @@
+label:
+  account_code: Account Code
+  agent: Agent
+  amount: Bedrag
+  balance: Saldo
+  date: Datum
+  dear_username: Beste {username},
+  description: Omschrijving
+  destination: Bestemming
+  email: E-mail
+  expired: Vervallen
+  from: Van
+  full_name: Volledige Naam
+  hours: Uren
+  link: Link
+  location: Plaats
+  login: Login
+  image: Afbeelding
+  ip: IP
+  is_canceled: Geannuleerd
+  is_paid: Betaald
+  minutes: Minuten
+  offer: Aanbod
+  password: Paswoord
+  postcode: Postcode
+  price: (Richt-)prijs
+  seconds: Seconden
+  system: Systeem
+  to: Naar
+  total: Totaal
+  transaction_id: Transactie ID
+  username: Gebruikersnaam
+  want: Vraag
+  your_account: Je Account
+  your_message: Je Bericht
+
+b:
+  no_reply: >-
+    Niet beantwoorden a.u.b.
+  no_reply_auto: >-
+    Dit is een automatische mail. Niet beantwoorden a.u.b.
+  sender_info:
+    email: >-
+      E-mail: {email}
+    ip: >-
+      IP: {ip}
+    agent: >-
+      Agent: {agent}
+  support:
+    title: Support
+    explain: >-
+      Gebruik het {ao}Help/Supportformulier
+      {ac} als je een vraag of probleem hebt
+    reply_admin: >-
+      Een reply op dit bericht brengt je bij de
+      administratie van {system_name}
+  support_subscribed: >-
+
+  email_validated: >-
+    Het E-mail adres werd gevalideerd.
+  footer: >-
+    {ao}{system_name}{ac}
+
+expiration:
+  1_day: >-
+    De link blijft 24 uur geldig.
+  1_week: >-
+    De link blijft 1 week geldig.
+
+subscribed:
+  admin: >-
+    Je ontvangt dit bericht omdat je E-mail
+    adres vermeld staat als Admin E-mail
+    adres in de {ao}instellingen{ac}.
+  support: >-
+    Je ontvangt dit bericht omdat je E-mail
+    adres vermeld staat als Support E-mail
+    adres in de {ao}instellingen{ac}.
+
+private_msg:
+  sub_header: >-
+    Persoonlijk bericht
+  from_contacts: >-
+    Contactgegevens van {from_account}
+private_msg_copy:
+  sub_header: >-
+    Kopie van je bericht
+
+reply:
+  user: >-
+    Je kan rechtstreeks reageren aan
+    {ao}{from_account}{ac}
+    door deze E-mail te beantwoorden (Reply).
+  user_intersystem: >-
+    Je kan rechtstreeks reageren aan
+    {from_account} [{from_system_name}]
+    door deze E-mail te beantwoorden (Reply).
+
+sender_info:
+  title: Info Verzender
+  email: E-mail
+  ip: IP
+  agent: Agent
+
+account_activation:
+  subject: >-
+    Activatie van je Account bij {system_name}
+  sub_header: >-
+    Activatie account
+  welcome: >-
+    Welkom bij {ao}{system_name}{ac}.
+  login: >-
+    Surf naar {login_ur} en meld je aan met
+    onderstaande gegevens.
+  change_profile: >-
+    Je gebruikersgegevens, je vraag en aanbod kan je
+    zelf online bewerken.
+account_activation_admin:
+  subject: >-
+    Activatie Account {account}
+  sub_header: >-
+    Activatie Account
+  message: >-
+    Account {ao}{account}{ac}
+    werd geactiveerd.
+  email_sent:
+    Een E-mail met nieuw paswoord werd verzonden
+    naar de gebruiker.
+  no_email_sent:
+    Er werd GEEN E-mail met paswoord verzonden naar
+    de gebruiker omdat geen E-mail adres werd ingesteld
+    voor dit account.
+
+auto_deactivate:
+  subject: >-
+    Deactivatie van je Account bij {system_name}
+  sub_header: >-
+    Deactivatie account
+  message: >-
+    Je account bij {ao}{system_name}{ac}
+    werd automatisch gedesactiveerd doordat het de status
+    "uitstapper" had en het uitstappers-saldo bereikt werd.
+auto_deactivate_admin:
+  subject: >-
+    Automatische deactivatie account {account}
+  sub_header: >-
+    Automatische deactivatie
+  message: >-
+    Account {ao}{account}{ac}
+    werd automatisch gedeactiveerd door het bereiken
+    van het uitstappers-saldo.
+  email_sent:
+    Een notificatie-E-mail werd verzonden
+    naar de gebruiker.
+  no_email_sent:
+    Er werd GEEN E-mail naar
+    de gebruiker omdat geen E-mail adres is ingesteld
+    voor dit account.
+
+contact:
+  sub_header: >-
+    Contactformulier
+
+contact_confirm:
+  subject: >-
+    Bevestig je bericht aan {system_name}
+  btn_label: >-
+    Bevestig je bericht
+  html_msg: >-
+    Klik om je bericht
+    in het contactformulier te bevestigen.
+  text_msg: >-
+    Klik op de link hieronder om je bericht in het
+    contactformulier te bevestigen.
+  explain: >-
+    Gelieve deze mail te negeren wanneer je niet
+    zelf een bericht hebt verstuurd
+    via {ao}het contactformulier
+    van {system_name}{ac}.
+
+contact_copy:
+  subject: >-
+    Kopie van je bericht aan {system_name}
+  explain: >-
+    Het bericht hieronder heb je verzonden aan {system_name}
+    via het contactformulier
+contact_support:
+  subject: Bericht van het contactformulier
+  explain: >-
+    Dit bericht werd ingegeven in het
+    contactformulier van {ao}{system_name}{ac}.
+    Gebruik "Reply" om het eventueel te beantwoorden.
+
+index:
+  link: eLAND
+
+index_contact:
+  subject: Bericht van het contactformulier
+  header: eLAND
+  sub_header: Bericht van het contactformulier
+
+index_contact_confirm:
+  subject: Bevestig je bericht
+  header: eLAND Contact
+  btn: Bevestig je bericht
+  btn_explain: >-
+    Je bericht wordt pas verzonden wanneer
+    je je email adres bevestigd hebt door
+    op bovenstaande link te klikken,
+  validity: Deze link blijft 24 uur geldig.
+  ignore: >-
+    Als je niet het
+    {ao}eLAND contactformulier{ac}
+    hebt gebruikt, gelieve dan deze email te negeren.
+
+index_contact_success:
+  subject: Bericht verzonden
+  header: eLAND Contact
+  sub_header: >-
+    Je bericht is succesvol verzonden naar de
+    administratie van de eLAND server. Hieronder
+    vind je een kopie van je bericht.
+
+mollie:
+  is_paid:
+    subject: >-
+      Betaling ontvangen
+    message: >-
+      We hebben je betaling goed ontvangen!
+  payment_request:
+    sub_header: Betalingsverzoek
+    sub_header_is_paid: Betaling voldaan
+    sub_header_is_canceled: Betaling geannuleerd
+    btn_label: Online betalen
+    link: Link voor online betalen
+  payment_request_admin_copy:
+    sub_header: Betalingsverzoek admin info
+    btn_label: Online betalen (dummy knop)
+    link_explain: >-
+      Een betaallink wordt alleen getoond bij openstaande betaalverzoeken
+
+password_reset:
+  sub_header: >-
+    Paswoord reset
+
+password_reset_user:
+  subject: >-
+    Nieuw Paswoord voor je Account
+  sub_header: >-
+    Nieuw Paswoord
+  message: >-
+    Er werd een nieuw paswoord
+    voor je account ingesteld.
+
+password_reset_confirm:
+  subject: Paswoord Reset Link
+  btn_label: Reset je paswoord
+  html_msg: >-
+    Klik om je paswoord opnieuw in te stellen
+    voor je account bij {system_name}.
+  text_msg: >-
+    Klik op de link hieronder om je paswoord opnieuw
+    in te stellen voor je account bij {system_name}.
+  explain: >-
+    Gelieve deze E-mail te negeren wanneer je niet
+    zelf een paswoord reset hebt aangevraagd
+    bij {ao}{system_name}{ac}.
+
+register:
+  sub_header: >-
+    Inschrijving
+
+register_admin:
+  subject: >-
+    Nieuwe Inschrijving: {full_name}
+  msg: >-
+    De volgende persoon schreef zich
+    in via de website
+
+register_confirm:
+  subject: >-
+    Bevestig je inschrijving bij {system_name}
+  btn_label: >-
+    Bevestig je inschrijving
+  html_msg: >-
+    Klik om je registratie te bevestigen.
+  text_msg: >-
+    Klik op de link hieronder om je inschrijving
+    te bevestigen.
+  explain: >-
+    Gelieve deze mail te negeren wanneer je niet
+    zelf {ao}het inschrijvingsformulier
+    van {system_name}{ac} hebt ingevuld.
+register_success:
+  subject: >-
+    Je inschrijving bij {system_name}
+  sub_header: Inschrijving geslaagd
+
+support_copy:
+  subject: >-
+    Kopie van je bericht aan {system_name}
+  explain: >-
+    Het bericht hieronder heb je verzonden
+    aan {system_name} via het help/supportformulier
+support:
+  subject: >-
+    Bericht van het Supportformulier
+  sub_header: >-
+    Supportforumulier
+  explain: >-
+    Het bericht hieronder werd ingegeven in het
+    supportformulier van {ao}{system_name}{ac} door
+    gebruiker {account}.
+  explain_reply: >-
+    Je kan dit bericht eventueel direct beantwoorden (Reply).
+  explain_no_reply: >-
+    Omdat de gebruiker geen E-mail adres heeft ingesteld
+    voor haar/zijn account kan je dit bericht niet direct
+    beantwoorden. Kijk in het {ao}account{ac}
+    voor eventuele andere contactgegevens.
+
+transaction:
+  subject: >-
+    Transactie van {from_account} naar {to_account}
+  title: >-
+    Notificatie Transactie
+transaction_intersystem_fail: #not implemented
+  subject: >-
+    InterSysteem transactie gefaald
+  title: >-
+    Waarschuwing
+  message: >-
+    De lokale commit van transactie
+    {trans_id} is niet gelukt.
+    Dit betekent dat er een onbalans is
+    met het externe systeem {remote_system_name}
+transaction_intersystem:
+  subject: >-
+    Intersysteem Transactie van {from_account} naar {to_account}
+  title: >-
+    Notificatie Intersysteem Transactie
+transact'dec_hours'ion_to_intersystem_mail_type:
+  subject: >-
+    Actie gevraagd! Intersysteem transactie van {system_name} naar {remote_system_name}
+  explain: >-
+    Een interSysteem transactie werd ingegeven in Systeem {system_name}.
+    Deze transactie dient verwerkt te worden in je eigen Systeem.
+  amount_explain: >-
+    {system_name} is een op tijd gebaseerd muntsysteem.
+    {amount} {currency} stemt overeen met {dec_hours} decimale uren.
+    Om je eigen Systeem in balans te brengen met deze interSysteem
+    transactie dien je het equivalent van {dec_hours} decimale uren
+    in je eigen munteenheid over te maken aan account {to_account}
+    vanuit een interSysteem rekening in je Systeem.
+  amount_dec_explain: >-
+    {dec_hours} decimale uren stemt overeen met
+transaction_to_intersystem_mail_type_admin:
+  subject: >-
+    Kopie van bericht, interSysteem transactie van {system_name} naar {remote_system_name}
+  explain: >-
+    Dit is een kopie van het interSysteem bericht dat verstuurd werd naar
+    de administratie van {remote_system_name}. De administratie van dit andere
+    Systeem dient deze transactie te verwerken.
+  amount_time_explain: >-
+    {amount} {currency} stemt overeen met {dec_hours} decimale uren, wat
+    overeenstemt met
+
+user_msg:
+  subject: >-
+    Bericht van {from_account}
+  explain: >-
+    Gebruiker {ao}{from_account}{ac}
+    zendt je het bericht hieronder via de webtoepassing.
+user_msg_copy:
+  subject: >-
+    Kopie van je bericht aan {to_account}
+  explain: >-
+    Dit is een kopie van het bericht dat je aan
+    {ao}{to_account}{ac}
+    verzonden hebt via de webtoepassing.
+user_msg_intersystem:
+  subject: >-
+    Bericht van {from_account} [{from_system_name}]
+  explain:
+    Gebruiker {from_account} van {from_system_name}
+    zendt je via de webtoepassing het bericht hieronder.
+user_msg_copy_intersystem:
+  subject: >-
+    Kopie van je bericht aan {to_account} [{to_system_name}]
+  explain: >-
+    Dit is een kopie van het bericht dat je aan
+    {to_account} van {to_system_name} verzonden hebt
+    via de webtoepassing.
+
+message_msg:
+  subject_offer: >-
+    Reactie op je Aanbod "{message_subject}"
+  subject_want: >-
+    Reactie op je Vraag "{message_subject}"
+  explain_offer: >-
+    Gebruiker {ao_from_account}{from_account}{ac}
+    stuurt je via de webtoepassing een reactie op je aanbod
+    "{ao_message}{message_subject}{ac}".
+  explain_want: >-
+    Gebruiker {ao_from_account}{from_account}{ac}
+    zendt je via de webtoepassing een reactie op je vraag
+    "{ao_message}{message_subject}{ac}".
+message_msg_copy:
+  subject_offer: >-
+    Kopie van je Reactie op het Aanbod "{message_subject}"
+  subject_want:
+    Kopie van je Reactie op de Vraag "{message_subject}"
+  explain_offer: >-
+    Dit is een kopie van je reactie via de webtoepassing
+    aan {ao_to_account}{to_account}{ac}
+    op het aanbod "{ao_message}{message_subject}{ac}".
+  explain_want: >-
+    Dit is een kopie van je reactie via de webtoepassing
+    aan {ao_to_account}{to_account}{ac}
+    op de vraag "{ao_message}{message_subject}{ac}".
+message_msg_intersystem:
+  explain_offer: >-
+    Gebruiker {from_account} van {from_system_name}
+    stuurt je via de webtoepassing een reactie op je aanbod
+    "{ao_message}{message_subject}{ac}".
+  explain_want: >-
+    Gebruiker {from_account} van {from_system_name}
+    zendt je via de webtoepassing een reactie op je vraag
+    "{ao_message}{message_subject}{ac}".
+message_msg_copy_intersystem:
+  explain_offer: >-
+    Dit is een kopie van je reactie via de webtoepassing
+    aan {to_account} van {to_system_name}
+    op het aanbod "{message_subject}".
+  explain_want: >-
+    Dit is een kopie van je reactie via de webtoepassing
+    aan {to_account} van {to_system_name}
+    op de vraag "{message_subject}".
+
+message_extend:
+  1_week: 1 week
+  2_weeks: 2 weken
+  4_weeks: 4 weken
+  2_months: 2 maanden
+  6_months: 6 maanden
+  1_year: 1 jaar
+  5_years: 5 jaren
+
+message_extend_offer:
+  subject: >-
+    Je aanbod "{message_subject}" is vervallen
+  sub_header: >-
+    Aanbod verlengen
+  explain: >-
+    Je aanbod "{ao}{message_subject}{ac}"
+    is vervallen en zal over {days} dagen van de
+    website verwijderd worden. Je kan het verlengen
+    door één van de links hieronder te gebruiken.
+    Als je niet ingelogd bent, zal je eerst gevraagd
+    worden in te loggen.
+message_extend_want:
+  subject: >-
+    Je vraag "{message_subject}" is vervallen
+  sub_header: >-
+    Vraag verlengen
+  explain: >-
+    Je vraag "{ao}{message_subject}{ac}"
+    is vervallen en zal over {days} dagen van de
+    website verwijderd worden. Je kan het verlengen
+    door één van de links hieronder te gebruiken.
+    Als je niet ingelogd bent, zal je eerst gevraagd
+    worden in te loggen.
+
+mass_transaction_many_to_one:
+  subject: >-
+    Nieuwe Veel naar Eén Massa Transactie
+  title: >-
+    Massa Transactie "Veel naar Eén"
+mass_transaction_one_to_many:
+  subject: >-
+    Nieuwe Eén naar Veel Massa Transactie
+  title: >-
+    Massa Transactie "Eén naar Veel"
+
+periodic_overview:
+  subject: >-
+    Periodiek Overzicht
+  unsubscribe: >-
+    Je ontvangt deze E-mail omdat de optie
+    'Periodieke Overzichts E-mail' aangevinkt
+    staat in {ao}je instellingen{ac}
+  messages:
+    title: >-
+      Recent Vraag en Aanbod
+    explain: >-
+      Deze lijst bevat vraag en aanbod dat de afgelopen {days}
+      dagen {ao}online{ac} is geplaatst.
+    none: >-
+      Er werd geen nieuw vraag of aanbod {ao}online{ac} geplaatst.
+    add: >-
+      {ao}Geef zelf je eigen Vraag of Aanbod in{ac}.
+  messages_self:
+    title: >-
+      Je eigen Vraag en Aanbod
+    explain: >-
+      Dit is het vraag en aanbod dat je momenteel online bebt staan.
+    max: >-
+      Dit zijn de {max} meest recente vraag en aanbod
+      berichten die je online hebt geplaatst.
+    none: >-
+      Je hebt momenteel geen berichten online staan.
+    add: >-
+      {ao}Geef een nieuw vraag of aanbod bericht in{ac}
+  intersystem:
+    title: >-
+      Recent InterSysteem Vraag en Aanbod
+    explain: >-
+      Gepost in verbonden InterSystemen.
+    system_name: >-
+      Systeem: {system_name}
+    system_messages_explain: >-
+      {ao}Klik hier{ac} om alles
+      in {system_name} te bekijken.
+    system_messages_none_explain: >-
+      Er werd recent niets gepost in {system_name}.
+      {ao}Klik hier{ac} om alles
+      te bekijken.
+    system_messages_none_explain_text:
+      Er werd recent niets gepost in {system_name}.
+    account: >-
+      Ingegeven door: {ao_account}{account}{ac} [{ao_system}{system_name}{ac}]
+    offer: >-
+      Aanbod: {msg}
+    want: >-
+      Vraag: {msg}
+  forum:
+    title: >-
+      Forum
+    none: >-
+      Er zijn geen nieuwe berichten in
+      het {ao}forum{ac}.
+  docs:
+    title: >-
+      Nieuwe Documenten
+    none: >-
+      Er zijn geen nieuwe documenten.
+  news:
+    title: >-
+      Nieuws
+    none: >-
+      Er zijn momenteel geen nieuwsberichten.
+    creator: >-
+      Ingegeven door {ao}{account}{ac}
+    no_recent: >-
+      Er zijn geen nieuwe nieuwsberichten.
+  new_users:
+    title: >-
+      Nieuwe Leden
+    none: >-
+      Momenteel zijn er geen nieuwe leden.
+    no_recent: >-
+      Er zijn geen nieuwe leden bijgekomen.
+  leaving_users:
+    title: >-
+      Uitstappers
+    none: >-
+      Momenteel zijn er geen uitstappende leden.
+    no_recent: >-
+      Er zijn geen extra uitstappende leden.
+  transactions:
+    title: >-
+      Recente Transacties
+    explain: >-
+      Deze lijst toont de transacties van
+      de laatste {days} dagen.
+    amount_from_to: >-
+      {amount} {currency} van {from} naar {to}
+    intersystem_account: >-
+      {account} [{system_name}]
+    none: >-
+      Er zijn geen recente transacties.
+  mollie:
+    title: >-
+      Betaalverzoek (EUR)
+    title_multi: >-
+      Betaalverzoeken (EUR)
+
+skeleton:
+  admin_copy:
+    to_users: >-
+      Dit bericht werd verzonden naar
+    omitted_to_users: >-
+      Dit bericht kon niet verzonden worden naar

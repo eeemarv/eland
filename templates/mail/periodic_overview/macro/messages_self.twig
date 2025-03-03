@@ -10,15 +10,15 @@
 	{%- if c.messages_self|length > config_int('periodic_mail.user.render.messages_self.max', c.schema) -%}
 		{%- include 'mail/include/info_bgcolor_panel.html.twig' with {
 			'info': 'periodic_overview.messages_self.max'|trans({
-				'%max%' : config_int('periodic_mail.user.render.messages_self.max', c.schema)}),
+				'max' : config_int('periodic_mail.user.render.messages_self.max', c.schema)}),
 			'bgcolor': 'ffccee'
 		} -%}
 	{%- elseif not c.messages_self -%}
 		{%- include 'mail/include/info_bgcolor_panel.html.twig' with {
 			'info': 'periodic_overview.messages_self.none'|trans({
-					'%link_open%': context_url_open('messages_extended',
+					'ao': context_url_open('messages_extended',
 						mpp_ary(c.user_id, c.schema), {}),
-					'%link_close%': '</a>'
+					'ac': '</a>'
 				})|raw,
 			'bgcolor': 'ffccee'
 		} -%}
@@ -63,8 +63,8 @@
 
 	{%- include 'mail/include/info_bgcolor_panel.html.twig' with {
 		'info': 'periodic_overview.messages_self.add'|trans({
-			'%link_open%': context_url_open('messages_add', mpp_ary(c.user_id, c.schema), {}),
-			'%link_close%': '</a>'
+			'ao': context_url_open('messages_add', mpp_ary(c.user_id, c.schema), {}),
+			'ac': '</a>'
 		})|raw ,
 		'bgcolor': 'ffccee'
 	} -%}
@@ -78,7 +78,7 @@
 {% if c.messages_self %}
 {% if c.messages_self|length > config_int('periodic_mail.user.render.messages_self.max', c.schema) %}
 {{ 'periodic_overview.messages_self.max'|trans({
-	'%max%' : config_int('periodic_mail.user.render.messages_self.max', c.schema)
+	'max' : config_int('periodic_mail.user.render.messages_self.max', c.schema)
 }) }}
 {% endif %}
 {% for msg in c.messages_self|slice(0, config_int('periodic_mail.user.render.messages_self.max', c.schema)) %}
@@ -87,14 +87,14 @@
 {% endfor %}
 {% else %}
 {{ 'periodic_overview.messages_self.none'|trans({
-	'%link_open%': '',
-	'%link_close%': ''
+	'ao': '',
+	'ac': ''
 }) }}
 {% endif %}
 
 {{ 'periodic_overview.messages_self.add'|trans({
-	'%link_open%': '',
-	'%link_close%': ''
+	'ao': '',
+	'ac': ''
 }) }}:
 {{ context_url('messages_add', mpp_ary(c.user_id, c.schema), {}) }}
 {% endautoescape %}

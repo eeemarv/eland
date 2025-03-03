@@ -3,8 +3,8 @@
 
 {% block subject_line -%}
     {{- 'transaction_intersystem.subject'|trans({
-        '%from_account%': account(from_user_id, schema),
-        '%to_account%': transaction.real_to
+        'from_account': account(from_user_id, schema),
+        'to_account': transaction.real_to
             ~ ' ['
             ~ user_full_name(to_user_id, schema)
             ~ ']'

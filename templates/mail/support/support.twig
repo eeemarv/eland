@@ -17,12 +17,11 @@
 
     {%- set info -%}
         {{- 'support.explain'|trans({
-            '%link_open%': context_url_open('home',
-                mpp_anon_ary(schema), {}),
-            '%link_close%': '</a>',
-            '%system_name%': config_str('system.name', schema),
-            '%account%':  context_url_open('users_show',
-                    mpp_ary(user_id, schema), {'id': user_id})
+            'ao': a_open('home', mpp_anon_ary(schema)),
+            'ac': '</a>',
+            'system_name': config_str('system.name', schema),
+            'account':  a_open('users_show',
+                    mpp_ary(user_id, schema)|merge({'id': user_id}))
                 ~ account(user_id, schema)
                 ~ '</a>'
         })|raw -}}
@@ -33,9 +32,9 @@
             {{- 'support.explain_reply'|trans -}}
         {%- else -%}
             {{- 'support.explain_no_reply'|trans({
-                '%link_open%': context_url_open('users_show', mpp_ary(user_id, schema),
+                'ao': context_url_open('users_show', mpp_ary(user_id, schema),
                     {'id': user_id}),
-                '%link_close%': '</a>'
+                'ac': '</a>'
             })|raw -}}
         {%- endif -%}
     {%- endset -%}
@@ -72,17 +71,17 @@
 {% autoescape false %}
 
 {{ 'support.explain'|trans({
-    '%link_open%': '',
-    '%link_close%': '',
-    '%system_name%': config_str('system.name', schema),
-    '%account%': account(user_id, schema)
+    'ao': '',
+    'ac': '',
+    'system_name': config_str('system.name', schema),
+    'account': account(user_id, schema)
 }) }}
 {% if can_reply %}
 {{ 'support.explain_reply'|trans }}
 {% else %}
 {{ 'support.explain_no_reply'|trans({
-    '%link_open%': '',
-    '%link_close%': ''
+    'ao': '',
+    'ac': ''
 }) }}
 {{ context_url('users_show', mpp_ary(user_id, schema), {'id': user_id}) }}
 {% endif %}

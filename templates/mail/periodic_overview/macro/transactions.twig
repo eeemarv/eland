@@ -38,17 +38,17 @@
 			<tr>
 				<td>
 					{{- 'periodic_overview.transactions.amount_from_to'|trans({
-						'%amount%': tr.amount,
-						'%currency%': config_str('transactions.currency.name', c.schema),
-						'%from%': tr.real_from ? 'periodic_overview.transactions.intersystem_account'|trans({
-							'%account%': tr.real_from,
-							'%system_name%': account(tr.id_from, c.schema)
+						'amount': tr.amount,
+						'currency': config_str('transactions.currency.name', c.schema),
+						'from': tr.real_from ? 'periodic_overview.transactions.intersystem_account'|trans({
+							'account': tr.real_from,
+							'system_name': account(tr.id_from, c.schema)
 						}) : context_url_open('users_show', mpp_ary(c.user_id, c.schema), {'id': tr.id_from})
 							~ account(tr.id_from, c.schema)
 							~ '</a>',
-						'%to%': tr.real_to ? 'periodic_overview.transactions.intersystem_account'|trans({
-							'%account%': tr.real_to,
-							'%system_name%': account(tr.id_to, c.schema)
+						'to': tr.real_to ? 'periodic_overview.transactions.intersystem_account'|trans({
+							'account': tr.real_to,
+							'system_name': account(tr.id_to, c.schema)
 						}) : context_url_open('users_show', mpp_ary(c.user_id, c.schema), {'id': tr.id_to})
 							~ account(tr.id_to, c.schema)
 							~ '</a>',
@@ -79,15 +79,15 @@
 {% for tr in c.transactions %}
 
 * {{ 'periodic_overview.transactions.amount_from_to'|trans({
-	'%amount%': tr.amount,
-	'%currency%': config_str('transactions.currency.name', c.schema),
-	'%from%': tr.real_from ? 'periodic_overview.transactions.intersystem_account'|trans({
-		'%account%': tr.real_from,
-		'%system_name%': account(tr.id_from, c.schema)
+	'amount': tr.amount,
+	'currency': config_str('transactions.currency.name', c.schema),
+	'from': tr.real_from ? 'periodic_overview.transactions.intersystem_account'|trans({
+		'account': tr.real_from,
+		'system_name': account(tr.id_from, c.schema)
 	}) : account(tr.id_from, c.schema),
-	'%to%': tr.real_to ? 'periodic_overview.transactions.intersystem_account'|trans({
-		'%account%': tr.real_to,
-		'%system_name%': account(tr.id_to, c.schema)
+	'to': tr.real_to ? 'periodic_overview.transactions.intersystem_account'|trans({
+		'account': tr.real_to,
+		'system_name': account(tr.id_to, c.schema)
 	}) : account(tr.id_to, c.schema),
 }) }}
 	{{ tr.description }}
