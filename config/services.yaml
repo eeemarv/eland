@@ -47,7 +47,7 @@ services:
 
     Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler:
         arguments:
-            - '@snc_redis.default'
-            - {prefix: session_, ttl: 864000}
+            - '@snc_redis.session'
+            - {ttl: 864000}
 
     Bramus\Monolog\Formatter\ColoredLineFormatter: ~

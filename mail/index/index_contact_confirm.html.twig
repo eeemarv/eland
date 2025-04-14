@@ -17,14 +17,18 @@
             <p>
                 {{- 'index_contact_confirm.validity'|trans -}}
             </p>
+
         </columns>
     </row>
-    <callout class="secondary">
-        <p>
-            {{- 'index_contact_confirm.ignore'|trans({
-                'ao': a_open('index_contact'),
-                'ac': '</a>'
-            })|raw -}}
-        </p>
-    </callout>
+    <spacer size="1" class="hr"></spacer>
+    <row>
+        <columns>
+            <p>
+                {{- 'index_contact_confirm.ignore'|trans({
+                    'ao': a_open('index_contact'),
+                    'ac': '</a>'
+                })|raw -}}
+            </p>
+        </columns>
+    </row>
 {%- endblock content -%}

@@ -16,6 +16,12 @@ snc_redis:
             logging: false #'%kernel.debug%'
             options:
                 prefix: eland.
+        session:
+            type: phpredis
+            alias: session
+            dsn: '%env(temp_redis_dsn_fix:REDIS_URL)%/15'
+            logging: '%kernel.debug%'
+
     monolog:
         client: monolog
         key: monolog
