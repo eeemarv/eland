@@ -12,6 +12,7 @@
 		"ext-exif": "*",
 		"ext-gd": "*",
 		"ext-iconv": "*",
+		"ext-imagick": "*",
 		"ext-intl": "*",
 		"ext-mbstring": "*",
 		"ext-redis": "*",
@@ -24,6 +25,7 @@
 		"doctrine/doctrine-bundle": "^2",
 		"doctrine/doctrine-migrations-bundle": "^3",
 		"doctrine/orm": "^2",
+		"dragonmantank/cron-expression": "^3.4",
 		"geo6/geocoder-php-bpost-provider": "^1.4",
 		"imagine/imagine": "^0.6",
 		"intervention/image": "^2.7",
@@ -46,6 +48,7 @@
 		"symfony/debug-bundle": "7.2.*",
 		"symfony/dotenv": "7.2.*",
 		"symfony/expression-language": "7.2.*",
+		"symfony/filesystem": "7.2.*",
 		"symfony/finder": "7.2.*",
 		"symfony/flex": "^2",
 		"symfony/form": "7.2.*",
@@ -61,6 +64,7 @@
 		"symfony/proxy-manager-bridge": "6.4.*",
 		"symfony/requirements-checker": "^2.0",
 		"symfony/runtime": "7.2.*",
+		"symfony/scheduler": "7.2.*",
 		"symfony/security-bundle": "7.2.*",
 		"symfony/security-csrf": "7.2.*",
 		"symfony/serializer": "7.2.*",
@@ -79,7 +83,7 @@
 	},
 
     "require-dev": {
-		"symfony/maker-bundle": "^1.13",
+		"symfony/maker-bundle": "^1.62",
 		"symfony/phpunit-bridge": "^7.0",
 		"symfony/web-profiler-bundle": "7.2.*"
 	},

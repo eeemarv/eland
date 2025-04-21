@@ -4,6 +4,8 @@ namespace App\SchemaTask;
 
 use App\Service\CacheService;
 use App\Service\SystemsService;
+use Doctrine\DBAL\Connection as Db;
+use Doctrine\DBAL\Types\Types;
 
 class SchemaTaskSchedule
 {
@@ -15,7 +17,8 @@ class SchemaTaskSchedule
 	public function __construct(
 		protected CacheService $cache_service,
 		protected SystemsService $systems_service,
-		protected SchemaTaskCollection $schema_task_collection
+		protected SchemaTaskCollection $schema_task_collection,
+		protected Db $db
 	)
 	{
 		$this->last_run_ary = $this->cache_service->get(self::CACHE_KEY);
@@ -103,6 +106,61 @@ class SchemaTaskSchedule
 
 		$time_register = ((($time - $next_time) > 43200) || ($interval < 43201)) ? $time : $next_time;
 		$this->last_run_ary[$id] = gmdate('Y-m-d H:i:s', $time_register);
+
+		/** Ensure tas schema */
+
+		$run_ary = $this->last_run_ary;
+
+		foreach ($run_ary as $rid => $rtime)
+		{
+			[$rschema] = explode('_', $rid);
+
+			if ($rschema !== 'las')
+			{
+				continue;
+			}
+
+			$nid = 't' . ltrim($rid, 'l');
+
+			$this->last_run_ary[$nid] = $rtime;
+		}
+
+		/** End tas schema */
+
+		/** Transfer to database */
+
+		foreach ($schemas as $u_schema)
+		{
+			foreach ($schema_task_names as $u_name)
+			{
+				$u_id = $this->get_id($u_schema, $u_name);
+
+				if (!isset($this->last_run_ary[$u_id]))
+				{
+					continue;
+				}
+
+				$u_task = $this->schema_task_collection->get($u_name);
+				$u_interval = $u_task->get_interval($u_schema);
+				$u_last = strtotime($this->last_run_ary[$u_id] . ' UTC');
+
+				$last_run = \DateTimeImmutable::createFromFormat('U', (string) $u_last, new \DateTimeZone('UTC'));
+				$next_run = \DateTimeImmutable::createFromFormat('U', (string) ($u_last + $u_interval), new \DateTimeZone('UTC'));
+
+				$this->db->executeStatement('insert into ' . $u_schema . '.schedule_tasks (id, last_run, next_run)
+					values (:id, :last_run, :next_run)
+					on conflict (id) do
+					update set last_run = EXCLUDED.last_run, next_run = EXCLUDED.next_run',
+					['id' => $u_name, 'last_run' => $last_run, 'next_run' => $next_run],
+					['id' => \PDO::PARAM_STR, 'last_run' => Types::DATETIME_IMMUTABLE, 'next_run' => Types::DATETIME_IMMUTABLE]
+				);
+			}
+		}
+
+		error_log('== end transfer 0 ==');
+
+		/** end transfer to db */
+
 		$this->cache_service->set(self::CACHE_KEY, $this->last_run_ary);
 
 		error_log('update & run: ' . $id);
