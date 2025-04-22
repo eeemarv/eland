@@ -28,6 +28,7 @@ class ClearRedisCacheConsoleCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->cache->invalidateTags([
+            'assets',
             'response',
             'config',
             'static_content'

@@ -1,0 +1,38 @@
+The store directory for user uploads
+(will be overwritten by mount from host, including this README file)
+Use Dokku's persistant storage to symlink to this directory.
+```
+# Create/ensure a persistant storage on the host
+# This creates /var/lib/dokku/data/storage/eland
+dokku storage:ensure-directory eland
+
+
+# mount the directory into the container's /app/public/store
+# explicit host paths _must_ exist prior to usage.
+dokku storage:mount <app> /var/lib/dokku/data/storage/eland:/app/public/store
+```
+
+structure
+<system_name>/d/ docs
+<system_name>/l/ logo image
+<system_name>/u/ user profile images
+<system_name>/m/ message images (ads)
+<system_name>/c/ cms images
+
+images for web:
+original file (downsized to maximum size 1000 or less)
+abcdefghijkl-1000.jpg
+web
+abcdefghijkl-400.jpg (src)
+
+abcdefghijkl-100.webp
+abcdefghijkl-120.webp
+abcdefghijkl-150.webp
+abcdefghijkl-200.webp
+abcdefghijkl-300.webp
+abcdefghijkl-400.webp
+abcdefghijkl-600.webp
+abcdefghijkl-800.webp
+abcdefghijkl-1000.webp
+mail
+abcdefghijkl-120.png

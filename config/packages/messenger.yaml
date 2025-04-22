@@ -4,6 +4,37 @@ framework:
         # failure_transport: failed
 
         transports:
+            sync: sync://
+            mail_lo:
+                dsn: redis://
+                options:
+                    client: snc_redis.messages
+                    stream: mail_lo
+            mail_hi:
+                dsn: redis://
+                options:
+                    client: snc_redis.messages
+                    stream: mail_hi
+            async:
+                dsn: redis://
+                options:
+                    client: snc_redis.nessages
+                    stream: async
+                retry_strategy:
+                    max_retries: 5
+                    delay: 2000
+                    multiplier: 2
+                    max_delay: 10000
+            images:
+                dsn: redis://
+                options:
+                    client: snc_redis.messages
+                    stream: images
+            geo:
+                dsn: redis://
+                options:
+                    client: snc_redis.messages
+                    stream: geo
             # https://symfony.com/doc/current/messenger.html#transport-configuration
             # async: '%env(MESSENGER_TRANSPORT_DSN)%'
             # default:

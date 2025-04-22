@@ -33,17 +33,18 @@ dokku domains:set your-eland-app your-domain.com
 
 ```
 
-* Each currency system on the eLAND server with an interSystem link to eLAS also needs a subdomain where eLAS will connect to:
-
-```shell
-
-dokku domains:set your-eland-app yourschemaname.your-domain.com
-
+Create a persistant storage for uploaded documents and images:
+```
+dokku storage:ensure-directory eland
+dokku storage:mount your-eland-app /var/lib/dokku/data/storage/eland:/app/public/store
 ```
 
-Note: this cannot be a wildcard because it's not supported by the Dokku Letsencrypt plugin.
 
-Also set (when intersystem connections with eLAS needed) a DNS A record with wildcard to the VPS ip.
+
+
+
+
+
 
 * Use the [Dokku Letsencrypt](https://github.com/dokku/dokku-letsencrypt) plugin to enable https
 

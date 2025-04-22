@@ -7,6 +7,12 @@
 
 /public/build/
 
+## uploaded files ##
+
+/public/store/*
+!/public/store/README
+##
+
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php

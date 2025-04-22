@@ -15,7 +15,7 @@ framework:
         cookie_secure: auto
         cookie_samesite: strict
         name: eland
-        sid_bits_per_character: 5
+        # sid_bits_per_character: 5 # depreciated
         cookie_lifetime: 2592000 # 30 days
         gc_maxlifetime: 864000 # 10 days
 

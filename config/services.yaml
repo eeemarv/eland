@@ -4,6 +4,7 @@ parameters:
     app.default_locale: nl
     app.locales: en|nl
     env(GIT_REV): ''
+    store_dir: '%kernel.project_dir%/public/store'
     assert.thumbprint: '[a-f0-9-]{8}'
     assert.token: '[a-z0-9-]{12}'
     assert.big_token: '[a-z0-9-]{20}'
@@ -25,6 +26,7 @@ parameters:
     assert.year: ^(19|20)[0-9]{2}$
     assert.month: ^[1-9]|1[012]$
     assert.tag_type: users|messages|calendar|news|transactions|blog|docs|forum
+    uuid_base58: '[1-9A-NP-Za-km-z]{22}'
 
 services:
     _defaults:
