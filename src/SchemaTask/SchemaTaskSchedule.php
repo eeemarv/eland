@@ -154,6 +154,17 @@ class SchemaTaskSchedule
 					['id' => $u_name, 'last_run' => $last_run, 'next_run' => $next_run],
 					['id' => \PDO::PARAM_STR, 'last_run' => Types::DATETIME_IMMUTABLE, 'next_run' => Types::DATETIME_IMMUTABLE]
 				);
+
+				if ($u_name === 'saldo')
+				{
+					$this->db->executeStatement('insert into ' . $u_schema . '.schedule_tasks (id, last_run, next_run)
+						values (\'periodic_mail\', :last_run, :next_run)
+						on conflict (id) do
+						update set last_run = EXCLUDED.last_run, next_run = EXCLUDED.next_run',
+						['last_run' => $last_run, 'next_run' => $next_run],
+						['last_run' => Types::DATETIME_IMMUTABLE, 'next_run' => Types::DATETIME_IMMUTABLE]
+					);
+				}
 			}
 		}
 

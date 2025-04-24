@@ -2,7 +2,6 @@ framework:
     messenger:
         # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
         # failure_transport: failed
-
         transports:
             sync: sync://
             mail_lo:
@@ -18,7 +17,7 @@ framework:
             async:
                 dsn: redis://
                 options:
-                    client: snc_redis.nessages
+                    client: snc_redis.messages
                     stream: async
                 retry_strategy:
                     max_retries: 5
@@ -43,7 +42,7 @@ framework:
             #    table_name: 'xdb.messenger_messages'
             # sync: 'sync://'
 
-        routing:
+        #routing:
             # Route your messages to the transports
             # 'App\Message\YourMessage': async
 

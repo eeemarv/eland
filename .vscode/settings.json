@@ -5,5 +5,9 @@
         "**/vendor/**": true,
         "**/_book/**": true,
         "**/node_modules/**": true
-    }
+    },
+    "intelephense.environment.variables": {
+        "snake_case_vars": true
+    },
+    "intelephense.diagnostics.undefinedTypes": false
 }
