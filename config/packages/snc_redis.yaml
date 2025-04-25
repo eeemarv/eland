@@ -16,6 +16,12 @@ snc_redis:
             logging: false #'%kernel.debug%'
             options:
                 prefix: eland.
+        lock:
+            type: phpredis
+            alias: lock
+            # See https://github.com/snc/SncRedisBundle/issues/709
+            dsn: '%env(temp_redis_dsn_fix:REDIS_URL)%/9'
+            logging: '%kernel.debug%'
         messages:
             type: phpredis
             alias: messages
