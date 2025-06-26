@@ -22,7 +22,7 @@ snc_redis:
             # See https://github.com/snc/SncRedisBundle/issues/709
             dsn: '%env(temp_redis_dsn_fix:REDIS_URL)%/9'
             logging: '%kernel.debug%'
-        messages:
+        messages:  # not used, directly configured in messenger.yaml
             type: phpredis
             alias: messages
             # See https://github.com/snc/SncRedisBundle/issues/709

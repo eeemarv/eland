@@ -5,19 +5,24 @@ framework:
         transports:
             sync: sync://
             mail_lo:
-                dsn: redis://
+                dsn: '%env(REDIS_URL)%/10'
                 options:
-                    client: snc_redis.messages
                     stream: mail_lo
+            mail_mi:
+                dsn: '%env(REDIS_URL)%/10'
+                options:
+                    stream: mail_mi
             mail_hi:
-                dsn: redis://
+                dsn: '%env(REDIS_URL)%/10'
                 options:
-                    client: snc_redis.messages
                     stream: mail_hi
-            async:
-                dsn: redis://
+            mail_dispatch:
+                dsn: '%env(REDIS_URL)%/10'
                 options:
-                    client: snc_redis.messages
+                    stream: mail_dispatch
+            async:
+                dsn: '%env(REDIS_URL)%/10'
+                options:
                     stream: async
                 retry_strategy:
                     max_retries: 5
@@ -25,15 +30,19 @@ framework:
                     multiplier: 2
                     max_delay: 10000
             images:
-                dsn: redis://
+                dsn: '%env(REDIS_URL)%/10'
                 options:
-                    client: snc_redis.messages
                     stream: images
             geo:
-                dsn: redis://
+                dsn: '%env(REDIS_URL)%/10'
                 options:
-                    client: snc_redis.messages
                     stream: geo
+
+        # async routing is handled in wrapper \App\Email\Message\EmailDispatchMessage
+        routing:
+            Symfony\Component\Mailer\Messenger\SendEmailMessage: sync
+
+
             # https://symfony.com/doc/current/messenger.html#transport-configuration
             # async: '%env(MESSENGER_TRANSPORT_DSN)%'
             # default:

@@ -1,0 +1,15 @@
+{%- trans_default_domain 'mail' -%}
+<callout class="secondary">
+    <h5>
+        {{- 'sender_info.title'|trans -}}
+    </h5>
+    <p>
+        {{- 'sender_info.email'|trans -}}: {{ sender.email|raw }}
+    </p>
+    <p>
+        {{- 'sender_info.ip'|trans -}}: {{ sender.ip|raw }}
+    </p>
+    <p>
+        {{- 'sender_info.agent'|trans -}}: {{ sender.agent|raw }}
+    </p>
+</callout>

@@ -5,8 +5,7 @@
 	"description": "web app for community currencies.",
 	"homepage": "https://eland.letsa.net",
 	"keywords": ["community", "currencies", "app"],
-
-    "require": {
+  "require": {
 		"php": "^8.4",
 		"ext-ctype": "*",
 		"ext-exif": "*",
@@ -74,6 +73,7 @@
 		"symfony/translation": "7.2.*",
 		"symfony/twig-bridge": "7.2.*",
 		"symfony/twig-bundle": "7.2.*",
+		"symfony/uid": "7.2.*",
 		"symfony/validator": "7.2.*",
 		"symfony/var-dumper": "7.2.*",
 		"symfony/yaml": "7.2.*",

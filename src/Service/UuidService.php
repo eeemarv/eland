@@ -70,4 +70,14 @@ class UuidService
 	{
 		return $this->bin_to_base58($this->gen_bin());
 	}
+
+	public function uuid_to_base58(string $uuid):string
+	{
+		return $this->bin_to_base58($this->uuid_to_bin($uuid));
+	}
+
+	public function base58_to_uuid(string $base58):string
+	{
+		return $this->bin_to_uuid($this->base58_to_bin($base58));
+	}
 }

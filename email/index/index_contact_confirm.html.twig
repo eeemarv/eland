@@ -1,5 +1,9 @@
-{%- extends '@mail/base/base.html.twig' -%}
+{%- extends '@email/base/base.html.twig' -%}
 {%- trans_default_domain 'mail' -%}
+
+{%- block subject -%}
+    {{- 'index_contact_confirm.subject'|trans -}}
+{%- endblock subject -%}
 
 {%- block header -%}
     {{- 'index_contact_confirm.header'|trans -}}
