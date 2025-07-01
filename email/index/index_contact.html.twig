@@ -2,23 +2,21 @@
 {%- trans_default_domain 'mail' -%}
 
 {%- block subject -%}
-    {{- 'index_contact.subject'|trans -}}
+  {{- 'index_contact.subject'|trans -}}
 {%- endblock subject -%}
 
 {%- block header -%}
-    {{- 'index_contact.header'|trans -}}
+  {{- 'index_contact.header'|trans -}}
 {%- endblock header -%}
 
 {%- block sub_header -%}
-    <p>
-        {{- 'index_contact.sub_header'|trans -}}
-    </p>
+  {{- 'index_contact.sub_header'|trans -}}
 {%- endblock sub_header -%}
 
 {%- block content -%}
-    {%- include '@email/include/message.html.twig' -%}
+  {%- include '@email/include/message.html.twig' -%}
 {%- endblock content -%}
 
 {%- block sender_info_footer -%}
-    {%- include '@email/include/sender_info.html.twig' -%}
+  {%- include '@email/include/sender_info.html.twig' -%}
 {%- endblock sender_info_footer -%}

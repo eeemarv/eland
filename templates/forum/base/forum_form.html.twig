@@ -1,47 +1,45 @@
 {%- extends 'forum/base/forum_base.html.twig' -%}
 
 {%- block assets_add -%}
-    {{- parent() -}}
-    {{- assets_add(['summernote', 'summernote_forum_post.js']) -}}
+  {{- parent() -}}
+  {{- assets_add(['summernote', 'summernote_forum_post.js']) -}}
 {%- endblock assets_add -%}
 
 {%- block form_a -%}
-    {%- if form.subject is defined -%}
-        {{- form_row(form.subject, {
-            'label': false,
-            'pre_addon': {
-                'fa': 'chevron-right'
-            },
-            'attr': {
-                'placeholder': 'label.subject'
-            }
-        }) -}}
-    {%- endif -%}
+  {%- if form.subject is defined -%}
+    {{- form_row(form.subject, {
+      'label': false,
+      'pre_addon': {
+        'fa': 'chevron-right'
+      },
+      'attr': {
+        'placeholder': 'label.subject'
+      }
+    }) -}}
+  {%- endif -%}
 
-    {%- if form.content is defined -%}
-        {{- form_row(form.content, {
-            'label': false,
-            'attr': {
-                'rows': 5,
-                'minlength': 10,
-                'maxlength': 5000
-            }
-        }) -}}
-    {%- endif -%}
+  {%- if form.content is defined -%}
+    {{- form_row(form.content, {
+      'label': false,
+      'attr': {
+        'rows': 5,
+        'minlength': 10,
+        'maxlength': 5000
+      }
+    }) -}}
+  {%- endif -%}
 
-    {%- if form.access is defined -%}
-        {{- form_row(form.access, {
-            'label': 'access.visible_for',
-        }) -}}
-    {%- endif -%}
+  {%- if form.access is defined -%}
+    {{- form_row(form.access, {
+      'label': 'access.visible_for',
+    }) -}}
+  {%- endif -%}
 {%- endblock form_a -%}
 
 {%- block css -%}
-    {{- parent() -}}
-    {{- encore_entry_link_tags('summernote') -}}
+  {{- parent() -}}
 {%- endblock css -%}
 
 {%- block js -%}
-    {{- parent() -}}
-	{{- encore_entry_script_tags('summernote') -}}
+  {{- parent() -}}
 {%- endblock js -%}

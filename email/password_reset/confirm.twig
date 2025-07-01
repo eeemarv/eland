@@ -1,0 +1,80 @@
+{%- extends 'mail/base/base.twig' -%}
+{%- trans_default_domain 'mail' -%}
+
+{%- block subject -%}
+    {{- 'password_reset_confirm.subject'|trans -}}
+{%- endblock subject -%}
+
+{%- block bgcolor_system_name -%}009900{%- endblock -%}
+{%- block bgcolor_sub_header -%}99ff99{%- endblock -%}
+{%- block sub_header -%}password_reset.sub_header{%- endblock -%}
+
+{%- block html_content -%}
+    {%- set info -%}
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+        {%- include 'mail/include/row_spacer20.html.twig' -%}
+        <tr>
+            <td align="center">
+                {%- include 'mail/include/btn.html.twig' with {
+                    'bgcolor': '008800',
+                    'label': 'password_reset_confirm.btn_label'|trans,
+                    'href': context_url('password_reset_confirm', mpp_anon_ary(schema), {'token': token})
+                } -%}
+            </td>
+        </tr>
+        {%- include 'mail/include/row_spacer20.html.twig' -%}
+        <tr>
+            <td>
+                {{- 'password_reset_confirm.html_msg'|trans({
+                    'system_name': config_str('system.name', schema),
+                }) -}}
+            </td>
+        </tr>
+        <tr>
+            <td style="font-weight: bold;">
+                {{- 'expiration.1_day'|trans -}}
+            </td>
+        </tr>
+        {%- include 'mail/include/row_spacer20.html.twig' -%}
+        <tr>
+            <td>
+                {{- 'password_reset_confirm.explain'|trans({
+                    'system_name': config_str('system.name', schema),
+                    'ao': context_url_open('home', mpp_anon_ary(schema), {}),
+                    'ac': '</a>'
+                })|raw -}}
+            </td>
+        </tr>
+    </table>
+    {%- include 'mail/include/row_spacer20.html.twig' -%}
+    {%- endset -%}
+
+    {%- include 'mail/include/spacer20.html.twig' -%}
+
+    {%- include 'mail/include/info_panel.html.twig' with {
+        'info': info|raw
+    } -%}
+
+    {%- include 'mail/include/spacer20.html.twig' -%}
+    {%- include 'mail/include/bgspacer40.html.twig' -%}
+{%- endblock html_content -%}
+
+{% block text_content %}
+{% autoescape false %}
+
+{{ 'password_reset_confirm.text_msg'|trans({
+    'system_name': config_str('system.name', schema)
+}) }}
+
+{{ context_url('password_reset_confirm', mpp_anon_ary(schema), {'token': token}) }}
+
+{{ 'expiration.1_day'|trans }}
+
+{{ 'password_reset_confirm.explain'|trans({
+    'system_name': config_str('system.name', schema),
+    'ao': '',
+    'ac': ''
+}) }}
+
+{% endautoescape %}
+{% endblock text_content %}

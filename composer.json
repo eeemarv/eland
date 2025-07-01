@@ -40,6 +40,7 @@
 		"snc/redis-bundle": "^4.1",
 		"symfony/amazon-mailer": "7.2.*",
 		"symfony/asset": "7.2.*",
+		"symfony/asset-mapper": "7.2.*",
 		"symfony/cache": "7.2.*",
 		"symfony/config": "7.2.*",
 		"symfony/console": "7.2.*",
@@ -77,6 +78,7 @@
 		"symfony/validator": "7.2.*",
 		"symfony/var-dumper": "7.2.*",
 		"symfony/yaml": "7.2.*",
+		"symfonycasts/sass-bundle": "^0.8.2",
 		"twig/cssinliner-extra": "^3.10",
 		"twig/extra-bundle": "^3.10",
 		"twig/inky-extra": "^3.5",
@@ -84,17 +86,17 @@
 		"twig/twig": "^3.0"
 	},
 
-    "require-dev": {
+  "require-dev": {
 		"symfony/maker-bundle": "^1.62",
 		"symfony/phpunit-bridge": "^7.0",
 		"symfony/web-profiler-bundle": "7.2.*"
 	},
 
-    "config": {
-        "preferred-install": {
-            "*": "dist"
-        },
-        "sort-packages": true,
+  "config": {
+    "preferred-install": {
+        "*": "dist"
+    },
+  "sort-packages": true,
 		"allow-plugins": {
 			"php-http/discovery": true,
 			"symfony/flex": true,
@@ -102,7 +104,7 @@
 		}
 	},
 
-    "minimum-stability": "stable",
+  "minimum-stability": "stable",
 
 	"autoload": {
 		"psr-4": {
@@ -110,43 +112,44 @@
         }
 	},
 
-    "autoload-dev": {
-        "psr-4": {
-            "App\\Tests\\": "tests/"
-        }
-	},
-
-    "replace": {
-        "paragonie/random_compat": "2.*",
-        "symfony/polyfill-ctype": "*",
-        "symfony/polyfill-iconv": "*",
-        "symfony/polyfill-php71": "*",
-        "symfony/polyfill-php70": "*",
-        "symfony/polyfill-php56": "*"
-	},
-
-    "scripts": {
-        "auto-scripts": {
-			"cache:clear": "symfony-cmd",
-			"assets:install %PUBLIC_DIR%": "symfony-cmd",
-			"requirements-checker": "script"
-		},
-        "post-install-cmd": [
-            "@auto-scripts"
-        ],
-        "post-update-cmd": [
-            "@auto-scripts"
-        ]
-	},
-
-    "conflict": {
-        "symfony/symfony": "*"
-	},
-
-    "extra": {
-        "symfony": {
-            "allow-contrib": false,
-            "require": "7.2.*"
-        }
+  "autoload-dev": {
+    "psr-4": {
+      "App\\Tests\\": "tests/"
     }
+	},
+
+  "replace": {
+    "paragonie/random_compat": "2.*",
+    "symfony/polyfill-ctype": "*",
+    "symfony/polyfill-iconv": "*",
+    "symfony/polyfill-php71": "*",
+    "symfony/polyfill-php70": "*",
+    "symfony/polyfill-php56": "*"
+	},
+
+  "scripts": {
+    "auto-scripts": {
+    "cache:clear": "symfony-cmd",
+    "assets:install %PUBLIC_DIR%": "symfony-cmd",
+    "requirements-checker": "script",
+    "importmap:install": "symfony-cmd"
+  },
+  "post-install-cmd": [
+      "@auto-scripts"
+    ],
+  "post-update-cmd": [
+      "@auto-scripts"
+    ]
+	},
+
+  "conflict": {
+    "symfony/symfony": "*"
+	},
+
+  "extra": {
+    "symfony": {
+      "allow-contrib": false,
+      "require": "7.2.*"
+    }
+  }
 }

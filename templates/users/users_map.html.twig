@@ -1,15 +1,14 @@
 {%- extends 'users/base/users_overview.html.twig' -%}
 
 {%- block assets_add -%}
-    {{- parent() -}}
-    {{- assets_add(['leaflet', 'users_map.js']) -}}
+  {{- parent() -}}
+  {{- assets_add(['leaflet', 'users_map.js']) -}}
 {%- endblock assets_add -%}
 
 {%- block css -%}
-    {{- parent() -}}
+  {{- parent() -}}
 {%- endblock css -%}
 
 {%- block js -%}
-    {{- parent() -}}
-	{{- encore_entry_script_tags('typeahead') -}}
+  {{- parent() -}}
 {%- endblock js -%}

@@ -1,15 +1,16 @@
 {
-    "editor.tabSize": 2,
-    "editor.insertSpaces": true,
-    "files.watcherExclude": {
-        "**/cache/**": true,
-        "**/var/**": true,
-        "**/vendor/**": true,
-        "**/_book/**": true,
-        "**/node_modules/**": true
-    },
-    "intelephense.environment.variables": {
-        "snake_case_vars": true
-    },
-    "intelephense.diagnostics.undefinedTypes": false
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  "files.watcherExclude": {
+    "**/cache/**": true,
+    "**/var/**": true,
+    "**/vendor/**": true,
+    "**/_book/**": true,
+    "**/node_modules/**": true
+  },
+  "intelephense.environment.variables": {
+    "snake_case_vars": true
+  },
+  "intelephense.diagnostics.undefinedTypes": false
 }

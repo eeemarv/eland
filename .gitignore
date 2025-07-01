@@ -5,8 +5,6 @@
 /cache/
 /.env*
 
-/public/build/
-
 ## uploaded files ##
 
 /public/store/*
@@ -27,3 +25,14 @@
 .phpunit.result.cache
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
+
+###> symfony/asset-mapper ###
+/public/assets/
+/assets/vendor/
+###< symfony/asset-mapper ###
+
+/public/build/
+
+# Compile sass from /style to /assets/build
+# Then Asset Mapper copies to /public/assets
+/assets/build/*

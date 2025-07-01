@@ -71,19 +71,16 @@
 {%- endblock heading_title -%}
 
 {%- block heading_append -%}
-    {%- if message.is_expired -%}
-        &nbsp;
-        {%- include 'messages/include/messages_heading_expired.html.twig' -%}
-    {%- endif -%}
+  {%- if message.is_expired -%}
+    &nbsp;
+    {%- include 'messages/include/messages_heading_expired.html.twig' -%}
+  {%- endif -%}
 {%- endblock heading_append -%}
 
 {%- block css -%}
-    {{- parent() -}}
-    {{- encore_entry_link_tags('fileupload') -}}
+  {{- parent() -}}
 {%- endblock css -%}
 
 {%- block js -%}
-    {{- parent() -}}
-	{{- encore_entry_script_tags('jssor') -}}
-	{{- encore_entry_script_tags('fileupload') -}}
+  {{- parent() -}}
 {%- endblock js -%}

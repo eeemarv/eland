@@ -33,57 +33,53 @@
 {%- endblock heading_title -%}
 
 {%- block heading_append -%}
-    {%- include 'include/filter/heading_filter.html.twig' -%}
-    {%- include 'include/filter/heading_btn_filter.html.twig' -%}
+  {%- include 'include/filter/heading_filter.html.twig' -%}
+  {%- include 'include/filter/heading_btn_filter.html.twig' -%}
 {%- endblock heading_append -%}
 
 {%- block filter_form_a -%}
-    {%- include 'transactions/include/transactions_filter_form.html.twig' -%}
+  {%- include 'transactions/include/transactions_filter_form.html.twig' -%}
 {%- endblock filter_form_a -%}
 
 {%- block pagination -%}
-    {%- include 'include/pagination/pagination.html.twig' -%}
+  {%- include 'include/pagination/pagination.html.twig' -%}
 {%- endblock pagination -%}
 
 {%- block content -%}{%- endblock -%}
 
 {%- block data -%}
-    {%- if row_count -%}
-        {{- data_list_raw|raw -}}
-    {%- else -%}
-        {%- include 'include/no_results.html.twig' -%}
-    {%- endif -%}
+  {%- if row_count -%}
+    {{- data_list_raw|raw -}}
+  {%- else -%}
+    {%- include 'include/no_results.html.twig' -%}
+  {%- endif -%}
 {%- endblock data -%}
 
 {%- block footnote -%}
-    <ul>
-        <li>
-            {{- 'transactions.account_count'|trans({
-                'account_count': account_count
-            }) -}}
-        </li>
-        <li>
-            {{- 'transactions.amount_sum'|trans({
-                'amount_sum': amount_sum,
-                'currency': config_str('transactions.currency.name', schema)
-            }) -}}
-        </li>
-        {%- include 'transactions/include/valuation.html.twig' -%}
-    </ul>
+  <ul>
+    <li>
+      {{- 'transactions.account_count'|trans({
+        'account_count': account_count
+      }) -}}
+    </li>
+    <li>
+      {{- 'transactions.amount_sum'|trans({
+        'amount_sum': amount_sum,
+        'currency': config_str('transactions.currency.name', schema)
+      }) -}}
+    </li>
+    {%- include 'transactions/include/valuation.html.twig' -%}
+  </ul>
 {%- endblock footnote -%}
 
 {%- block bulk_actions -%}
-    {{- bulk_actions_raw|raw -}}
+  {{- bulk_actions_raw|raw -}}
 {%- endblock bulk_actions -%}
 
 {%- block css -%}
-    {{- parent() -}}
-    {{- encore_entry_link_tags('datepicker') -}}
+  {{- parent() -}}
 {%- endblock css -%}
 
 {%- block js -%}
-    {{- parent() -}}
-	{{- encore_entry_script_tags('footable') -}}
-	{{- encore_entry_script_tags('datepicker') -}}
-	{{- encore_entry_script_tags('typeahead') -}}
+  {{- parent() -}}
 {%- endblock js -%}

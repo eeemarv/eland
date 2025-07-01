@@ -1,19 +1,13 @@
 {%- extends 'users/base/users_edit_form.html.twig' -%}
 
 {%- block heading_title -%}
-    {{- 'users_edit_personal.title'|trans -}}
+  {{- 'users_edit_personal.title'|trans -}}
 {%- endblock heading_title -%}
 
 {%- block css -%}
-    {{- parent() -}}
-    {{- encore_entry_link_tags('summernote') -}}
-    {{- encore_entry_link_tags('fileupload') -}}
+  {{- parent() -}}
 {%- endblock css -%}
 
 {%- block js -%}
-    {{- parent() -}}
-	{{- encore_entry_script_tags('typeahead') -}}
-	{{- encore_entry_script_tags('summernote') -}}
-	{{- encore_entry_script_tags('sortable') -}}
-	{{- encore_entry_script_tags('fileupload') -}}
+  {{- parent() -}}
 {%- endblock js -%}

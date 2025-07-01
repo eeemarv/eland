@@ -1,0 +1,30 @@
+
+/*** group menu highlight ****/
+
+li.active-group a, li.active-group a:link,
+li.active-group a:visited, li.active-group a:hover
+{
+  background-color: #FFC765;
+}
+
+/* extra btn default */
+
+.btn-default-2 {
+  background-color: #888;
+  color: white;
+}
+.btn-default-2:hover {
+  background-color: #666;
+  color: white;
+}
+
+.label-sm {
+  font-size: 12px;
+}
+
+/***for inputs of horizontal form******/
+
+.margin-bottom
+{
+  margin-bottom: 10px;
+}

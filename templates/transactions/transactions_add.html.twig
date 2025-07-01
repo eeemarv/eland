@@ -1,20 +1,18 @@
 {%- extends 'transactions/base/transactions_base.html.twig' -%}
 
 {%- block assets_add -%}
-    {{- parent() -}}
-    {{- assets_add(['transactions_add.js']) -}}
+  {{- parent() -}}
+  {{- assets_add(['transactions_add.js']) -}}
 {%- endblock assets_add -%}
 
 {%- block heading_title -%}
-    {{- 'transactions_add.title'|trans -}}
+  {{- 'transactions_add.title'|trans -}}
 {%- endblock heading_title -%}
 
 {%- block css -%}
-    {{- parent() -}}
+  {{- parent() -}}
 {%- endblock css -%}
 
 {%- block js -%}
-    {{- parent() -}}
-	{{- encore_entry_script_tags('typeahead') -}}
-	{{- encore_entry_script_tags('transactions_add') -}}
+  {{- parent() -}}
 {%- endblock js -%}

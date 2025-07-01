@@ -3,24 +3,21 @@
 {%- set csv_en = true -%}
 
 {%- block assets_add -%}
-    {{- parent() -}}
-    {{- assets_add(['table_sel.js', 'messages_filter.js']) -}}
-    {{- assets_add(['cat_count_ary.js']) -}}
+  {{- parent() -}}
+  {{- assets_add(['table_sel.js', 'messages_filter.js']) -}}
+  {{- assets_add(['cat_count_ary.js']) -}}
 {%- endblock assets_add -%}
 
 {%- block btn_top_bulk -%}
-    {%- if pp_has_role('admin') -%}
-        {%- include 'include/btn_top/bulk.html.twig' -%}
-    {%- endif -%}
+  {%- if pp_has_role('admin') -%}
+    {%- include 'include/btn_top/bulk.html.twig' -%}
+  {%- endif -%}
 {%- endblock btn_top_bulk -%}
 
 {%- block css -%}
-    {{- parent() -}}
-    {{- encore_entry_link_tags('footable') -}}
+  {{- parent() -}}
 {%- endblock css -%}
 
 {%- block js -%}
-    {{- parent() -}}
-	{{- encore_entry_script_tags('footable') -}}
-	{{- encore_entry_script_tags('typeahead') -}}
+  {{- parent() -}}
 {%- endblock js -%}

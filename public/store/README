@@ -21,18 +21,19 @@ structure
 
 images for web:
 original file (downsized to maximum size 1000 or less)
-abcdefghijkl-1000.jpg
+base58-uuid(22)-size.ext
+abcdefghijklmnopqrstv-1000.jpg
 web
-abcdefghijkl-400.jpg (src)
+abcdefghijklmnopqrstv-400.jpg (src)
 
-abcdefghijkl-100.webp
-abcdefghijkl-120.webp
-abcdefghijkl-150.webp
-abcdefghijkl-200.webp
-abcdefghijkl-300.webp
-abcdefghijkl-400.webp
-abcdefghijkl-600.webp
-abcdefghijkl-800.webp
-abcdefghijkl-1000.webp
+abcdefghijklmnopqrstv-100.webp
+abcdefghijklmnopqrstv-120.webp
+abcdefghijklmnopqrstv-150.webp
+abcdefghijklmnopqrstv-200.webp
+abcdefghijklmnopqrstv-300.webp
+abcdefghijklmnopqrstv-400.webp
+abcdefghijklmnopqrstv-600.webp
+abcdefghijklmnopqrstv-800.webp
+abcdefghijklmnopqrstv-1000.webp
 mail
-abcdefghijkl-120.png
+abcdefghijklmnopqrstv-120.png

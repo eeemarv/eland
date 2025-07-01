@@ -1,59 +1,46 @@
 framework:
-    messenger:
-        # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
-        # failure_transport: failed
-        transports:
-            sync: sync://
-            mail_lo:
-                dsn: '%env(REDIS_URL)%/10'
-                options:
-                    stream: mail_lo
-            mail_mi:
-                dsn: '%env(REDIS_URL)%/10'
-                options:
-                    stream: mail_mi
-            mail_hi:
-                dsn: '%env(REDIS_URL)%/10'
-                options:
-                    stream: mail_hi
-            mail_dispatch:
-                dsn: '%env(REDIS_URL)%/10'
-                options:
-                    stream: mail_dispatch
-            async:
-                dsn: '%env(REDIS_URL)%/10'
-                options:
-                    stream: async
-                retry_strategy:
-                    max_retries: 5
-                    delay: 2000
-                    multiplier: 2
-                    max_delay: 10000
-            images:
-                dsn: '%env(REDIS_URL)%/10'
-                options:
-                    stream: images
-            geo:
-                dsn: '%env(REDIS_URL)%/10'
-                options:
-                    stream: geo
+  messenger:
+    # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
+    # failure_transport: failed
+    transports:
+      sync: sync://
+      mail_lo:
+        dsn: '%env(REDIS_URL)%/10'
+        options:
+          stream: mail_lo
+      mail_mi:
+        dsn: '%env(REDIS_URL)%/10'
+        options:
+          stream: mail_mi
+      mail_hi:
+        dsn: '%env(REDIS_URL)%/10'
+        options:
+          stream: mail_hi
+      mail_dispatch:
+        dsn: '%env(REDIS_URL)%/10'
+        options:
+          stream: mail_dispatch
+      async:
+        dsn: '%env(REDIS_URL)%/10'
+        options:
+          stream: async
+        retry_strategy:
+          max_retries: 5
+          delay: 2000
+          multiplier: 2
+          max_delay: 10000
+      images:
+        dsn: '%env(REDIS_URL)%/10'
+        options:
+          stream: images
+      geo:
+        dsn: '%env(REDIS_URL)%/10'
+        options:
+          stream: geo
 
-        # async routing is handled in wrapper \App\Email\Message\EmailDispatchMessage
-        routing:
-            Symfony\Component\Mailer\Messenger\SendEmailMessage: sync
-
-
-            # https://symfony.com/doc/current/messenger.html#transport-configuration
-            # async: '%env(MESSENGER_TRANSPORT_DSN)%'
-            # default:
-            #  dsn: 'doctrine://default'
-            #  options:
-            #    table_name: 'xdb.messenger_messages'
-            # sync: 'sync://'
-
-        #routing:
-            # Route your messages to the transports
-            # 'App\Message\YourMessage': async
+    # async routing is handled in wrapper \App\Email\Message\EmailDispatchMessage
+    routing:
+      Symfony\Component\Mailer\Messenger\SendEmailMessage: mail_dispatch
 
 # when@test:
 #    framework:

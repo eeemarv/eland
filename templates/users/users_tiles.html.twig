@@ -1,21 +1,18 @@
 {%- extends 'users/base/users_overview.html.twig' -%}
 
 {%- block assets_add -%}
-    {{- parent() -}}
-    {{- assets_add(['isotope', 'users_tiles.js']) -}}
+  {{- parent() -}}
+  {{- assets_add(['isotope', 'users_tiles.js']) -}}
 {%- endblock assets_add -%}
 
 {%- block filter_form_a -%}
-    {%- include 'form/q_filter.html.twig' -%}
+  {%- include 'form/q_filter.html.twig' -%}
 {%- endblock filter_form_a -%}
 
 {%- block css -%}
-    {{- parent() -}}
-    {{- encore_entry_link_tags('footable') -}}
+  {{- parent() -}}
 {%- endblock css -%}
 
 {%- block js -%}
-    {{- parent() -}}
-	{{- encore_entry_script_tags('footable') -}}
-	{{- encore_entry_script_tags('typeahead') -}}
+  {{- parent() -}}
 {%- endblock js -%}

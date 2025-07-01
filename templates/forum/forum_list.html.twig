@@ -16,21 +16,19 @@
 {%- endblock filter_form_a -%}
 
 {%- block data -%}
-    {%- if topics -%}
-        {%- include 'forum/include/topics_list.html.twig' -%}
-    {%- else -%}
-        {%- include 'include/no_results.html.twig' with {
-            'message': 'forum.no_topics'
-        } -%}
-    {%- endif -%}
+  {%- if topics -%}
+    {%- include 'forum/include/topics_list.html.twig' -%}
+  {%- else -%}
+    {%- include 'include/no_results.html.twig' with {
+      'message': 'forum.no_topics'
+    } -%}
+  {%- endif -%}
 {%- endblock data -%}
 
 {%- block css -%}
-    {{- parent() -}}
-    {{- encore_entry_link_tags('footable') -}}
+  {{- parent() -}}
 {%- endblock css -%}
 
 {%- block js -%}
-    {{- parent() -}}
-	{{- encore_entry_script_tags('footable') -}}
+  {{- parent() -}}
 {%- endblock js -%}

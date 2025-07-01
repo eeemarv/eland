@@ -21,12 +21,12 @@ class AddressAry
     }
   }
 
-  public function get(): array
+  public function ary(): array
   {
     return $this->ary;
   }
 
-  public function get_string()
+  public function str()
   {
     return implode(', ', array_map(fn(Address $address) => $address->toString(), $this->ary));
   }

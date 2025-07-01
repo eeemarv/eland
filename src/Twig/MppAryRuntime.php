@@ -63,4 +63,44 @@ class MppAryRuntime implements RuntimeExtensionInterface
 	{
 		return $this->get_ary('', $context['et'] ?? '', $schema);
 	}
+
+	public function mpp(
+		array $context,
+		string|null $role = null
+	):array
+	{
+		$ary = [];
+
+		if (isset($context['schema']))
+		{
+			$ary['system'] = $this->systems_service->get_system($context['schema']);
+		}
+
+		if (isset($context['et']))
+		{
+			$ary['et'] = $context['et'];
+		}
+
+		if (isset($role) && isset(RoleCnst::SHORT[$role]))
+		{
+			$ary['role_short'] = RoleCnst::SHORT[$role];
+		}
+
+		return $ary;
+	}
+
+	public function mpp_guest(array $context):array
+	{
+		return $this->mpp($context, 'guest');
+	}
+
+	public function mpp_user(array $context):array
+	{
+		return $this->mpp($context, 'user');
+	}
+
+	public function mpp_admin(array $context):array
+	{
+		return $this->mpp($context, 'admin');
+	}
 }

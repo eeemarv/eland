@@ -18,7 +18,7 @@ class Schema
     }
   }
 
-  public function get(): string
+  public function str(): string
   {
     return $this->val;
   }

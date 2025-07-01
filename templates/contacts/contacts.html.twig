@@ -1,60 +1,58 @@
 {%- extends 'contacts/base/contacts_base.html.twig' -%}
 
 {%- block assets_add -%}
-    {{- parent() -}}
-    {{- assets_add(['table_sel.js']) -}}
+  {{- parent() -}}
+  {{- assets_add(['table_sel.js']) -}}
 {%- endblock assets_add -%}
 
 {%- block btn_top_add -%}
-    {%- include 'include/btn_top/add.html.twig' with {
-        'btn_route': 'contacts_add',
-        'btn_title': 'contacts_add.btn_add'
-    } -%}
+  {%- include 'include/btn_top/add.html.twig' with {
+    'btn_route': 'contacts_add',
+    'btn_title': 'contacts_add.btn_add'
+  } -%}
 {%- endblock btn_top_add -%}
 
 {%- block btn_top_bulk -%}
-    {%- include 'include/btn_top/bulk.html.twig' -%}
+  {%- include 'include/btn_top/bulk.html.twig' -%}
 {%- endblock btn_top_bulk -%}
 
 {%- set csv_en = true -%}
 
 {%- block heading_title -%}
-    {{- 'contacts.title'|trans -}}
+  {{- 'contacts.title'|trans -}}
 {%- endblock heading_title -%}
 
 {%- block heading_append -%}
-    {%- include 'include/filter/heading_filter.html.twig' -%}
-    {%- include 'include/filter/heading_btn_filter.html.twig' -%}
+  {%- include 'include/filter/heading_filter.html.twig' -%}
+  {%- include 'include/filter/heading_btn_filter.html.twig' -%}
 {%- endblock heading_append -%}
 
 {%- block filter_form_a -%}
-    {%- include 'contacts/include/contacts_filter_form.html.twig' -%}
+  {%- include 'contacts/include/contacts_filter_form.html.twig' -%}
 {%- endblock filter_form_a -%}
 
 {%- block pagination -%}
-    {%- include 'include/pagination/pagination.html.twig' -%}
+  {%- include 'include/pagination/pagination.html.twig' -%}
 {%- endblock pagination -%}
 
 {%- block content -%}{%- endblock -%}
 
 {%- block data -%}
-    {%- if row_count -%}
-        {{- data_list_raw|raw -}}
-    {%- else -%}
-        {%- include 'include/no_results.html.twig' -%}
-    {%- endif -%}
+  {%- if row_count -%}
+    {{- data_list_raw|raw -}}
+  {%- else -%}
+    {%- include 'include/no_results.html.twig' -%}
+  {%- endif -%}
 {%- endblock data -%}
 
 {%- block bulk_actions -%}
-    {{- bulk_actions_raw|raw -}}
+  {{- bulk_actions_raw|raw -}}
 {%- endblock bulk_actions -%}
 
 {%- block css -%}
-    {{- parent() -}}
-    {{- encore_entry_link_tags('footable') -}}
+  {{- parent() -}}
 {%- endblock css -%}
 
 {%- block js -%}
-    {{- parent() -}}
-	{{- encore_entry_script_tags('footable') -}}
+  {{- parent() -}}
 {%- endblock js -%}

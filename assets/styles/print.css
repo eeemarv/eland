@@ -1,0 +1,50 @@
+body,html
+{
+  height:100%;
+}
+
+#main
+{
+	height: 100%;
+	overflow: auto;
+}
+
+span, div.alert, ul, div.panel, .footer, div.navbar,
+#sidebar, .print-hide, button, a.csv, h3, h2, table td input, p, img
+{
+	display: none;
+}
+
+a
+{
+	text-decoration: none;
+	color: black;
+}
+
+table, th, td
+{
+	border: 1px solid black;
+}
+
+table td
+{
+	padding: 5px;
+}
+
+table
+{
+	border-collapse: collapse;
+	width: 100%;
+}
+
+div.panel.printview, h3.printview, div.panel.printview p,
+div.panel.printview h3, div.panel.printview a, div.panel.printview p a,
+div.panel.printview p i
+{
+	display: block;
+}
+
+dd > span, dt > span, td > span
+{
+	display: inline;
+}

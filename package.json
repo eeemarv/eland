@@ -2,25 +2,25 @@
   "name": "eland",
   "license": "AGPL-3.0",
   "version": "0.1.0",
+  "private": true,
   "repository": {
     "type": "git",
     "url": "https://github.com/eeemarv/eland"
   },
   "bugs": "https://github.com/eeemarv/eland/issues",
   "engines": {
-    "node": "^14",
+    "node": "^22",
     "yarn": "^1"
   },
-  "devDependencies": {
-    "gitbook-cli": "^2.3.2"
-  },
+  "devDependencies": {},
   "scripts": {
-    "docs:prepare": "gitbook install",
-    "docs:watch": "npm run docs:prepare && gitbook serve",
-    "docs:build": "npm run docs:prepare && rm -rf _book && gitbook build",
-    "docs:publish": "npm run docs:build && cd _book && git init && git commit --allow-empty -m 'Update docs' && git checkout -b gh-pages && git add --all && git commit -am 'Update docs' && git push https://github.com/eeemarv/eland gh-pages --force"
+    "build:css": "sass assets/styles:assets/build"
   },
   "dependencies": {
+    "@fontsource/ubuntu": "^5.2.6",
+    "bootstrap-sass": "^3.4.3",
+    "foundation-emails": "^2.4.0",
+    "sass": "^1.89.2",
     "svgo": "^1.3.2"
   }
 }

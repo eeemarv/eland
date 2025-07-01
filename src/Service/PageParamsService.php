@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Cnst\RoleCnst;
+use App\DTO\Schema;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,6 +18,7 @@ class PageParamsService
 	protected string $role;
 	protected string $system;
 	protected string $schema;
+  protected Schema $schema_o;
 	protected array $edit;
 	protected array $ary;
 
@@ -77,6 +79,7 @@ class PageParamsService
 		}
 
 		$this->schema = $this->systems_service->get_schema($this->system);
+    $this->schema_o = new Schema($this->schema);
 
 		$this->org_system = $this->request->query->get('os', '');
 
@@ -197,6 +200,11 @@ class PageParamsService
 	public function schema():string
 	{
 		return $this->schema;
+	}
+
+	public function schema_o():Schema
+	{
+		return $this->schema_o;
 	}
 
 	public function org_system():string

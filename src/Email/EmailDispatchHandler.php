@@ -32,12 +32,12 @@ final class EmailDispatchHandler
     $context = $message->context;
     $log_context = [
       'template' => $message->template,
-      'to' => $message->to->get_string(),
+      'to' => $message->to->str(),
     ];
 
     if (isset($message->schema))
     {
-      $schema = $message->schema->get();
+      $schema = $message->schema->str();
       $context['schema'] = $schema;
       $log_context['schema'] = $schema;
     }
@@ -52,19 +52,19 @@ final class EmailDispatchHandler
 
     if (isset($message->cc))
     {
-      $email->cc(...$message->cc->get());
-      $log_context['cc'] = $message->cc->get_string();
+      $email->cc(...$message->cc->ary());
+      $log_context['cc'] = $message->cc->str();
     }
 
     if (isset($message->bcc))
     {
-      $email->bcc(...$message->bcc->get());
-      $log_context['bcc'] = $message->bcc->get_string();
+      $email->bcc(...$message->bcc->ary());
+      $log_context['bcc'] = $message->bcc->str();
     }
 
     if (isset($schema))
     {
-      $email->getHeaders()->addHeader('X-Schema', $schema);
+      $email->getHeaders()->addHeader('X-Eland-Schema', $schema);
     }
 
     if (isset($message->from))
@@ -73,7 +73,7 @@ final class EmailDispatchHandler
     }
     else
     {
-      $sender_name = 'eLAMD';
+      $sender_name = 'eLAND';
 
       if (isset($schema))
       {
@@ -88,7 +88,7 @@ final class EmailDispatchHandler
     $log_context['from'] = $from->toString();
 
     $template = $this->twig->load($template_path);
-    $subject = $template->renderBlock('subject', $message->context);
+    $subject = $template->renderBlock('subject_render', $context);
     $log_context['subject'] = $subject;
 
     if (isset($message->embedded_template))
@@ -109,17 +109,18 @@ final class EmailDispatchHandler
 		}
 
     $email->from($from);
-    $email->to(...$message->to->get());
+    $email->to(...$message->to->ary());
     $email->subject($subject);
     $email->htmlTemplate($template_path);
     $email->context($context);
 
     $this->mailer->send($email);
 
+    // TODO register email with token in database
+
     $log_context['template'] = $message->template;
-    $log_context['to'] = $message->to->get_string();
+    $log_context['to'] = $message->to->str();
     $log_context['from'] = $from->toString();
-    $log_context['bcc'] = $message->bcc?->get_string();
 
     $this->logger->info('Email sent', $log_context);
   }

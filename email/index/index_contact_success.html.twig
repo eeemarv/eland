@@ -2,19 +2,17 @@
 {%- trans_default_domain 'mail' -%}
 
 {%- block subject -%}
-    {{- 'index_contact_success.subject'|trans -}}
+  {{- 'index_contact_success.subject'|trans -}}
 {%- endblock subject -%}
 
 {%- block header -%}
-    {{- 'index_contact_success.header'|trans -}}
+  {{- 'index_contact_success.header'|trans -}}
 {%- endblock header -%}
 
 {%- block sub_header -%}
-    <p>
-        {{- 'index_contact_success.sub_header'|trans -}}
-    </p>
+  {{- 'index_contact_success.sub_header'|trans -}}
 {%- endblock sub_header -%}
 
 {%- block content -%}
-    {%- include '@email/include/message.html.twig' -%}
+  {%- include '@email/include/message.html.twig' -%}
 {%- endblock content -%}

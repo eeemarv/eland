@@ -2,6 +2,7 @@
 
 namespace App\Twig;
 
+use Deprecated;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Extension\RuntimeExtensionInterface;
 
@@ -13,33 +14,26 @@ class LinkUrlRuntime implements RuntimeExtensionInterface
 	{
 	}
 
-    public function url(
-		string $route,
-		array $params
-	):string
-    {
-        return $this->url_generator->generate(
-			$route, $params, UrlGeneratorInterface::ABSOLUTE_URL);
-	}
-
+	#[\Deprecated]
 	public function context_url(
 		string $route,
 		array $params_context,
 		array $params
 	):string
 	{
-        return $this->url_generator->generate(
+    return $this->url_generator->generate(
 			$route, [...$params, ...$params_context],
 			UrlGeneratorInterface::ABSOLUTE_URL);
 	}
 
+	#[\Deprecated]
 	public function context_url_open(
 		string $route,
 		array $params_context,
 		array $params
 	):string
 	{
-        return '<a href="' . $this->url_generator->generate(
+    return '<a href="' . $this->url_generator->generate(
 			$route, [...$params, ...$params_context],
 			UrlGeneratorInterface::ABSOLUTE_URL) . '">';
 	}
@@ -49,8 +43,17 @@ class LinkUrlRuntime implements RuntimeExtensionInterface
 		array $params = []
 	):string
 	{
-        return '<a href="' . $this->url_generator->generate(
+    return '<a href="' . $this->url_generator->generate(
 			$route, $params,
 			UrlGeneratorInterface::ABSOLUTE_URL) . '">';
+	}
+
+  public function abs_url(
+		string $route,
+		array $params
+	):string
+  {
+    return $this->url_generator->generate(
+			$route, $params, UrlGeneratorInterface::ABSOLUTE_URL);
 	}
 }

@@ -3,18 +3,17 @@
 {%- set map_id = app.request.query.get('map_id') -%}
 
 {%- block heading_title -%}
-    {{- 'docs_add.title'|trans -}}
+  {{- 'docs_add.title'|trans -}}
 {%- endblock heading_title -%}
 
 {%- block form_submit_btn -%}
-    {%- include 'form/submit_add_btn.html.twig' -%}
+  {%- include 'form/submit_add_btn.html.twig' -%}
 {%- endblock form_submit_btn -%}
 
 {%- block css -%}
-    {{- parent() -}}
+  {{- parent() -}}
 {%- endblock css -%}
 
 {%- block js -%}
-    {{- parent() -}}
-	{{- encore_entry_script_tags('typeahead') -}}
+  {{- parent() -}}
 {%- endblock js -%}

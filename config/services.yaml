@@ -1,52 +1,52 @@
 parameters:
-    router.request_context.host: '%env(APP_HOST)%'
-    router.request_context.scheme: '%env(APP_SCHEME)%'
-    app.default_locale: nl
-    app.locales: en|nl
-    env(GIT_REV): ''
-    store_dir: '%kernel.project_dir%/public/store'
-    assert.thumbprint: '[a-f0-9-]{8}'
-    assert.token: '[a-z0-9-]{12}'
-    assert.big_token: '[a-z0-9-]{20}'
-    assert.system: '[a-z][a-z0-9]*'
-    assert.schema: '[a-z][a-z0-9]*'
-    assert.route: '[a-z_]+'
-    assert.role_short.guest: '[gua]'
-    assert.role_short.user: '[ua]'
-    assert.role_short.admin: 'a'
-    assert.id: \d++
-    assert.view: 'extended|list|map|tiles'
-    assert.account_status: 'active|new|leaving|inactive|im|ip|extern|all'
-    assert.account_status.primary: 'active|inactive|im|ip|extern'
-    assert.message_image: '[a-z][a-z0-9]*_m_\d+_[a-f0-9]{40}'
-    assert.image_ext: 'jpg|png|gif|webp|svg'
-    assert.year: ^(19|20)[0-9]{2}$
-    assert.month: ^[1-9]|1[012]$
-    assert.tag_type: users|messages|calendar
-    uuid_base58: '[1-9A-NP-Za-km-z]{22}'
+  store_dir: '%kernel.project_dir%/public/store'
+  router.request_context.host: '%env(APP_HOST)%'
+  router.request_context.scheme: '%env(APP_SCHEME)%'
+  app.default_locale: nl
+  app.locales: en|nl
+  env(GIT_REV): ''
+  assert.thumbprint: '[a-f0-9-]{8}'
+  assert.token: '[a-z0-9-]{12}'
+  assert.big_token: '[a-z0-9-]{20}'
+  assert.system: '[a-z][a-z0-9]*'
+  assert.schema: '[a-z][a-z0-9]*'
+  assert.route: '[a-z_]+'
+  assert.role_short.guest: '[gua]'
+  assert.role_short.user: '[ua]'
+  assert.role_short.admin: 'a'
+  assert.id: \d++
+  assert.view: 'extended|list|map|tiles'
+  assert.account_status: 'active|new|leaving|inactive|im|ip|extern|all'
+  assert.account_status.primary: 'active|inactive|im|ip|extern'
+  assert.message_image: '[a-z][a-z0-9]*_m_\d+_[a-f0-9]{40}'
+  assert.image_ext: 'jpg|png|gif|webp|svg'
+  assert.year: ^(19|20)[0-9]{2}$
+  assert.month: ^[1-9]|1[012]$
+  assert.tag_type: users|messages|calendar
+  uuid_base58: '[1-9A-NP-Za-km-z]{22}'
 
 services:
-    _defaults:
-        autowire: true
-        autoconfigure: true
-        bind:
-            $env_map_access_token: '%env(MAP_ACCESS_TOKEN)%'
-            $env_map_tiles_url: '%env(MAP_TILES_URL)%'
-            $env_s3_url: 'https://s3.%env(AWS_S3_REGION)%.amazonaws.com/%env(AWS_S3_BUCKET)%/'
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    bind:
+      $env_map_access_token: '%env(MAP_ACCESS_TOKEN)%'
+      $env_map_tiles_url: '%env(MAP_TILES_URL)%'
+      $env_s3_url: 'https://s3.%env(AWS_S3_REGION)%.amazonaws.com/%env(AWS_S3_BUCKET)%/'
 
-    App\:
-        resource: '../src/*'
-        exclude:
-            - '../src/DependencyInjection/'
-            - '../src/Entity/'
-            - '../src/Kernel.php'
-            - '../src/Tests/'
+  App\:
+    resource: '../src/*'
+    exclude:
+      - '../src/DependencyInjection/'
+      - '../src/Entity/'
+      - '../src/Kernel.php'
+      - '../src/Tests/'
 
-    Redis: '@snc_redis.default'
+  Redis: '@snc_redis.default'
 
-    Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler:
-        arguments:
-            - '@snc_redis.session'
-            - {ttl: 864000}
+  Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler:
+    arguments:
+      - '@snc_redis.session'
+      - {ttl: 864000}
 
-    Bramus\Monolog\Formatter\ColoredLineFormatter: ~
+  Bramus\Monolog\Formatter\ColoredLineFormatter: ~

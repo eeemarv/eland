@@ -1,0 +1,15 @@
+{%- trans_default_domain 'mail' -%}
+
+{%- if no_reply is defined or no_reply_auto is defined -%}
+<row>
+  <columns>
+    <p>
+      {%- if no_reply is defined -%}
+        {{- 'b.no_reply'|trans -}}
+      {%- else -%}
+        {{- 'b.no_reply_auto'|trans -}}
+      {%- endif -%}
+    </p>
+  </columns>
+</row>
+{%- endif -%}

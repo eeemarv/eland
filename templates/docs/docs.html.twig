@@ -1,39 +1,38 @@
 {%- extends 'docs/base/docs_base.html.twig' -%}
 
 {%- block btn_top_add -%}
-    {%- if pp_has_role('admin') -%}
-        {%- include 'include/btn_top/add.html.twig' with {
-            'btn_route': 'docs_add',
-            'btn_title': 'docs_add.title'
-        } -%}
-    {%- endif -%}
+  {%- if pp_has_role('admin') -%}
+    {%- include 'include/btn_top/add.html.twig' with {
+      'btn_route': 'docs_add',
+      'btn_title': 'docs_add.title'
+    } -%}
+  {%- endif -%}
 {%- endblock btn_top_add -%}
 
 {%- set csv_en = true -%}
 
 {%- block filter_form_a -%}
-    {%- include 'form/q_filter.html.twig' -%}
+  {%- include 'form/q_filter.html.twig' -%}
 {%- endblock filter_form_a -%}
 
 {%- block data -%}
-    {%- if maps -%}
-        {%- include 'docs/include/maps_list.html.twig' -%}
-    {%- endif -%}
+  {%- if maps -%}
+    {%- include 'docs/include/maps_list.html.twig' -%}
+  {%- endif -%}
 
-    {%- if docs -%}
-        {%- include 'docs/include/docs_list.html.twig' -%}
-    {%- elseif not maps -%}
-        {%- include 'include/no_results.html.twig' with {
-            'message': 'docs.no_results'
-        } -%}
-    {%- endif -%}
+  {%- if docs -%}
+    {%- include 'docs/include/docs_list.html.twig' -%}
+  {%- elseif not maps -%}
+    {%- include 'include/no_results.html.twig' with {
+      'message': 'docs.no_results'
+    } -%}
+  {%- endif -%}
 {%- endblock data -%}
 
 {%- block css -%}
-    {{- parent() -}}
+  {{- parent() -}}
 {%- endblock css -%}
 
 {%- block js -%}
-    {{- parent() -}}
-	{{- encore_entry_script_tags('footable') -}}
+  {{- parent() -}}
 {%- endblock js -%}

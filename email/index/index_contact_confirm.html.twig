@@ -2,37 +2,31 @@
 {%- trans_default_domain 'mail' -%}
 
 {%- block subject -%}
-    {{- 'index_contact_confirm.subject'|trans -}}
+  {{- 'index_contact_confirm.subject'|trans -}}
 {%- endblock subject -%}
 
 {%- block header -%}
-    {{- 'index_contact_confirm.header'|trans -}}
+  {{- 'index_contact_confirm.header'|trans -}}
 {%- endblock header -%}
 
 {%- block content -%}
-    <row>
-        <columns>
-            <button href="{{- url('index_contact_confirm', {'token': token}) -}}" class="radius">
-                {{- 'index_contact_confirm.btn'|trans -}}
-            </button>
-            <p>
-                {{- 'index_contact_confirm.btn_explain'|trans -}}
-            </p>
-            <p>
-                {{- 'index_contact_confirm.validity'|trans -}}
-            </p>
-
-        </columns>
-    </row>
-    <spacer size="1" class="hr"></spacer>
-    <row>
-        <columns>
-            <p>
-                {{- 'index_contact_confirm.ignore'|trans({
-                    'ao': a_open('index_contact'),
-                    'ac': '</a>'
-                })|raw -}}
-            </p>
-        </columns>
-    </row>
+  <row>
+    <columns>
+      <button href="{{- url('index_contact_confirm', {'token': token}) -}}" class="radius">
+        {{- 'index_contact_confirm.btn'|trans -}}
+      </button>
+      <p>
+        {{- 'index_contact_confirm.btn_explain'|trans -}}
+      </p>
+      <p>
+        {{- 'index_contact_confirm.validity'|trans -}}
+      </p>
+      <p>
+        {{- 'index_contact_confirm.ignore'|trans({
+          'ao': a_open('index_contact'),
+          'ac': '</a>'
+        })|raw -}}
+      </p>
+    </columns>
+  </row>
 {%- endblock content -%}

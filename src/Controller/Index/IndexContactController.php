@@ -6,13 +6,10 @@ use App\Command\Index\IndexContactFormCommand;
 use App\Email\Index\ContactConfirm\EmailIndexContactConfirmMessage;
 use App\Form\Type\Index\IndexContactFormType;
 use App\Service\DataTokenService;
-// use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-// use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-// use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Annotation\Route;
@@ -67,19 +64,6 @@ class IndexContactController extends AbstractController
       );
 
       $bus->dispatch($m_confirm);
-
-/*
-      $email = new TemplatedEmail();
-      $email->from(new Address($env_mail_from_address, 'eLAND contact'));
-      $email->to(new Address($email_address));
-      $email->subject('Bevestig je bericht');
-      $email->htmlTemplate('@email/index/index_contact_confirm.html.twig');
-      $email->context([
-          'token' => $token,
-      ]);
-
-      $mailer->send($email);
-*/
 
       $alert_msg = 'Open je E-mailbox en klik
         de link aan die we je zonden om je

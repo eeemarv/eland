@@ -1,14 +1,14 @@
 twig:
-    default_path: '%kernel.project_dir%/templates'
-    paths:
-      '%kernel.project_dir%/email': email
-      '%kernel.project_dir%/assets/style': style
-    debug: '%kernel.debug%'
-    strict_variables: '%kernel.debug%'
-    form_themes: ['form_3.html.twig']
-    globals:
-        env_git_rev_short: '%env(substr8:GIT_REV)%'
+  default_path: '%kernel.project_dir%/templates'
+  paths:
+    '%kernel.project_dir%/email': email
+    '%kernel.project_dir%/public': public
+  debug: '%kernel.debug%'
+  strict_variables: '%kernel.debug%'
+  form_themes: ['form_3.html.twig']
+  globals:
+    env_git_rev_short: '%env(substr8:GIT_REV)%'
 
 when@test:
-    twig:
-        strict_variables: true
+  twig:
+    strict_variables: true

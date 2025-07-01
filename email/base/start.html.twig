@@ -1,0 +1,55 @@
+{%- trans_default_domain 'mail' -%}
+{%- apply inky_to_html|inline_css(source('@public' ~ asset('styles/email.scss'))) -%}
+
+<wrapper class="el-wrapper">
+  <container>
+    {%- include '@email/base/include/no_reply.html.twig' -%}
+
+    {%- block header_container -%}
+      {%- if schema is defined or block('header') is not empty -%}
+        <row>
+          <columns>
+            <spacer size="10"></spacer>
+            <p class="text-center el-mb0">
+              {%- if schema is defined -%}
+                {{- config_str('system.name', schema) -}}
+              {%- else -%}
+                {%- block header -%}{%- endblock -%}
+              {%- endif -%}
+            </p>
+          </columns>
+        </row>
+      {%- endif -%}
+    {%- endblock header_container -%}
+
+    {%- if block('sub_header') is not empty -%}
+      <spacer size="8"></spacer>
+      <row>
+        <columns>
+          {#}
+          {%- if block('header') is not empty -%}
+            <h1>
+              {%- block header -%}{%- endblock -%}
+            </h1>
+          {%- endif -%}
+          {#}
+          {%- if block('sub_header') is not empty -%}
+            <p>
+              {%- block sub_header -%}{%- endblock -%}
+            </p>
+          {%- endif -%}
+        </columns>
+      </row>
+      <spacer size="2"></spacer>
+    {%- endif -%}
+    {%- block content -%}{%- endblock -%}
+    {%- block sender_info_footer -%}{%- endblock -%}
+    {%- block account_info_footer -%}{%- endblock -%}
+    {%- block unsubscribe_info_footer -%}{%- endblock -%}
+    {%- block system_info_footer -%}{%- endblock -%}
+    {%- block admin_info_footer -%}{%- endblock -%}
+    {%- include '@email/base/include/eland_footer.html.twig' -%}
+  </container>
+</wrapper>
+
+{%- endapply -%}
