@@ -537,7 +537,9 @@ config_mail:
     label: E-mail tag
     help: >-
       Prefix tussen haken [tag]
-      in onderwerp van alle E-mail-berichten
+      in onderwerp van alle E-mail-berichten\
+  background:
+    label: Achtergrondkleur voor e-mails
 
 config_mail_addr:
   title: E-mail adressen

@@ -1,24 +1,28 @@
 {%- extends 'config/base/config_form.html.twig' -%}
 
 {%- block form_a -%}
-    {{- form_row(form.enabled, {
-        'label': 'config_mail.enabled.label',
-        'required': false
-    }) -}}
+  {{- form_row(form.enabled, {
+    'label': 'config_mail.enabled.label',
+    'required': false
+  }) -}}
 
-    {{- form_row(form.tag, {
-        'label': 'config_mail.tag.label',
-        'pre_addon': {
-            'fa': 'tag'
-        },
-        'help': 'config_mail.tag.help',
-    }) -}}
+  {{- form_row(form.tag, {
+    'label': 'config_mail.tag.label',
+    'pre_addon': {
+      'fa': 'tag'
+    },
+    'help': 'config_mail.tag.help',
+  }) -}}
+
+  {{- form_row(form.background, {
+    'label': 'config_mail.background.label',
+  }) -}}
 {%- endblock form_a -%}
 
 {%- block css -%}
-    {{- parent() -}}
+  {{- parent() -}}
 {%- endblock css -%}
 
 {%- block js -%}
-    {{- parent() -}}
+  {{- parent() -}}
 {%- endblock js -%}
