@@ -1,0 +1,109 @@
+@use 'sass:color';
+
+@each $name, $shift in $e_colors {
+  $e_color: color.adjust($e_base, $hue: $shift);
+  @if $name == "grey" {
+    $e_color: color.adjust($e_base, $lightness: -100%);
+  }
+  @for $i from 0 through 9 {
+    $ei_color: color.scale($e_color, $lightness: $lig_b + ($i * $lig_i));
+    .b-#{$name}-#{$i} { background: $ei_color; }
+    .l-#{$name}-#{$i} { border-left: $l_width solid $ei_color; }
+    .r-#{$name}-#{$i} { border-right: $l_width solid $ei_color; }
+    .h-#{$name}-#{$i} {
+      border-top: $h_bar_height solid $ei_color;
+      line-height: $h_bar_height;
+      font-size: $h_bar_height;
+    }
+  }
+  .tx-#{$name} { color: color.scale($e_color, $lightness: $lig_txt); }
+}
+
+.l-doc-0 { border-left: $l_width solid $c_doc_a; }
+.l-doc-1 { border-left: $l_width solid $c_doc_b; }
+.b-doc-0 { background: $c_doc_c; }
+.b-doc-1 { background: $c_doc_d; }
+
+.l-forum-0 { border-left: $l_width solid $c_forum_a; }
+.l-forum-1 { border-left: $l_width solid $c_forum_b; }
+.b-forum-0 { background: $c_forum_c; }
+.b-forum-1 { background: $c_forum_d; }
+
+.l-inter-0 { border-left: $l_width solid $c_inter_a; }
+.l-inter-1 { border-left: $l_width solid $c_inter_b; }
+.b-inter-0 { background: $c_inter_c; }
+.b-inter-1 { background: $c_inter_d; }
+
+.l-leaving-0 { border-left: $l_width solid $c_leaving_a; }
+.l-leaving-1 { border-left: $l_width solid $c_leaving_b; }
+.b-leaving-0 { background: $c_leaving_c; }
+.b-leaving-1 { background: $c_leaving_d; }
+
+.l-self-0 { border-left: $l_width solid $c_self_a; }
+.l-self-1 { border-left: $l_width solid $c_self_b; }
+.b-self-0 { background: $c_self_c; }
+.b-self-1 { background: $c_self_d; }
+
+.l-messages-0 { border-left: $l_width solid $c_messages_a; }
+.l-messages-1 { border-left: $l_width solid $c_messages_b; }
+.b-messages-0 { background: $c_messages_c; }
+.b-messages-1 { background: $c_messages_d; }
+
+.l-mollie-0 { border-left: $l_width solid $c_mollie_a; }
+.l-mollie-1 { border-left: $l_width solid $c_mollie_b; }
+.b-mollie-0 { background: $c_mollie_c; }
+.b-mollie-1 { background: $c_mollie_d; }
+
+.l-new-0 { border-left: $l_width solid $c_new_a; }
+.l-new-1 { border-left: $l_width solid $c_new_b; }
+.b-new-0 { background: $c_new_c; }
+.b-new-1 { background: $c_new_d; }
+
+.l-news-0 { border-left: $l_width solid $c_news_a; }
+.l-news-1 { border-left: $l_width solid $c_news_b; }
+.b-news-0 { background: $c_news_c; }
+.b-news-1 { background: $c_news_d; }
+
+.l-trans-0 { border-left: $l_width solid $c_trans_a; }
+.l-trans-1 { border-left: $l_width solid $c_trans_b; }
+.b-trans-0 { background: $c_trans_c; }
+.b-trans-1 { background: $c_trans_d; }
+
+.l-itrans-0 { border-left: $l_width solid $c_itrans_a; }
+.l-itrans-1 { border-left: $l_width solid $c_itrans_b; }
+.b-itrans-0 { background: $c_itrans_c; }
+.b-itrans-1 { background: $c_itrans_d; }
+
+.l-doc-0 { border-left: $l_width solid $c_doc_a; }
+.l-doc-1 { border-left: $l_width solid $c_doc_b; }
+.b-doc-0 { background: $c_doc_c; }
+.b-doc-1 { background: $c_doc_d; }
+
+.brdr-0 { border: 0px solid white; }
+
+.el-bl-red0 {
+  border-left: $l_width solid #c1a0a0;
+}
+.el-bl-yellow0 {
+  border-left: $l_width solid #c1bea0;
+}
+.el-bl-green0 {
+  border-left: $l_width solid #a4c1a0;
+}
+.el-bl-cyan0 {
+  border-left: $l_width solid #a0bfc1;
+}
+.el-bl-blue0 {
+  border-left: $l_width solid #a0a2c1;
+}
+.el-bl-violet0 {
+  border-left: $l_width solid #c1a0b9;
+}
+.el-bl-pink0 {
+  border-left: $l_width solid #ff4488;
+}
+.el-message {
+  background: #ededed;
+  border-left: $l_width solid #c3c3c3;
+}
+.brd {border: 1px solid #297a1a; }

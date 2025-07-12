@@ -6,8 +6,12 @@
 			<div class="jumbotron eland-index">
 				<div class="container">
 
-				<h1>eLAND Index</h1>
-				<p>Server gemeenschapsmunten</p>
+				<h1>
+          {{- 'index.title'|trans -}}
+        </h1>
+				<p>
+          {{- 'index.sub_title'|trans -}}
+        </p>
 				</div>
 			</div>
 		</div>
@@ -46,7 +50,7 @@
 {%- block index_link -%}
 	<p>
 		<a href="{{- path('index_contact') -}}">
-			Contactformulier
+      {{- 'index_contact_form.link'|trans -}}
 		</a>
 	</p>
 {%- endblock index_link -%}

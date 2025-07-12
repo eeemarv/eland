@@ -157,21 +157,14 @@ auto_deactivate_admin:
     de gebruiker omdat geen E-mail adres is ingesteld
     voor dit account.
 
-contact:
-  sub_header: >-
-    Contactformulier
-
 contact_confirm:
   subject: >-
     Bevestig je bericht aan {system_name}
   btn_label: >-
     Bevestig je bericht
-  html_msg: >-
+  message: >-
     Klik om je bericht
     in het contactformulier te bevestigen.
-  text_msg: >-
-    Klik op de link hieronder om je bericht in het
-    contactformulier te bevestigen.
   explain: >-
     Gelieve deze mail te negeren wanneer je niet
     zelf een bericht hebt verstuurd
@@ -197,7 +190,7 @@ index:
 index_contact:
   subject: Bericht van het contactformulier
   header: eLAND
-  sub_header: Bericht van het contactformulier
+  explain: Bericht van het contactformulier
 
 index_contact_confirm:
   subject: Bevestig je bericht
@@ -216,7 +209,7 @@ index_contact_confirm:
 index_contact_success:
   subject: Bericht verzonden
   header: eLAND Contact
-  sub_header: >-
+  explain: >-
     Je bericht is succesvol verzonden naar de
     administratie van de eLAND server. Hieronder
     vind je een kopie van je bericht.

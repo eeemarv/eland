@@ -12,5 +12,15 @@
   "intelephense.environment.variables": {
     "snake_case_vars": true
   },
-  "intelephense.diagnostics.undefinedTypes": false
+  "intelephense.diagnostics.undefinedTypes": false,
+  "emmet.includeLanguages": {
+    "html": "html",
+    "twig": "html"
+  },
+  "[twig]": {
+    "editor.autoClosingTags": true
+  },
+  "auto-close-tag.activationOnLanguage": [
+    "twig"
+  ]
 }

@@ -1,3 +1,134 @@
+@use 'sass:color';
+
 $global-padding: 10px;  // 16
 $global-margin: 10px;  // 16
-$global-radius: 5px; //3
+$global-radius: 10px; //3
+
+$column-padding-bottom: 5px; // was $global_padding
+
+$header-margin-bottom: 5px; // was 10px
+
+$l_width: 8px;
+
+$lig_b: 37%;
+$lig_i: 6%;
+$lig_txt: -18%;
+
+$e_colors: (
+  "grey": 0deg,
+  "red": 0deg,
+  "green": 90deg,
+  "blue": 200deg,
+  "violet": 250deg,
+  "yellow": 40deg,
+  "cyan": 150deg
+);
+
+$base0: color.adjust(red, $hue: 6deg, $saturation: -60%);
+$e_base: color.adjust(red, $hue: 6deg, $saturation: -60%);
+
+$grey0: color.adjust($base0, $saturation: -100%);
+$red0: color.adjust($base0, $hue: 0deg);
+$green0: color.adjust($base0, $hue: 90deg);
+$blue0: color.adjust($base0, $hue: 200deg);
+$violet0: color.adjust($base0, $hue: 250deg);
+$yellow0: color.adjust($base0, $hue: 40deg);
+$cyan0: color.adjust($base0, $hue: 150deg);
+
+$c_doc_a: #ccbbcc;
+$c_doc_b: color.scale($c_doc_a, $lightness: 30%);
+$c_doc_c: color.scale($c_doc_a, $lightness: 60%);
+$c_doc_d: color.scale($c_doc_a, $lightness: 80%);
+
+$c_forum_a: #ddcc88;
+$c_forum_b: color.scale($c_forum_a, $lightness: 30%);
+$c_forum_c: color.scale($c_forum_a, $lightness: 60%);
+$c_forum_d: color.scale($c_forum_a, $lightness: 80%);
+
+$c_inter_a: #fee888;
+$c_inter_b: color.scale($c_inter_a, $lightness: 30%);
+$c_inter_c: color.scale($c_inter_a, $lightness: 60%);
+$c_inter_d: color.scale($c_inter_a, $lightness: 80%);
+
+$c_leaving_a: #eebbbb;
+$c_leaving_b: color.scale($c_leaving_a, $lightness: 30%);
+$c_leaving_c: color.scale($c_leaving_a, $lightness: 60%);
+$c_leaving_d: color.scale($c_leaving_a, $lightness: 80%);
+
+$c_self_a: #eebbe8;
+$c_self_b: color.scale($c_self_a, $lightness: 30%);
+$c_self_c: color.scale($c_self_a, $lightness: 60%);
+$c_self_d: color.scale($c_self_a, $lightness: 80%);
+
+$c_messages_a: #bbbbbb;
+$c_messages_b: color.scale($c_messages_a, $lightness: 30%);
+$c_messages_c: color.scale($c_messages_a, $lightness: 60%);
+$c_messages_d: color.scale($c_messages_a, $lightness: 80%);
+
+$c_mollie_a: #d7bbff;
+$c_mollie_b: color.scale($c_mollie_a, $lightness: 30%);
+$c_mollie_c: color.scale($c_mollie_a, $lightness: 60%);
+$c_mollie_d: color.scale($c_mollie_a, $lightness: 80%);
+
+$c_new_a: #bbeebb;
+$c_new_b: color.scale($c_new_a, $lightness: 30%);
+$c_new_c: color.scale($c_new_a, $lightness: 60%);
+$c_new_d: color.scale($c_new_a, $lightness: 80%);
+
+$c_news_a: #c8b4ff;
+$c_news_b: color.scale($c_news_a, $lightness: 30%);
+$c_news_c: color.scale($c_news_a, $lightness: 60%);
+$c_news_d: color.scale($c_news_a, $lightness: 80%);
+
+$c_trans_a: #b2eedd;
+$c_trans_b: color.scale($c_trans_a, $lightness: 30%);
+$c_trans_c: color.scale($c_trans_a, $lightness: 60%);
+$c_trans_d: color.scale($c_trans_a, $lightness: 80%);
+
+$c_itrans_a: #f0eea0;
+$c_itrans_b: color.scale($c_itrans_a, $lightness: 30%);
+$c_itrans_c: color.scale($c_itrans_a, $lightness: 60%);
+$c_itrans_d: color.scale($c_itrans_a, $lightness: 80%);
+
+$blue: blue;
+$violet: violet;
+$green: green;
+$yellow: yellow;
+$red: red;
+$orange: orange;
+
+$primary-color: #2199e8;
+$secondary-color: #777777;
+$success-color: #3adb76;
+$warning-color: #ffae00;
+$alert-color: #ec5840;
+
+$callout-background: color.scale($secondary-color, $lightness: 80%);
+$callout-background-fade: 90%;
+
+$callout-margin-bottom: 0;
+
+$callout_border_width: 1px;
+
+$callout-border: $callout_border_width solid color.scale($callout-background, $lightness: 80%);
+$callout-border-primary: $callout_border_width solid color.scale($primary-color, $lightness: 80%);
+$callout-border-secondary: $callout_border_width solid color.scale($secondary-color, $lightness: 80%);
+$callout-border-success: $callout_border_width solid color.scale($success-color, $lightness: 80%);
+$callout-border-warning: $callout_border_width solid color.scale($warning-color, $lightness: 80%);
+$callout-border-alert: $callout_border_width solid color.scale($alert-color, $lightness: 80%);
+
+$global-font-size: 16px;
+
+$h1-font-size: floor($global-font-size * 1.3); // 2.125
+$h2-font-size: floor($global-font-size * 1.25); // 1.875
+$h3-font-size: floor($global-font-size * 1.2); // 1.75
+$h4-font-size: floor($global-font-size * 1.15); // 1.5
+$h5-font-size: floor($global-font-size * 1.1); // 1.2
+$h6-font-size: floor($global-font-size * 1.05); // 1.125
+
+$h_bar_height: 2px; // added
+$hr_height: 2px; // added
+
+$hr-margin: 0px;
+
+$hr-border: $hr_height solid $cyan0;

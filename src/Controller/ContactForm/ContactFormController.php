@@ -97,17 +97,6 @@ class ContactFormController extends AbstractController
       );
       $bus->dispatch($m_confirm);
 
-/*
-      $mail_queue->queue([
-        'schema'	=> $pp->schema(),
-        'to' 		=> [new Address($email)],
-        'template'	=> 'contact/confirm',
-        'vars'		=> [
-          'token' 	=> $token,
-        ],
-      ], 10000);
-*/
-
       $alert_service->success('Open je E-mailbox en klik
         de link aan die we je zonden om je
         bericht te bevestigen.');

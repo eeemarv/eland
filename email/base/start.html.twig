@@ -1,7 +1,7 @@
 {%- trans_default_domain 'mail' -%}
 {%- apply inky_to_html|inline_css(source('@public' ~ asset('styles/email.scss'))) -%}
 
-<wrapper class="el-wrapper">
+<wrapper class="b-{{- config_str('mail.style.background', schema) -}}-0">
   <container>
     {%- include '@email/base/include/no_reply.html.twig' -%}
 
@@ -17,37 +17,25 @@
                 {%- block header -%}{%- endblock -%}
               {%- endif -%}
             </p>
+            {%- include '@email/include/h_bar.html.twig' -%}
+            <spacer size="4"></spacer>
           </columns>
         </row>
       {%- endif -%}
     {%- endblock header_container -%}
 
-    {%- if block('sub_header') is not empty -%}
-      <spacer size="8"></spacer>
-      <row>
-        <columns>
-          {#}
-          {%- if block('header') is not empty -%}
-            <h1>
-              {%- block header -%}{%- endblock -%}
-            </h1>
-          {%- endif -%}
-          {#}
-          {%- if block('sub_header') is not empty -%}
-            <p>
-              {%- block sub_header -%}{%- endblock -%}
-            </p>
-          {%- endif -%}
-        </columns>
-      </row>
-      <spacer size="2"></spacer>
-    {%- endif -%}
     {%- block content -%}{%- endblock -%}
+
     {%- block sender_info_footer -%}{%- endblock -%}
     {%- block account_info_footer -%}{%- endblock -%}
+
     {%- block unsubscribe_info_footer -%}{%- endblock -%}
-    {%- block system_info_footer -%}{%- endblock -%}
     {%- block admin_info_footer -%}{%- endblock -%}
+
+    {%- if schema is defined -%}
+      {%- include '@email/base/include/system_footer.html.twig' -%}
+    {%- endif -%}
+
     {%- include '@email/base/include/eland_footer.html.twig' -%}
   </container>
 </wrapper>

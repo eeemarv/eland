@@ -1,13 +1,18 @@
 {%- extends 'index/base/index_base.html.twig' -%}
 
-{%- block title -%}eLAND Contact{%- endblock -%}
+{%- block title -%}
+{{- 'index_contact_form.title'|trans -}}
+{%- endblock title -%}
 
 {%- block jumbotron -%}
 	<div class="jumbotron">
 		<div class="container eland-jumbo">
-
-		<h1>eLAND Contact</h1>
-		<p>Server gemeenschapsmunten.</p>
+      <h1>
+        {{- 'index_contact_form.title'|trans -}}
+      </h1>
+      <p>
+        {{- 'index.sub_title'|trans -}}
+      </p>
 		</div>
 
 		<div class="container eland-jumbo-image">

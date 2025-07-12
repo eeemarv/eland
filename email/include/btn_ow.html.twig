@@ -1,0 +1,20 @@
+{%- trans_default_domain 'mail' -%}
+
+{%- set color = is_offer ? '#555555' : '#ffffff' -%}
+{%- set bgcolor = is_offer ? '#ffffff' : '#777777' -%}
+{%- set label = is_offer ? 'label.offer' : 'label.want' -%}
+<table style="border-spacing: 0; border-collapse: collapse; padding: 0; vertical-align: top; text-align: left; margin: 0 0 10px 0; Margin: 0 0 10px 0; width: auto;">
+  <tr style="padding: 0; vertical-align: top; text-align: left;">
+    <td style="word-wrap: break-word; -webkit-hyphens: auto; -moz-hyphens: auto; hyphens: auto; border-collapse: collapse !important; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; vertical-align: top; color: {{ color }}; font-family: Helvetica, Arial, sans-serif; font-weight: normal; padding: 0; margin: 0; Margin: 0; text-align: left; font-size: 16px; line-height: 130%;">
+      <table style="border-spacing: 0; border-collapse: collapse; padding: 0; vertical-align: top; text-align: left; width: auto;">
+        <tr style="padding: 0; vertical-align: top; text-align: left;">
+          <td style="word-wrap: break-word; -webkit-hyphens: auto; -moz-hyphens: auto; hyphens: auto; border-collapse: collapse !important; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; vertical-align: top; font-family: Helvetica, Arial, sans-serif; font-weight: normal; padding: 0; margin: 0; Margin: 0; font-size: 16px; line-height: 130%; text-align: left; color: {{ color }}; background: {{ bgcolor }}; border-radius: 10px; border: none;">
+            <a href="{{- link -}}" style="line-height: 130%; font-family: Helvetica, Arial, sans-serif; font-size: 16px; font-weight: bold; color: {{ color }}; text-decoration: none; text-align: left; display: inline-block; padding: 8px 16px 8px 16px; border: 2px solid {{ color }}; border-radius: 10px;">
+              {{- label|trans -}}
+            </a>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>

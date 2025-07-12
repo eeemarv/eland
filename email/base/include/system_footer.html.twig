@@ -1,7 +1,7 @@
 {%- trans_default_domain 'mail' -%}
 
 {#}
-{%- include '@email/include/h_bar.html.twig' -%}
+{%- include '@email/base/include/ow.html.twig' -%}
 {#}
 
 <row>
@@ -9,8 +9,8 @@
     {%- include '@email/include/h_bar.html.twig' -%}
     <spacer size="12"></spacer>
     <center>
-      <a href="{{- abs_url('index', {}) -}}">
-        {{- 'index.link'|trans -}}
+      <a href="{{- abs_url('home', mpp()) -}}">
+        {{- config_str('system.name', schema) -}}
       </a>
     </center>
     <spacer size="12"></spacer>

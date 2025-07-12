@@ -2,6 +2,9 @@
 
 namespace App\Controller\ContactForm;
 
+use App\Email\ContactForm\ContactConfirm\EmailContactConfirmMessage;
+use App\Email\ContactForm\ContactForm\EmailContactFormMessage;
+use App\Email\ContactForm\ContactSuccess\EmailContactSuccessMessage;
 use App\Queue\MailQueue;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,6 +15,7 @@ use App\Service\MailAddrSystemService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -37,9 +41,10 @@ class ContactFormConfirmController extends AbstractController
     ConfigService $config_service,
     AlertService $alert_service,
     DataTokenService $data_token_service,
-    MailAddrSystemService $mail_addr_system_service,
+//    MailAddrSystemService $mail_addr_system_service,
     PageParamsService $pp,
-    MailQueue $mail_queue
+    MessageBusInterface $bus,
+//    MailQueue $mail_queue
   ):Response
   {
     if (!$config_service->get_bool('contact_form.enabled', $pp->schema()))
@@ -62,6 +67,25 @@ class ContactFormConfirmController extends AbstractController
       'email'			=> $data['email'],
     ];
 
+    $sender_email_address = new Address($data['email']);
+
+    $m_contact = new EmailContactFormMessage(
+      reply_to: $sender_email_address,
+      message: $data['message'],
+      agent: $data['agent'],
+      ip: $data['ip'],
+      schema: $pp->schema_o(),
+    );
+    $bus->dispatch($m_contact);
+
+    $m_success = new EmailContactSuccessMessage(
+      to: $sender_email_address,
+      message: $data['message'],
+      schema: $pp->schema_o(),
+    );
+    $bus->dispatch($m_success);
+
+/*
     $mail_queue->queue([
       'schema'	  => $pp->schema(),
       'template'	=> 'contact/copy',
@@ -76,6 +100,7 @@ class ContactFormConfirmController extends AbstractController
       'to'		    => $mail_addr_system_service->get_support($pp->schema()),
       'reply_to'	=> [new Address($data['email'])],
     ], 8000);
+*/
 
     $data_token_service->del($token, 'contact_form', $pp->schema());
 

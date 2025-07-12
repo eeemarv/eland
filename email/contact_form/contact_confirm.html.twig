@@ -7,10 +7,6 @@
   -}}
 {%- endblock subject -%}
 
-{%- block header -%}
-  {{- 'contact.sub_header'|trans -}}
-{%- endblock header -%}
-
 {%- block content -%}
 <row>
   <columns>
@@ -18,7 +14,7 @@
       {{- 'contact_confirm.btn_label'|trans -}}
     </button>
     <p>
-      {{- 'contact_confirm.html_msg'|trans -}}
+      {{- 'contact_confirm.message'|trans -}}
     </p>
     <p>
       {{- 'expiration.1_day'|trans -}}

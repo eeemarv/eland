@@ -9,11 +9,15 @@
   {{- 'index_contact.header'|trans -}}
 {%- endblock header -%}
 
-{%- block sub_header -%}
-  {{- 'index_contact.sub_header'|trans -}}
-{%- endblock sub_header -%}
-
 {%- block content -%}
+  <row>
+    <columns>
+      <p>
+        {{- 'index_contact.explain'|trans -}}
+      </p>
+    </columns>
+  </row>
+
   {%- include '@email/include/message.html.twig' -%}
 {%- endblock content -%}
 

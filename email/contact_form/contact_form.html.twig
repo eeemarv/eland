@@ -5,41 +5,17 @@
     {{- 'contact_support.subject'|trans -}}
 {%- endblock subject -%}
 
-{%- block bgcolor_system_name -%}000000{%- endblock -%}
-{%- block bgcolor_sub_header -%}99ff99{%- endblock -%}
-{%- block sub_header -%}contact.sub_header{%- endblock -%}
-{%- block bgcolor -%}e8eeff{%- endblock -%}
+{% block content -%}
+  <p>
+    {{- 'contact_support.explain'|trans({
+        'ao': a_open('home', mpp()),
+        'ac': '</a>',
+        'system_name': config_str('system.name', schema)
+    })|raw -}}
+  </p>
+  {%- include '@email/include/message.html.twig' -%}
+{%- endblock content -%}
 
-{% block html_content -%}
-    {%- set bgcolor_panel -%}
-        e0ffe0
-    {%- endset -%}
-
-    {%- set info -%}
-        {{- 'contact_support.explain'|trans({
-            'ao': context_url_open(
-                'home', mpp_anon_ary(schema), {}),
-            'ac': '</a>',
-            'system_name': config_str('system.name', schema)
-        })|raw -}}
-    {%- endset -%}
-
-    {%- include 'mail/include/info_bgcolor_panel.html.twig' with {
-        'info': info|raw,
-        'bgcolor': bgcolor_panel
-    } -%}
-
-    {%- include 'mail/include/info_bgcolor_panel.html.twig' with {
-        'info': '',
-        'bgcolor': bgcolor_panel
-    } -%}
-
-    {%- include 'mail/include/spacer20.html.twig' -%}
-    {%- include 'mail/include/info_panel.html.twig' with {
-        'info': message|nl2br
-    } -%}
-    {%- include 'mail/include/spacer20.html.twig' -%}
-    {%- include 'mail/include/bgspacer40.html.twig' -%}
-
-    {%- include 'mail/include/sender_info.html.twig' -%}
-{%- endblock html_content -%}
+{%- block sender_info_footer -%}
+  {%- include '@email/include/sender_info.html.twig' -%}
+{%- endblock sender_info_footer -%}
