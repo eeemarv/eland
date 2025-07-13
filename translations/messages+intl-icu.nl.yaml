@@ -569,6 +569,11 @@ config_name:
 contact_form:
   title: Contact
 
+contact_form_confirm:
+  success: Je bericht is succesvol verzonden
+  fail: Het token is ongeldig of verlopen.
+  back_to_home: Terug naar de homepagina
+
 contact_types:
   title: Contact types
   explain_protected: >-

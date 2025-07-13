@@ -1,9 +1,11 @@
 {%- trans_default_domain 'mail' -%}
 
-<row class="l-c6 b-c9">
+<row>
   <columns>
     <h6>
-      {{- 'sender_info.title'|trans -}}
+      <b>
+        {{- 'sender_info.title'|trans -}}
+      </b>
     </h6>
     <b>{{- 'sender_info.email'|trans -}}:</b> {{ sender.email|raw }}<br/>
     <b>{{- 'sender_info.ip'|trans -}}:</b> {{ sender.ip|raw }}<br/>

@@ -2,16 +2,14 @@
 {%- trans_default_domain 'mail' -%}
 
 {% block subject -%}
-    {{- 'contact_copy.subject'|trans({
-        'system_name': config_str('system.name', schema)
-    }) -}}
+  {{- 'contact_form_success.subject'|trans -}}
 {%- endblock subject -%}
 
 {%- block content -%}
   <row>
     <columns>
       <p>
-        {{- 'contact_copy.explain'|trans({
+        {{- 'contact_form_success.explain'|trans({
             'system_name': config_str('system.name', schema)
         }) -}}
       </p>

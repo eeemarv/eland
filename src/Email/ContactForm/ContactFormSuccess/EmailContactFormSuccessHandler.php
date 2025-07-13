@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Email\ContactForm\ContactSuccess;
+namespace App\Email\ContactForm\ContactFormSuccess;
 
 use App\DTO\AddressAry;
 use App\Email\EmailDispatchMessage;
@@ -8,13 +8,13 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 #[AsMessageHandler]
-final class EmailContactSuccessHandler
+final class EmailContactFormSuccessHandler
 {
     public function __construct(
       private readonly MessageBusInterface $bus,
     ) {}
 
-    public function __invoke(EmailContactSuccessMessage $message):void
+    public function __invoke(EmailContactFormSuccessMessage $message):void
     {
       $schema = $message->schema;
 
@@ -23,7 +23,7 @@ final class EmailContactSuccessHandler
       ];
 
       $dispatch = new EmailDispatchMessage(
-        template: 'contact_form/contact_success',
+        template: 'contact_form/contact_form_success',
         context: $context,
         to: New AddressAry([$message->to]),
         schema: $schema,

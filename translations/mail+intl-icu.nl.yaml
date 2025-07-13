@@ -157,9 +157,9 @@ auto_deactivate_admin:
     de gebruiker omdat geen E-mail adres is ingesteld
     voor dit account.
 
-contact_confirm:
+contact_form_confirm:
   subject: >-
-    Bevestig je bericht aan {system_name}
+    Bevestig je bericht
   btn_label: >-
     Bevestig je bericht
   message: >-
@@ -171,13 +171,14 @@ contact_confirm:
     via {ao}het contactformulier
     van {system_name}{ac}.
 
-contact_copy:
+contact_form_success:
   subject: >-
-    Kopie van je bericht aan {system_name}
+    Kopie van je bericht
   explain: >-
     Het bericht hieronder heb je verzonden aan {system_name}
     via het contactformulier
-contact_support:
+
+contact_form:
   subject: Bericht van het contactformulier
   explain: >-
     Dit bericht werd ingegeven in het

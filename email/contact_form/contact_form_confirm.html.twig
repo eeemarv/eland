@@ -2,25 +2,23 @@
 {%- trans_default_domain 'mail' -%}
 
 {%- block subject -%}
-  {{- 'contact_confirm.subject'|trans({
-    'system_name': config_str('system.name', schema)})
-  -}}
+  {{- 'contact_form_confirm.subject'|trans -}}
 {%- endblock subject -%}
 
 {%- block content -%}
 <row>
   <columns>
     <button href="{{- abs_url('contact_form_confirm', mpp()|merge({'token': token})) -}}" class="radius">
-      {{- 'contact_confirm.btn_label'|trans -}}
+      {{- 'contact_form_confirm.btn_label'|trans -}}
     </button>
     <p>
-      {{- 'contact_confirm.message'|trans -}}
+      {{- 'contact_form_confirm.message'|trans -}}
     </p>
     <p>
       {{- 'expiration.1_day'|trans -}}
     </p>
     <p>
-      {{- 'contact_confirm.explain'|trans({
+      {{- 'contact_form_confirm.explain'|trans({
         'system_name': config_str('system.name', schema),
         'ao': a_open('contact_form', mpp()),
         'ac': '</a>'

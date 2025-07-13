@@ -3,7 +3,7 @@
 namespace App\Controller\ContactForm;
 
 use App\Command\ContactForm\ContactFormCommand;
-use App\Email\ContactForm\ContactConfirm\EmailContactConfirmMessage;
+use App\Email\ContactForm\ContactFormConfirm\EmailContactFormConfirmMessage;
 use App\Form\Type\ContactForm\ContactFormType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -90,7 +90,7 @@ class ContactFormController extends AbstractController
         json_encode($contact),
         ['schema' => $pp->schema()]);
 
-      $m_confirm = new EmailContactConfirmMessage(
+      $m_confirm = new EmailContactFormConfirmMessage(
         to: new Address($email),
         schema: $pp->schema_o(),
         token: $token,
