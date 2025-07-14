@@ -7,7 +7,6 @@ use App\Form\Type\Users\UsersPasswordEditType;
 use App\Queue\MailQueue;
 use App\Repository\UserRepository;
 use App\Security\User;
-use App\Service\AlertService;
 use App\Service\MailAddrSystemService;
 use App\Service\MailAddrUserService;
 use App\Service\PageParamsService;
@@ -59,7 +58,6 @@ class UsersPasswordEditController extends AbstractController
         int $id,
         bool $is_self,
         UserRepository $user_repository,
-        AlertService $alert_service,
         MailAddrSystemService $mail_addr_system_service,
         MailAddrUserService $mail_addr_user_service,
         MailQueue $mail_queue,
@@ -97,7 +95,7 @@ class UsersPasswordEditController extends AbstractController
             $hashed_password = $password_hasher->hash($command->password);
             $user_repository->set_password($id, $hashed_password, $pp->schema());
 
-            $alert_service->success('Paswoord opgeslagen.');
+            $this->addFlash('success', 'Paswoord opgeslagen.');
 
             if ($command->notify)
             {
@@ -116,15 +114,15 @@ class UsersPasswordEditController extends AbstractController
                         'vars'		=> $vars,
                     ], 8000);
 
-                    $alert_service->success('Notificatie mail verzonden');
+                    $this->addFlash('success', 'Notificatie mail verzonden');
                 }
                 else if (!$has_email)
                 {
-                    $alert_service->warning('Geen E-mail adres bekend voor deze gebruiker, stuur het paswoord op een andere manier door!');
+                    $this->addFlash('warning', 'Geen E-mail adres bekend voor deze gebruiker, stuur het paswoord op een andere manier door!');
                 }
                 else
                 {
-                    $alert_service->warning('Er werd geen notificatie email verstuurd want het account is niet actief.');
+                    $this->addFlash('warning', 'Er werd geen notificatie email verstuurd want het account is niet actief.');
                 }
             }
 

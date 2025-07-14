@@ -14,7 +14,6 @@ use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
-use App\Service\AlertService;
 use App\Service\FormTokenService;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Types\Types;
@@ -42,7 +41,6 @@ class ContactsController extends AbstractController
     public function __invoke(
         Request $request,
         Db $db,
-        AlertService $alert_service,
         LinkRender $link_render,
         FormTokenService $form_token_service,
         ConfigService $config_service,
@@ -154,17 +152,20 @@ class ContactsController extends AbstractController
 
                 if (count($selected_contacts) > 1)
                 {
-                    $alert_service->success('De contacten zijn aangepast.');
+                    $this->addFlash('success', 'De contacten zijn aangepast.');
                 }
                 else
                 {
-                    $alert_service->success('Het contact is aangepast.');
+                    $this->addFlash('success', 'Het contact is aangepast.');
                 }
 
                 return $this->redirectToRoute('contacts', $pp->ary());
             }
 
-            $alert_service->error($errors);
+            foreach ($errors as $error)
+            {
+              $this->addFlash('error', $error);
+            }
         }
 
         $pag = $request->query->all('p');

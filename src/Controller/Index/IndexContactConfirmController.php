@@ -34,10 +34,8 @@ class IndexContactConfirmController extends AbstractController
 
     if (!$data)
     {
-      $this->addFlash('alert', [
-        'type'      => 'error',
-        'message'   => 'Ongeldig of verlopen token.',
-      ]);
+      $this->addFlash('error', 'Ongeldig of verlopen token.');
+
       return $this->redirectToRoute('index_contact');
     }
 

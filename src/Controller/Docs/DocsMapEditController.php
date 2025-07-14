@@ -7,7 +7,6 @@ use App\Form\Type\Docs\DocsMapType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\AlertService;
 use App\Repository\DocRepository;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -38,7 +37,6 @@ class DocsMapEditController extends AbstractController
         int $id,
         DocRepository $doc_repository,
         ConfigService $config_service,
-        AlertService $alert_service,
         TypeaheadService $typeahead_service,
         PageParamsService $pp
     ):Response
@@ -72,7 +70,7 @@ class DocsMapEditController extends AbstractController
 
             $typeahead_service->clear_cache($pp->schema());
 
-            $alert_service->success('Map naam aangepast.');
+            $this->addFlash('success', 'Map naam aangepast.');
 
             return $this->redirectToRoute('docs_map', [
                 ...$pp->ary(),

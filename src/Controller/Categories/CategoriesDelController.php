@@ -4,11 +4,9 @@ namespace App\Controller\Categories;
 
 use App\Command\Categories\CategoriesNameCommand;
 use App\Form\Type\Categories\CategoriesNameType;
-use App\Form\Type\Del\DelType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\AlertService;
 use App\Repository\CategoryRepository;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -40,7 +38,6 @@ class CategoriesDelController extends AbstractController
         int $id,
         CategoryRepository $category_repository,
         ConfigService $config_service,
-        AlertService $alert_service,
         PageParamsService $pp
     ):Response
     {
@@ -80,7 +77,7 @@ class CategoriesDelController extends AbstractController
         {
             $category_repository->del($id, $pp->schema());
 
-            $alert_service->success('Categorie "' . $category['name'] . '" verwijderd.');
+            $this->addFlash('success', 'Categorie "' . $category['name'] . '" verwijderd.');
 
             return $this->redirectToRoute('categories', $pp->ary());
         }

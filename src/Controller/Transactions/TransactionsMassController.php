@@ -8,7 +8,6 @@ use App\Queue\MailQueue;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Repository\AccountRepository;
-use App\Service\AlertService;
 use App\Service\AutoDeactivateService;
 use App\Service\AutoMinLimitService;
 use App\Service\ConfigService;
@@ -102,7 +101,6 @@ class TransactionsMassController extends AbstractController
         Db $db,
         AccountRepository $account_repository,
         LoggerInterface $logger,
-        AlertService $alert_service,
         FormTokenService $form_token_service,
         ItemAccessService $item_access_service,
         ConfigService $config_service,
@@ -304,7 +302,10 @@ class TransactionsMassController extends AbstractController
 
             if (count($errors))
             {
-                $alert_service->error($errors);
+              foreach ($errors as $error)
+              {
+                $this->addFlash('error', $error);
+              }
             }
             else
             {
@@ -383,7 +384,7 @@ class TransactionsMassController extends AbstractController
 
                 $alert_success .= 'Totaal: ' . $total_amount . ' ';
                 $alert_success .= $currency;
-                $alert_service->success($alert_success);
+                $this->addFlash('success', $alert_success);
 
                 $log_one = $users[$one_uid]['code'] . ' ';
                 $log_one .= $users[$one_uid]['name'];
@@ -401,7 +402,7 @@ class TransactionsMassController extends AbstractController
 
                 if ($su->is_master())
                 {
-                    $alert_service->warning('Master account: geen mails verzonden.');
+                    $this->addFlash('warning', 'Master account: geen mails verzonden.');
                 }
                 else if ($mail_en)
                 {
@@ -453,7 +454,7 @@ class TransactionsMassController extends AbstractController
                         'vars'		=> $vars,
                     ], 8000);
 
-                    $alert_service->success('Notificatie mails verzonden.');
+                    $this->addFlash('success', 'Notificatie mails verzonden.');
                 }
 
                 return $this->redirectToRoute('transactions_mass', $pp->ary());

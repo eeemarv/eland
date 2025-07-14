@@ -3,12 +3,11 @@
 namespace App\Controller\ContactForm;
 
 use App\Command\ContactForm\ContactFormCommand;
-use App\Email\ContactForm\ContactFormConfirm\EmailContactFormConfirmMessage;
+use App\Email\ContactForm\Confirm\EmailContactFormConfirmMessage;
 use App\Form\Type\ContactForm\ContactFormType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\DataTokenService;
 use App\Service\PageParamsService;
@@ -38,7 +37,6 @@ class ContactFormController extends AbstractController
   public function __invoke(
     Request $request,
     LoggerInterface $logger,
-    AlertService $alert_service,
     ConfigService $config_service,
     DataTokenService $data_token_service,
     PageParamsService $pp,
@@ -97,7 +95,7 @@ class ContactFormController extends AbstractController
       );
       $bus->dispatch($m_confirm);
 
-      $alert_service->success('Open je E-mailbox en klik
+      $this->addFlash('success', 'Open je E-mailbox en klik
         de link aan die we je zonden om je
         bericht te bevestigen.');
 
@@ -106,13 +104,13 @@ class ContactFormController extends AbstractController
 
     if (!$mail_enabled)
     {
-      $alert_service->warning('E-mail functies zijn
+      $this->addFlash('warning', 'E-mail functies zijn
         uitgeschakeld door de beheerder.
         Je kan dit formulier niet gebruiken');
     }
     else if (count($support_email_addr) < 1)
     {
-      $alert_service->warning('Er is geen support E-mail adres
+      $this->addFlash('warning', 'Er is geen support E-mail adres
         ingesteld door de beheerder.
         Je kan dit formulier niet gebruiken.');
     }

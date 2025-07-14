@@ -8,7 +8,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\NewsRepository;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -37,7 +36,6 @@ class NewsEditController extends AbstractController
         int $id,
         NewsRepository $news_repository,
         ConfigService $config_service,
-        AlertService $alert_service,
         PageParamsService $pp
     ):Response
     {
@@ -68,7 +66,7 @@ class NewsEditController extends AbstractController
             $command = $form->getData();
             $news_repository->update($command, $pp->schema());
 
-            $alert_service->success('Nieuwsbericht aangepast.');
+            $this->addFlash('success', 'Nieuwsbericht aangepast.');
             return $this->redirectToRoute('news_show', [
                 ...$pp->ary(),
                 'id' => $id,

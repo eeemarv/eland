@@ -4,7 +4,6 @@ namespace App\Controller\Intersystems;
 
 use App\Render\LinkRender;
 use App\Render\SelectRender;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
@@ -39,7 +38,6 @@ class IntersystemsAddController extends AbstractController
     public function __invoke(
         Request $request,
         Db $db,
-        AlertService $alert_service,
         ConfigService $config_service,
         FormTokenService $form_token_service,
         IntersystemsService $intersystems_service,
@@ -85,7 +83,7 @@ class IntersystemsAddController extends AbstractController
             {
                 if ($db->insert($pp->schema() . '.letsgroups', $group))
                 {
-                    $alert_service->success('Intersysteem opgeslagen.');
+                    $this->addFlash('success', 'Intersysteem opgeslagen.');
 
                     $id = $db->lastInsertId($pp->schema() . '.letsgroups_id_seq');
 
@@ -97,11 +95,14 @@ class IntersystemsAddController extends AbstractController
                     ]);
                 }
 
-                $alert_service->error('InterSysteem niet opgeslagen.');
+                $this->addFlash('error', 'InterSysteem niet opgeslagen.');
             }
             else
             {
-                $alert_service->error($errors);
+              foreach ($errors as $error)
+              {
+                $this->addFlash('error', $error);
+              }
             }
         }
         else

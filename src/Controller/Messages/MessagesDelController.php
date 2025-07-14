@@ -9,7 +9,6 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Repository\CategoryRepository;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
@@ -47,7 +46,6 @@ class MessagesDelController extends AbstractController
         Db $db,
         CategoryRepository $category_repository,
         AccountRender $account_render,
-        AlertService $alert_service,
         FormTokenService $form_token_service,
         IntersystemsService $intersystems_service,
         ItemAccessService $item_access_service,
@@ -83,17 +81,17 @@ class MessagesDelController extends AbstractController
         {
             if ($error_token = $form_token_service->get_error())
             {
-                $alert_service->error($error_token);
+              $this->addFlash('error', $error_token);
             }
 
             if ($db->delete($pp->schema() . '.messages', ['id' => $id]))
             {
-                $alert_service->success(ucfirst($message['label']['offer_want_this']) . ' is verwijderd.');
+                $this->addFlash('success', ucfirst($message['label']['offer_want_this']) . ' is verwijderd.');
 
                 return $this->redirectToRoute($vr->get('messages'), $pp->ary());
             }
 
-            $alert_service->error(ucfirst($message['label']['offer_want_this']) . ' is niet verwijderd.');
+            $this->addFlash('error', ucfirst($message['label']['offer_want_this']) . ' is niet verwijderd.');
         }
 
         $out = '<div class="panel panel-info printview">';

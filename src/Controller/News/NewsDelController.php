@@ -5,7 +5,6 @@ namespace App\Controller\News;
 use App\Command\News\NewsCommand;
 use App\Form\Type\News\NewsDelType;
 use App\Repository\NewsRepository;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\VarRouteService;
@@ -38,7 +37,6 @@ class NewsDelController extends AbstractController
         int $id,
         NewsRepository $news_repository,
         ConfigService $config_service,
-        AlertService $alert_service,
         PageParamsService $pp,
         VarRouteService $vr
     ):Response
@@ -68,7 +66,7 @@ class NewsDelController extends AbstractController
             && $form->isValid())
         {
             $news_repository->del($id, $pp->schema());
-            $alert_service->success('Nieuwsbericht "' . $news_item['subject'] . '" verwijderd.');
+            $this->addFlash('success', 'Nieuwsbericht "' . $news_item['subject'] . '" verwijderd.');
             return $this->redirectToRoute($vr->get('news'), $pp->ary());
         }
 

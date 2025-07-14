@@ -15,7 +15,6 @@ use App\Form\Type\Messages\MessagesFilterType;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Render\SelectRender;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
@@ -118,7 +117,6 @@ class MessagesListController extends AbstractController
         bool $is_self,
         FormTokenService $form_token_service,
         AccountRender $account_render,
-        AlertService $alert_service,
         DateFormatService $date_format_service,
         IntersystemsService $intersystems_service,
         ItemAccessService $item_access_service,
@@ -257,11 +255,11 @@ class MessagesListController extends AbstractController
 
                 if (count($update_msgs_ary) > 1)
                 {
-                    $alert_service->success('De berichten zijn verlengd.');
+                    $this->addFlash('success', 'De berichten zijn verlengd.');
                 }
                 else
                 {
-                    $alert_service->success('Het bericht is verlengd.');
+                    $this->addFlash('success', 'Het bericht is verlengd.');
                 }
 
                 return $this->redirectToRoute($vr_route, $pp->ary());
@@ -295,11 +293,11 @@ class MessagesListController extends AbstractController
 
                 if (count($selected_messages) > 1)
                 {
-                    $alert_service->success('De berichten zijn aangepast.');
+                    $this->addFlash('success', 'De berichten zijn aangepast.');
                 }
                 else
                 {
-                    $alert_service->success('Het bericht is aangepast.');
+                    $this->addFlash('success', 'Het bericht is aangepast.');
                 }
 
                 return $this->redirectToRoute($vr_route, $pp->ary());
@@ -341,11 +339,11 @@ class MessagesListController extends AbstractController
 
                 if (count($selected_messages) > 1)
                 {
-                    $alert_service->success('De categorie van de berichten is aangepast.');
+                    $this->addFlash('success', 'De categorie van de berichten is aangepast.');
                 }
                 else
                 {
-                    $alert_service->success('De categorie van het bericht is aangepast.');
+                    $this->addFlash('success', 'De categorie van het bericht is aangepast.');
                 }
 
                 return $this->redirectToRoute($vr_route, $pp->ary());
@@ -369,17 +367,20 @@ class MessagesListController extends AbstractController
 
                 if (count($selected_messages) > 1)
                 {
-                    $alert_service->success('De zichtbaarheid van de berichten is aangepast.');
+                    $this->addFlash('success', 'De zichtbaarheid van de berichten is aangepast.');
                 }
                 else
                 {
-                    $alert_service->success('De zichtbaarheid van het bericht is aangepast.');
+                    $this->addFlash('success', 'De zichtbaarheid van het bericht is aangepast.');
                 }
 
                 return $this->redirectToRoute($vr_route, $pp->ary());
             }
 
-            $alert_service->error($errors);
+            foreach ($errors as $error)
+            {
+              $this->addFlash('error', $error);
+            }
         }
 
         $fetch_and_filter = $this->fetch_and_filter(

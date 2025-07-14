@@ -3,7 +3,6 @@
 namespace App\Controller\Config;
 
 use App\Form\Type\Del\DelType;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -32,7 +31,6 @@ class ConfigLogoDelController extends AbstractController
     public function __invoke(
         Request $request,
         ConfigService $config_service,
-        AlertService $alert_service,
         PageParamsService $pp
     ):Response
     {
@@ -51,7 +49,7 @@ class ConfigLogoDelController extends AbstractController
         {
             $config_service->set_str('system.logo', '', $pp->schema());
 
-            $alert_service->success('Het logo is verwijderd.');
+            $this->addFlash('success', 'Het logo is verwijderd.');
             return $this->redirectToRoute('config_logo', $pp->ary());
         }
 

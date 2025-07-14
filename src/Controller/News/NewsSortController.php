@@ -7,7 +7,6 @@ use App\Form\Type\News\NewsSortType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -32,7 +31,6 @@ class NewsSortController extends AbstractController
 
     public function __invoke(
         Request $request,
-        AlertService $alert_service,
         ConfigService $config_service,
         PageParamsService $pp
     ):Response
@@ -54,7 +52,7 @@ class NewsSortController extends AbstractController
             $command = $form->getData();
             $config_service->store_command($command, $pp->schema());
 
-            $alert_service->success('Sortering nieuws configuratie aangepast');
+            $this->addFlash('success', 'Sortering nieuws configuratie aangepast');
             return $this->redirectToRoute('news_sort', $pp->ary());
         }
 

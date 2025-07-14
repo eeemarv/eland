@@ -10,22 +10,22 @@ use Symfony\Component\Messenger\MessageBusInterface;
 #[AsMessageHandler]
 final class EmailIndexContactConfirmHandler
 {
-    public function __construct(
-      private readonly MessageBusInterface $bus,
-    ) {}
+  public function __construct(
+    private readonly MessageBusInterface $bus,
+  ) {}
 
-    public function __invoke(EmailIndexContactConfirmMessage $message):void
-    {
-      $context = [
-        'token' => $message->token,
-      ];
+  public function __invoke(EmailIndexContactConfirmMessage $message):void
+  {
+    $context = [
+      'token' => $message->token,
+    ];
 
-      $dispatch = new EmailDispatchMessage(
-        template: 'index/index_contact_confirm',
-        context: $context,
-        to: New AddressAry([$message->to]),
-      );
+    $dispatch = new EmailDispatchMessage(
+      template: 'index/index_contact_confirm',
+      context: $context,
+      to: New AddressAry([$message->to]),
+    );
 
-      $this->bus->dispatch($dispatch);
-    }
+    $this->bus->dispatch($dispatch);
+  }
 }

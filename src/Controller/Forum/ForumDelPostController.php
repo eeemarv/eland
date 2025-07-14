@@ -6,7 +6,6 @@ use App\Command\Forum\ForumPostCommand;
 use App\Form\Type\Forum\ForumPostDelType;
 use App\Render\AccountRender;
 use App\Repository\ForumRepository;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
@@ -42,7 +41,6 @@ class ForumDelPostController extends AbstractController
         ForumRepository $forum_repository,
         AccountRender $account_render,
         ConfigService $config_service,
-        AlertService $alert_service,
         PageParamsService $pp,
         SessionUserService $su,
         ItemAccessService $item_access_service
@@ -90,7 +88,7 @@ class ForumDelPostController extends AbstractController
             $alert_msg = $su->is_owner($forum_post['user_id']) ? 'Je post' : 'De post van ' . $account_str;
             $alert_msg .= ' in topic "' . $topic_subject . '" werd gewist.';
 
-            $alert_service->success($alert_msg);
+            $this->addFlash('success', $alert_msg);
 
             return $this->redirectToRoute('forum_topic', [
                 ...$pp->ary(),

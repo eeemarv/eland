@@ -7,7 +7,6 @@ use App\Form\Type\Users\UsersFullNameType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -32,7 +31,6 @@ class UsersFullNameController extends AbstractController
 
     public function __invoke(
         Request $request,
-        AlertService $alert_service,
         ConfigService $config_service,
         PageParamsService $pp
     ):Response
@@ -55,7 +53,7 @@ class UsersFullNameController extends AbstractController
 
             $config_service->store_command($command, $pp->schema());
 
-            $alert_service->success('Volledige naam configuratie aangepast');
+            $this->addFlash('success', 'Volledige naam configuratie aangepast');
             return $this->redirectToRoute('users_full_name', $pp->ary());
         }
 

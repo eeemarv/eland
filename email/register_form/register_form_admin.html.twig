@@ -1,0 +1,89 @@
+{%- extends '@email/base/base.html.twig' -%}
+{%- trans_default_domain 'mail' -%}
+
+{% block subject -%}
+    {{- 'register_form_admin.subject'|trans({
+        'full_name': user_full_name(user_id, schema)
+    }) -}}
+{%- endblock subject -%}
+
+{%- block bgcolor_system_name -%}000000{%- endblock -%}
+{%- block bgcolor_sub_header -%}99ff99{%- endblock -%}
+{%- block sub_header -%}register.sub_header{%- endblock -%}
+{%- block bgcolor -%}e8eeff{%- endblock -%}
+
+{% block html_content %}
+    {%- set info -%}
+    <table border="1" bgcolor="eeeeee" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+            <td width="200" style="padding-left: 10px">
+                {{- 'label.full_name'|trans -}}
+            </td>
+            <td style="font-style: bold; padding-left: 10px">
+                {{ user_full_name(user_id, schema) -}}
+            </td>
+        </tr>
+        {%- if config_bool('users.fields.postcode.enabled', schema) -%}
+        <tr>
+            <td width="200" style="padding-left: 10px">
+                {{- 'label.postcode'|trans -}}
+            </td>
+            <td style="font-style: bold; padding-left: 10px">
+                {{- postcode -}}
+            </td>
+        </tr>
+        {%- endif -%}
+        <tr>
+            <td width="200" style="padding-left: 10px">
+                {{- 'label.email'|trans -}}
+            </td>
+            <td style="font-style: bold; padding-left: 10px">
+                {{- email -}}
+            </td>
+        </tr>
+    </table>
+
+    {%- include 'mail/include/spacer20.html.twig' -%}
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+            <td>
+                <a href="{{ context_url('users_show', mpp_admin_ary(schema), {'id': user_id}) -}}">
+                    {{- 'label.link'|trans -}}
+                </a>
+            </td>
+        </tr>
+    </table>
+    {%- endset -%}
+
+    {%- include 'mail/include/spacer20.html.twig' -%}
+
+    {%- include 'mail/include/info_panel.html.twig' with {
+        'info': 'register_admin.msg'|trans
+    } -%}
+
+    {%- include 'mail/include/spacer20.html.twig' -%}
+
+    {%- include 'mail/include/info_panel.html.twig' with {
+        'info': info|raw
+    } -%}
+
+    {%- include 'mail/include/spacer20.html.twig' -%}
+    {%- include 'mail/include/bgspacer40.html.twig' -%}
+{% endblock html_content %}
+
+{% block text_content %}
+{% autoescape false %}
+
+{{ 'register.sub_header'|trans|underline }}
+
+{{ 'register_admin.msg'|trans }}:
+
+{{ 'label.full_name'|trans }}: {{ user_full_name(user_id, schema) }}
+{% if config_bool('users.fields.postcode.enabled', schema) -%}
+{{ 'label.postcode'|trans }}: {{ postcode }}
+{%- endif %}
+{{ 'label.email'|trans }}: {{ email }}
+{{ 'label.link'|trans }}: {{ context_url('users_show', mpp_admin_ary(schema), {'id': user_id}) }}
+
+{% endautoescape %}
+{% endblock text_content %}

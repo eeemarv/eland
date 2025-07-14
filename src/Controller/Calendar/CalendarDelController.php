@@ -2,13 +2,9 @@
 
 namespace App\Controller\Calendar;
 
-use App\Render\AccountRender;
 use App\Render\LinkRender;
-use App\Service\AlertService;
 use App\Service\ConfigService;
-use App\Service\DateFormatService;
 use App\Service\FormTokenService;
-use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -27,10 +23,6 @@ class CalendarDelController extends AbstractController
         Db $db,
         ConfigService $config_service,
         FormTokenService $form_token_service,
-        AccountRender $account_render,
-        AlertService $alert_service,
-        DateFormatService $date_format_service,
-        ItemAccessService $item_access_service,
         LinkRender $link_render,
         PageParamsService $pp,
         VarRouteService $vr
@@ -45,17 +37,17 @@ class CalendarDelController extends AbstractController
         {
             if ($error_token = $form_token_service->get_error())
             {
-                $alert_service->error($error_token);
+                $this->addFlash('error', $error_token);
                 return $this->redirectToRoute($vr->get('news'), $pp->ary());
             }
 
             if($db->delete($pp->schema() . '.news', ['id' => $id]))
             {
-                $alert_service->success('Nieuwsbericht verwijderd.');
+                $this->addFlash('success', 'Nieuwsbericht verwijderd.');
                 return $this->redirectToRoute($vr->get('news'), $pp->ary());
             }
 
-            $alert_service->error('Nieuwsbericht niet verwijderd.');
+            $this->addFlash('error', 'Nieuwsbericht niet verwijderd.');
         }
 
         $news = $db->fetchAssociative('select n.*

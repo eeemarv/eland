@@ -7,7 +7,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Command\Tags\TagsDefCommand;
 use App\Form\Type\Tags\TagsDefType;
-use App\Service\AlertService;
 use App\Repository\TagRepository;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -144,7 +143,6 @@ class TagsAddController extends AbstractController
         Request $request,
         TagRepository $tag_repository,
         TypeaheadService $typeahead_service,
-        AlertService $alert_service,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
@@ -168,7 +166,7 @@ class TagsAddController extends AbstractController
             $command->tag_type = $tag_type;
             $tag_repository->insert($command, $created_by, $pp->schema());
             $typeahead_service->clear_cache($pp->schema());
-            $alert_service->success('Tag "' . $command->txt . '" opgeslagen.');
+            $this->addFlash('success', 'Tag "' . $command->txt . '" opgeslagen.');
 
             return $this->redirectToRoute('tags_' . $tag_type, $pp->ary());
         }

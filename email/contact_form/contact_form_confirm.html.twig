@@ -6,24 +6,24 @@
 {%- endblock subject -%}
 
 {%- block content -%}
-<row>
-  <columns>
-    <button href="{{- abs_url('contact_form_confirm', mpp()|merge({'token': token})) -}}" class="radius">
-      {{- 'contact_form_confirm.btn_label'|trans -}}
-    </button>
-    <p>
-      {{- 'contact_form_confirm.message'|trans -}}
-    </p>
-    <p>
-      {{- 'expiration.1_day'|trans -}}
-    </p>
-    <p>
-      {{- 'contact_form_confirm.explain'|trans({
-        'system_name': config_str('system.name', schema),
-        'ao': a_open('contact_form', mpp()),
-        'ac': '</a>'
-      })|raw -}}
-    </p>
-  </columns>
-</row>
+  <row>
+    <columns>
+      <button href="{{- abs_url('contact_form_confirm', mpp()|merge({'token': token})) -}}" class="radius">
+        {{- 'contact_form_confirm.btn_label'|trans -}}
+      </button>
+      <p>
+        {{- 'contact_form_confirm.message'|trans -}}
+      </p>
+      <p>
+        {{- 'expiration.1_day'|trans -}}
+      </p>
+      <p>
+        {{- 'contact_form_confirm.explain'|trans({
+          'system_name': config_str('system.name', schema),
+          'ao': a_open('contact_form', mpp()),
+          'ac': '</a>'
+        })|raw -}}
+      </p>
+    </columns>
+  </row>
 {%- endblock content -%}

@@ -7,7 +7,6 @@ use App\Form\Type\Categories\CategoriesNameType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\AlertService;
 use App\Repository\CategoryRepository;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -38,7 +37,6 @@ class CategoriesEditController extends AbstractController
         int $id,
         CategoryRepository $category_repository,
         ConfigService $config_service,
-        AlertService $alert_service,
         PageParamsService $pp
     ):Response
     {
@@ -69,7 +67,7 @@ class CategoriesEditController extends AbstractController
 
             $category_repository->update_name($id, $name, $pp->schema());
 
-            $alert_service->success('Naam van Categorie aangepast van "' . $category['name'] . '" naar "' . $name . '".');
+            $this->addFlash('success', 'Naam van Categorie aangepast van "' . $category['name'] . '" naar "' . $name . '".');
 
             return $this->redirectToRoute('categories', $pp->ary());
         }

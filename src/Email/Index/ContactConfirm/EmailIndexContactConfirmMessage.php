@@ -8,10 +8,10 @@ use Symfony\Component\Mime\Address;
 #[AsMessage('mail_hi')]
 final class EmailIndexContactConfirmMessage
 {
-    public function __construct(
-        public readonly Address $to,
-        public readonly string $token,
-    )
-    {
-    }
+  public function __construct(
+    public readonly Address $to,
+    public readonly string $token,
+  )
+  {
+  }
 }

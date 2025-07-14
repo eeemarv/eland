@@ -5,7 +5,6 @@ namespace App\Controller\ContactTypes;
 use App\Command\ContactTypes\ContactTypesCommand;
 use App\Form\Type\ContactTypes\ContactTypesType;
 use App\Repository\ContactRepository;
-use App\Service\AlertService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -36,7 +35,6 @@ class ContactTypesEditController extends AbstractController
         Request $request,
         int $id,
         ContactRepository $contact_repository,
-        AlertService $alert_service,
         PageParamsService $pp
     ):Response
     {
@@ -66,7 +64,7 @@ class ContactTypesEditController extends AbstractController
             $command = $form->getData();
             $contact_repository->update_contact_type($command, $pp->schema());
 
-            $alert_service->success('Contact type aangepast.');
+            $this->addFlash('success', 'Contact type aangepast.');
             return $this->redirectToRoute('contact_types', $pp->ary());
         }
 

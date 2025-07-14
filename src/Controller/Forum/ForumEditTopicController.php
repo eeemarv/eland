@@ -9,7 +9,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\ForumRepository;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
@@ -40,7 +39,6 @@ class ForumEditTopicController extends AbstractController
         Request $request,
         int $id,
         ForumRepository $forum_repository,
-        AlertService $alert_service,
         AccountRender $account_render,
         ConfigService $config_service,
         ItemAccessService $item_access_service,
@@ -94,13 +92,13 @@ class ForumEditTopicController extends AbstractController
 
             if ($su->is_owner($forum_topic['user_id']))
             {
-                $alert_service->success('Je forum onderwerp is aangepast.');
+              $this->addFlash('success', 'Je forum onderwerp is aangepast.');
             }
             else
             {
-                $alert_service->success('Forum onderwerp van ' .
-                    $account_render->get_str($forum_topic['user_id'], $pp->schema()) .
-                    ' aangepast.');
+              $this->addFlash('success', 'Forum onderwerp van ' .
+                $account_render->get_str($forum_topic['user_id'], $pp->schema()) .
+                ' aangepast.');
             }
 
             return $this->redirectToRoute('forum_topic', [

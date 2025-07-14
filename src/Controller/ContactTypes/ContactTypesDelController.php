@@ -5,7 +5,6 @@ namespace App\Controller\ContactTypes;
 use App\Command\ContactTypes\ContactTypesCommand;
 use App\Form\Type\ContactTypes\ContactTypesDelType;
 use App\Repository\ContactRepository;
-use App\Service\AlertService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,7 +35,6 @@ class ContactTypesDelController extends AbstractController
         Request $request,
         int $id,
         ContactRepository $contact_repository,
-        AlertService $alert_service,
         PageParamsService $pp
     ):Response
     {
@@ -71,7 +69,7 @@ class ContactTypesDelController extends AbstractController
             && $form->isValid())
         {
             $contact_repository->del_contact_type($id, $pp->schema());
-            $alert_service->success('Contact type "' . $contact_type['name'] . '" verwijderd.');
+            $this->addFlash('success', 'Contact type "' . $contact_type['name'] . '" verwijderd.');
             return $this->redirectToRoute('contact_types', $pp->ary());
         }
 

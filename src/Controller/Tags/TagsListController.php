@@ -8,9 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\TagRepository;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
-use App\Service\AlertService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -142,8 +140,6 @@ class TagsListController extends AbstractController
         string $tag_type,
         Request $request,
         TagRepository $tag_repository,
-        AlertService $alert_service,
-        ConfigService $config_service,
         PageParamsService $pp
     ):Response
     {
@@ -173,11 +169,11 @@ class TagsListController extends AbstractController
 
             if ($update_count)
             {
-                $alert_service->success('Plaatsing tags aangepast.');
+                $this->addFlash('success', 'Plaatsing tags aangepast.');
             }
             else
             {
-                $alert_service->warning('Geen aangepaste plaatsing van tags');
+                $this->addFlash('warning', 'Geen aangepaste plaatsing van tags');
             }
 
             return $this->redirectToRoute('tags_' . $tag_type, $pp->ary());

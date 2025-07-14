@@ -4,7 +4,6 @@ namespace App\Controller\Transactions;
 
 use App\Command\Transactions\TransactionsCurrencyCommand;
 use App\Form\Type\Transactions\TransactionsCurrencyType;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -32,7 +31,6 @@ class TransactionsCurrencyController extends AbstractController
 
     public function __invoke(
         Request $request,
-        AlertService $alert_service,
         ConfigService $config_service,
         PageParamsService $pp
     ):Response
@@ -54,7 +52,7 @@ class TransactionsCurrencyController extends AbstractController
             $command = $form->getData();
             $config_service->store_command($command, $pp->schema());
 
-            $alert_service->success('Munteenheid aangepast');
+            $this->addFlash('success', 'Munteenheid aangepast');
             return $this->redirectToRoute('transactions_currency', $pp->ary());
         }
 

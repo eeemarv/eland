@@ -11,7 +11,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App\Cnst\StatusCnst;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
-use App\Service\AlertService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
 use App\Service\PageParamsService;
@@ -46,7 +45,6 @@ class UsersDelController extends AbstractController
         Db $db,
         TypeaheadService $typeahead_service,
         FormTokenService $form_token_service,
-        AlertService $alert_service,
         AccountRender $account_render,
         LinkRender $link_render,
         UserCacheService $user_cache_service,
@@ -97,14 +95,16 @@ class UsersDelController extends AbstractController
 
             if (count($errors))
             {
-                $alert_service->error($errors);
+              foreach ($errors as $error)
+              {
+                $this->addFlash('error', $error);
+              }
             }
             else
             {
                 $this->remove_user(
                     $id,
                     $db,
-                    $alert_service,
                     $intersystems_service,
                     $typeahead_service,
                     $user_cache_service,
@@ -161,7 +161,6 @@ class UsersDelController extends AbstractController
     private function remove_user(
         int $id,
         Db $db,
-        AlertService $alert_service,
         IntersystemsService $intersystems_service,
         TypeaheadService $typeahead_service,
         UserCacheService $user_cache_service,
@@ -180,7 +179,7 @@ class UsersDelController extends AbstractController
 
         $user_cache_service->clear($id, $pp->schema());
 
-        $alert_service->success('De gebruiker is verwijderd.');
+        $this->addFlash('success', 'De gebruiker is verwijderd.');
 
         $typeahead_service->clear_cache($pp->schema());
 

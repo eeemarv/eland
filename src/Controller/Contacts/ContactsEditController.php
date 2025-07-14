@@ -9,7 +9,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use App\Queue\GeocodeQueue;
-use App\Service\AlertService;
 use App\Repository\ContactRepository;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -84,7 +83,6 @@ class ContactsEditController extends AbstractController
         bool $redirect_contacts,
         bool $is_self,
         ContactRepository $contact_repository,
-        AlertService $alert_service,
         PageParamsService $pp,
         SessionUserService $su,
         GeocodeQueue $geocode_queue
@@ -173,11 +171,11 @@ class ContactsEditController extends AbstractController
                         $warning_2 .= ' maal onder de actieve gebruikers.';
                     }
 
-                    $alert_service->warning($warning_2 . ' ' . $warning);
+                    $this->addFlash('warning', $warning_2 . ' ' . $warning);
                 }
             }
 
-            $alert_service->success('Contact aangepast.');
+            $this->addFlash('success', 'Contact aangepast.');
 
             if ($redirect_contacts)
             {

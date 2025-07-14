@@ -4,7 +4,6 @@ namespace App\Controller\Users;
 
 use App\Command\Users\UsersConfigLeavingCommand;
 use App\Form\Type\Users\UsersConfigLeavingType;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -32,7 +31,6 @@ class UsersConfigLeavingController extends AbstractController
 
     public function __invoke(
         Request $request,
-        AlertService $alert_service,
         ConfigService $config_service,
         PageParamsService $pp
     ):Response
@@ -55,7 +53,7 @@ class UsersConfigLeavingController extends AbstractController
             $command = $form->getData();
             $config_service->store_command($command, $pp->schema());
 
-            $alert_service->success('Configuratie uitstappende leden aangepast');
+            $this->addFlash('success', 'Configuratie uitstappende leden aangepast');
             return $this->redirectToRoute('users_config_leaving', $pp->ary());
         }
 

@@ -6,7 +6,6 @@ use App\Cnst\BulkCnst;
 use App\Cnst\MessageTypeCnst;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
@@ -47,7 +46,6 @@ class TransactionsEditController extends AbstractController
         LoggerInterface $logger,
         FormTokenService $form_token_service,
         AccountRender $account_render,
-        AlertService $alert_service,
         ConfigService $config_service,
         DateFormatService $date_format_service,
         LinkRender $link_render,
@@ -101,7 +99,7 @@ class TransactionsEditController extends AbstractController
 
         if (!$inter_transaction && ($transaction['real_from'] || $transaction['real_to']))
         {
-            $alert_service->error('De omschrijving van een transactie
+            $this->addFlash('error', 'De omschrijving van een transactie
                 naar een interSysteem dat draait op eLAS kan
                 niet aangepast worden.');
 
@@ -173,7 +171,7 @@ class TransactionsEditController extends AbstractController
                     ' to new: ' . json_encode($update_ary),
                     ['schema' => $pp->schema()]);
 
-                $alert_service->success('Transactie aangepast.');
+                $this->addFlash('success', 'Transactie aangepast.');
 
                 return $this->redirectToRoute('transactions_show', [
                     ...$pp->ary(),
@@ -181,7 +179,10 @@ class TransactionsEditController extends AbstractController
                 ]);
             }
 
-            $alert_service->error($errors);
+            foreach ($errors as $error)
+            {
+              $this->addFlash('error', $error);
+            }
         }
 
         $out = '<div class="panel panel-info">';

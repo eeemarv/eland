@@ -12,32 +12,32 @@ use Symfony\Component\Mime\Address;
 #[AsMessageHandler]
 final class EmailIndexContactHandler
 {
-    public function __construct(
-      private readonly MessageBusInterface $bus,
-      #[Autowire('%env(MAIL_HOSTER_ADDRESS)%')]
-      private readonly string $env_mail_hoster_address,
-    ) {}
+  public function __construct(
+    private readonly MessageBusInterface $bus,
+    #[Autowire('%env(MAIL_HOSTER_ADDRESS)%')]
+    private readonly string $env_mail_hoster_address,
+  ) {}
 
-    public function __invoke(EmailIndexContactMessage $message):void
-    {
-      $context = [
-        'message' => $message->message,
-        'sender'  => [
-          'email' => $message->reply_to->toString(),
-          'agent' => $message->agent,
-          'ip' => $message->ip,
-        ],
-      ];
+  public function __invoke(EmailIndexContactMessage $message):void
+  {
+    $context = [
+      'message' => $message->message,
+      'sender'  => [
+        'email' => $message->reply_to->toString(),
+        'agent' => $message->agent,
+        'ip' => $message->ip,
+      ],
+    ];
 
-      $hoster_address = new Address($this->env_mail_hoster_address);
+    $hoster_address = new Address($this->env_mail_hoster_address);
 
-      $dispatch = new EmailDispatchMessage(
-        template: 'index/index_contact',
-        context: $context,
-        reply_to: $message->reply_to,
-        to: New AddressAry([$hoster_address]),
-      );
+    $dispatch = new EmailDispatchMessage(
+      template: 'index/index_contact',
+      context: $context,
+      reply_to: $message->reply_to,
+      to: New AddressAry([$hoster_address]),
+    );
 
-      $this->bus->dispatch($dispatch);
-    }
+    $this->bus->dispatch($dispatch);
+  }
 }

@@ -3,7 +3,6 @@
 namespace App\Controller\Intersystems;
 
 use App\Render\LinkRender;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SystemsService;
@@ -35,7 +34,6 @@ class IntersystemsShowController extends AbstractController
     public function __invoke(
         int $id,
         Db $db,
-        AlertService $alert_service,
         LinkRender $link_render,
         ConfigService $config_service,
         SystemsService $systems_service,
@@ -53,7 +51,7 @@ class IntersystemsShowController extends AbstractController
 
         if (!$group)
         {
-            $alert_service->error('Systeem niet gevonden.');
+            $this->addFlash('error', 'Systeem niet gevonden.');
 
             return $this->redirectToRoute('intersystems', $pp->ary());
         }

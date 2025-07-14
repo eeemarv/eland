@@ -4,7 +4,6 @@ namespace App\Controller\Intersystems;
 
 use App\Render\LinkRender;
 use App\Render\SelectRender;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
@@ -41,7 +40,6 @@ class IntersystemsEditController extends AbstractController
         Request $request,
         int $id,
         Db $db,
-        AlertService $alert_service,
         IntersystemsService $intersystems_service,
         LinkRender $link_render,
         PageParamsService $pp,
@@ -88,7 +86,7 @@ class IntersystemsEditController extends AbstractController
                     $group,
                     ['id' => $id]))
                 {
-                    $alert_service->success('InterSysteem aangepast.');
+                    $this->addFlash('success', 'InterSysteem aangepast.');
 
                     $intersystems_service->clear_cache();
 
@@ -98,11 +96,14 @@ class IntersystemsEditController extends AbstractController
                     ]);
                 }
 
-                $alert_service->error('InterSysteem niet aangepast.');
+                $this->addFlash('error', 'InterSysteem niet aangepast.');
             }
             else
             {
-                $alert_service->error($errors);
+              foreach ($errors as $error)
+              {
+                $this->addFlash('error', $error);
+              }
             }
         }
         else
@@ -114,7 +115,7 @@ class IntersystemsEditController extends AbstractController
 
             if (!$group)
             {
-                $alert_service->error('Systeem niet gevonden.');
+                $this->addFlash('error', 'Systeem niet gevonden.');
 
                 return $this->redirectToRoute('intersystems', $pp->ary());
             }

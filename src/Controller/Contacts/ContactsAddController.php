@@ -8,7 +8,6 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Command\Contacts\ContactsCommand;
 use App\Form\Type\Contacts\ContactsType;
 use App\Queue\GeocodeQueue;
-use App\Service\AlertService;
 use App\Repository\ContactRepository;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -75,7 +74,6 @@ class ContactsAddController extends AbstractController
         bool $is_self,
         bool $redirect_contacts,
         ContactRepository $contact_repository,
-        AlertService $alert_service,
         GeocodeQueue $geocode_queue,
         PageParamsService $pp,
         SessionUserService $su
@@ -147,11 +145,11 @@ class ContactsAddController extends AbstractController
                         $warning_2 .= ' maal onder de actieve gebruikers.';
                     }
 
-                    $alert_service->warning($warning_2 . ' ' . $warning);
+                    $this->addFlash('warning', $warning_2 . ' ' . $warning);
                 }
             }
 
-            $alert_service->success('Contact opgeslagen.');
+            $this->addFlash('success', 'Contact opgeslagen.');
 
             if ($redirect_contacts)
             {

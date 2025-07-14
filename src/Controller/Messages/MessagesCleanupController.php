@@ -7,7 +7,6 @@ use App\Form\Type\Messages\MessagesCleanupType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -32,7 +31,6 @@ class MessagesCleanupController extends AbstractController
 
     public function __invoke(
         Request $request,
-        AlertService $alert_service,
         ConfigService $config_service,
         PageParamsService $pp
     ):Response
@@ -59,7 +57,7 @@ class MessagesCleanupController extends AbstractController
             $command = $form->getData();
             $config_service->store_command($command, $pp->schema());
 
-            $alert_service->success('Geldigheid en opruiming instellingen van vraag en aanbod aangepast');
+            $this->addFlash('success', 'Geldigheid en opruiming instellingen van vraag en aanbod aangepast');
             return $this->redirectToRoute('messages_cleanup', $pp->ary());
         }
 

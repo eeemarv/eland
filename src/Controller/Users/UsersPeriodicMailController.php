@@ -8,7 +8,6 @@ use App\Form\Type\Users\UsersPeriodicMailType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -33,7 +32,6 @@ class UsersPeriodicMailController extends AbstractController
 
     public function __invoke(
         Request $request,
-        AlertService $alert_service,
         ConfigService $config_service,
         PageParamsService $pp
     ):Response
@@ -201,7 +199,7 @@ class UsersPeriodicMailController extends AbstractController
             }
             $config_service->set_ary('periodic_mail.user.layout', $block_layout, $pp->schema());
 
-            $alert_service->success('Periodieke overzichts e-mail aangepast');
+            $this->addFlash('success', 'Periodieke overzichts e-mail aangepast');
             return $this->redirectToRoute('users_periodic_mail', $pp->ary());
         }
 

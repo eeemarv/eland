@@ -5,7 +5,6 @@ namespace App\Controller\Forum;
 use App\Command\Forum\ForumPostCommand;
 use App\Form\Type\Forum\ForumPostType;
 use App\Repository\ForumRepository;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
@@ -39,7 +38,6 @@ class ForumTopicController extends AbstractController
         Request $request,
         int $id,
         ForumRepository $forum_repository,
-        AlertService $alert_service,
         ConfigService $config_service,
         ItemAccessService $item_access_service,
         PageParamsService $pp,
@@ -70,7 +68,7 @@ class ForumTopicController extends AbstractController
             $command = $form->getData();
             $forum_repository->insert_post($command, $su->id(), $id, $pp->schema());
 
-            $alert_service->success('Reactie toegevoegd.');
+            $this->addFlash('success', 'Reactie toegevoegd.');
 
             return $this->redirectToRoute('forum_topic', [
                 ...$pp->ary(),

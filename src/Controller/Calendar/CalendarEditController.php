@@ -6,7 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Render\LinkRender;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
@@ -24,7 +23,6 @@ class CalendarEditController extends AbstractController
         int $id,
         Db $db,
         ConfigService $config_service,
-        AlertService $alert_service,
         DateFormatService $date_format_service,
         FormTokenService $form_token_service,
         ItemAccessService $item_access_service,
@@ -103,14 +101,17 @@ class CalendarEditController extends AbstractController
                 }
 
                 $db->update($pp->schema() . '.news', $news, ['id' => $id]);
-                $alert_service->success('Nieuwsbericht aangepast.');
+                $this->addFlash('success', 'Nieuwsbericht aangepast.');
                 return $this->redirectToRoute('news_show', [
                     ...$pp->ary(),
                     'id' => $id,
                 ]);
             }
 
-            $alert_service->error($errors);
+            foreach ($errors as $error)
+            {
+              $this->addFlash('error', $error);
+            }
         }
         else
         {

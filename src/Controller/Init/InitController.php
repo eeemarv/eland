@@ -3,7 +3,6 @@
 namespace App\Controller\Init;
 
 use App\Render\LinkRender;
-use App\Service\AlertService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -32,7 +31,6 @@ class InitController extends AbstractController
 
     public function __invoke(
         Request $request,
-        AlertService $alert_service,
         PageParamsService $pp,
         LinkRender $link_render,
         #[Autowire('%env(APP_INIT_ENABLED)%')]
@@ -48,7 +46,7 @@ class InitController extends AbstractController
 
         if ($done)
         {
-            $alert_service->success('Done: ' . self::ROUTES_LABELS[$done]);
+          $this->addFlash('success', 'Done: ' . self::ROUTES_LABELS[$done]);
         }
 
         $out = '<div class="panel panel-info">';

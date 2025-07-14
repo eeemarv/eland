@@ -10,25 +10,25 @@ use Symfony\Component\Messenger\MessageBusInterface;
 #[AsMessageHandler]
 final class EmailPasswordResetConfirmHandler
 {
-    public function __construct(
-      private readonly MessageBusInterface $bus,
-    ) {}
+  public function __construct(
+    private readonly MessageBusInterface $bus,
+  ) {}
 
-    public function __invoke(EmailPasswordResetConfirmMessage $message):void
-    {
-      $schema = $message->schema;
+  public function __invoke(EmailPasswordResetConfirmMessage $message):void
+  {
+    $schema = $message->schema;
 
-      $context = [
-        'token' => $message->token,
-      ];
+    $context = [
+      'token' => $message->token,
+    ];
 
-      $dispatch = new EmailDispatchMessage(
-        template: 'password_reset/password_reset_confirm',
-        context: $context,
-        to: New AddressAry([$message->to]),
-        schema: $schema,
-      );
+    $dispatch = new EmailDispatchMessage(
+      template: 'password_reset/password_reset_confirm',
+      context: $context,
+      to: New AddressAry([$message->to]),
+      schema: $schema,
+    );
 
-      $this->bus->dispatch($dispatch);
-    }
+    $this->bus->dispatch($dispatch);
+  }
 }

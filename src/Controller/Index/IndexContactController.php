@@ -69,10 +69,7 @@ class IndexContactController extends AbstractController
         de link aan die we je zonden om je
         bericht te bevestigen.';
 
-      $this->addFlash('alert', [
-        'type'      => 'success',
-        'message'   => $alert_msg,
-      ]);
+      $this->addFlash('success', $alert_msg);
 
       return $this->redirectToRoute('index_contact');
     }

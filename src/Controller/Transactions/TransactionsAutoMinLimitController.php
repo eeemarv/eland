@@ -7,7 +7,6 @@ use App\Form\Type\Transactions\TransactionsAutoMinLimitType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -33,7 +32,6 @@ class TransactionsAutoMinLimitController extends AbstractController
 
     public function __invoke(
         Request $request,
-        AlertService $alert_service,
         PageParamsService $pp,
         ConfigService $config_service
     ):Response
@@ -60,7 +58,7 @@ class TransactionsAutoMinLimitController extends AbstractController
             $command = $form->getData();
             $config_service->store_command($command, $pp->schema());
 
-            $alert_service->success('De automatische minimum limiet instellingen zijn aangepast.');
+            $this->addFlash('success', 'De automatische minimum limiet instellingen zijn aangepast.');
             return $this->redirectToRoute('transactions_autominlimit', $pp->ary());
         }
 

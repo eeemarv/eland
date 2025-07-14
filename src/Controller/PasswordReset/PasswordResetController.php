@@ -7,7 +7,6 @@ use App\Email\PasswordReset\PasswordResetConfirm\EmailPasswordResetConfirmMessag
 use App\Form\Type\PasswordReset\PasswordResetType;
 use App\Render\AccountRender;
 use App\Repository\UserRepository;
-use App\Service\AlertService;
 use App\Service\DataTokenService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -39,7 +38,6 @@ class PasswordResetController extends AbstractController
     Request $request,
     UserRepository $user_repository,
     AccountRender $account_render,
-    AlertService $alert_service,
     DataTokenService $data_token_service,
     MessageBusInterface $bus,
     PageParamsService $pp
@@ -77,8 +75,8 @@ class PasswordResetController extends AbstractController
       );
       $bus->dispatch($m_confirm);
 
-      $alert_service->success('Een link om je paswoord te resetten werd
-        naar je E-mailbox verzonden. Deze link blijft 24 uur geldig.');
+      $this->addFlash('success', 'Een link om je paswoord te resetten werd
+        naar je E-mailbox verzonden. Deze link blijft 1 uur geldig.');
 
       return $this->redirectToRoute('login', $pp->ary());
     }

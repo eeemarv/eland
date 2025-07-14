@@ -8,7 +8,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\ForumRepository;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -36,7 +35,6 @@ class ForumAddTopicController extends AbstractController
         Request $request,
         ForumRepository $forum_repository,
         ConfigService $config_service,
-        AlertService $alert_service,
         SessionUserService $su,
         PageParamsService $pp
     ):Response
@@ -61,7 +59,7 @@ class ForumAddTopicController extends AbstractController
             $command = $form->getData();
             $id = $forum_repository->insert_topic($command, $su->id(), $pp->schema());
 
-            $alert_service->success('Forum onderwerp toegevoegd.');
+            $this->addFlash('success', 'Forum onderwerp toegevoegd.');
             return $this->redirectToRoute('forum_topic', [
                 ...$pp->ary(),
                 'id' => $id,

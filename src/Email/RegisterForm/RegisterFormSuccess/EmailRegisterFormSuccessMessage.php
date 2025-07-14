@@ -1,17 +1,17 @@
 <?php declare(strict_types=1);
 
-namespace App\Email\ContactForm\ContactFormConfirm;
+namespace App\Email\RegisterForm\RegisterFormSuccess;
 
 use App\DTO\Schema;
 use Symfony\Component\Messenger\Attribute\AsMessage;
 use Symfony\Component\Mime\Address;
 
 #[AsMessage('mail_hi')]
-final class EmailContactFormConfirmMessage
+final class EmailRegisterFormSuccessMessage
 {
     public function __construct(
         public readonly Address $to,
-        public readonly string $token,
+        public readonly string $message,
         public readonly Schema $schema,
     )
     {

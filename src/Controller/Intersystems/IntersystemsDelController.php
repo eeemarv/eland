@@ -3,7 +3,6 @@
 namespace App\Controller\Intersystems;
 
 use App\Render\LinkRender;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
@@ -41,7 +40,6 @@ class IntersystemsDelController extends AbstractController
         ConfigService $config_service,
         IntersystemsService $intersystems_service,
         LinkRender $link_render,
-        AlertService $alert_service,
         FormTokenService $form_token_service,
         PageParamsService $pp
     ):Response
@@ -57,7 +55,7 @@ class IntersystemsDelController extends AbstractController
 
         if (!$group)
         {
-            $alert_service->error('Systeem niet gevonden.');
+            $this->addFlash('error', 'Systeem niet gevonden.');
 
             return $this->redirectToRoute('intersystems', $pp->ary());
         }
@@ -66,21 +64,21 @@ class IntersystemsDelController extends AbstractController
         {
             if ($error_token = $form_token_service->get_error())
             {
-                $alert_service->error($error_token);
+              $this->addFlash('error', $error_token);
 
-                return $this->redirectToRoute('intersystems', $pp->ary());
+              return $this->redirectToRoute('intersystems', $pp->ary());
             }
 
             if($db->delete($pp->schema() . '.letsgroups', ['id' => $id]))
             {
-                $alert_service->success('InterSysteem verwijderd.');
+                $this->addFlash('success', 'InterSysteem verwijderd.');
 
                 $intersystems_service->clear_cache();
 
                 return $this->redirectToRoute('intersystems', $pp->ary());
             }
 
-            $alert_service->error('InterSysteem niet verwijderd.');
+            $this->addFlash('error', 'InterSysteem niet verwijderd.');
         }
 
         $out = '<div class="panel panel-info">';

@@ -5,7 +5,6 @@ namespace App\Controller\Docs;
 use App\Command\Docs\DocsCommand;
 use App\Form\Type\Docs\DocsDelType;
 use App\Repository\DocRepository;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\S3Service;
@@ -41,7 +40,6 @@ class DocsDelController extends AbstractController
         DocRepository $doc_repository,
         ConfigService $config_service,
         LoggerInterface $logger,
-        AlertService $alert_service,
         S3Service $s3_service,
         TypeaheadService $typeahead_service,
         PageParamsService $pp,
@@ -102,7 +100,10 @@ class DocsDelController extends AbstractController
                 }
             }
 
-            $alert_service->success($alert_success_msg);
+            foreach ($alert_success_msg as $success)
+            {
+              $this->addFlash('success', $success);
+            }
 
             if (!isset($doc['map_id']))
             {

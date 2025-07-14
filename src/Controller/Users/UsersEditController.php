@@ -15,7 +15,6 @@ use App\Render\LinkRender;
 use App\Render\SelectRender;
 use App\Repository\AccountRepository;
 use App\Security\User;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
@@ -96,7 +95,6 @@ class UsersEditController extends AbstractController
         Db $db,
         AccountRepository $account_repository,
         PasswordHasherFactoryInterface $password_hasher_factory,
-        AlertService $alert_service,
         ConfigService $config_service,
         DateFormatService $date_format_service,
         FormTokenService $form_token_service,
@@ -286,7 +284,7 @@ class UsersEditController extends AbstractController
 
                             if ($warning_2)
                             {
-                                $alert_service->warning($warning_2 . $warning);
+                                $this->addFlash('warning', $warning_2 . $warning);
                             }
                         }
                     }
@@ -299,7 +297,7 @@ class UsersEditController extends AbstractController
                         $err = 'Waarschuwing: Geen E-mail adres ingevuld. ';
                         $err .= 'De gebruiker kan geen berichten en notificaties ';
                         $err .= 'ontvangen en zijn/haar paswoord niet resetten.';
-                        $alert_service->warning($err);
+                        $this->addFlash('warning', $err);
                     }
                 }
             }
@@ -536,7 +534,7 @@ class UsersEditController extends AbstractController
                     if ($db->insert($pp->schema() . '.users', $post_user))
                     {
                         $id = (int) $db->lastInsertId($pp->schema() . '.users_id_seq');
-                        $alert_service->success('Gebruiker opgeslagen.');
+                        $this->addFlash('success', 'Gebruiker opgeslagen.');
                     }
                     else
                     {
@@ -548,7 +546,7 @@ class UsersEditController extends AbstractController
                 {
                     if ($db->update($pp->schema() . '.users', $post_user, ['id' => $id]))
                     {
-                        $alert_service->success('Gebruiker aangepast.');
+                        $this->addFlash('success', 'Gebruiker aangepast.');
                     }
                     else
                     {
@@ -679,12 +677,12 @@ class UsersEditController extends AbstractController
                             {
                                 if ($mailadr)
                                 {
-                                    $alert_service->success('E-mail met paswoord
+                                    $this->addFlash('success', 'E-mail met paswoord
                                         naar de gebruiker verstuurd.');
                                 }
                                 else
                                 {
-                                    $alert_service->warning('Er werd geen E-mail
+                                    $this->addFlash('warning', 'Er werd geen E-mail
                                         met passwoord naar de gebruiker verstuurd
                                         want er is geen E-mail adres voor deze
                                         gebruiker ingesteld.');
@@ -702,13 +700,13 @@ class UsersEditController extends AbstractController
                             }
                             else
                             {
-                                $alert_service->warning('De E-mail functies zijn uitgeschakeld.
+                                $this->addFlash('warning', 'De E-mail functies zijn uitgeschakeld.
                                     Geen E-mail met paswoord naar de gebruiker verstuurd.');
                             }
                         }
                         else
                         {
-                            $alert_service->warning('Geen E-mail met
+                            $this->addFlash('warning', 'Geen E-mail met
                                 paswoord naar de gebruiker verstuurd.');
                         }
                     }
@@ -730,7 +728,10 @@ class UsersEditController extends AbstractController
                 ]);
             }
 
-            $alert_service->error($errors);
+            foreach ($errors as $error)
+            {
+              $this->addFlash('error', $error);
+            }
         }
 
         if ($request->isMethod('GET'))

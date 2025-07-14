@@ -4,7 +4,6 @@ namespace App\Controller\Messages;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -37,7 +36,6 @@ class MessagesExtendController extends AbstractController
         int $days,
         Db $db,
         ConfigService $config_service,
-        AlertService $alert_service,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
@@ -74,7 +72,7 @@ class MessagesExtendController extends AbstractController
 
         if (!$db->update($pp->schema() . '.messages', $m, ['id' => $id]))
         {
-            $alert_service->error('Fout: ' . $message['label']['offer_want_the'] . ' is niet verlengd.');
+            $this->addFlash('error', 'Fout: ' . $message['label']['offer_want_the'] . ' is niet verlengd.');
 
             return $this->redirectToRoute('messages_show', [
                 ...$pp->ary(),
@@ -82,7 +80,7 @@ class MessagesExtendController extends AbstractController
             ]);
         }
 
-        $alert_service->success(ucfirst($message['label']['offer_want_the']) . ' is verlengd.');
+        $this->addFlash('success', ucfirst($message['label']['offer_want_the']) . ' is verlengd.');
 
         return $this->redirectToRoute('messages_show', [
             ...$pp->ary(),

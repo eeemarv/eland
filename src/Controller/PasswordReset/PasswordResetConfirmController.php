@@ -7,7 +7,6 @@ use App\Command\PasswordReset\PasswordResetConfirmCommand;
 use App\Form\Type\PasswordReset\PasswordResetConfirmType;
 use App\Repository\UserRepository;
 use App\Security\User;
-use App\Service\AlertService;
 use App\Service\DataTokenService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -42,7 +41,6 @@ class PasswordResetConfirmController extends AbstractController
     string $token,
     UserRepository $user_repository,
     DataTokenService $data_token_service,
-    AlertService $alert_service,
     PageParamsService $pp,
     SessionUserService $su
   ):Response
@@ -62,7 +60,7 @@ class PasswordResetConfirmController extends AbstractController
 
       if (!$data)
       {
-        $alert_service->error('Het reset-token is niet meer geldig.');
+        $this->addFlash('error', 'Het reset-token is niet meer geldig.');
         return $this->redirectToRoute('password_reset', $pp->ary());
       }
 
@@ -93,7 +91,7 @@ class PasswordResetConfirmController extends AbstractController
 
       $data = $data_token_service->del($token, 'password_reset', $pp->schema());
 
-      $alert_service->success('Paswoord opgeslagen.');
+      $this->addFlash('success', 'Paswoord opgeslagen.');
       return $this->redirectToRoute('login', $pp->ary());
     }
 

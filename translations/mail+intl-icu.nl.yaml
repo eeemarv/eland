@@ -159,6 +159,14 @@ auto_deactivate_admin:
     de gebruiker omdat geen E-mail adres is ingesteld
     voor dit account.
 
+contact_form_admin:
+  subject: >-
+    Bericht van het contactformulier
+  explain: >-
+    Dit bericht werd ingegeven in het
+    contactformulier van {ao}{system_name}{ac}.
+    Gebruik "Reply" om het eventueel te beantwoorden.
+
 contact_form_confirm:
   subject: >-
     Bevestig je bericht
@@ -179,13 +187,6 @@ contact_form_success:
   explain: >-
     Het bericht hieronder heb je verzonden aan {system_name}
     via het contactformulier
-
-contact_form:
-  subject: Bericht van het contactformulier
-  explain: >-
-    Dit bericht werd ingegeven in het
-    contactformulier van {ao}{system_name}{ac}.
-    Gebruik "Reply" om het eventueel te beantwoorden.
 
 index:
   link: eLAND
@@ -253,35 +254,28 @@ password_reset_confirm:
     zelf een paswoord reset hebt aangevraagd
     bij {ao}{system_name}{ac}.
 
-register:
-  sub_header: >-
-    Inschrijving
-
-register_admin:
+register_form_admin:
   subject: >-
     Nieuwe Inschrijving: {full_name}
-  msg: >-
+  message: >-
     De volgende persoon schreef zich
     in via de website
 
-register_confirm:
+register_form_confirm:
   subject: >-
-    Bevestig je inschrijving bij {system_name}
+    Bevestig je inschrijving
   btn_label: >-
     Bevestig je inschrijving
-  html_msg: >-
+  message: >-
     Klik om je registratie te bevestigen.
-  text_msg: >-
-    Klik op de link hieronder om je inschrijving
-    te bevestigen.
   explain: >-
     Gelieve deze mail te negeren wanneer je niet
     zelf {ao}het inschrijvingsformulier
     van {system_name}{ac} hebt ingevuld.
-register_success:
+
+register_form_success:
   subject: >-
-    Je inschrijving bij {system_name}
-  sub_header: Inschrijving geslaagd
+    Je inschrijving
 
 support_copy:
   subject: >-

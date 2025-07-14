@@ -2,17 +2,17 @@
 {%- trans_default_domain 'mail' -%}
 
 {% block subject -%}
-  {{- 'contact_form.subject'|trans -}}
+  {{- 'contact_form_admin.subject'|trans -}}
 {%- endblock subject -%}
 
 {% block content -%}
   <row>
     <columns>
       <p>
-        {{- 'contact_form.explain'|trans({
-            'ao': a_open('home', mpp()),
-            'ac': '</a>',
-            'system_name': config_str('system.name', schema)
+        {{- 'contact_form_admin.explain'|trans({
+          'ao': a_open('home', mpp()),
+          'ac': '</a>',
+          'system_name': config_str('system.name', schema)
         })|raw -}}
       </p>
     </columns>

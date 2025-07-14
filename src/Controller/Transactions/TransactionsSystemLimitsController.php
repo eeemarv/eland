@@ -4,7 +4,6 @@ namespace App\Controller\Transactions;
 
 use App\Command\Transactions\TransactionsSystemLimitsCommand;
 use App\Form\Type\Transactions\TransactionsSystemLimitsType;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -32,7 +31,6 @@ class TransactionsSystemLimitsController extends AbstractController
 
     public function __invoke(
         Request $request,
-        AlertService $alert_service,
         ConfigService $config_service,
         PageParamsService $pp
     ):Response
@@ -54,7 +52,7 @@ class TransactionsSystemLimitsController extends AbstractController
             $command = $form->getData();
             $config_service->store_command($command, $pp->schema());
 
-            $alert_service->success('Systeemslimieten aangepast');
+            $this->addFlash('success', 'Systeemslimieten aangepast');
             return $this->redirectToRoute('transactions_system_limits', $pp->ary());
         }
 

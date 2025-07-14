@@ -4,7 +4,6 @@ namespace App\Controller\Config;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\SystemsService;
 use App\Service\PageParamsService;
@@ -28,7 +27,6 @@ class ConfigRefreshController extends AbstractController
     )]
 
     public function __invoke(
-        AlertService $alert_service,
         ConfigService $config_service,
         SystemsService $systems_service,
         PageParamsService $pp
@@ -41,7 +39,7 @@ class ConfigRefreshController extends AbstractController
             $config_service->clear_cache($schema);
         }
 
-        $alert_service->success('Config refreshed.');
+        $this->addFlash('success', 'Config refreshed.');
 
         return $this->redirectToRoute('config_name', $pp->ary());
     }

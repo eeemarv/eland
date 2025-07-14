@@ -6,7 +6,6 @@ use App\Command\Forum\ForumTopicCommand;
 use App\Form\Type\Forum\ForumTopicDelType;
 use App\Render\AccountRender;
 use App\Repository\ForumRepository;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
@@ -43,7 +42,6 @@ class ForumDelTopicController extends AbstractController
         ItemAccessService $item_access_service,
         AccountRender $account_render,
         ConfigService $config_service,
-        AlertService $alert_service,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
@@ -96,11 +94,11 @@ class ForumDelTopicController extends AbstractController
 
             if ($su->is_owner($forum_topic['user_id']))
             {
-                $alert_service->success('Je forum onderwerp "' . $topic_subject . '" is verwijderd.');
+                $this->addFlash('success', 'Je forum onderwerp "' . $topic_subject . '" is verwijderd.');
             }
             else
             {
-                $alert_service->success('Het forum onderwerp "' . $topic_subject . '" van ' . $account_str . ' is verwijderd.');
+                $this->addFlash('success', 'Het forum onderwerp "' . $topic_subject . '" van ' . $account_str . ' is verwijderd.');
             }
 
             return $this->redirectToRoute('forum', $pp->ary());

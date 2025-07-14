@@ -7,7 +7,6 @@ use App\Form\Type\Docs\DocsAddType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\AlertService;
 use App\Repository\DocRepository;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -40,7 +39,6 @@ class DocsAddController extends AbstractController
         DocRepository $doc_repository,
         ConfigService $config_service,
         LoggerInterface $logger,
-        AlertService $alert_service,
         S3Service $s3_service,
         TypeaheadService $typeahead_service,
         PageParamsService $pp,
@@ -90,7 +88,7 @@ class DocsAddController extends AbstractController
                 $logger->error('doc upload fail: ' . $error,
                     ['schema' => $pp->schema()]);
 
-                $alert_service->error('Fout bij het opladen van het document');
+                $this->addFlash('error', 'Fout bij het opladen van het document');
                 return $this->redirectToRoute('docs_add', $pp->ary());
             }
 
@@ -129,7 +127,10 @@ class DocsAddController extends AbstractController
 
             $doc_repository->insert_doc($doc, $pp->schema());
 
-            $alert_service->success($alert_success_msg);
+            foreach ($alert_success_msg as $success)
+            {
+              $this->addFlash('success', $success);
+            }
 
             if (isset($doc['map_id']))
             {

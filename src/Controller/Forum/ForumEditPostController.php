@@ -8,7 +8,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\ForumRepository;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
@@ -39,7 +38,6 @@ class ForumEditPostController extends AbstractController
         Request $request,
         int $id,
         ForumRepository $forum_repository,
-        AlertService $alert_service,
         ConfigService $config_service,
         ItemAccessService $item_access_service,
         PageParamsService $pp,
@@ -87,7 +85,7 @@ class ForumEditPostController extends AbstractController
             $command = $form->getData();
             $forum_repository->update_post($id, $command, $pp->schema());
 
-            $alert_service->success('Reactie aangepast.');
+            $this->addFlash('success', 'Reactie aangepast.');
             return $this->redirectToRoute('forum_topic', [
                 ...$pp->ary(),
                 'id' => $forum_topic['id'],

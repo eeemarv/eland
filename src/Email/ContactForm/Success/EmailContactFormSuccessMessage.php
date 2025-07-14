@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Email\ContactForm\ContactFormSuccess;
+namespace App\Email\ContactForm\Success;
 
 use App\DTO\Schema;
 use Symfony\Component\Messenger\Attribute\AsMessage;

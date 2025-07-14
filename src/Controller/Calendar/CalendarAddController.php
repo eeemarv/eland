@@ -6,7 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Render\LinkRender;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
@@ -26,7 +25,6 @@ class CalendarAddController extends AbstractController
         Db $db,
         ConfigService $config_service,
         DateFormatService $date_format_service,
-        AlertService $alert_service,
         FormTokenService $form_token_service,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
@@ -116,7 +114,7 @@ class CalendarAddController extends AbstractController
                 {
                     $id = $db->lastInsertId($pp->schema() . '.news_id_seq');
 
-                    $alert_service->success('Nieuwsbericht opgeslagen.');
+                    $this->addFlash('success', 'Nieuwsbericht opgeslagen.');
 
                     $news['id'] = $id;
 
@@ -131,7 +129,10 @@ class CalendarAddController extends AbstractController
                 }
             }
 
-            $alert_service->error($errors);
+            foreach ($errors as $error)
+            {
+              $this->addFlash('error', $error);
+            }
         }
 
         /*

@@ -7,7 +7,6 @@ use App\Form\Type\Cms\CmsEditType;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\AlertService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\StaticContentService;
@@ -43,8 +42,8 @@ class CmsEditController extends AbstractController
     public function __invoke(
         Request $request,
         StaticContentService $static_content_service,
-        #[Autowire(service: 'html_sanitizer.sanitizer.cms_sanitizer')] HtmlSanitizerInterface $html_sanitizer,
-        AlertService $alert_service,
+        #[Autowire(service: 'html_sanitizer.sanitizer.cms_sanitizer')]
+        HtmlSanitizerInterface $html_sanitizer,
         SessionUserService $su,
         PageParamsService $pp
     ):Response
@@ -96,13 +95,13 @@ class CmsEditController extends AbstractController
             switch($count_updated)
             {
                 case 0:
-                    $alert_service->warning('Geen content aangepast.');
+                    $this->addFlash('warning', 'Geen content aangepast.');
                 break;
                 case 1:
-                    $alert_service->success('1 content blok aangepast');
+                    $this->addFlash('success', '1 content blok aangepast');
                 break;
                 default:
-                    $alert_service->success($count_updated . ' content blokken aangepast.');
+                    $this->addFlash('success', $count_updated . ' content blokken aangepast.');
                 break;
             }
 

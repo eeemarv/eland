@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Email\ContactForm\ContactForm;
+namespace App\Email\RegisterForm\RegisterFormAdmin;
 
 use App\DTO\AddressAry;
 use App\Email\EmailDispatchMessage;
@@ -10,14 +10,14 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Mime\Address;
 
 #[AsMessageHandler]
-final class EmailContactFormHandler
+final class EmailRegisterFormAdminHandler
 {
     public function __construct(
       private readonly MessageBusInterface $bus,
       private readonly ConfigService $config_service,
     ) {}
 
-    public function __invoke(EmailContactFormMessage $message):void
+    public function __invoke(EmailRegisterFormAdminMessage $message):void
     {
       $schema = $message->schema;
 

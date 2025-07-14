@@ -7,7 +7,6 @@ use App\Cnst\StatusCnst;
 use App\Controller\Users\UsersListController;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
@@ -47,7 +46,6 @@ class MolliePaymentsAddController extends AbstractController
         Request $request,
         string $status,
         Db $db,
-        AlertService $alert_service,
         UserCacheService $user_cache_service,
         FormTokenService $form_token_service,
         ConfigService $config_service,
@@ -83,7 +81,7 @@ class MolliePaymentsAddController extends AbstractController
         {
             if ($request->isMethod('GET'))
             {
-                $alert_service->warning('Je kan geen betaalverzoeken aanmaken want
+                $this->addFlash('warning', 'Je kan geen betaalverzoeken aanmaken want
                     er is geen Mollie apikey ingesteld in de ' .
                     $link_render->link('mollie_config', $pp->ary(), [], 'configuratie', []), false);
 
@@ -95,7 +93,7 @@ class MolliePaymentsAddController extends AbstractController
         {
             if ($request->isMethod('GET'))
             {
-                $alert_service->warning('Er is geen <code>live_</code> Mollie apikey ingsteld in de ' .
+                $this->addFlash('warning', 'Er is geen <code>live_</code> Mollie apikey ingsteld in de ' .
                     $link_render->link('mollie_config', $pp->ary(), [], 'configuratie', []) .
                     '. Betalingen kunnen niet uitgevoerd worden!', false);
             }
@@ -249,12 +247,18 @@ class MolliePaymentsAddController extends AbstractController
                     $success[] = 'Betaalverzoeken met omschrijving "' . $description . '" aangemaakt.';
                 }
 
-                $alert_service->success($success);
+                foreach ($success as $s_str)
+                {
+                $this->addFlash('success', $s_str);
+                }
 
                 return $this->redirectToRoute('mollie_payments', $pp->ary());
             }
 
-            $alert_service->error($errors);
+            foreach ($errors as $error)
+            {
+              $this->addFlash('error', $error);
+            }
         }
 
         $out = '<div class="panel panel-warning">';

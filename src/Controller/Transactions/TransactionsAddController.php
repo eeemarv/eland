@@ -7,7 +7,6 @@ use App\Cnst\MessageTypeCnst;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Repository\AccountRepository;
-use App\Service\AlertService;
 use App\Service\AutoDeactivateService;
 use App\Service\AutoMinLimitService;
 use App\Service\ConfigService;
@@ -55,7 +54,6 @@ class TransactionsAddController extends AbstractController
         AccountRepository $account_repository,
         LoggerInterface $logger,
         AccountRender $account_render,
-        AlertService $alert_service,
         ItemAccessService $item_access_service,
         ConfigService $config_service,
         FormTokenService $form_token_service,
@@ -409,11 +407,11 @@ class TransactionsAddController extends AbstractController
                 {
                     $transaction['id'] = $id;
                     $mail_transaction_service->queue($transaction, $pp->schema());
-                    $alert_service->success('Transactie opgeslagen');
+                    $this->addFlash('success', 'Transactie opgeslagen');
                 }
                 else
                 {
-                    $alert_service->error('Gefaalde transactie');
+                    $this->addFlash('error', 'Gefaalde transactie');
                 }
 
                 return $this->redirectToRoute('transactions', $pp->ary());
@@ -430,13 +428,13 @@ class TransactionsAddController extends AbstractController
 
                     $mail_transaction_service->queue_mail_type($transaction, $pp->schema());
 
-                    $alert_service->success('InterSysteem transactie opgeslagen. Een E-mail werd
+                    $this->addFlash('success', 'InterSysteem transactie opgeslagen. Een E-mail werd
                         verstuurd naar de administratie van het andere Systeem om de transactie aldaar
                         manueel te verwerken.');
                 }
                 else
                 {
-                    $alert_service->error('Gefaalde interSysteem transactie');
+                    $this->addFlash('error', 'Gefaalde interSysteem transactie');
                 }
 
                 return $this->redirectToRoute('transactions', $pp->ary());
@@ -444,7 +442,7 @@ class TransactionsAddController extends AbstractController
 
             if (!count($errors) && $group['apimethod'] !== 'elassoap')
             {
-                $alert_service->error('InterSysteem ' .
+                $this->addFlash('error', 'InterSysteem ' .
                     $group['groupname'] .
                     ' heeft geen geldige Api Methode.' . $contact_admin);
 
@@ -453,7 +451,7 @@ class TransactionsAddController extends AbstractController
 
             if (!count($errors) && !$group_domain)
             {
-                $alert_service->error('Geen URL ingesteld voor interSysteem ' .
+                $this->addFlash('error', 'Geen URL ingesteld voor interSysteem ' .
                     $group['groupname'] . '. ' . $contact_admin);
 
                 return $this->redirectToRoute('transactions', $pp->ary());
@@ -463,7 +461,7 @@ class TransactionsAddController extends AbstractController
             {
                 // Previously eLAS intersystem
 
-                $alert_service->error('Geen verbinding met interSysteem ' . $group['groupname']);
+                $this->addFlash('error', 'Geen verbinding met interSysteem ' . $group['groupname']);
 
                 return $this->redirectToRoute('transactions', $pp->ary());
             }
@@ -735,7 +733,7 @@ class TransactionsAddController extends AbstractController
                     $auto_deactivate_service->process($to_remote_id, $remote_schema);
                     $auto_deactivate_service->process($from_remote_id, $remote_schema);
 
-                    $alert_service->success('InterSysteem transactie uitgevoerd.');
+                    $this->addFlash('success', 'InterSysteem transactie uitgevoerd.');
 
                     return $this->redirectToRoute('transactions', $pp->ary());
                 }
@@ -743,7 +741,10 @@ class TransactionsAddController extends AbstractController
 
             // At least one error
 
-            $alert_service->error($errors);
+            foreach ($errors as $error)
+            {
+              $this->addFlash('error', $error);
+            }
 
             $code_to = $request->request->get('code_to', '');
             $code_from = $pp->is_admin() || $su->is_master()

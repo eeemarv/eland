@@ -9,12 +9,13 @@ use App\Service\ConfigService;
 use App\Service\UserCacheService;
 use App\Render\AccountRender;
 use App\Repository\AccountRepository;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Session\FlashBagAwareSessionInterface;
 
 class AutoDeactivateService
 {
 	public function __construct(
 		protected Db $db,
-		protected AlertService $alert_service,
 		protected LoggerInterface $logger,
 		protected UserCacheService $user_cache_service,
 		protected AccountRepository $account_repository,
@@ -24,6 +25,7 @@ class AutoDeactivateService
 		protected ConfigService $config_service,
 		protected SessionUserService $su,
 		protected TypeaheadService $typeahead_service,
+    protected RequestStack $request_stack,
 		protected AccountRender $account_render
 	)
 	{
@@ -90,15 +92,23 @@ class AutoDeactivateService
 
 		if ($this->su->schema() === $schema)
 		{
+      $session = $this->request_stack->getSession();
+
+      if (!$session instanceof FlashBagAwareSessionInterface) {
+        return;
+      }
+
+      $flashBag = $session->getFlashBag();
+
 			if ($this->su->id() === $user_id)
 			{
-				$this->alert_service->warning('Je account heeft het
+				$flashBag->add('warning', 'Je account heeft het
 					uitstappers-saldo bereikt en werd
 					automatisch gedeactiveerd.');
 			}
 			else
 			{
-				$this->alert_service->warning('Het account ' .
+				$flashBag->add('warning', 'Het account ' .
 					$this->account_render->str($user_id, $schema) .
 					' heeft het uitstappers-saldo bereikt en werd
 					automatisch gedesactiveerd.');

@@ -2,7 +2,6 @@
 
 namespace App\Controller\Logout;
 
-use App\Service\AlertService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Psr\Log\LoggerInterface;
@@ -33,7 +32,6 @@ class LogoutController extends AbstractController
         Db $db,
         RequestStack $request_stack,
         LoggerInterface $logger,
-        AlertService $alert_service,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
@@ -59,7 +57,7 @@ class LogoutController extends AbstractController
         $logger->info('user logged out',
             ['schema' => $pp->schema()]);
 
-        $alert_service->success('Je bent uitgelogd');
+        $this->addFlash('success', 'Je bent uitgelogd');
 
         if ($pp->org_system() === '')
         {

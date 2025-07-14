@@ -9,7 +9,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Render\AccountRender;
 use App\Repository\UserRepository;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -35,7 +34,6 @@ class LoginController extends AbstractController
         Request $request,
         UserRepository $user_repository,
         ConfigService $config_service,
-        AlertService $alert_service,
         LoggerInterface $logger,
         AccountRender $account_render,
         PageParamsService $pp,
@@ -69,7 +67,7 @@ class LoginController extends AbstractController
             {
                 $su->set_master_login($pp->schema());
 
-                $alert_service->success('OK - Gebruiker ingelogd als master.');
+                $this->addFlash('success', 'OK - Gebruiker ingelogd als master.');
 
                 if ($location)
                 {
@@ -117,7 +115,7 @@ class LoginController extends AbstractController
 
             $user_repository->insert_login($command->id, $agent, $ip, $pp->schema());
 
-            $alert_service->success('Je bent ingelogd.');
+            $this->addFlash('success', 'Je bent ingelogd.');
 
             if ($location)
             {
@@ -138,7 +136,7 @@ class LoginController extends AbstractController
 
         if($config_service->get_bool('system.maintenance_en', $pp->schema()))
         {
-            $alert_service->warning('De website is niet beschikbaar
+            $this->addFlash('warning', 'De website is niet beschikbaar
                 wegens onderhoudswerken.  Enkel admins kunnen inloggen', false);
         }
 

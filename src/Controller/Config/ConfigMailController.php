@@ -7,7 +7,6 @@ use App\Form\Type\Config\ConfigMailType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -31,7 +30,6 @@ class ConfigMailController extends AbstractController
 
     public function __invoke(
         Request $request,
-        AlertService $alert_service,
         ConfigService $config_service,
         PageParamsService $pp
     ):Response
@@ -48,7 +46,7 @@ class ConfigMailController extends AbstractController
             $command = $form->getData();
             $config_service->store_command($command, $pp->schema());
 
-            $alert_service->success('E-mail instellingen aangepast.');
+            $this->addFlash('success', 'E-mail instellingen aangepast.');
             return $this->redirectToRoute('config_mail', $pp->ary());
         }
 

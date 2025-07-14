@@ -8,7 +8,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\DocRepository;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -39,7 +38,6 @@ class DocsEditController extends AbstractController
         int $id,
         DocRepository $doc_repository,
         ConfigService $config_service,
-        AlertService $alert_service,
         TypeaheadService $typeahead_service,
         PageParamsService $pp,
         SessionUserService $su,
@@ -135,7 +133,10 @@ class DocsEditController extends AbstractController
 
             $alert_success_msg[] = 'Document aangepast.';
 
-            $alert_service->success($alert_success_msg);
+            foreach ($alert_success_msg as $success)
+            {
+              $this->addFlash('success', $success);
+            }
 
             if (!isset($update['map_id']))
             {

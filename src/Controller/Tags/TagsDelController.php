@@ -7,7 +7,6 @@ use App\Form\Type\Tags\TagsDefType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\AlertService;
 use App\Repository\TagRepository;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
@@ -151,7 +150,6 @@ class TagsDelController extends AbstractController
         string $module,
         string $tag_type,
         TagRepository $tag_repository,
-        AlertService $alert_service,
         PageParamsService $pp
     ):Response
     {
@@ -180,7 +178,7 @@ class TagsDelController extends AbstractController
             && $form->isValid())
         {
             $tag_repository->del($id, $tag_type, $pp->schema());
-            $alert_service->success('Tag "' . $command->txt . '" verwijderd.');
+            $this->addFlash('success', 'Tag "' . $command->txt . '" verwijderd.');
 
             return $this->redirectToRoute('tags_' . $tag_type, $pp->ary());
         }

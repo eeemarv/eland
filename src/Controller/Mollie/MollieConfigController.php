@@ -7,7 +7,6 @@ use App\Form\Type\Mollie\MollieConfigType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -34,7 +33,6 @@ class MollieConfigController extends AbstractController
     public function __invoke(
         Request $request,
         ConfigService $config_service,
-        AlertService $alert_service,
         PageParamsService $pp
     ):Response
     {
@@ -55,7 +53,7 @@ class MollieConfigController extends AbstractController
             $command = $form->getData();
             $config_service->store_command($command, $pp->schema());
 
-            $alert_service->success('De Mollie Apikey is aangepast.');
+            $this->addFlash('success', 'De Mollie Apikey is aangepast.');
             return $this->redirectToRoute('mollie_payments', $pp->ary());
         }
 

@@ -4,7 +4,6 @@ namespace App\Controller\Users;
 
 use App\Command\Users\UsersConfigNewCommand;
 use App\Form\Type\Users\UsersConfigNewType;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -32,7 +31,6 @@ class UsersConfigNewController extends AbstractController
 
     public function __invoke(
         Request $request,
-        AlertService $alert_service,
         ConfigService $config_service,
         PageParamsService $pp
     ):Response
@@ -55,7 +53,7 @@ class UsersConfigNewController extends AbstractController
 
             $config_service->store_command($command, $pp->schema());
 
-            $alert_service->success('Configuratie instappende leden aangepast');
+            $this->addFlash('success', 'Configuratie instappende leden aangepast');
             return $this->redirectToRoute('users_config_new', $pp->ary());
         }
 

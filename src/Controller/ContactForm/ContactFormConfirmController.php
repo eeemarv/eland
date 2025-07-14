@@ -2,11 +2,10 @@
 
 namespace App\Controller\ContactForm;
 
-use App\Email\ContactForm\ContactForm\EmailContactFormMessage;
-use App\Email\ContactForm\ContactFormSuccess\EmailContactFormSuccessMessage;
+use App\Email\ContactForm\Admin\EmailContactFormAdminMessage;
+use App\Email\ContactForm\Success\EmailContactFormSuccessMessage;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\DataTokenService;
 use App\Service\PageParamsService;
@@ -36,7 +35,6 @@ class ContactFormConfirmController extends AbstractController
   public function __invoke(
     string $token,
     ConfigService $config_service,
-    AlertService $alert_service,
     DataTokenService $data_token_service,
     PageParamsService $pp,
     MessageBusInterface $bus,
@@ -54,13 +52,13 @@ class ContactFormConfirmController extends AbstractController
       return $this->render('contact_form/contact_form_confirm.html.twig', [
         'success' => false,
       ]);
-      $alert_service->error('Ongeldig of verlopen token.');
+      $this->addFlash('error', 'Ongeldig of verlopen token.');
       return $this->redirectToRoute('contact_form', $pp->ary());
     }
 
     $sender_email_address = new Address($data['email']);
 
-    $m_contact = new EmailContactFormMessage(
+    $m_contact = new EmailContactFormAdminMessage(
       reply_to: $sender_email_address,
       message: $data['message'],
       agent: $data['agent'],
@@ -83,7 +81,7 @@ class ContactFormConfirmController extends AbstractController
     ]);
 
 
-    $alert_service->success('Je bericht werd succesvol verzonden.');
+    $this->addFlash('success', 'Je bericht werd succesvol verzonden.');
     return $this->redirectToRoute('contact_form', $pp->ary());
   }
 }

@@ -8,7 +8,6 @@ use App\Command\Transactions\TransactionsFilterCommand;
 use App\Form\Type\Transactions\TransactionsFilterType;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
-use App\Service\AlertService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -65,7 +64,6 @@ class TransactionsController extends AbstractController
         Db $db,
         bool $is_self,
         AccountRender $account_render,
-        AlertService $alert_service,
         FormTokenService $form_token_service,
         ConfigService $config_service,
         DateFormatService $date_format_service,
@@ -263,11 +261,11 @@ class TransactionsController extends AbstractController
 
                 if (count($selected_transactions) > 1)
                 {
-                    $alert_service->success('De transacties zijn aangepast.');
+                    $this->addFlash('success', 'De transacties zijn aangepast.');
                 }
                 else
                 {
-                    $alert_service->success('De transactie is aangepast.');
+                    $this->addFlash('success', 'De transactie is aangepast.');
                 }
 
                 $redirect_route = 'transactions' . ($is_self ? '_self' : '');
@@ -275,7 +273,10 @@ class TransactionsController extends AbstractController
                 return $this->redirectToRoute($redirect_route, $pp->ary());
             }
 
-            $alert_service->error($errors);
+            foreach ($errors as $error)
+            {
+              $this->addFlash('error', $error);
+            }
         }
 
         $sql_map = [

@@ -5,7 +5,6 @@ namespace App\Controller\Mollie;
 use App\Form\Type\Mollie\MollieCheckoutType;
 use App\Render\LinkRender;
 use App\Repository\MollieRepository;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -39,7 +38,6 @@ class MollieCheckoutController extends AbstractController
     public function __invoke(
         Request $request,
         string $token,
-        AlertService $alert_service,
         ConfigService $config_service,
         LinkRender $link_render,
         FormFactoryInterface $form_factory,
@@ -74,7 +72,7 @@ class MollieCheckoutController extends AbstractController
             {
                 if ($request->isMethod('GET'))
                 {
-                    $alert_service->warning('TEST modus! Er zijn momenteel geen echte betalingen mogelijk.', false);
+                    $this->addFlash('warning', 'TEST modus! Er zijn momenteel geen echte betalingen mogelijk.', false);
                 }
             }
         }

@@ -9,7 +9,6 @@ use App\Form\Type\Mollie\MollieFilterType;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
@@ -66,7 +65,6 @@ class MolliePaymentsController extends AbstractController
     public function __invoke(
         Request $request,
         Db $db,
-        AlertService $alert_service,
         AccountRender $account_render,
         FormTokenService $form_token_service,
         ConfigService $config_service,
@@ -137,7 +135,7 @@ class MolliePaymentsController extends AbstractController
         {
             if ($request->isMethod('GET'))
             {
-                $alert_service->warning('Betalingen met Mollie zijn niet mogelijk want
+                $this->addFlash('warning', 'Betalingen met Mollie zijn niet mogelijk want
                     er is geen Mollie apikey ingesteld in de ' .
                     $link_render->link('mollie_config', $pp->ary(), [], 'configuratie', []), false);
             }
@@ -148,7 +146,7 @@ class MolliePaymentsController extends AbstractController
         {
             if ($request->isMethod('GET'))
             {
-                $alert_service->warning('Er is geen <code>live_</code> Mollie apikey ingsteld in de ' .
+                $this->addFlash('warning', 'Er is geen <code>live_</code> Mollie apikey ingsteld in de ' .
                     $link_render->link('mollie_config', $pp->ary(), [], 'configuratie', []) .
                     '. Betalingen kunnen niet uitgevoerd worden!', false);
             }
@@ -473,7 +471,10 @@ class MolliePaymentsController extends AbstractController
                     $success[] = $cancel_str;
                 }
 
-                $alert_service->success($success);
+                foreach ($success as $s_str)
+                {
+                  $this->addFlash('success', $s_str);
+                }
 
                 return $this->redirectToRoute('mollie_payments', $pp->ary());
             }
@@ -675,7 +676,10 @@ class MolliePaymentsController extends AbstractController
                         ['schema' => $pp->schema()]);
                 }
 
-                $alert_service->success($success);
+                foreach ($success as $s_str)
+                {
+                  $this->addFlash('success', $s_str);
+                }
 
                 return $this->redirectToRoute('mollie_payments', $pp->ary());
             }
@@ -683,7 +687,10 @@ class MolliePaymentsController extends AbstractController
 
         if (count($errors))
         {
-            $alert_service->error($errors);
+          foreach ($errors as $error)
+          {
+            $this->addFlash('error', $error);
+          }
         }
 
         $filtered = isset($filter_command->q)

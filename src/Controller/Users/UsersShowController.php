@@ -16,7 +16,6 @@ use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Repository\AccountRepository;
 use App\Repository\ContactRepository;
-use App\Service\AlertService;
 use App\Service\AssetsService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
@@ -79,7 +78,6 @@ class UsersShowController extends AbstractController
         ContactRepository $contact_repository,
         AccountRepository $account_repository,
         AccountRender $account_render,
-        AlertService $alert_service,
         AssetsService $assets_service,
         ConfigService $config_service,
         FormTokenService $form_token_service,
@@ -220,7 +218,7 @@ class UsersShowController extends AbstractController
                     ], 8000);
                 }
 
-                $alert_service->success('E-mail bericht verzonden.');
+                $this->addFlash('success', 'E-mail bericht verzonden.');
 
                 return $this->redirectToRoute('users_show', [
                     ...$pp->ary(),
@@ -228,7 +226,10 @@ class UsersShowController extends AbstractController
                 ]);
             }
 
-            $alert_service->error($errors);
+            foreach ($errors as $error)
+            {
+              $this->addFlash('error', $error);
+            }
         }
 
         $count_messages = $db->fetchOne('select count(*)

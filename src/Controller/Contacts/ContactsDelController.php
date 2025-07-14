@@ -8,7 +8,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use App\Service\AlertService;
 use App\Repository\ContactRepository;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -84,7 +83,6 @@ class ContactsDelController extends AbstractController
         bool $redirect_contacts,
         bool $is_self,
         ContactRepository $contact_repository,
-        AlertService $alert_service,
         UserCacheService $user_cache_service,
         PageParamsService $pp,
         SessionUserService $su
@@ -163,7 +161,7 @@ class ContactsDelController extends AbstractController
         {
             $contact_repository->del($id, $pp->schema());
 
-            $alert_service->success('Contact verwijderd.');
+            $this->addFlash('success', 'Contact verwijderd.');
 
             if ($redirect_contacts)
             {
@@ -185,13 +183,13 @@ class ContactsDelController extends AbstractController
             {
                 if ($pp->is_admin())
                 {
-                    $alert_service->warning(
+                    $this->addFlash('warning',
                         'Waarschuwing: dit is het enige E-mail adres
                         van een actieve gebruiker');
                 }
                 else
                 {
-                    $alert_service->warning(
+                    $this->addFlash('warning',
                         'Waarschuwing: dit is je enige E-mail adres.');
                 }
             }

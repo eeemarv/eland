@@ -16,7 +16,6 @@ use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Repository\CategoryRepository;
 use App\Repository\ContactRepository;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\DistanceService;
@@ -56,7 +55,6 @@ class MessagesShowController extends AbstractController
         ContactRepository $contact_repository,
         CategoryRepository $category_repository,
         AccountRender $account_render,
-        AlertService $alert_service,
         ConfigService $config_service,
         DateFormatService $date_format_service,
         FormTokenService $form_token_service,
@@ -187,7 +185,7 @@ class MessagesShowController extends AbstractController
                     ], 8000);
                 }
 
-                $alert_service->success('Mail verzonden.');
+                $this->addFlash('success', 'Mail verzonden.');
 
                 return $this->redirectToRoute('messages_show', [
                     ...$pp->ary(),
@@ -195,7 +193,10 @@ class MessagesShowController extends AbstractController
                 ]);
             }
 
-            $alert_service->error($errors);
+            foreach ($errors as $error)
+            {
+              $this->addFlash('error', $error);
+            }
         }
 
         $data_images = [

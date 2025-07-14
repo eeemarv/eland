@@ -7,7 +7,6 @@ use App\Form\Type\Tags\TagsDefType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\AlertService;
 use App\Repository\TagRepository;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -150,7 +149,6 @@ class TagsEditController extends AbstractController
         string $module,
         string $tag_type,
         TagRepository $tag_repository,
-        AlertService $alert_service,
         PageParamsService $pp,
     ):Response
     {
@@ -176,7 +174,7 @@ class TagsEditController extends AbstractController
             $command = $form->getData();
             $tag_repository->update($command, $pp->schema());
 
-            $alert_service->success('Tag "' . $command->txt . '" aangepast.');
+            $this->addFlash('success', 'Tag "' . $command->txt . '" aangepast.');
 
             return $this->redirectToRoute('tags_' . $tag_type, $pp->ary());
         }

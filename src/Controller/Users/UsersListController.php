@@ -14,7 +14,6 @@ use App\Queue\MailQueue;
 use App\Render\AccountRender;
 use App\Render\SelectRender;
 use App\Repository\AccountRepository;
-use App\Service\AlertService;
 use App\Service\CacheService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
@@ -66,7 +65,6 @@ class UsersListController extends AbstractController
         AccountRepository $account_repository,
         LoggerInterface $logger,
         AccountRender $account_render,
-        AlertService $alert_service,
         CacheService $cache_service,
         ConfigService $config_service,
         DateFormatService $date_format_service,
@@ -271,7 +269,10 @@ class UsersListController extends AbstractController
 
             if (count($errors))
             {
-                $alert_service->error($errors);
+              foreach ($errors as $error)
+              {
+                $this->addFlash('error', $error);
+              }
             }
             else
             {
@@ -320,7 +321,7 @@ class UsersListController extends AbstractController
 
                 $intersystems_service->clear_cache();
 
-                $alert_service->success('Het veld werd aangepast.');
+                $this->addFlash('success', 'Het veld werd aangepast.');
 
                 $redirect = true;
             }
@@ -357,7 +358,7 @@ class UsersListController extends AbstractController
                     ['schema' => $pp->schema()]);
 
                 $alert_msg .=  isset($store_value) ? 'aangepast.' : 'gewist.';
-                $alert_service->success($alert_msg);
+                $this->addFlash('success', $alert_msg);
 
                 $redirect = true;
             }
@@ -390,7 +391,7 @@ class UsersListController extends AbstractController
 
                 $intersystems_service->clear_cache();
 
-                $alert_service->success('Het veld werd aangepast.');
+                $this->addFlash('success', 'Het veld werd aangepast.');
 
                 $redirect = true;
             }
@@ -479,11 +480,11 @@ class UsersListController extends AbstractController
                     $alert_users_sent = $msg_users_sent . '<br>';
                     $alert_users_sent .= implode('<br>', $alert_users_sent_ary);
 
-                    $alert_service->success($alert_users_sent);
+                    $this->addFlash('success', $alert_users_sent);
                 }
                 else
                 {
-                    $alert_service->warning('Geen E-mails verzonden.');
+                    $this->addFlash('warning', 'Geen E-mails verzonden.');
                 }
 
                 if (count($sel_ary))
@@ -503,7 +504,7 @@ class UsersListController extends AbstractController
                         $mail_missing_users .= '<br />';
                     }
 
-                    $alert_service->warning($alert_missing_users);
+                    $this->addFlash('warning', $alert_missing_users);
                 }
 
                 if ($bulk_mail_cc)

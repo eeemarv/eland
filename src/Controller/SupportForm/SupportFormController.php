@@ -5,7 +5,6 @@ namespace App\Controller\SupportForm;
 use App\Command\SupportForm\SupportFormCommand;
 use App\Form\Type\SupportForm\SupportFormType;
 use App\Queue\MailQueue;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\MailAddrSystemService;
 use App\Service\MailAddrUserService;
@@ -38,7 +37,6 @@ class SupportFormController extends AbstractController
 
     public function __invoke(
         Request $request,
-        AlertService $alert_service,
         ConfigService $config_service,
         MailQueue $mail_queue,
         MailAddrUserService $mail_addr_user_service,
@@ -103,29 +101,29 @@ class SupportFormController extends AbstractController
                 'reply_to'	=> $user_email_ary,
             ], 8000);
 
-            $alert_service->success('De Support E-mail is verzonden.');
+            $this->addFlash('success', 'De Support E-mail is verzonden.');
             return $this->redirectToRoute($vr->get('default'), $pp->ary());
         }
 
         if ($is_master)
         {
-            $alert_service->warning('Het master account kan geen E-mail berichten versturen.');
+            $this->addFlash('warning', 'Het master account kan geen E-mail berichten versturen.');
         }
         else
         {
             if (!$can_reply)
             {
-                $alert_service->warning('Je hebt geen E-mail adres ingesteld voor je account. ');
+                $this->addFlash('warning', 'Je hebt geen E-mail adres ingesteld voor je account. ');
             }
         }
 
         if (!$mail_enabled)
         {
-            $alert_service->warning('De E-mail functies zijn uitgeschakeld door de beheerder. Je kan dit formulier niet gebruiken');
+            $this->addFlash('warning', 'De E-mail functies zijn uitgeschakeld door de beheerder. Je kan dit formulier niet gebruiken');
         }
         else if (count($support_addr) < 1)
         {
-            $alert_service->warning('Er is geen Support E-mail adres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
+            $this->addFlash('warning', 'Er is geen Support E-mail adres ingesteld door de beheerder. Je kan dit formulier niet gebruiken.');
         }
 
         return $this->render('support_form/support_form.html.twig', [

@@ -7,7 +7,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use App\Render\LinkRender;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\PageParamsService;
@@ -39,7 +38,6 @@ class MessagesImagesDelController extends AbstractController
         int $id,
         Db $db,
         ConfigService $config_service,
-        AlertService $alert_service,
         FormTokenService $form_token_service,
         LinkRender $link_render,
         PageParamsService $pp,
@@ -65,7 +63,7 @@ class MessagesImagesDelController extends AbstractController
 
         if (!count($images))
         {
-            $alert_service->error(ucfirst($message['label']['offer_want_the']) . ' heeft geen afbeeldingen.');
+            $this->addFlash('error', ucfirst($message['label']['offer_want_the']) . ' heeft geen afbeeldingen.');
 
             return $this->redirectToRoute('messages_show', [
                 ...$pp->ary(),
@@ -84,7 +82,7 @@ class MessagesImagesDelController extends AbstractController
             {
                 $db->update($pp->schema() . '.messages', ['image_files' => '[]'], ['id' => $id]);
 
-                $alert_service->success('De afbeeldingen voor ' . $message['label']['offer_want_this'] .
+                $this->addFlash('success', 'De afbeeldingen voor ' . $message['label']['offer_want_this'] .
                     ' zijn verwijderd.');
 
                 return $this->redirectToRoute('messages_show', [
@@ -93,7 +91,10 @@ class MessagesImagesDelController extends AbstractController
                 ]);
             }
 
-            $alert_service->error($errors);
+            foreach ($errors as $error)
+            {
+              $this->addFlash('error', $error);
+            }
         }
 
         $out = '<div class="row">';

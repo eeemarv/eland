@@ -12,7 +12,6 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Psr\Log\LoggerInterface;
 use App\Render\LinkRender;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
@@ -72,7 +71,6 @@ class MessagesEditController extends AbstractController
         string $mode,
         Db $db,
         LoggerInterface $logger,
-        AlertService $alert_service,
         ConfigService $config_service,
         FormTokenService $form_token_service,
         IntersystemsService $intersystems_service,
@@ -462,7 +460,7 @@ class MessagesEditController extends AbstractController
                     $db->update($pp->schema() . '.messages', ['image_files' => $image_files], ['id' => $id]);
                 }
 
-                $alert_service->success('Nieuw vraag of aanbod toegevoegd.');
+                $this->addFlash('success', 'Nieuw vraag of aanbod toegevoegd.');
 
                 return $this->redirectToRoute('messages_show', [
                     ...$pp->ary(),
@@ -474,7 +472,7 @@ class MessagesEditController extends AbstractController
                 $db->update($pp->schema() . '.messages', $post_message, ['id' => $id]);
                 $logger->debug('#msg update message with id ' . $id . ' ' . json_encode($post_message), ['schema' => $pp->schema()]);
 
-                $alert_service->success('Vraag/aanbod aangepast');
+                $this->addFlash('success', 'Vraag/aanbod aangepast');
 
                 return $this->redirectToRoute('messages_show', [
                     ...$pp->ary(),
@@ -486,7 +484,10 @@ class MessagesEditController extends AbstractController
                 throw new HttpException(500, 'Onbekende modus');
             }
 
-            $alert_service->error($errors);
+            foreach ($errors as $error)
+            {
+              $this->addFlash('error', $error);
+            }
         }
 
         if ($request->isMethod('GET'))

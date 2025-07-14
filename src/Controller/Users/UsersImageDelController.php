@@ -3,11 +3,9 @@
 namespace App\Controller\Users;
 
 use App\Render\LinkRender;
-use App\Service\AlertService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\UserCacheService;
-use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -54,12 +52,10 @@ class UsersImageDelController extends AbstractController
         int $id,
         bool $is_self,
         Db $db,
-        AlertService $alert_service,
         LinkRender $link_render,
         UserCacheService $user_cache_service,
         PageParamsService $pp,
         SessionUserService $su,
-        VarRouteService $vr,
         string $env_s3_url
     ):Response
     {
@@ -90,7 +86,7 @@ class UsersImageDelController extends AbstractController
 
             $user_cache_service->clear($id, $pp->schema());
 
-            $alert_service->success('Profielfoto/afbeelding verwijderd.');
+            $this->addFlash('success', 'Profielfoto/afbeelding verwijderd.');
 
             return $this->redirectToRoute('users_show', [
                 ...$pp->ary(),

@@ -7,7 +7,6 @@ use App\Form\Type\Categories\CategoriesListType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\CategoryRepository;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpFoundation\Request;
@@ -36,7 +35,6 @@ class CategoriesController extends AbstractController
         Request $request,
         CategoryRepository $category_repository,
         ConfigService $config_service,
-        AlertService $alert_service,
         PageParamsService $pp
     ):Response
     {
@@ -76,11 +74,11 @@ class CategoriesController extends AbstractController
 
             if ($update_count)
             {
-                $alert_service->success('Plaatsing categorieën aangepast.');
+                $this->addFlash('success', 'Plaatsing categorieën aangepast.');
             }
             else
             {
-                $alert_service->warning('Geen aangepaste plaatsing van categorieën');
+                $this->addFlash('warning', 'Geen aangepaste plaatsing van categorieën');
             }
 
             return $this->redirectToRoute('categories', $pp->ary());

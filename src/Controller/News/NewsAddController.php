@@ -8,7 +8,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\NewsRepository;
-use App\Service\AlertService;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -36,7 +35,6 @@ class NewsAddController extends AbstractController
         Request $request,
         NewsRepository $news_repository,
         ConfigService $config_service,
-        AlertService $alert_service,
         PageParamsService $pp,
         SessionUserService $su
     ):Response
@@ -61,7 +59,7 @@ class NewsAddController extends AbstractController
             $command = $form->getData();
             $id = $news_repository->insert($command, $su->id(), $pp->schema());
 
-            $alert_service->success('Nieuwsbericht opgeslagen.');
+            $this->addFlash('success', 'Nieuwsbericht opgeslagen.');
             return $this->redirectToRoute('news_show', [
                 ...$pp->ary(),
                 'id' => $id,
