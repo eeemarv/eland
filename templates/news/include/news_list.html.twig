@@ -21,7 +21,7 @@
                 </td>
                 <td>
                     {%- if n.event_at is defined and n.event_at is not empty -%}
-                        {{- n.event_at|date_format('day', schema) -}}
+                        {{- n.event_at|date_format('day') -}}
                     {%- else -%}
                         &nbsp;
                     {%- endif -%}

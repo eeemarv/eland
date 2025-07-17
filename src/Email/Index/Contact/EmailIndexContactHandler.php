@@ -31,13 +31,13 @@ final class EmailIndexContactHandler
 
     $hoster_address = new Address($this->env_mail_hoster_address);
 
-    $dispatch = new EmailDispatchMessage(
+    $m_dispatch = new EmailDispatchMessage(
       template: 'index/index_contact',
       context: $context,
       reply_to: $message->reply_to,
       to: New AddressAry([$hoster_address]),
     );
 
-    $this->bus->dispatch($dispatch);
+    $this->bus->dispatch($m_dispatch);
   }
 }

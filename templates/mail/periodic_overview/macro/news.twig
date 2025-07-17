@@ -69,7 +69,7 @@
 			{{- 'label.date'|trans -}}
 		</td>
 		<td style="font-weight: bold;">
-			{{ n.event_at|date_format('day', c.schema) }}
+			{{ n.event_at|date_format('day') }}
 		</td>
 	</tr>
 </table>
@@ -120,7 +120,7 @@
 {{ 'label.location'|trans }}: {{ n.location }}
 {% endif %}
 {% if n.event_at %}
-{{ 'label.date'|trans }}: {{ n.event_at|date_format('day', c.schema) }}
+{{ 'label.date'|trans }}: {{ n.event_at|date_format('day') }}
 {% endif %}
 {{ 'periodic_overview.news.creator'|trans({
 	'ao': '',

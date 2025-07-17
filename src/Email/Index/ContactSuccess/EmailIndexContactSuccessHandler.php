@@ -20,12 +20,12 @@ final class EmailIndexContactSuccessHandler
       'message' => $message->message,
     ];
 
-    $dispatch = new EmailDispatchMessage(
+    $m_dispatch = new EmailDispatchMessage(
       template: 'index/index_contact_success',
       context: $context,
       to: New AddressAry([$message->to]),
     );
 
-    $this->bus->dispatch($dispatch);
+    $this->bus->dispatch($m_dispatch);
   }
 }

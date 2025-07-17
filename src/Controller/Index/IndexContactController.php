@@ -5,7 +5,6 @@ namespace App\Controller\Index;
 use App\Command\Index\IndexContactFormCommand;
 use App\Email\Index\ContactConfirm\EmailIndexContactConfirmMessage;
 use App\Form\Type\Index\IndexContactFormType;
-use App\Service\DataTokenService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,7 +25,6 @@ class IndexContactController extends AbstractController
 
   public function __invoke(
     Request $request,
-    DataTokenService $data_token_service,
     MessageBusInterface $bus,
   ):Response
   {
@@ -46,6 +44,8 @@ class IndexContactController extends AbstractController
       $command = $form->getData();
 
       $email_address = strtolower($command->email_address);
+
+      /*
       $message = $command->message;
 
       $contact = [
@@ -57,25 +57,24 @@ class IndexContactController extends AbstractController
 
       $token = $data_token_service->store($contact,
         'index_contact_form', null, 86400);
+      */
 
       $m_confirm = new EmailIndexContactConfirmMessage(
         to: new Address($email_address),
-        token: $token
+        message: $command->message,
+        agent: $request->headers->get('User-Agent'),
+        ip: $request->getClientIp(),
       );
 
       $bus->dispatch($m_confirm);
 
-      $alert_msg = 'Open je E-mailbox en klik
-        de link aan die we je zonden om je
-        bericht te bevestigen.';
-
-      $this->addFlash('success', $alert_msg);
+      $this->addFlash('content', 'open_email');
 
       return $this->redirectToRoute('index_contact');
     }
 
     return $this->render('index/contact.html.twig', [
-        'form'      => $form,
+      'form' => $form,
     ]);
   }
 }

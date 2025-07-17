@@ -25,7 +25,7 @@
                     {{- d.name|s3(d.filename)|raw -}}
                 </td>
                 <td>
-                    {{- d.created_at|date_format('min', schema) -}}
+                    {{- d.created_at|date_format('min') -}}
                 </td>
                 {%- if show_access -%}
                     <td>

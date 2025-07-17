@@ -756,7 +756,12 @@ index_contact_form:
     waarbij uw data steeds uw data blijft. Vertrek uit
     het systeem en alle data opvragen is op elk moment
     mogelijk. Gebruik dit contactformulier bij interesse.
-  mail:
+  flash:
+    open_email: >-
+      Open je E-mailbox en klik de link aan
+      die we je zonden om je bericht te bevestigen.
+  btn_back_to_index: Terug naar het overzicht
+  mail: ## ?
     subject:
       eLAND Contact Formulier
   success:
@@ -767,7 +772,16 @@ index_contact_form:
 
 index_contact_confirm:
   success: Je bericht is verzonden.
-  back_to_index: Terug naar het overzicht
+  expired: >-
+    Je bericht werd niet bevestigd binnen de tijd.
+    Probeer het opnieuw.
+  already_confirmed: >-
+    Je bericht werd reeds eerder bevestigd
+    en verzonden {confirmed_at}
+  not_found: >-
+    Ongeldig token.
+  btn_back_to_index: Terug naar het overzicht
+  btn_try_again: Probeer opnieuw
 
 index:
   title: eLAND index

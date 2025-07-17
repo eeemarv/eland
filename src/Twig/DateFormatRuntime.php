@@ -23,6 +23,7 @@ class DateFormatRuntime implements RuntimeExtensionInterface
 		return $this->date_format_service->datepicker_placeholder($schema);
 	}
 
+/*
 	public function get_from_unix(
 		int $unix,
 		string $precision,
@@ -31,16 +32,20 @@ class DateFormatRuntime implements RuntimeExtensionInterface
 	{
 		return $this->date_format_service->get_from_unix($unix, $precision, $schema);
 	}
+*/
 
 	public function get(
+    array $context,
 		string $ts,
 		string $precision,
-		string $schema
+    string|null $schema = null
 	):string
 	{
-		return $this->date_format_service->get($ts, $precision, $schema);
+    $sch = $schema ?? $context['schema'] ?? null;
+		return $this->date_format_service->get($ts, $precision, $sch);
 	}
 
+/**
 	public function get_sec(
 		string $ts,
 		string $schema
@@ -78,4 +83,5 @@ class DateFormatRuntime implements RuntimeExtensionInterface
 
 		return $out;
 	}
+*/
 }

@@ -16,16 +16,20 @@ final class EmailIndexContactConfirmHandler
 
   public function __invoke(EmailIndexContactConfirmMessage $message):void
   {
-    $context = [
-      'token' => $message->token,
+    $confirm_data = [
+      'message' => $message->message,
+      'email'   => $message->to->getAddress(),
+      'ip'      => $message->ip,
+      'agent'   => $message->agent
     ];
 
-    $dispatch = new EmailDispatchMessage(
+    $m_dispatch = new EmailDispatchMessage(
       template: 'index/index_contact_confirm',
-      context: $context,
       to: New AddressAry([$message->to]),
+      add_confirm_token: true,
+      confirm_data: $confirm_data
     );
 
-    $this->bus->dispatch($dispatch);
+    $this->bus->dispatch($m_dispatch);
   }
 }

@@ -76,9 +76,9 @@ class MppAryRuntime implements RuntimeExtensionInterface
 			$ary['system'] = $this->systems_service->get_system($context['schema']);
 		}
 
-		if (isset($context['et']))
+		if (isset($context['email_token']))
 		{
-			$ary['et'] = $context['et'];
+			$ary['et'] = $context['email_token'];
 		}
 
 		if (isset($role) && isset(RoleCnst::SHORT[$role]))

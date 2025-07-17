@@ -12,7 +12,7 @@
 {%- block content -%}
   <row>
     <columns>
-      <button href="{{- url('index_contact_confirm', {'token': token}) -}}" class="radius">
+      <button href="{{- url('index_contact_confirm', {'confirm_token': confirm_token}) -}}" class="radius">
         {{- 'index_contact_confirm.btn'|trans -}}
       </button>
       <p>

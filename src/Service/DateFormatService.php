@@ -58,10 +58,10 @@ class DateFormatService
 
 	protected function get_format(
 		string $precision,
-		string $schema
+		string|null $schema
 	):string
 	{
-		$format = $this->config_service->get_str('system.date_format', $schema);
+		$format = isset($schema) ? $this->config_service->get_str('system.date_format', $schema) : '%e %b %Y, %H:%M:%S';
 
 		if (!$format || !isset(self::FORMATS[$format]))
 		{
@@ -213,7 +213,7 @@ class DateFormatService
 	public function get_from_unix(
 		int $unix,
 		string $precision,
-		string $schema
+		string|null $schema
 	):string
 	{
 		$format = $this->get_format($precision, $schema);
@@ -224,7 +224,7 @@ class DateFormatService
 	public function get(
 		string $ts,
 		string $precision,
-		string $schema
+		string|null $schema
 	):string
 	{
 		if (!$ts)

@@ -2,16 +2,33 @@
 
 {%- block container -%}
 
-	<div class="panel panel-success">
+	<div class="panel panel-{%- if success -%}success{%- else -%}danger{%- endif -%}">
 		<div class="panel-heading">
 			<h3>
-				{{- 'index_contact_confirm.success'|trans -}}
+        {%- if success -%}
+				  {{- 'index_contact_confirm.success'|trans -}}
+        {%- elseif is_already_confirmed -%}
+				  {{- 'index_contact_confirm.already_confirmed'|trans({
+            'confirmed_at': confirmed_at|date_format('min')
+          }) -}}
+        {%- elseif is_expired -%}
+				  {{- 'index_contact_confirm.expired'|trans -}}
+        {%- elseif is_not_found -%}
+				  {{- 'index_contact_confirm.not_found'|trans -}}
+        {%- endif -%}
 			</h3>
 		</div>
 		<div class="panel-body">
 			<a href="{{- path('index') -}}" class="btn btn-lg btn-primary">
-				{{- 'index_contact_confirm.back_to_index'|trans -}}
+				{{- 'index_contact_confirm.btn_back_to_index'|trans -}}
 			</a>
+
+      {%- if not success and not is_already_confirmed -%}
+        &nbsp;
+        <a href="{{- path('index_contact') -}}" class="btn btn-lg btn-primary">
+          {{- 'index_contact_confirm.btn_try_again'|trans -}}
+        </a>
+      {%- endif -%}
 		</div>
 	</div>
 

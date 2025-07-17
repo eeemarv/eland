@@ -26,8 +26,24 @@ class AddressAry
     return $this->ary;
   }
 
-  public function str()
+  public function count(): int
+  {
+    return count($this->ary);
+  }
+
+  /**
+   * for logging
+   */
+  public function str():string
   {
     return implode(', ', array_map(fn(Address $address) => $address->toString(), $this->ary));
+  }
+
+  /**
+   * To store in db
+   */
+  public function adr_str_ary():array
+  {
+    return array_map(fn(Address $address) => $address->getAddress(), $this->ary);
   }
 }

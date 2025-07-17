@@ -2,7 +2,9 @@
 
 namespace App\Email;
 
+use App\DTO\AddressAry;
 use App\Email\EmailDispatchMessage;
+use App\Repository\EmailSentRepository;
 use App\Service\ConfigService;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -10,6 +12,7 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Mime\Address;
+use Symfony\Component\Uid\Uuid;
 use Twig\Environment as Twig;
 
 #[AsMessageHandler]
@@ -19,6 +22,7 @@ final class EmailDispatchHandler
     private readonly MailerInterface $mailer,
     private readonly Twig $twig,
     private readonly LoggerInterface $logger,
+    private readonly EmailSentRepository $email_sent_repository,
     private readonly ConfigService $config_service,
     #[Autowire('%env(MAIL_FROM_ADDRESS)%')]
     private readonly string $env_mail_from_address,
@@ -108,15 +112,47 @@ final class EmailDispatchHandler
 			}
 		}
 
+    $confirm_token = null;
+
+    if ($message->add_confirm_token)
+    {
+      $confirm_token = Uuid::v4();
+      $confirm_token_base58 = $confirm_token->toBase58();
+      $context['confirm_token'] = $confirm_token_base58;
+      $log_context['confirm_token'] = $confirm_token_base58;
+      $log_context['confirm_token_rfc4122'] = $confirm_token->toRfc4122();
+    }
+
+    $email_token = Uuid::v4();
+    $email_token_base58 = $email_token->toBase58();
+    $context['email_token'] = $email_token_base58;
+    $log_context['email_token'] = $email_token_base58;
+    $log_context['email_token_rfc4122'] = $email_token->toRfc4122();
+
+    $email->getHeaders()->addHeader('X-Eland-Token', $email_token_base58);
+
     $email->from($from);
     $email->to(...$message->to->ary());
     $email->subject($subject);
     $email->htmlTemplate($template_path);
     $email->context($context);
 
-    $this->mailer->send($email);
+    $this->email_sent_repository->register(
+      email_token: $email_token,
+      to_addresses: $message->to,
+      from_address: $from,
+      bcc_addresses: $message->bcc ?? new AddressAry([]),
+      cc_addresses: $message->cc ?? new AddressAry([]),
+      reply_to_address: $message->reply_to,
+      confirm_token: $confirm_token,
+      confirm_data: $message->confirm_data,
+      template: $message->template,
+      subject: $subject,
+      bulk_id: $message->bulk_id,
+      schema: $message->schema
+    );
 
-    // TODO register email with token in database
+    $this->mailer->send($email);
 
     $log_context['template'] = $message->template;
     $log_context['to'] = $message->to->str();

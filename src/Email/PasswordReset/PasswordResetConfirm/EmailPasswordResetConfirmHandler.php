@@ -22,13 +22,13 @@ final class EmailPasswordResetConfirmHandler
       'token' => $message->token,
     ];
 
-    $dispatch = new EmailDispatchMessage(
+    $m_dispatch = new EmailDispatchMessage(
       template: 'password_reset/password_reset_confirm',
       context: $context,
       to: New AddressAry([$message->to]),
       schema: $schema,
     );
 
-    $this->bus->dispatch($dispatch);
+    $this->bus->dispatch($m_dispatch);
   }
 }

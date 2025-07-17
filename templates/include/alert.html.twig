@@ -1,29 +1,31 @@
 {%- for type, messages in app.flashes(['error', 'warning', 'success', 'info']) -%}
-  <div class="row">
-    <div class="col-xs-12">
-      <div class="mt-5p alert alert-{%- if type == 'error' -%}danger{%- else -%}{{- type -}}{%- endif %} alert-dismissible" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+  {%- if messages is not empty -%}
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="mt-5p alert alert-{%- if type == 'error' -%}danger{%- else -%}{{- type -}}{%- endif %} alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
 
-        {%- for message in messages -%}
-          {%- if message is iterable -%}
-            {%- set params = message.params is defined ? message.params : [] -%}
-            {%- if message.is_raw is defined and message.is_raw -%}
-              {{- message.key|trans(params)|raw -}}
+          {%- for message in messages -%}
+            {%- if message is iterable -%}
+              {%- set params = message.params is defined ? message.params : [] -%}
+              {%- if message.is_raw is defined and message.is_raw -%}
+                {{- message.key|trans(params)|raw -}}
+              {%- else -%}
+                {{- message.key|trans(params) -}}
+              {%- endif -%}
             {%- else -%}
-              {{- message.key|trans(params) -}}
+              {{- message|raw -}}
             {%- endif -%}
-          {%- else -%}
-            {{- message|raw -}}
-          {%- endif -%}
 
-          {%- if not loop.last -%}
-            <br>
-          {%- endif -%}
-        {%- endfor -%}
+            {%- if not loop.last -%}
+              <br>
+            {%- endif -%}
+          {%- endfor -%}
 
+        </div>
       </div>
     </div>
-  </div>
+  {%- endif -%}
 {%- endfor -%}
