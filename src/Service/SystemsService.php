@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\DTO\Schema;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
@@ -92,6 +93,16 @@ class SystemsService
 	{
 		return $this->schemas[$system] ?? '';
 	}
+
+  public function get_schema_o(string $system):Schema
+  {
+    if (!isset($this->schemas[$system]))
+    {
+      throw new \Exception('System ' . $system . ' not found.');
+    }
+
+    return new Schema($this->schemas[$system]);
+  }
 
 	public function get_system(string $schema):string
 	{

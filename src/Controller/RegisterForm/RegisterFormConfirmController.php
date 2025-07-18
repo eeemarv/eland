@@ -6,6 +6,7 @@ use App\Cnst\PagesCnst;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use App\Queue\MailQueue;
+use App\Repository\EmailSentRepository;
 use App\Service\ConfigService;
 use App\Service\DataTokenService;
 use App\Service\MailAddrSystemService;
@@ -46,6 +47,7 @@ class RegisterFormConfirmController extends AbstractController
     DataTokenService $data_token_service,
     MailAddrSystemService $mail_addr_system_service,
     MailQueue $mail_queue,
+    EmailSentRepository $email_sent_repository,
     MessageBusInterface $bus,
     PageParamsService $pp,
     SessionUserService $su

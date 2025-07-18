@@ -20,13 +20,13 @@
 		</div>
 		<div class="panel-body">
 			<a href="{{- path('index') -}}" class="btn btn-lg btn-primary">
-				{{- 'index_contact_confirm.btn_back_to_index'|trans -}}
+				{{- 'index_contact_confirm.btn.back_to_index'|trans -}}
 			</a>
 
       {%- if not success and not is_already_confirmed -%}
         &nbsp;
         <a href="{{- path('index_contact') -}}" class="btn btn-lg btn-primary">
-          {{- 'index_contact_confirm.btn_try_again'|trans -}}
+          {{- 'index_contact_confirm.btn.try_again'|trans -}}
         </a>
       {%- endif -%}
 		</div>

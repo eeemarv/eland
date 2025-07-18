@@ -66,29 +66,31 @@ class MppAryRuntime implements RuntimeExtensionInterface
 
 	public function mpp(
 		array $context,
+    array $params,
 		string|null $role = null
 	):array
 	{
-		$ary = [];
+		//$params = [];
 
 		if (isset($context['schema']))
 		{
-			$ary['system'] = $this->systems_service->get_system($context['schema']);
+			$params['system'] = $this->systems_service->get_system($context['schema']);
 		}
 
 		if (isset($context['email_token']))
 		{
-			$ary['et'] = $context['email_token'];
+			$params['et'] = $context['email_token'];
 		}
 
 		if (isset($role) && isset(RoleCnst::SHORT[$role]))
 		{
-			$ary['role_short'] = RoleCnst::SHORT[$role];
+			$params['role_short'] = RoleCnst::SHORT[$role];
 		}
 
-		return $ary;
+		return $params;
 	}
 
+  /*
 	public function mpp_guest(array $context):array
 	{
 		return $this->mpp($context, 'guest');
@@ -103,4 +105,5 @@ class MppAryRuntime implements RuntimeExtensionInterface
 	{
 		return $this->mpp($context, 'admin');
 	}
+  */
 }

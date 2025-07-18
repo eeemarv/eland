@@ -760,7 +760,8 @@ index_contact_form:
     open_email: >-
       Open je E-mailbox en klik de link aan
       die we je zonden om je bericht te bevestigen.
-  btn_back_to_index: Terug naar het overzicht
+  btn:
+    back_to_index: Terug naar het overzicht
   mail: ## ?
     subject:
       eLAND Contact Formulier
@@ -776,12 +777,13 @@ index_contact_confirm:
     Je bericht werd niet bevestigd binnen de tijd.
     Probeer het opnieuw.
   already_confirmed: >-
-    Je bericht werd reeds eerder bevestigd
+    Dit bericht werd reeds eerder bevestigd
     en verzonden {confirmed_at}
   not_found: >-
     Ongeldig token.
-  btn_back_to_index: Terug naar het overzicht
-  btn_try_again: Probeer opnieuw
+  btn:
+    back_to_index: Terug naar het overzicht
+    try_again: Probeer opnieuw
 
 index:
   title: eLAND index

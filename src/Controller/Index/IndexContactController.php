@@ -45,20 +45,6 @@ class IndexContactController extends AbstractController
 
       $email_address = strtolower($command->email_address);
 
-      /*
-      $message = $command->message;
-
-      $contact = [
-        'message' 	    => $message,
-        'email_address'	=> $email_address,
-        'agent'		    => $request->headers->get('User-Agent'),
-        'ip'		    => $request->getClientIp(),
-      ];
-
-      $token = $data_token_service->store($contact,
-        'index_contact_form', null, 86400);
-      */
-
       $m_confirm = new EmailIndexContactConfirmMessage(
         to: new Address($email_address),
         message: $command->message,

@@ -5,6 +5,7 @@ namespace App\Controller\RegisterForm;
 use App\Command\RegisterForm\RegisterFormCommand;
 use App\Email\RegisterForm\RegisterFormConfirm\EmailRegisterFormConfirmMessage;
 use App\Form\Type\RegisterForm\RegisterFormType;
+use App\Repository\EmailSentRepository;
 use App\Service\ConfigService;
 use App\Service\DataTokenService;
 use App\Service\PageParamsService;
@@ -39,6 +40,7 @@ class RegisterFormController extends AbstractController
     LoggerInterface $logger,
     DataTokenService $data_token_service,
     ConfigService $config_service,
+    EmailSentRepository $email_sent_repository,
     MessageBusInterface $bus,
     PageParamsService $pp
   ):Response

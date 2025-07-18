@@ -12,7 +12,7 @@
 {%- block content -%}
   <row>
     <columns>
-      <button href="{{- url('index_contact_confirm', {'confirm_token': confirm_token}) -}}" class="radius">
+      <button href="{{- url('index_contact_confirm', {'confirm_token': confirm_token}|mpp) -}}" class="radius">
         {{- 'index_contact_confirm.btn'|trans -}}
       </button>
       <p>
@@ -23,7 +23,7 @@
       </p>
       <p>
         {{- 'index_contact_confirm.ignore'|trans({
-          'ao': a_open('index_contact'),
+          'ao': a_open('index_contact', {}|mpp),
           'ac': '</a>'
         })|raw -}}
       </p>

@@ -130,4 +130,29 @@ class EmailSentRepository
     $stmt->bindValue('confirm_token', $confirm_token->toRfc4122(), Types::GUID);
     return $stmt->executeStatement();
   }
+
+  public function register_on_email_token (
+    Uuid $email_token,
+    string $path_info,
+    Schema|null $schema
+  ):void
+  {
+    $sch_str = isset($schema) ? $schema->str() : 'xdb';
+    $uuid_et = $email_token->toRfc4122();
+
+    $stmt_1 = $this->db->prepare('update ' . $sch_str . '.emails_sent
+      set last_verified_at = timezone(\'utc\', now())
+      where email_token = :email_token');
+    $stmt_1->bindValue('email_token', $uuid_et, Types::GUID);
+    $stmt_1->executeStatement();
+
+    $stmt_2 =  $this->db->prepare('insert into ' . $sch_str . '.emails_sent_verified
+      (email_sent_id, path_info)
+      select id, :path_info
+      from ' . $sch_str . '.emails_sent
+      where email_token = :email_token');
+    $stmt_2->bindValue('path_info', $path_info, Types::STRING);
+    $stmt_2->bindValue('email_token', $uuid_et, Types::GUID);
+    $stmt_2->executeStatement();
+  }
 }

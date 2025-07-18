@@ -3,6 +3,7 @@
 namespace App\Twig;
 
 use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
 use Twig\TwigFunction;
 
 /**
@@ -19,11 +20,18 @@ class MppAryExtension extends AbstractExtension
 			new TwigFunction('mpp_guest_ary', [MppAryRuntime::class, 'get_guest'], ['needs_context' => true]),
 			new TwigFunction('mpp_admin_ary', [MppAryRuntime::class, 'get_admin'], ['needs_context' => true]),
 
-			/** new functions (retrieve schema from context) */
-			new TwigFunction('mpp', [MppAryRuntime::class, 'mpp'], ['needs_context' => true]),
-			new TwigFunction('mpp_guest', [MppAryRuntime::class, 'mpp_guest'], ['needs_context' => true]),
-			new TwigFunction('mpp_user', [MppAryRuntime::class, 'mpp_user'], ['needs_context' => true]),
-			new TwigFunction('mpp_admin', [MppAryRuntime::class, 'mpp_admin'], ['needs_context' => true]),
+			/** new function (retrieve schema from context) */
+			// new TwigFunction('mpp', [MppAryRuntime::class, 'mpp'], ['needs_context' => true]),
+			// new TwigFunction('mpp_guest', [MppAryRuntime::class, 'mpp_guest'], ['needs_context' => true]),
+			// new TwigFunction('mpp_user', [MppAryRuntime::class, 'mpp_user'], ['needs_context' => true]),
+			// new TwigFunction('mpp_admin', [MppAryRuntime::class, 'mpp_admin'], ['needs_context' => true]),
 		];
 	}
+
+  public function getFilters ():array
+  {
+    return [
+      new TwigFilter('mpp', [MppAryRuntime::class, 'mpp'], ['needs_context' => true]),
+    ];
+  }
 }
