@@ -56,6 +56,11 @@ class EmailVerifySubscriber implements EventSubscriberInterface
       $system = $request->attributes->get('system');
       $schema = $this->systems_service->get_schema_o($system);
     }
+    else if ($request->query->has('system'))
+    {
+      $system = $request->query->get('system');
+      $schema = $this->systems_service->get_schema_o($system);
+    }
 
     $this->email_sent_repository->register_on_email_token(
       email_token: $email_token,

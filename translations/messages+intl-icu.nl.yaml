@@ -570,9 +570,18 @@ contact_form:
   title: Contact
 
 contact_form_confirm:
-  success: Je bericht is succesvol verzonden
-  fail: Het token is ongeldig of verlopen.
-  back_to_home: Terug naar de homepagina
+  success: Je bericht is verzonden.
+  expired: >-
+    Je bericht werd niet bevestigd binnen de tijd.
+    Probeer het opnieuw.
+  already_confirmed: >-
+    Dit bericht werd reeds eerder bevestigd
+    en verzonden {confirmed_at}
+  not_found: >-
+    Ongeldig token.
+  btn:
+    back_to_home: Terug naar de homepagina
+    try_again: Probeer opnieuw
 
 contact_types:
   title: Contact types

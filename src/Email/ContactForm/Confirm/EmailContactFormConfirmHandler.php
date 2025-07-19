@@ -18,17 +18,21 @@ final class EmailContactFormConfirmHandler
   {
     $schema = $message->schema;
 
-    $context = [
-      'token' => $message->token,
+    $confirm_data = [
+      'message' => $message->message,
+      'email'   => $message->to->getAddress(),
+      'ip'      => $message->ip,
+      'agent'   => $message->agent
     ];
 
-    $dispatch = new EmailDispatchMessage(
+    $m_dispatch = new EmailDispatchMessage(
       template: 'contact_form/contact_form_confirm',
-      context: $context,
       to: New AddressAry([$message->to]),
+      add_confirm_token: true,
+      confirm_data: $confirm_data,
       schema: $schema,
     );
 
-    $this->bus->dispatch($dispatch);
+    $this->bus->dispatch($m_dispatch);
   }
 }

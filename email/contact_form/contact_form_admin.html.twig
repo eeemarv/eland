@@ -10,7 +10,7 @@
     <columns>
       <p>
         {{- 'contact_form_admin.explain'|trans({
-          'ao': a_open('home', mpp()),
+          'ao': a_open('home', {}|mpp),
           'ac': '</a>',
           'system_name': config_str('system.name', schema)
         })|raw -}}

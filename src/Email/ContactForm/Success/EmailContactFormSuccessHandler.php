@@ -22,13 +22,13 @@ final class EmailContactFormSuccessHandler
         'message' => $message->message,
       ];
 
-      $dispatch = new EmailDispatchMessage(
+      $m_dispatch = new EmailDispatchMessage(
         template: 'contact_form/contact_form_success',
         context: $context,
         to: New AddressAry([$message->to]),
         schema: $schema,
       );
 
-      $this->bus->dispatch($dispatch);
+      $this->bus->dispatch($m_dispatch);
     }
 }

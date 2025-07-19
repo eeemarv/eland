@@ -3,6 +3,7 @@
 namespace App\Twig;
 
 use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
 use Twig\TwigFunction;
 
 class PpExtension extends AbstractExtension
@@ -14,6 +15,13 @@ class PpExtension extends AbstractExtension
 			new TwigFunction('pp_schema', [PpRuntime::class, 'get_schema']),
 			new TwigFunction('pp_role', [PpRuntime::class, 'get_role']),
 			new TwigFunction('pp_has_role', [PpRuntime::class, 'has_role']),
+		];
+	}
+
+	public function getFilters():array
+	{
+		return [
+			new TwigFilter('pp', [PpRuntime::class, 'pp']),
 		];
 	}
 }

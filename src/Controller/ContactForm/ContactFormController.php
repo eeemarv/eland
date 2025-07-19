@@ -9,9 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\ConfigService;
-use App\Service\DataTokenService;
 use App\Service\PageParamsService;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -36,9 +34,7 @@ class ContactFormController extends AbstractController
 
   public function __invoke(
     Request $request,
-    LoggerInterface $logger,
     ConfigService $config_service,
-    DataTokenService $data_token_service,
     PageParamsService $pp,
     MessageBusInterface $bus,
   ):Response
@@ -73,25 +69,12 @@ class ContactFormController extends AbstractController
       $email = strtolower($command->email);
       $message = $command->message;
 
-      $contact = [
-        'message' 	=> $message,
-        'email'		=> $email,
-        'agent'		=> $request->headers->get('User-Agent'),
-        'ip'		=> $request->getClientIp(),
-      ];
-
-      $token = $data_token_service->store($contact,
-        'contact_form', $pp->schema(), 86400);
-
-      $logger->info('Contact form filled in with address ' .
-        $email . ' ' .
-        json_encode($contact),
-        ['schema' => $pp->schema()]);
-
       $m_confirm = new EmailContactFormConfirmMessage(
         to: new Address($email),
+        message: $message,
+        ip: $request->getClientIp(),
+        agent: $request->headers->get('User-Agent'),
         schema: $pp->schema_o(),
-        token: $token,
       );
       $bus->dispatch($m_confirm);
 
@@ -116,7 +99,7 @@ class ContactFormController extends AbstractController
     }
 
     return $this->render('contact_form/contact_form.html.twig', [
-      'form'   => $form->createView(),
+      'form'  => $form->createView(),
     ]);
   }
 }

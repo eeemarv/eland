@@ -56,4 +56,9 @@ class PpRuntime implements RuntimeExtensionInterface
 
 		return false;
 	}
+
+  public function pp(array $params):array
+  {
+    return [...$params, ...$this->pp->ary()];
+  }
 }

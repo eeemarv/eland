@@ -11,7 +11,9 @@ final class EmailContactFormConfirmMessage
 {
   public function __construct(
     public readonly Address $to,
-    public readonly string $token,
+    public readonly string $message,
+    public readonly string $ip,
+    public readonly string $agent,
     public readonly Schema $schema,
   )
   {
