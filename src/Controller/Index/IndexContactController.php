@@ -8,6 +8,7 @@ use App\Form\Type\Index\IndexContactFormType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Mime\Address;
@@ -28,6 +29,17 @@ class IndexContactController extends AbstractController
     MessageBusInterface $bus,
   ):Response
   {
+    $session = $request->getSession();
+    if ($session instanceof Session)
+    {
+      $flash_bag = $session->getFlashBag();
+      if ($flash_bag->peek('content'))
+      {
+        /** no form, just a flash message */
+        return $this->render('index/contact.html.twig', []);
+      }
+    }
+
     $command = new IndexContactFormCommand();
 
     $form_options = [

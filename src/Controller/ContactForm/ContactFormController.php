@@ -10,8 +10,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Annotation\Route;
@@ -41,7 +41,18 @@ class ContactFormController extends AbstractController
   {
     if (!$config_service->get_bool('contact_form.enabled', $pp->schema()))
     {
-      throw new NotFoundHttpException('Contact form module not enabled.');
+      $this->createNotFoundException('Contact form module not enabled.');
+    }
+
+    $session = $request->getSession();
+    if ($session instanceof Session)
+    {
+      $flash_bag = $session->getFlashBag();
+      if ($flash_bag->peek('content'))
+      {
+        /** no form, just a flash message */
+        return $this->render('contact_form/contact_form.html.twig', []);
+      }
     }
 
     $support_email_addr = $config_service->get_ary('mail.addresses.support', $pp->schema());
@@ -78,24 +89,22 @@ class ContactFormController extends AbstractController
       );
       $bus->dispatch($m_confirm);
 
-      $this->addFlash('success', 'Open je E-mailbox en klik
-        de link aan die we je zonden om je
-        bericht te bevestigen.');
+      $this->addFlash('content', 'open_email');
 
       return $this->redirectToRoute('contact_form', $pp->ary());
     }
 
     if (!$mail_enabled)
     {
-      $this->addFlash('warning', 'E-mail functies zijn
-        uitgeschakeld door de beheerder.
-        Je kan dit formulier niet gebruiken');
+      $this->addFlash('warning', [
+        'key' => 'flash.email_functions_disabled',
+      ]);
     }
     else if (count($support_email_addr) < 1)
     {
-      $this->addFlash('warning', 'Er is geen support E-mail adres
-        ingesteld door de beheerder.
-        Je kan dit formulier niet gebruiken.');
+      $this->addFlash('warning', [
+        'key' => 'flash.no_support_email_config',
+      ]);
     }
 
     return $this->render('contact_form/contact_form.html.twig', [

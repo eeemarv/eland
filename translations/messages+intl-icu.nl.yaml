@@ -48,6 +48,8 @@ btn:
   transaction: Transactie
   transaction_to: Transactie naar {user}
   try_again: Opnieuw proberen
+  back_to_home: Terug naar de homepagina
+  back_to_index: Terug naar het overzicht
 
 captcha:
   label: Anti-spam verificatiecode
@@ -99,6 +101,20 @@ error_fileupload:
     Het bestand is te groot.
   general: >-
     Fout bij het opladen van de afbeelding.
+
+flash:
+  open_email_confirm_link: >-
+    Open je E-mailbox en klik de link aan
+    die we je zonden om je bericht te bevestigen.
+    De link blijft een uur geldig.
+  email_functions_disabled: >-
+    E-mail functies zijn
+    uitgeschakeld door de beheerder.
+    Je kan dit formulier niet gebruiken
+  no_support_email_config:
+    Er is geen support E-mail adres
+    ingesteld door de beheerder.
+    Je kan dit formulier niet gebruiken.
 
 help:
   address: >-
@@ -579,9 +595,6 @@ contact_form_confirm:
     en verzonden {confirmed_at}
   not_found: >-
     Ongeldig token.
-  btn:
-    back_to_home: Terug naar de homepagina
-    try_again: Probeer opnieuw
 
 contact_types:
   title: Contact types
@@ -765,12 +778,6 @@ index_contact_form:
     waarbij uw data steeds uw data blijft. Vertrek uit
     het systeem en alle data opvragen is op elk moment
     mogelijk. Gebruik dit contactformulier bij interesse.
-  flash:
-    open_email: >-
-      Open je E-mailbox en klik de link aan
-      die we je zonden om je bericht te bevestigen.
-  btn:
-    back_to_index: Terug naar het overzicht
   mail: ## ?
     subject:
       eLAND Contact Formulier
@@ -790,9 +797,6 @@ index_contact_confirm:
     en verzonden {confirmed_at}
   not_found: >-
     Ongeldig token.
-  btn:
-    back_to_index: Terug naar het overzicht
-    try_again: Probeer opnieuw
 
 index:
   title: eLAND index

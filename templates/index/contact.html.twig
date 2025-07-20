@@ -13,17 +13,17 @@
     <div class="panel panel-success">
       <div class="panel-heading">
         <h3>
-          {{- 'index_contact_form.flash.open_email'|trans -}}
+          {{- 'flash.open_email_confirm_link'|trans -}}
         </h3>
       </div>
       <div class="panel-body">
         <a href="{{- path('index') -}}" class="btn btn-lg btn-primary">
-          {{- 'index_contact_form.btn.back_to_index'|trans -}}
+          {{- 'btn.back_to_index'|trans -}}
         </a>
       </div>
     </div>
 
-  {%- else -%}
+  {%- elseif form is defined -%}
 
     <div class="panel panel-info">
       <div class="panel-heading">

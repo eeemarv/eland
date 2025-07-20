@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Annotation\Route;
@@ -43,7 +42,7 @@ class ContactFormConfirmController extends AbstractController
   {
     if (!$config_service->get_bool('contact_form.enabled', $pp->schema()))
     {
-      throw new NotFoundHttpException('Contact form module not enabled.');
+      $this->createNotFoundException('Contact form module not enabled.');
     }
 
     $uuid_confirm_token = Uuid::fromBase58($confirm_token);
