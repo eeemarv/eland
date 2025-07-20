@@ -4,11 +4,11 @@ namespace App\Controller\PasswordReset;
 
 use App\Cnst\PagesCnst;
 use App\Command\PasswordReset\PasswordResetConfirmCommand;
+use App\Email\PasswordReset\Confirm\EmailPasswordResetConfirmMessage;
 use App\Form\Type\PasswordReset\PasswordResetConfirmType;
 use App\Repository\EmailSentRepository;
 use App\Repository\UserRepository;
 use App\Security\User;
-use App\Service\DataTokenService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Uid\Uuid;
 
 #[AsController]
 class PasswordResetConfirmController extends AbstractController
@@ -41,16 +42,14 @@ class PasswordResetConfirmController extends AbstractController
     PasswordHasherFactoryInterface $password_hasher_factory,
     string $confirm_token,
     UserRepository $user_repository,
-    DataTokenService $data_token_service,
     EmailSentRepository $email_sent_repository,
     PageParamsService $pp,
     SessionUserService $su
   ):Response
   {
+    $uuid_confirm_token = Uuid::fromBase58($confirm_token);
+
     $form_disabled = false;
-    $is_not_found = false;
-    $is_expired = false;
-    $is_already_confirmed = false;
     $success = false;
 
     if ($pp->edit_en()
@@ -62,8 +61,6 @@ class PasswordResetConfirmController extends AbstractController
     }
     else
     {
-      $uuid_confirm_token = Uuid::fromBase58($confirm_token);
-
       $record = $email_sent_repository->get_with_confirm_token(
         confirm_token: $uuid_confirm_token,
         minutes_exp: 60,
@@ -72,35 +69,33 @@ class PasswordResetConfirmController extends AbstractController
 
       if ($record === false)
       {
-        $is_not_found = true;
+        $this->addFlash('content', 'is_not_found');
+      }
+      else if ($record['message_class'] !== EmailPasswordResetConfirmMessage::class)
+      {
+        $this->createNotFoundException();
       }
       else if ($record['is_confirmed'])
       {
-        $is_already_confirmed = true;
+        $this->addFlash('content', 'is_already_confirmed');
+        $this->addFlash('confirmed_at', $record['confirmed_at']);
       }
       else if ($record['is_expired'])
       {
-        $is_expired = true;
+        $this->addFlash('content', 'is_expired');
       }
       else
       {
         $success = true;
       }
 
-
-
-
-
-
-      $data = $data_token_service->retrieve($token, 'password_reset', $pp->schema());
-
-      if (!$data)
+      if (!$success)
       {
-        $this->addFlash('error', 'Het reset-token is niet meer geldig.');
-        return $this->redirectToRoute('password_reset', $pp->ary());
+        return $this->redirectToRoute('password_reset_confirm_unvalid', [
+          ...$pp->ary(),
+          'confirm_token' => $confirm_token,
+        ]);
       }
-
-      $user_id = $data['user_id'];
     }
 
     $command = new PasswordResetConfirmCommand();
@@ -118,6 +113,9 @@ class PasswordResetConfirmController extends AbstractController
     if ($form->isSubmitted()
       && $form->isValid())
     {
+      $confirm_data = $record['confirm_data'];
+      $user_id = $confirm_data['user_id'];
+
       $command = $form->getData();
 
       $password_hasher = $password_hasher_factory->getPasswordHasher(new User());
@@ -125,10 +123,13 @@ class PasswordResetConfirmController extends AbstractController
 
       $user_repository->set_password($user_id, $hashed_password, $pp->schema());
 
-      $data = $data_token_service->del($token, 'password_reset', $pp->schema());
+      $email_sent_repository->set_confirmed(
+        confirm_token: $uuid_confirm_token,
+        schema: $pp->schema_o(),
+      );
 
-      $this->addFlash('success', 'Paswoord opgeslagen.');
-      return $this->redirectToRoute('login', $pp->ary());
+      $this->addFlash('content', 'success');
+      return $this->redirectToRoute('password_reset_success', $pp->ary());
     }
 
     return $this->render('password_reset/password_reset_confirm.html.twig', [

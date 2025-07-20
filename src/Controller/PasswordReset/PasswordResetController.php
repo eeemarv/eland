@@ -11,7 +11,6 @@ use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Mime\Address;
@@ -42,18 +41,6 @@ class PasswordResetController extends AbstractController
     PageParamsService $pp
   ):Response
   {
-
-    $session = $request->getSession();
-    if ($session instanceof Session)
-    {
-      $flash_bag = $session->getFlashBag();
-      if ($flash_bag->peek('content'))
-      {
-        /** no form, just a flash message */
-        return $this->render('password_reset/password_reset.html.twig', []);
-      }
-    }
-
     $command = new PasswordResetCommand();
 
     $form_options = [
@@ -81,9 +68,9 @@ class PasswordResetController extends AbstractController
       );
       $bus->dispatch($m_confirm);
 
-      $this->addFlash('content', 'open_email');
+      $this->addFlash('content', 'link_sent');
 
-      return $this->redirectToRoute('password_reset', $pp->ary());
+      return $this->redirectToRoute('password_reset_link_sent', $pp->ary());
     }
 
     return $this->render('password_reset/password_reset.html.twig', [

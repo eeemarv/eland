@@ -19,7 +19,7 @@
       </p>
       <p>
         {{- 'contact_form_confirm.explain'|trans({
-          'system_name': config_str('system.name', schema),
+          'system_name': config_str('system.name'),
           'ao': a_open('contact_form',{}|mpp),
           'ac': '</a>'
         })|raw -}}

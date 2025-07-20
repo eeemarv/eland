@@ -2,7 +2,7 @@
   <columns large="3" class="lv-0 bv-3">
   <spacer size="4"></spacer>
     {%- include '@email/include/btn_ow.html.twig' with {
-      'link': abs_url('home', mpp()),
+      'link': url('home', mpp()),
       'is_offer': true
     } -%}
   </columns>
@@ -21,7 +21,7 @@
   <columns large="3" class="lv-2 bv-5">
     <spacer size="4"></spacer>
     {%- include '@email/include/btn_ow.html.twig' with {
-      'link': abs_url('home', mpp()),
+      'link': url('home', mpp()),
       'is_offer': false
     } -%}
   </columns>

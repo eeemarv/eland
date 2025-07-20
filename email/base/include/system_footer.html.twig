@@ -9,8 +9,8 @@
     {%- include '@email/include/h_bar.html.twig' -%}
     <spacer size="12"></spacer>
     <center>
-      <a href="{{- abs_url('home', {}|mpp) -}}">
-        {{- config_str('system.name', schema) -}}
+      <a href="{{- url('home', {}|mpp) -}}">
+        {{- config_str('system.name') -}}
       </a>
     </center>
     <spacer size="12"></spacer>

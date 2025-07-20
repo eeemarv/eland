@@ -8,7 +8,7 @@
 {%- block content -%}
   <row>
     <columns>
-      <button href="{{- abs_url('register_form_confirm', mpp()|merge({'token': token})) -}}" class="radius">
+      <button href="{{- url('register_form_confirm', mpp()|merge({'token': token})) -}}" class="radius">
         {{- 'register_form_confirm.btn_label'|trans -}}
       </button>
       <p>

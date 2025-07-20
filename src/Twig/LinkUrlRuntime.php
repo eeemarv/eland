@@ -47,13 +47,4 @@ class LinkUrlRuntime implements RuntimeExtensionInterface
 			$route, $params,
 			UrlGeneratorInterface::ABSOLUTE_URL) . '">';
 	}
-
-  public function abs_url(
-		string $route,
-		array $params
-	):string
-  {
-    return $this->url_generator->generate(
-			$route, $params, UrlGeneratorInterface::ABSOLUTE_URL);
-	}
 }

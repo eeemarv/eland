@@ -10,10 +10,10 @@ class ConfigExtension extends AbstractExtension
 	public function getFunctions():array
 	{
 		return [
-			new TwigFunction('config_str', [ConfigRuntime::class, 'get_str']),
-			new TwigFunction('config_bool', [ConfigRuntime::class, 'get_bool']),
-			new TwigFunction('config_int', [ConfigRuntime::class, 'get_int']),
-			new TwigFunction('config_ary', [ConfigRuntime::class, 'get_ary']),
+			new TwigFunction('config_str', [ConfigRuntime::class, 'get_str'], ['needs_context' => true]),
+			new TwigFunction('config_bool', [ConfigRuntime::class, 'get_bool'], ['needs_context' => true]),
+			new TwigFunction('config_int', [ConfigRuntime::class, 'get_int'], ['needs_context' => true]),
+			new TwigFunction('config_ary', [ConfigRuntime::class, 'get_ary'], ['needs_context' => true]),
 		];
 	}
 }

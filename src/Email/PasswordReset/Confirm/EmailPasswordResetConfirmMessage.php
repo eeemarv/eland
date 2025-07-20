@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Email\PasswordReset\PasswordResetConfirm;
+namespace App\Email\PasswordReset\Confirm;
 
 use App\DTO\Schema;
 use Symfony\Component\Messenger\Attribute\AsMessage;

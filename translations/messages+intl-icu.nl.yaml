@@ -1068,6 +1068,8 @@ password_reset:
       staat in het Systeem. Een link om je paswoord te
       resetten wordt naar je E-mailbox gestuurd.
   btn: Zend paswoord reset link
+
+password_reset_link_sent:
   flash:
     open_email_confirm_link: >-
       Een link om je paswoord te resetten
@@ -1082,6 +1084,21 @@ password_reset_confirm:
       je account dat je alleen op deze site gebruikt.
       Gebruik eventueel de "Genereer" knop om automatisch
       een random paswoord aan te maken.
+
+password_reset_confirm_unvalid:
+  expired: >-
+    De link om het paswoord te resetten werd
+    niet bevestigd binnen de tijd.
+    Probeer het opnieuw.
+  already_confirmed: >-
+    De link om het paswoord te resetten werd
+    reeds gebruikt {confirmed_at}
+  not_found: >-
+    Ongeldig token.
+
+password_reset_success:
+  success: >-
+    Je paswoord is succesvol opnieuw ingesteld.
 
 register_form:
   title: Inschrijven

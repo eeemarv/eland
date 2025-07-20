@@ -14,7 +14,7 @@
             <spacer size="10"></spacer>
             <p class="text-center el-mb0">
               {%- if schema is defined -%}
-                {{- config_str('system.name', schema) -}}
+                {{- config_str('system.name') -}}
               {%- else -%}
                 {%- block header -%}{%- endblock -%}
               {%- endif -%}
