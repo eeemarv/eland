@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Email\RegisterForm\RegisterFormSuccess;
+namespace App\Email\RegisterForm\Success;
 
 use App\DTO\Schema;
 use Symfony\Component\Messenger\Attribute\AsMessage;

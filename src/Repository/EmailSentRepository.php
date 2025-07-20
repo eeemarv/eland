@@ -28,6 +28,7 @@ class EmailSentRepository
     null|array $confirm_data,
     string $template,
     string $subject,
+    string $message_class,
     null|Uuid $bulk_id,
     null|Schema $schema
   ):void
@@ -40,6 +41,7 @@ class EmailSentRepository
       'from_address'    => $from_address->getAddress(),
       'template'        => $template,
       'subject'         => $subject,
+      'message_class'   => $message_class,
     ];
 
     $type_ary = [
@@ -47,6 +49,7 @@ class EmailSentRepository
       Types::JSON,
       Types::JSON,
       Types::JSON,
+      Types::STRING,
       Types::STRING,
       Types::STRING,
       Types::STRING,
@@ -100,6 +103,7 @@ class EmailSentRepository
 
 		$stmt = $this->db->prepare('select confirm_data,
       single_to_address, confirmed_at,
+      message_class,
       (confirmed_at is not null) as is_confirmed,
       (timezone(\'utc\', now()) - created_at > interval \'' . $minutes_exp . ' minutes\') as is_expired
 			from ' . $sch_str . '.emails_sent

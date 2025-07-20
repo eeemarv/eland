@@ -11,7 +11,7 @@ final class EmailPasswordResetConfirmMessage
 {
   public function __construct(
     public readonly Address $to,
-    public readonly string $token,
+    public readonly int $user_id,
     public readonly Schema $schema,
   )
   {

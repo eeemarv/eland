@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Email\RegisterForm\RegisterFormAdmin;
+namespace App\Email\RegisterForm\Admin;
 
 use App\DTO\Schema;
 use Symfony\Component\Messenger\Attribute\AsMessage;

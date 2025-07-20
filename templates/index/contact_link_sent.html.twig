@@ -1,0 +1,29 @@
+{%- extends 'index/base/index_contact.html.twig' -%}
+
+{%- set email_help -%}
+	<ul>
+		<li>{{- 'help.email_validation_link'|trans -}}</li>
+		<li>{{- 'help.email_privacy'|trans -}}</li>
+	</ul>
+{%- endset -%}
+
+{%- block container -%}
+
+  <div class="panel panel-success">
+
+    {% if 'link_sent' in app.flashes('content') %}
+      <div class="panel-heading">
+        <h3>
+          {{- 'flash.open_email_confirm_link'|trans -}}
+        </h3>
+      </div>
+    {% endif %}
+
+    <div class="panel-body">
+      <a href="{{- path('index') -}}" class="btn btn-lg btn-primary">
+        {{- 'btn.back_to_index'|trans -}}
+      </a>
+    </div>
+  </div>
+
+{%- endblock container -%}

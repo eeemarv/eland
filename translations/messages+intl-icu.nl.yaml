@@ -50,6 +50,7 @@ btn:
   try_again: Opnieuw proberen
   back_to_home: Terug naar de homepagina
   back_to_index: Terug naar het overzicht
+  back_to_login: Terug naar login
 
 captcha:
   label: Anti-spam verificatiecode
@@ -1067,6 +1068,11 @@ password_reset:
       staat in het Systeem. Een link om je paswoord te
       resetten wordt naar je E-mailbox gestuurd.
   btn: Zend paswoord reset link
+  flash:
+    open_email_confirm_link: >-
+      Een link om je paswoord te resetten
+      werd naar je E-mailbox verzonden.
+      Deze link blijft een uur geldig.
 
 password_reset_confirm:
   title: Nieuw paswoord ingeven
@@ -1079,6 +1085,12 @@ password_reset_confirm:
 
 register_form:
   title: Inschrijven
+  flash:
+    open_email_confirm_link: >-
+      Open je E-mailbox en klik op de
+      bevestigingslink in de E-mail die we
+      naar je gestuurd hebben om je inschrijving
+      te voltooien. De link blijft een uur geldig.
 
 register_form_confirm_fail:
   title: Inschrijving niet geslaagd.

@@ -147,6 +147,7 @@ final class EmailDispatchHandler
       confirm_token: $confirm_token,
       confirm_data: $message->confirm_data,
       template: $message->template,
+      message_class: $message->message_class,
       subject: $subject,
       bulk_id: $message->bulk_id,
       schema: $message->schema

@@ -13,6 +13,7 @@ final class EmailDispatchMessage
 {
     public function __construct(
         public readonly string $template,
+        public readonly string $message_class,
         public readonly AddressAry $to,
         public readonly array $context = [],
         public readonly Address|null $from = null,

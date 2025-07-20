@@ -27,6 +27,7 @@ final class EmailContactFormConfirmHandler
 
     $m_dispatch = new EmailDispatchMessage(
       template: 'contact_form/contact_form_confirm',
+      message_class: get_class($message),
       to: New AddressAry([$message->to]),
       add_confirm_token: true,
       confirm_data: $confirm_data,

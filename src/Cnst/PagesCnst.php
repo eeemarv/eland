@@ -4,7 +4,7 @@ namespace App\Cnst;
 
 class PagesCnst
 {
-    const CMS_TOKEN = 'a--cms-token';
+    const CMS_TOKEN = 'CMScmsCMScmsCMScmsCMSc';
 
     const LANDING = [
         'messages'		=> true,

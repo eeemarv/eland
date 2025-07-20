@@ -3,6 +3,7 @@
 namespace App\Controller\Index;
 
 use App\Email\Index\Contact\EmailIndexContactMessage;
+use App\Email\Index\ContactConfirm\EmailIndexContactConfirmMessage;
 use App\Email\Index\ContactSuccess\EmailIndexContactSuccessMessage;
 use App\Repository\EmailSentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -47,6 +48,10 @@ class IndexContactConfirmController extends AbstractController
     if ($record === false)
     {
       $is_not_found = true;
+    }
+    else if ($record['message_class'] !== EmailIndexContactConfirmMessage::class)
+    {
+      $this->createNotFoundException();
     }
     else if ($record['is_confirmed'])
     {

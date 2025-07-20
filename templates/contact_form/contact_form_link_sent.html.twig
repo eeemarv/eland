@@ -1,0 +1,32 @@
+{%- extends 'base/navbar.html.twig' -%}
+
+{%- set active_menu = 'contact_form' -%}
+
+{%- block content -%}
+
+    <div class="panel panel-success">
+
+      {% if 'link_sent' in app.flashes('content') %}
+      <div class="panel-heading">
+        <h3>
+          {{- 'flash.open_email_confirm_link'|trans -}}
+        </h3>
+      </div>
+      {%- endif -%}
+
+      <div class="panel-body">
+        <a href="{{- path('home', {}|pp) -}}" class="btn btn-lg btn-primary">
+          {{- 'btn.back_to_home'|trans -}}
+        </a>
+      </div>
+    </div>
+
+{%- endblock content -%}
+
+{%- block css -%}
+  {{- parent() -}}
+{%- endblock css -%}
+
+{%- block js -%}
+  {{- parent() -}}
+{%- endblock js -%}

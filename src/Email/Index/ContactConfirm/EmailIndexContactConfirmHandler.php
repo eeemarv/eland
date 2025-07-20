@@ -25,6 +25,7 @@ final class EmailIndexContactConfirmHandler
 
     $m_dispatch = new EmailDispatchMessage(
       template: 'index/index_contact_confirm',
+      message_class: get_class($message),
       to: New AddressAry([$message->to]),
       add_confirm_token: true,
       confirm_data: $confirm_data

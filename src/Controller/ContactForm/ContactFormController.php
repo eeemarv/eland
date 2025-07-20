@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
-use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Mime\Address;
@@ -42,17 +41,6 @@ class ContactFormController extends AbstractController
     if (!$config_service->get_bool('contact_form.enabled', $pp->schema()))
     {
       $this->createNotFoundException('Contact form module not enabled.');
-    }
-
-    $session = $request->getSession();
-    if ($session instanceof Session)
-    {
-      $flash_bag = $session->getFlashBag();
-      if ($flash_bag->peek('content'))
-      {
-        /** no form, just a flash message */
-        return $this->render('contact_form/contact_form.html.twig', []);
-      }
     }
 
     $support_email_addr = $config_service->get_ary('mail.addresses.support', $pp->schema());
@@ -89,9 +77,9 @@ class ContactFormController extends AbstractController
       );
       $bus->dispatch($m_confirm);
 
-      $this->addFlash('content', 'open_email');
+      $this->addFlash('content', 'link_sent');
 
-      return $this->redirectToRoute('contact_form', $pp->ary());
+      return $this->redirectToRoute('contact_form_link_sent', $pp->ary());
     }
 
     if (!$mail_enabled)

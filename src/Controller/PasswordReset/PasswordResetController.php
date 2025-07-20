@@ -3,15 +3,15 @@
 namespace App\Controller\PasswordReset;
 
 use App\Command\PasswordReset\PasswordResetCommand;
-use App\Email\PasswordReset\PasswordResetConfirm\EmailPasswordResetConfirmMessage;
+use App\Email\PasswordReset\Confirm\EmailPasswordResetConfirmMessage;
 use App\Form\Type\PasswordReset\PasswordResetType;
 use App\Render\AccountRender;
 use App\Repository\UserRepository;
-use App\Service\DataTokenService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Mime\Address;
@@ -38,11 +38,22 @@ class PasswordResetController extends AbstractController
     Request $request,
     UserRepository $user_repository,
     AccountRender $account_render,
-    DataTokenService $data_token_service,
     MessageBusInterface $bus,
     PageParamsService $pp
   ):Response
   {
+
+    $session = $request->getSession();
+    if ($session instanceof Session)
+    {
+      $flash_bag = $session->getFlashBag();
+      if ($flash_bag->peek('content'))
+      {
+        /** no form, just a flash message */
+        return $this->render('password_reset/password_reset.html.twig', []);
+      }
+    }
+
     $command = new PasswordResetCommand();
 
     $form_options = [
@@ -61,24 +72,18 @@ class PasswordResetController extends AbstractController
 
       $user_id = $user_repository->get_active_id_by_email($email, $pp->schema());
 
-      $token = $data_token_service->store([
-        'user_id'	=> $user_id,
-        'email'		=> $email,
-      ], 'password_reset', $pp->schema(), 3600);
-
       $account_str = $account_render->get_str($user_id, $pp->schema());
 
       $m_confirm = new EmailPasswordResetConfirmMessage(
         to: new Address($email, $account_str),
-        token: $token,
+        user_id: $user_id,
         schema: $pp->schema_o(),
       );
       $bus->dispatch($m_confirm);
 
-      $this->addFlash('success', 'Een link om je paswoord te resetten werd
-        naar je E-mailbox verzonden. Deze link blijft 1 uur geldig.');
+      $this->addFlash('content', 'open_email');
 
-      return $this->redirectToRoute('login', $pp->ary());
+      return $this->redirectToRoute('password_reset', $pp->ary());
     }
 
     return $this->render('password_reset/password_reset.html.twig', [

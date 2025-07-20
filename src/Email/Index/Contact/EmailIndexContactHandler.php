@@ -33,6 +33,7 @@ final class EmailIndexContactHandler
 
     $m_dispatch = new EmailDispatchMessage(
       template: 'index/index_contact',
+      message_class: get_class($message),
       context: $context,
       reply_to: $message->reply_to,
       to: New AddressAry([$hoster_address]),

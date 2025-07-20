@@ -35,6 +35,7 @@ final class EmailContactFormAdminHandler
 
     $dispatch = new EmailDispatchMessage(
       template: 'contact_form/contact_form_admin',
+      message_class: get_class($message),
       context: $context,
       reply_to: $message->reply_to,
       to: New AddressAry($to),

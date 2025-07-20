@@ -5,6 +5,7 @@ namespace App\Controller\PasswordReset;
 use App\Cnst\PagesCnst;
 use App\Command\PasswordReset\PasswordResetConfirmCommand;
 use App\Form\Type\PasswordReset\PasswordResetConfirmType;
+use App\Repository\EmailSentRepository;
 use App\Repository\UserRepository;
 use App\Security\User;
 use App\Service\DataTokenService;
@@ -21,12 +22,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class PasswordResetConfirmController extends AbstractController
 {
   #[Route(
-    '/{system}/password-reset/{token}',
+    '/{system}/password-reset/{confirm_token}',
     name: 'password_reset_confirm',
     methods: ['GET', 'POST'],
     priority: 30,
     requirements: [
-      'token'         => '%assert.token%',
+      'confirm_token' => '%uuid_base58%',
       'system'        => '%assert.system%',
     ],
     defaults: [
@@ -38,17 +39,22 @@ class PasswordResetConfirmController extends AbstractController
   public function __invoke(
     Request $request,
     PasswordHasherFactoryInterface $password_hasher_factory,
-    string $token,
+    string $confirm_token,
     UserRepository $user_repository,
     DataTokenService $data_token_service,
+    EmailSentRepository $email_sent_repository,
     PageParamsService $pp,
     SessionUserService $su
   ):Response
   {
     $form_disabled = false;
+    $is_not_found = false;
+    $is_expired = false;
+    $is_already_confirmed = false;
+    $success = false;
 
     if ($pp->edit_en()
-      && $token === PagesCnst::CMS_TOKEN
+      && $confirm_token === PagesCnst::CMS_TOKEN
       && $su->is_admin())
     {
       $user_id = $su->id();
@@ -56,6 +62,36 @@ class PasswordResetConfirmController extends AbstractController
     }
     else
     {
+      $uuid_confirm_token = Uuid::fromBase58($confirm_token);
+
+      $record = $email_sent_repository->get_with_confirm_token(
+        confirm_token: $uuid_confirm_token,
+        minutes_exp: 60,
+        schema: $pp->schema_o(),
+      );
+
+      if ($record === false)
+      {
+        $is_not_found = true;
+      }
+      else if ($record['is_confirmed'])
+      {
+        $is_already_confirmed = true;
+      }
+      else if ($record['is_expired'])
+      {
+        $is_expired = true;
+      }
+      else
+      {
+        $success = true;
+      }
+
+
+
+
+
+
       $data = $data_token_service->retrieve($token, 'password_reset', $pp->schema());
 
       if (!$data)

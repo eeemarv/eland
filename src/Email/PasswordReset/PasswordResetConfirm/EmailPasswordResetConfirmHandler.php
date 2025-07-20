@@ -18,14 +18,17 @@ final class EmailPasswordResetConfirmHandler
   {
     $schema = $message->schema;
 
-    $context = [
-      'token' => $message->token,
+    $confirm_data = [
+      'email'   => $message->to->getAddress(),
+      'user_id' => $message->user_id,
     ];
 
     $m_dispatch = new EmailDispatchMessage(
       template: 'password_reset/password_reset_confirm',
-      context: $context,
+      message_class: get_class($message),
       to: New AddressAry([$message->to]),
+      add_confirm_token: true,
+      confirm_data: $confirm_data,
       schema: $schema,
     );
 

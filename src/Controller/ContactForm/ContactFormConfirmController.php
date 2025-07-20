@@ -3,6 +3,7 @@
 namespace App\Controller\ContactForm;
 
 use App\Email\ContactForm\Admin\EmailContactFormAdminMessage;
+use App\Email\ContactForm\Confirm\EmailContactFormConfirmMessage;
 use App\Email\ContactForm\Success\EmailContactFormSuccessMessage;
 use App\Repository\EmailSentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -58,9 +59,13 @@ class ContactFormConfirmController extends AbstractController
       schema: $pp->schema_o(),
     );
 
-     if ($record === false)
+    if ($record === false)
     {
       $is_not_found = true;
+    }
+    else if ($record['message_class'] !== EmailContactFormConfirmMessage::class)
+    {
+      $this->createNotFoundException();
     }
     else if ($record['is_confirmed'])
     {

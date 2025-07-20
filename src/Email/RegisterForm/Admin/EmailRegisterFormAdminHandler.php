@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Email\RegisterForm\RegisterFormAdmin;
+namespace App\Email\RegisterForm\Admin;
 
 use App\DTO\AddressAry;
 use App\Email\EmailDispatchMessage;
@@ -35,6 +35,7 @@ final class EmailRegisterFormAdminHandler
 
       $dispatch = new EmailDispatchMessage(
         template: 'contact_form/contact_form',
+        message_class: get_class($message),
         context: $context,
         reply_to: $message->reply_to,
         to: New AddressAry($to),

@@ -22,6 +22,7 @@ final class EmailIndexContactSuccessHandler
 
     $m_dispatch = new EmailDispatchMessage(
       template: 'index/index_contact_success',
+      message_class: get_class($message),
       context: $context,
       to: New AddressAry([$message->to]),
     );

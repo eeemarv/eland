@@ -16,7 +16,6 @@ use App\Service\StaticContentService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Annotation\Route;
@@ -25,12 +24,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class RegisterFormConfirmController extends AbstractController
 {
   #[Route(
-    '/{system}/register/{token}',
+    '/{system}/register/{confirm_token}',
     name: 'register_form_confirm',
     methods: ['GET'],
     priority: 30,
     requirements: [
-      'token'         => '%assert.token%',
+      'confirm_token' => '%uuid_base58%',
       'system'        => '%assert.system%',
     ],
     defaults: [
@@ -39,7 +38,7 @@ class RegisterFormConfirmController extends AbstractController
   )]
 
   public function __invoke(
-    string $token,
+    string $confirm_token,
     Db $db,
     Request $request,
     ConfigService $config_service,
@@ -55,13 +54,13 @@ class RegisterFormConfirmController extends AbstractController
   {
     if (!$config_service->get_bool('register_form.enabled', $pp->schema()))
     {
-      throw new NotFoundHttpException('Register form not enabled.');
+      $this->createNotFoundException('Register form not enabled.');
     }
 
     $postcode_enabled = $config_service->get_bool('users.fields.postcode.enabled', $pp->schema());
 
     if ($pp->edit_en()
-      && $token === PagesCnst::CMS_TOKEN
+      && $confirm_token === PagesCnst::CMS_TOKEN
       && $su->is_admin())
     {
       $fail = $request->query->has('fail');

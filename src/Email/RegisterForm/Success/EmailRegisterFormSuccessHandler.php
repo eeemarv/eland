@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Email\RegisterForm\RegisterFormSuccess;
+namespace App\Email\RegisterForm\Success;
 
 use App\DTO\AddressAry;
 use App\Email\EmailDispatchMessage;
@@ -24,6 +24,7 @@ final class EmailRegisterFormSuccessHandler
 
       $dispatch = new EmailDispatchMessage(
         template: 'contact_form/contact_form_success',
+        message_class: get_class($message),
         context: $context,
         to: New AddressAry([$message->to]),
         schema: $schema,

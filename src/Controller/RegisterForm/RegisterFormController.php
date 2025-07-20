@@ -13,8 +13,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Annotation\Route;
@@ -47,7 +47,18 @@ class RegisterFormController extends AbstractController
   {
     if (!$config_service->get_bool('register_form.enabled', $pp->schema()))
     {
-      throw new NotFoundHttpException('Register form not enabled.');
+      $this->createNotFoundException('Register form not enabled.');
+    }
+
+    $session = $request->getSession();
+    if ($session instanceof Session)
+    {
+      $flash_bag = $session->getFlashBag();
+      if ($flash_bag->peek('content'))
+      {
+        /** no form, just a flash message */
+        return $this->render('register_form/register_form.html.twig', []);
+      }
     }
 
     $postcode_enabled = $config_service->get_bool('users.fields.postcode.enabled', $pp->schema());
@@ -115,7 +126,9 @@ class RegisterFormController extends AbstractController
         bevestigingslink in de E-mail die we naar je gestuurd
         hebben om je inschrijving te voltooien.');
 
-      return $this->redirectToRoute('login', $pp->ary());
+      $this->addFlash('content', 'open_email');
+
+      return $this->redirectToRoute('register_form', $pp->ary());
     }
 
     return $this->render('register_form/register_form.html.twig', [

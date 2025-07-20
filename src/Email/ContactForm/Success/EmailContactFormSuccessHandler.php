@@ -24,6 +24,7 @@ final class EmailContactFormSuccessHandler
 
       $m_dispatch = new EmailDispatchMessage(
         template: 'contact_form/contact_form_success',
+        message_class: get_class($message),
         context: $context,
         to: New AddressAry([$message->to]),
         schema: $schema,
