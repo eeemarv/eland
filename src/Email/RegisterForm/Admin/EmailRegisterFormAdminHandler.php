@@ -12,36 +12,30 @@ use Symfony\Component\Mime\Address;
 #[AsMessageHandler]
 final class EmailRegisterFormAdminHandler
 {
-    public function __construct(
-      private readonly MessageBusInterface $bus,
-      private readonly ConfigService $config_service,
-    ) {}
+  public function __construct(
+    private readonly MessageBusInterface $bus,
+    private readonly ConfigService $config_service,
+  ) {}
 
-    public function __invoke(EmailRegisterFormAdminMessage $message):void
-    {
-      $schema = $message->schema;
+  public function __invoke(EmailRegisterFormAdminMessage $message):void
+  {
+    $schema = $message->schema;
 
-      $context = [
-        'message' => $message->message,
-        'sender'  => [
-          'email' => $message->reply_to->toString(),
-          'agent' => $message->agent,
-          'ip' => $message->ip,
-        ],
-      ];
+    $context = [
+      'user_id' => $message->user_id,
+    ];
 
-      $to_email_ary = $this->config_service->get_ary('mail.addresses.support', $schema->str());
-      $to = array_map(fn($e) => new Address($e), $to_email_ary);
+    $to_email_ary = $this->config_service->get_ary('mail.addresses.support', $schema->str());
+    $to = array_map(fn($e) => new Address($e), $to_email_ary);
 
-      $dispatch = new EmailDispatchMessage(
-        template: 'contact_form/contact_form',
-        message_class: get_class($message),
-        context: $context,
-        reply_to: $message->reply_to,
-        to: New AddressAry($to),
-        schema: $schema
-      );
+    $m_dispatch = new EmailDispatchMessage(
+      template: 'register_form/register_form_admin',
+      message_class: get_class($message),
+      context: $context,
+      to: New AddressAry($to),
+      schema: $schema
+    );
 
-      $this->bus->dispatch($dispatch);
-    }
+    $this->bus->dispatch($m_dispatch);
+  }
 }

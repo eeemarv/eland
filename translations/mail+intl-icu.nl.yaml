@@ -20,6 +20,7 @@ label:
   is_canceled: Geannuleerd
   is_paid: Betaald
   minutes: Minuten
+  name: Naam
   offer: Aanbod
   password: Paswoord
   postcode: Postcode
@@ -204,7 +205,6 @@ index_contact_confirm:
     Je bericht wordt pas verzonden wanneer
     je je email adres bevestigd hebt door
     op bovenstaande link te klikken,
-  validity: Deze link blijft 24 uur geldig.
   ignore: >-
     Als je niet het
     {ao}eLAND contactformulier{ac}
@@ -260,6 +260,7 @@ register_form_admin:
   message: >-
     De volgende persoon schreef zich
     in via de website
+  btn: Link naar account
 
 register_form_confirm:
   subject: >-
@@ -273,25 +274,20 @@ register_form_confirm:
     zelf {ao}het inschrijvingsformulier
     van {system_name}{ac} hebt ingevuld.
 
-register_form_success:
+support_form_copy:
   subject: >-
-    Je inschrijving
-
-support_copy:
-  subject: >-
-    Kopie van je bericht aan {system_name}
+    Kopie van je bericht
   explain: >-
     Het bericht hieronder heb je verzonden
     aan {system_name} via het help/supportformulier
-support:
+
+support_form:
   subject: >-
     Bericht van het Supportformulier
-  sub_header: >-
-    Supportforumulier
   explain: >-
     Het bericht hieronder werd ingegeven in het
-    supportformulier van {ao}{system_name}{ac} door
-    gebruiker {account}.
+    supportformulier door
+    gebruiker {ao}{account}{ac}.
   explain_reply: >-
     Je kan dit bericht eventueel direct beantwoorden (Reply).
   explain_no_reply: >-

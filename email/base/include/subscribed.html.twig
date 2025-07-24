@@ -1,0 +1,33 @@
+{%- trans_default_domain 'mail' -%}
+
+{%- if subscribed == 'admin' -%}
+
+  <row>
+    <columns>
+      {%- include '@email/include/h_bar.html.twig' -%}
+      <spacer size="8"></spacer>
+      <p>
+        {{- 'subscribed.admin'|trans({
+          'ao': a_open('config_mail_addr', {}|mpp('admin')),
+          'ac': '</a>'
+        })|raw -}}
+      </p>
+    </columns>
+  </row>
+
+{%- elseif subscribed == 'support' -%}
+
+  <row>
+    <columns>
+      {%- include '@email/include/h_bar.html.twig' -%}
+      <spacer size="8"></spacer>
+      <p>
+        {{- 'subscribed.support'|trans({
+          'ao': a_open('config_mail_addr', {}|mpp('admin')),
+          'ac': '</a>'
+        })|raw -}}
+      </p>
+    </columns>
+  </row>
+
+{%- endif -%}

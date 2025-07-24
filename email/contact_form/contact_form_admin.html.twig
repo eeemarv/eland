@@ -5,22 +5,24 @@
   {{- 'contact_form_admin.subject'|trans -}}
 {%- endblock subject -%}
 
-{% block content -%}
-  <row>
-    <columns>
-      <p>
-        {{- 'contact_form_admin.explain'|trans({
-          'ao': a_open('home', {}|mpp),
-          'ac': '</a>',
-          'system_name': config_str('system.name')
-        })|raw -}}
-      </p>
-    </columns>
-  </row>
+{% block content_1row -%}
+  <p>
+    {{- 'contact_form_admin.explain'|trans({
+      'ao': a_open('home', {}|mpp),
+      'ac': '</a>',
+      'system_name': config_str('system.name')
+    })|raw -}}
+  </p>
+{%- endblock content_1row -%}
 
-  {%- include '@email/include/message.html.twig' -%}
-{%- endblock content -%}
+{%- block message_text -%}
+  {{- message|nl2br -}}
+{%- endblock message_text -%}
 
 {%- block sender_info_footer -%}
   {%- include '@email/include/sender_info.html.twig' -%}
 {%- endblock sender_info_footer -%}
+
+{%- block subscribed -%}
+  {%- include '@email/subscribed/support.html.twig' -%}
+{%- endblock subscribed -%}

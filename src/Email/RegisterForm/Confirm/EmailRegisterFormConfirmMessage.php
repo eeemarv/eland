@@ -13,9 +13,10 @@ final class EmailRegisterFormConfirmMessage
     public readonly Address $to,
     public readonly string $first_name,
     public readonly string $last_name,
+    public readonly string $full_name,
     public readonly string|null $postcode,
-    public readonly string|null $tel,
-    public readonly string|null $gsm,
+    public readonly string|null $phone,
+    public readonly string|null $mobile,
     public readonly Schema $schema,
   )
   {

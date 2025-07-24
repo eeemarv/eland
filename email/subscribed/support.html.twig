@@ -1,0 +1,6 @@
+{%- trans_default_domain 'mail' -%}
+
+{{- 'subscribed.support'|trans({
+  'ao': a_open('config_mail_addr', {}|mpp('admin')),
+  'ac': '</a>'
+})|raw -}}

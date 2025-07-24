@@ -5,16 +5,14 @@
   {{- 'contact_form_success.subject'|trans -}}
 {%- endblock subject -%}
 
-{%- block content -%}
-  <row>
-    <columns>
-      <p>
-        {{- 'contact_form_success.explain'|trans({
-          'system_name': config_str('system.name')
-        }) -}}
-      </p>
-    </columns>
-  </row>
+{%- block content_1row -%}
+  <p>
+    {{- 'contact_form_success.explain'|trans({
+      'system_name': config_str('system.name')
+    }) -}}
+  </p>
+{%- endblock content_1row -%}
 
-  {%- include '@email/include/message.html.twig' -%}
-{%- endblock content -%}
+{%- block message_text -%}
+  {{- message|nl2br -}}
+{%- endblock message_text -%}

@@ -9,14 +9,12 @@
   {{- 'index_contact_success.header'|trans -}}
 {%- endblock header -%}
 
-{%- block content -%}
-  <row>
-    <columns>
-      <p>
-        {{- 'index_contact_success.explain'|trans -}}
-      </p>
-    </columns>
-  </row>
+{%- block content_1row -%}
+  <p>
+    {{- 'index_contact_success.explain'|trans -}}
+  </p>
+{%- endblock content_1row -%}
 
-  {%- include '@email/include/message.html.twig' -%}
-{%- endblock content -%}
+{%- block message_text -%}
+  {{- message|nl2br -}}
+{%- endblock message_text -%}

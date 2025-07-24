@@ -1,0 +1,32 @@
+{%- extends '@email/base/base.html.twig' -%}
+{%- trans_default_domain 'mail' -%}
+
+{% block subject -%}
+  {{- 'support_form_copy.subject'|trans -}}
+{%- endblock subject -%}
+
+{% block content -%}
+
+
+    {%- set info -%}
+        {{- 'support_form_copy.explain'|trans({
+            'system_name': config_str('system.name', schema)
+        }) -}}
+    {%- endset -%}
+
+    {%- include 'mail/include/info_bgcolor_panel.html.twig' with {
+        'info': info|raw,
+        'bgcolor': bgcolor_panel
+    } -%}
+
+    {%- include 'mail/include/info_bgcolor_panel.html.twig' with {
+        'info': '',
+        'bgcolor': bgcolor_panel
+    } -%}
+
+    {%- include 'mail/include/spacer20.html.twig' -%}
+    {%- include 'mail/include/info_panel.html.twig' with {
+        'info': message|nl2br
+    } -%}
+
+{%- endblock content -%}

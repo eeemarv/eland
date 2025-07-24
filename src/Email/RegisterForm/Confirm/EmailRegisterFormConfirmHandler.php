@@ -22,12 +22,13 @@ final class EmailRegisterFormConfirmHandler
       'email'       => $message->to->getAddress(),
       'first_name'  => $message->first_name,
       'last_name'   => $message->last_name,
+      'full_name'   => $message->full_name,
       'postcode'    => $message->postcode,
-      'tel'         => $message->tel,
-      'gsm'         => $message->gsm,
+      'phone'       => $message->phone,
+      'mobile'      => $message->mobile,
     ];
 
-    $dispatch = new EmailDispatchMessage(
+    $m_dispatch = new EmailDispatchMessage(
       template: 'register_form/register_form_confirm',
       message_class: get_class($message),
       to: New AddressAry([$message->to]),
@@ -36,6 +37,6 @@ final class EmailRegisterFormConfirmHandler
       schema: $schema,
     );
 
-    $this->bus->dispatch($dispatch);
+    $this->bus->dispatch($m_dispatch);
   }
 }

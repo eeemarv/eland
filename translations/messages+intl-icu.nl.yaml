@@ -1102,26 +1102,26 @@ password_reset_success:
 
 register_form:
   title: Inschrijven
+
+register_form_confirm:
+  success: Je inschrijving is geslaagd.
+  expired: >-
+    Je inschrijving werd niet bevestigd binnen de tijd.
+    Probeer het opnieuw.
+  already_confirmed: >-
+    Je inschrijving werd reeds eerder
+    bevestigd {confirmed_at}
+  not_found: >-
+    Ongeldig token.
+
+register_form_link_sent:
   flash:
-    open_email_confirm_link: >-
+    link_sent: >-
       Open je E-mailbox en klik op de
       bevestigingslink in de E-mail die we
       naar je gestuurd hebben om je inschrijving
       te voltooien. De link blijft een uur geldig.
 
-register_form_confirm_fail:
-  title: Inschrijving niet geslaagd.
-
-register_form_confirm_success:
-  title: Inschrijving geslaagd.
-  cms:
-    email:
-      title: Bevestigings E-mail (cms edit lokaal blok)
-      explain: >-
-        Deze E-mail wordt verzonden naar degene
-        die zich inschrijft na een geslaagde
-        inschrijving. Indien dit veld leeg is,
-        wordt er geen E-mail verstuurd.
 
 support_form:
   title: Support

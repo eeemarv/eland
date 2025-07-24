@@ -18,41 +18,71 @@ class AccountRuntime implements RuntimeExtensionInterface
 	{
 	}
 
-	public function get(int $id, string $schema):string
+	public function get(
+    array $context,
+    int $user_id,
+    string|null $schema,
+  ):string
 	{
-		$user = $this->user_cache_service->get($id, $schema);
+    $sch_str = $schema ?? $context['schema'] ?? null;
+		$user = $this->user_cache_service->get($user_id, $sch_str);
 		$code = $user['code'] ?? '***';
 		$name = $user['name'] ?? '***';
 		return $code . ' ' . $name;
 	}
 
-	public function get_full_name(int $id, string $schema):string
+	public function get_full_name(
+    array $context,
+    int $user_id,
+    string|null $schema = null,
+  ):string
 	{
-		$user = $this->user_cache_service->get($id, $schema);
+    $sch_str = $schema ?? $context['schema'] ?? null;
+		$user = $this->user_cache_service->get($user_id, $sch_str);
 		return $user['full_name'];
 	}
 
-	public function get_name(int $id, string $schema):string
+	public function get_name(
+    array $context,
+    int $user_id,
+    string|null $schema = null,
+  ):string
 	{
-		$user = $this->user_cache_service->get($id, $schema);
+    $sch_str = $schema ?? $context['schema'] ?? null;
+		$user = $this->user_cache_service->get($user_id, $sch_str);
 		return $user['name'];
 	}
 
-	public function get_code(int $id, string $schema):string
+	public function get_code(
+    array $context,
+    int $user_id,
+    string|null $schema = null,
+  ):string
 	{
-		$user = $this->user_cache_service->get($id, $schema);
+    $sch_str = $schema ?? $context['schema'] ?? null;
+		$user = $this->user_cache_service->get($user_id, $sch_str);
 		return $user['code'];
 	}
 
-	public function get_balance(int $id, string $schema):int
+	public function get_balance(
+    array $context,
+    int $user_id,
+    string|null $schema = null
+  ):int
 	{
-		return $this->account_repository->get_balance($id, $schema);
+    $sch_str = $schema ?? $context['schema'] ?? null;
+		return $this->account_repository->get_balance($user_id, $sch_str);
 	}
 
-	public function get_status(int $id, string $schema):string
+	public function get_status(
+    array $context,
+    int $user_id,
+    string|null $schema = null
+  ):string
 	{
+    $sch_str = $schema ?? $context['schema'] ?? null;
 
-		$user = $this->user_cache_service->get($id, $schema);
+		$user = $this->user_cache_service->get($user_id, $sch_str);
 		$status_id = $user['status'];
 
         if (isset($user['adate'])

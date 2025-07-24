@@ -9,24 +9,20 @@
   {{- 'index_contact_confirm.header'|trans -}}
 {%- endblock header -%}
 
-{%- block content -%}
-  <row>
-    <columns>
-      <button href="{{- url('index_contact_confirm', {'confirm_token': confirm_token}|mpp) -}}" class="radius">
-        {{- 'index_contact_confirm.btn'|trans -}}
-      </button>
-      <p>
-        {{- 'index_contact_confirm.btn_explain'|trans -}}
-      </p>
-      <p>
-        {{- 'index_contact_confirm.validity'|trans -}}
-      </p>
-      <p>
-        {{- 'index_contact_confirm.ignore'|trans({
-          'ao': a_open('index_contact', {}|mpp),
-          'ac': '</a>'
-        })|raw -}}
-      </p>
-    </columns>
-  </row>
-{%- endblock content -%}
+{%- block content_1row -%}
+  <button href="{{- url('index_contact_confirm', {'confirm_token': confirm_token}|mpp) -}}" class="radius">
+    {{- 'index_contact_confirm.btn'|trans -}}
+  </button>
+  <p>
+    {{- 'index_contact_confirm.btn_explain'|trans -}}
+  </p>
+  <p>
+    {{- 'expiration.1_hour'|trans -}}
+  </p>
+  <p>
+    {{- 'index_contact_confirm.ignore'|trans({
+      'ao': a_open('index_contact', {}|mpp),
+      'ac': '</a>'
+    })|raw -}}
+  </p>
+{%- endblock content_1row -%}

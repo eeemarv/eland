@@ -5,25 +5,21 @@
   {{- 'contact_form_confirm.subject'|trans -}}
 {%- endblock subject -%}
 
-{%- block content -%}
-  <row>
-    <columns>
-      <button href="{{- url('contact_form_confirm', {'confirm_token': confirm_token}|mpp) -}}" class="radius">
-        {{- 'contact_form_confirm.btn_label'|trans -}}
-      </button>
-      <p>
-        {{- 'contact_form_confirm.message'|trans -}}
-      </p>
-      <p>
-        {{- 'expiration.1_hour'|trans -}}
-      </p>
-      <p>
-        {{- 'contact_form_confirm.explain'|trans({
-          'system_name': config_str('system.name'),
-          'ao': a_open('contact_form',{}|mpp),
-          'ac': '</a>'
-        })|raw -}}
-      </p>
-    </columns>
-  </row>
-{%- endblock content -%}
+{%- block content_1row -%}
+  <button href="{{- url('contact_form_confirm', {'confirm_token': confirm_token}|mpp) -}}" class="radius">
+    {{- 'contact_form_confirm.btn_label'|trans -}}
+  </button>
+  <p>
+    {{- 'contact_form_confirm.message'|trans -}}
+  </p>
+  <p>
+    {{- 'expiration.1_hour'|trans -}}
+  </p>
+  <p>
+    {{- 'contact_form_confirm.explain'|trans({
+      'system_name': config_str('system.name'),
+      'ao': a_open('contact_form',{}|mpp),
+      'ac': '</a>'
+    })|raw -}}
+  </p>
+{%- endblock content_1row -%}

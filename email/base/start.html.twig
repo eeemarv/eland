@@ -26,13 +26,49 @@
       {%- endif -%}
     {%- endblock header_container -%}
 
-    {%- block content -%}{%- endblock -%}
+    {%- if block('content_1row') is not empty -%}
+      <row>
+        <columns>
+          {% block content_1row -%}
+          {%- endblock -%}
+        </columns>
+      </row>
+    {%- endif -%}
 
-    {%- block sender_info_footer -%}{%- endblock -%}
-    {%- block account_info_footer -%}{%- endblock -%}
+    {%- if block('message_text') is not empty -%}
+      <row class="l-{{- email_background -}}-3 b-{{- email_background -}}-8">
+        <columns>
+          <spacer size="8"></spacer>
+          <p>
+            {%- block message_text -%}
+            {%- endblock -%}
+          </p>
+        </columns>
+      </row>
+      <spacer size="16"></spacer>
+    {%- endif -%}
 
-    {%- block unsubscribe_info_footer -%}{%- endblock -%}
-    {%- block admin_info_footer -%}{%- endblock -%}
+    {%- block content -%}
+    {%- endblock -%}
+
+    {%- block sender_info_footer -%}
+    {%- endblock -%}
+
+    {%- block account_info_footer -%}
+    {%- endblock -%}
+
+    {%- if block('subscribed') is not empty -%}
+      <row>
+        <columns>
+          {%- include '@email/include/h_bar.html.twig' -%}
+          <spacer size="8"></spacer>
+          <p>
+            {%- block subscribed -%}
+            {%- endblock -%}
+          </p>
+        </columns>
+      </row>
+    {%- endif -%}
 
     {%- if schema is defined -%}
       {%- include '@email/base/include/system_footer.html.twig' -%}
