@@ -17,7 +17,7 @@ final class EmailDispatchMessage
         public readonly AddressAry $to,
         public readonly array $context = [],
         public readonly Address|null $from = null,
-        public readonly Address|null $reply_to = null,
+        public readonly AddressAry|null $reply_to = null,
         public readonly AddressAry|null $cc = null,
         public readonly AddressAry|null $bcc = null,
         public readonly string|null $embedded_template = null,

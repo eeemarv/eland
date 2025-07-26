@@ -50,8 +50,8 @@ final class EmailDispatchHandler
 
     if (isset($message->reply_to))
     {
-      $email->replyTo($message->reply_to);
-      $log_context['reply_to'] = $message->reply_to->toString();
+      $email->replyTo(...$message->reply_to->ary());
+      $log_context['reply_to'] = $message->reply_to->str();
     }
 
     if (isset($message->cc))
@@ -143,7 +143,7 @@ final class EmailDispatchHandler
       from_address: $from,
       bcc_addresses: $message->bcc ?? new AddressAry([]),
       cc_addresses: $message->cc ?? new AddressAry([]),
-      reply_to_address: $message->reply_to,
+      reply_to_addresses: $message->reply_to ?? new AddressAry([]),
       confirm_token: $confirm_token,
       confirm_data: $message->confirm_data,
       template: $message->template,

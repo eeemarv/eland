@@ -21,7 +21,7 @@ class AccountRuntime implements RuntimeExtensionInterface
 	public function get(
     array $context,
     int $user_id,
-    string|null $schema,
+    string|null $schema = null,
   ):string
 	{
     $sch_str = $schema ?? $context['schema'] ?? null;

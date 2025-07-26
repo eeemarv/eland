@@ -10,26 +10,26 @@ use Symfony\Component\Messenger\MessageBusInterface;
 #[AsMessageHandler]
 final class EmailContactFormSuccessHandler
 {
-    public function __construct(
-      private readonly MessageBusInterface $bus,
-    ) {}
+  public function __construct(
+    private readonly MessageBusInterface $bus,
+  ) {}
 
-    public function __invoke(EmailContactFormSuccessMessage $message):void
-    {
-      $schema = $message->schema;
+  public function __invoke(EmailContactFormSuccessMessage $message):void
+  {
+    $schema = $message->schema;
 
-      $context = [
-        'message' => $message->message,
-      ];
+    $context = [
+      'message' => $message->message,
+    ];
 
-      $m_dispatch = new EmailDispatchMessage(
-        template: 'contact_form/contact_form_success',
-        message_class: get_class($message),
-        context: $context,
-        to: New AddressAry([$message->to]),
-        schema: $schema,
-      );
+    $m_dispatch = new EmailDispatchMessage(
+      template: 'contact_form/contact_form_success',
+      message_class: get_class($message),
+      context: $context,
+      to: New AddressAry([$message->to]),
+      schema: $schema,
+    );
 
-      $this->bus->dispatch($m_dispatch);
-    }
+    $this->bus->dispatch($m_dispatch);
+  }
 }

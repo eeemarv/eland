@@ -2,9 +2,13 @@
 
 namespace App\Repository;
 
+use App\DTO\AddressAry;
+use App\DTO\Schema;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App\Service\UserCacheService;
+use Doctrine\DBAL\Types\Types;
+use Symfony\Component\Mime\Address;
 
 class UserRepository
 {
@@ -15,9 +19,35 @@ class UserRepository
 	{
 	}
 
+  public function get_email_addresses_active_user(
+    int $user_id,
+    Schema $schema,
+  ):AddressAry
+  {
+    $stmt = $this->db->prepare('select c.value, u.name
+      from ' . $schema->str() . '.contact c, ' .
+        $schema->str() . '.type_contact tc, ' .
+        $schema->str() . '.users u
+      where c.id_type_contact = tc.id
+        and tc.abbrev = \'mail\'
+        and c.user_id = :user_id
+        and c.user_id = u.id
+        and u.status in (1, 2)');
+    $stmt->bindValue('user_id', $user_id, Types::INTEGER);
+    $res = $stmt->executeQuery();
+    $ary = [];
+
+    while ($row = $res->fetchAssociative())
+    {
+      $ary[] = new Address($row['value'], $row['name']);
+    }
+
+    return new AddressAry($ary);
+  }
+
 	public function get_account_str(int $id, string $schema):string
 	{
-        $account_str = $this->db->fetchOne('select trim(concat(coalesce(code,\'\'), \' \', coalesce(name, \'\')))
+    $account_str = $this->db->fetchOne('select trim(concat(coalesce(code,\'\'), \' \', coalesce(name, \'\')))
             from ' . $schema . '.users
 			where id = ?',
 			[$id],

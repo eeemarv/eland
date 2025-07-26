@@ -85,13 +85,13 @@ class ContactFormController extends AbstractController
     if (!$mail_enabled)
     {
       $this->addFlash('warning', [
-        'key' => 'flash.email_functions_disabled',
+        'key' => 'flash.email.functions_disabled',
       ]);
     }
     else if (count($support_email_addr) < 1)
     {
       $this->addFlash('warning', [
-        'key' => 'flash.no_support_email_config',
+        'key' => 'flash.email.no_support_config',
       ]);
     }
 

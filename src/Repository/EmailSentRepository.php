@@ -23,7 +23,7 @@ class EmailSentRepository
     Address $from_address,
     AddressAry $bcc_addresses,
     AddressAry $cc_addresses,
-    null|Address $reply_to_address,
+    AddressAry $reply_to_addresses,
     null|Uuid $confirm_token,
     null|array $confirm_data,
     string $template,
@@ -38,6 +38,7 @@ class EmailSentRepository
       'to_addresses'    => $to_addresses->adr_str_ary(),
       'cc_addresses'    => $cc_addresses->adr_str_ary(),
       'bcc_addresses'   => $bcc_addresses->adr_str_ary(),
+      'reply_to_addresses'  => $reply_to_addresses->adr_str_ary(),
       'from_address'    => $from_address->getAddress(),
       'template'        => $template,
       'subject'         => $subject,
@@ -49,17 +50,12 @@ class EmailSentRepository
       Types::JSON,
       Types::JSON,
       Types::JSON,
+      Types::JSON,
       Types::STRING,
       Types::STRING,
       Types::STRING,
       Types::STRING,
     ];
-
-    if (isset($reply_to_address))
-    {
-      $insert_ary['reply_to_address'] = $reply_to_address->getAddress();
-      $type_ary[] = Types::STRING;
-    }
 
     if (isset($confirm_token))
     {

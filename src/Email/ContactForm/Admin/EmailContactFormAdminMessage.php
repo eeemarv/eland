@@ -10,11 +10,11 @@ use Symfony\Component\Mime\Address;
 final class EmailContactFormAdminMessage
 {
   public function __construct(
-      public readonly Address $reply_to,
-      public readonly string $message,
-      public readonly string $agent,
-      public readonly string $ip,
-      public readonly Schema $schema
+    public readonly Address $reply_to,
+    public readonly string $message,
+    public readonly string $agent,
+    public readonly string $ip,
+    public readonly Schema $schema
   )
   {
   }

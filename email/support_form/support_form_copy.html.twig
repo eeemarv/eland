@@ -1,0 +1,18 @@
+{%- extends '@email/base/base.html.twig' -%}
+{%- trans_default_domain 'mail' -%}
+
+{% block subject -%}
+  {{- 'support_form_copy.subject'|trans -}}
+{%- endblock subject -%}
+
+{% block content_1row -%}
+  <p>
+    {{- 'support_form_copy.explain'|trans({
+        'system_name': config_str('system.name', schema)
+    }) -}}
+  </p>
+{%- endblock content_1row -%}
+
+{%- block message_text -%}
+  {{- message|nl2br -}}
+{%- endblock message_text -%}

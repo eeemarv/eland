@@ -274,14 +274,7 @@ register_form_confirm:
     zelf {ao}het inschrijvingsformulier
     van {system_name}{ac} hebt ingevuld.
 
-support_form_copy:
-  subject: >-
-    Kopie van je bericht
-  explain: >-
-    Het bericht hieronder heb je verzonden
-    aan {system_name} via het help/supportformulier
-
-support_form:
+support_form_admin:
   subject: >-
     Bericht van het Supportformulier
   explain: >-
@@ -295,6 +288,13 @@ support_form:
     voor haar/zijn account kan je dit bericht niet direct
     beantwoorden. Kijk in het {ao}account{ac}
     voor eventuele andere contactgegevens.
+
+support_form_copy:
+  subject: >-
+    Kopie van je bericht
+  explain: >-
+    Het bericht hieronder heb je verzonden
+    aan {system_name} via het help/supportformulier
 
 transaction:
   subject: >-

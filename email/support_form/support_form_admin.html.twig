@@ -2,27 +2,25 @@
 {%- trans_default_domain 'mail' -%}
 
 {% block subject -%}
-  {{- 'support_form.subject'|trans -}}
+  {{- 'support_form_admin.subject'|trans -}}
 {%- endblock subject -%}
 
 {% block content_1row -%}
   <p>
-    {{- 'support_form.explain'|trans({
-      'ao': a_open('home', {}|mpp),
-      'ac': '</a>',
+    {{- 'support_form_admin.explain'|trans({
       'system_name': config_str('system.name'),
-      'account':  a_open('users_show', {'id': user_id}|mpp('admin')
-        ~ account(user_id)
-        ~ '</a>'
+      'account': account(user_id),
+      'ao': a_open('users_show', {'id': user_id}|mpp('admin')),
+      'ac': '</a>',
     })|raw -}}
   </p>
   <p>
     {%- if can_reply -%}
-      {{- 'support_form.explain_reply'|trans -}}
+      {{- 'support_form_admin.explain_reply'|trans -}}
     {%- else -%}
-      {{- 'support_form.explain_no_reply'|trans({
+      {{- 'support_form_admin.explain_no_reply'|trans({
         'ao': a_open('users_show', {'id': user_id}|mpp('admin')),
-        'ac': '</a>'
+        'ac': '</a>',
       })|raw -}}
     {%- endif -%}
   </p>

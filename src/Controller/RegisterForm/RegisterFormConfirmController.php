@@ -4,21 +4,15 @@ namespace App\Controller\RegisterForm;
 
 use App\Email\RegisterForm\Admin\EmailRegisterFormAdminMessage;
 use App\Email\RegisterForm\Confirm\EmailRegisterFormConfirmMessage;
-use App\Email\RegisterForm\Success\EmailRegisterFormSuccessMessage;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use App\Queue\MailQueue;
 use App\Repository\EmailSentRepository;
 use App\Service\ConfigService;
-use App\Service\MailAddrSystemService;
 use App\Service\PageParamsService;
-use App\Service\StaticContentService;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Uid\Uuid;
 
@@ -42,11 +36,7 @@ class RegisterFormConfirmController extends AbstractController
   public function __invoke(
     string $confirm_token,
     Db $db,
-    Request $request,
     ConfigService $config_service,
-    StaticContentService $static_content_service,
-    MailAddrSystemService $mail_addr_system_service,
-    MailQueue $mail_queue,
     EmailSentRepository $email_sent_repository,
     MessageBusInterface $bus,
     PageParamsService $pp
@@ -229,158 +219,5 @@ class RegisterFormConfirmController extends AbstractController
       'success'       => $success,
       'confirmed_at'  => $record['confirmed_at'] ?? null,
     ]);
-
-    /**
-    for ($i = 0; $i < 20; $i++)
-    {
-      $name = $data['first_name'];
-
-      if ($i)
-      {
-        $name .= ' ';
-
-        if ($i < strlen($data['last_name']))
-        {
-          $name .= substr($data['last_name'], 0, $i);
-        }
-        else
-        {
-          $name .= substr(hash('sha512', $pp->schema() . time() . mt_rand(0, 100000)), 0, 4);
-        }
-      }
-
-      if ($db->fetchOne('select name
-        from ' . $pp->schema() . '.users
-        where name = ?',
-        [$name], [\PDO::PARAM_STR]) === false)
-      {
-        break;
-      }
-    }
-
-    $user = [
-      'name'			            => $name,
-      'full_name'		          => $data['full_name'],
-      'status'		            => 5,
-      'role'	                => 'user',
-      'periodic_overview_en'	=> 't',
-    ];
-
-    if (isset($data['postcode'])
-      && $postcode_enabled)
-    {
-      $user['postcode'] = $data['postcode'];
-    }
-
-    $db->beginTransaction();
-
-    try
-    {
-      $db->insert($pp->schema() . '.users', $user);
-
-      $user_id = $db->lastInsertId($pp->schema() . '.users_id_seq');
-
-      $tc = [];
-
-      $stmt = $db->prepare('select abbrev, id
-        from ' . $pp->schema() . '.type_contact');
-
-      $res = $stmt->executeQuery();
-
-      while($row = $res->fetchAssociative())
-      {
-        $tc[$row['abbrev']] = $row['id'];
-      }
-
-      $data['email'] = strtolower($data['email']);
-
-      $mail = [
-        'user_id'			=> $user_id,
-        'access'            => 'admin',
-        'value'				=> $data['email'],
-        'id_type_contact'	=> $tc['mail'],
-      ];
-
-      $db->insert($pp->schema() . '.contact', $mail);
-
-      if ($data['gsm'] || $data['tel'])
-      {
-        if ($data['gsm'])
-        {
-          $gsm = [
-            'user_id'			=> $user_id,
-            'access'            => 'admin',
-            'value'				=> $data['gsm'],
-            'id_type_contact'	=> $tc['gsm'],
-          ];
-
-          $db->insert($pp->schema() . '.contact', $gsm);
-        }
-
-        if ($data['tel'])
-        {
-          $tel = [
-            'user_id'			    => $user_id,
-            'access'          => 'admin',
-            'value'				    => $data['tel'],
-            'id_type_contact'	=> $tc['tel'],
-          ];
-
-          $db->insert($pp->schema() . '.contact', $tel);
-        }
-      }
-      $db->commit();
-    }
-    catch (\Exception $e)
-    {
-      $db->rollback();
-      throw $e;
-    }
-
-    $vars = [
-      'user_id'		=> $user_id,
-      'email'			=> $data['email'],
-    ];
-
-    if ($postcode_enabled)
-    {
-      $vars['postcode'] = $user['postcode'];
-    }
-
-    $mail_queue->queue([
-      'schema'		=> $pp->schema(),
-      'to' 			=> $mail_addr_system_service->get_admin($pp->schema()),
-      'vars'			=> $vars,
-      'template'		=> 'register/admin',
-    ], 8000);
-
-    $map_template_vars = [
-      'voornaam' 			=> 'first_name',
-      'achternaam'		=> 'last_name',
-      'postcode'			=> 'postcode',
-    ];
-
-    foreach ($map_template_vars as $k => $v)
-    {
-      $vars[$k] = $data[$v];
-    }
-
-    $pre_html_template = $static_content_service->get('', 'register_form_confirm', 'mail', $pp->schema());
-
-    if ($pre_html_template)
-    {
-      $mail_queue->queue([
-        'schema'				=> $pp->schema(),
-        'to' 					=> [new Address($data['email'], $user['full_name'])],
-        'reply_to'				=> $mail_addr_system_service->get_admin($pp->schema()),
-        'pre_html_template'		=> $pre_html_template,
-        'template'				=> 'register/success',
-        'vars'					=> $vars,
-      ], 8500);
-    }
-
-    return $this->render('register_form/register_form_confirm_success.html.twig', [
-    ]);
-    */
   }
 }

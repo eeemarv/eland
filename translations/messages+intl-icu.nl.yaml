@@ -104,18 +104,25 @@ error_fileupload:
     Fout bij het opladen van de afbeelding.
 
 flash:
-  open_email_confirm_link: >-
-    Open je E-mailbox en klik de link aan
-    die we je zonden om je bericht te bevestigen.
-    De link blijft een uur geldig.
-  email_functions_disabled: >-
-    E-mail functies zijn
-    uitgeschakeld door de beheerder.
-    Je kan dit formulier niet gebruiken
-  no_support_email_config:
-    Er is geen support E-mail adres
-    ingesteld door de beheerder.
-    Je kan dit formulier niet gebruiken.
+  email:
+    open_confirm_link_message: >-
+      Open je E-mailbox en klik de link aan
+      die we je zonden om je bericht te bevestigen.
+      De link blijft een uur geldig.
+    functions_disabled: >-
+      E-mail functies zijn
+      uitgeschakeld door de beheerder.
+      Je kan dit formulier niet gebruiken
+    no_support_config: >-
+      Er is geen support E-mail adres
+      ingesteld door de beheerder.
+      Je kan dit formulier niet gebruiken.
+    not_for_master: >-
+      Het master account kan geen
+      E-mail berichten versturen.
+    missing_for_your_account: >-
+      Je hebt geen E-mail adres
+      ingesteld voor je account.
 
 help:
   address: >-
@@ -369,6 +376,8 @@ system_menu:
   own_system: Eigen systeem
   own_systems: Eigen systemen
   system: Systeem
+
+#### Route related ####
 
 calendar:
   title: >-
@@ -1134,6 +1143,10 @@ support_form:
           is voor je account kan je geen kopie
           naar je eigen e-mail box sturen}
       }
+  flash:
+    sent: >-
+      Je bericht werd verstuurd naar de administratie
+      van {system_name}
 
 tags:
   add:
