@@ -67,14 +67,53 @@ class MppAryRuntime implements RuntimeExtensionInterface
 	public function mpp(
 		array $context,
     array $params,
-		string|null $role = null
+		string|null $role = null,
+    int|null $id = null,
+    string|null $rem_schema = null, // refers to route
+    string|null $org_schema = null, // refers to receiver
+    bool $d_role = false,
 	):array
 	{
-		//$params = [];
-
 		if (isset($context['schema']))
 		{
-			$params['system'] = $this->systems_service->get_system($context['schema']);
+      $schema = $context['schema'];
+
+      if (isset($rem_schema)&& $rem_schema !== $schema)
+      {
+			  $params['system'] = $this->systems_service->get_system($rem_schema);
+			  $org_system = $this->systems_service->get_system($schema);
+			  $params['os'] = $org_system;
+			  $params['ets'] = $org_system; // email token system
+
+        if ($d_role)
+        {
+			    $params['role_short'] = RoleCnst::SHORT['guest'];
+        }
+      }
+      else if (isset($org_schema) && $org_schema !== $schema)
+      {
+			  $params['system'] = $this->systems_service->get_system($schema);
+			  $params['os'] = $this->systems_service->get_system($org_schema);
+
+        if ($d_role)
+        {
+			    $params['role_short'] = RoleCnst::SHORT['guest'];
+        }
+      }
+      else
+      {
+        if ($d_role)
+        {
+          $params['role_short'] = RoleCnst::SHORT['user'];
+        }
+
+			  $params['system'] = $this->systems_service->get_system($schema);
+      }
+
+      if (isset($role) && isset(RoleCnst::SHORT[$role]))
+      {
+        $params['role_short'] = RoleCnst::SHORT[$role];
+      }
 		}
 
 		if (isset($context['email_token']))
@@ -82,28 +121,11 @@ class MppAryRuntime implements RuntimeExtensionInterface
 			$params['et'] = $context['email_token'];
 		}
 
-		if (isset($role) && isset(RoleCnst::SHORT[$role]))
-		{
-			$params['role_short'] = RoleCnst::SHORT[$role];
-		}
+    if (isset($id))
+    {
+      $params['id'] = $id;
+    }
 
 		return $params;
 	}
-
-  /*
-	public function mpp_guest(array $context):array
-	{
-		return $this->mpp($context, 'guest');
-	}
-
-	public function mpp_user(array $context):array
-	{
-		return $this->mpp($context, 'user');
-	}
-
-	public function mpp_admin(array $context):array
-	{
-		return $this->mpp($context, 'admin');
-	}
-  */
 }

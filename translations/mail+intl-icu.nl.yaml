@@ -89,15 +89,9 @@ private_msg_copy:
   sub_header: >-
     Kopie van je bericht
 
-reply:
-  user: >-
-    Je kan rechtstreeks reageren aan
-    {ao}{from_account}{ac}
-    door deze E-mail te beantwoorden (Reply).
-  user_intersystem: >-
-    Je kan rechtstreeks reageren aan
-    {from_account} [{from_system_name}]
-    door deze E-mail te beantwoorden (Reply).
+reply: >-
+  Je kan rechtstreeks reageren door
+  deze E-mail te beantwoorden (Reply).
 
 sender_info:
   title: Info Verzender
@@ -342,32 +336,35 @@ transaction_to_intersystem_mail_type_admin:
     {amount} {currency} stemt overeen met {dec_hours} decimale uren, wat
     overeenstemt met
 
-user_msg:
+user_private_message:
   subject: >-
-    Bericht van {from_account}
+    { is_intersystem, select,
+      no {Bericht van {from_account}}
+      yes {Bericht van {from_account} [{from_system_name}]}
+      other {** ERR **}
+    }
   explain: >-
-    Gebruiker {ao}{from_account}{ac}
-    zendt je het bericht hieronder via de webtoepassing.
-user_msg_copy:
+    { is_intersystem, select,
+      no {Gebruiker {ao}{from_account}{ac} zendt je
+      het bericht hieronder via de webtoepassing.}
+      yes {Gebruiker {ao}{from_account}{ac} van
+      {from_system_name} zendt je
+      het bericht hieronder via de webtoepassing.}
+      other {** ERR **}
+    }
+user_private_copy:
   subject: >-
     Kopie van je bericht aan {to_account}
   explain: >-
-    Dit is een kopie van het bericht dat je aan
-    {ao}{to_account}{ac}
-    verzonden hebt via de webtoepassing.
-user_msg_intersystem:
-  subject: >-
-    Bericht van {from_account} [{from_system_name}]
-  explain:
-    Gebruiker {from_account} van {from_system_name}
-    zendt je via de webtoepassing het bericht hieronder.
-user_msg_copy_intersystem:
-  subject: >-
-    Kopie van je bericht aan {to_account} [{to_system_name}]
-  explain: >-
-    Dit is een kopie van het bericht dat je aan
-    {to_account} van {to_system_name} verzonden hebt
-    via de webtoepassing.
+    { is_intersystem, select,
+      no {Dit is een kopie van het bericht
+      dat je aan {ao}{to_account}{ac} verzonden
+      hebt.}
+      yes {Dit is een kopie van het bericht
+      dat je aan {ao}{to_account}{ac} van
+      {to_system_name} verzonden hebt.}
+      other {** ERR **}
+    }
 
 message_msg:
   subject_offer: >-

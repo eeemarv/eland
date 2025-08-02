@@ -1,6 +1,6 @@
 {
 	"name": "eeemarv/eland",
-	"license": "AGPL-3.0",
+	"license": "AGPL-3.0-only",
 	"type": "project",
 	"description": "web app for community currencies.",
 	"homepage": "https://eland.letsa.net",
@@ -83,7 +83,7 @@
 		"twig/extra-bundle": "^3.10",
 		"twig/inky-extra": "^3.5",
 		"twig/markdown-extra": "^3.5",
-		"twig/twig": "^3.0"
+		"twig/twig": "^3"
 	},
 
   "require-dev": {

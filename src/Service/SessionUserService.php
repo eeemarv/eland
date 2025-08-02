@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Cnst\RoleCnst;
+use App\DTO\Schema;
 use App\Service\UserCacheService;
 use App\Service\PageParamsService;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
@@ -104,6 +105,11 @@ class SessionUserService
 	{
 		return $this->schema;
 	}
+
+  public function schema_o():Schema
+  {
+    return new Schema($this->schema);
+  }
 
 	public function system():string
 	{

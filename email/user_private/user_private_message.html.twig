@@ -1,0 +1,29 @@
+{%- extends '@email/base/base.html.twig' -%}
+{%- trans_default_domain 'mail' -%}
+
+{%- block subject -%}
+  {{- 'user_private_message.subject'|trans({
+    'is_intersystem': sender.schema == schema ? 'no' : 'yes',
+    'from_account': account(sender.id, sender.schema),
+    'from_system_name': config_str('system.name', sender.schema),
+  }) -}}
+{%- endblock subject -%}
+
+{% block content_1row -%}
+  <p>
+    {{- 'user_private_message.explain'|trans({
+      'is_intersystem': sender.schema == schema ? 'no' : 'yes',
+      'from_account': account(sender.id, sender.schema),
+      'ao': a_open('users_show', {}|mpp(id: sender.id, rem_schema: sender.schema, d_role: true)),
+      'ac': '</a>',
+      'from_system_name': config_str('system.name', sender.schema),
+    })|raw -}}
+  </p>
+  <p>
+    {{- 'reply'|trans -}}
+  </p>
+{%- endblock content_1row -%}
+
+{%- block message_text -%}
+  {{- message|nl2br -}}
+{%- endblock message_text -%}

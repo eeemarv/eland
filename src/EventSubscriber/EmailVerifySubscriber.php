@@ -4,7 +4,6 @@ namespace App\EventSubscriber;
 
 use App\Repository\EmailSentRepository;
 use App\Service\EmailVerifyService;
-use App\Service\PageParamsService;
 use App\Service\SystemsService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
@@ -14,9 +13,9 @@ use Symfony\Component\Uid\Uuid;
 class EmailVerifySubscriber implements EventSubscriberInterface
 {
   public function __construct(
-    private EmailSentRepository $email_sent_repository,
-    private SystemsService $systems_service,
-    protected EmailVerifyService $email_verify_service
+    private readonly EmailSentRepository $email_sent_repository,
+    private readonly SystemsService $systems_service,
+    private readonly EmailVerifyService $email_verify_service
   )
   {
   }
@@ -53,13 +52,27 @@ class EmailVerifySubscriber implements EventSubscriberInterface
 
     if ($request->attributes->has('system'))
     {
-      $system = $request->attributes->get('system');
-      $schema = $this->systems_service->get_schema_o($system);
+      if ($request->attributes->has('role_short')
+        && $request->attributes->get('role_short') === 'g'
+        && $request->query->has('ets')
+      )
+      {
+        // link refers to other system than email
+        $email_token_system = $request->query->get('ets');
+        $schema = $this->systems_service->get_schema_o($email_token_system);
+        $request->query->remove('ets');
+      }
+      else
+      {
+        $system = $request->attributes->get('system');
+        $schema = $this->systems_service->get_schema_o($system);
+      }
     }
     else if ($request->query->has('system'))
     {
       $system = $request->query->get('system');
       $schema = $this->systems_service->get_schema_o($system);
+      $request->query->remove('ets');
     }
 
     $this->email_sent_repository->register_on_email_token(
@@ -67,12 +80,14 @@ class EmailVerifySubscriber implements EventSubscriberInterface
       path_info: $request->getPathInfo(),
       schema: $schema,
     );
+
+    $request->query->remove('et');
   }
 
   public static function getSubscribedEvents():array
   {
     return [
-      KernelEvents::CONTROLLER => ['onKernelController', 1000],
+      KernelEvents::CONTROLLER => 'onKernelController',
     ];
   }
 }

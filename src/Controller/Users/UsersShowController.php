@@ -11,6 +11,8 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use App\Cnst\StatusCnst;
 use App\Cnst\RoleCnst;
 use App\Controller\Contacts\ContactsUserShowInlineController;
+use App\Email\UserPrivate\Copy\EmailUserPrivateCopyMessage;
+use App\Email\UserPrivate\Message\EmailUserPrivateMessageMessage;
 use App\Queue\MailQueue;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
@@ -29,6 +31,7 @@ use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Attribute\AsController;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -88,6 +91,7 @@ class UsersShowController extends AbstractController
         DateFormatService $date_format_service,
         UserCacheService $user_cache_service,
         DistanceService $distance_service,
+        MessageBusInterface $bus,
         PageParamsService $pp,
         SessionUserService $su,
         VarRouteService $vr,
@@ -181,41 +185,25 @@ class UsersShowController extends AbstractController
 
             if (!count($errors))
             {
-                $from_user = $user_cache_service->get($su->id(), $su->schema());
-
-                $vars = [
-                    'from_user'			=> $from_user,
-                    'from_schema'		=> $su->schema(),
-                    'to_user'			=> $user,
-                    'to_schema'			=> $pp->schema(),
-                    'is_same_system'	=> $su->is_system_self(),
-                    'msg_content'		=> $user_mail_content,
-                ];
-
-                $mail_template = $su->is_system_self()
-                    ? 'user_msg/msg'
-                    : 'user_msg/msg_intersystem';
-
-                $mail_queue->queue([
-                    'schema'	=> $pp->schema(),
-                    'to'		=> $mail_addr_user_service->get($id, $pp->schema()),
-                    'reply_to'	=> $reply_ary,
-                    'template'	=> $mail_template,
-                    'vars'		=> $vars,
-                ], 8000);
+                $m_message = new EmailUserPrivateMessageMessage(
+                  sender_id: $su->id(),
+                  sender_schema: $su->schema_o(),
+                  message: $user_mail_content,
+                  user_id: $id,
+                  schema: $pp->schema_o(),
+                );
+                $bus->dispatch($m_message);
 
                 if ($user_mail_cc)
                 {
-                    $mail_template = $su->is_system_self()
-                        ? 'user_msg/copy'
-                        : 'user_msg/copy_intersystem';
-
-                    $mail_queue->queue([
-                        'schema'	=> $pp->schema(),
-                        'to' 		=> $mail_addr_user_service->get($su->id(), $su->schema()),
-                        'template' 	=> $mail_template,
-                        'vars'		=> $vars,
-                    ], 8000);
+                  $m_copy = new EmailUserPrivateCopyMessage(
+                    sender_id: $su->id(),
+                    sender_schema: $su->schema_o(),
+                    message: $user_mail_content,
+                    user_id: $id,
+                    schema: $pp->schema_o(),
+                  );
+                  $bus->dispatch($m_copy);
                 }
 
                 $this->addFlash('success', 'E-mail bericht verzonden.');

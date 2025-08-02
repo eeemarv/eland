@@ -1,0 +1,24 @@
+{%- extends '@email/base/base.html.twig' -%}
+{%- trans_default_domain 'mail' -%}
+
+{%- block subject -%}
+  {{- 'user_private_copy.subject'|trans({
+    'to_account': account(user_id),
+  }) -}}
+{%- endblock subject -%}
+
+{% block content_1row -%}
+  <p>
+    {{- 'user_private_copy.explain'|trans({
+      'is_intersystem': sender.schema == schema ? 'no' : 'yes',
+      'to_account': account(user_id),
+      'ao': a_open('users_show', {}|mpp(id: user_id, org_schema: sender.schema, d_role: true)),
+      'ac': '</a>',
+      'to_system_name': config_str('system.name'),
+    })|raw -}}
+  </p>
+{%- endblock content_1row -%}
+
+{%- block message_text -%}
+  {{- message|nl2br -}}
+{%- endblock message_text -%}

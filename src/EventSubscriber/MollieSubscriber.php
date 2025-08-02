@@ -3,7 +3,6 @@
 namespace App\EventSubscriber;
 
 use App\Form\Type\Mollie\MollieCheckoutType;
-use App\Render\LinkRender;
 use App\Repository\MollieRepository;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -13,105 +12,109 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Environment;
 
 class MollieSubscriber implements EventSubscriberInterface
 {
-    public function __construct(
-        protected PageParamsService $pp,
-        protected SessionUserService $su,
-        protected UserCacheService $user_cache_service,
-        protected LinkRender $link_render,
-        protected ConfigService $config_service,
-        protected FormFactoryInterface $form_factory,
-        protected Environment $twig,
-        protected MollieRepository $mollie_repository
-    )
+  public function __construct(
+    private readonly UrlGeneratorInterface $url_generator,
+    private readonly PageParamsService $pp,
+    private readonly SessionUserService $su,
+    private readonly UserCacheService $user_cache_service,
+    private readonly ConfigService $config_service,
+    private readonly FormFactoryInterface $form_factory,
+    private readonly Environment $twig,
+    private readonly MollieRepository $mollie_repository
+  )
+  {
+  }
+
+  public function onKernelController(ControllerEvent $event):void
+  {
+    $request = $event->getRequest();
+
+    if (!$request->isMethod('GET'))
     {
+      return;
     }
 
-    public function onKernelController(ControllerEvent $event):void
+    if ($request->isXmlHttpRequest())
     {
-        $request = $event->getRequest();
-
-        if (!$request->isMethod('GET'))
-        {
-            return;
-        }
-
-        if ($request->isXmlHttpRequest())
-        {
-            return;
-        }
-
-        if (!$request->attributes->has('system'))
-        {
-            return;
-        }
-
-        if (!$this->pp->system())
-        {
-            return;
-        }
-
-        if (!($this->pp->is_admin() || $this->pp->is_user()))
-        {
-            return;
-        }
-
-        if (!($this->config_service->get_bool('mollie.enabled', $this->pp->schema())))
-        {
-            return;
-        }
-
-        if (!$this->su->has_open_mollie_payment())
-        {
-            return;
-        }
-
-        $route = $request->attributes->get('_route');
-
-        if (str_starts_with($route, 'mollie_'))
-        {
-            return;
-        }
-
-        $payments = $this->mollie_repository->get_open_payments_for_user($this->su->id(), $this->pp->schema());
-
-        if (!$payments)
-        {
-            error_log('User sync no payments in subscriber. Clear cache ++');
-            $this->user_cache_service->clear($this->su->id(), $this->pp->schema());
-            return;
-        }
-
-        $mollie_checkout_ary =[];
-
-        foreach ($payments as $payment)
-        {
-            $description = $this->su->code() . ' ' . $payment['description'];
-
-            $form = $this->form_factory->create(MollieCheckoutType::class, [], [
-                'action' => $this->link_render->context_path('mollie_checkout',
-                    ['system' => $this->pp->system()],
-                    ['token' => $payment['token']]),
-            ]);
-
-            $mollie_checkout_ary[] = [
-                'form'          => $form->createView(),
-                'from_user_id'  => $this->su->id(),
-                'description'   => $description,
-                'amount'        => strtr($payment['amount'], '.', ',') . ' EUR',
-            ];
-        }
-
-        $this->twig->addGlobal('mollie_checkout_ary', $mollie_checkout_ary);
+      return;
     }
 
-    public static function getSubscribedEvents():array
+    if (!$request->attributes->has('system'))
     {
-        return [
-           KernelEvents::CONTROLLER => 'onKernelController',
-        ];
+      return;
     }
+
+    if (!$this->pp->system())
+    {
+      return;
+    }
+
+    if (!($this->pp->is_admin() || $this->pp->is_user()))
+    {
+      return;
+    }
+
+    if (!($this->config_service->get_bool('mollie.enabled', $this->pp->schema())))
+    {
+      return;
+    }
+
+    if (!$this->su->has_open_mollie_payment())
+    {
+      return;
+    }
+
+    $route = $request->attributes->get('_route');
+
+    if (str_starts_with($route, 'mollie_'))
+    {
+      return;
+    }
+
+    $payments = $this->mollie_repository->get_open_payments_for_user($this->su->id(), $this->pp->schema());
+
+    if (!$payments)
+    {
+      error_log('User sync no payments in subscriber. Clear cache ++');
+      $this->user_cache_service->clear($this->su->id(), $this->pp->schema());
+      return;
+    }
+
+    $mollie_checkout_ary =[];
+
+    foreach ($payments as $payment)
+    {
+      $description = $this->su->code() . ' ' . $payment['description'];
+
+      $action = $this->url_generator->generate('mollie_checkout', [
+        'system' => $this->pp->system(),
+        'token' => $payment['token'],
+      ]);
+
+      $form = $this->form_factory->create(MollieCheckoutType::class, [], [
+        'action' => $action,
+      ]);
+
+      $mollie_checkout_ary[] = [
+        'form'          => $form->createView(),
+        'from_user_id'  => $this->su->id(),
+        'description'   => $description,
+        'amount'        => strtr($payment['amount'], '.', ',') . ' EUR',
+      ];
+    }
+
+    $this->twig->addGlobal('mollie_checkout_ary', $mollie_checkout_ary);
+  }
+
+  public static function getSubscribedEvents():array
+  {
+    return [
+      KernelEvents::CONTROLLER => 'onKernelController',
+    ];
+  }
 }
