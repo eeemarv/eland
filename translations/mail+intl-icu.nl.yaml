@@ -338,78 +338,97 @@ transaction_to_intersystem_mail_type_admin:
 
 user_private_message:
   subject: >-
-    { is_intersystem, select,
+    {is_intersystem, select,
       no {Bericht van {from_account}}
       yes {Bericht van {from_account} [{from_system_name}]}
       other {** ERR **}
     }
   explain: >-
-    { is_intersystem, select,
+    {is_intersystem, select,
       no {Gebruiker {ao}{from_account}{ac} zendt je
-      het bericht hieronder via de webtoepassing.}
+        het bericht hieronder via de webtoepassing.}
       yes {Gebruiker {ao}{from_account}{ac} van
-      {from_system_name} zendt je
-      het bericht hieronder via de webtoepassing.}
+        {from_system_name} zendt je
+        het bericht hieronder via de webtoepassing.}
       other {** ERR **}
     }
 user_private_copy:
   subject: >-
     Kopie van je bericht aan {to_account}
   explain: >-
-    { is_intersystem, select,
+    {is_intersystem, select,
       no {Dit is een kopie van het bericht
-      dat je aan {ao}{to_account}{ac} verzonden
-      hebt.}
+        dat je aan {ao}{to_account}{ac} verzonden
+        hebt.}
       yes {Dit is een kopie van het bericht
-      dat je aan {ao}{to_account}{ac} van
-      {to_system_name} verzonden hebt.}
+        dat je aan {ao}{to_account}{ac} van
+        {to_system_name} verzonden hebt.}
       other {** ERR **}
     }
 
-message_msg:
-  subject_offer: >-
-    Reactie op je Aanbod "{message_subject}"
-  subject_want: >-
-    Reactie op je Vraag "{message_subject}"
-  explain_offer: >-
-    Gebruiker {ao_from_account}{from_account}{ac}
-    stuurt je via de webtoepassing een reactie op je aanbod
-    "{ao_message}{message_subject}{ac}".
-  explain_want: >-
-    Gebruiker {ao_from_account}{from_account}{ac}
-    zendt je via de webtoepassing een reactie op je vraag
-    "{ao_message}{message_subject}{ac}".
-message_msg_copy:
-  subject_offer: >-
-    Kopie van je Reactie op het Aanbod "{message_subject}"
-  subject_want:
-    Kopie van je Reactie op de Vraag "{message_subject}"
-  explain_offer: >-
-    Dit is een kopie van je reactie via de webtoepassing
-    aan {ao_to_account}{to_account}{ac}
-    op het aanbod "{ao_message}{message_subject}{ac}".
-  explain_want: >-
-    Dit is een kopie van je reactie via de webtoepassing
-    aan {ao_to_account}{to_account}{ac}
-    op de vraag "{ao_message}{message_subject}{ac}".
-message_msg_intersystem:
-  explain_offer: >-
-    Gebruiker {from_account} van {from_system_name}
-    stuurt je via de webtoepassing een reactie op je aanbod
-    "{ao_message}{message_subject}{ac}".
-  explain_want: >-
-    Gebruiker {from_account} van {from_system_name}
-    zendt je via de webtoepassing een reactie op je vraag
-    "{ao_message}{message_subject}{ac}".
-message_msg_copy_intersystem:
-  explain_offer: >-
-    Dit is een kopie van je reactie via de webtoepassing
-    aan {to_account} van {to_system_name}
-    op het aanbod "{message_subject}".
-  explain_want: >-
-    Dit is een kopie van je reactie via de webtoepassing
-    aan {to_account} van {to_system_name}
-    op de vraag "{message_subject}".
+message_private_message:
+  subject: >-
+    {offer_want, select,
+      offer {Reactie op je Aanbod "{message_subject}"}
+      want {Reactie op je Vraag "{message_subject}"}
+      other {** ERR **}
+    }
+  explain: >-
+    {is_intersystem, select,
+      no {{offer_want, select,
+        offer {Gebruiker {ao_from_account}{from_account}{ac}
+          stuurt je via de webtoepassing een reactie op je aanbod
+          "{ao_message}{message_subject}{ac}".}
+        want {Gebruiker {ao_from_account}{from_account}{ac}
+          zendt je via de webtoepassing een reactie op je vraag
+          "{ao_message}{message_subject}{ac}"}
+        other {** ERR **}
+      }}
+      yes {{offer_want, select,
+        offer {Gebruiker {ao_from_account}{from_account}{ac}
+          van {from_system_name} stuurt je via de
+          webtoepassing een reactie op je aanbod
+          "{ao_message}{message_subject}{ac}"}
+        want {Gebruiker {ao_from_account}{from_account}{ac}
+          van {from_system_name} zendt je via de
+          webtoepassing een reactie op je vraag
+          "{ao_message}{message_subject}{ac}"}
+        other {** ERR **}
+      }}
+      other {** ERR **}
+    }
+
+message_private_copy:
+  subject: >-
+    {offer_want, select,
+      offer {Kopie van je Reactie op het Aanbod "{message_subject}"}
+      want {Kopie van je Reactie op de Vraag "{message_subject}"}
+      other {** ERR **}
+    }
+  explain: >-
+    {is_intersystem, select,
+      no {{offer_want, select,
+        offer {Dit is een kopie van je reactie
+          aan {ao_to_account}{to_account}{ac}
+          op het aanbod "{ao_message}{message_subject}{ac}".}
+        want {Dit is een kopie van je reactie
+          aan {ao_to_account}{to_account}{ac}
+          op de vraag "{ao_message}{message_subject}{ac}}
+        other {** ERR **}
+      }}
+      yes {{offer_want, select,
+        offer {Dit is een kopie van je reactie
+          aan {ao_to_account}{to_account}{ac}
+          van {to_system_name}
+          op het aanbod "{ao_message}{message_subject}{ac}".}
+        want {Dit is een kopie van je reactie
+          aan {ao_to_account}{to_account}{ac}
+          van {to_system_name}
+          op de vraag "{ao_message}{message_subject}{ac}}
+        other {** ERR **}
+      }}
+      other {** ERR **}
+    }
 
 message_extend:
   1_week: 1 week

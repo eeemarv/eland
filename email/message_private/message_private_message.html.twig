@@ -1,0 +1,31 @@
+{%- extends '@email/base/base.html.twig' -%}
+{%- trans_default_domain 'mail' -%}
+
+{% block subject -%}
+  {{- 'message_private_message.subject'|trans({
+    'offer_want': message.offer_want,
+    'message_subject': message.subject
+  })|raw -}}
+{%- endblock subject %}
+
+{% block content_1row -%}
+  <p>
+    {{- 'message_private_message.explain'|trans({
+      'is_intersystem': schema == sender.schema ? 'no' : 'yes',
+      'offer_want': message.offer_want,
+      'from_account': account(sender.id, sender.schema),
+      'ao_from_account': a_open('users_show', {}|mpp(id: sender.id, rem_schema: sender.schema, d_role: true)),
+      'ac': '</a>',
+      'from_system_name': config_str('system.name', sender.schema),
+      'message_subject': message.subject,
+      'ao_message': a_open('messages_show', {}|mpp(id:message.id, d_role: true)),
+    })|raw -}}
+  </p>
+  <p>
+    {{- 'reply'|trans -}}
+  </p>
+{%- endblock content_1row -%}
+
+{%- block message_text -%}
+  {{- sender_message|nl2br -}}
+{%- endblock message_text -%}

@@ -11,7 +11,8 @@ use Doctrine\DBAL\Connection as Db;
 use App\Cnst\MessageTypeCnst;
 use App\Controller\Contacts\ContactsUserShowInlineController;
 use App\Controller\Users\UsersShowController;
-use App\Queue\MailQueue;
+use App\Email\MessagePrivate\Copy\EmailMessagePrivateCopyMessage;
+use App\Email\MessagePrivate\Message\EmailMessagePrivateMessageMessage;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Repository\CategoryRepository;
@@ -28,6 +29,7 @@ use App\Service\SessionUserService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -62,8 +64,8 @@ class MessagesShowController extends AbstractController
         ItemAccessService $item_access_service,
         LinkRender $link_render,
         MailAddrUserService $mail_addr_user_service,
-        MailQueue $mail_queue,
         UserCacheService $user_cache_service,
+        MessageBusInterface $bus,
         PageParamsService $pp,
         SessionUserService $su,
         VarRouteService $vr,
@@ -147,8 +149,18 @@ class MessagesShowController extends AbstractController
 
             if (!count($errors))
             {
-                $from_user = $user_cache_service->get($su->id(), $su->schema());
+                //$from_user = $user_cache_service->get($su->id(), $su->schema());
 
+                $m_message = new EmailMessagePrivateMessageMessage(
+                  message_id: $id,
+                  sender_id: $su->id(),
+                  sender_schema: $su->schema_o(),
+                  sender_message: $user_mail_content,
+                  schema: $pp->schema_o(),
+                );
+                $bus->dispatch($m_message);
+
+                /*
                 $vars = [
                     'from_user'			=> $from_user,
                     'from_schema'		=> $su->schema(),
@@ -170,9 +182,20 @@ class MessagesShowController extends AbstractController
                     'template'	=> $mail_template,
                     'vars'		=> $vars,
                 ], 8500);
+                */
 
                 if ($user_mail_cc)
                 {
+                    $m_copy = new EmailMessagePrivateCopyMessage(
+                      message_id: $id,
+                      sender_id: $su->id(),
+                      sender_schema: $su->schema_o(),
+                      sender_message: $user_mail_content,
+                      schema: $pp->schema_o(),
+                    );
+                    $bus->dispatch($m_copy);
+
+                    /*
                     $mail_template = $su->is_system_self()
                         ? 'message_msg/copy'
                         : 'message_msg/copy_intersystem';
@@ -183,6 +206,7 @@ class MessagesShowController extends AbstractController
                         'template'	=> $mail_template,
                         'vars'		=> $vars,
                     ], 8000);
+                    */
                 }
 
                 $this->addFlash('success', 'Mail verzonden.');
