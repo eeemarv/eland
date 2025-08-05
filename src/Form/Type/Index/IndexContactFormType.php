@@ -13,20 +13,20 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 
 class IndexContactFormType extends AbstractType
 {
-    public function buildForm(
-        FormBuilderInterface $builder,
-        array $options
-    ):void
-    {
-        $builder
-            ->add('email_address', EmailType::class)
-            ->add('message', TextareaType::class)
-            ->add('captcha', CaptchaType::class)
-            ->add('submit', SubmitType::class);
-    }
+  public function buildForm(
+    FormBuilderInterface $builder,
+    array $options
+  ):void
+  {
+    $builder
+    ->add('email_address', EmailType::class)
+    ->add('message', TextareaType::class)
+    ->add('captcha', CaptchaType::class)
+    ->add('submit', SubmitType::class);
+  }
 
-    public function configureOptions(OptionsResolver $resolver):void
-    {
-        $resolver->setDefault('data_class', IndexContactFormCommand::class);
-    }
+  public function configureOptions(OptionsResolver $resolver):void
+  {
+    $resolver->setDefault('data_class', IndexContactFormCommand::class);
+  }
 }

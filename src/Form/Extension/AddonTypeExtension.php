@@ -10,33 +10,33 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class AddonTypeExtension extends AbstractTypeExtension
 {
-    public static function getExtendedTypes(): iterable
+  public static function getExtendedTypes(): iterable
+  {
+    yield TextType::class;
+  }
+
+  public function configureOptions(OptionsResolver $resolver):void
+  {
+    $resolver->setDefault('pre_addon', null);
+    $resolver->setAllowedTypes('pre_addon', ['null', 'array']);
+    $resolver->setDefault('post_addon', null);
+    $resolver->setAllowedTypes('post_addon', ['null', 'array']);
+  }
+
+  public function buildView(
+    FormView $view,
+    FormInterface $form,
+    array $options
+  ):void
+  {
+    if (isset($options['pre_addon']))
     {
-        yield TextType::class;
+      $view->vars['pre_addon'] = $options['pre_addon'];
     }
 
-    public function configureOptions(OptionsResolver $resolver):void
+    if (isset($options['post_addon']))
     {
-        $resolver->setDefault('pre_addon', null);
-        $resolver->setAllowedTypes('pre_addon', ['null', 'array']);
-        $resolver->setDefault('post_addon', null);
-        $resolver->setAllowedTypes('post_addon', ['null', 'array']);
+      $view->vars['post_addon'] = $options['post_addon'];
     }
-
-    public function buildView(
-        FormView $view,
-        FormInterface $form,
-        array $options
-    ):void
-    {
-        if (isset($options['pre_addon']))
-        {
-            $view->vars['pre_addon'] = $options['pre_addon'];
-        }
-
-        if (isset($options['post_addon']))
-        {
-            $view->vars['post_addon'] = $options['post_addon'];
-        }
-    }
+  }
 }

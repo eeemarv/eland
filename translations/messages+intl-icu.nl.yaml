@@ -33,9 +33,6 @@ btn:
   download_csv: Download CSV
   edit: Aanpassen
   filter: Filter
-  generate: Genereer
-  generate_password_title: >-
-    Genereer automatisch een paswoord
   login: Inloggen
   password: Paswoord
   password_reset: Reset Paswoord
@@ -1091,8 +1088,6 @@ password_reset_confirm:
     help: >-
       Voor de veiligheid verzin een paswoord voor
       je account dat je alleen op deze site gebruikt.
-      Gebruik eventueel de "Genereer" knop om automatisch
-      een random paswoord aan te maken.
 
 password_reset_confirm_unvalid:
   expired: >-
@@ -1463,21 +1458,7 @@ users_password_edit:
   password:
     help: >-
       Verzin voor de veiligheid een orgineel
-      paswoord. Gebruik eventueel de "Genereer"
-      knop om automatisch een paswoord aan te maken.
-  notify:
-    label: >-
-      {notify, select,
-        enabled {Stuur een notificatie e-mail met
-          het nieuwe paswoord}
-        inactive {Een notificatie e-mail versturen
-          is niet mogelijk wegens inactieve status van de
-          gebruiker}
-        no_email {Een notificatie e-mail versturen is
-          niet mogelijk wegens het ontbreken van een e-mail
-          adres}
-        other {}
-      }
+      paswoord.
 
 users_periodic_mail:
   title: >-

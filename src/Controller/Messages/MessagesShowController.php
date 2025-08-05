@@ -149,8 +149,6 @@ class MessagesShowController extends AbstractController
 
             if (!count($errors))
             {
-                //$from_user = $user_cache_service->get($su->id(), $su->schema());
-
                 $m_message = new EmailMessagePrivateMessageMessage(
                   message_id: $id,
                   sender_id: $su->id(),
@@ -159,30 +157,6 @@ class MessagesShowController extends AbstractController
                   schema: $pp->schema_o(),
                 );
                 $bus->dispatch($m_message);
-
-                /*
-                $vars = [
-                    'from_user'			=> $from_user,
-                    'from_schema'		=> $su->schema(),
-                    'is_same_system'	=> $su->is_system_self(),
-                    'to_user'			=> $to_user,
-                    'to_schema'			=> $pp->schema(),
-                    'msg_content'		=> $user_mail_content,
-                    'message'			=> $message,
-                ];
-
-                $mail_template = $su->is_system_self()
-                    ? 'message_msg/msg'
-                    : 'message_msg/msg_intersystem';
-
-                $mail_queue->queue([
-                    'schema'	=> $pp->schema(),
-                    'to'		=> $mail_addr_user_service->get_active($to_user['id'], $pp->schema()),
-                    'reply_to'	=> $reply_ary,
-                    'template'	=> $mail_template,
-                    'vars'		=> $vars,
-                ], 8500);
-                */
 
                 if ($user_mail_cc)
                 {
@@ -194,19 +168,6 @@ class MessagesShowController extends AbstractController
                       schema: $pp->schema_o(),
                     );
                     $bus->dispatch($m_copy);
-
-                    /*
-                    $mail_template = $su->is_system_self()
-                        ? 'message_msg/copy'
-                        : 'message_msg/copy_intersystem';
-
-                    $mail_queue->queue([
-                        'schema'	=> $pp->schema(),
-                        'to'		=> $mail_addr_user_service->get_active($su->id(), $su->schema()),
-                        'template'	=> $mail_template,
-                        'vars'		=> $vars,
-                    ], 8000);
-                    */
                 }
 
                 $this->addFlash('success', 'Mail verzonden.');
