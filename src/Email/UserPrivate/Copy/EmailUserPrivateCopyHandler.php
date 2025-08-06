@@ -31,7 +31,7 @@ final class EmailUserPrivateCopyHandler
       'message' => $message->message,
     ];
 
-    $to = $this->user_repository->get_email_addresses_active_user(
+    $to = $this->user_repository->get_email_addresses(
       user_id: $sender_id,
       schema: $sender_schema
     );

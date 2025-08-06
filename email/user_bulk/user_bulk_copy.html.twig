@@ -1,0 +1,55 @@
+{%- extends '@email/base/base.html.twig' -%}
+{%- trans_default_domain 'mail' -%}
+
+{%- block subject -%}
+  {{- 'user_bulk_copy.subject'|trans({
+    'subject': subject
+  })|raw -}}
+{%- endblock subject -%}
+
+{% block content -%}
+  <row class="b-{{- email_background -}}-9 r-{{- email_background -}}-4">
+    <columns>
+      <spacer size="8"></spacer>
+      <p>
+        {{- 'user_bulk_copy.to_users'|trans -}}
+      </p>
+      <p>
+        {%- for uid in user_ids -%}
+          {{- a_open('users_show', {}|mpp(id: uid, role_user_id: sender_id))|raw -}}
+            {{- account(uid) -}}
+          </a><br/>
+        {%- endfor -%}
+      </p>
+    </columns>
+  </row>
+    {%- if omitted_user_ids is not empty -%}
+    <row class="b-red-8 r-red-4">
+      <columns>
+        <spacer size="8"></spacer>
+        <p>
+          {{- 'user_bulk_copy.omitted_to_users'|trans -}}
+        </p>
+        <p>
+          {%- for uid in omitted_user_ids -%}
+            {{- a_open('users_show', {}|mpp(id: uid, role_user_id: sender_id))|raw -}}
+              {{- account(uid) -}}
+            </a><br/>
+          {%- endfor -%}
+        </p>
+      </columns>
+    </row>
+  {%- endif -%}
+
+  <spacer size="8"></spacer>
+
+  <row>
+    <columns>
+      {%- include '@email/include/h_bar.html.twig' -%}
+      <spacer size="16"></spacer>
+      <p>
+        {{- html_content|raw -}}
+      </p>
+    </columns>
+  </row>
+{%- endblock content -%}

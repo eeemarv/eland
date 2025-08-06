@@ -336,6 +336,13 @@ transaction_to_intersystem_mail_type_admin:
     {amount} {currency} stemt overeen met {dec_hours} decimale uren, wat
     overeenstemt met
 
+user_bulk_copy:
+  subject: "Kopie: {subject}"
+  to_users: >-
+    Dit bericht werd verzonden naar:
+  omitted_to_users: >-
+    Dit bericht kon niet verzonden worden naar:
+
 user_private_message:
   subject: >-
     {is_intersystem, select,
@@ -577,10 +584,3 @@ periodic_overview:
       Betaalverzoek (EUR)
     title_multi: >-
       Betaalverzoeken (EUR)
-
-skeleton:
-  admin_copy:
-    to_users: >-
-      Dit bericht werd verzonden naar
-    omitted_to_users: >-
-      Dit bericht kon niet verzonden worden naar

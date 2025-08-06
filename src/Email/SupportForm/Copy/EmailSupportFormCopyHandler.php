@@ -25,7 +25,10 @@ final class EmailSupportFormCopyHandler
         'user_id' => $message->user_id,
       ];
 
-      $to = $this->user_repository->get_email_addresses_active_user($user_id, $schema);
+      $to = $this->user_repository->get_email_addresses(
+        user_id: $user_id,
+        schema: $schema
+      );
 
       $m_dispatch = new EmailDispatchMessage(
         template: 'support_form/support_form_copy',

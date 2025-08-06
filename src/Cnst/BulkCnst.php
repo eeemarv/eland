@@ -9,7 +9,6 @@ class BulkCnst
 {
     const MOLLIE_TPL_VARS = [
         'naam' 					=> 'name',
-        'volledige_naam'		=> 'full_name',
         'account_code'			=> 'code',
         'betaal_link'           => 'payment_link',
         'bedrag'                => 'amount',
@@ -18,7 +17,6 @@ class BulkCnst
 
     const USER_TPL_VARS = [
         'naam' 					=> 'name',
-        'volledige_naam'		=> 'full_name',
         'account_code'			=> 'code',
     ];
 

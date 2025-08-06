@@ -21,6 +21,7 @@ final class EmailDispatchMessage
         public readonly AddressAry|null $cc = null,
         public readonly AddressAry|null $bcc = null,
         public readonly string|null $embedded_template = null,
+        public readonly array $embedded_context = [],
         public readonly Uuid|null $bulk_id = null,
         public readonly bool $add_confirm_token = false,
         public readonly array|null $confirm_data = null,

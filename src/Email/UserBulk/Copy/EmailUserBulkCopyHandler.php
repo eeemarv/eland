@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Email\UserPrivate\Message;
+namespace App\Email\UserBulk\Copy;
 
 use App\Email\EmailDispatchMessage;
 use App\Repository\UserRepository;
@@ -8,44 +8,37 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 #[AsMessageHandler]
-final class EmailUserPrivateMessageHandler
+final class EmailUserBulkCopyHandler
 {
   public function __construct(
     private readonly MessageBusInterface $bus,
     private readonly UserRepository $user_repository,
   ) {}
 
-  public function __invoke(EmailUserPrivateMessageMessage $message):void
+  public function __invoke(EmailUserBulkCopyMessage $message):void
   {
     $sender_id = $message->sender_id;
-    $sender_schema = $message->sender_schema;
-    $user_id = $message->user_id;
+    $user_ids = $message->user_ids;
+    $omitted_user_ids = $message->omitted_user_ids;
     $schema = $message->schema;
 
     $context = [
-      'sender'  => [
-        'id'    => $sender_id,
-        'schema'  => $sender_schema->str(),
-      ],
-      'user_id' => $user_id,
-      'message' => $message->message,
+      'sender_id' => $sender_id,
+      'user_ids'  => $user_ids,
+      'omitted_user_ids'  => $omitted_user_ids,
+      'html_content'  => $message->message,
+      'subject'   => $message->subject,
     ];
 
     $to = $this->user_repository->get_email_addresses(
-      user_id: $user_id,
+      user_id: $sender_id,
       schema: $schema
     );
 
-    $reply_to = $this->user_repository->get_email_addresses(
-      user_id: $sender_id,
-      schema: $sender_schema
-    );
-
     $m_dispatch = new EmailDispatchMessage(
-      template: 'user_private/user_private_message',
+      template: 'user_bulk/user_bulk_copy',
       message_class: get_class($message),
       context: $context,
-      reply_to: $reply_to,
       to: $to,
       schema: $schema
     );

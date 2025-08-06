@@ -1,0 +1,12 @@
+{%- extends '@email/base/base.html.twig' -%}
+{%- trans_default_domain 'mail' -%}
+
+{%- block subject -%}
+  {{- subject|raw -}}
+{%- endblock subject -%}
+
+{% block content_1row -%}
+  <p>
+    {{- html_content|raw -}}
+  </p>
+{%- endblock content_1row -%}

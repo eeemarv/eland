@@ -9,8 +9,9 @@ use App\Render\LinkRender;
 use App\Cnst\StatusCnst;
 use App\Cnst\RoleCnst;
 use App\Cnst\BulkCnst;
+use App\Email\UserBulk\Copy\EmailUserBulkCopyMessage;
+use App\Email\UserBulk\Message\EmailUserBulkMessageMessage;
 use App\Form\Type\Filter\QTextSearchFilterType;
-use App\Queue\MailQueue;
 use App\Render\AccountRender;
 use App\Render\SelectRender;
 use App\Repository\AccountRepository;
@@ -20,7 +21,6 @@ use App\Service\DateFormatService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
 use App\Service\ItemAccessService;
-use App\Service\MailAddrUserService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
@@ -36,6 +36,7 @@ use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -72,11 +73,10 @@ class UsersListController extends AbstractController
         IntersystemsService $intersystems_service,
         ItemAccessService $item_access_service,
         LinkRender $link_render,
-        MailAddrUserService $mail_addr_user_service,
-        MailQueue $mail_queue,
         SelectRender $select_render,
         TypeaheadService $typeahead_service,
         UserCacheService $user_cache_service,
+        MessageBusInterface $bus,
         PageParamsService $pp,
         SessionUserService $su,
         VarRouteService $vr,
@@ -434,6 +434,7 @@ class UsersListController extends AbstractController
 
                     unset($sel_ary[$sel_user['id']]);
 
+                    /*
                     $vars = [
                         'subject'	=> $bulk_mail_subject,
                     ];
@@ -451,6 +452,7 @@ class UsersListController extends AbstractController
                         'vars'				=> $vars,
                         'template'			=> 'skeleton/user',
                     ], random_int(200, 2000));
+                    */
 
                     $sent_to_ary[] = (int) $sel_user['id'];
                     $alert_users_sent_ary[] = $account_render->link($sel_user['id'], $pp->ary());
@@ -461,6 +463,15 @@ class UsersListController extends AbstractController
 
                 if (count($alert_users_sent_ary))
                 {
+                    $m_message = new EmailUserBulkMessageMessage(
+                      sender_id: $su->id(),
+                      user_ids: $sent_to_ary,
+                      message: $bulk_mail_content,
+                      subject: $bulk_mail_subject,
+                      schema: $pp->schema_o(),
+                    );
+                    $bus->dispatch($m_message);
+
                     if ($bulk_submit_action === 'mail')
                     {
                         $db->insert($pp->schema() . '.emails', [
@@ -509,17 +520,6 @@ class UsersListController extends AbstractController
 
                 if ($bulk_mail_cc)
                 {
-                    $vars = [
-                        'subject'	=> 'Kopie: ' . $bulk_mail_subject,
-                        'to_users'  => $sent_to_ary,
-                        'user_id'   => $su->id(),
-                    ];
-
-                    foreach (BulkCnst::USER_TPL_VARS as $key => $trans)
-                    {
-                        $vars[$key] = '{{ ' . $key . ' }}';
-                    }
-
                     $mail_users_info = $msg_users_sent . '<br />';
                     $mail_users_info .= implode('<br />', $alert_users_sent_ary);
                     $mail_users_info .= '<br /><br />';
@@ -532,13 +532,15 @@ class UsersListController extends AbstractController
 
                     $mail_users_info .= '<hr /><br />';
 
-                    $mail_queue->queue([
-                        'schema'			=> $pp->schema(),
-                        'to' 				=> $mail_addr_user_service->get($su->id(), $pp->schema()),
-                        'template'			=> 'skeleton/admin_copy',
-                        'pre_html_template'	=> $bulk_mail_content,
-                        'vars'				=> $vars,
-                    ], 8000);
+                    $m_copy = new EmailUserBulkCopyMessage(
+                      sender_id: $su->id(),
+                      user_ids: $sent_to_ary,
+                      omitted_user_ids: array_keys($sel_ary),
+                      message: $bulk_mail_content,
+                      subject: $bulk_mail_subject,
+                      schema: $pp->schema_o(),
+                    );
+                    $bus->dispatch($m_copy);
 
                     $logger->debug('#bulk mail:: ' .
                         $mail_users_info . $bulk_mail_content,

@@ -26,7 +26,11 @@ final class EmailSupportFormAdminHandler
 
     $to_email_ary = $this->config_service->get_ary('mail.addresses.support', $schema->str());
     $to = array_map(fn($e) => new Address($e), $to_email_ary);
-    $reply_to = $this->user_repository->get_email_addresses_active_user($user_id, $schema);
+
+    $reply_to = $this->user_repository->get_email_addresses(
+      user_id: $user_id,
+      schema: $schema
+    );
 
     $context = [
       'message'   => $message->message,

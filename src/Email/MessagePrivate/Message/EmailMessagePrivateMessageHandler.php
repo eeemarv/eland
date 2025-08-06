@@ -35,12 +35,12 @@ final class EmailMessagePrivateMessageHandler
       'sender_message' => $message->sender_message,
     ];
 
-    $to = $this->user_repository->get_email_addresses_active_user(
+    $to = $this->user_repository->get_email_addresses(
       user_id: $ad_message['user_id'],
       schema: $schema
     );
 
-    $reply_to = $this->user_repository->get_email_addresses_active_user(
+    $reply_to = $this->user_repository->get_email_addresses(
       user_id: $sender_id,
       schema: $sender_schema
     );

@@ -97,15 +97,18 @@ final class EmailDispatchHandler
 
     if (isset($message->embedded_template))
 		{
+      $embedded_context = $message->embedded_context;
+
 			try
 			{
 				$html_template = $this->twig->createTemplate($message->embedded_template);
-				$context['html_content'] = $html_template->render($context);
+				$context['html_content'] = $html_template->render($embedded_context);
 			}
 			catch (\Exception $e)
 			{
 				$this->logger->error('Mail Queue Process, embedded HTML template err: ' .
 					$e->getMessage() . ' ::: ' .
+					json_encode($embedded_context) .
 					json_encode($context),
 					$log_context);
 				return;

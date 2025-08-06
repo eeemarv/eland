@@ -72,6 +72,7 @@ class MppAryRuntime implements RuntimeExtensionInterface
     string|null $rem_schema = null, // refers to route
     string|null $org_schema = null, // refers to receiver
     bool $d_role = false,
+    int|null $role_user_id = null,
 	):array
 	{
 		if (isset($context['schema']))
@@ -113,6 +114,14 @@ class MppAryRuntime implements RuntimeExtensionInterface
       if (isset($role) && isset(RoleCnst::SHORT[$role]))
       {
         $params['role_short'] = RoleCnst::SHORT[$role];
+      }
+      else if (isset($role_user_id))
+      {
+		    $u_role = $this->user_cache_service->get($role_user_id, $schema)['role'];
+		    if (isset(RoleCnst::SHORT[$u_role]))
+        {
+          $params['role_short'] = RoleCnst::SHORT[$u_role];
+        }
       }
 		}
 

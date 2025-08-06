@@ -19,11 +19,14 @@ class UserRepository
 	{
 	}
 
-  public function get_email_addresses_active_user(
+  public function get_email_addresses(
     int $user_id,
     Schema $schema,
+    bool $active_only = true,
   ):AddressAry
   {
+    $sql_active = $active_only ? ' and u.status in (1, 2)' : '';
+
     $stmt = $this->db->prepare('select c.value, u.name
       from ' . $schema->str() . '.contact c, ' .
         $schema->str() . '.type_contact tc, ' .
@@ -31,8 +34,7 @@ class UserRepository
       where c.id_type_contact = tc.id
         and tc.abbrev = \'mail\'
         and c.user_id = :user_id
-        and c.user_id = u.id
-        and u.status in (1, 2)');
+        and c.user_id = u.id' . $sql_active);
     $stmt->bindValue('user_id', $user_id, Types::INTEGER);
     $res = $stmt->executeQuery();
     $ary = [];
