@@ -223,12 +223,28 @@ mollie:
     sub_header_is_paid: Betaling voldaan
     sub_header_is_canceled: Betaling geannuleerd
     btn_label: Online betalen
-    link: Link voor online betalen
   payment_request_admin_copy:
     sub_header: Betalingsverzoek admin info
     btn_label: Online betalen (dummy knop)
     link_explain: >-
       Een betaallink wordt alleen getoond bij openstaande betaalverzoeken
+
+mollie_bulk:
+  btn_label: Online betalen
+
+mollie_bulk_copy:
+  subject: "Kopie: {subject}"
+  btn_label: Online betalen (dummy knop)
+  btn_explain: >-
+    Een betaalknop wordt alleen getoond bij openstaande betaalverzoeken
+  to_users: >-
+    Dit bericht werd verzonden naar:
+  omitted_to_users: >-
+    Dit bericht kon niet verzonden worden naar:
+
+mollie_paid:
+  subject: Betaling ontvangen
+  message: We hebben je betaling goed ontvangen!
 
 password_reset_success:
   subject: >-

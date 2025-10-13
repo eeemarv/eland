@@ -5,10 +5,12 @@ namespace App\Email;
 use App\DTO\AddressAry;
 use App\Email\EmailDispatchMessage;
 use App\Repository\EmailSentRepository;
+use App\Repository\UserRepository;
 use App\Service\ConfigService;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Mime\Address;
@@ -24,16 +26,20 @@ final class EmailDispatchHandler
     private readonly LoggerInterface $logger,
     private readonly EmailSentRepository $email_sent_repository,
     private readonly ConfigService $config_service,
+    private readonly UserRepository $user_repository,
     #[Autowire('%env(MAIL_FROM_ADDRESS)%')]
     private readonly string $env_mail_from_address,
     #[Autowire('%env(MAIL_NOREPLY_ADDRESS)%')]
-    private readonly string $env_mail_noreply_address
+    private readonly string $env_mail_noreply_address,
+    #[Autowire(service: 'html_sanitizer.sanitizer.no_img_email_sanitizer')]
+    private readonly HtmlSanitizerInterface $html_sanitizer,
   ) {}
 
   public function __invoke(EmailDispatchMessage $message):void
   {
     $template_path = '@email/' . $message->template . '.html.twig';
     $context = $message->context;
+
     $log_context = [
       'template' => $message->template,
       'to' => $message->to->str(),
@@ -98,10 +104,11 @@ final class EmailDispatchHandler
     if (isset($message->embedded_template))
 		{
       $embedded_context = $message->embedded_context;
+      $embedded_template = $this->html_sanitizer->sanitize($message->embedded_template);
 
 			try
 			{
-				$html_template = $this->twig->createTemplate($message->embedded_template);
+				$html_template = $this->twig->createTemplate($embedded_template);
 				$context['html_content'] = $html_template->render($embedded_context);
 			}
 			catch (\Exception $e)
@@ -113,6 +120,20 @@ final class EmailDispatchHandler
 					$log_context);
 				return;
 			}
+
+      if (isset($message->bulk_id)
+        && isset($message->bulk_created_by)
+        && isset($message->schema)
+      )
+      {
+        $this->email_sent_repository->insert_bulk_if_not_exists(
+          content: $embedded_template,
+          subject: $subject,
+          bulk_id: $message->bulk_id,
+          created_by: $message->bulk_created_by,
+          schema: $message->schema,
+        );
+      }
 		}
 
     $confirm_token = null;
@@ -153,6 +174,7 @@ final class EmailDispatchHandler
       message_class: $message->message_class,
       subject: $subject,
       bulk_id: $message->bulk_id,
+      mollie_payment_id: $message->mollie_payment_id,
       schema: $message->schema
     );
 

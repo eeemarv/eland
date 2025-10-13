@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\DTO\Schema;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
 use App\Service\ConfigService;
@@ -111,7 +112,10 @@ class AutoMinLimitService
 			return;
 		}
 
-		$min_limit = $this->account_repository->get_min_limit($to_id, $schema);
+		$min_limit = $this->account_repository->get_min_limit(
+      account_id: $to_id,
+      schema: new Schema($schema),
+    );
 
 		if (!isset($min_limit))
 		{

@@ -1,0 +1,26 @@
+<div class="row">
+  <div class="col-xs-12">
+    <div class="mt-5p alert alert-success alert-dismissible" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <h2>{{- 'welcome.title'|trans({
+        'system_name': config_str('system.name')
+      }) -}}
+      </h2>
+      {%- if config_bool('transactions.enabled')
+        and config_bool('transactions.currency.timebased_en') -%}
+      <p>
+        {{- 'welcome.currency'|trans({
+          'system_name': config_str('system.name'),
+          'currency': config_str('transactions.currency.name'),
+          'per_hour_ratio': config_int('transactions.currency.per_hour_ratio')
+        }) -}}
+      </p>
+      {%- endif -%}
+      <p>
+        {{- 'welcome.back'|trans -}}
+      </p>
+    </div>
+  </div>
+</div>

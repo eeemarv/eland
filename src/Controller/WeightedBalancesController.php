@@ -39,7 +39,9 @@ class WeightedBalancesController extends AbstractController
         $begin_unix = $end_unix - ($days * 86400);
         $begin_datetime = \DateTimeImmutable::createFromFormat('U', (string) $begin_unix);
 
-        $balance_ary = $account_repository->get_balance_ary($pp->schema());
+        $balance_ary = $account_repository->get_balance_ary(
+          schema: $pp->schema_o()
+        );
 
         $balance = [];
 

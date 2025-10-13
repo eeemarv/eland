@@ -335,18 +335,28 @@ class UsersListController extends AbstractController
 
                 if ($bulk_submit_action === 'min_limit')
                 {
-                    foreach($user_ids as $user_id)
-                    {
-                        $account_repository->update_min_limit($user_id, $store_value, $su->id(), $pp->schema());
-                    }
+                  foreach($user_ids as $user_id)
+                  {
+                    $account_repository->update_min_limit(
+                      account_id: $user_id,
+                      min_limit: $store_value,
+                      created_by: $su->id(),
+                      schema: $pp->schema_o(),
+                    );
+                  }
 
-                    $alert_msg = 'De minimum limiet werd ';
+                  $alert_msg = 'De minimum limiet werd ';
                 }
                 else
                 {
                     foreach($user_ids as $user_id)
                     {
-                        $account_repository->update_max_limit($user_id, $store_value, $su->id(), $pp->schema());
+                      $account_repository->update_max_limit(
+                        account_id: $user_id,
+                        max_limit: $store_value,
+                        created_by: $su->id(),
+                        schema: $pp->schema_o(),
+                      );
                     }
 
                     $alert_msg = 'De maximum limiet werd ';
@@ -434,26 +444,6 @@ class UsersListController extends AbstractController
 
                     unset($sel_ary[$sel_user['id']]);
 
-                    /*
-                    $vars = [
-                        'subject'	=> $bulk_mail_subject,
-                    ];
-
-                    foreach (BulkCnst::USER_TPL_VARS as $key => $val)
-                    {
-                        $vars[$key] = $sel_user[$val];
-                    }
-
-                    $mail_queue->queue([
-                        'schema'			=> $pp->schema(),
-                        'to' 				=> $mail_addr_user_service->get($sel_user['id'], $pp->schema()),
-                        'pre_html_template' => $bulk_mail_content,
-                        'reply_to' 			=> $mail_addr_user_service->get($su->id(), $pp->schema()),
-                        'vars'				=> $vars,
-                        'template'			=> 'skeleton/user',
-                    ], random_int(200, 2000));
-                    */
-
                     $sent_to_ary[] = (int) $sel_user['id'];
                     $alert_users_sent_ary[] = $account_render->link($sel_user['id'], $pp->ary());
                     $mail_users_sent_ary[] = $account_render->link_url($sel_user['id'], $pp->ary());
@@ -471,17 +461,6 @@ class UsersListController extends AbstractController
                       schema: $pp->schema_o(),
                     );
                     $bus->dispatch($m_message);
-
-                    if ($bulk_submit_action === 'mail')
-                    {
-                        $db->insert($pp->schema() . '.emails', [
-                            'subject'       => $bulk_mail_subject,
-                            'content'       => $bulk_mail_content,
-                            'route'         => $request->attributes->get('_route'),
-                            'sent_to'       => json_encode($sent_to_ary),
-                            'created_by'    => $su->id(),
-                        ]);
-                    }
 
                     $msg_users_sent = 'E-mail verzonden naar ';
                     $msg_users_sent .= count($alert_users_sent_ary);
@@ -885,33 +864,42 @@ class UsersListController extends AbstractController
 
             $datetime = new \DateTimeImmutable($balance_date_rev, new \DateTimeZone('UTC'));
 
-            $balance_ary_on_date = $account_repository->get_balance_ary_on_date($datetime, $pp->schema());
+            $balance_ary_on_date = $account_repository->get_balance_ary_on_date(
+              datetime: $datetime,
+              schema: $pp->schema_o(),
+            );
 
             array_walk($users, function(&$user, $user_id) use ($balance_ary_on_date){
                 $user['balance_date'] = $balance_ary_on_date[$user_id] ?? 0;
             });
         }
 
-        $balance_ary = $account_repository->get_balance_ary($pp->schema());
+        $balance_ary = $account_repository->get_balance_ary(
+          schema: $pp->schema_o(),
+        );
 
         array_walk($users, function(&$user, $user_id) use ($balance_ary){
-            $user['balance'] = $balance_ary[$user_id] ?? 0;
+          $user['balance'] = $balance_ary[$user_id] ?? 0;
         });
 
         if (isset($show_columns['u']['min']))
         {
-            $min_limit_ary = $account_repository->get_min_limit_ary($pp->schema());
-            $min_intersect_ary = array_intersect_key($min_limit_ary, $users);
+          $min_limit_ary = $account_repository->get_min_limit_ary(
+            schema: $pp->schema_o(),
+          );
+          $min_intersect_ary = array_intersect_key($min_limit_ary, $users);
 
-            foreach ($min_intersect_ary as $user_id => $min_limit)
-            {
-                $users[$user_id]['min'] = $min_limit;
-            }
+          foreach ($min_intersect_ary as $user_id => $min_limit)
+          {
+            $users[$user_id]['min'] = $min_limit;
+          }
         }
 
         if (isset($show_columns['u']['max']))
         {
-            $max_limit_ary = $account_repository->get_max_limit_ary($pp->schema());
+            $max_limit_ary = $account_repository->get_max_limit_ary(
+              schema: $pp->schema_o(),
+            );
             $max_intersect_ary = array_intersect_key($max_limit_ary, $users);
 
             foreach ($max_intersect_ary as $user_id => $max_limit)

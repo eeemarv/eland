@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\DTO\Schema;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
 use App\Service\AutoMinLimitService;
@@ -23,7 +24,10 @@ class TransactionService
 	{
 	}
 
-	public function generate_transid(int $s_id, string $system_name):string
+	public function generate_transid(
+    int $s_id,
+    string $system_name
+  ):string
 	{
 		$transid = substr(sha1(random_bytes(16)), 0, 12);
 		$transid .= '_';
@@ -32,7 +36,10 @@ class TransactionService
 		return $transid;
 	}
 
-	public function insert(array $transaction, string $schema):int
+	public function insert(
+    array $transaction,
+    Schema $schema
+  ):int
 	{
 		$from_id = (int) $transaction['id_from'];
 		$to_id = (int) $transaction['id_to'];
@@ -40,29 +47,37 @@ class TransactionService
 
 		$this->db->beginTransaction();
 
-		$this->db->insert($schema . '.transactions', $transaction);
-		$id = (int) $this->db->lastInsertId($schema . '.transactions_id_seq');
-		$this->account_repository->update_balance($to_id, $amount, $schema);
-		$this->account_repository->update_balance($from_id, -$amount, $schema);
+		$this->db->insert($schema->str() . '.transactions', $transaction);
+		$id = (int) $this->db->lastInsertId($schema->str() . '.transactions_id_seq');
+		$this->account_repository->update_balance(
+      account_id: $to_id,
+      amount: $amount,
+      schema: $schema
+    );
+		$this->account_repository->update_balance(
+      account_id: $from_id,
+      amount: -$amount,
+      schema: $schema
+    );
 		$this->db->commit();
 
 		$this->autominlimit_service->process(
 			$from_id,
 			$to_id,
 			$amount,
-			$schema
+			$schema->str()
 		);
 
-		$this->auto_deactivate_service->process($to_id, $schema);
-		$this->auto_deactivate_service->process($from_id, $schema);
+		$this->auto_deactivate_service->process($to_id, $schema->str());
+		$this->auto_deactivate_service->process($from_id, $schema->str());
 
 		$this->logger->info('Transaction ' . $transaction['transid'] . ' saved: ' .
 			$amount . ' ' .
-			$this->config_service->get_str('transactions.currency.name', $schema) .
+			$this->config_service->get_str('transactions.currency.name', $schema->str()) .
 			' from user ' .
-			$this->account_render->str_id($from_id, $schema) .
+			$this->account_render->str_id($from_id, $schema->str()) .
 			' to user ' .
-			$this->account_render->str_id($to_id, $schema),
+			$this->account_render->str_id($to_id, $schema->str()),
 			['schema' => $schema]);
 
 		return $id;

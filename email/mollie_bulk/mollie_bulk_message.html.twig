@@ -1,0 +1,67 @@
+{%- extends '@email/base/base.html.twig' -%}
+{%- trans_default_domain 'mail' -%}
+
+{#}
+mollie:
+  is_paid:
+    subject: >-
+      Betaling ontvangen
+    message: >-
+      We hebben je betaling goed ontvangen!
+  payment_request:
+    sub_header: Betalingsverzoek
+    sub_header_is_paid: Betaling voldaan
+    sub_header_is_canceled: Betaling geannuleerd
+    btn_label: Online betalen
+    link: Link voor online betalen
+  payment_request_admin_copy:
+    sub_header: Betalingsverzoek admin info
+    btn_label: Online betalen (dummy knop)
+    link_explain: >-
+      Een betaallink wordt alleen getoond bij openstaande betaalverzoeken
+
+mollie_bulk:
+  btn_label: Online betalen
+
+mollie_bulk_copy:
+  subject: "Kopie: {subject}"
+  btn_label: Online betalen (dummy knop)
+  btn_explain: >-
+    Een betaalknop wordt alleen getoond bij openstaande betaalverzoeken
+  to_users: >-
+    Dit bericht werd verzonden naar:
+  omitted_to_users: >-
+    Dit bericht kon niet verzonden worden naar:
+
+
+
+{#}
+
+{%- block subject -%}
+  {{- subject|raw -}}
+{%- endblock subject -%}
+
+{% block content -%}
+  <row class="b-{{- email_background -}}-9 r-{{- email_background -}}-4">
+    <columns>
+      <spacer size="8"></spacer>
+      <p>
+        {{- 'label.amount'|trans -}}: <b>{{- amount -}}</b>
+        <br/>
+        {{- 'label.description'|trans -}}: <b>{{- description -}}</b>
+      </p>
+      <button href="{{- url('mollie_checkout', {'checkout_token': checkout_token}|mpp) -}}" class="radius">
+        {{- 'mollie_bulk.btn_label'|trans -}}
+      </button>
+    </columns>
+  </row>
+  <spacer size="8"></spacer>
+  <row>
+    <columns>
+      <spacer size="16"></spacer>
+      <p>
+        {{- html_content|raw -}}
+      </p>
+    </columns>
+  </row>
+{%- endblock content -%}

@@ -118,7 +118,7 @@ class MessageRepository
 			set image_files = coalesce(image_files, \'[]\') || ?::jsonb
 			where id = ?',
 			[$image_filename, $id],
-			[Types::JSON, \PDO::PARAM_INT]);
+			[Types::JSON, Types::INTEGER]);
 	}
 
 	public function update_image_files(

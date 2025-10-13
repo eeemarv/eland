@@ -50,7 +50,11 @@ class TransactionsPlotUserController extends AbstractController
         $begin_unix = $end_unix - (86400 * $days);
         $end_datetime = \DateTimeImmutable::createFromFormat('U', (string) $end_unix);
         $begin_datetime = \DateTimeImmutable::createFromFormat('U', (string) $begin_unix);
-        $begin_balance = $account_repository->get_balance_on_date($user_id, $begin_datetime, $pp->schema());
+        $begin_balance = $account_repository->get_balance_on_date(
+          account_id: $user_id,
+          datetime: $begin_datetime,
+          schema: $pp->schema_o(),
+        );
 
         $intersystem_names = [];
         $transactions = [];

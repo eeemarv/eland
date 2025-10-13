@@ -3,6 +3,7 @@
 namespace App\Twig;
 
 use App\Cnst\StatusCnst;
+use App\DTO\Schema;
 use App\Repository\AccountRepository;
 use App\Service\ConfigService;
 use App\Service\UserCacheService;
@@ -71,7 +72,10 @@ class AccountRuntime implements RuntimeExtensionInterface
   ):int
 	{
     $sch_str = $schema ?? $context['schema'] ?? null;
-		return $this->account_repository->get_balance($user_id, $sch_str);
+		return $this->account_repository->get_balance(
+      account_id: $user_id,
+      schema: new Schema($sch_str),
+    );
 	}
 
 	public function get_status(

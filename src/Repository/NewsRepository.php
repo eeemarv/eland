@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Command\News\NewsCommand;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection as Db;
+use Doctrine\DBAL\Types\Types;
 use LogicException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -25,7 +26,7 @@ class NewsRepository
             from ' . $schema . '.news
             where id = ?',
 			[$id],
-			[\PDO::PARAM_INT]
+			[Types::INTEGER]
 		);
 
 		if (!$news)
@@ -53,7 +54,7 @@ class NewsRepository
 				where access in (?)) n
             where n.id = ?',
 			[$visible_ary, $id],
-			[ArrayParameterType::STRING, \PDO::PARAM_INT]
+			[ArrayParameterType::STRING, Types::INTEGER]
 		);
 
 		if ($news === false)

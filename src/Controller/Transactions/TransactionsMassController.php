@@ -164,12 +164,18 @@ class TransactionsMassController extends AbstractController
         $selected_users = explode('.', $selected_users);
         $selected_users = array_combine($selected_users, $selected_users);
 
-        $balance_ary = $account_repository->get_balance_ary($pp->schema());
+        $balance_ary = $account_repository->get_balance_ary(
+          schema: $pp->schema_o()
+        );
 
         if ($limits_enabled)
         {
-            $min_limit_ary = $account_repository->get_min_limit_ary($pp->schema());
-            $max_limit_ary = $account_repository->get_max_limit_ary($pp->schema());
+          $min_limit_ary = $account_repository->get_min_limit_ary(
+            schema: $pp->schema_o(),
+          );
+          $max_limit_ary = $account_repository->get_max_limit_ary(
+            schema: $pp->schema_o(),
+          );
         }
 
         $users = [];
@@ -359,8 +365,17 @@ class TransactionsMassController extends AbstractController
 
                     $db->insert($pp->schema() . '.transactions', $transaction);
                     $transaction['id'] = $db->lastInsertId($pp->schema() . '.transactions_id_seq');
-                    $account_repository->update_balance($to_id, $amo, $pp->schema());
-                    $account_repository->update_balance($from_id, -$amo, $pp->schema());
+
+                    $account_repository->update_balance(
+                      account_id: $to_id,
+                      amount: $amo,
+                      schema: $pp->schema_o()
+                    );
+                    $account_repository->update_balance(
+                      account_id: $from_id,
+                      amount: -$amo,
+                      schema: $pp->schema_o()
+                    );
 
                     $total_amount += $amo;
 

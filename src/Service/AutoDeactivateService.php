@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\DTO\Schema;
 use Doctrine\DBAL\Connection as Db;
 use App\Queue\MailQueue;
 use Psr\Log\LoggerInterface;
@@ -36,6 +37,8 @@ class AutoDeactivateService
 		string $schema
 	):void
 	{
+    $schema_o = new Schema($schema);
+
 		if (!$this->config_service->get_bool('users.leaving.enabled', $schema))
 		{
 			return;
@@ -53,8 +56,11 @@ class AutoDeactivateService
 			return;
 		}
 
-        $balance_equilibrium = $this->config_service->get_int('accounts.equilibrium', $schema) ?? 0;
-		$balance = $this->account_repository->get_balance($user_id, $schema);
+    $balance_equilibrium = $this->config_service->get_int('accounts.equilibrium', $schema) ?? 0;
+		$balance = $this->account_repository->get_balance(
+      account_id: $user_id,
+      schema: $schema_o,
+    );
 
 		if ($balance !== $balance_equilibrium)
 		{

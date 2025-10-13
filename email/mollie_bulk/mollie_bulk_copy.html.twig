@@ -1,0 +1,71 @@
+{%- extends '@email/base/base.html.twig' -%}
+{%- trans_default_domain 'mail' -%}
+
+{%- block subject -%}
+  {{- 'mollie_bulk_copy.subject'|trans({
+    'subject': subject
+  })|raw -}}
+{%- endblock subject -%}
+
+{% block content -%}
+  <row class="b-{{- email_background -}}-9 r-{{- email_background -}}-4">
+    <columns>
+      <spacer size="8"></spacer>
+      <p>
+        {{- 'mollie_bulk_copy.to_users'|trans -}}
+      </p>
+      <p>
+        {%- for s in sent_ary -%}
+          {{- a_open('users_show', {}|mpp(id: s.user_id, role_user_id: to_user_id))|raw -}}
+            {{- account(s.user_id) -}}
+          </a>: {{ s.amount }}, {{ account_code(s.user_id) }} {{ s.description }}<br/>
+        {%- endfor -%}
+      </p>
+    </columns>
+  </row>
+  {%- if not_sent_ary is not empty -%}
+    <row class="b-red-8 r-red-4">
+      <columns>
+        <spacer size="8"></spacer>
+        <p>
+          {{- 'mollie_bulk_copy.omitted_to_users'|trans -}}
+        </p>
+        <p>
+          {%- for ns in not_sent_ary -%}
+            {{- a_open('users_show', {}|mpp(id: ns.user_id, role_user_id: to_user_id))|raw -}}
+              {{- account(ns.user_id) -}}
+            </a>: {{ ns.amount }}, {{ account_code(ns.user_id) }} {{ ns.description }}<br/>
+          {%- endfor -%}
+        </p>
+      </columns>
+    </row>
+  {%- endif -%}
+
+  <spacer size="8"></spacer>
+
+  <row class="b-{{- email_background -}}-9 r-{{- email_background -}}-4">
+    <columns>
+      <spacer size="8"></spacer>
+      <p>
+        {{- 'label.amount'|trans -}}: <i>{{- 'label.amount'|trans -}}</i>
+        <br/>
+        {{- 'label.description'|trans -}}: <i>{{- 'label.description'|trans -}}</i>
+      </p>
+      <button href="{{- url('mollie_checkout', {'checkout_token': dummy_checkout_token}|mpp) -}}" class="radius">
+        {{- 'mollie_bulk_copy.btn_label'|trans -}}
+      </button>
+    </columns>
+  </row>
+
+  <spacer size="8"></spacer>
+
+  <row>
+    <columns>
+      {%- include '@email/include/h_bar.html.twig' -%}
+      <spacer size="16"></spacer>
+      <p>
+        {{- html_content|raw -}}
+      </p>
+    </columns>
+  </row>
+{%- endblock content -%}

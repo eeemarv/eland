@@ -164,8 +164,14 @@ class UsersEditController extends AbstractController
 
             if ($transactions_enabled && $limits_enabled)
             {
-                $stored_min_limit = $account_repository->get_min_limit($id, $pp->schema());
-                $stored_max_limit = $account_repository->get_max_limit($id, $pp->schema());
+                $stored_min_limit = $account_repository->get_min_limit(
+                  account_id: $id,
+                  schema: $pp->schema_o(),
+                );
+                $stored_max_limit = $account_repository->get_max_limit(
+                  account_id: $id,
+                  schema: $pp->schema_o(),
+                );
             }
         }
 
@@ -566,7 +572,12 @@ class UsersEditController extends AbstractController
 
                 if ($stored_min_limit !== $min_to_store)
                 {
-                    $account_repository->update_min_limit($id, $min_to_store, $su->id(), $pp->schema());
+                  $account_repository->update_min_limit(
+                    account_id: $id,
+                    min_limit: $min_to_store,
+                    created_by: $su->id(),
+                    schema: $pp->schema_o(),
+                  );
                 }
 
                 $max_to_store = $max_limit;
@@ -574,7 +585,12 @@ class UsersEditController extends AbstractController
 
                 if ($stored_max_limit !== $max_to_store)
                 {
-                    $account_repository->update_max_limit($id, $max_to_store, $su->id(), $pp->schema());
+                  $account_repository->update_max_limit(
+                    account_id: $id,
+                    max_limit: $max_to_store,
+                    created_by: $su->id(),
+                    schema: $pp->schema_o(),
+                  );
                 }
             }
 

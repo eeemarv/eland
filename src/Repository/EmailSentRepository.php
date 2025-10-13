@@ -30,6 +30,7 @@ class EmailSentRepository
     string $subject,
     string $message_class,
     null|Uuid $bulk_id,
+    null|int $mollie_payment_id,
     null|Schema $schema
   ):void
 	{
@@ -87,6 +88,22 @@ class EmailSentRepository
     $sch_str = isset($schema) ? $schema->str() : 'xdb';
 
     $this->db->insert($sch_str . '.emails_sent',  $insert_ary, $type_ary);
+
+    if (isset($mollie_payment_id))
+    {
+      if (!isset($schema))
+      {
+        throw new \Exception('missing schema for registering mollie_emails_sent');
+      }
+      $email_sent_id = (int) $this->db->lastInsertId($schema->str() . '.emails_sent_id_seq');
+      $this->db->insert($schema->str() . '.mollie_emails_sent', [
+        'payment_id'    => $mollie_payment_id,
+        'email_sent_id' => $email_sent_id,
+      ], [
+        Types::INTEGER,
+        Types::INTEGER
+      ]);
+    }
 	}
 
   public function get_with_confirm_token (
@@ -155,4 +172,23 @@ class EmailSentRepository
     $stmt_2->bindValue('email_token', $uuid_et, Types::GUID);
     $stmt_2->executeStatement();
   }
+
+	public function insert_bulk_if_not_exists(
+    Uuid $bulk_id,
+    string $subject,
+    string $content,
+    int $created_by,
+    Schema $schema,
+  ):void
+	{
+		$stmt = $this->db->prepare('insert into ' .
+      $schema->str() . '.emails_sent_bulk(id, subject, content, created_by)
+      values(:id, :subject, :content, :created_by)
+      on conflict do nothing');
+		$stmt->bindValue('id', $bulk_id->toRfc4122(), Types::GUID);
+		$stmt->bindValue('subject', $subject, Types::STRING);
+		$stmt->bindValue('content', $content, Types::STRING);
+		$stmt->bindValue('created_by', $created_by, Types::INTEGER);
+		$stmt->executeStatement();
+	}
 }

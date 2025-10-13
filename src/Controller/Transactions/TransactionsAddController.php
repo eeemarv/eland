@@ -4,6 +4,7 @@ namespace App\Controller\Transactions;
 
 use App\Cnst\BulkCnst;
 use App\Cnst\MessageTypeCnst;
+use App\DTO\Schema;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Repository\AccountRepository;
@@ -252,8 +253,14 @@ class TransactionsAddController extends AbstractController
 
             if (isset($from_id))
             {
-                $from_user_min_limit = $account_repository->get_min_limit($from_id, $pp->schema());
-                $from_user_balance = $account_repository->get_balance($from_id, $pp->schema());
+              $from_user_min_limit = $account_repository->get_min_limit(
+                account_id: $from_id,
+                schema: $pp->schema_o(),
+              );
+              $from_user_balance = $account_repository->get_balance(
+                account_id: $from_id,
+                schema: $pp->schema_o()
+              );
             }
 
             if ($limits_enabled
@@ -292,8 +299,14 @@ class TransactionsAddController extends AbstractController
 
             if (isset($to_id))
             {
-                $to_user_balance = $account_repository->get_balance($to_id, $pp->schema());
-                $to_user_max_limit = $account_repository->get_max_limit($to_id, $pp->schema());
+              $to_user_balance = $account_repository->get_balance(
+                account_id: $to_id,
+                schema: $pp->schema_o()
+              );
+              $to_user_max_limit = $account_repository->get_max_limit(
+                account_id: $to_id,
+                schema: $pp->schema_o(),
+              );
             }
 
             if ($limits_enabled
@@ -403,7 +416,10 @@ class TransactionsAddController extends AbstractController
 
             if (!count($errors) && $group_id === 'self')
             {
-                if ($id = $transaction_service->insert($transaction, $pp->schema()))
+                if ($id = $transaction_service->insert(
+                  transaction: $transaction,
+                  schema: $pp->schema_o(),
+                ))
                 {
                     $transaction['id'] = $id;
                     $mail_transaction_service->queue($transaction, $pp->schema());
@@ -421,7 +437,10 @@ class TransactionsAddController extends AbstractController
             {
                 $transaction['real_to'] = trim($request->request->get('code_to', ''));
 
-                if ($id = $transaction_service->insert($transaction, $pp->schema()))
+                if ($id = $transaction_service->insert(
+                  transaction: $transaction,
+                  schema: $pp->schema_o(),
+                ))
                 {
                     $transaction['id'] = $id;
                     $transaction['code_to'] = $code_to;
@@ -468,14 +487,15 @@ class TransactionsAddController extends AbstractController
 
             if (!count($errors))
             {
-                // the interSystem group is on the same server (eLAND)
+              // the interSystem group is on the same server (eLAND)
 
-                $remote_schema = $systems_service->get_schema_from_legacy_eland_origin($group['url']);
+              $remote_schema = $systems_service->get_schema_from_legacy_eland_origin($group['url']);
+              $remote_schema_o = new Schema($remote_schema);
 
-                if (!$config_service->get_bool('transactions.enabled', $remote_schema))
-                {
-                    $errors[] = 'De transactie module is niet actief in het andere systeem.';
-                }
+              if (!$config_service->get_bool('transactions.enabled', $remote_schema))
+              {
+                $errors[] = 'De transactie module is niet actief in het andere systeem.';
+              }
             }
 
             if (!count($errors))
@@ -570,8 +590,14 @@ class TransactionsAddController extends AbstractController
 
                 if (!count($errors))
                 {
-                    $from_remote_min_limit = $account_repository->get_min_limit($from_remote_id, $remote_schema);
-                    $from_remote_balance = $account_repository->get_balance($from_remote_id, $remote_schema);
+                    $from_remote_min_limit = $account_repository->get_min_limit(
+                      account_id: $from_remote_id,
+                      schema: $remote_schema_o,
+                    );
+                    $from_remote_balance = $account_repository->get_balance(
+                      account_id: $from_remote_id,
+                      schema: $remote_schema_o,
+                    );
 
                     if (!isset($from_remote_min_limit))
                     {
@@ -625,8 +651,14 @@ class TransactionsAddController extends AbstractController
                     && $remote_limits_enabled
                 )
                 {
-                    $to_remote_max_limit = $account_repository->get_max_limit($to_remote_id, $remote_schema);
-                    $to_remote_balance = $account_repository->get_balance($to_remote_id, $remote_schema);
+                    $to_remote_max_limit = $account_repository->get_max_limit(
+                      account_id: $to_remote_id,
+                      schema: $remote_schema_o,
+                    );
+                    $to_remote_balance = $account_repository->get_balance(
+                      account_id: $to_remote_id,
+                      schema: $remote_schema_o,
+                    );
 
                     if (!isset($to_remote_max_limit))
                     {
@@ -682,8 +714,17 @@ class TransactionsAddController extends AbstractController
                     $db->insert($pp->schema() . '.transactions', $transaction);
                     $id = $db->lastInsertId($pp->schema() . '.transactions_id_seq');
                     $transaction['id'] = $id;
-                    $account_repository->update_balance($to_id, $amount, $pp->schema());
-                    $account_repository->update_balance($from_id, -$amount, $pp->schema());
+
+                    $account_repository->update_balance(
+                      account_id: $to_id,
+                      amount: $amount,
+                      schema: $pp->schema_o(),
+                    );
+                    $account_repository->update_balance(
+                      account_id: $from_id,
+                      amount: -$amount,
+                      schema: $pp->schema_o(),
+                    );
 
                     $remote_transaction = [
                         'id_from'       => $from_remote_id,
@@ -701,9 +742,18 @@ class TransactionsAddController extends AbstractController
 
                     $db->insert($remote_schema . '.transactions', $remote_transaction);
                     $remote_id = $db->lastInsertId($remote_schema . '.transactions_id_seq');
+
                     $remote_transaction['id'] = $remote_id;
-                    $account_repository->update_balance($to_remote_id, $remote_amount, $remote_schema);
-                    $account_repository->update_balance($from_remote_id, -$remote_amount, $remote_schema);
+                    $account_repository->update_balance(
+                      account_id: $to_remote_id,
+                      amount: $remote_amount,
+                      schema: $remote_schema_o
+                    );
+                    $account_repository->update_balance(
+                      account_id: $from_remote_id,
+                      amount: -$remote_amount,
+                      schema: $remote_schema_o
+                    );
 
                     $db->commit();
 
@@ -1043,13 +1093,14 @@ class TransactionsAddController extends AbstractController
                 }
                 else if (isset($sys['eland']))
                 {
-                    $remote_schema = $sys['remote_schema'];
+                  $remote_schema = $sys['remote_schema'];
+                  $remote_schema_o = new Schema($remote_schema);
 
-                    $typeahead_service->add('eland_intersystem_accounts', [
-                        'remote_schema'	=> $remote_schema,
-                    ]);
+                  $typeahead_service->add('eland_intersystem_accounts', [
+                    'remote_schema'	=> $remote_schema,
+                  ]);
 
-                    $config_schema = $remote_schema;
+                  $config_schema = $remote_schema;
                 }
                 else if (isset($sys['mail']))
                 {

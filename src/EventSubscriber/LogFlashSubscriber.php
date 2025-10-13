@@ -13,9 +13,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class LogFlashSubscriber implements EventSubscriberInterface
 {
   public function __construct(
-    private PageParamsService $pp,
-    private TranslatorInterface $translator,
-    private LoggerInterface $logger
+    private readonly PageParamsService $pp,
+    private readonly TranslatorInterface $translator,
+    private readonly LoggerInterface $logger
   )
   {
   }

@@ -1503,3 +1503,13 @@ users_username:
   self_edit:
     label: >-
       Gebruikers kunnen zelf hun gebruikersnaam aanpassen
+
+welcome:
+  title: Welkom bij {system_name}
+  currency: >-
+    Waardering bij {system_name} gebeurt met "{currency}".
+    {per_hour_ratio} {currency} stemt overeen met 1 uur.
+  back: >-
+    Je kan steeds terug naar je eigen Systeem via
+    het menu "Systeem" boven
+    in de navigatiebalk.

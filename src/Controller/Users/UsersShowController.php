@@ -146,9 +146,18 @@ class UsersShowController extends AbstractController
         $messages_enabled = $config_service->get_bool('messages.enabled', $pp->schema());
         $transactions_enabled = $config_service->get_bool('transactions.enabled', $pp->schema());
         $limits_enabled = $config_service->get_bool('accounts.limits.enabled', $pp->schema());
-        $min_limit = $account_repository->get_min_limit($id, $pp->schema());
-        $max_limit = $account_repository->get_max_limit($id, $pp->schema());
-        $balance = $account_repository->get_balance($id, $pp->schema());
+        $min_limit = $account_repository->get_min_limit(
+          account_id: $id,
+          schema: $pp->schema_o(),
+        );
+        $max_limit = $account_repository->get_max_limit(
+          account_id: $id,
+          schema: $pp->schema_o(),
+        );
+        $balance = $account_repository->get_balance(
+          account_id: $id,
+          schema: $pp->schema_o(),
+        );
 
         $system_min_limit = $config_service->get_int('accounts.limits.global.min', $pp->schema());
         $system_max_limit = $config_service->get_int('accounts.limits.global.max', $pp->schema());

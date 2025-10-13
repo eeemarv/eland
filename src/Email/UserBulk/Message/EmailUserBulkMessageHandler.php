@@ -63,6 +63,7 @@ final class EmailUserBulkMessageHandler
         embedded_template: $message->message,
         embedded_context: $embedded_context,
         bulk_id: $bulk_id,
+        bulk_created_by: $sender_id,
         reply_to: $reply_to,
         to: $to,
         schema: $schema

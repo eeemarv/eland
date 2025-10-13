@@ -122,6 +122,10 @@
 	<div id="wrap">
 	<div id="main" class="container-fluid clear-top{%- if pp_has_role('admin') %} admin{%- endif -%}">
 
+  {%- if pp_has_role('guest') and query_params.welcome is defined -%}
+    {%- include 'include/welcome.html.twig' -%}
+  {%- endif -%}
+
 	{%- if mollie_checkout_ary is defined -%}
 		{%- include 'mollie/include/mollie_checkout_ary.html.twig' -%}
 	{%- endif -%}

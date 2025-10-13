@@ -13,6 +13,7 @@ use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Uid\Uuid;
 use Twig\Environment;
 
 class MollieSubscriber implements EventSubscriberInterface
@@ -76,7 +77,10 @@ class MollieSubscriber implements EventSubscriberInterface
       return;
     }
 
-    $payments = $this->mollie_repository->get_open_payments_for_user($this->su->id(), $this->pp->schema());
+    $payments = $this->mollie_repository->get_open_payments_for_user(
+      user_id: $this->su->id(),
+      schema: $this->pp->schema_o(),
+    );
 
     if (!$payments)
     {
@@ -90,10 +94,11 @@ class MollieSubscriber implements EventSubscriberInterface
     foreach ($payments as $payment)
     {
       $description = $this->su->code() . ' ' . $payment['description'];
+      $checkout_token = Uuid::fromRfc4122($payment['checkout_token']);
 
       $action = $this->url_generator->generate('mollie_checkout', [
         'system' => $this->pp->system(),
-        'token' => $payment['token'],
+        'checkout_token' => $checkout_token->toBase58(),
       ]);
 
       $form = $this->form_factory->create(MollieCheckoutType::class, [], [

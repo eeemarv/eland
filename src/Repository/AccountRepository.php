@@ -2,169 +2,244 @@
 
 namespace App\Repository;
 
+use App\DTO\Schema;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
 
 class AccountRepository
 {
 	public function __construct(
-        protected Db $db
-    )
+    protected Db $db
+  )
 	{
 	}
 
-    public function get_min_limit(int $account_id, string $schema):?int
+  public function get_min_limit(
+    int $account_id,
+    Schema $schema
+  ):int|null
+  {
+    $stmt = $this->db->prepare('select m.min_limit
+      from (values(0)) as d
+      left join ' . $schema->str() . '.min_limit as m
+      on m.account_id = :account_id
+      order by m.id desc
+      limit 1');
+    $stmt->bindValue('account_id', $account_id, Types::INTEGER);
+    $res = $stmt->executeQuery();
+    return $res->fetchOne();
+  }
+
+  public function update_min_limit(
+    int $account_id,
+    int|null $min_limit,
+    int|null $created_by,
+    Schema $schema
+  ):void
+  {
+    $cols = ['account_id'];
+    if (isset($min_limit))
     {
-        return $this->db->fetchOne('select m.min_limit
-            from (values(0)) as d
-            left join ' . $schema . '.min_limit as m
-            on m.account_id = ?
-            order by m.id desc
-            limit 1',
-            [$account_id],
-            [\PDO::PARAM_INT]);
+      $cols[] = 'min_limit';
+    }
+    if (isset($created_by))
+    {
+      $cols[] = 'created_by';
+    }
+    $stmt = $this->db->prepare('insert into ' .
+      $schema->str() . '.min_limit
+      (' . implode(', ', $cols) . ')
+      values
+      (:' . implode(', :', $cols) . ')');
+    $stmt->bindValue('account_id', $account_id, Types::INTEGER);
+    if (isset($min_limit))
+    {
+      $stmt->bindValue('min_limit', $min_limit, Types::INTEGER);
+    }
+    if (isset($created_by))
+    {
+      $stmt->bindValue('created_by', $created_by, Types::INTEGER);
+    }
+    $stmt->executeStatement();
+  }
+
+  public function get_min_limit_ary(
+    Schema $schema
+  ):array
+  {
+    $min_limit_ary = [];
+
+    $stmt = $this->db->prepare('select distinct on(account_id) min_limit, account_id
+      from ' . $schema->str() . '.min_limit
+      order by account_id, id desc');
+    $res = $stmt->executeQuery();
+
+    while ($row = $res->fetchAssociative())
+    {
+        $min_limit_ary[$row['account_id']] = $row['min_limit'];
     }
 
-    public function update_min_limit(int $account_id, ?int $min_limit, ?int $created_by, string $schema):void
-    {
-        $created_by = $created_by ?: null;
+    return $min_limit_ary;
+  }
 
-        $this->db->insert($schema . '.min_limit', [
-            'min_limit'     => $min_limit,
-            'account_id'    => $account_id,
-            'created_by'    => $created_by,
-        ]);
+  public function get_max_limit(
+    int $account_id,
+    Schema $schema
+  ):int|null
+  {
+    $stmt = $this->db->prepare('select m.max_limit
+      from (values(0)) as d
+      left join ' . $schema->str() . '.max_limit as m
+      on m.account_id = :account_id
+      order by m.id desc
+      limit 1');
+    $stmt->bindValue('account_id', $account_id, Types::INTEGER);
+    $res = $stmt->executeQuery();
+    return $res->fetchOne();
+  }
+
+  public function update_max_limit(
+    int $account_id,
+    int|null $max_limit,
+    int|null $created_by,
+    Schema $schema
+  ):void
+  {
+    $cols = ['account_id'];
+    if (isset($max_limit))
+    {
+      $cols[] = 'max_limit';
+    }
+    if (isset($created_by))
+    {
+      $cols[] = 'created_by';
+    }
+    $stmt = $this->db->prepare('insert into ' .
+      $schema->str() . '.max_limit
+      (' . implode(', ', $cols) . ')
+      values
+      (:' . implode(', :', $cols) . ')');
+    $stmt->bindValue('account_id', $account_id, Types::INTEGER);
+    if (isset($max_limit))
+    {
+      $stmt->bindValue('max_limit', $max_limit, Types::INTEGER);
+    }
+    if (isset($created_by))
+    {
+      $stmt->bindValue('created_by', $created_by, Types::INTEGER);
+    }
+    $stmt->executeStatement();
+  }
+
+  public function get_max_limit_ary(
+    Schema $schema,
+  ):array
+  {
+    $max_limit_ary = [];
+
+    $stmt = $this->db->prepare('select distinct on(account_id) max_limit, account_id
+      from ' . $schema->str() . '.max_limit
+      order by account_id, id desc');
+    $res = $stmt->executeQuery();
+
+    while ($row = $res->fetchAssociative())
+    {
+        $max_limit_ary[$row['account_id']] = $row['max_limit'];
     }
 
-    public function get_min_limit_ary(string $schema):array
+    return $max_limit_ary;
+  }
+
+  public function get_balance(
+    int $account_id,
+    Schema $schema,
+  ):int
+  {
+    $stmt = $this->db->prepare('select coalesce(b.balance, 0)
+      from (values(0)) as d
+      left join ' . $schema->str() . '.balance as b
+      on b.account_id = :account_id
+      order by b.id desc
+      limit 1');
+    $stmt->bindValue('account_id', $account_id, Types::INTEGER);
+    $res = $stmt->executeQuery();
+    return $res->fetchOne();
+  }
+
+  public function get_balance_on_date(
+    int $account_id,
+    \DateTimeImmutable $datetime,
+    Schema $schema
+  ):int
+  {
+    $stmt = $this->db->prepare('select coalesce(b.balance, 0)
+      from (values(0)) as d
+      left join ' . $schema->str() . '.balance as b
+      on b.account_id = :account_id and b.created_at <= :datetime
+      order by b.id desc
+      limit 1');
+    $stmt->bindValue('account_id', $account_id, Types::INTEGER);
+    $stmt->bindValue('datetime', $datetime, Types::DATETIME_IMMUTABLE);
+    $res = $stmt->executeQuery();
+    return $res->fetchOne();
+  }
+
+  public function update_balance(
+    int $account_id,
+    int $amount,
+    Schema $schema,
+  ):void
+  {
+    $stmt = $this->db->prepare('insert into ' . $schema->str() . '.balance (account_id, amount, balance)
+      values (:account_id, :amount, (select coalesce(b.balance, 0) + :amount
+      from (values(0)) as d
+      left join ' . $schema->str() . '.balance as b
+      on b.account_id = :account_id
+      order by b.id desc limit 1))');
+    $stmt->bindValue('account_id', $account_id, Types::INTEGER);
+    $stmt->bindValue('amount', $amount, Types::INTEGER);
+    $stmt->executeStatement();
+  }
+
+  public function get_balance_ary(
+    Schema $schema,
+  ):array
+  {
+    $balance_ary = [];
+
+    $stmt = $this->db->prepare('select distinct on(account_id) balance, account_id
+      from ' . $schema->str() . '.balance
+      order by account_id, id desc');
+
+    $res = $stmt->executeQuery();
+
+    while ($row = $res->fetchAssociative())
     {
-        $min_limit_ary = [];
-
-        $stmt = $this->db->prepare('select distinct on(account_id) min_limit, account_id
-            from ' . $schema . '.min_limit
-            order by account_id, id desc');
-
-        $res = $stmt->executeQuery();
-
-        while ($row = $res->fetchAssociative())
-        {
-            $min_limit_ary[$row['account_id']] = $row['min_limit'];
-        }
-
-        return $min_limit_ary;
+      $balance_ary[$row['account_id']] = $row['balance'];
     }
 
-    public function get_max_limit(int $account_id, string $schema):?int
+    return $balance_ary;
+  }
+
+  public function get_balance_ary_on_date(
+    \DateTimeImmutable $datetime,
+    Schema $schema,
+  ):array
+  {
+    $balance_ary = [];
+
+    $stmt = $this->db->prepare('select distinct on(account_id) balance, account_id
+      from ' . $schema->str() . '.balance
+      where created_at <= :datetime
+      order by account_id, id desc');
+    $stmt->bindValue('datetime', $datetime, Types::DATETIME_IMMUTABLE);
+    $res = $stmt->executeQuery();
+
+    while ($row = $res->fetchAssociative())
     {
-        return $this->db->fetchOne('select m.max_limit
-            from (values(0)) as d
-            left join ' . $schema . '.max_limit as m
-            on m.account_id = ?
-            order by m.id desc
-            limit 1',
-            [$account_id], [\PDO::PARAM_INT]);
+      $balance_ary[$row['account_id']] = $row['balance'];
     }
 
-    public function update_max_limit(int $account_id, ?int $max_limit, ?int $created_by, string $schema):void
-    {
-        $created_by = $created_by ?: null;
-
-        $this->db->insert($schema . '.max_limit', [
-            'max_limit'     => $max_limit,
-            'account_id'    => $account_id,
-            'created_by'    => $created_by,
-        ]);
-    }
-
-    public function get_max_limit_ary(string $schema):array
-    {
-        $max_limit_ary = [];
-
-        $stmt = $this->db->prepare('select distinct on(account_id) max_limit, account_id
-            from ' . $schema . '.max_limit
-            order by account_id, id desc');
-
-        $res = $stmt->executeQuery();
-
-        while ($row = $res->fetchAssociative())
-        {
-            $max_limit_ary[$row['account_id']] = $row['max_limit'];
-        }
-
-        return $max_limit_ary;
-    }
-
-    public function get_balance(int $account_id, string $schema):int
-    {
-        return $this->db->fetchOne('select coalesce(b.balance, 0)
-            from (values(0)) as d
-            left join ' . $schema . '.balance as b
-            on b.account_id = ?
-            order by b.id desc
-            limit 1',
-            [$account_id], [\PDO::PARAM_INT]);
-    }
-
-    public function get_balance_on_date(int $account_id, \DateTimeImmutable $datetime, string $schema):int
-    {
-        return $this->db->fetchOne('select coalesce(b.balance, 0)
-            from (values(0)) as d
-            left join ' . $schema . '.balance as b
-            on b.account_id = ? and b.created_at <= ?
-            order by b.id desc
-            limit 1',
-            [$account_id, $datetime],
-            [\PDO::PARAM_INT, Types::DATETIME_IMMUTABLE]);
-    }
-
-    public function update_balance(int $account_id, int $amount, string $schema):void
-    {
-        $this->db->executeStatement('insert into ' . $schema . '.balance (account_id, amount, balance)
-            values (?, ?, (select coalesce(b.balance, 0) + ?
-            from (values(0)) as d
-            left join ' . $schema . '.balance as b
-            on b.account_id = ?
-            order by b.id desc limit 1))',
-            [$account_id, $amount, $amount, $account_id],
-            [\PDO::PARAM_INT, \PDO::PARAM_INT, \PDO::PARAM_INT, \PDO::PARAM_INT]);
-    }
-
-    public function get_balance_ary(string $schema):array
-    {
-        $balance_ary = [];
-
-        $stmt = $this->db->prepare('select distinct on(account_id) balance, account_id
-            from ' . $schema . '.balance
-            order by account_id, id desc');
-
-        $res = $stmt->executeQuery();
-
-        while ($row = $res->fetchAssociative())
-        {
-            $balance_ary[$row['account_id']] = $row['balance'];
-        }
-
-        return $balance_ary;
-    }
-
-    public function get_balance_ary_on_date(\DateTimeImmutable $datetime, string $schema):array
-    {
-        $balance_ary = [];
-
-        $stmt = $this->db->prepare('select distinct on(account_id) balance, account_id
-            from ' . $schema . '.balance
-            where created_at <= ?
-            order by account_id, id desc');
-
-        $stmt->bindValue(1, $datetime, Types::DATETIME_IMMUTABLE);
-
-        $res = $stmt->executeQuery();
-
-        while ($row = $res->fetchAssociative())
-        {
-            $balance_ary[$row['account_id']] = $row['balance'];
-        }
-
-        return $balance_ary;
-    }
+    return $balance_ary;
+  }
 }
