@@ -13,43 +13,43 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class UrlContactValidator extends ConstraintValidator
 {
-    public function __construct(
-        protected ContactRepository $contact_repository,
-        protected PageParamsService $pp,
-        protected ValidatorInterface $validator
-    )
+  public function __construct(
+    private readonly ContactRepository $contact_repository,
+    private readonly PageParamsService $pp,
+    private readonly ValidatorInterface $validator
+  )
+  {
+  }
+
+  public function validate($command, Constraint $constraint):void
+  {
+    if (!$constraint instanceof UrlContact)
     {
+      throw new UnexpectedTypeException($constraint, UrlContact::class);
     }
 
-    public function validate($command, Constraint $constraint):void
+    if (!$command instanceof ContactsCommand)
     {
-        if (!$constraint instanceof UrlContact)
-        {
-            throw new UnexpectedTypeException($constraint, UrlContact::class);
-        }
-
-        if (!$command instanceof ContactsCommand)
-        {
-            throw new UnexpectedTypeException($command, ContactsCommand::class);
-        }
-
-        $url_contact_type = $this->contact_repository->get_contact_type_by_abbrev('web', $this->pp->schema());
-
-        if ($command->contact_type_id !== $url_contact_type['id'])
-        {
-            return;
-        }
-
-        $url = $command->value;
-        $url_constraint = new Url();
-
-        $errors = $this->validator->validate($url, $url_constraint);
-
-        foreach ($errors as $error)
-        {
-            $this->context->buildViolation($error->getMessage())
-                ->atPath('value')
-                ->addViolation();
-        }
+      throw new UnexpectedTypeException($command, ContactsCommand::class);
     }
+
+    $url_contact_type = $this->contact_repository->get_contact_type_by_abbrev('web', $this->pp->schema());
+
+    if ($command->contact_type_id !== $url_contact_type['id'])
+    {
+      return;
+    }
+
+    $url = $command->value;
+    $url_constraint = new Url();
+
+    $errors = $this->validator->validate($url, $url_constraint);
+
+    foreach ($errors as $error)
+    {
+      $this->context->buildViolation($error->getMessage())
+        ->atPath('value')
+        ->addViolation();
+    }
+  }
 }

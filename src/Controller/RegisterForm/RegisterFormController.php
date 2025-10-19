@@ -42,7 +42,7 @@ class RegisterFormController extends AbstractController
   {
     if (!$config_service->get_bool('register_form.enabled', $pp->schema()))
     {
-      $this->createNotFoundException('Register form not enabled.');
+      throw $this->createNotFoundException('Register form not enabled.');
     }
 
     $postcode_enabled = $config_service->get_bool('users.fields.postcode.enabled', $pp->schema());

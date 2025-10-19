@@ -1,30 +1,34 @@
 {%- extends 'mollie/base/mollie_base.html.twig' -%}
 
 {%- block btn_top_add -%}
-    {%- include 'include/btn_top/add.html.twig' with {
-        'btn_route': 'mollie_payments_add',
-        'btn_title': 'mollie_payments_add.title'
-    } -%}
+  {%- include 'include/btn_top/add.html.twig' with {
+    'btn_route': 'mollie_payments_add',
+    'btn_title': 'mollie_payments_add.title'
+  } -%}
 {%- endblock btn_top_add -%}
 
+{%- block btn_top_bulk -%}
+  {%- include 'include/btn_top/bulk.html.twig' -%}
+{%- endblock btn_top_bulk -%}
+
 {%- block btn_top_config -%}
-    {%- include 'include/btn_top/config.html.twig' with {
-        'btn_route': 'mollie_config',
-        'btn_title': 'mollie_config.title'
-    } -%}
+  {%- include 'include/btn_top/config.html.twig' with {
+    'btn_route': 'mollie_config',
+    'btn_title': 'mollie_config.title'
+  } -%}
 {%- endblock btn_top_config -%}
 
 {%- set csv_en = true -%}
 
 {%- block assets_add -%}
-    {{- parent() -}}
-    {{- assets_add([
-        'codemirror',
-        'summernote',
-        'summernote_email.js',
-        'datepicker',
-        'table_sel.js'
-    ]) -}}
+  {{- parent() -}}
+  {{- assets_add([
+    'codemirror',
+    'summernote',
+    'summernote_email.js',
+    'datepicker',
+    'table_sel.js'
+  ]) -}}
 {%- endblock assets_add -%}
 
 {%- block heading_title -%}
@@ -37,7 +41,7 @@
 {%- endblock heading_append -%}
 
 {%- block filter_form_a -%}
-  {%- include 'mollie/include/mollie_filter_form.html.twig' -%}
+  {%- include 'mollie/payments/mollie_payments_filter_form.html.twig' -%}
 {%- endblock filter_form_a -%}
 
 {%- block pagination -%}
@@ -48,14 +52,14 @@
 
 {%- block data -%}
   {%- if row_count -%}
-    {{- data_list_raw|raw -}}
+    {%- include 'mollie/payments/mollie_payments_table.html.twig' -%}
   {%- else -%}
     {%- include 'include/no_results.html.twig' -%}
   {%- endif -%}
 {%- endblock data -%}
 
 {%- block bulk_actions -%}
-  {{- bulk_actions_raw|raw -}}
+  {%- include 'mollie/payments/mollie_payments_bulk.html.twig' -%}
 {%- endblock bulk_actions -%}
 
 {%- block css -%}

@@ -19,77 +19,77 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class MollieFilterType extends AbstractType
 {
-    public function __construct(
-        protected ConfigService $config_service,
-        protected PageParamsService $pp,
-        protected UrlGeneratorInterface $url_generator
-    )
-    {
-    }
+  public function __construct(
+    private readonly ConfigService $config_service,
+    private readonly PageParamsService $pp,
+    private readonly UrlGeneratorInterface $url_generator
+  )
+  {
+  }
 
-    public function buildForm(
-        FormBuilderInterface $builder,
-        array $options
-    ):void
-    {
-        $typeahead_add = [];
-        $typeahead_add[] = ['accounts', ['status' => 'active']];
-        $typeahead_add[] = ['accounts', ['status' => 'extern']];
-        $typeahead_add[] = ['accounts', ['status' => 'inactive']];
-        $typeahead_add[] = ['accounts', ['status' => 'im']];
-        $typeahead_add[] = ['accounts', ['status' => 'ip']];
+  public function buildForm(
+    FormBuilderInterface $builder,
+    array $options
+  ):void
+  {
+    $typeahead_add = [];
+    $typeahead_add[] = ['accounts', ['status' => 'active']];
+    $typeahead_add[] = ['accounts', ['status' => 'extern']];
+    $typeahead_add[] = ['accounts', ['status' => 'inactive']];
+    $typeahead_add[] = ['accounts', ['status' => 'im']];
+    $typeahead_add[] = ['accounts', ['status' => 'ip']];
 
-        $builder->add('q', TextType::class, [
-            'required' => false,
-        ]);
+    $builder->add('q', TextType::class, [
+        'required' => false,
+    ]);
 
-		$builder->add('user', TypeaheadType::class, [
-            'add'           => $typeahead_add,
-            'filter'        => 'accounts',
-            'required' 		=> false,
-        ]);
+    $builder->add('user', TypeaheadType::class, [
+      'add'         => $typeahead_add,
+      'filter'      => 'accounts',
+      'required' 		=> false,
+    ]);
 
-		$builder->add('from_date', DatepickerType::class, [
-            'attr'  => [
-                'data-date-default-view-date'   => '-1y',
-                'data-date-end-date'            => '0d',
-            ],
-            'required'  => false,
-        ]);
+    $builder->add('from_date', DatepickerType::class, [
+      'attr'  => [
+        'data-date-default-view-date'   => '-1y',
+        'data-date-end-date'            => '0d',
+      ],
+      'required'  => false,
+    ]);
 
-		$builder->add('to_date', DatepickerType::class, [
-            'attr'  => [
-                'data-date-end-date'            => '0d',
-            ],
-            'required'  => false,
-        ]);
+    $builder->add('to_date', DatepickerType::class, [
+      'attr'  => [
+        'data-date-end-date'  => '0d',
+      ],
+      'required'  => false,
+    ]);
 
 
-        $builder->add('status', BtnChoiceType::class, [
-            'choices'       => [
-                'open'      => 'open',
-                'paid'      => 'paid',
-                'canceled'  => 'canceled',
-            ],
-            'multiple'      => true,
-            'required'      => false,
-        ]);
-    }
+    $builder->add('status', BtnChoiceType::class, [
+      'choices'       => [
+        'open'      => 'open',
+        'paid'      => 'paid',
+        'canceled'  => 'canceled',
+      ],
+      'multiple'      => true,
+      'required'      => false,
+    ]);
+  }
 
-    public function getParent():string
-    {
-        return FilterType::class;
-    }
+  public function getParent():string
+  {
+    return FilterType::class;
+  }
 
-    public function getBlockPrefix():string
-    {
-        return 'f';
-    }
+  public function getBlockPrefix():string
+  {
+    return 'f';
+  }
 
-    public function configureOptions(OptionsResolver $resolver):void
-    {
-        $resolver->setDefaults([
-            'data_class'                => MollieFilterCommand::class,
-        ]);
-    }
+  public function configureOptions(OptionsResolver $resolver):void
+  {
+    $resolver->setDefaults([
+      'data_class'  => MollieFilterCommand::class,
+    ]);
+  }
 }

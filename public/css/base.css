@@ -1032,3 +1032,27 @@ div.cms-edit.cms-global .note-airframe .note-editing-area {
 .grab {
   cursor: grab;
 }
+
+/** bold labels on checkboxes */
+.checkbox label{
+  font-weight: bold;
+}
+.checkbox {
+  margin: 0;
+}
+/** summernote error */
+.form-group.has-error .note-editor {
+  border-color: #a94442;
+}
+.form-group.has-error .note-toolbar {
+  border-color: #a94442;
+  background-color: #f2dede;
+}
+.form-group.has-error .note-btn {
+  border-color: #a94442;
+  color: #a94442;
+}
+.form-group.has-error .note-resizebar {
+  border-color: #a94442;
+  background-color: #f2dede;
+}

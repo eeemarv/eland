@@ -11,32 +11,32 @@ use Symfony\Component\Validator\Constraints\Type;
 
 class UsersConfigLeavingCommand implements CommandInterface
 {
-    #[Type(type: 'int')]
-    #[ConfigMap(type: 'int', key: 'accounts.equilibrium')]
-    public $equilibrium;
+  #[Type(type: 'int')]
+  #[ConfigMap(type: 'int', key: 'accounts.equilibrium')]
+  public $equilibrium;
 
-    #[Type(type: 'bool')]
-    #[ConfigMap(type: 'bool', key: 'users.leaving.auto_deactivate')]
-    public $auto_deactivate;
+  #[Type(type: 'bool')]
+  #[ConfigMap(type: 'bool', key: 'users.leaving.auto_deactivate')]
+  public $auto_deactivate;
 
-    #[Sequentially(constraints: [
-        new NotNull(),
-        new Choice(['admin', 'user', 'guest']),
-    ])]
-    #[ConfigMap(type: 'str', key: 'users.leaving.access')]
-    public $access;
+  #[Sequentially(constraints: [
+    new NotNull(),
+    new Choice(['admin', 'user', 'guest']),
+  ])]
+  #[ConfigMap(type: 'str', key: 'users.leaving.access')]
+  public $access;
 
-    #[Sequentially(constraints: [
-        new NotNull(),
-        new Choice(['admin', 'user', 'guest']),
-    ])]
-    #[ConfigMap(type: 'str', key: 'users.leaving.access_pane')]
-    public $access_list;
+  #[Sequentially(constraints: [
+    new NotNull(),
+    new Choice(['admin', 'user', 'guest']),
+  ])]
+  #[ConfigMap(type: 'str', key: 'users.leaving.access_pane')]
+  public $access_list;
 
-    #[Sequentially(constraints: [
-        new NotNull(),
-        new Choice(['admin', 'user', 'guest']),
-    ])]
-    #[ConfigMap(type: 'str', key: 'users.leaving.access_list')]
-    public $access_pane;
+  #[Sequentially(constraints: [
+    new NotNull(),
+    new Choice(['admin', 'user', 'guest']),
+  ])]
+  #[ConfigMap(type: 'str', key: 'users.leaving.access_list')]
+  public $access_pane;
 }

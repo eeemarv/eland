@@ -43,7 +43,7 @@ class ContactFormConfirmController extends AbstractController
   {
     if (!$config_service->get_bool('contact_form.enabled', $pp->schema()))
     {
-      $this->createNotFoundException('Contact form module not enabled.');
+      throw $this->createNotFoundException('Contact form module not enabled.');
     }
 
     $uuid_confirm_token = Uuid::fromBase58($confirm_token);
@@ -65,7 +65,7 @@ class ContactFormConfirmController extends AbstractController
     }
     else if ($record['message_class'] !== EmailContactFormConfirmMessage::class)
     {
-      $this->createNotFoundException();
+      throw $this->createNotFoundException();
     }
     else if ($record['is_confirmed'])
     {

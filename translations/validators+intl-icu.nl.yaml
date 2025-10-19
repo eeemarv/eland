@@ -1,3 +1,14 @@
+bulk_select:
+  not_empty:
+    generic: >-
+      Selecteer minstens één item
+    mollie_payment_requests: >-
+      Selecteer minstens één betaalverzoek
+    users: >-
+      Selecteer minstens één gebruiker
+    transactions: >-
+      Selecteer minstens één transactie
+
 captcha:
   no_token: Fout in formulier
   not_correct: De ingevulde code is niet juist
@@ -85,6 +96,12 @@ not_empty: Deze waarde mag niet leeg zijn
 
 password_strength:
   Het paswoord is niet sterk genoeg.
+
+plain_text_length:
+  min: >-
+    De tekst bestaat uit {len} tekens; ze moet minstens {min} tekens bevatten.
+  max: >-
+    De tekst bestaat uit {len} tekens; ze mag maximaal {max} tekens bevatten.
 
 tag:
   txt_not_unique: Deze tag-tekst is niet uniek.

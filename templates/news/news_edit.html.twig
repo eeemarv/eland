@@ -3,15 +3,15 @@
 {%- set cancel_route = 'news_show' -%}
 
 {%- block heading_title -%}
-    {{- 'news_edit.title'|trans({
-        'subject': news_item.subject
-    }) -}}
+  {{- 'news_edit.title'|trans({
+    'subject': news_item.subject
+  }) -}}
 {%- endblock heading_title -%}
 
 {%- block css -%}
-    {{- parent() -}}
+  {{- parent() -}}
 {%- endblock css -%}
 
 {%- block js -%}
-    {{- parent() -}}
+  {{- parent() -}}
 {%- endblock js -%}

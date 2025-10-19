@@ -89,22 +89,22 @@ class AccountRuntime implements RuntimeExtensionInterface
 		$user = $this->user_cache_service->get($user_id, $sch_str);
 		$status_id = $user['status'];
 
-        if (isset($user['adate'])
-            && $status_id === 1
+    if (isset($user['adate'])
+      && $status_id === 1
 		)
+    {
+      $new_users_enabled = $this->config_service->get_bool('users.new.enabled', $sch_str);
+
+      if ($new_users_enabled)
+      {
+        $new_user_treshold = $this->config_service->get_new_user_treshold($sch_str);
+
+        if ($new_user_treshold->getTimestamp() < strtotime($user['adate'] . ' UTC'))
         {
-			$new_users_enabled = $this->config_service->get_bool('users.new.enabled', $schema);
-
-			if ($new_users_enabled)
-			{
-				$new_user_treshold = $this->config_service->get_new_user_treshold($schema);
-
-				if ($new_user_treshold->getTimestamp() < strtotime($user['adate'] . ' UTC'))
-				{
-					$status_id = 3;
-				}
-			}
+          $status_id = 3;
         }
+      }
+    }
 
 		if ($status_id === 1)
 		{
@@ -113,7 +113,7 @@ class AccountRuntime implements RuntimeExtensionInterface
 
 		if ($status_id === 2)
 		{
-			$leaving_users_enabled = $this->config_service->get_bool('users.leaving.enabled', $schema);
+			$leaving_users_enabled = $this->config_service->get_bool('users.leaving.enabled', $sch_str);
 
 			if (!$leaving_users_enabled)
 			{
@@ -128,5 +128,135 @@ class AccountRuntime implements RuntimeExtensionInterface
 		$out .= '</span></small>';
 
 		return $out;
+	}
+
+	public function is_new(
+    array $context,
+    int $user_id,
+    string|null $schema = null
+  ):bool
+	{
+    $sch_str = $schema ?? $context['schema'] ?? null;
+		$user = $this->user_cache_service->get($user_id, $sch_str);
+
+    if ($user['status'] !== 1)
+    {
+      return false;
+    }
+    if (!isset($user['adate']))
+    {
+      return false;
+    }
+    if (!$this->config_service->get_bool('users.new.enabled', $sch_str))
+    {
+      return false;
+    }
+    $new_user_treshold = $this->config_service->get_new_user_treshold($sch_str);
+
+    if ($new_user_treshold->getTimestamp() < strtotime($user['adate'] . ' UTC'))
+    {
+      return true;
+    }
+    return false;
+	}
+
+	public function is_leaving(
+    array $context,
+    int $user_id,
+    string|null $schema = null
+  ):bool
+	{
+    $sch_str = $schema ?? $context['schema'] ?? null;
+		$user = $this->user_cache_service->get($user_id, $sch_str);
+
+		if ($user['status'] !== 2)
+		{
+			return false;
+		}
+    if (!$this->config_service->get_bool('users.leaving.enabled', $sch_str))
+    {
+      return false;
+    }
+    return true;
+	}
+
+	public function is_inactive(
+    array $context,
+    int $user_id,
+    string|null $schema = null
+  ):bool
+	{
+    $sch_str = $schema ?? $context['schema'] ?? null;
+		$user = $this->user_cache_service->get($user_id, $sch_str);
+
+		if ($user['status'] === 0)
+		{
+			return true;
+		}
+    return false;
+	}
+
+	public function is_ip(
+    array $context,
+    int $user_id,
+    string|null $schema = null
+  ):bool
+	{
+    $sch_str = $schema ?? $context['schema'] ?? null;
+		$user = $this->user_cache_service->get($user_id, $sch_str);
+
+		if ($user['status'] === 5)
+		{
+			return true;
+		}
+    return false;
+	}
+
+	public function is_im(
+    array $context,
+    int $user_id,
+    string|null $schema = null
+  ):bool
+	{
+    $sch_str = $schema ?? $context['schema'] ?? null;
+		$user = $this->user_cache_service->get($user_id, $sch_str);
+
+		if ($user['status'] === 6)
+		{
+			return true;
+		}
+    return false;
+	}
+
+	public function is_extern(
+    array $context,
+    int $user_id,
+    string|null $schema = null
+  ):bool
+	{
+    $sch_str = $schema ?? $context['schema'] ?? null;
+		$user = $this->user_cache_service->get($user_id, $sch_str);
+
+		if ($user['status'] === 7)
+		{
+			return true;
+		}
+    return false;
+	}
+
+	public function is_active(
+    array $context,
+    int $user_id,
+    string|null $schema = null
+  ):bool
+	{
+    $sch_str = $schema ?? $context['schema'] ?? null;
+		$user = $this->user_cache_service->get($user_id, $sch_str);
+
+		if ($user['status'] === 1)
+		{
+			return true;
+		}
+    return false;
 	}
 }

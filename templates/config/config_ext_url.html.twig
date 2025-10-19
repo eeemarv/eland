@@ -1,20 +1,20 @@
 {%- extends 'config/base/config_form.html.twig' -%}
 
 {%- block form_a -%}
-    {{- form_row(form.url, {
-        'label': 'config_ext_url.url.label',
-        'pre_addon': {
-            'fa': 'share-alt',
-        },
-        'help': 'config_ext_url.url.help',
-        'required': false
-    }) -}}
+  {{- form_row(form.url, {
+    'label': 'config_ext_url.url.label',
+    'pre_addon': {
+      'fa': 'share-alt',
+    },
+    'help': 'config_ext_url.url.help',
+    'required': false
+  }) -}}
 {%- endblock form_a -%}
 
 {%- block css -%}
-    {{- parent() -}}
+  {{- parent() -}}
 {%- endblock css -%}
 
 {%- block js -%}
-    {{- parent() -}}
+  {{- parent() -}}
 {%- endblock js -%}

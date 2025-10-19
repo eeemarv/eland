@@ -46,7 +46,10 @@
 {%- endblock data -%}
 
 {%- block bulk_actions -%}
-  {{- bulk_actions_raw|raw -}}
+  {%- if bulk_actions_raw -%}
+    {%- include 'include/bulk_select_btns.html.twig' -%}
+    {{- bulk_actions_raw|raw -}}
+  {%- endif -%}
 {%- endblock bulk_actions -%}
 
 {%- block css -%}

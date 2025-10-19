@@ -8,23 +8,23 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class SummernoteType extends AbstractType
 {
-    public function configureOptions(OptionsResolver $resolver):void
-    {
-        $resolver->setDefaults([
-            'attr'                  => [
-                'rows'              => 5,
-                'minlength'         => 10,
-                'maxlength'         => 100000,
-                'data-summernote'   => '',
-                'class'             => 'summernote',
-            ],
-            // handled in controller for now
-            // 'sanitize_html' => true,
-        ]);
-    }
+  public function configureOptions(OptionsResolver $resolver):void
+  {
+    $resolver->setDefaults([
+      'attr'                  => [
+        'rows'              => 5,
+        'minlength'         => 10,
+        'maxlength'         => 100000,
+        'data-summernote'   => '',
+        'class'             => 'summernote',
+      ],
+      // handled in controller for now
+      // 'sanitize_html' => true,
+    ]);
+  }
 
-    public function getParent(): ?string
-    {
-        return TextareaType::class;
-    }
+  public function getParent(): ?string
+  {
+    return TextareaType::class;
+  }
 }

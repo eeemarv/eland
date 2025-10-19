@@ -14,4 +14,11 @@ jQuery(function() {
 			}
 		});
 	});
+
+  const $errorForm = $('form[method="post"]').has('.has-error, .alert-danger');
+  if ($errorForm.length) {
+    $('html, body').animate({
+      scrollTop: $errorForm.offset().top - 150
+    }, 600);
+  }
 });

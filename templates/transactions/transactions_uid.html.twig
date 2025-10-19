@@ -1,32 +1,32 @@
 {%- extends 'transactions/transactions_list.html.twig' -%}
 
 {%- block btn_top_add -%}
-    {%- if pp_has_role('admin') or pp_has_role('user') -%}
-        {%- if is_self -%}
-            {%- include 'include/btn_top/add.html.twig' with {
-                'btn_route': 'transactions_add',
-                'btn_title': 'transactions_add.title'
-            } -%}
-        {%- else -%}
-            {%- include 'include/btn_top/add.html.twig' with {
-                    'btn_route': 'transactions_add',
-                    'btn_route_params': {'tuid': uid},
-                    'btn_title': 'transactions_add.btn_add_to_user',
-                    'btn_title_trans_params': {
-                        'user': account(uid, schema)
-                    }
-            } -%}
-        {%- endif -%}
-    {%- endif -%}
+  {%- if pp_has_role('admin') or pp_has_role('user') -%}
+    {%- if is_self -%}
+      {%- include 'include/btn_top/add.html.twig' with {
+        'btn_route': 'transactions_add',
+        'btn_title': 'transactions_add.title'
+      } -%}
+    {%- else -%}
+        {%- include 'include/btn_top/add.html.twig' with {
+            'btn_route': 'transactions_add',
+            'btn_route_params': {'tuid': uid},
+            'btn_title': 'transactions_add.btn_add_to_user',
+            'btn_title_trans_params': {
+              'user': account(uid, schema)
+            }
+        } -%}
+      {%- endif -%}
+  {%- endif -%}
 {%- endblock btn_top_add -%}
 
 {%- block heading_sub -%}
-    <h2>
-        {{- 'label.current_balance'|trans -}}:
-        <span class="label label-info">
-            {{- account_balance(uid, schema) -}}
-        </span>
-        &nbsp;
-        {{- config_str('transactions.currency.name', schema) -}}
-    </h2>
+  <h2>
+    {{- 'label.current_balance'|trans -}}:
+    <span class="label label-info">
+      {{- account_balance(uid, schema) -}}
+    </span>
+    &nbsp;
+    {{- config_str('transactions.currency.name', schema) -}}
+  </h2>
 {%- endblock heading_sub -%}

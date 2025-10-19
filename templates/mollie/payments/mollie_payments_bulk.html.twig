@@ -1,0 +1,59 @@
+{%- include 'include/bulk_select_btns.html.twig' -%}
+
+{%- set badge_open -%}
+  <span class="label label-warning">
+    {{- 'mollie.status.open'|trans -}}
+  </span>
+{%- endset -%}
+
+<h3>
+  {{- 'mollie_payments.bulk.title'|trans({
+    'badge_open': badge_open
+  })|raw -}}
+</h3>
+
+{%- set active_tab = bulk_cancel_form.vars.errors|length
+  ? 'cancel'
+  : 'email' -%}
+
+<div class="panel panel-info">
+  <div class="panel-heading">
+    <ul class="nav nav-tabs" role="tablist">
+      <li{%- if active_tab == 'email' %} class="active"{%- endif -%}>
+        <a href="#email_tab" data-toggle="tab">
+          {{- 'label.email'|trans -}}
+        </a>
+      </li>
+      <li{%- if active_tab == 'cancel' %} class="active"{%- endif -%}>
+        <a href="#cancel_tab" data-toggle="tab">
+          {{- 'btn.cancel'|trans -}}
+        </a>
+      </li>
+    </ul>
+
+    <div class="tab-content">
+      <div
+        role="tabpanel"
+        class="tab-pane{%- if active_tab == 'email' %} active{%- endif -%}"
+        id="email_tab"
+      >
+        <h4>
+          {{- 'mollie_payments.bulk.email.title'|trans -}}
+        </h4>
+        {%- include 'mollie/payments/mollie_payments_bulk_email_form.html.twig' -%}
+      </div>
+      <div
+        role="tabpanel"
+        class="tab-pane{%- if active_tab == 'cancel' %} active{%- endif -%}"
+        id="cancel_tab"
+      >
+        <h4>
+          {{- 'mollie_payments.bulk.cancel.title'|trans({
+            'badge_open': badge_open,
+          })|raw -}}
+        </h4>
+        {%- include 'mollie/payments/mollie_payments_bulk_cancel_form.html.twig' -%}
+      </div>
+    </div>
+  </div>
+</div>

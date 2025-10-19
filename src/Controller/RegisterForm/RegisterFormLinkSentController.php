@@ -31,7 +31,7 @@ class RegisterFormLinkSentController extends AbstractController
   {
     if (!$config_service->get_bool('register_form.enabled', $pp->schema()))
     {
-      $this->createNotFoundException('Register form not enabled.');
+      throw $this->createNotFoundException('Register form not enabled.');
     }
 
     return $this->render('register_form/register_form_link_sent.html.twig', []);

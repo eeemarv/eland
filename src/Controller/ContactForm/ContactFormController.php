@@ -40,7 +40,7 @@ class ContactFormController extends AbstractController
   {
     if (!$config_service->get_bool('contact_form.enabled', $pp->schema()))
     {
-      $this->createNotFoundException('Contact form module not enabled.');
+      throw $this->createNotFoundException('Contact form module not enabled.');
     }
 
     $support_email_addr = $config_service->get_ary('mail.addresses.support', $pp->schema());

@@ -9,9 +9,9 @@ use Symfony\Component\Validator\Constraints\Sequentially;
 
 class TagsListCommand implements CommandInterface
 {
-    #[Sequentially(constraints: [
-        new NotBlank(groups: ['edit']),
-        new Json(groups: ['edit']),
-    ])]
-    public $tags;
+  #[Sequentially(constraints: [
+    new NotBlank(groups: ['edit']),
+    new Json(groups: ['edit']),
+  ])]
+  public $tags;
 }

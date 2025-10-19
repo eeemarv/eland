@@ -25,10 +25,14 @@ access:
 btn:
   add: Toevoegen
   approve: Goedkeuren
+  back_to_home: Terug naar de homepagina
+  back_to_index: Terug naar het overzicht
+  back_to_login: Terug naar login
   bulk: Bulk acties
   cancel: Annuleren
   config: Configuratie
   del: Verwijderen
+  do_cancel: Annuleer
   download: Download
   download_csv: Download CSV
   edit: Aanpassen
@@ -39,19 +43,24 @@ btn:
   register: Inschrijven
   save_password: Bewaar paswoord
   send: Verzenden
+  select_invert: Selectie omkeren
+  select_all: Selecteer alle
+  select_none: De-selecteer alle
   show: Toon
   show_columns: Toon Kolommen
   store: Opslaan
   transaction: Transactie
   transaction_to: Transactie naar {user}
   try_again: Opnieuw proberen
-  back_to_home: Terug naar de homepagina
-  back_to_index: Terug naar het overzicht
-  back_to_login: Terug naar login
 
 captcha:
   label: Anti-spam verificatiecode
   help: Geef de code in die hieronder getoond wordt.
+
+check:
+  bulk_copy: >-
+    Stuur een kopie met verzendinfo naar mijzelf
+  verify: Ik heb alles nagekeken
 
 date_format:
   technical:
@@ -115,11 +124,25 @@ flash:
       ingesteld door de beheerder.
       Je kan dit formulier niet gebruiken.
     not_for_master: >-
-      Het master account kan geen
+      Het master account kan geen,
       E-mail berichten versturen.
     missing_for_your_account: >-
       Je hebt geen E-mail adres
       ingesteld voor je account.
+    sent_to: >-
+      {count, plural,
+        =0 {Geen emails verzonden.}
+        =1 {Email verzonden naar:}
+        other {Emails verzonden naar:}
+      }
+    not_send_to: >-
+      {count, plural,
+        =0 {}
+        =1 {Wegens ontbreken van adres,
+        geen emails verzonden naar:}
+        other {Wegens ontbreken van adres,
+        geen emails verzonden naar:}
+      }
 
 help:
   address: >-
@@ -996,6 +1019,15 @@ mollie:
     canceled: Geannuleerd
     open: Open
     paid: Betaald
+  flash:
+    no_apikey: >-
+      Betalingen met Mollie zijn niet mogelijk want
+      er is geen Mollie apikey ingesteld in de
+      {ao}configuratie{ac}.
+    no_live_apikey: >-
+      Er is geen <code>live_</code> Mollie apikey
+      ingsteld in de {ao}configuratie{ac}. Betalingen
+      kunnen niet uitgevoerd worden!
 
 mollie_checkout:
   title: >-
@@ -1039,6 +1071,34 @@ mollie_config:
 
 mollie_payments:
   title: Mollie betaalverzoeken
+  col:
+    amount: Bedrag (EUR)
+    description: Omschrijving
+    code: Account
+    status: Status
+    created_at: Aangemaakt
+    emails: Verz. Emails
+  bulk:
+    title: >-
+      Bulk acties met selecteerde {badge_open}
+      betaalverzoeken
+    email:
+      title: >-
+        Verzend betaalverzoeken per email
+      explain: >-
+        Betaalknop, bedrag en omschrijving van
+        het betaalverzoek worden bovenaan
+        toegevoegd in de verzonden e-mails.
+    cancel:
+      title: >-
+        Annuleer {badge_open} betaalverzoeken
+      flash:
+        success: >-
+          {count, plural,
+            =0 {Geen betaalverzoeken werden geannuleerd.}
+            =1 {Volgend betaalverzoek werd geannuleerd:}
+            other {Volgende betaalverzoeken werden geannuleerd:}
+          }
 
 mollie_payments_add:
   title: Mollie betaalverzoeken aanmaken

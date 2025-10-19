@@ -45,7 +45,7 @@ class DateFormatRuntime implements RuntimeExtensionInterface
 		return $this->date_format_service->get($ts, $precision, $sch);
 	}
 
-/**
+/*
 	public function get_sec(
 		string $ts,
 		string $schema

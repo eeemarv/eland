@@ -14,38 +14,38 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CategorySelectType extends AbstractType
 {
-    public function __construct(
-        protected TranslatorInterface $translator,
-        protected CategoryRepository $category_repository,
-        protected PageParamsService $pp
-    )
-    {
-    }
+  public function __construct(
+    private readonly TranslatorInterface $translator,
+    private readonly CategoryRepository $category_repository,
+    private readonly PageParamsService $pp,
+  )
+  {
+  }
 
-    public function configureOptions(OptionsResolver $resolver):void
-    {
-        $resolver->setDefault('parent_selectable', false);
-        $resolver->setAllowedTypes('parent_selectable', 'bool');
-        $resolver->setDefault('null_selectable', false);
-        $resolver->setAllowedTypes('null_selectable', 'bool');
-        $resolver->setDefault('all_choice', false);
-        $resolver->setAllowedTypes('all_choice', 'bool');
+  public function configureOptions(OptionsResolver $resolver):void
+  {
+    $resolver->setDefault('parent_selectable', false);
+    $resolver->setAllowedTypes('parent_selectable', 'bool');
+    $resolver->setDefault('null_selectable', false);
+    $resolver->setAllowedTypes('null_selectable', 'bool');
+    $resolver->setDefault('all_choice', false);
+    $resolver->setAllowedTypes('all_choice', 'bool');
 
-        $resolver->setDefault('choice_loader', function (Options $options){
-            return ChoiceList::loader($this,
-                new CategoriesChoiceLoader(
-                    $options['parent_selectable'],
-                    $options['null_selectable'],
-                    $options['all_choice'],
-                    $this->category_repository,
-                    $this->pp,
-                    $this->translator
-            ));
-        });
-    }
+    $resolver->setDefault('choice_loader', function (Options $options){
+      return ChoiceList::loader($this,
+        new CategoriesChoiceLoader(
+          $options['parent_selectable'],
+          $options['null_selectable'],
+          $options['all_choice'],
+          $this->category_repository,
+          $this->pp,
+          $this->translator
+      ));
+    });
+  }
 
-    public function getParent():string
-    {
-        return ChoiceType::class;
-    }
+  public function getParent():string
+  {
+      return ChoiceType::class;
+  }
 }

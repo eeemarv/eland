@@ -44,7 +44,7 @@ class RegisterFormConfirmController extends AbstractController
   {
     if (!$config_service->get_bool('register_form.enabled', $pp->schema()))
     {
-      $this->createNotFoundException('Register form not enabled.');
+      throw $this->createNotFoundException('Register form not enabled.');
     }
 
     $uuid_confirm_token = Uuid::fromBase58($confirm_token);
@@ -68,7 +68,7 @@ class RegisterFormConfirmController extends AbstractController
     }
     else if ($record['message_class'] !== EmailRegisterFormConfirmMessage::class)
     {
-      $this->createNotFoundException();
+      throw $this->createNotFoundException();
     }
     else if ($record['is_confirmed'])
     {

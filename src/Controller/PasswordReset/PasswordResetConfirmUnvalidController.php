@@ -52,7 +52,7 @@ class PasswordResetConfirmUnvalidController extends AbstractController
     }
     else if ($record['message_class'] !== EmailPasswordResetConfirmMessage::class)
     {
-      $this->createNotFoundException();
+      throw $this->createNotFoundException();
     }
     else if ($record['is_confirmed'])
     {

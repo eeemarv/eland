@@ -1,56 +1,56 @@
 {%- extends 'news/base/news_base.html.twig' -%}
 
 {%- block btn_top_edit -%}
-    {%- if pp_has_role('admin') -%}
-        {%- include 'include/btn_top/edit.html.twig' with {
-            'btn_route': 'news_edit',
-            'btn_title': 'news_edit.title',
-            'btn_title_trans_params': {
-                'subject': news_item.subject
-            }
-        } -%}
-    {%- endif -%}
+  {%- if pp_has_role('admin') -%}
+    {%- include 'include/btn_top/edit.html.twig' with {
+      'btn_route': 'news_edit',
+      'btn_title': 'news_edit.title',
+      'btn_title_trans_params': {
+        'subject': news_item.subject
+      }
+    } -%}
+  {%- endif -%}
 {%- endblock btn_top_edit -%}
 
 {%- block btn_top_del -%}
-    {%- if pp_has_role('admin') -%}
-        {%- include 'include/btn_top/del.html.twig' with {
-            'btn_route': 'news_del',
-            'btn_title': 'news_del.title',
-            'btn_title_trans_params': {
-                'subject': news_item.subject
-            }
-        } -%}
-    {%- endif -%}
+  {%- if pp_has_role('admin') -%}
+    {%- include 'include/btn_top/del.html.twig' with {
+      'btn_route': 'news_del',
+      'btn_title': 'news_del.title',
+      'btn_title_trans_params': {
+        'subject': news_item.subject
+      }
+    } -%}
+  {%- endif -%}
 {%- endblock btn_top_del -%}
 
 {%- block btn_item_nav -%}
-    {%- set sort_reverse = config_bool('news.sort.asc', schema) ? '' : '_reverse' -%}
-    {%- include 'include/nav/nav_btn_group' ~ sort_reverse ~ '.html.twig' with {
-        'nav_route': 'news_show',
-        'overview_route': 'news',
-        'fa': 'calendar-o',
-        'nav_route_params': pp_ary(),
-    } -%}
+  {%- set sort_reverse = config_bool('news.sort.asc', schema) ? '' : '_reverse' -%}
+  {%- include 'include/nav/nav_btn_group' ~ sort_reverse ~ '.html.twig' with {
+    'nav_route': 'news_show',
+    'overview_route': 'news',
+    'fa': 'calendar-o',
+    'nav_route_params': pp_ary(),
+  } -%}
 {%- endblock btn_item_nav -%}
 
 {%- block heading_title -%}
-    {{- 'news_show.title'|trans({
-        'subject': news_item.subject
-    }) -}}
+  {{- 'news_show.title'|trans({
+    'subject': news_item.subject
+  }) -}}
 {%- endblock heading_title -%}
 
 {%- block data -%}
-    {%- include 'news/include/news_item.html.twig' with {
-        'post': news_item,
-        'show_subject': false
-    } -%}
+  {%- include 'news/include/news_item.html.twig' with {
+    'post': news_item,
+    'show_subject': false
+  } -%}
 {%- endblock data -%}
 
 {%- block css -%}
-    {{- parent() -}}
+  {{- parent() -}}
 {%- endblock css -%}
 
 {%- block js -%}
-    {{- parent() -}}
+  {{- parent() -}}
 {%- endblock js -%}

@@ -46,7 +46,7 @@ class MollieCheckoutController extends AbstractController
   {
     if (!$config_service->get_bool('mollie.enabled', $pp->schema()))
     {
-      $this->createNotFoundException('Mollie submodule (users) not enabled.');
+      throw $this->createNotFoundException('Mollie submodule (users) not enabled.');
     }
 
     $uuid_checkout_token = Uuid::fromBase58($checkout_token);
@@ -58,7 +58,7 @@ class MollieCheckoutController extends AbstractController
 
     if (!$mollie_payment)
     {
-      $this->createNotFoundException('Payment request not found.');
+      throw $this->createNotFoundException('Payment request not found.');
     }
 
     $mollie_apikey = $config_service->get_str('mollie.apikey', $pp->schema());
@@ -69,7 +69,7 @@ class MollieCheckoutController extends AbstractController
       !(str_starts_with($mollie_apikey, 'test_')
       || str_starts_with($mollie_apikey, 'live_')))
       {
-        $this->createAccessDeniedException('Configuratie-fout (Geen Mollie apikey). Contacteer de administratie.');
+        throw $this->createAccessDeniedException('Configuratie-fout (Geen Mollie apikey). Contacteer de administratie.');
       }
       else if (!str_starts_with($mollie_apikey, 'live_'))
       {

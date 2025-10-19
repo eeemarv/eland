@@ -47,7 +47,7 @@ class SupportFormController extends AbstractController
   {
     if (!$config_service->get_bool('support_form.enabled', $pp->schema()))
     {
-      $this->createNotFoundException('Support form not enabled.');
+      throw $this->createNotFoundException('Support form not enabled.');
     }
 
     $is_master = $su->is_master();

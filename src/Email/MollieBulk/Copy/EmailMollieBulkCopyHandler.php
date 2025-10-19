@@ -24,7 +24,7 @@ final class EmailMollieBulkCopyHandler
 
     $context = [
       'to_user_id'  => $message->to_user_id,
-      'html_content'  => $message->message,
+      'html_content'  => $message->content,
       'subject'   => $message->subject,
       'dummy_checkout_token' => Uuid::v4()->toBase58(),
     ];

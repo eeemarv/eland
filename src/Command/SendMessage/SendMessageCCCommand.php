@@ -10,12 +10,12 @@ use Symfony\Component\Validator\Constraints\Type;
 
 class SendMessageCCCommand implements CommandInterface
 {
-    #[Sequentially(constraints: [
-        new NotBlank(),
-        new Length(min: 10, max: 10000),
-    ])]
-    public $message;
+  #[Sequentially(constraints: [
+    new NotBlank(),
+    new Length(min: 10, max: 10000),
+  ])]
+  public $message;
 
-    #[Type(type: 'bool')]
-    public $cc;
+  #[Type(type: 'bool')]
+  public $cc;
 }

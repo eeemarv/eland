@@ -19,174 +19,174 @@ use Symfony\Component\OptionsResolver\Options;
 
 class TypeaheadType extends AbstractType
 {
-    public function __construct(
-        protected TypeaheadService $typeahead_service,
-        protected PageParamsService $pp,
-        protected ConfigService $config_service,
-        protected ItemAccessService $item_access_service,
-        protected TypeaheadUserTransformer $typeahead_user_transformer
-    )
+  public function __construct(
+    private readonly TypeaheadService $typeahead_service,
+    private readonly PageParamsService $pp,
+    private readonly ConfigService $config_service,
+    private readonly ItemAccessService $item_access_service,
+    private readonly TypeaheadUserTransformer $typeahead_user_transformer,
+  )
+  {
+  }
+
+  public function buildForm(
+    FormBuilderInterface $builder,
+    array $options
+  ):void
+  {
+    parent::buildForm($builder, $options);
+
+    if (isset($options['filter']) && $options['filter'] === 'accounts')
     {
+      $builder->addModelTransformer($this->typeahead_user_transformer);
     }
+  }
 
-    public function buildForm(
-        FormBuilderInterface $builder,
-        array $options
-    ):void
+  public function buildView(
+    FormView $view,
+    FormInterface $form,
+    array $options
+  ):void
+  {
+    $add = $options['add'];
+
+    $this->typeahead_service->ini($this->pp);
+
+    if (is_string($add))
     {
-        parent::buildForm($builder, $options);
-
-        if (isset($options['filter']) && $options['filter'] === 'accounts')
-        {
-            $builder->addModelTransformer($this->typeahead_user_transformer);
-        }
+      $this->typeahead_service->add($add, []);
     }
-
-    public function buildView(
-        FormView $view,
-        FormInterface $form,
-        array $options
-    ):void
+    else if (is_array($add))
     {
-        $add = $options['add'];
-
-        $this->typeahead_service->ini($this->pp);
-
-        if (is_string($add))
+      foreach ($add as $add_item)
+      {
+        if (is_string($add_item))
         {
-            $this->typeahead_service->add($add, []);
+          $this->typeahead_service->add($add_item, []);
         }
-        else if (is_array($add))
+        else if (is_array($add_item))
         {
-            foreach ($add as $add_item)
-            {
-                if (is_string($add_item))
-                {
-                    $this->typeahead_service->add($add_item, []);
-                }
-                else if (is_array($add_item))
-                {
-                    [$typeahead_route, $params] = $add_item;
+          [$typeahead_route, $params] = $add_item;
 
-                    if (!is_string($typeahead_route))
-                    {
-                        throw new UnexpectedTypeException($typeahead_route, 'string');
-                    }
+          if (!is_string($typeahead_route))
+          {
+            throw new UnexpectedTypeException($typeahead_route, 'string');
+          }
 
-                    if (!is_array($params))
-                    {
-                        throw new UnexpectedTypeException($params, 'array');
-                    }
+          if (!is_array($params))
+          {
+            throw new UnexpectedTypeException($params, 'array');
+          }
 
-                    $this->typeahead_service->add($typeahead_route, $params);
+          $this->typeahead_service->add($typeahead_route, $params);
 
-                    if (isset($params['remote_schema']))
-                    {
-                        $remote_schema = $params['remote_schema'];
-                    }
-                }
-                else
-                {
-                    throw new UnexpectedTypeException($add_item, 'string|array');
-                }
-            }
+          if (isset($params['remote_schema']))
+          {
+            $remote_schema = $params['remote_schema'];
+          }
         }
         else
         {
-            throw new UnexpectedTypeException($add, 'string|array');
+          throw new UnexpectedTypeException($add_item, 'string|array');
         }
-
-        $process_ary = [];
-
-        if (isset($options['render_omit']))
-        {
-            $process_ary = [
-                'render'    => [
-                    'check'     => 10,
-                    'omit'      => $options['render_omit'],
-                ],
-            ];
-        }
-
-        if (isset($options['filter']) && $options['filter'] === 'accounts')
-        {
-            if (count($process_ary))
-            {
-                throw new InvalidConfigurationException('Either filter or render_omit can be configured, not both options.');
-            }
-
-            $schema = $remote_schema ?? $this->pp->schema();
-
-            $new_users_days = $this->config_service->get_int('users.new.days', $schema);
-            $new_users_enabled = $this->config_service->get_bool('users.new.enabled', $schema);
-            $leaving_users_enabled = $this->config_service->get_bool('users.leaving.enabled', $schema);
-
-            $show_new_status = $new_users_enabled;
-
-            if ($show_new_status)
-            {
-                $new_users_access = $this->config_service->get_str('users.new.access', $schema);
-                $show_new_status = $this->item_access_service->is_visible($new_users_access);
-            }
-
-            $show_leaving_status = $leaving_users_enabled;
-
-            if ($show_leaving_status)
-            {
-                $leaving_users_access = $this->config_service->get_str('users.leaving.access', $schema);
-                $show_leaving_status = $this->item_access_service->is_visible($leaving_users_access);
-            }
-
-            $process_ary['filter'] = 'accounts';
-            $process_ary['new_users_days'] = $new_users_days;
-            $process_ary['show_new_status'] = $show_new_status;
-            $process_ary['show_leaving_status'] = $show_leaving_status;
-        }
-
-        $data_typeahead = $this->typeahead_service->str_raw($process_ary);
-
-        parent::buildView($view, $form, $options);
-
-        $view->vars['attr'] = [
-            ...$options['attr'],
-            'data-typeahead'    => $data_typeahead,
-            'autocomplete'      => 'off',
-        ];
-
-        if (isset($process_ary['render']))
-        {
-            $view->vars['render_omit'] = true;
-        }
+      }
     }
-
-    public function configureOptions(OptionsResolver $resolver):void
+    else
     {
-        $resolver->setDefault('add', null);
-        $resolver->setDefault('filter', null);
-        $resolver->setDefault('render_omit', null);
-        $resolver->setRequired('add');
-        $resolver->setAllowedTypes('add', ['string', 'array']);
-        $resolver->setAllowedTypes('filter', ['null', 'string']);
-        $resolver->setAllowedTypes('render_omit', ['null', 'string']);
-        $resolver->setAllowedValues('filter', [null, 'accounts']);
-
-        $resolver->setDefault('invalid_message', function (Options $options) {
-            if (isset($options['filter']) && $options['filter'] === 'accounts')
-            {
-                return 'user.code_not_exists';
-            }
-
-            return 'This value is not valid.';
-        });
+      throw new UnexpectedTypeException($add, 'string|array');
     }
 
-    public function getParent():string
+    $process_ary = [];
+
+    if (isset($options['render_omit']))
     {
-        return TextType::class;
+      $process_ary = [
+        'render'    => [
+          'check'     => 10,
+          'omit'      => $options['render_omit'],
+        ],
+      ];
     }
 
-    public function getBlockPrefix():string
+    if (isset($options['filter']) && $options['filter'] === 'accounts')
     {
-        return 'typeahead';
+      if (count($process_ary))
+      {
+        throw new InvalidConfigurationException('Either filter or render_omit can be configured, not both options.');
+      }
+
+      $schema = $remote_schema ?? $this->pp->schema();
+
+      $new_users_days = $this->config_service->get_int('users.new.days', $schema);
+      $new_users_enabled = $this->config_service->get_bool('users.new.enabled', $schema);
+      $leaving_users_enabled = $this->config_service->get_bool('users.leaving.enabled', $schema);
+
+      $show_new_status = $new_users_enabled;
+
+      if ($show_new_status)
+      {
+        $new_users_access = $this->config_service->get_str('users.new.access', $schema);
+        $show_new_status = $this->item_access_service->is_visible($new_users_access);
+      }
+
+      $show_leaving_status = $leaving_users_enabled;
+
+      if ($show_leaving_status)
+      {
+        $leaving_users_access = $this->config_service->get_str('users.leaving.access', $schema);
+        $show_leaving_status = $this->item_access_service->is_visible($leaving_users_access);
+      }
+
+      $process_ary['filter'] = 'accounts';
+      $process_ary['new_users_days'] = $new_users_days;
+      $process_ary['show_new_status'] = $show_new_status;
+      $process_ary['show_leaving_status'] = $show_leaving_status;
     }
+
+    $data_typeahead = $this->typeahead_service->str_raw($process_ary);
+
+    parent::buildView($view, $form, $options);
+
+    $view->vars['attr'] = [
+      ...$options['attr'],
+      'data-typeahead'    => $data_typeahead,
+      'autocomplete'      => 'off',
+    ];
+
+    if (isset($process_ary['render']))
+    {
+      $view->vars['render_omit'] = true;
+    }
+  }
+
+  public function configureOptions(OptionsResolver $resolver):void
+  {
+    $resolver->setDefault('add', null);
+    $resolver->setDefault('filter', null);
+    $resolver->setDefault('render_omit', null);
+    $resolver->setRequired('add');
+    $resolver->setAllowedTypes('add', ['string', 'array']);
+    $resolver->setAllowedTypes('filter', ['null', 'string']);
+    $resolver->setAllowedTypes('render_omit', ['null', 'string']);
+    $resolver->setAllowedValues('filter', [null, 'accounts']);
+
+    $resolver->setDefault('invalid_message', function (Options $options) {
+      if (isset($options['filter']) && $options['filter'] === 'accounts')
+      {
+        return 'user.code_not_exists';
+      }
+
+      return 'This value is not valid.';
+    });
+  }
+
+  public function getParent():string
+  {
+    return TextType::class;
+  }
+
+  public function getBlockPrefix():string
+  {
+    return 'typeahead';
+  }
 }

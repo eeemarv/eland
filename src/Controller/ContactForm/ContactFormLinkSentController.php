@@ -31,7 +31,7 @@ class ContactFormLinkSentController extends AbstractController
   {
     if (!$config_service->get_bool('contact_form.enabled', $pp->schema()))
     {
-      $this->createNotFoundException('Contact form module not enabled.');
+      throw $this->createNotFoundException('Contact form module not enabled.');
     }
 
     return $this->render('contact_form/contact_form_link_sent.html.twig', []);

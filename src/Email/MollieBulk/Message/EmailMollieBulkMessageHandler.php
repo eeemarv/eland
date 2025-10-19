@@ -32,7 +32,7 @@ final class EmailMollieBulkMessageHandler
       schema: $schema
     );
 
-    $m_payments = $this->mollie_repository->get_payments_with_email_ary(
+    $m_payments = $this->mollie_repository->get_payments_with_email_addresses(
       payment_ids: $payment_ids,
       schema: $schema,
     );
@@ -41,16 +41,16 @@ final class EmailMollieBulkMessageHandler
 
     foreach ($m_payments as $payment_id => $payment)
     {
-      if (!count($payment['email_ary']))
+      if (!count($payment['email_addresses']))
       {
         continue;
       }
 
-      $email_ary = [];
+      $to_email_addresses = [];
 
-      foreach ($payment['email_ary'] as $email)
+      foreach ($payment['email_addresses'] as $email)
       {
-        $email_ary[] = new Address($email, $payment['name']);
+        $to_email_addresses[] = new Address($email, $payment['name']);
       }
 
       $checkout_token = Uuid::fromRfc4122($payment['checkout_token']);
@@ -75,13 +75,13 @@ final class EmailMollieBulkMessageHandler
         template: 'mollie_bulk/mollie_bulk_message',
         message_class: get_class($message),
         context: $context,
-        embedded_template: $message->message,
+        embedded_template: $message->content,
         embedded_context: $embedded_context,
         bulk_id: $bulk_id,
         bulk_created_by: $sender_id,
         mollie_payment_id: $payment_id,
         reply_to: $reply_to,
-        to: new AddressAry($email_ary),
+        to: new AddressAry($to_email_addresses),
         schema: $schema
       );
 

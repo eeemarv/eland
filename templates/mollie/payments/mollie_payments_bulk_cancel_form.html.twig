@@ -1,0 +1,17 @@
+{{- form_start(bulk_cancel_form, {'attr': {'novalidate': 'novalidate'}}) -}}
+{{- form_errors(bulk_cancel_form) -}}
+
+{{- form_widget(bulk_cancel_form.selected) -}}
+
+{{- form_row(bulk_cancel_form.verify, {
+  'label': 'check.verify',
+}) -}}
+
+{{- form_widget(bulk_cancel_form.submit, {
+  'label': 'btn.do_cancel',
+  'attr': {
+    'class': 'btn btn-lg btn-primary',
+  }
+}) -}}
+
+{{- form_end(bulk_cancel_form) -}}

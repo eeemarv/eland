@@ -16,44 +16,44 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 class RegisterFormType extends AbstractType
 {
-    public function __construct(
-        protected ConfigService $config_service,
-        protected PageParamsService $pp
-    )
+  public function __construct(
+    private readonly ConfigService $config_service,
+    private readonly PageParamsService $pp
+  )
+  {
+  }
+
+  public function buildForm(
+    FormBuilderInterface $builder,
+    array $options
+  ):void
+  {
+    $postcode_enabled = $this->config_service->get_bool('users.fields.postcode.enabled', $this->pp->schema());
+
+    $builder->add('email', EmailType::class);
+    $builder->add('first_name', TextType::class);
+    $builder->add('last_name', TextType::class);
+
+    if ($postcode_enabled)
     {
+      $builder->add('postcode', TextType::class);
     }
 
-    public function buildForm(
-        FormBuilderInterface $builder,
-        array $options
-    ):void
-    {
-        $postcode_enabled = $this->config_service->get_bool('users.fields.postcode.enabled', $this->pp->schema());
-
-        $builder->add('email', EmailType::class);
-        $builder->add('first_name', TextType::class);
-        $builder->add('last_name', TextType::class);
-
-        if ($postcode_enabled)
-        {
-            $builder->add('postcode', TextType::class);
-        }
-
-        $builder->add('mobile', TelType::class);
-        $builder->add('phone', TelType::class);
-        $builder->add('captcha', CaptchaType::class);
+    $builder->add('mobile', TelType::class);
+    $builder->add('phone', TelType::class);
+    $builder->add('captcha', CaptchaType::class);
 /*
-            ->add('accept', CheckboxType::class, [
-                'constraints' => new Assert\IsTrue(),
-            ])
+        ->add('accept', CheckboxType::class, [
+            'constraints' => new Assert\IsTrue(),
+        ])
 */
-        $builder->add('submit', SubmitType::class);
-    }
+    $builder->add('submit', SubmitType::class);
+  }
 
-    public function configureOptions(OptionsResolver $resolver):void
-    {
-        $resolver->setDefaults([
-            'data_class'    => RegisterFormCommand::class,
-        ]);
-    }
+  public function configureOptions(OptionsResolver $resolver):void
+  {
+    $resolver->setDefaults([
+      'data_class'    => RegisterFormCommand::class,
+    ]);
+  }
 }

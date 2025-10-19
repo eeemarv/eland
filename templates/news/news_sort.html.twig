@@ -1,18 +1,18 @@
 {%- extends 'news/base/news_form.html.twig' -%}
 
 {%- block heading_fa -%}
-    sort
+  sort
 {%- endblock heading_fa -%}
 
 {%- block heading_title -%}
-    {{- 'news_sort.title'|trans -}}
+  {{- 'news_sort.title'|trans -}}
 {%- endblock heading_title -%}
 
 {%- block form_a -%}
-    {{- form_row(form.sort_asc, {
-        'label': 'news_sort.sort_asc',
-        'required': false
-    }) -}}
+  {{- form_row(form.sort_asc, {
+    'label': 'news_sort.sort_asc',
+    'required': false
+  }) -}}
 {%- endblock form_a -%}
 
 {%- set cancel_route = 'news'|var_route -%}

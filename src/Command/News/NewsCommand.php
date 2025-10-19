@@ -14,29 +14,29 @@ use Symfony\Component\Validator\Constraints\Type;
 #[GroupSequence(['NewsCommand', 'add', 'edit', 'del'])]
 class NewsCommand implements CommandInterface
 {
-    public $id;
+  public $id;
 
-    #[Sequentially(constraints: [
-        new NotBlank(groups: ['add', 'edit']),
-        new Length(max: 200, groups: ['add', 'edit']),
-    ])]
-    public $subject;
+  #[Sequentially(constraints: [
+    new NotBlank(groups: ['add', 'edit']),
+    new Length(max: 200, groups: ['add', 'edit']),
+  ])]
+  public $subject;
 
-    public $event_at;
+  public $event_at;
 
-    #[Length(max: 128, groups: ['add', 'edit'])]
-    public $location;
+  #[Length(max: 128, groups: ['add', 'edit'])]
+  public $location;
 
-    #[Sequentially(constraints: [
-        new NotBlank(groups: ['add', 'edit']),
-        new Length(min: 10, max: 10000, groups: ['add', 'edit']),
-    ])]
-    public $content;
+  #[Sequentially(constraints: [
+    new NotBlank(groups: ['add', 'edit']),
+    new Length(min: 10, max: 10000, groups: ['add', 'edit']),
+  ])]
+  public $content;
 
-    #[Sequentially(constraints: [
-        new NotNull(groups: ['add', 'edit']),
-        new Type('string', groups: ['add', 'edit']),
-        new Choice(['admin', 'user', 'guest'], groups: ['add', 'edit', 'del']),
-    ])]
-    public $access;
+  #[Sequentially(constraints: [
+    new NotNull(groups: ['add', 'edit']),
+    new Type('string', groups: ['add', 'edit']),
+    new Choice(['admin', 'user', 'guest'], groups: ['add', 'edit', 'del']),
+  ])]
+  public $access;
 }

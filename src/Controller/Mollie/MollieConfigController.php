@@ -37,7 +37,7 @@ class MollieConfigController extends AbstractController
   {
     if (!$config_service->get_bool('mollie.enabled', $pp->schema()))
     {
-      $this->createNotFoundException('Mollie submodule (users) not enabled.');
+      throw $this->createNotFoundException('Mollie submodule (users) not enabled.');
     }
 
     $command = new MollieConfigCommand();

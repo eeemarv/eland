@@ -51,32 +51,64 @@ class LogFlashSubscriber implements EventSubscriberInterface
 
     $flashBag = $session->getFlashBag();
 
-    $error_ary = $flashBag->peek('error', []);
+    $error_ary = $flashBag->peek(
+      type: 'error',
+      default: [],
+    );
 
     if (count($error_ary))
     {
-      $this->add_log('error', $error_ary, $uri, $schema);
+      $this->add_log(
+        type: 'error',
+        msg_ary: $error_ary,
+        uri: $uri,
+        schema: $schema
+      );
     }
 
-    $warning_ary = $flashBag->peek('warning', []);
+    $warning_ary = $flashBag->peek(
+      type: 'warning',
+      default: [],
+    );
 
     if (count($warning_ary))
     {
-      $this->add_log('warning', $warning_ary, $uri, $schema);
+      $this->add_log(
+        type: 'warning',
+        msg_ary: $warning_ary,
+        uri: $uri,
+        schema: $schema,
+      );
     }
 
-    $success_ary = $flashBag->peek('success', []);
+    $success_ary = $flashBag->peek(
+      type: 'success',
+      default: [],
+    );
 
     if (count($success_ary))
     {
-      $this->add_log('success', $success_ary, $uri, $schema);
+      $this->add_log(
+        type: 'success',
+        msg_ary: $success_ary,
+        uri: $uri,
+        schema:$schema,
+      );
     }
 
-    $info_ary = $flashBag->peek('info', []);
+    $info_ary = $flashBag->peek(
+      type: 'info',
+      default: [],
+    );
 
     if (count($info_ary))
     {
-      $this->add_log('info', $info_ary, $uri, $schema);
+      $this->add_log(
+        type: 'info',
+        msg_ary: $info_ary,
+        uri: $uri,
+        schema: $schema,
+      );
     }
   }
 
@@ -110,7 +142,10 @@ class LogFlashSubscriber implements EventSubscriberInterface
       'uri'         => $uri,
 		];
 
-    $this->logger->debug($log_msg, $log_ary);
+    $this->logger->debug(
+      message: $log_msg,
+      context: $log_ary
+    );
   }
 
   public static function getSubscribedEvents():array

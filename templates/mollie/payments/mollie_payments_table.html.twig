@@ -1,0 +1,105 @@
+{%- set cols = ['amount', 'description', 'code', 'status', 'created_at', 'emails'] -%}
+{%- set order_by = pag_params.s.order_by -%}
+{%- set asc = pag_params.s.asc ? true : false -%}
+
+<div class="panel panel-info">
+  <table class="table table-bordered table-striped
+    table-hover panel-body footable csv"
+    data-filter="#combined-filter"
+    data-filter-minimum="1"
+    data-sort="false">
+    <thead>
+      <tr>
+        {%- for c in cols -%}
+        {%- set sort = {
+          s: {
+            order_by: c,
+            asc: order_by == c ? (asc ? '0' : '1') : '0'
+          }
+        } -%}
+        <th>
+          {%- if c in ['status', 'emails'] -%}
+            {{- ('mollie_payments.col.' ~ c)|trans -}}
+          {%- else -%}
+          <a href="{{- path('mollie_payments', pag_params|merge(sort)|pp) -}}">
+            <i class="fa fa-sort{{- order_by == c ? (sort.s.asc == '1' ? '-desc' : '-asc') : '' -}}"></i>
+            &nbsp;
+            {{- ('mollie_payments.col.' ~ c)|trans -}}
+          </a>
+          {%- endif -%}
+        </th>
+        {%- endfor -%}
+      </tr>
+    </thead>
+    <tbody>
+    {%- for p in payments -%}
+      {%- set u_class =
+        is_new(p.user_id) ? ' class="success"' :
+        is_active(p.user_id) ? '' :
+        is_leaving(p.user_id) ? ' class="danger"' :
+        is_inactive(p.user_id) ? ' class="inactive"' :
+        is_ip(p.user_id) ? ' class="warning"' :
+        is_im(p.user_id) ? ' class="info"' :
+        is_extern(p.user_id) ? ' class="extern"' : ''
+      -%}
+      <tr>
+        <td{%- if p.is_paid or p.is_canceled %} class="bg-inactive"{%- endif -%}>
+          <label for="sel[{{- p.id -}}]">
+            <input
+              type="checkbox"
+              name="sel[{{- p.id -}}]"
+              id="sel[{{- p.id -}}]"
+              value="{{- p.id -}}"
+              {%- if p.is_paid or p.is_canceled %} disabled{%- endif -%}
+              {%- if sel[p.id] is defined %} checked{%- endif -%}
+            />
+            &nbsp;&nbsp;{{- p.amount|replace({'.': ','}) -}}
+          </label>
+        </td>
+        <td>
+          <a href="{{- path('mollie_payments', {'request_id': p.request_id, 'f': {'q': p.description }}|pp) -}}">
+            {{- p.description -}}
+          </a>
+        </td>
+        <td{{ u_class|raw }}>
+          <a href="{{- path('users_show', {'id': p.user_id}|pp) -}}">
+            {{- account(p.user_id) -}}
+          </a>
+        </td>
+        <td>
+          {%- if p.is_paid -%}
+          <span class="label label-success">
+            {{- 'mollie.status.paid'|trans -}}
+          </span>
+          {%- elseif p.is_canceled -%}
+          <span class="label label-default">
+            {{- 'mollie.status.canceled'|trans -}}
+          </span>
+          {%- else -%}
+          <span class="label label-warning">
+            {{- 'mollie.status.open'|trans -}}
+          </span>
+          {%- endif -%}
+        </td>
+        <td>
+          {{- p.created_at|date_format('day') -}}
+        </td>
+        {%- if p.email_addresses|length -%}
+        <td>
+          {{- p.emails_sent|length -}}
+        </td>
+        {%- else -%}
+        <td class="danger">
+          {{- p.emails_sent|length -}}
+          &nbsp;
+          <span class="label label-danger"
+          title="Er is geen E-mail adres ingesteld voor de gebruiker.">
+            <i class="fa fa-exclamation-triangle"></i>
+          </span>
+        </td>
+        {%- endif -%}
+      </tr>
+    {%- endfor -%}
+    </tbody>
+  </table>
+</div>

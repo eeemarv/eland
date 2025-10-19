@@ -13,34 +13,34 @@ use Symfony\Component\Routing\Annotation\Route;
 #[AsController]
 class ConfigRefreshController extends AbstractController
 {
-    #[Route(
-        '/{system}/{role_short}/config/refresh',
-        name: 'config_refresh',
-        methods: ['GET'],
-        requirements: [
-            'system'        => '%assert.system%',
-            'role_short'    => '%assert.role_short.admin%',
-        ],
-        defaults: [
-            'module'        => 'config',
-        ],
-    )]
+  #[Route(
+    '/{system}/{role_short}/config/refresh',
+    name: 'config_refresh',
+    methods: ['GET'],
+    requirements: [
+      'system'        => '%assert.system%',
+      'role_short'    => '%assert.role_short.admin%',
+    ],
+    defaults: [
+      'module'        => 'config',
+    ],
+  )]
 
-    public function __invoke(
-        ConfigService $config_service,
-        SystemsService $systems_service,
-        PageParamsService $pp
-    ):Response
+  public function __invoke(
+    ConfigService $config_service,
+    SystemsService $systems_service,
+    PageParamsService $pp
+  ):Response
+  {
+    $schemas = $systems_service->get_schemas();
+
+    foreach ($schemas as $schema)
     {
-        $schemas = $systems_service->get_schemas();
-
-        foreach ($schemas as $schema)
-        {
-            $config_service->clear_cache($schema);
-        }
-
-        $this->addFlash('success', 'Config refreshed.');
-
-        return $this->redirectToRoute('config_name', $pp->ary());
+      $config_service->clear_cache($schema);
     }
+
+    $this->addFlash('success', 'Config refreshed.');
+
+    return $this->redirectToRoute('config_name', $pp->ary());
+  }
 }

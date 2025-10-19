@@ -8,11 +8,11 @@ use Symfony\Component\Validator\Constraints\Type;
 
 class TransactionsSystemLimitsCommand implements CommandInterface
 {
-    #[Type(type: 'int')]
-    #[ConfigMap(type: 'int', key: 'accounts.limits.global.min')]
-    public $min;
+  #[Type(type: 'int')]
+  #[ConfigMap(type: 'int', key: 'accounts.limits.global.min')]
+  public $min;
 
-    #[Type(type: 'int')]
-    #[ConfigMap(type: 'int', key: 'accounts.limits.global.max')]
-    public $max;
+  #[Type(type: 'int')]
+  #[ConfigMap(type: 'int', key: 'accounts.limits.global.max')]
+  public $max;
 }

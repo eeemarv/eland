@@ -1,19 +1,19 @@
 {%- extends 'config/base/config_form.html.twig' -%}
 
 {%- block form_a-%}
-    {{- form_row(form.date_format, {
-        'label': 'config_date_format.date_format.label',
-        'pre_addon': {
-            'fa': 'calendar',
-        },
-        'choice_translation_domain': false
-    }) -}}
+  {{- form_row(form.date_format, {
+    'label': 'config_date_format.date_format.label',
+    'pre_addon': {
+      'fa': 'calendar',
+    },
+    'choice_translation_domain': false
+  }) -}}
 {%- endblock form_a -%}
 
 {%- block css -%}
-    {{- parent() -}}
+  {{- parent() -}}
 {%- endblock css -%}
 
 {%- block js -%}
-    {{- parent() -}}
+  {{- parent() -}}
 {%- endblock js -%}

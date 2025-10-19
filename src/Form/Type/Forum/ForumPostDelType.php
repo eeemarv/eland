@@ -11,26 +11,26 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ForumPostDelType extends AbstractType
 {
-    public function __construct()
-    {
-    }
+  public function __construct()
+  {
+  }
 
-    public function buildForm(
-        FormBuilderInterface $builder,
-        array $options
-    ):void
-    {
-        $builder
-            ->add('content', SummernoteType::class, [
-                'disabled'  => true,
-            ])
-            ->add('submit', SubmitType::class);
-    }
+  public function buildForm(
+    FormBuilderInterface $builder,
+    array $options
+  ):void
+  {
+    $builder
+      ->add('content', SummernoteType::class, [
+        'disabled'  => true,
+      ])
+      ->add('submit', SubmitType::class);
+  }
 
-    public function configureOptions(OptionsResolver $resolver):void
-    {
-        $resolver->setDefaults([
-            'data_class'    => ForumPostCommand::class,
-        ]);
-    }
+  public function configureOptions(OptionsResolver $resolver):void
+  {
+    $resolver->setDefaults([
+      'data_class'    => ForumPostCommand::class,
+    ]);
+  }
 }

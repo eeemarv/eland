@@ -11,23 +11,23 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class MessagesModulesType extends AbstractType
 {
-    public function buildForm(
-        FormBuilderInterface $builder,
-        array $options
-    ):void
-    {
-        $builder
-            ->add('service_stuff_enabled', CheckboxType::class)
-            ->add('category_enabled', CheckboxType::class)
-            ->add('expires_at_enabled', CheckboxType::class)
-            ->add('units_enabled', CheckboxType::class)
-            ->add('submit', SubmitType::class);
-    }
+  public function buildForm(
+    FormBuilderInterface $builder,
+    array $options
+  ):void
+  {
+    $builder
+      ->add('service_stuff_enabled', CheckboxType::class)
+      ->add('category_enabled', CheckboxType::class)
+      ->add('expires_at_enabled', CheckboxType::class)
+      ->add('units_enabled', CheckboxType::class)
+      ->add('submit', SubmitType::class);
+  }
 
-    public function configureOptions(OptionsResolver $resolver):void
-    {
-        $resolver->setDefaults([
-            'data_class'    => MessagesModulesCommand::class,
-        ]);
-    }
+  public function configureOptions(OptionsResolver $resolver):void
+  {
+    $resolver->setDefaults([
+      'data_class'    => MessagesModulesCommand::class,
+    ]);
+  }
 }

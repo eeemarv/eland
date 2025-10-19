@@ -8,28 +8,28 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 class QTextSearchFilterType extends AbstractType
 {
-    public function __construct()
-    {
-    }
+  public function __construct()
+  {
+  }
 
-    public function buildForm(
-        FormBuilderInterface $builder,
-        array $options
-    ):void
-    {
-        $builder->add('q', TextType::class, [
-            'required' => false,
-        ]);
-        $builder->remove('show');
-    }
+  public function buildForm(
+    FormBuilderInterface $builder,
+    array $options
+  ):void
+  {
+    $builder->add('q', TextType::class, [
+      'required' => false,
+    ]);
+    $builder->remove('show');
+  }
 
-    public function getParent():string
-    {
-        return FilterType::class;
-    }
+  public function getParent():string
+  {
+    return FilterType::class;
+  }
 
-    public function getBlockPrefix():string
-    {
-        return 'f';
-    }
+  public function getBlockPrefix():string
+  {
+    return 'f';
+  }
 }

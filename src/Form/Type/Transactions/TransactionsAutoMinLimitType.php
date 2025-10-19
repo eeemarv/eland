@@ -12,22 +12,22 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class TransactionsAutoMinLimitType extends AbstractType
 {
-    public function buildForm(
-        FormBuilderInterface $builder,
-        array $options
-    ):void
-    {
-        $builder
-            ->add('percentage', IntegerType::class)
-            ->add('exclude_to', TextType::class)
-            ->add('exclude_from', TextType::class)
-            ->add('submit', SubmitType::class);
-    }
+  public function buildForm(
+    FormBuilderInterface $builder,
+    array $options
+  ):void
+  {
+    $builder
+      ->add('percentage', IntegerType::class)
+      ->add('exclude_to', TextType::class)
+      ->add('exclude_from', TextType::class)
+      ->add('submit', SubmitType::class);
+  }
 
-    public function configureOptions(OptionsResolver $resolver):void
-    {
-        $resolver->setDefaults([
-            'data_class'    => TransactionsAutoMinLimitCommand::class,
-        ]);
-    }
+  public function configureOptions(OptionsResolver $resolver):void
+  {
+    $resolver->setDefaults([
+      'data_class'    => TransactionsAutoMinLimitCommand::class,
+    ]);
+  }
 }

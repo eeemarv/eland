@@ -162,7 +162,7 @@ class MollieRepository
     return $res->fetchAllAssociative();
 	}
 
-  public function get_payments_with_email_ary(
+  public function get_payments_with_email_addresses(
     array $payment_ids,
     Schema $schema
   ):array
@@ -172,7 +172,7 @@ class MollieRepository
     $res = $this->db->executeQuery('select p.*,
       u.code, u.name,
       r.description,
-      coalesce(jsonb_agg(c.value) filter(where c.value is not null), \'[]\') as email_json
+      coalesce(jsonb_agg(c.value) filter(where c.value is not null), \'[]\') as email_addresses
       from ' . $schema->str() . '.mollie_payments p
       inner join ' . $schema->str() . '.mollie_payment_requests r
         on p.request_id = r.id
@@ -195,7 +195,7 @@ class MollieRepository
     {
       $payments[$row['id']] = [
         ...$row,
-        'email_ary' => json_decode($row['email_json']),
+        'email_addresses' => json_decode($row['email_addresses']),
       ];
     }
 
@@ -286,13 +286,40 @@ class MollieRepository
     return $this->db->executeStatement('update ' .
       $schema->str() . '.mollie_payments
       set canceled_by = :canceled_by
-      where id in (:payment_ids)', [
+      where id in (:payment_ids)
+        and is_paid = \'f\'::bool', [
         'canceled_by' => $canceled_by,
         'payment_ids' => $payment_ids
+    ], [
+      'canceled_by' => Types::INTEGER,
+      'payment_ids' => ArrayParameterType::INTEGER,
+    ]);
+  }
+
+  public function get_canceled_payments(
+    array $payment_ids,
+    Schema $schema,
+  ):array
+  {
+    $payments = [];
+    $res = $this->db->executeQuery('select
+      p.id, p.user_id, p.amount, r.description
+      from ' . $schema->str() . '.mollie_payments p
+      inner join ' . $schema->str() . '.mollie_payment_requests r
+        on p.request_id = r.id
+      where p.id in (:payment_ids)
+        and p.is_canceled = \'t\'::bool
+      order by p.created_at desc', [
+        'payment_ids' => $payment_ids,
       ], [
-        'canceled_by' => Types::INTEGER,
         'payment_ids' => ArrayParameterType::INTEGER,
       ]);
+
+    while ($row = $res->fetchAssociative())
+    {
+      $payments[$row['id']] = $row;
+    }
+    return $payments;
   }
 
   public function get_filtered_payments(
@@ -305,16 +332,18 @@ class MollieRepository
   ):array
   {
     $allowed_sort_cols = [
-      'p.amount',
-      'r.description',
-      'u.code',
-      'p.created_at',
+      'amount'      => 'p',
+      'description' => 'r',
+      'code'        => 'u',
+      'created_at'  => 'p',
     ];
 
-    if (!in_array($order_by, $allowed_sort_cols))
+    if (!isset($allowed_sort_cols[$order_by]))
     {
       throw new \Exception('Not allowed order_by ' . $order_by);
     }
+
+    $prefixed_order_by = $allowed_sort_cols[$order_by] . '.' . $order_by;
 
     $sql = [
       'where'     => [
@@ -366,7 +395,6 @@ class MollieRepository
     if (isset($filter_command->from_date))
     {
       $from_date_immutable = \DateTimeImmutable::createFromFormat('U', (string) strtotime($filter_command->from_date . ' UTC'));
-
       $sql['where']['from_date'] = 'p.created_at >= :from_date';
       $sql['params']['from_date'] = $from_date_immutable;
       $sql['types']['from_date'] = Types::DATETIME_IMMUTABLE;
@@ -375,7 +403,6 @@ class MollieRepository
     if (isset($filter_command->to_date))
     {
       $to_date_immutable = \DateTimeImmutable::createFromFormat('U', (string) strtotime($filter_command->to_date . ' UTC'));
-
       $sql['where']['to_date'] = 'p.created_at <= :to_date';
       $sql['params']['to_date'] = $to_date_immutable;
       $sql['types']['to_date'] = Types::DATETIME_IMMUTABLE;
@@ -394,7 +421,7 @@ class MollieRepository
       r.description,
       u.code, u.name,
       u.status, u.adate,
-      coalesce(jsonb_agg(c.value) filter(where c.value is not null), \'[]\') as email
+      coalesce(jsonb_agg(c.value) filter(where c.value is not null), \'[]\') as email_addresses
       from ' . $schema->str() . '.mollie_payments p
       inner join ' . $schema->str() . '.mollie_payment_requests r
         on p.request_id = r.id
@@ -409,7 +436,7 @@ class MollieRepository
       group by p.id, r.description,
         u.code, u.name,
         u.status, u.adate
-      order by ' . $order_by . '
+      order by ' . $prefixed_order_by . '
       ' . ($asc ? 'asc' : 'desc') . '
       limit :limit offset :offset',
       $sql['params'], $sql['types']);
@@ -418,7 +445,7 @@ class MollieRepository
     {
       $payments[$row['id']] = [
         ...$row,
-        'email'       => json_decode($row['email'], true),
+        'email_addresses' => json_decode($row['email_addresses'], true),
         'emails_sent' => json_decode($row['emails_sent'], true),
       ];
     }

@@ -1,6 +1,6 @@
 {{- form_start(form) -}}
 {{- form_errors(form) -}}
-{%- include 'mollie/include/mollie_checkout_info.html.twig' -%}
+{%- include 'mollie/checkout/mollie_checkout_info.html.twig' -%}
 {{- form_widget(form.submit,{
   'label': label|default('mollie_checkout.btn'),
   'attr': {'class': 'btn btn-primary btn-lg'}

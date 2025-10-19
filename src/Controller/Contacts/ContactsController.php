@@ -516,9 +516,7 @@ class ContactsController extends AbstractController
 
         $out .= '</div></div>';
 
-        $blk = BulkCnst::TPL_SELECT_BUTTONS;
-
-        $blk .= '<h3>Bulk acties met geselecteerde contacten</h3>';
+        $blk = '<h3>Bulk acties met geselecteerde contacten</h3>';
         $blk .= '<div class="panel panel-info">';
         $blk .= '<div class="panel-heading">';
 

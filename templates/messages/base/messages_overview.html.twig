@@ -53,13 +53,16 @@
 {%- block content -%}{%- endblock -%}
 
 {%- block data -%}
-    {%- if row_count -%}
-        {{- data_list_raw|raw -}}
-    {%- else -%}
-        {%- include 'include/no_results.html.twig' -%}
-    {%- endif -%}
+  {%- if row_count -%}
+    {{- data_list_raw|raw -}}
+  {%- else -%}
+    {%- include 'include/no_results.html.twig' -%}
+  {%- endif -%}
 {%- endblock data -%}
 
 {%- block bulk_actions -%}
+  {%- if bulk_actions_raw -%}
+    {%- include 'include/bulk_select_btns.html.twig' -%}
     {{- bulk_actions_raw|raw -}}
+  {%- endif -%}
 {%- endblock bulk_actions -%}

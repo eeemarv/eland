@@ -12,51 +12,51 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class LogsFilterType extends AbstractType
 {
-    public function __construct()
-    {
-    }
+  public function __construct()
+  {
+  }
 
-    public function buildForm(
-        FormBuilderInterface $builder,
-        array $options
-    ):void
-    {
-		$builder->add('q', TextType::class, [
-            'required' => false,
-        ]);
+  public function buildForm(
+    FormBuilderInterface $builder,
+    array $options
+  ):void
+  {
+  $builder->add('q', TextType::class, [
+          'required' => false,
+      ]);
 
-        $builder->add('user', TypeaheadType::class, [
-            'add'   => [
-                ['accounts', ['status' => 'active']],
-                ['accounts', ['status' => 'inactive']],
-                ['accounts', ['status' => 'ip']],
-                ['accounts', ['status' => 'im']],
-                ['accounts', ['status' => 'extern']],
-            ],
-            'filter'    => 'accounts',
-            'required'  => false,
-        ]);
+      $builder->add('user', TypeaheadType::class, [
+        'add'   => [
+          ['accounts', ['status' => 'active']],
+          ['accounts', ['status' => 'inactive']],
+          ['accounts', ['status' => 'ip']],
+          ['accounts', ['status' => 'im']],
+          ['accounts', ['status' => 'extern']],
+        ],
+        'filter'    => 'accounts',
+        'required'  => false,
+      ]);
 
-        $builder->add('type', TypeaheadType::class, [
-            'add'       => 'log_types',
-            'required'  => false,
-        ]);
-    }
+      $builder->add('type', TypeaheadType::class, [
+        'add'       => 'log_types',
+        'required'  => false,
+      ]);
+  }
 
-    public function getParent():string
-    {
-        return FilterType::class;
-    }
+  public function getParent():string
+  {
+    return FilterType::class;
+  }
 
-    public function getBlockPrefix():string
-    {
-        return 'f';
-    }
+  public function getBlockPrefix():string
+  {
+    return 'f';
+  }
 
-    public function configureOptions(OptionsResolver $resolver):void
-    {
-        $resolver->setDefaults([
-            'data_class'    => LogsFilterCommand::class,
-        ]);
-    }
+  public function configureOptions(OptionsResolver $resolver):void
+  {
+    $resolver->setDefaults([
+      'data_class'    => LogsFilterCommand::class,
+    ]);
+  }
 }

@@ -1,20 +1,20 @@
 {%- extends 'users/base/users_base.html.twig' -%}
 
 {%- set users_view_btns = {
-    'users_list': {'fa': 'align-justify', 'title': 'view.list'},
-    'users_tiles': {'fa': 'th', 'title': 'view.tiles'},
-    'users_map': {'fa': 'map-marker', 'title': 'view.map'}
+  'users_list': {'fa': 'align-justify', 'title': 'view.list'},
+  'users_tiles': {'fa': 'th', 'title': 'view.tiles'},
+  'users_map': {'fa': 'map-marker', 'title': 'view.map'}
 } -%}
 
 {%- block btn_view -%}
-    {%- include 'include/nav/view_btn_group.html.twig' with {'btns': users_view_btns} -%}
+  {%- include 'include/nav/view_btn_group.html.twig' with {'btns': users_view_btns} -%}
 {%- endblock btn_view -%}
 
 {%- block btn_top_add -%}
-    {%- if pp_has_role('admin') -%}
-        {%- include 'include/btn_top/add.html.twig' with {
-            'btn_route': 'users_add',
-            'btn_title': 'users_add.title'
-        } -%}
-    {%- endif -%}
+  {%- if pp_has_role('admin') -%}
+    {%- include 'include/btn_top/add.html.twig' with {
+      'btn_route': 'users_add',
+      'btn_title': 'users_add.title'
+    } -%}
+  {%- endif -%}
 {%- endblock btn_top_add -%}

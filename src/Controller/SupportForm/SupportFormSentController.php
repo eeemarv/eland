@@ -32,7 +32,7 @@ class SupportFormSentController extends AbstractController
   {
     if (!$config_service->get_bool('support_form.enabled', $pp->schema()))
     {
-      $this->createNotFoundException('Support form not enabled.');
+      throw $this->createNotFoundException('Support form not enabled.');
     }
 
     return $this->render('support_form/support_form_sent.html.twig', [

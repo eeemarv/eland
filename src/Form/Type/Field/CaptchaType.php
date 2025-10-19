@@ -17,10 +17,10 @@ class CaptchaType extends AbstractType
   const TTL = 86400;
 
   public function __construct(
-    protected Redis $redis,
-    protected TokenGeneratorService $token_generator_service,
+    private readonly Redis $redis,
+    private readonly TokenGeneratorService $token_generator_service,
     #[Autowire('%kernel.project_dir%')]
-    protected $project_dir
+    private readonly string $project_dir,
   )
   {
   }

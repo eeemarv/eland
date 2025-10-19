@@ -1,19 +1,19 @@
 {%- extends 'news/base/news_form.html.twig' -%}
 
 {%- block heading_title -%}
-    {{- 'news_add.title'|trans -}}
+  {{- 'news_add.title'|trans -}}
 {%- endblock heading_title -%}
 
 {%- set cancel_route = 'news'|var_route -%}
 
 {%- block form_submit_btn -%}
-    {%- include 'form/submit_add_btn.html.twig' -%}
+  {%- include 'form/submit_add_btn.html.twig' -%}
 {%- endblock form_submit_btn -%}
 
 {%- block css -%}
-    {{- parent() -}}
+  {{- parent() -}}
 {%- endblock css -%}
 
 {%- block js -%}
-    {{- parent() -}}
+  {{- parent() -}}
 {%- endblock js -%}

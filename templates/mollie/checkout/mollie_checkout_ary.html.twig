@@ -4,7 +4,7 @@
       'count': mollie_checkout_ary|length
     }) -}}</h3>
     {%- for mc in mollie_checkout_ary -%}
-      {%- include 'mollie/include/mollie_checkout_form.html.twig' with {
+      {%- include 'mollie/checkout/mollie_checkout_form.html.twig' with {
         'form': mc.form,
         'from_user_id': mc.from_user_id,
         'amount': mc.amount,

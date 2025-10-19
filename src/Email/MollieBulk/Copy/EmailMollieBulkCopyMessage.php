@@ -12,7 +12,7 @@ final class EmailMollieBulkCopyMessage
     public readonly int $to_user_id,
     public readonly array $payment_ids_sent,
     public readonly array $payment_ids_not_sent,
-    public readonly string $message,
+    public readonly string $content,
     public readonly string $subject,
     public readonly Schema $schema
   )

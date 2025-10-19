@@ -8,7 +8,7 @@ use App\Command\CommandInterface;
 
 class MollieConfigCommand implements CommandInterface
 {
-    #[IsMollieApikey()]
-    #[ConfigMap(type: 'str', key: 'mollie.apikey')]
-    public $apikey;
+  #[IsMollieApikey()]
+  #[ConfigMap(type: 'str', key: 'mollie.apikey')]
+  public $apikey;
 }

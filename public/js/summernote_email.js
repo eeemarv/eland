@@ -39,7 +39,7 @@ jQuery(function(){
 	var $summernote = $('textarea.summernote');
 
 	$summernote.each(function(){
-		var $self = $(this);
+		let $self = $(this);
 		$self.summernote({
 			minHeight: 200,
 			lang: 'nl-NL',
@@ -76,7 +76,7 @@ jQuery(function(){
 		});
 
 		$('form').on('submit', function(){
-			$self.html($self.summernote('code'));
+			$self.val($self.summernote('code'));
 		});
 	});
 });

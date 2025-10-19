@@ -37,6 +37,36 @@
   {%- include 'form/q_filter.html.twig' -%}
 {%- endblock filter_form_a -%}
 
+{%- block content -%}{%- endblock -%}
+
+{%- block data -%}
+  {%- if row_count -%}
+    {{- data_list_raw|raw -}}
+  {%- else -%}
+    {%- include 'include/no_results.html.twig' -%}
+  {%- endif -%}
+{%- endblock data -%}
+
+{%- block footnote -%}
+  <div class="row">
+    <div class="col-md-12">
+      <p>
+        <span class="pull-right">{{- 'label.balance_sum'|trans({
+          'balance_sum': '<span id="sum"></span> ' ~ config_str('transactions.currency.name')
+        })|raw -}}
+        </span>
+      </p>
+    </div>
+  </div>
+{%- endblock footnote -%}
+
+{%- block bulk_actions -%}
+  {%- if bulk_actions_raw -%}
+    {%- include 'include/bulk_select_btns.html.twig' -%}
+    {{- bulk_actions_raw|raw -}}
+  {%- endif -%}
+{%- endblock bulk_actions -%}
+
 {%- block css -%}
   {{- parent() -}}
 {%- endblock css -%}

@@ -5,19 +5,19 @@
 {%- set is_del_form = true -%}
 
 {%- block heading_title -%}
-    {{- 'news_del.title'|trans({
-        'subject': news_item.subject
-    }) -}}
+  {{- 'news_del.title'|trans({
+    'subject': news_item.subject
+  }) -}}
 {%- endblock -%}
 
 {%- block form_submit_btn -%}
-    {%- include 'form/submit_del_btn.html.twig' -%}
+  {%- include 'form/submit_del_btn.html.twig' -%}
 {%- endblock form_submit_btn -%}
 
 {%- block css -%}
-    {{- parent() -}}
+  {{- parent() -}}
 {%- endblock css -%}
 
 {%- block js -%}
-    {{- parent() -}}
+  {{- parent() -}}
 {%- endblock js -%}
