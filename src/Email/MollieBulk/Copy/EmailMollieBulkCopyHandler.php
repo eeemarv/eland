@@ -5,6 +5,7 @@ namespace App\Email\MollieBulk\Copy;
 use App\Email\EmailDispatchMessage;
 use App\Repository\MollieRepository;
 use App\Repository\UserRepository;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Uid\Uuid;
@@ -16,15 +17,17 @@ final class EmailMollieBulkCopyHandler
     private readonly MessageBusInterface $bus,
     private readonly UserRepository $user_repository,
     private readonly MollieRepository $mollie_repository,
+    private readonly HtmlSanitizerInterface $html_sanitizer,
   ) {}
 
   public function __invoke(EmailMollieBulkCopyMessage $message):void
   {
     $schema = $message->schema;
+    $sanitized_content = $this->html_sanitizer->sanitize($message->content);
 
     $context = [
       'to_user_id'  => $message->to_user_id,
-      'html_content'  => $message->content,
+      'html_content'  => $sanitized_content,
       'subject'   => $message->subject,
       'dummy_checkout_token' => Uuid::v4()->toBase58(),
     ];

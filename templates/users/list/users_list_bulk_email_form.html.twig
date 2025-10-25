@@ -1,0 +1,59 @@
+{{- form_start(bulk_email_form, {'attr': {'novalidate': 'novalidate'}}) -}}
+{{- form_errors(bulk_email_form) -}}
+
+{%- set email_enabled = config_bool('mail.enabled') -%}
+
+{%- if not email_enabled -%}
+  <div class="alert alert-warning">
+    {{- 'flash.email.functions_disabled'|trans -}}
+  </div>
+{%- endif -%}
+
+{%- if su_is_master() -%}
+  <div class="alert alert-warning">
+    {{- 'flash.email.not_for_master'|trans -}}
+  </div>
+  {%- set email_enabled = false -%}
+{%- endif -%}
+
+{{- form_widget(bulk_email_form.selected) -}}
+
+{{- form_row(bulk_email_form.subject, {
+  'label': false,
+  'attr': {
+    'placeholder': 'label.subject',
+  },
+  'pre_addon': {
+    'fa': 'chevron-right'
+  },
+  'disabled': not email_enabled,
+}) -}}
+
+{{- form_row(bulk_email_form.content, {
+  'label': false,
+  'attr': {
+    'rows': 10,
+    'data-template-vars': constant('App\\Cnst\\BulkCnst::USER_TPL_VARS')|keys|join(',')
+  },
+  'disabled': not email_enabled,
+}) -}}
+
+{{- form_row(bulk_email_form.copy, {
+  'label': 'check.bulk_copy',
+  'disabled': not email_enabled,
+}) -}}
+
+{{- form_row(bulk_email_form.verify, {
+  'label': 'check.bulk_verify_email',
+  'disabled': not email_enabled,
+}) -}}
+
+{{- form_widget(bulk_email_form.submit, {
+  'label': 'btn.send',
+  'attr': {
+    'class': 'btn btn-lg btn-primary',
+  },
+  'disabled': not email_enabled,
+}) -}}
+
+{{- form_end(bulk_email_form) -}}

@@ -10,9 +10,9 @@ use App\Service\UserCacheService;
 class AccountRender
 {
 	public function __construct(
-		protected LinkRender $link_render,
-		protected SystemsService $systems_service,
-		protected UserCacheService $user_cache_service
+		private readonly LinkRender $link_render,
+		private readonly SystemsService $systems_service,
+		private readonly UserCacheService $user_cache_service
 	)
 	{
 	}

@@ -7,7 +7,7 @@ use App\Service\UserCacheService;
 class AccountStrRender
 {
 	public function __construct(
-		protected UserCacheService $user_cache_service
+		private readonly UserCacheService $user_cache_service
 	)
 	{
 	}

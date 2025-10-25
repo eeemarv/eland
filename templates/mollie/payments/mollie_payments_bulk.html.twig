@@ -12,7 +12,8 @@
   })|raw -}}
 </h3>
 
-{%- set active_tab = bulk_cancel_form.vars.errors|length
+{%- set active_tab = bulk_cancel_form.vars.submitted
+  and not bulk_cancel_form.vars.valid
   ? 'cancel'
   : 'email' -%}
 

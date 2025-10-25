@@ -15,71 +15,71 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class FormTypeFormTokenExtension extends AbstractTypeExtension
 {
-    public function __construct(
-        protected FormTokenManagerInterface $form_token_manager,
-        protected TranslatorInterface $translator
-    )
+  public function __construct(
+    private readonly FormTokenManagerInterface $form_token_manager,
+    private readonly TranslatorInterface $translator,
+  )
+  {
+  }
+
+  public function buildForm(
+    FormBuilderInterface $builder,
+    array $options,
+  ):void
+  {
+    if (!$options[FormTokenManagerInterface::OPTION_ENABLED])
     {
+      return;
     }
 
-    public function buildForm(
-        FormBuilderInterface $builder,
-        array $options
-    ):void
+    $builder->addEventSubscriber(new FormTokenValidationSubscriber(
+      $this->form_token_manager,
+      $this->translator,
+    ));
+  }
+
+  public function finishView(
+    FormView $view,
+    FormInterface $form,
+    array $options,
+  ):void
+  {
+    if ($options[FormTokenManagerInterface::OPTION_ENABLED] && !$view->parent && $options['compound'])
     {
-        if (!$options[FormTokenManagerInterface::OPTION_ENABLED])
-        {
-            return;
-        }
+      $factory = $form->getConfig()->getFormFactory();
 
-        $builder->addEventSubscriber(new FormTokenValidationSubscriber(
-            $this->form_token_manager,
-            $this->translator
-        ));
+      $value = (string) $this->form_token_manager->get();
+
+      $form_token_form = $factory->createNamed(
+        FormTokenManagerInterface::NAME,
+        HiddenType::class,
+        $value, [
+          'mapped' => false,
+        ]
+      );
+
+      $view->children[FormTokenManagerInterface::NAME] = $form_token_form->createView($view);
     }
+  }
 
-    public function finishView(
-        FormView $view,
-        FormInterface $form,
-        array $options
-    ):void
-    {
-        if ($options[FormTokenManagerInterface::OPTION_ENABLED] && !$view->parent && $options['compound'])
-        {
-            $factory = $form->getConfig()->getFormFactory();
+  public function configureOptions(OptionsResolver $resolver):void
+  {
+    $resolver->setDefaults([
+      FormTokenManagerInterface::OPTION_ENABLED => true,
+      FormTokenManagerInterface::OPTION_PREVENT_DOUBLE => true,
+    ]);
+  }
 
-            $value = (string) $this->form_token_manager->get();
+  public static function getExtendedTypes():iterable
+  {
+    yield FormType::class;
+  }
 
-            $form_token_form = $factory->createNamed(
-                FormTokenManagerInterface::NAME,
-                HiddenType::class,
-                $value, [
-                    'mapped' => false,
-                ]
-            );
-
-            $view->children[FormTokenManagerInterface::NAME] = $form_token_form->createView($view);
-        }
-    }
-
-    public function configureOptions(OptionsResolver $resolver):void
-    {
-        $resolver->setDefaults([
-            FormTokenManagerInterface::OPTION_ENABLED => true,
-            FormTokenManagerInterface::OPTION_PREVENT_DOUBLE => true,
-        ]);
-    }
-
-    public static function getExtendedTypes():iterable
-    {
-        yield FormType::class;
-    }
-
-    public function getDefaultOptions(array $options)
-    {
-        return [
-            FormTokenManagerInterface::OPTION_ENABLED => true,
-            FormTokenManagerInterface::OPTION_PREVENT_DOUBLE => true,
-        ];
-    }
+  public function getDefaultOptions(array $options)
+  {
+    return [
+      FormTokenManagerInterface::OPTION_ENABLED => true,
+      FormTokenManagerInterface::OPTION_PREVENT_DOUBLE => true,
+    ];
+  }
 }

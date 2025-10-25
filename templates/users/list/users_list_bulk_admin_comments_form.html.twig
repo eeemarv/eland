@@ -1,0 +1,30 @@
+{{- form_start(bulk_admin_comments_form, {'attr': {'novalidate': 'novalidate'}}) -}}
+{{- form_errors(bulk_admin_comments_form) -}}
+
+{{- form_widget(bulk_admin_comments_form.selected) -}}
+
+{{- form_row(bulk_admin_comments_form.admin_comments, {
+  'label': 'label.admin_comments',
+  'pre_addon': {
+    'fa': 'comment-o'
+  },
+}) -}}
+
+<p class="alert alert-warning">
+  <b>
+  {{- 'users_list.bulk.admin_comments.warning'|trans -}}
+  </b>
+</p>
+
+{{- form_row(bulk_admin_comments_form.verify, {
+  'label': 'check.verify',
+}) -}}
+
+{{- form_widget(bulk_admin_comments_form.submit, {
+  'label': 'btn.edit',
+  'attr': {
+    'class': 'btn btn-lg btn-primary',
+  },
+}) -}}
+
+{{- form_end(bulk_admin_comments_form) -}}

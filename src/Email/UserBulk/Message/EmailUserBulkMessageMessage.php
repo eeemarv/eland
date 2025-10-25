@@ -11,7 +11,7 @@ final class EmailUserBulkMessageMessage
   public function __construct(
     public readonly int $sender_id,
     public readonly array $user_ids,
-    public readonly string $message,
+    public readonly string $content,
     public readonly string $subject,
     public readonly Schema $schema
   )

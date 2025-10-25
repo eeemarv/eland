@@ -129,6 +129,16 @@ class LogFlashSubscriber implements EventSubscriberInterface
         continue;
       }
 
+      if (!isset($msg['key']))
+      {
+        throw new \Exception('Missing translation key');
+      }
+
+      if (!is_string($msg['key']))
+      {
+        throw new \Exception('Key should be string');
+      }
+
       $params = $msg['params'] ?? [];
       $text_ary[] = $this->translator->trans($msg['key'], $params);
     }

@@ -1,0 +1,224 @@
+{%- set active_tab = bulk_full_name_access_form is not null
+    and bulk_full_name_access_form.vars.submitted
+    and not bulk_full_name_access_form.vars.valid
+  ? 'full_name_access'
+  : bulk_status_form is not null
+    and bulk_status_form.vars.submitted
+    and not bulk_status_form.vars.valid
+  ? 'status'
+  : bulk_comments_form is not null
+    and bulk_comments_form.vars.submitted
+    and not bulk_comments_form.vars.valid
+  ? 'comments'
+  : bulk_admin_comments_form is not null
+    and bulk_admin_comments_form.vars.submitted
+    and not bulk_admin_comments_form.vars.valid
+  ? 'admin_comments'
+  : bulk_min_limit_form is not null
+    and bulk_min_limit_form.vars.submitted
+    and not bulk_min_limit_form.vars.valid
+  ? 'min_limit'
+  : bulk_max_limit_form is not null
+    and bulk_max_limit_form.vars.submitted
+    and not bulk_max_limit_form.vars.valid
+  ? 'max_limit'
+  : bulk_periodic_overview_en_form is not null
+    and bulk_periodic_overview_en_form.vars.submitted
+    and not bulk_periodic_overview_en_form.vars.valid
+  ? 'periodic_overview_en'
+  : 'email' -%}
+
+<h3>
+  {{- 'users_list.bulk.title'|trans -}}
+</h3>
+<div class="panel panel-info">
+  <div class="panel-heading">
+    <ul class="nav nav-tabs" role="tablist">
+      <li{%- if active_tab == 'email' %} class="active"{%- endif -%}>
+        <a href="#email_tab" data-toggle="tab">
+          {{- 'label.email'|trans -}}
+        </a>
+      </li>
+      <li class="dropdown{%- if active_tab != 'email' %} active{%- endif -%}">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+          {{- 'users_list.bulk.field_nav'|trans -}}
+          <span class="caret"></span>
+        </a>
+        <ul class="dropdown-menu">
+          {%- if bulk_full_name_access_form is not null -%}
+            <li{%- if active_tab == 'full_name_access' %} class"active"{%- endif -%}>
+              <a href="#full_name_access_tab" data-toggle="tab">
+                {{- 'users_list.bulk.full_name_access.menu'|trans -}}
+              </a>
+            </li>
+          {%- endif -%}
+         {%- if bulk_role_form is not null -%}
+            <li{%- if active_tab == 'role' %} class"active"{%- endif -%}>
+              <a href="#role_tab" data-toggle="tab">
+                {{- 'users_list.bulk.role.menu'|trans -}}
+              </a>
+            </li>
+          {%- endif -%}
+          {%- if bulk_status_form is not null -%}
+            <li{%- if active_tab == 'status' %} class"active"{%- endif -%}>
+              <a href="#status_tab" data-toggle="tab">
+                {{- 'users_list.bulk.status.menu'|trans -}}
+              </a>
+            </li>
+          {%- endif -%}
+          {%- if bulk_comments_form is not null -%}
+            <li{%- if active_tab == 'comments' %} class"active"{%- endif -%}>
+              <a href="#comments_tab" data-toggle="tab">
+                {{- 'users_list.bulk.comments.menu'|trans -}}
+              </a>
+            </li>
+          {%- endif -%}
+          {%- if bulk_admin_comments_form is not null -%}
+            <li{%- if active_tab == 'admin_comments' %} class"active"{%- endif -%}>
+              <a href="#admin_comments_tab" data-toggle="tab">
+                {{- 'users_list.bulk.admin_comments.menu'|trans -}}
+              </a>
+            </li>
+          {%- endif -%}
+          {%- if bulk_min_limit_form is not null -%}
+            <li{%- if active_tab == 'min_limit' %} class"active"{%- endif -%}>
+              <a href="#min_limit_tab" data-toggle="tab">
+                {{- 'users_list.bulk.min_limit.menu'|trans -}}
+              </a>
+            </li>
+          {%- endif -%}
+          {%- if bulk_max_limit_form is not null -%}
+            <li{%- if active_tab == 'max_limit' %} class"active"{%- endif -%}>
+              <a href="#max_limit_tab" data-toggle="tab">
+                {{- 'users_list.bulk.max_limit.menu'|trans -}}
+              </a>
+            </li>
+          {%- endif -%}
+          {%- if bulk_periodic_overview_en_form is not null -%}
+            <li{%- if active_tab == 'periodic_overview_en' %} class"active"{%- endif -%}>
+              <a href="#periodic_overview_en_tab" data-toggle="tab">
+                {{- 'users_list.bulk.periodic_overview_en.menu'|trans -}}
+              </a>
+            </li>
+          {%- endif -%}
+        </ul>
+      </li>
+    </ul>
+    <div class="tab-content">
+      <div
+        role="tabpanel"
+        class="tab-pane{%- if active_tab == 'email' %}  active{%- endif -%}"
+        id="email_tab"
+      >
+        <h4>
+          {{- 'users_list.bulk.email.title'|trans -}}
+        </h4>
+        {%- include 'users/list/users_list_bulk_email_form.html.twig' -%}
+      </div>
+
+      {%- if bulk_full_name_access_form is not null -%}
+      <div
+        role="tabpanel"
+        class="tab-pane{%- if active_tab == 'full_name_access' %}  active{%- endif -%}"
+        id="full_name_access_tab"
+      >
+        <h4>
+          {{- 'users_list.bulk.full_name_access.title'|trans -}}
+        </h4>
+        {%- include 'users/list/users_list_bulk_full_name_access_form.html.twig' -%}
+      </div>
+      {%- endif -%}
+
+      {%- if bulk_role_form is not null -%}
+      <div
+        role="tabpanel"
+        class="tab-pane{%- if active_tab == 'role' %}  active{%- endif -%}"
+        id="role_tab"
+      >
+        <h4>
+          {{- 'users_list.bulk.role.title'|trans -}}
+        </h4>
+        {%- include 'users/list/users_list_bulk_role_form.html.twig' -%}
+      </div>
+      {%- endif -%}
+
+      {%- if bulk_status_form is not null -%}
+      <div
+        role="tabpanel"
+        class="tab-pane{%- if active_tab == 'status' %}  active{%- endif -%}"
+        id="status_tab"
+      >
+        <h4>
+          {{- 'users_list.bulk.status.title'|trans -}}
+        </h4>
+        {%- include 'users/list/users_list_bulk_status_form.html.twig' -%}
+      </div>
+      {%- endif -%}
+
+      {%- if bulk_comments_form is not null -%}
+      <div
+        role="tabpanel"
+        class="tab-pane{%- if active_tab == 'comments' %}  active{%- endif -%}"
+        id="comments_tab"
+      >
+        <h4>
+          {{- 'users_list.bulk.comments.title'|trans -}}
+        </h4>
+        {%- include 'users/list/users_list_bulk_comments_form.html.twig' -%}
+      </div>
+      {%- endif -%}
+
+      {%- if bulk_admin_comments_form is not null -%}
+      <div
+        role="tabpanel"
+        class="tab-pane{%- if active_tab == 'admin_comments' %}  active{%- endif -%}"
+        id="admin_comments_tab"
+      >
+        <h4>
+          {{- 'users_list.bulk.admin_comments.title'|trans -}}
+        </h4>
+        {%- include 'users/list/users_list_bulk_admin_comments_form.html.twig' -%}
+      </div>
+      {%- endif -%}
+
+      {%- if bulk_min_limit_form is not null -%}
+      <div
+        role="tabpanel"
+        class="tab-pane{%- if active_tab == 'min_limit' %}  active{%- endif -%}"
+        id="min_limit_tab"
+      >
+        <h4>
+          {{- 'users_list.bulk.min_limit.title'|trans -}}
+        </h4>
+        {%- include 'users/list/users_list_bulk_min_limit_form.html.twig' -%}
+      </div>
+      {%- endif -%}
+
+      {%- if bulk_max_limit_form is not null -%}
+      <div
+        role="tabpanel"
+        class="tab-pane{%- if active_tab == 'max_limit' %}  active{%- endif -%}"
+        id="max_limit_tab"
+      >
+        <h4>
+          {{- 'users_list.bulk.max_limit.title'|trans -}}
+        </h4>
+        {%- include 'users/list/users_list_bulk_max_limit_form.html.twig' -%}
+      </div>
+      {%- endif -%}
+
+      {%- if bulk_periodic_overview_en_form is not null -%}
+      <div
+        role="tabpanel"
+        class="tab-pane{%- if active_tab == 'periodic_overview_en' %}  active{%- endif -%}"
+        id="periodic_overview_en_tab"
+      >
+        <h4>
+          {{- 'users_list.bulk.periodic_overview_en.title'|trans -}}
+        </h4>
+        {%- include 'users/list/users_list_bulk_periodic_overview_en_form.html.twig' -%}
+      </div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>

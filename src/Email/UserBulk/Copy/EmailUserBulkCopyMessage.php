@@ -10,9 +10,9 @@ final class EmailUserBulkCopyMessage
 {
   public function __construct(
     public readonly int $sender_id,
-    public readonly array $user_ids,
-    public readonly array $omitted_user_ids,
-    public readonly string $message,
+    public readonly array $user_ids_sent,
+    public readonly array $user_ids_not_sent,
+    public readonly string $content,
     public readonly string $subject,
     public readonly Schema $schema
   )

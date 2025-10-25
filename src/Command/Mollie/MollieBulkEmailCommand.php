@@ -5,11 +5,9 @@ namespace App\Command\Mollie;
 use App\Command\CommandInterface;
 use App\Validator\BulkSelect\BulkSelectNotEmpty;
 use App\Validator\PlainText\PlainTextLength;
-use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Constraints\Type;
 

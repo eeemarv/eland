@@ -15,38 +15,39 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class UsersConfigLeavingType extends AbstractType
 {
-    public function __construct(
-        protected AccessFieldSubscriber $access_field_subscriber,
-        protected PageParamsService $pp,
-        protected ConfigService $config_service
-    )
+  public function __construct(
+    private readonly AccessFieldSubscriber $access_field_subscriber,
+    private readonly PageParamsService $pp,
+    private readonly ConfigService $config_service,
+  )
+  {
+  }
+
+  public function buildForm(
+    FormBuilderInterface $builder,
+    array $options
+  ):void
+  {
+    $transactions_enabled = $this->config_service->get_bool('transactions.enabled', $this->pp->schema());
+
+    if ($transactions_enabled)
     {
+      $builder->add('equilibrium', IntegerType::class);
+      $builder->add('auto_deactivate', CheckboxType::class);
     }
 
-    public function buildForm(
-        FormBuilderInterface $builder,
-        array $options
-    ):void
-    {
-        $transactions_enabled = $this->config_service->get_bool('transactions.enabled', $this->pp->schema());
+    $this->access_field_subscriber->add(name: 'access');
+    $this->access_field_subscriber->add(name: 'access_list');
+    $this->access_field_subscriber->add(name: 'access_pane');
+    $builder->addEventSubscriber($this->access_field_subscriber);
 
-        if ($transactions_enabled)
-        {
-            $builder->add('equilibrium', IntegerType::class);
-            $builder->add('auto_deactivate', CheckboxType::class);
-        }
+    $builder->add('submit', SubmitType::class);
+  }
 
-        $this->access_field_subscriber->add('access', ['admin', 'user', 'guest']);
-        $this->access_field_subscriber->add('access_list', ['admin', 'user', 'guest']);
-        $this->access_field_subscriber->add('access_pane', ['admin', 'user', 'guest']);
-        $builder->addEventSubscriber($this->access_field_subscriber);
-        $builder->add('submit', SubmitType::class);
-    }
-
-    public function configureOptions(OptionsResolver $resolver):void
-    {
-        $resolver->setDefaults([
-            'data_class'    => UsersConfigLeavingCommand::class,
-        ]);
-    }
+  public function configureOptions(OptionsResolver $resolver):void
+  {
+    $resolver->setDefaults([
+      'data_class'    => UsersConfigLeavingCommand::class,
+    ]);
+  }
 }

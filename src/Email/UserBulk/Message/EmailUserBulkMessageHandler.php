@@ -60,7 +60,7 @@ final class EmailUserBulkMessageHandler
         template: 'user_bulk/user_bulk_message',
         message_class: get_class($message),
         context: $context,
-        embedded_template: $message->message,
+        embedded_template: $message->content,
         embedded_context: $embedded_context,
         bulk_id: $bulk_id,
         bulk_created_by: $sender_id,

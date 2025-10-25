@@ -29,7 +29,7 @@ class ForumTopicType extends AbstractType
       ->add('content', SummernoteType::class)
       ->add('submit', SubmitType::class);
 
-    $this->access_field_subscriber->add('access', ['admin', 'user', 'guest']);
+    $this->access_field_subscriber->add();
     $builder->addEventSubscriber($this->access_field_subscriber);
   }
 

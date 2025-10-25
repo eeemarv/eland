@@ -107,7 +107,9 @@ class MessagesType extends AbstractType
     $builder->add('image_files', HiddenType::class);
     $builder->add('submit', SubmitType::class);
 
-    $this->access_field_subscriber->add('access', ['user', 'guest']);
+    $this->access_field_subscriber->add(
+      access_options: ['user', 'guest'],
+    );
     $builder->addEventSubscriber($this->access_field_subscriber);
   }
 

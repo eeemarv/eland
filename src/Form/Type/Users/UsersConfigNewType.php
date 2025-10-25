@@ -12,31 +12,31 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class UsersConfigNewType extends AbstractType
 {
-    public function __construct(
-        protected AccessFieldSubscriber $access_field_subscriber
-    )
-    {
-    }
+  public function __construct(
+    private readonly AccessFieldSubscriber $access_field_subscriber
+  )
+  {
+  }
 
-    public function buildForm(
-        FormBuilderInterface $builder,
-        array $options
-    ):void
-    {
-        $builder->add('days', IntegerType::class);
+  public function buildForm(
+    FormBuilderInterface $builder,
+    array $options
+  ):void
+  {
+    $builder->add('days', IntegerType::class);
 
-        $this->access_field_subscriber->add('access', ['admin', 'user', 'guest']);
-        $this->access_field_subscriber->add('access_list', ['admin', 'user', 'guest']);
-        $this->access_field_subscriber->add('access_pane', ['admin', 'user', 'guest']);
+    $this->access_field_subscriber->add(name: 'access');
+    $this->access_field_subscriber->add(name: 'access_list');
+    $this->access_field_subscriber->add(name: 'access_pane');
 
-        $builder->addEventSubscriber($this->access_field_subscriber);
-        $builder->add('submit', SubmitType::class);
-    }
+    $builder->addEventSubscriber($this->access_field_subscriber);
+    $builder->add('submit', SubmitType::class);
+  }
 
-    public function configureOptions(OptionsResolver $resolver):void
-    {
-        $resolver->setDefaults([
-            'data_class'    => UsersConfigNewCommand::class,
-        ]);
-    }
+  public function configureOptions(OptionsResolver $resolver):void
+  {
+    $resolver->setDefaults([
+      'data_class'    => UsersConfigNewCommand::class,
+    ]);
+  }
 }

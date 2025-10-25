@@ -12,10 +12,10 @@
     <columns>
       <spacer size="8"></spacer>
       <p>
-        {{- 'user_bulk_copy.to_users'|trans -}}
+        {{- 'user_bulk_copy.users_sent'|trans -}}
       </p>
       <p>
-        {%- for uid in user_ids -%}
+        {%- for uid in user_ids_sent -%}
           {{- a_open('users_show', {}|mpp(id: uid, role_user_id: sender_id))|raw -}}
             {{- account(uid) -}}
           </a><br/>
@@ -23,15 +23,15 @@
       </p>
     </columns>
   </row>
-    {%- if omitted_user_ids is not empty -%}
+    {%- if user_ids_not_sent is not empty -%}
     <row class="b-red-8 r-red-4">
       <columns>
         <spacer size="8"></spacer>
         <p>
-          {{- 'user_bulk_copy.omitted_to_users'|trans -}}
+          {{- 'user_bulk_copy.users_not_sent'|trans -}}
         </p>
         <p>
-          {%- for uid in omitted_user_ids -%}
+          {%- for uid in user_ids_not_sent -%}
             {{- a_open('users_show', {}|mpp(id: uid, role_user_id: sender_id))|raw -}}
               {{- account(uid) -}}
             </a><br/>

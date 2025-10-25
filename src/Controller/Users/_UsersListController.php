@@ -839,15 +839,15 @@ class _UsersListController extends AbstractController
     $sql_types = array_merge(...array_column($sql, 'types'));
 
     $query = 'select u.*
-        from ' . $pp->schema() . '.users u
-        where ' . $sql_where . '
-        order by u.code asc';
+      from ' . $pp->schema() . '.users u
+      where ' . $sql_where . '
+      order by u.code asc';
 
     $res = $db->executeQuery($query, $sql_params, $sql_types);
 
     while($row = $res->fetchAssociative())
     {
-        $users[$row['id']] = $row;
+      $users[$row['id']] = $row;
     }
 
     if (isset($show_columns['u']['balance_date']))
@@ -1858,89 +1858,81 @@ class _UsersListController extends AbstractController
     $out .= '</table>';
     $out .= '</div></div>';
 
-    $out .= '<div class="row"><div class="col-md-12">';
-    $out .= '<p><span class="pull-right">Totaal saldo: <span id="sum"></span> ';
-    $out .= $currency;
-    $out .= '</span></p>';
-    $out .= '</div></div>';
-
     if ($pp->is_admin() & isset($show_columns['u']))
     {
-        $out .= BulkCnst::TPL_SELECT_BUTTONS;
+        $blk = '<h3>Bulk acties met geselecteerde gebruikers</h3>';
+        $blk .= '<div class="panel panel-info">';
+        $blk .= '<div class="panel-heading">';
 
-        $out .= '<h3>Bulk acties met geselecteerde gebruikers</h3>';
-        $out .= '<div class="panel panel-info">';
-        $out .= '<div class="panel-heading">';
+        $blk .= '<ul class="nav nav-tabs" role="tablist">';
 
-        $out .= '<ul class="nav nav-tabs" role="tablist">';
+        $blk .= '<li class="active">';
+        $blk .= '<a href="#mail_tab" data-toggle="tab">Mail</a></li>';
+        $blk .= '<li class="dropdown">';
 
-        $out .= '<li class="active">';
-        $out .= '<a href="#mail_tab" data-toggle="tab">Mail</a></li>';
-        $out .= '<li class="dropdown">';
-
-        $out .= '<a class="dropdown-toggle" data-toggle="dropdown" href="#">Veld aanpassen';
-        $out .= '<span class="caret"></span></a>';
-        $out .= '<ul class="dropdown-menu">';
+        $blk .= '<a class="dropdown-toggle" data-toggle="dropdown" href="#">Veld aanpassen';
+        $blk .= '<span class="caret"></span></a>';
+        $blk .= '<ul class="dropdown-menu">';
 
         foreach ($user_tabs as $k => $t)
         {
-            $out .= '<li>';
-            $out .= '<a href="#' . $k . '_tab" data-toggle="tab">';
-            $out .= $t['lbl'];
-            $out .= '</a></li>';
+            $blk .= '<li>';
+            $blk .= '<a href="#' . $k . '_tab" data-toggle="tab">';
+            $blk .= $t['lbl'];
+            $blk .= '</a></li>';
         }
 
-        $out .= '</ul>';
-        $out .= '</li>';
-        $out .= '</ul>';
+        $blk .= '</ul>';
+        $blk .= '</li>';
+        $blk .= '</ul>';
 
-        $out .= '<div class="tab-content">';
+        $blk .= '<div class="tab-content">';
 
-        $out .= '<div role="tabpanel" class="tab-pane active" id="mail_tab">';
-        $out .= '<h3>E-Mail verzenden naar geselecteerde gebruikers</h3>';
+        $blk .= '<div role="tabpanel" class="tab-pane active" id="mail_tab">';
+        $blk .= '<h3>E-Mail verzenden naar geselecteerde gebruikers</h3>';
 
-        $out .= '<form method="post">';
+        $blk .= '<form method="post">';
 
-        $out .= '<div class="form-group">';
-        $out .= '<input type="text" class="form-control" id="bulk_mail_subject" name="bulk_mail_subject" ';
-        $out .= 'placeholder="Onderwerp" ';
-        $out .= 'value="';
-        $out .= $bulk_mail_subject;
-        $out .= '" required>';
-        $out .= '</div>';
+        $blk .= '<div class="form-group">';
+        $blk .= '<input type="text" class="form-control" id="bulk_mail_subject" name="bulk_mail_subject" ';
+        $blk .= 'placeholder="Onderwerp" ';
+        $blk .= 'value="';
+        $blk .= $bulk_mail_subject;
+        $blk .= '" required>';
+        $blk .= '</div>';
 
-        $out .= '<div class="form-group">';
-        $out .= '<textarea name="bulk_mail_content" ';
-        $out .= 'class="form-control summernote" ';
-        $out .= 'id="bulk_mail_content" rows="8" ';
-        $out .= 'data-template-vars="';
-        $out .= implode(',', array_keys(BulkCnst::USER_TPL_VARS));
-        $out .= '" ';
-        $out .= 'required>';
-        $out .= $bulk_mail_content;
-        $out .= '</textarea>';
-        $out .= '</div>';
+        $blk .= '<div class="form-group">';
+        $blk .= '<textarea name="bulk_mail_content" ';
+        $blk .= 'class="form-control summernote" ';
+        $blk .= 'id="bulk_mail_content" rows="8" ';
+        $blk .= 'data-template-vars="';
+        $blk .= implode(',', array_keys(BulkCnst::USER_TPL_VARS));
+        $blk .= '" ';
+        $blk .= 'required>';
+        $blk .= $bulk_mail_content;
+        $blk .= '</textarea>';
+        $blk .= '</div>';
 
-        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+        $blk .= strtr(BulkCnst::TPL_CHECKBOX, [
             '%name%'    => 'bulk_mail_cc',
             '%label%'   => 'Stuur een kopie met verzendinfo naar mijzelf',
             '%attr%'    => $bulk_mail_cc ? ' checked' : '',
         ]);
 
-        $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+        $blk .= strtr(BulkCnst::TPL_CHECKBOX, [
             '%name%'    => 'bulk_verify[mail]',
             '%label%'   => 'Ik heb mijn bericht nagelezen en nagekeken dat de juiste gebruikers geselecteerd zijn.',
             '%attr%'    => ' required',
         ]);
 
-        $out .= '<input type="submit" value="Zend test E-mail naar mijzelf" ';
-        $out .= 'name="bulk_submit[mail_test]" class="btn btn-info btn-lg">&nbsp;';
-        $out .= '<input type="submit" value="Verzend" name="bulk_submit[mail]" ';
-        $out .= 'class="btn btn-info btn-lg">';
+        $blk .= '<input type="submit" value="Zend test E-mail naar mijzelf" ';
+        $blk .= 'name="bulk_submit[mail_test]" class="btn btn-info btn-lg">&nbsp;';
+        $blk .= '<input type="submit" value="Verzend" name="bulk_submit[mail]" ';
+        $blk .= 'class="btn btn-info btn-lg">';
 
-        $out .= $form_token_service->get_hidden_input();
-        $out .= '</form>';
-        $out .= '</div>';
+        $blk .= $form_token_service->get_hidden_input();
+        $blk .= '</form>';
+        $blk .= '</div>';
 
         foreach($user_tabs as $k => $t)
         {
@@ -1951,19 +1943,19 @@ class _UsersListController extends AbstractController
                 continue;
             }
 
-            $out .= '<div role="tabpanel" class="tab-pane" id="';
-            $out .= $k;
-            $out .= '_tab"';
-            $out .= '>';
-            $out .= '<h3>Veld aanpassen: ' . $t['lbl'] . '</h3>';
+            $blk .= '<div role="tabpanel" class="tab-pane" id="';
+            $blk .= $k;
+            $blk .= '_tab"';
+            $blk .= '>';
+            $blk .= '<h3>Veld aanpassen: ' . $t['lbl'] . '</h3>';
 
-            $out .= '<form method="post">';
+            $blk .= '<form method="post">';
 
             $bulk_field_name = 'bulk_field[' . $k . ']';
 
             if (isset($t['item_access']))
             {
-                $out .= $item_access_service->get_radio_buttons($bulk_field_name);
+                $blk .= $item_access_service->get_radio_buttons($bulk_field_name);
             }
             else
             {
@@ -1984,7 +1976,7 @@ class _UsersListController extends AbstractController
                     $tpl = BulkCnst::TPL_INPUT_FA;
                 }
 
-                $out .= strtr($tpl, [
+                $blk .= strtr($tpl, [
                     '%name%'        => $bulk_field_name,
                     '%label%'       => $t['lbl'],
                     '%type%'        => $t['type'] ?? '',
@@ -1997,30 +1989,32 @@ class _UsersListController extends AbstractController
                 ]);
             }
 
-            $out .= strtr(BulkCnst::TPL_CHECKBOX, [
+            $blk .= strtr(BulkCnst::TPL_CHECKBOX, [
                 '%name%'    => 'bulk_verify[' . $k  . ']',
                 '%label%'   => 'Ik heb de ingevulde waarde nagekeken en dat de juiste gebruikers geselecteerd zijn.',
                 '%attr%'    => ' required',
             ]);
 
-            $out .= '<input type="submit" value="Veld aanpassen" ';
-            $out .= 'name="bulk_submit[' . $k . ']" class="btn btn-primary btn-lg">';
-            $out .= $form_token_service->get_hidden_input();
-            $out .= '</form>';
+            $blk .= '<input type="submit" value="Veld aanpassen" ';
+            $blk .= 'name="bulk_submit[' . $k . ']" class="btn btn-primary btn-lg">';
+            $blk .= $form_token_service->get_hidden_input();
+            $blk .= '</form>';
 
-            $out .= '</div>';
+            $blk .= '</div>';
         }
 
-        $out .= '<div class="clearfix"></div>';
-        $out .= '</div>';
-        $out .= '</div>';
-        $out .= '</div>';
+        $blk .= '<div class="clearfix"></div>';
+        $blk .= '</div>';
+        $blk .= '</div>';
+        $blk .= '</div>';
     }
 
     return $this->render('users/users_list.html.twig', [
-        'content'           => $out,
-        'columns_form_raw'  => $f_col,
-        'filter_form'       => $filter_form->createView(),
+      'columns_form_raw'  => $f_col,
+      'filter_form'       => $filter_form->createView(),
+      'row_count'         => count($users),
+      'data_list_raw'     => $out,
+      'bulk_actions_raw'  => $blk ?? null,
     ]);
   }
 

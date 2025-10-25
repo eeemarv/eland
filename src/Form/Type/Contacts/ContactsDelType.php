@@ -15,51 +15,52 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ContactsDelType extends AbstractType
 {
-    public function __construct(
-        protected TranslatorInterface $translator,
-        protected AccessFieldSubscriber $access_field_subscriber,
-        protected ContactRepository $contact_repository,
-        protected PageParamsService $pp
-    )
-    {
-    }
+  public function __construct(
+    private readonly TranslatorInterface $translator,
+    private readonly AccessFieldSubscriber $access_field_subscriber,
+    private readonly ContactRepository $contact_repository,
+    private readonly PageParamsService $pp
+  )
+  {
+  }
 
-    public function buildForm(
-        FormBuilderInterface $builder,
-        array $options
-    ):void
-    {
-        $fa = ContactsType::FORMAT[$options['contact_type_abbrev']]['fa'] ?? 'chevron-right';
+  public function buildForm(
+    FormBuilderInterface $builder,
+    array $options
+  ):void
+  {
+    $fa = ContactsType::FORMAT[$options['contact_type_abbrev']]['fa'] ?? 'chevron-right';
 
-        $builder->add('contact_type_id', TextType::class, [
-            'disabled'      => true,
-        ]);
+    $builder->add('contact_type_id', TextType::class, [
+      'disabled'      => true,
+    ]);
 
-        $builder->add('value', TextType::class, [
-            'disabled'      => true,
-            'attr'          => [
-                'data-fa'   => $fa,
-            ]
-        ]);
+    $builder->add('value', TextType::class, [
+      'disabled'      => true,
+      'attr'          => [
+        'data-fa'   => $fa,
+      ]
+    ]);
 
-        $builder->add('comments', TextType::class, [
-            'disabled'      => true,
-        ]);
+    $builder->add('comments', TextType::class, [
+      'disabled'      => true,
+    ]);
 
-        $builder->add('submit', SubmitType::class);
+    $builder->add('submit', SubmitType::class);
 
-        $this->access_field_subscriber->add('access', ['admin', 'user', 'guest'], [
-            'disabled'  => true,
-        ]);
+    $this->access_field_subscriber->add(
+      type_options: [
+      'disabled'  => true,
+    ]);
 
-        $builder->addEventSubscriber($this->access_field_subscriber);
-    }
+    $builder->addEventSubscriber($this->access_field_subscriber);
+  }
 
-    public function configureOptions(OptionsResolver $resolver):void
-    {
-        $resolver->setDefaults([
-            'contact_type_abbrev'   => null,
-            'data_class'            => ContactsCommand::class,
-        ]);
-    }
+  public function configureOptions(OptionsResolver $resolver):void
+  {
+    $resolver->setDefaults([
+      'contact_type_abbrev'   => null,
+      'data_class'            => ContactsCommand::class,
+    ]);
+  }
 }

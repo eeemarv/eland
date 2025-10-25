@@ -187,8 +187,6 @@ class MolliePaymentsController extends AbstractController
 
       if (count($payment_ids_sent))
       {
-        $sanitized_content = $html_sanitizer->sanitize($content);
-
         $mollie_repository->add_emails_sent(
           sanitized_content: $sanitized_content,
           subject: $subject,
@@ -214,7 +212,7 @@ class MolliePaymentsController extends AbstractController
           to_user_id: $su->id(),
           payment_ids_sent: $payment_ids_sent,
           payment_ids_not_sent: $payment_ids_not_sent,
-          content: $sanitized_content,
+          content: $content,
           subject: $subject,
           schema: $pp->schema_o(),
         );
@@ -248,7 +246,6 @@ class MolliePaymentsController extends AbstractController
         $this->addFlash('success', $msg);
       }
 
-      $this->addFlash('success', '');
       return $this->redirectToRoute('mollie_payments', $pp->ary());
     }
 

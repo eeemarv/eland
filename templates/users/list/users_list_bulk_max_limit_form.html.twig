@@ -1,0 +1,34 @@
+{{- form_start(bulk_max_limit_form, {'attr': {'novalidate': 'novalidate'}}) -}}
+{{- form_errors(bulk_max_limit_form) -}}
+
+{{- form_widget(bulk_max_limit_form.selected) -}}
+
+{{- form_row(bulk_max_limit_form.max_limit, {
+  'label': 'field.max_limit.label',
+  'help': 'field.max_limit.help',
+  'attr': {
+    'min': '0',
+  },
+  'pre_addon': {
+    'fa': 'arrow-up',
+  },
+}) -}}
+
+<p class="alert alert-warning">
+  <b>
+  {{- 'users_list.bulk.max_limit.warning'|trans -}}
+  </b>
+</p>
+
+{{- form_row(bulk_max_limit_form.verify, {
+  'label': 'check.verify',
+}) -}}
+
+{{- form_widget(bulk_max_limit_form.submit, {
+  'label': 'btn.edit',
+  'attr': {
+    'class': 'btn btn-lg btn-primary',
+  },
+}) -}}
+
+{{- form_end(bulk_max_limit_form) -}}

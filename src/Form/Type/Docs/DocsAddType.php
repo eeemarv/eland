@@ -15,41 +15,41 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class DocsAddType extends AbstractType
 {
-    public function __construct(
-        protected AccessFieldSubscriber $access_field_subscriber,
-        protected TypeaheadService $typeahead_service,
-        protected PageParamsService $pp
-    )
-    {
-    }
+  public function __construct(
+    private readonly AccessFieldSubscriber $access_field_subscriber,
+    private readonly TypeaheadService $typeahead_service,
+    private readonly PageParamsService $pp,
+  )
+  {
+  }
 
-    public function buildForm(
-        FormBuilderInterface $builder,
-        array $options
-    ):void
-    {
-        $data_typeahead = $this->typeahead_service->ini($this->pp)
-            ->add('doc_map_names', [])
-            ->str_raw();
+  public function buildForm(
+    FormBuilderInterface $builder,
+    array $options,
+  ):void
+  {
+    $data_typeahead = $this->typeahead_service->ini($this->pp)
+      ->add('doc_map_names', [])
+      ->str_raw();
 
-        $builder
-            ->add('file', FileType::class)
-            ->add('name', TextType::class)
-            ->add('map_name', TextType::class, [
-                'attr'  => [
-                    'data-typeahead'    => $data_typeahead,
-                ],
-            ])
-            ->add('submit', SubmitType::class);
+    $builder
+      ->add('file', FileType::class)
+      ->add('name', TextType::class)
+      ->add('map_name', TextType::class, [
+        'attr'  => [
+          'data-typeahead'    => $data_typeahead,
+        ],
+      ])
+      ->add('submit', SubmitType::class);
 
-        $this->access_field_subscriber->add('access', ['admin', 'user', 'guest']);
-        $builder->addEventSubscriber($this->access_field_subscriber);
-    }
+    $this->access_field_subscriber->add();
+    $builder->addEventSubscriber($this->access_field_subscriber);
+  }
 
-    public function configureOptions(OptionsResolver $resolver):void
-    {
-        $resolver->setDefaults([
-            'data_class'    => DocsCommand::class,
-        ]);
-    }
+  public function configureOptions(OptionsResolver $resolver):void
+  {
+    $resolver->setDefaults([
+      'data_class'    => DocsCommand::class,
+    ]);
+  }
 }

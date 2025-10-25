@@ -15,41 +15,44 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 class NewsDelType extends AbstractType
 {
-    public function __construct(
-        protected AccessFieldSubscriber $access_field_subscriber
-    )
-    {
-    }
+  public function __construct(
+    private readonly AccessFieldSubscriber $access_field_subscriber
+  )
+  {
+  }
 
-    public function buildForm(
-        FormBuilderInterface $builder,
-        array $options
-    ):void
-    {
-        $builder
-            ->add('subject', TextType::class, [
-                'disabled'  => true,
-            ])
-            ->add('location', TextType::class, [
-                'disabled'  => true,
-            ])
-            ->add('event_at', DatepickerType::class, [
-                'disabled'  => true,
-            ])
-            ->add('content', SummernoteType::class, [
-                'disabled'  => true,
-            ])
-            ->add('submit', SubmitType::class);
+  public function buildForm(
+    FormBuilderInterface $builder,
+    array $options
+  ):void
+  {
+    $builder
+      ->add('subject', TextType::class, [
+          'disabled'  => true,
+      ])
+      ->add('location', TextType::class, [
+          'disabled'  => true,
+      ])
+      ->add('event_at', DatepickerType::class, [
+          'disabled'  => true,
+      ])
+      ->add('content', SummernoteType::class, [
+          'disabled'  => true,
+      ])
+      ->add('submit', SubmitType::class);
 
-            $this->access_field_subscriber->add('access',
-                ['admin', 'user', 'guest'], ['disabled' => true]);
-            $builder->addEventSubscriber($this->access_field_subscriber);
-    }
+    $this->access_field_subscriber->add(
+      type_options: [
+        'disabled' => true,
+      ],
+    );
+    $builder->addEventSubscriber($this->access_field_subscriber);
+  }
 
-    public function configureOptions(OptionsResolver $resolver):void
-    {
-        $resolver->setDefaults([
-            'data_class'    => NewsCommand::class,
-        ]);
-    }
+  public function configureOptions(OptionsResolver $resolver):void
+  {
+    $resolver->setDefaults([
+      'data_class'    => NewsCommand::class,
+    ]);
+  }
 }

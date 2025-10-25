@@ -11,27 +11,27 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class FilterColTypeExtension extends AbstractTypeExtension
 {
-    public static function getExtendedTypes(): iterable
-    {
-        yield TextType::class;
-        yield ButtonType::class;
-    }
+  public static function getExtendedTypes(): iterable
+  {
+    yield TextType::class;
+    yield ButtonType::class;
+  }
 
-    public function configureOptions(OptionsResolver $resolver):void
-    {
-        $resolver->setDefault('col', null);
-        $resolver->setAllowedTypes('col', ['null', 'string']);
-    }
+  public function configureOptions(OptionsResolver $resolver):void
+  {
+    $resolver->setDefault('col', null);
+    $resolver->setAllowedTypes('col', ['null', 'string']);
+  }
 
-    public function buildView(
-        FormView $view,
-        FormFormInterface $form,
-        array $options
-    ):void
+  public function buildView(
+    FormView $view,
+    FormFormInterface $form,
+    array $options
+  ):void
+  {
+    if (isset($options['col']))
     {
-        if (isset($options['col']))
-        {
-            $view->vars['col'] = $options['col'];
-        }
+      $view->vars['col'] = $options['col'];
     }
+  }
 }

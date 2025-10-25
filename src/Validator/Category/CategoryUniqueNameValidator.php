@@ -11,36 +11,36 @@ use App\Service\PageParamsService;
 
 class CategoryUniqueNameValidator extends ConstraintValidator
 {
-    public function __construct(
-        protected CategoryRepository $category_repository,
-        protected PageParamsService $pp
-    )
+  public function __construct(
+    private readonly CategoryRepository $category_repository,
+    private readonly PageParamsService $pp
+  )
+  {
+  }
+
+  public function validate($categories_name_command, Constraint $constraint):void
+  {
+    if (!$constraint instanceof CategoryUniqueName)
     {
+      throw new UnexpectedTypeException($constraint, CategoryUniqueName::class);
     }
 
-    public function validate($categories_name_command, Constraint $constraint):void
+    if (!$categories_name_command instanceof CategoriesNameCommand)
     {
-        if (!$constraint instanceof CategoryUniqueName)
-        {
-            throw new UnexpectedTypeException($constraint, CategoryUniqueName::class);
-        }
-
-        if (!$categories_name_command instanceof CategoriesNameCommand)
-        {
-            throw new UnexpectedTypeException($categories_name_command, CategoriesNameCommand::class);
-        }
-
-        $name = $categories_name_command->name;
-        $id = $categories_name_command->id;
-
-        $is_unique = $this->category_repository->is_unique_name_except_id($name, $id, $this->pp->schema());
-
-        if (!$is_unique)
-        {
-            $this->context->buildViolation('category.name_not_unique')
-                ->atPath('name')
-                ->addViolation();
-            return;
-        }
+      throw new UnexpectedTypeException($categories_name_command, CategoriesNameCommand::class);
     }
+
+    $name = $categories_name_command->name;
+    $id = $categories_name_command->id;
+
+    $is_unique = $this->category_repository->is_unique_name_except_id($name, $id, $this->pp->schema());
+
+    if (!$is_unique)
+    {
+      $this->context->buildViolation('category.name_not_unique')
+        ->atPath('name')
+        ->addViolation();
+      return;
+    }
+  }
 }

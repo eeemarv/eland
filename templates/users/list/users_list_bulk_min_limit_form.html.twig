@@ -1,0 +1,34 @@
+{{- form_start(bulk_min_limit_form, {'attr': {'novalidate': 'novalidate'}}) -}}
+{{- form_errors(bulk_min_limit_form) -}}
+
+{{- form_widget(bulk_min_limit_form.selected) -}}
+
+{{- form_row(bulk_min_limit_form.min_limit, {
+  'label': 'field.min_limit.label',
+  'help': 'field.min_limit.help',
+  'attr': {
+    'max': '0',
+  },
+  'pre_addon': {
+    'fa': 'arrow-down',
+  },
+}) -}}
+
+<p class="alert alert-warning">
+  <b>
+  {{- 'users_list.bulk.min_limit.warning'|trans -}}
+  </b>
+</p>
+
+{{- form_row(bulk_min_limit_form.verify, {
+  'label': 'check.verify',
+}) -}}
+
+{{- form_widget(bulk_min_limit_form.submit, {
+  'label': 'btn.edit',
+  'attr': {
+    'class': 'btn btn-lg btn-primary',
+  },
+}) -}}
+
+{{- form_end(bulk_min_limit_form) -}}

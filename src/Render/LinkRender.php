@@ -7,12 +7,12 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class LinkRender
 {
 	public function __construct(
-		protected UrlGeneratorInterface $url_generator
+		private readonly UrlGeneratorInterface $url_generator
 	)
 	{
 	}
 
-    public function url(
+  public function url(
 		string $route,
 		array $params
 	):string
@@ -27,7 +27,7 @@ class LinkRender
 		array $params
 	):string
 	{
-        return $this->url_generator->generate(
+    return $this->url_generator->generate(
 			$route, [
 				...$params,
 				...$params_context,
@@ -63,8 +63,8 @@ class LinkRender
 		string $route,
 		array $params
 	):string
-    {
-        return $this->url_generator->generate(
+  {
+    return $this->url_generator->generate(
 			$route, $params, UrlGeneratorInterface::ABSOLUTE_PATH);
 	}
 
@@ -74,7 +74,7 @@ class LinkRender
 		array $params
 	):string
 	{
-        return $this->url_generator->generate(
+    return $this->url_generator->generate(
 			$route, [
 				...$params,
 				...$params_context,

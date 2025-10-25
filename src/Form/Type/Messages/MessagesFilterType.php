@@ -156,10 +156,13 @@ class MessagesFilterType extends AbstractType
 
     $builder->add('uid', HiddenType::class);
 
-    $this->access_field_subscriber->add('access', ['user', 'guest'], [
+    $this->access_field_subscriber->add(
+      access_options: ['user', 'guest'],
+      type_options: [
       'multiple' => true,
       'required' => false,
-    ]);
+      ],
+    );
 
     $builder->addEventSubscriber($this->access_field_subscriber);
 

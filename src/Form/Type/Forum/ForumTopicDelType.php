@@ -34,8 +34,11 @@ class ForumTopicDelType extends AbstractType
       ])
       ->add('submit', SubmitType::class);
 
-    $this->access_field_subscriber->add('access',
-      ['admin', 'user', 'guest'], ['disabled' => true]);
+    $this->access_field_subscriber->add(
+      type_options: [
+        'disabled' => true,
+      ],
+    );
     $builder->addEventSubscriber($this->access_field_subscriber);
   }
 

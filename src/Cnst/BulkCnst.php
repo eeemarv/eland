@@ -77,6 +77,15 @@ class BulkCnst
   </span>
   TPL;
 
+  const TPL_CHECKBOX_ITEM_2 = <<<'TPL'
+  <span>
+  <label for="sel_%id%">
+  <input type="checkbox" name="sel[%id%]" id="sel_%id%" value="%id%"%attr%>&nbsp;&nbsp;
+  %label%
+  </label>
+  </span>
+  TPL;
+
   const TPL_INLINE_NUMBER_INPUT = <<<'TPL'
   <input type="number" name="%name%"
   id="%name%" class="sm-size"

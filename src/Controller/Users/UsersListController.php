@@ -9,12 +9,31 @@ use App\Render\LinkRender;
 use App\Cnst\StatusCnst;
 use App\Cnst\RoleCnst;
 use App\Cnst\BulkCnst;
+use App\Command\Users\UsersBulkAdminCommentsCommand;
+use App\Command\Users\UsersBulkCommentsCommand;
+use App\Command\Users\UsersBulkEmailCommand;
+use App\Command\Users\UsersBulkFullNameAccessCommand;
+use App\Command\Users\UsersBulkMaxLimitCommand;
+use App\Command\Users\UsersBulkMinLimitCommand;
+use App\Command\Users\UsersBulkPeriodicOverviewEnCommand;
+use App\Command\Users\UsersBulkRoleCommand;
+use App\Command\Users\UsersBulkStatusCommand;
 use App\Email\UserBulk\Copy\EmailUserBulkCopyMessage;
 use App\Email\UserBulk\Message\EmailUserBulkMessageMessage;
 use App\Form\Type\Filter\QTextSearchFilterType;
+use App\Form\Type\Users\UsersBulkAdminCommentsType;
+use App\Form\Type\Users\UsersBulkCommentsType;
+use App\Form\Type\Users\UsersBulkEmailType;
+use App\Form\Type\Users\UsersBulkFullNameAccessType;
+use App\Form\Type\Users\UsersBulkMaxLimitType;
+use App\Form\Type\Users\UsersBulkMinLimitType;
+use App\Form\Type\Users\UsersBulkPeriodicOverviewEnType;
+use App\Form\Type\Users\UsersBulkRoleType;
+use App\Form\Type\Users\UsersBulkStatusType;
 use App\Render\AccountRender;
 use App\Render\SelectRender;
 use App\Repository\AccountRepository;
+use App\Repository\UserRepository;
 use App\Service\CacheService;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
@@ -64,6 +83,7 @@ class UsersListController extends AbstractController
     string $status,
     Db $db,
     AccountRepository $account_repository,
+    UserRepository $user_repository,
     LoggerInterface $logger,
     AccountRender $account_render,
     CacheService $cache_service,
@@ -137,9 +157,7 @@ class UsersListController extends AbstractController
     $show_columns = $request->query->all('sh');
 
     $selected_users = $request->request->all('sel');
-    $bulk_mail_subject = $request->request->get('bulk_mail_subject', '');
-    $bulk_mail_content = $request->request->get('bulk_mail_content', '');
-    $bulk_mail_cc = $request->request->has('bulk_mail_cc');
+
     $bulk_field = $request->request->all('bulk_field');
     $bulk_verify = $request->request->all('bulk_verify');
     $bulk_submit = $request->request->all('bulk_submit');
@@ -177,366 +195,585 @@ class UsersListController extends AbstractController
      * Begin bulk POST
      */
 
-    if ($pp->is_admin()
-      && $request->isMethod('POST')
-      && count($bulk_submit) === 1)
+    $bulk_email_form = null;
+    $bulk_full_name_access_form = null;
+    $bulk_role_form = null;
+    $bulk_status_form = null;
+    $bulk_comments_form = null;
+    $bulk_admin_comments_form = null;
+    $bulk_min_limit_form = null;
+    $bulk_max_limit_form = null;
+    $bulk_periodic_overview_en_form = null;
+
+    if ($pp->is_admin())
     {
-      if (count($bulk_field) > 1)
-      {
-        throw new BadRequestHttpException('Unvalid form. Request for more than one field.');
-      }
+      $bulk_email_command = new UsersBulkEmailCommand();
+      $bulk_email_form = $this->createForm(
+        type: UsersBulkEmailType::class,
+        data: $bulk_email_command,
+      );
+      $bulk_email_form->handleRequest($request);
+    }
 
-      if (count($bulk_verify) > 1)
+    if (isset($bulk_email_form)
+      && $bulk_email_form->isSubmitted()
+      && $bulk_email_form->isValid()
+      && $config_service->get_bool('mail.enabled', $pp->schema())
+      && !$su->is_master())
+    {
+      $bulk_email_command = $bulk_email_form->getData();
+      $selected = $bulk_email_command->selected;
+      $subject = $bulk_email_command->subject;
+      $content = $bulk_email_command->content;
+      $copy = $bulk_email_command->copy;
+      $select_ary = explode(',', $selected);
+      $s_user_ids = [];
+      foreach ($select_ary as $sel_id)
       {
-        throw new BadRequestHttpException('Unvalide form. More than one confirmation checkbox.');
+        $s_user_ids[] = (int) trim($sel_id);
       }
+      $user_ids_sent = [];
+      $user_ids_not_sent = [];
 
-      if ($error_token = $form_token_service->get_error())
-      {
-        $errors[] = $error_token;
-      }
+      $m_users = $user_repository->get_users_with_email_addresses(
+        user_ids: $s_user_ids,
+        schema: $pp->schema_o(),
+      );
 
-      if (count($bulk_verify) !== 1)
-      {
-        $errors[] = 'Het controle nazichts-vakje is niet aangevinkt.';
-      }
+      $flash_sent_ary = [];
+      $flash_not_sent_ary = [];
 
-      $bulk_submit_action = array_key_first($bulk_submit);
-      $bulk_verify_action = array_key_first($bulk_verify);
-      $bulk_field_action = array_key_first($bulk_field);
-
-      if (isset($bulk_verify_action)
-        && !($bulk_verify_action === 'mail' && $bulk_submit_action === 'mail_test')
-        && $bulk_verify_action !== $bulk_submit_action)
+      foreach ($m_users as $u)
       {
-        throw new BadRequestHttpException('Ongeldig formulier. Actie nazichtvakje klopt niet.');
-      }
-
-      if (isset($bulk_field_action)
-        && $bulk_field_action !== $bulk_submit_action)
-      {
-        throw new BadRequestHttpException('Ongeldig formulier. Actie waardeveld klopt niet.');
-      }
-
-      if (!in_array($bulk_submit_action, ['periodic_overview_en', 'mail', 'mail_test'])
-          && !isset($bulk_field_action))
-      {
-        throw new BadRequestHttpException('Ongeldig formulier. Waarde veld ontbreekt.');
-      }
-
-      if (in_array($bulk_submit_action, ['periodic_overview_en', 'mail', 'mail_test']))
-      {
-        $bulk_field_value = isset($bulk_field[$bulk_submit_action]);
-      }
-      else
-      {
-        $bulk_field_value = $bulk_field[$bulk_field_action];
-      }
-
-      if (in_array($bulk_submit_action, ['mail', 'mail_test']))
-      {
-        if (!$config_service->get_bool('mail.enabled', $pp->schema()))
+        $str = $account_render->link($u['id'], $pp->ary());
+        if (count($u['email_addresses']))
         {
-          $errors[] = 'De E-mail functies zijn niet ingeschakeld. Zie instellingen.';
-        }
-
-        if ($su->is_master())
-        {
-          $errors[] = 'Het master account kan geen E-mail berichten verzenden.';
-        }
-
-        if (!$bulk_mail_subject)
-        {
-          $errors[] = 'Vul een onderwerp in voor je E-mail.';
-        }
-
-        if (!$bulk_mail_content)
-        {
-          $errors[] = 'Het E-mail bericht is leeg.';
-        }
-      }
-      else if (str_ends_with($bulk_submit_action, '_access'))
-      {
-        if (!$bulk_field_value)
-        {
-          $errors[] = 'Vul een zichtbaarheid in.';
-        }
-      }
-
-      if (!count($selected_users) && $bulk_submit_action !== 'mail_test')
-      {
-        $errors[] = 'Selecteer ten minste één gebruiker voor deze actie.';
-      }
-
-      if (count($errors))
-      {
-        foreach ($errors as $error)
-        {
-          $this->addFlash('error', $error);
-        }
-      }
-      else
-      {
-        $user_ids = array_keys($selected_users);
-
-        $users_log = '';
-
-        $res = $db->executeQuery('select id
-          from ' . $pp->schema() . '.users
-          where id in (?)',
-          [$user_ids], [ArrayParameterType::INTEGER]);
-
-        while ($row = $res->fetchAssociative())
-        {
-          $users_log .= ', ';
-          $users_log .= $account_render->str_id($row['id'], $pp->schema());
-        }
-
-        $users_log = ltrim($users_log, ', ');
-      }
-
-      $redirect = false;
-
-      $user_tab_data = $user_tabs[$bulk_submit_action] ?? [];
-
-      if (!count($errors)
-        && $bulk_submit_action === 'periodic_overview_en')
-      {
-        $db->executeStatement('update ' . $pp->schema() . '.users
-          set periodic_overview_en = ?
-          where id in (?)',
-          [$bulk_field_value, $user_ids],
-          [\PDO::PARAM_BOOL, ArrayParameterType::INTEGER]);
-
-        foreach ($user_ids as $user_id)
-        {
-          $user_cache_service->clear($user_id, $pp->schema());
-        }
-
-        $log_value = $bulk_field_value ? 'on' : 'off';
-
-        $logger->info('bulk: Set periodic mail to ' .
-          $log_value . ' for users ' .
-          $users_log,
-          ['schema' => $pp->schema()]);
-
-        $intersystems_service->clear_cache();
-
-        $this->addFlash('success', 'Het veld werd aangepast.');
-
-        $redirect = true;
-      }
-      else if (!count($errors)
-        && $transactions_enabled
-        && $limits_enabled
-        && $user_tab_data
-        && in_array($bulk_submit_action, ['min_limit', 'max_limit']))
-      {
-        $store_value = $bulk_field_value === '' ? null : (int) $bulk_field_value;
-
-        if ($bulk_submit_action === 'min_limit')
-        {
-          foreach($user_ids as $user_id)
-          {
-            $account_repository->update_min_limit(
-              account_id: $user_id,
-              min_limit: $store_value,
-              created_by: $su->id(),
-              schema: $pp->schema_o(),
-            );
-          }
-
-          $alert_msg = 'De minimum limiet werd ';
+          $user_ids_sent[] = $u['id'];
+          $flash_sent_ary[] = $str;
         }
         else
         {
-          foreach($user_ids as $user_id)
-          {
-            $account_repository->update_max_limit(
-              account_id: $user_id,
-              max_limit: $store_value,
-              created_by: $su->id(),
-              schema: $pp->schema_o(),
-            );
-          }
-
-          $alert_msg = 'De maximum limiet werd ';
+          $user_ids_not_sent[] = $u['id'];
+          $flash_not_sent_ary[] = $str;
         }
-
-        $logger->info('bulk: Set ' . $bulk_submit_action .
-          ' to ' . ($store_value ?? 'null') .
-          ' for users ' . $users_log,
-          ['schema' => $pp->schema()]);
-
-        $alert_msg .=  isset($store_value) ? 'aangepast.' : 'gewist.';
-        $this->addFlash('success', $alert_msg);
-
-        $redirect = true;
       }
-      else if (!count($errors)
-        && $user_tab_data)
+
+      if (count($user_ids_sent))
       {
-        $store_value = $bulk_field_value;
+        $m_message = new EmailUserBulkMessageMessage(
+          sender_id: $su->id(),
+          user_ids: $user_ids_sent,
+          content: $content,
+          subject: $subject,
+          schema: $pp->schema_o(),
+        );
+        $bus->dispatch($m_message);
 
-        $field_type = isset($user_tab_data['string']) ? \PDO::PARAM_STR : \PDO::PARAM_INT;
-
-        $db->executeStatement('update ' . $pp->schema() . '.users
-          set ' . $bulk_submit_action . ' = ? where id in (?)',
-          [$store_value, $user_ids],
-          [$field_type, ArrayParameterType::INTEGER]);
-
-        foreach ($user_ids as $user_id)
+        if ($copy)
         {
-          $user_cache_service->clear($user_id, $pp->schema());
-        }
-
-        if ($bulk_field == 'status')
-        {
-          $typeahead_service->clear_cache($pp->schema());
-        }
-
-        $logger->info('bulk: Set ' . $bulk_submit_action .
-          ' to ' . $store_value .
-          ' for users ' . $users_log,
-          ['schema' => $pp->schema()]);
-
-        $intersystems_service->clear_cache();
-
-        $this->addFlash('success', 'Het veld werd aangepast.');
-
-        $redirect = true;
-      }
-      else if (!count($errors)
-        && in_array($bulk_submit_action, ['mail', 'mail_test']))
-      {
-        if ($bulk_submit_action === 'mail_test')
-        {
-          $sel_ary = [$su->id() => true];
-          $user_ids = [$su->id()];
-        }
-        else
-        {
-          $sel_ary = $selected_users;
-        }
-
-        $alert_users_sent_ary = [];
-        $mail_users_sent_ary = [];
-        $sent_to_ary = [];
-
-        $bulk_mail_content = $html_sanitizer->sanitize($bulk_mail_content);
-
-        $res = $db->executeQuery('select u.*, c.value as mail
-          from ' . $pp->schema() . '.users u, ' .
-            $pp->schema() . '.contact c, ' .
-            $pp->schema() . '.type_contact tc
-          where u.id in (?)
-            and u.id = c.user_id
-            and c.id_type_contact = tc.id
-            and tc.abbrev = \'mail\'',
-            [$user_ids], [ArrayParameterType::INTEGER]);
-
-        while ($sel_user = $res->fetchAssociative())
-        {
-          if (!isset($sel_ary[$sel_user['id']]))
-          {
-            // avoid duplicate send when multiple mail addresses for one user.
-            continue;
-          }
-
-          unset($sel_ary[$sel_user['id']]);
-
-          $sent_to_ary[] = (int) $sel_user['id'];
-          $alert_users_sent_ary[] = $account_render->link($sel_user['id'], $pp->ary());
-          $mail_users_sent_ary[] = $account_render->link_url($sel_user['id'], $pp->ary());
-        }
-
-        $msg_users_sent = '';
-
-        if (count($alert_users_sent_ary))
-        {
-          $m_message = new EmailUserBulkMessageMessage(
-            sender_id: $su->id(),
-            user_ids: $sent_to_ary,
-            message: $bulk_mail_content,
-            subject: $bulk_mail_subject,
-            schema: $pp->schema_o(),
-          );
-          $bus->dispatch($m_message);
-
-          $msg_users_sent = 'E-mail verzonden naar ';
-          $msg_users_sent .= count($alert_users_sent_ary);
-          $msg_users_sent .= ' ';
-          $msg_users_sent .= count($alert_users_sent_ary) > 1 ? 'accounts' : 'account';
-          $msg_users_sent .= ':';
-          $alert_users_sent = $msg_users_sent . '<br>';
-          $alert_users_sent .= implode('<br>', $alert_users_sent_ary);
-
-          $this->addFlash('success', $alert_users_sent);
-        }
-        else
-        {
-          $this->addFlash('warning', 'Geen E-mails verzonden.');
-        }
-
-        if (count($sel_ary))
-        {
-          $msg_missing_users = 'Naar volgende gebruikers werd geen
-            E-mail verzonden wegens ontbreken van E-mail adres:';
-
-          $alert_missing_users = $msg_missing_users . '<br>';
-          $mail_missing_users = $msg_missing_users . '<br />';
-
-          foreach ($sel_ary as $warning_user_id => $dummy)
-          {
-            $alert_missing_users .= $account_render->link($warning_user_id, $pp->ary());
-            $alert_missing_users .= '<br>';
-
-            $mail_missing_users .= $account_render->link_url($warning_user_id, $pp->ary());
-            $mail_missing_users .= '<br />';
-          }
-
-          $this->addFlash('warning', $alert_missing_users);
-        }
-
-        if ($bulk_mail_cc)
-        {
-          $mail_users_info = $msg_users_sent . '<br />';
-          $mail_users_info .= implode('<br />', $alert_users_sent_ary);
-          $mail_users_info .= '<br /><br />';
-
-          if (isset($mail_missing_users))
-          {
-            $mail_users_info .= $mail_missing_users;
-            $mail_users_info .= '<br/>';
-          }
-
-          $mail_users_info .= '<hr /><br />';
-
           $m_copy = new EmailUserBulkCopyMessage(
             sender_id: $su->id(),
-            user_ids: $sent_to_ary,
-            omitted_user_ids: array_keys($sel_ary),
-            message: $bulk_mail_content,
-            subject: $bulk_mail_subject,
+            user_ids_sent: $user_ids_sent,
+            user_ids_not_sent: $user_ids_not_sent,
+            content: $content,
+            subject: $subject,
             schema: $pp->schema_o(),
           );
           $bus->dispatch($m_copy);
-
-          $logger->debug('#bulk mail:: ' .
-            $mail_users_info . $bulk_mail_content,
-            ['schema' => $pp->schema()]);
-        }
-
-        if ($bulk_submit_action === 'mail')
-        {
-          $redirect = true;
         }
       }
-
-      if ($redirect)
+      $this->addFlash(
+        type: 'success',
+        message: [
+          'key'   => 'flash.email.sent_to',
+          'params'  => [
+            'count' => count($flash_sent_ary),
+          ],
+      ]);
+      foreach($flash_sent_ary as $msg)
       {
-        return $this->redirectToRoute($vr->get('users'), $pp->ary());
+        $this->addFlash(
+          type: 'success',
+          message: $msg,
+        );
       }
+      if (count($flash_not_sent_ary))
+      {
+        $this->addFlash(
+          type: 'success',
+          message: [
+            'key'   => 'flash.email.not_sent_to',
+            'params'  => [
+              'count' => count($flash_not_sent_ary),
+          ],
+        ]);
+      }
+      foreach($flash_not_sent_ary as $msg)
+      {
+        $this->addFlash(
+          type: 'success',
+          message: $msg,
+        );
+      }
+      return $this->redirectToRoute(
+        route: $vr->get('users'),
+        parameters: $pp->ary(),
+      );
+    }
+
+    if ($full_name_enabled
+      && $pp->is_admin()
+    )
+    {
+      $bulk_full_name_access_command = new UsersBulkFullNameAccessCommand();
+      $bulk_full_name_access_form = $this->createForm(
+        type: UsersBulkFullNameAccessType::class,
+        data: $bulk_full_name_access_command,
+      );
+      $bulk_full_name_access_form->handleRequest($request);
+    }
+
+    if (isset($bulk_full_name_access_form)
+      && $bulk_full_name_access_form->isSubmitted()
+      && $bulk_full_name_access_form->isValid()
+    )
+    {
+      $bulk_full_name_access_command = $bulk_full_name_access_form->getData();
+      $selected = $bulk_full_name_access_command->selected;
+      $access = $bulk_full_name_access_command->access;
+      $select_ary = explode(',', $selected);
+      $s_user_ids = [];
+      foreach ($select_ary as $sel_id)
+      {
+        $s_user_ids[] = (int) trim($sel_id);
+      }
+      $user_repository->set_bulk_full_name_access(
+        full_name_access: $access,
+        user_ids: $s_user_ids,
+        schema: $pp->schema_o(),
+      );
+      foreach ($s_user_ids as $uid)
+      {
+        $user_cache_service->clear(
+          id: $uid,
+          schema: $pp->schema(),
+        );
+      }
+      $this->addFlash(
+        type: 'success',
+        message: [
+          'key' => 'users_list.bulk.full_name_access.flash.success',
+          'params'  => [
+            'count' => count($s_user_ids),
+          ],
+        ],
+      );
+      foreach ($s_user_ids as $uid)
+      {
+        $this->addFlash(
+          type: 'success',
+          message: $account_render->link($uid, $pp->ary()),
+        );
+      }
+      return $this->redirectToRoute(
+        route: $vr->get('users'),
+        parameters: $pp->ary(),
+      );
+    }
+
+    if ($comments_enabled
+      && $pp->is_admin())
+    {
+      $bulk_comments_command = new UsersBulkCommentsCommand();
+      $bulk_comments_form = $this->createForm(
+        type: UsersBulkCommentsType::class,
+        data: $bulk_comments_command,
+      );
+      $bulk_comments_form->handleRequest($request);
+    }
+
+    if ($bulk_comments_form
+      && $bulk_comments_form->isSubmitted()
+      && $bulk_comments_form->isValid())
+    {
+      $bulk_comments_command = $bulk_comments_form->getData();
+      $selected = $bulk_comments_command->selected;
+      $comments = $bulk_comments_command->comments;
+      $select_ary = explode(',', $selected);
+      $s_user_ids = [];
+      foreach ($select_ary as $sel_id)
+      {
+        $s_user_ids[] = (int) trim($sel_id);
+      }
+      $user_repository->set_bulk_comments(
+        comments: $comments,
+        user_ids: $s_user_ids,
+        schema: $pp->schema_o(),
+      );
+      foreach ($s_user_ids as $uid)
+      {
+        $user_cache_service->clear(
+          id: $uid,
+          schema: $pp->schema(),
+        );
+      }
+      $this->addFlash(
+        type: 'success',
+        message: [
+          'key' => 'users_list.bulk.comments.flash.success',
+          'params'  => [
+            'count' => count($s_user_ids),
+          ],
+        ],
+      );
+      foreach ($s_user_ids as $uid)
+      {
+        $this->addFlash(
+          type: 'success',
+          message: $account_render->link($uid, $pp->ary()),
+        );
+      }
+      return $this->redirectToRoute(
+        route: $vr->get('users'),
+        parameters: $pp->ary(),
+      );
+    }
+
+    if ($admin_comments_enabled
+      && $pp->is_admin())
+    {
+      $bulk_admin_comments_command = new UsersBulkAdminCommentsCommand();
+      $bulk_admin_comments_form = $this->createForm(
+        type: UsersBulkAdminCommentsType::class,
+        data: $bulk_admin_comments_command,
+      );
+      $bulk_admin_comments_form->handleRequest($request);
+    }
+
+    if ($bulk_admin_comments_form
+      && $bulk_admin_comments_form->isSubmitted()
+      && $bulk_admin_comments_form->isValid())
+    {
+      $bulk_admin_comments_command = $bulk_admin_comments_form->getData();
+      $selected = $bulk_admin_comments_command->selected;
+      $admin_comments = $bulk_admin_comments_command->admin_comments;
+      $select_ary = explode(',', $selected);
+      $s_user_ids = [];
+      foreach ($select_ary as $sel_id)
+      {
+        $s_user_ids[] = (int) trim($sel_id);
+      }
+      $user_repository->set_bulk_admin_comments(
+        admin_comments: $admin_comments,
+        user_ids: $s_user_ids,
+        schema: $pp->schema_o(),
+      );
+      foreach ($s_user_ids as $uid)
+      {
+        $user_cache_service->clear(
+          id: $uid,
+          schema: $pp->schema(),
+        );
+      }
+      $this->addFlash(
+        type: 'success',
+        message: [
+          'key' => 'users_list.bulk.admin_comments.flash.success',
+          'params'  => [
+            'count' => count($s_user_ids),
+          ],
+        ],
+      );
+      foreach ($s_user_ids as $uid)
+      {
+        $this->addFlash(
+          type: 'success',
+          message: $account_render->link($uid, $pp->ary()),
+        );
+      }
+      return $this->redirectToRoute(
+        route: $vr->get('users'),
+        parameters: $pp->ary(),
+      );
+    }
+
+    if ($pp->is_admin())
+    {
+      $bulk_status_command = new UsersBulkStatusCommand();
+      $bulk_status_form = $this->createForm(
+        type: UsersBulkStatusType::class,
+        data: $bulk_status_command,
+      );
+      $bulk_status_form->handleRequest($request);
+    }
+
+    if ($bulk_status_form
+      && $bulk_status_form->isSubmitted()
+      && $bulk_status_form->isValid())
+    {
+      $bulk_status_command = $bulk_status_form->getData();
+      $selected = $bulk_status_command->selected;
+      $status = $bulk_status_command->status;
+      $select_ary = explode(',', $selected);
+      $s_user_ids = [];
+      foreach ($select_ary as $sel_id)
+      {
+        $s_user_ids[] = (int) trim($sel_id);
+      }
+      $user_repository->set_bulk_status(
+        status: $status,
+        user_ids: $s_user_ids,
+        schema: $pp->schema_o(),
+      );
+      foreach ($s_user_ids as $uid)
+      {
+        $user_cache_service->clear(
+          id: $uid,
+          schema: $pp->schema(),
+        );
+      }
+      $this->addFlash(
+        type: 'success',
+        message: [
+          'key' => 'users_list.bulk.status.flash.success',
+          'params'  => [
+            'count' => count($s_user_ids),
+          ],
+        ],
+      );
+      foreach ($s_user_ids as $uid)
+      {
+        $this->addFlash(
+          type: 'success',
+          message: $account_render->link($uid, $pp->ary(),
+        ));
+      }
+      return $this->redirectToRoute(
+        route: $vr->get('users'),
+        parameters: $pp->ary(),
+      );
+    }
+
+    if ($pp->is_admin())
+    {
+      $bulk_role_command = new UsersBulkRoleCommand();
+      $bulk_role_form = $this->createForm(
+        type: UsersBulkRoleType::class,
+        data: $bulk_role_command,
+      );
+      $bulk_role_form->handleRequest($request);
+    }
+
+    if ($bulk_role_form
+      && $bulk_role_form->isSubmitted()
+      && $bulk_role_form->isValid())
+    {
+      $bulk_role_command = $bulk_role_form->getData();
+      $selected = $bulk_role_command->selected;
+      $role = $bulk_role_command->role;
+      $select_ary = explode(',', $selected);
+      $s_user_ids = [];
+      foreach ($select_ary as $sel_id)
+      {
+        $s_user_ids[] = (int) trim($sel_id);
+      }
+      $user_repository->set_bulk_role(
+        role: $role,
+        user_ids: $s_user_ids,
+        schema: $pp->schema_o(),
+      );
+      foreach ($s_user_ids as $uid)
+      {
+        $user_cache_service->clear(
+          id: $uid,
+          schema: $pp->schema(),
+        );
+      }
+      $this->addFlash(
+        type: 'success',
+        message: [
+          'key' => 'users_list.bulk.role.flash.success',
+          'params'  => [
+            'count' => count($s_user_ids),
+          ],
+        ],
+      );
+      foreach ($s_user_ids as $uid)
+      {
+        $this->addFlash(
+          type: 'success',
+          message: $account_render->link($uid, $pp->ary()),
+        );
+      }
+      return $this->redirectToRoute(
+        route: $vr->get('users'),
+        parameters: $pp->ary(),
+      );
+    }
+
+    if ($pp->is_admin())
+    {
+      $bulk_periodic_overview_en_command = new UsersBulkPeriodicOverviewEnCommand();
+      $bulk_periodic_overview_en_form = $this->createForm(
+        type: UsersBulkPeriodicOverviewEnType::class,
+        data: $bulk_periodic_overview_en_command,
+      );
+      $bulk_periodic_overview_en_form->handleRequest($request);
+    }
+
+    if ($bulk_periodic_overview_en_form
+      && $bulk_periodic_overview_en_form->isSubmitted()
+      && $bulk_periodic_overview_en_form->isValid())
+    {
+      $bulk_periodic_overview_en_command = $bulk_periodic_overview_en_form->getData();
+      $selected = $bulk_periodic_overview_en_command->selected;
+      $periodic_overview_en = $bulk_periodic_overview_en_command->periodic_overview_en;
+      $select_ary = explode(',', $selected);
+      $s_user_ids = [];
+      foreach ($select_ary as $sel_id)
+      {
+        $s_user_ids[] = (int) trim($sel_id);
+      }
+      $user_repository->set_bulk_periodic_overview_en(
+        periodic_overview_en: $periodic_overview_en,
+        user_ids: $s_user_ids,
+        schema: $pp->schema_o(),
+      );
+      foreach ($s_user_ids as $uid)
+      {
+        $user_cache_service->clear(
+          id: $uid,
+          schema: $pp->schema(),
+        );
+      }
+      $this->addFlash(
+        type: 'success',
+        message: [
+          'key' => 'users_list.bulk.periodic_overview_en.flash.success',
+          'params'  => [
+            'count' => count($s_user_ids),
+          ],
+        ],
+      );
+      foreach ($s_user_ids as $uid)
+      {
+        $this->addFlash(
+          type: 'success',
+          message: $account_render->link($uid, $pp->ary()),
+        );
+      }
+      return $this->redirectToRoute(
+        route: $vr->get('users'),
+        parameters: $pp->ary(),
+      );
+    }
+
+    if ($transactions_enabled
+      && $limits_enabled
+      && $pp->is_admin())
+    {
+      $bulk_min_limit_command = new UsersBulkMinLimitCommand();
+      $bulk_min_limit_form = $this->createForm(
+        type: UsersBulkMinLimitType::class,
+        data: $bulk_min_limit_command,
+      );
+      $bulk_min_limit_form->handleRequest($request);
+    }
+
+    if ($bulk_min_limit_form
+      && $bulk_min_limit_form->isSubmitted()
+      && $bulk_min_limit_form->isValid())
+    {
+      $bulk_min_limit_command = $bulk_min_limit_form->getData();
+      $selected = $bulk_min_limit_command->selected;
+      $min_limit = $bulk_min_limit_command->min_limit;
+      $select_ary = explode(',', $selected);
+      $s_user_ids = [];
+      foreach ($select_ary as $sel_id)
+      {
+        $uid = (int) trim($sel_id);
+        $account_repository->update_min_limit(
+          account_id: $uid,
+          min_limit: $min_limit,
+          created_by: $su->id() ?: null,
+          schema: $pp->schema_o(),
+        );
+        $s_user_ids[] = $uid;
+      }
+      $this->addFlash(
+        type: 'success',
+        message: [
+          'key' => 'users_list.bulk.min_limit.flash.success',
+          'params'  => [
+            'count' => count($s_user_ids),
+          ],
+        ],
+      );
+      foreach ($s_user_ids as $uid)
+      {
+        $this->addFlash(
+          type: 'success',
+          message: $account_render->link($uid, $pp->ary()),
+        );
+      }
+      return $this->redirectToRoute(
+        route: $vr->get('users'),
+        parameters: $pp->ary(),
+      );
+    }
+
+    if ($transactions_enabled
+      && $limits_enabled
+      && $pp->is_admin())
+    {
+      $bulk_max_limit_command = new UsersBulkMaxLimitCommand();
+      $bulk_max_limit_form = $this->createForm(
+        type: UsersBulkMaxLimitType::class,
+        data: $bulk_max_limit_command,
+      );
+      $bulk_max_limit_form->handleRequest($request);
+    }
+
+    if ($bulk_max_limit_form
+      && $bulk_max_limit_form->isSubmitted()
+      && $bulk_max_limit_form->isValid())
+    {
+      $bulk_min_limit_command = $bulk_max_limit_form->getData();
+      $selected = $bulk_max_limit_command->selected;
+      $max_limit = $bulk_max_limit_command->max_limit;
+      $select_ary = explode(',', $selected);
+      $s_user_ids = [];
+      foreach ($select_ary as $sel_id)
+      {
+        $uid = (int) trim($sel_id);
+        $account_repository->update_max_limit(
+          account_id: $uid,
+          max_limit: $max_limit,
+          created_by: $su->id() ?: null,
+          schema: $pp->schema_o(),
+        );
+        $s_user_ids[] = $uid;
+      }
+      $this->addFlash(
+        type: 'success',
+        message: [
+          'key' => 'users_list.bulk.max_limit.flash.success',
+          'params'  => [
+            'count' => count($s_user_ids),
+          ],
+        ],
+      );
+      foreach ($s_user_ids as $uid)
+      {
+        $this->addFlash(
+          type: 'success',
+          message: $account_render->link($uid, $pp->ary()),
+        );
+      }
+      return $this->redirectToRoute(
+        route: $vr->get('users'),
+        parameters: $pp->ary(),
+      );
     }
 
     /**
@@ -548,10 +785,10 @@ class UsersListController extends AbstractController
      */
 
     $sql_map = [
-        'where'     => [],
-        'where_or'  => [],
-        'params'    => [],
-        'types'     => [],
+      'where'     => [],
+      'where_or'  => [],
+      'params'    => [],
+      'types'     => [],
     ];
 
     $sql = [];
@@ -564,10 +801,10 @@ class UsersListController extends AbstractController
 
     foreach ($status_def_ary[$status]['sql'] as $st_def_key => $def_sql_ary)
     {
-        foreach ($def_sql_ary as $def_val)
-        {
-            $sql['status'][$st_def_key][] = $def_val;
-        }
+      foreach ($def_sql_ary as $def_val)
+      {
+        $sql['status'][$st_def_key][] = $def_val;
+      }
     }
 
     $params = ['status'	=> $status];
@@ -1654,7 +1891,7 @@ class UsersListController extends AbstractController
 
                 if ($pp->is_admin() && $first)
                 {
-                    $out .= strtr(BulkCnst::TPL_CHECKBOX_ITEM, [
+                    $out .= strtr(BulkCnst::TPL_CHECKBOX_ITEM_2, [
                         '%id%'      => $id,
                         '%attr%'    => isset($selected_users[$id]) ? ' checked' : '',
                         '%label%'   => $td,
@@ -1858,163 +2095,20 @@ class UsersListController extends AbstractController
     $out .= '</table>';
     $out .= '</div></div>';
 
-    if ($pp->is_admin() & isset($show_columns['u']))
-    {
-        $blk = '<h3>Bulk acties met geselecteerde gebruikers</h3>';
-        $blk .= '<div class="panel panel-info">';
-        $blk .= '<div class="panel-heading">';
-
-        $blk .= '<ul class="nav nav-tabs" role="tablist">';
-
-        $blk .= '<li class="active">';
-        $blk .= '<a href="#mail_tab" data-toggle="tab">Mail</a></li>';
-        $blk .= '<li class="dropdown">';
-
-        $blk .= '<a class="dropdown-toggle" data-toggle="dropdown" href="#">Veld aanpassen';
-        $blk .= '<span class="caret"></span></a>';
-        $blk .= '<ul class="dropdown-menu">';
-
-        foreach ($user_tabs as $k => $t)
-        {
-            $blk .= '<li>';
-            $blk .= '<a href="#' . $k . '_tab" data-toggle="tab">';
-            $blk .= $t['lbl'];
-            $blk .= '</a></li>';
-        }
-
-        $blk .= '</ul>';
-        $blk .= '</li>';
-        $blk .= '</ul>';
-
-        $blk .= '<div class="tab-content">';
-
-        $blk .= '<div role="tabpanel" class="tab-pane active" id="mail_tab">';
-        $blk .= '<h3>E-Mail verzenden naar geselecteerde gebruikers</h3>';
-
-        $blk .= '<form method="post">';
-
-        $blk .= '<div class="form-group">';
-        $blk .= '<input type="text" class="form-control" id="bulk_mail_subject" name="bulk_mail_subject" ';
-        $blk .= 'placeholder="Onderwerp" ';
-        $blk .= 'value="';
-        $blk .= $bulk_mail_subject;
-        $blk .= '" required>';
-        $blk .= '</div>';
-
-        $blk .= '<div class="form-group">';
-        $blk .= '<textarea name="bulk_mail_content" ';
-        $blk .= 'class="form-control summernote" ';
-        $blk .= 'id="bulk_mail_content" rows="8" ';
-        $blk .= 'data-template-vars="';
-        $blk .= implode(',', array_keys(BulkCnst::USER_TPL_VARS));
-        $blk .= '" ';
-        $blk .= 'required>';
-        $blk .= $bulk_mail_content;
-        $blk .= '</textarea>';
-        $blk .= '</div>';
-
-        $blk .= strtr(BulkCnst::TPL_CHECKBOX, [
-            '%name%'    => 'bulk_mail_cc',
-            '%label%'   => 'Stuur een kopie met verzendinfo naar mijzelf',
-            '%attr%'    => $bulk_mail_cc ? ' checked' : '',
-        ]);
-
-        $blk .= strtr(BulkCnst::TPL_CHECKBOX, [
-            '%name%'    => 'bulk_verify[mail]',
-            '%label%'   => 'Ik heb mijn bericht nagelezen en nagekeken dat de juiste gebruikers geselecteerd zijn.',
-            '%attr%'    => ' required',
-        ]);
-
-        $blk .= '<input type="submit" value="Zend test E-mail naar mijzelf" ';
-        $blk .= 'name="bulk_submit[mail_test]" class="btn btn-info btn-lg">&nbsp;';
-        $blk .= '<input type="submit" value="Verzend" name="bulk_submit[mail]" ';
-        $blk .= 'class="btn btn-info btn-lg">';
-
-        $blk .= $form_token_service->get_hidden_input();
-        $blk .= '</form>';
-        $blk .= '</div>';
-
-        foreach($user_tabs as $k => $t)
-        {
-            if ((!$transactions_enabled
-                || !$limits_enabled)
-            && in_array($k, ['min_limit', 'max_limit']))
-            {
-                continue;
-            }
-
-            $blk .= '<div role="tabpanel" class="tab-pane" id="';
-            $blk .= $k;
-            $blk .= '_tab"';
-            $blk .= '>';
-            $blk .= '<h3>Veld aanpassen: ' . $t['lbl'] . '</h3>';
-
-            $blk .= '<form method="post">';
-
-            $bulk_field_name = 'bulk_field[' . $k . ']';
-
-            if (isset($t['item_access']))
-            {
-                $blk .= $item_access_service->get_radio_buttons($bulk_field_name);
-            }
-            else
-            {
-                $options = '';
-
-                if (isset($t['options']))
-                {
-                    $tpl = BulkCnst::TPL_SELECT;
-                    $options = $select_render->get_options($t['options'], '');
-                }
-                else if (isset($t['type'])
-                    && $t['type'] === 'checkbox')
-                {
-                    $tpl = BulkCnst::TPL_CHECKBOX;
-                }
-                else
-                {
-                    $tpl = BulkCnst::TPL_INPUT_FA;
-                }
-
-                $blk .= strtr($tpl, [
-                    '%name%'        => $bulk_field_name,
-                    '%label%'       => $t['lbl'],
-                    '%type%'        => $t['type'] ?? '',
-                    '%options%'     => $options,
-                    '%required%'    => isset($t['required']) ? ' required' : '',
-                    '%fa%'          => $t['fa'] ?? '',
-                    '%attr%'        => $t['attr'] ?? '',
-                    '%explain%'     => $t['explain'] ?? '',
-                    '%value%'       => '',
-                ]);
-            }
-
-            $blk .= strtr(BulkCnst::TPL_CHECKBOX, [
-                '%name%'    => 'bulk_verify[' . $k  . ']',
-                '%label%'   => 'Ik heb de ingevulde waarde nagekeken en dat de juiste gebruikers geselecteerd zijn.',
-                '%attr%'    => ' required',
-            ]);
-
-            $blk .= '<input type="submit" value="Veld aanpassen" ';
-            $blk .= 'name="bulk_submit[' . $k . ']" class="btn btn-primary btn-lg">';
-            $blk .= $form_token_service->get_hidden_input();
-            $blk .= '</form>';
-
-            $blk .= '</div>';
-        }
-
-        $blk .= '<div class="clearfix"></div>';
-        $blk .= '</div>';
-        $blk .= '</div>';
-        $blk .= '</div>';
-    }
-
     return $this->render('users/users_list.html.twig', [
       'columns_form_raw'  => $f_col,
       'filter_form'       => $filter_form->createView(),
       'row_count'         => count($users),
       'data_list_raw'     => $out,
-      'bulk_actions_raw'  => $blk ?? null,
+      'bulk_email_form'   => $bulk_email_form?->createView(),
+      'bulk_full_name_access_form' => $bulk_full_name_access_form?->createView(),
+      'bulk_role_form' => $bulk_role_form?->createView(),
+      'bulk_status_form'  => $bulk_status_form?->createView(),
+      'bulk_comments_form'    => $bulk_comments_form?->createView(),
+      'bulk_admin_comments_form' => $bulk_admin_comments_form?->createView(),
+      'bulk_min_limit_form'     => $bulk_min_limit_form?->createView(),
+      'bulk_max_limit_form'     => $bulk_max_limit_form?->createView(),
+      'bulk_periodic_overview_en_form'     => $bulk_periodic_overview_en_form?->createView(),
     ]);
   }
 

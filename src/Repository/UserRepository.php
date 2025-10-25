@@ -7,6 +7,7 @@ use App\DTO\Schema;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App\Service\UserCacheService;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Types\Types;
 use Symfony\Component\Mime\Address;
 
@@ -47,7 +48,44 @@ class UserRepository
     return new AddressAry($ary);
   }
 
-	public function get_account_str(int $id, string $schema):string
+  public function get_users_with_email_addresses(
+    array $user_ids,
+    Schema $schema
+  ):array
+  {
+    $users = [];
+
+    $res = $this->db->executeQuery('select u.*,
+      coalesce(jsonb_agg(c.value) filter(where c.value is not null), \'[]\') as email_addresses
+      from ' . $schema->str() . '.users u
+      left join ' . $schema->str() . '.contact c
+        on c.user_id = u.id
+          and c.id_type_contact = (select t.id
+            from ' . $schema->str() . '.type_contact t
+            where t.abbrev = \'mail\')
+      where u.id in (:user_ids)
+      group by u.id
+      order by u.code asc', [
+        'user_ids' => $user_ids,
+      ], [
+        'user_ids' => ArrayParameterType::INTEGER,
+      ]);
+
+    while (($row = $res->fetchAssociative()))
+    {
+      $users[$row['id']] = [
+        ...$row,
+        'email_addresses' => json_decode($row['email_addresses']),
+      ];
+    }
+
+    return $users;
+  }
+
+	public function get_account_str(
+    int $id,
+    string $schema,
+  ):string
 	{
     $account_str = $this->db->fetchOne('select trim(concat(coalesce(code,\'\'), \' \', coalesce(name, \'\')))
             from ' . $schema . '.users
@@ -268,7 +306,7 @@ class UserRepository
 		$this->db->update($schema . '.users',
 			['password' => $password],
 			['id' => $id],
-			['password' => \PDO::PARAM_STR]
+			['password' => Types::STRING, 'id' => Types::INTEGER]
 		);
 		$this->user_cache_service->clear($id, $schema);
 	}
@@ -337,13 +375,13 @@ class UserRepository
 
 	public function del(int $id, string $schema):bool
 	{
-        $this->db->delete($schema . '.contact',
-            ['user_id' => $id]);
-        $success = $this->db->delete($schema . '.users',
-            ['id' => $id]) ? true : false;
+    $this->db->delete($schema . '.contact',
+      ['user_id' => $id]);
+    $success = $this->db->delete($schema . '.users',
+      ['id' => $id]) ? true : false;
 		if ($success)
 		{
-        	$this->user_cache_service->clear($id, $schema);
+      $this->user_cache_service->clear($id, $schema);
 		}
 
 		return $success;
@@ -356,4 +394,136 @@ class UserRepository
 			where status in (1, 2)
 				and id = ?', [$id], [\PDO::PARAM_INT]) ? true : false;
 	}
+
+  public function set_bulk_full_name_access(
+    string $full_name_access,
+    array $user_ids,
+    Schema $schema,
+  ):void
+  {
+    $this->db->executeStatement('update ' .
+      $schema->str() . '.users
+      set full_name_access = :full_name_access
+      where id in (:user_ids)', [
+        'full_name_access'  => $full_name_access,
+        'user_ids'  => $user_ids,
+      ], [
+        'full_name_access'  => Types::STRING,
+        'user_ids'  => ArrayParameterType::INTEGER,
+      ]);
+  }
+
+  public function set_bulk_comments(
+    string|null $comments,
+    array $user_ids,
+    Schema $schema,
+  ):void
+  {
+    if (isset($comments))
+    {
+      $this->db->executeStatement('update ' .
+        $schema->str() . '.users
+        set comments = :comments
+        where id in (:user_ids)', [
+          'comments'  => $comments,
+          'user_ids'  => $user_ids,
+        ], [
+          'comments'  => Types::STRING,
+          'user_ids'  => ArrayParameterType::INTEGER,
+        ]);
+      return;
+    }
+    $this->db->executeStatement('update ' .
+      $schema->str() . '.users
+      set comments = null
+      where id in (:user_ids)', [
+        'user_ids'  => $user_ids,
+      ], [
+        'user_ids'  => ArrayParameterType::INTEGER,
+      ]);
+  }
+
+  public function set_bulk_admin_comments(
+    string|null $admin_comments,
+    array $user_ids,
+    Schema $schema,
+  ):void
+  {
+    if (isset($admin_comments))
+    {
+      $this->db->executeStatement('update ' .
+        $schema->str() . '.users
+        set admin_comments = :admin_comments
+        where id in (:user_ids)', [
+          'admin_comments'  => $admin_comments,
+          'user_ids'  => $user_ids,
+        ], [
+          'admin_comments'  => Types::STRING,
+          'user_ids'  => ArrayParameterType::INTEGER,
+        ]);
+      return;
+    }
+    $this->db->executeStatement('update ' .
+      $schema->str() . '.users
+      set admin_comments = null
+      where id in (:user_ids)', [
+        'user_ids'  => $user_ids,
+      ], [
+        'user_ids'  => ArrayParameterType::INTEGER,
+      ]);
+  }
+
+  public function set_bulk_role(
+    string $role,
+    array $user_ids,
+    Schema $schema,
+  ):void
+  {
+    $this->db->executeStatement('update ' .
+      $schema->str() . '.users
+      set role = :role
+      where id in (:user_ids)', [
+        'role'  => $role,
+        'user_ids'  => $user_ids,
+      ], [
+        'role'  => Types::STRING,
+        'user_ids'  => ArrayParameterType::INTEGER,
+      ]);
+  }
+
+  public function set_bulk_status(
+    int $status,
+    array $user_ids,
+    Schema $schema,
+  ):void
+  {
+    $this->db->executeStatement('update ' .
+      $schema->str() . '.users
+      set status = :status
+      where id in (:user_ids)', [
+        'status'  => $status,
+        'user_ids'  => $user_ids,
+      ], [
+        'status'  => Types::INTEGER,
+        'user_ids'  => ArrayParameterType::INTEGER,
+      ]);
+  }
+
+  public function set_bulk_periodic_overview_en(
+    bool $periodic_overview_en,
+    array $user_ids,
+    Schema $schema,
+  ):void
+  {
+    $this->db->executeStatement('update ' .
+      $schema->str() . '.users
+      set periodic_overview_en = :periodic_overview_en
+      where id in (:user_ids)', [
+        'periodic_overview_en'  => $periodic_overview_en,
+        'user_ids'  => $user_ids,
+      ], [
+        'periodic_overview_en'  => Types::BOOLEAN,
+        'user_ids'  => ArrayParameterType::INTEGER,
+      ]);
+  }
 }

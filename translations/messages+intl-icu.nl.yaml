@@ -60,6 +60,9 @@ captcha:
 check:
   bulk_copy: >-
     Stuur een kopie met verzendinfo naar mijzelf
+  bulk_verify_email: >-
+    Ik heb mijn bericht nagelezen en nagekeken
+    dat de juiste gebruikers geselecteerd zijn.
   verify: Ik heb alles nagekeken
 
 date_format:
@@ -109,6 +112,26 @@ error_fileupload:
   general: >-
     Fout bij het opladen van de afbeelding.
 
+field:
+  max_limit:
+    label: Maximum Account Limiet
+    help: >-
+      De waarde moet positief of nul zijn.
+      Tip: laat het veld leeg om de maximum
+      limiet te wissen. Bij accounts zonder
+      individuele maximum limiet is de
+      maximum systeemslimiet van toepassing
+      (wanneer ingesteld).
+  min_limit:
+    label: Minimum Account Limiet
+    help: >-
+      De waarde moet negatief of nul zijn.
+      Tip: laat het veld leeg om de minimum
+      limiet te wissen. Bij accounts zonder
+      individuele minimum limiet is de
+      minimum systeemslimiet van toepassing
+      (wanneer ingesteld).
+
 flash:
   email:
     open_confirm_link_message: >-
@@ -135,7 +158,7 @@ flash:
         =1 {Email verzonden naar:}
         other {Emails verzonden naar:}
       }
-    not_send_to: >-
+    not_sent_to: >-
       {count, plural,
         =0 {}
         =1 {Wegens ontbreken van adres,
@@ -184,6 +207,7 @@ label:
   activity: Activiteit
   admin: Admin
   admin_comment: Admin commentaar
+  admin_comments: Admin Commentaar
   admin_functions: Admin functies
   address: Adres
   already_exists: Bestaat reeds
@@ -198,6 +222,7 @@ label:
   code: Code
   columns: Kolommen
   comment: Commentaar
+  comments: Commentaar
   contacts: Contacten
   contact_type: Contact type
   content: Inhoud
@@ -261,6 +286,7 @@ label:
   original_filename: Orginele bestandsnaam
   out: Uit
   periodic_overview: Periodiek overzicht (e-mail)
+  periodic_overview_en: Ontvangst periodieke overzichts email
   parsed_address: Ontleed Adres
   password: Paswoord
   per_unit: Per (uur, stuk...)
@@ -300,6 +326,7 @@ label:
   value: Waarde
   valid: Geldig
   validity: Geldigheid
+  visibility: Zichtbaarheid
   want: Vraag
   wants: Vraag
   website: Website
@@ -1504,6 +1531,145 @@ users_image_del:
 users_image_del_self:
   title: >-
     Profielfoto/-afbeelding verwijderen?
+
+users_list:
+  bulk:
+    title: >-
+      Bulk acties met geselecteerde gebruikers
+    email:
+      title: >-
+        E-Mail Verzenden Naar Geselecteerde Gebruikers
+    field_nav: Veld Aanpassen
+    full_name_access:
+      menu: Zichtbaarheid Volledige Naam
+      title: Zichtbaarheid Volledige Naam Aanpassen
+      warning: >-
+        Let op, de zichtbaarheid van de vollidige
+        naam van de geselecteerde gebruikers
+        wordt overschreven!
+      flash:
+        success: >-
+          {count, plural,
+            =0 {}
+            =1 {Zichtbaarheid volledige naam aangepast
+            van 1 gebruiker}
+            other {Zichtbaarheid volledige naam aangepast
+            van # gebruikers}
+          }
+    role:
+      menu: Rechten
+      title: Rechten Aanpassen
+      warning: >-
+        Let op, de rechten
+        van de geselecteerde gebruikers
+        wordt overschreven!
+      flash:
+        success: >-
+          {count, plural,
+            =0 {}
+            =1 {Rechten aangepast
+            van 1 gebruiker}
+            other {Rechten aangepast
+            van # gebruikers}
+          }
+    status:
+      menu: Status
+      title: Status Aanpassen
+      warning: >-
+        Let op, de status
+        van de geselecteerde gebruikers
+        wordt overschreven!
+      flash:
+        success: >-
+          {count, plural,
+            =0 {}
+            =1 {Status aangepast
+            van 1 gebruiker}
+            other {Status aangepast
+            van # gebruikers}
+          }
+    comments:
+      menu: Commentaar
+      title: Commentaar Aanpassen
+      warning: >-
+        Let op, het commentaar veld
+        van de geselecteerde gebruikers
+        wordt overschreven!
+      flash:
+        success: >-
+          {count, plural,
+            =0 {}
+            =1 {Commentaar aangepast
+            voor 1 gebruiker}
+            other {Commentaar aangepast
+            voor # gebruikers}
+          }
+    admin_comments:
+      menu: Commentaar van de Admin
+      title: Commentaar van de Admin Aanpassen
+      warning: >-
+        Let op, het veld "Commentaar van de Admin"
+        van de geselecteerde gebruikers
+        wordt overschreven!
+      flash:
+        success: >-
+          {count, plural,
+            =0 {}
+            =1 {Commentaar van de admin aangepast
+            voor 1 gebruiker}
+            other {Commentaar van de admin aangepast
+            voor # gebruikers}
+          }
+    min_limit:
+      menu: Minumum Account Limiet
+      title: Minimum Account Limiet Aanpassen
+      warning: >-
+        Let op, de minimum limiet van de accounts
+        van de geselecteerde gebruikers zal overschreven
+        worden!
+      flash:
+        success: >-
+          {count, plural,
+            =0 {}
+            =1 {Minimum limiet aangepast
+            van 1 account}
+            other {Minimum limiet aangepast
+            van # accounts}
+          }
+    max_limit:
+      menu: Maximum Account Limiet
+      title: Maximum Account Limiet Aanpassen
+      warning: >-
+        Let op, de maximum limiet van de accounts
+        van de geselecteerde gebruikers zal overschreven
+        worden!
+      flash:
+        success: >-
+          {count, plural,
+            =0 {}
+            =1 {Maximum limiet aangepast
+            van 1 account}
+            other {Maximum limiet aangepast
+            van # accounts}
+          }
+    periodic_overview_en:
+      menu: Periodieke Overzichts Email (aan/uit)
+      title: >-
+        Periodieke Overzichts Email ontvangst (aan/uit) aanpassen
+      warning: >-
+        Let op, de instelling ontvangst van de
+        periodieke email
+        van de geselecteerde gebruikers
+        wordt overschreven!
+      flash:
+        success: >-
+          {count, plural,
+            =0 {}
+            =1 {Ontvangst periodieke overzichts email
+            aangepast voor 1 gebruiker}
+            other {Ontvangst periodieke overzichts email
+            aangepast voor # gebruikers}
+          }
 
 users_modules:
   title: >-

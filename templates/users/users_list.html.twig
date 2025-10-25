@@ -61,9 +61,9 @@
 {%- endblock footnote -%}
 
 {%- block bulk_actions -%}
-  {%- if bulk_actions_raw -%}
+  {%- if pp_has_role('admin') -%}
     {%- include 'include/bulk_select_btns.html.twig' -%}
-    {{- bulk_actions_raw|raw -}}
+    {%- include 'users/list/users_list_bulk.html.twig' -%}
   {%- endif -%}
 {%- endblock bulk_actions -%}
 

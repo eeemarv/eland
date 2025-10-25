@@ -15,26 +15,26 @@ use Symfony\Component\Security\Http\Authorization\AccessDeniedHandlerInterface;
 
 class AccessDeniedHandler implements AccessDeniedHandlerInterface
 {
-    public function __construct(
-        protected LinkRender $link_render
-    )
+  public function __construct(
+    private readonly LinkRender $link_render
+  )
+  {
+  }
+
+  public function handle(Request $request, AccessDeniedException $accessDeniedException): ?Response
+  {
+    $system = $request->attributes->get('system', '');
+
+    if ($system)
     {
+      $this->link_render->redirect('login', [
+        'system' => $system,
+      ], [
+        'location'  => $request->getRequestUri(),
+      ]);
     }
 
-    public function handle(Request $request, AccessDeniedException $accessDeniedException): ?Response
-    {
-        $system = $request->attributes->get('system', '');
-
-        if ($system)
-        {
-            $this->link_render->redirect('login', [
-                'system' => $system,
-            ], [
-                'location'  => $request->getRequestUri(),
-            ]);
-        }
-
-        $this->link_render->redirect('index', [], []);
-        return new Response('Access Denied', 403);
-    }
+    $this->link_render->redirect('index', [], []);
+    return new Response('Access Denied', 403);
+  }
 }

@@ -354,9 +354,9 @@ transaction_to_intersystem_mail_type_admin:
 
 user_bulk_copy:
   subject: "Kopie: {subject}"
-  to_users: >-
+  users_sent: >-
     Dit bericht werd verzonden naar:
-  omitted_to_users: >-
+  users_not_sent: >-
     Dit bericht kon niet verzonden worden naar:
 
 user_private_message:

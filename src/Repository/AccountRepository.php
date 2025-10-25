@@ -76,7 +76,7 @@ class AccountRepository
 
     while ($row = $res->fetchAssociative())
     {
-        $min_limit_ary[$row['account_id']] = $row['min_limit'];
+      $min_limit_ary[$row['account_id']] = $row['min_limit'];
     }
 
     return $min_limit_ary;
