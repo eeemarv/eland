@@ -33,7 +33,10 @@ class UrlContactValidator extends ConstraintValidator
       throw new UnexpectedTypeException($command, ContactsCommand::class);
     }
 
-    $url_contact_type = $this->contact_repository->get_contact_type_by_abbrev('web', $this->pp->schema());
+    $url_contact_type = $this->contact_repository->get_contact_type_by_abbrev(
+      abbrev: 'web',
+      schema: $this->pp->schema_o(),
+    );
 
     if ($command->contact_type_id !== $url_contact_type['id'])
     {

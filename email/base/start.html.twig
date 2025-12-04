@@ -1,7 +1,7 @@
 {%- trans_default_domain 'mail' -%}
 {%- apply inky_to_html|inline_css(source('@public' ~ asset('styles/email.scss'))) -%}
 
-{%- set email_background = schema is defined ? config_str('mail.style.background', schema) : 'blue' -%}
+{%- set email_background = schema is defined ? config_str('mail.style.background') : 'blue' -%}
 
 <wrapper class="b-{{- email_background -}}-0">
   <container>

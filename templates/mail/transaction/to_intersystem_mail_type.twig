@@ -31,9 +31,9 @@
     <tr>
         <td>
             {{- 'transaction_to_intersystem_mail_type.amount_explain'|trans({
-                'system_name': config_str('system.name', schema),
+                'system_name': config_str('system.name'),
                 'amount': transaction.amount,
-                'currency': config_str('transactions.currency.name', schema),
+                'currency': config_str('transactions.currency.name'),
                 'dec_hours': amount_time.dec_hours,
                 'to_account': transaction.real_to
             }) -}}
@@ -137,9 +137,9 @@
 {% block text_amount_time_explain %}
 
 {{ 'transaction_to_intersystem_mail_type.amount_explain'|trans({
-    'system_name': config_str('system.name', schema),
+    'system_name': config_str('system.name'),
     'amount': transaction.amount,
-    'currency': config_str('transactions.currency.name', schema),
+    'currency': config_str('transactions.currency.name'),
     'dec_hours': amount_time.dec_hours,
     'to_account': transaction.real_to
 })|raw }}

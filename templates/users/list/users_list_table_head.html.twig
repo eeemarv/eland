@@ -1,0 +1,212 @@
+
+{#}
+  'users'             => $users,
+  'cols'              => $cols_command,
+  'balance_ary'       => $balance_ary ?? [],
+  'balance_on_date_ary' => $balance_on_date_ary ?? [],
+  'min_limit_ary'     => $min_limit_ary ?? [],
+  'max_limit_ary'     => $max_limit_ary ?? [],
+  'last_login_ary'    => $last_login_ary ?? [],
+  'contacts_ary'      => $contacts_ary ?? [],
+  'distance_ary'      => $distance_ary ?? [],
+  'ref_geo'           => $ref_geo ?? null,
+  'mollie_ary'        => $mollie_ary ?? [],
+  'messages_ary'      => $messages_ary ?? [],
+  'trans_ary'         => $trans_ary,
+{#}
+
+{%- if pp_has_role('admin') -%}
+<th data-sort-ignore="true">
+  &nbsp;
+</th>
+{%- endif -%}
+
+{%- if cols.code -%}
+<th data-sort-initial="true">
+  {{- 'label.code'|trans -}}
+</th>
+{%- endif -%}
+
+{%- if cols.name -%}
+<th>
+  {{- 'label.name'|trans -}}
+</th>
+{%- endif -%}
+
+{%- if cols.full_name -%}
+<th>
+  {{- 'label.full_name'|trans -}}
+</th>
+{%- endif -%}
+
+{%- if cols.postcode -%}
+<th>
+  {{- 'label.postcode'|trans -}}
+</th>
+{%- endif -%}
+
+{%- if cols.role -%}
+<th>
+  {{- 'label.role'|trans -}}
+</th>
+{%- endif -%}
+
+{%- if cols.balance -%}
+<th data-type="numeric">
+  {{- 'label.balance'|trans -}}
+</th>
+{%- endif -%}
+
+{%- if cols.balance_on_date and cols.balance_date -%}
+<th data-type="numeric">
+  {{- 'label.balance_on_date_var'|trans({
+    'date': cols.balance_date|date_format('day')
+  }) -}}
+</th>
+{%- endif -%}
+
+{%- if cols.min_limit -%}
+<th data-type="numeric">
+  {{- 'label.min'|trans -}}
+</th>
+{%- endif -%}
+
+{%- if cols.max_limit -%}
+<th data-type="numeric">
+  {{- 'label.max'|trans -}}
+</th>
+{%- endif -%}
+
+{%- if cols.comments -%}
+<th>
+  {{- 'label.comments'|trans -}}
+</th>
+{%- endif -%}
+
+{%- if cols.hobbies -%}
+<th>
+  {{- 'label.hobbies'|trans -}}
+</th>
+{%- endif -%}
+
+{%- if cols.birthdate -%}
+<th>
+  {{- 'label.birthdate'|trans -}}
+</th>
+{%- endif -%}
+
+{%- if cols.admin_comments -%}
+<th>
+  {{- 'label.admin_comments'|trans -}}
+</th>
+{%- endif -%}
+
+{%- if cols.periodic_overview -%}
+<th>
+  {{- 'label.periodic_overview_short'|trans -}}
+</th>
+{%- endif -%}
+
+{%- if cols.created_at -%}
+<th>
+  {{- 'label.created'|trans -}}
+</th>
+{%- endif -%}
+
+{%- if cols.last_edit_at -%}
+<th>
+  {{- 'label.modified'|trans -}}
+</th>
+{%- endif -%}
+
+{%- if cols.activated_at -%}
+<th>
+  {{- 'label.activated'|trans -}}
+</th>
+{%- endif -%}
+
+{%- if cols.last_login_at -%}
+<th>
+  {{- 'label.last_login'|trans -}}
+</th>
+{%- endif -%}
+
+{%- for abbrev, b in cols.contacts -%}
+{%- if b -%}
+<th>
+  {{- abbrev -}}
+</th>
+{%- endif -%}
+{%- endfor -%}
+
+{%- if cols.distance -%}
+<th data-type="numeric">
+  {{- 'label.distance'|trans -}}
+</th>
+{%- endif -%}
+
+{%- if cols.mollie -%}
+<th>
+  {{- 'users_list.cols.mollie.label'|trans -}}
+</th>
+{%- endif -%}
+
+{%- if cols.wants -%}
+<th data-type="numeric">
+  {{- 'label.wants'|trans -}}
+</th>
+{%- endif -%}
+
+{%- if cols.offers -%}
+<th data-type="numeric">
+  {{- 'label.offers'|trans -}}
+</th>
+{%- endif -%}
+
+{%- if cols.offers_and_wants -%}
+<th data-type="numeric">
+  {{- 'label.offers_and_wants'|trans -}}
+</th>
+{%- endif -%}
+
+{%- if cols.transactions_in -%}
+<th data-type="numeric">
+  {{- 'users_list.cols.transactions_in.label'|trans -}}
+</th>
+{%- endif -%}
+
+{%- if cols.transactions_out -%}
+<th data-type="numeric">
+  {{- 'users_list.cols.transactions_out.label'|trans -}}
+</th>
+{%- endif -%}
+
+{%- if cols.transactions_total -%}
+<th data-type="numeric">
+  {{- 'users_list.cols.transactions_total.label'|trans -}}
+</th>
+{%- endif -%}
+
+{%- if cols.amount_in -%}
+<th data-type="numeric">
+  {{- 'users_list.cols.amount_in.label'|trans({
+    'currency': config_str('transactions.currency.name')
+  }) -}}
+</th>
+{%- endif -%}
+
+{%- if cols.amount_out -%}
+<th data-type="numeric">
+  {{- 'users_list.cols.amount_out.label'|trans({
+    'currency': config_str('transactions.currency.name')
+  }) -}}
+</th>
+{%- endif -%}
+
+{%- if cols.amount_total -%}
+<th data-type="numeric">
+  {{- 'users_list.cols.amount_total.label'|trans({
+    'currency': config_str('transactions.currency.name')
+  }) -}}
+</th>
+{%- endif -%}

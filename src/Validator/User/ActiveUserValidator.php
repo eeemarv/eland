@@ -39,7 +39,10 @@ class ActiveUserValidator extends ConstraintValidator
       throw new UnexpectedTypeException($user_id, 'number');
     }
 
-    $is_active = $this->user_repository->is_active((int) $user_id, $this->pp->schema());
+    $is_active = $this->user_repository->is_active(
+      id: (int) $user_id,
+      schema: $this->pp->schema_o(),
+    );
 
     if (!$is_active)
     {

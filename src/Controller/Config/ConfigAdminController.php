@@ -15,43 +15,43 @@ use Symfony\Component\Routing\Annotation\Route;
 #[AsController]
 class ConfigAdminController extends AbstractController
 {
-    #[Route(
-        '/{system}/{role_short}/config/admin',
-        name: 'config_admin',
-        methods: ['GET', 'POST'],
-        requirements: [
-            'system'        => '%assert.system%',
-            'role_short'    => '%assert.role_short.admin%',
-        ],
-        defaults: [
-            'module'        => 'config',
-        ],
-    )]
+  #[Route(
+    '/{system}/{role_short}/config/admin',
+    name: 'config_admin',
+    methods: ['GET', 'POST'],
+    requirements: [
+      'system'        => '%assert.system%',
+      'role_short'    => '%assert.role_short.admin%',
+    ],
+    defaults: [
+      'module'        => 'config',
+    ],
+  )]
 
-    public function __invoke(
-        Request $request,
-        ConfigService $config_service,
-        PageParamsService $pp
-    ):Response
+  public function __invoke(
+    Request $request,
+    ConfigService $config_service,
+    PageParamsService $pp,
+  ):Response
+  {
+    $command = new ConfigAdminCommand();
+    $config_service->load_command($command, $pp->schema());
+
+    $form = $this->createForm(ConfigAdminType::class, $command);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted()
+      && $form->isValid())
     {
-        $command = new ConfigAdminCommand();
-        $config_service->load_command($command, $pp->schema());
+      $command = $form->getData();
+      $config_service->store_command($command, $pp->schema());
 
-        $form = $this->createForm(ConfigAdminType::class, $command);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted()
-            && $form->isValid())
-        {
-            $command = $form->getData();
-            $config_service->store_command($command, $pp->schema());
-
-            $this->addFlash('success', 'Admin instellingen aangepast.');
-            return $this->redirectToRoute('config_admin', $pp->ary());
-        }
-
-        return $this->render('config/config_admin.html.twig', [
-            'form'          => $form->createView(),
-        ]);
+      $this->addFlash('success', 'Admin instellingen aangepast.');
+      return $this->redirectToRoute('config_admin', $pp->ary());
     }
+
+    return $this->render('config/config_admin.html.twig', [
+      'form'          => $form->createView(),
+    ]);
+  }
 }

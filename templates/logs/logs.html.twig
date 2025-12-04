@@ -2,41 +2,42 @@
 
 {%- set active_menu = 'logs' -%}
 {%- set csv_en = true -%}
+{%- set admin_heading = true -%}
 
 {%- block heading_fa -%}
-    history
+  history
 {%- endblock heading_fa -%}
 
 {%- block heading_title -%}
-    {{- 'logs.title'|trans -}}
+  {{- 'logs.title'|trans -}}
 {%- endblock heading_title -%}
 
 {%- block heading_append -%}
-    {%- include 'include/filter/heading_filter.html.twig' -%}
+  {%- include 'include/filter/heading_filter.html.twig' -%}
 {%- endblock heading_append -%}
 
 {%- block filter_form_a -%}
-    {%- include 'logs/include/logs_filter_form.html.twig' -%}
+  {%- include 'logs/include/logs_filter_form.html.twig' -%}
 {%- endblock filter_form_a -%}
 
 {%- block pagination -%}
-    {%- include 'include/pagination/pagination.html.twig' -%}
+  {%- include 'include/pagination/pagination.html.twig' -%}
 {%- endblock pagination -%}
 
 {%- block content -%}{%- endblock -%}
 
 {%- block data -%}
-    {%- if row_count -%}
-        {{- data_list_raw|raw -}}
-    {%- else -%}
-        {%- include 'include/no_results.html.twig' -%}
-    {%- endif -%}
+  {%- if row_count -%}
+    {{- data_list_raw|raw -}}
+  {%- else -%}
+    {%- include 'include/no_results.html.twig' -%}
+  {%- endif -%}
 {%- endblock data -%}
 
 {%- block css -%}
-    {{- parent() -}}
+  {{- parent() -}}
 {%- endblock css -%}
 
 {%- block js -%}
-    {{- parent() -}}
+  {{- parent() -}}
 {%- endblock js -%}

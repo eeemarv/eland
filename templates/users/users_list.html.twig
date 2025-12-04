@@ -29,7 +29,12 @@
   {%- endif -%}
 {%- endblock btn_top_bulk -%}
 
+{%- block heading_append -%}
+  {%- include 'include/btn/btn_cols.html.twig' -%}
+{%- endblock heading_append -%}
+
 {%- block columns_form -%}
+  {%- include 'users/list/users_list_cols_form.html.twig' -%}
   {{- columns_form_raw|raw -}}
 {%- endblock columns_form -%}
 
@@ -37,11 +42,23 @@
   {%- include 'form/q_filter.html.twig' -%}
 {%- endblock filter_form_a -%}
 
+{%- block pane_select -%}
+
+{%- endblock pane_select -%}
+
 {%- block content -%}{%- endblock -%}
 
 {%- block data -%}
   {%- if row_count -%}
     {{- data_list_raw|raw -}}
+  {%- else -%}
+    {%- include 'include/no_results.html.twig' -%}
+  {%- endif -%}
+
+  {%- if row_count -%}
+
+    {%- include 'users/list/users_list_table.html.twig' -%}
+
   {%- else -%}
     {%- include 'include/no_results.html.twig' -%}
   {%- endif -%}

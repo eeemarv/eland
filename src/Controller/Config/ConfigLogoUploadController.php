@@ -16,46 +16,46 @@ use Symfony\Component\Routing\Annotation\Route;
 #[AsController]
 class ConfigLogoUploadController extends AbstractController
 {
-    #[Route(
-        '/{system}/{role_short}/logo/upload',
-        name: 'config_logo_upload',
-        methods: ['POST'],
-        requirements: [
-            'system'        => '%assert.system%',
-            'role_short'    => '%assert.role_short.admin%',
-        ],
-        defaults: [
-            'module'        => 'config',
-        ],
-    )]
+  #[Route(
+    '/{system}/{role_short}/logo/upload',
+    name: 'config_logo_upload',
+    methods: ['POST'],
+    requirements: [
+      'system'        => '%assert.system%',
+      'role_short'    => '%assert.role_short.admin%',
+    ],
+    defaults: [
+      'module'        => 'config',
+    ],
+  )]
 
-    public function __invoke(
-        Request $request,
-        LoggerInterface $logger,
-        ConfigService $config_service,
-        PageParamsService $pp,
-        ImageUploadService $image_upload_service
-    ):Response
+  public function __invoke(
+    Request $request,
+    LoggerInterface $logger,
+    ConfigService $config_service,
+    PageParamsService $pp,
+    ImageUploadService $image_upload_service,
+  ):Response
+  {
+    $uploaded_file = $request->files->get('image');
+
+    if (!$uploaded_file)
     {
-        $uploaded_file = $request->files->get('image');
-
-        if (!$uploaded_file)
-        {
-            throw new BadRequestHttpException('Image file missing.');
-        }
-
-        $res = $image_upload_service->upload($uploaded_file,
-            'l', 0, 400, 100, false, $pp->schema());
-
-        if (isset($res['filename']))
-        {
-            $config_service->set_str('system.logo', $res['filename'], $pp->schema());
-
-            $logger->info('Logo ' . $res['filename'] .
-                ' uploaded.',
-                ['schema' => $pp->schema()]);
-        }
-
-        return $this->json($res);
+      throw new BadRequestHttpException('Image file missing.');
     }
+
+    $res = $image_upload_service->upload($uploaded_file,
+      'l', 0, 400, 100, false, $pp->schema());
+
+    if (isset($res['filename']))
+    {
+      $config_service->set_str('system.logo', $res['filename'], $pp->schema());
+
+      $logger->info('Logo ' . $res['filename'] .
+        ' uploaded.',
+        ['schema' => $pp->schema()]);
+    }
+
+    return $this->json($res);
+  }
 }

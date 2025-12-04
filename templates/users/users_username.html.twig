@@ -1,16 +1,18 @@
 {%- extends 'users/base/users_form.html.twig' -%}
 
+{%- set admin_heading = true -%}
+
 {%- block heading_fa -%}
-    user
+  user
 {%- endblock heading_fa -%}
 
 {%- block heading_title -%}
-    {{- 'users_username.title'|trans -}}
+  {{- 'users_username.title'|trans -}}
 {%- endblock heading_title -%}
 
 {%- block form_a -%}
-    {{- form_row(form.self_edit, {
-        'label': 'users_username.self_edit.label',
-        'required': false
-    }) -}}
+  {{- form_row(form.self_edit, {
+    'label': 'users_username.self_edit.label',
+    'required': false
+  }) -}}
 {%- endblock form_a -%}

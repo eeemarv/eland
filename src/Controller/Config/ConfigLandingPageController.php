@@ -15,43 +15,43 @@ use Symfony\Component\Routing\Annotation\Route;
 #[AsController]
 class ConfigLandingPageController extends AbstractController
 {
-    #[Route(
-        '/{system}/{role_short}/config/landing-page',
-        name: 'config_landing_page',
-        methods: ['GET', 'POST'],
-        requirements: [
-            'system'        => '%assert.system%',
-            'role_short'    => '%assert.role_short.admin%',
-        ],
-        defaults: [
-            'module'        => 'config',
-        ],
-    )]
+  #[Route(
+    '/{system}/{role_short}/config/landing-page',
+    name: 'config_landing_page',
+    methods: ['GET', 'POST'],
+    requirements: [
+      'system'        => '%assert.system%',
+      'role_short'    => '%assert.role_short.admin%',
+    ],
+    defaults: [
+      'module'        => 'config',
+    ],
+  )]
 
-    public function __invoke(
-        Request $request,
-        ConfigService $config_service,
-        PageParamsService $pp
-    ):Response
+  public function __invoke(
+    Request $request,
+    ConfigService $config_service,
+    PageParamsService $pp,
+  ):Response
+  {
+    $command = new ConfigLandingPageCommand();
+    $config_service->load_command($command, $pp->schema());
+
+    $form = $this->createForm(ConfigLandingPageType::class, $command);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted()
+      && $form->isValid())
     {
-        $command = new ConfigLandingPageCommand();
-        $config_service->load_command($command, $pp->schema());
+      $command = $form->getData();
+      $config_service->store_command($command, $pp->schema());
 
-        $form = $this->createForm(ConfigLandingPageType::class, $command);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted()
-            && $form->isValid())
-        {
-            $command = $form->getData();
-            $config_service->store_command($command, $pp->schema());
-
-            $this->addFlash('success', 'Landingspagina aangepast.');
-            return $this->redirectToRoute('config_landing_page', $pp->ary());
-        }
-
-        return $this->render('config/config_landing_page.html.twig', [
-            'form'  => $form->createView(),
-        ]);
+      $this->addFlash('success', 'Landingspagina aangepast.');
+      return $this->redirectToRoute('config_landing_page', $pp->ary());
     }
+
+    return $this->render('config/config_landing_page.html.twig', [
+      'form'  => $form->createView(),
+    ]);
+  }
 }

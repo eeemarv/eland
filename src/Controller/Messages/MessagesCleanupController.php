@@ -16,53 +16,53 @@ use Symfony\Component\Routing\Annotation\Route;
 #[AsController]
 class MessagesCleanupController extends AbstractController
 {
-    #[Route(
-        '/{system}/{role_short}/messages/cleanup',
-        name: 'messages_cleanup',
-        methods: ['GET', 'POST'],
-        requirements: [
-            'system'        => '%assert.system%',
-            'role_short'    => '%assert.role_short.admin%',
-        ],
-        defaults: [
-            'module'        => 'messages',
-        ],
-    )]
+  #[Route(
+    '/{system}/{role_short}/messages/cleanup',
+    name: 'messages_cleanup',
+    methods: ['GET', 'POST'],
+    requirements: [
+      'system'        => '%assert.system%',
+      'role_short'    => '%assert.role_short.admin%',
+    ],
+    defaults: [
+      'module'        => 'messages',
+    ],
+  )]
 
-    public function __invoke(
-        Request $request,
-        ConfigService $config_service,
-        PageParamsService $pp
-    ):Response
+  public function __invoke(
+    Request $request,
+    ConfigService $config_service,
+    PageParamsService $pp,
+  ):Response
+  {
+    if (!$config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema()))
     {
-        if (!$config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema()))
-        {
-            throw new NotFoundHttpException('Messages cleanup submodule not enabled.');
-        }
-
-        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
-        {
-            throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
-        }
-
-        $command = new MessagesCleanupCommand();
-        $config_service->load_command($command, $pp->schema());
-
-        $form = $this->createForm(MessagesCleanupType::class, $command);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted()
-            && $form->isValid())
-        {
-            $command = $form->getData();
-            $config_service->store_command($command, $pp->schema());
-
-            $this->addFlash('success', 'Geldigheid en opruiming instellingen van vraag en aanbod aangepast');
-            return $this->redirectToRoute('messages_cleanup', $pp->ary());
-        }
-
-        return $this->render('messages/messages_cleanup.html.twig', [
-            'form'      => $form->createView(),
-        ]);
+      throw new NotFoundHttpException('Messages cleanup submodule not enabled.');
     }
+
+    if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+    {
+      throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
+    }
+
+    $command = new MessagesCleanupCommand();
+    $config_service->load_command($command, $pp->schema());
+
+    $form = $this->createForm(MessagesCleanupType::class, $command);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted()
+      && $form->isValid())
+    {
+      $command = $form->getData();
+      $config_service->store_command($command, $pp->schema());
+
+      $this->addFlash('success', 'Geldigheid en opruiming instellingen van vraag en aanbod aangepast');
+      return $this->redirectToRoute('messages_cleanup', $pp->ary());
+    }
+
+    return $this->render('messages/messages_cleanup.html.twig', [
+      'form'      => $form->createView(),
+    ]);
+  }
 }

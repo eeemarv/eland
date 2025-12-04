@@ -22,25 +22,25 @@ class LogsFilterType extends AbstractType
   ):void
   {
   $builder->add('q', TextType::class, [
-          'required' => false,
-      ]);
+      'required' => false,
+    ]);
 
-      $builder->add('user', TypeaheadType::class, [
-        'add'   => [
-          ['accounts', ['status' => 'active']],
-          ['accounts', ['status' => 'inactive']],
-          ['accounts', ['status' => 'ip']],
-          ['accounts', ['status' => 'im']],
-          ['accounts', ['status' => 'extern']],
-        ],
-        'filter'    => 'accounts',
-        'required'  => false,
-      ]);
+    $builder->add('user', TypeaheadType::class, [
+      'add'   => [
+        ['accounts', ['status' => 'active']],
+        ['accounts', ['status' => 'inactive']],
+        ['accounts', ['status' => 'ip']],
+        ['accounts', ['status' => 'im']],
+        ['accounts', ['status' => 'extern']],
+      ],
+      'filter'    => 'accounts',
+      'required'  => false,
+    ]);
 
-      $builder->add('type', TypeaheadType::class, [
-        'add'       => 'log_types',
-        'required'  => false,
-      ]);
+    $builder->add('type', TypeaheadType::class, [
+      'add'       => 'log_types',
+      'required'  => false,
+    ]);
   }
 
   public function getParent():string

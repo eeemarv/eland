@@ -18,6 +18,10 @@
 
 {%- set csv_en = true -%}
 
+{%- if pp_has_role('admin') -%}
+  {%- set admin_heading = true -%}
+{%- endif -%}
+
 {%- block heading_title -%}
   {{- 'contacts.title'|trans -}}
 {%- endblock heading_title -%}

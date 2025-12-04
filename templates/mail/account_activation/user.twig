@@ -3,7 +3,7 @@
 
 {% block subject_line -%}
 {{- 'account_activation.subject'|trans({
-    'system_name': config_str('system.name', schema)
+    'system_name': config_str('system.name')
 }) -}}
 {%- endblock subject_line %}
 

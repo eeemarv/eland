@@ -1,34 +1,36 @@
 {%- extends 'transactions/base/transactions_form.html.twig' -%}
 
+{%- set admin_heading = true -%}
+
 {%- block heading_fa -%}
-    money
+  money
 {%- endblock heading_fa -%}
 
 {%- block heading_title -%}
-    {{- 'transactions_currency.title'|trans -}}
+  {{- 'transactions_currency.title'|trans -}}
 {%- endblock heading_title -%}
 
 {%- block form_a -%}
-    {{- form_row(form.currency, {
-        'label': 'transactions_currency.currency.label',
-        'pre_addon': {
-            'fa': 'money'
-        }
-    }) -}}
+  {{- form_row(form.currency, {
+    'label': 'transactions_currency.currency.label',
+    'pre_addon': {
+      'fa': 'money'
+    }
+  }) -}}
 
-    {{- form_row(form.timebased_en, {
-        'label': 'transactions_currency.timebased_en.label',
-        'required': false
-    }) -}}
+  {{- form_row(form.timebased_en, {
+    'label': 'transactions_currency.timebased_en.label',
+    'required': false
+  }) -}}
 
-    {{- form_row(form.per_hour_ratio, {
-        'label': 'transactions_currency.per_hour_ratio.label',
-        'help': 'transactions_currency.per_hour_ratio.help',
-        'pre_addon': {
-            'fa': 'clock-o'
-        },
-        'attr': {'min': 1},
-        'required': false
-    }) -}}
+  {{- form_row(form.per_hour_ratio, {
+    'label': 'transactions_currency.per_hour_ratio.label',
+    'help': 'transactions_currency.per_hour_ratio.help',
+    'pre_addon': {
+      'fa': 'clock-o'
+    },
+    'attr': {'min': 1},
+    'required': false
+  }) -}}
 
 {%- endblock form_a -%}

@@ -1,0 +1,271 @@
+<div class="panel panel-info collapse" id="cols">
+  <div class="panel-heading">
+    <h2>{{- 'cols.title'|trans -}}</h2>
+
+    {{- form_start(cols_form) -}}
+    {{- form_errors(cols_form) -}}
+    <div class="row">
+      <div class="col-md-4">
+        {%- if cols_form.code is defined -%}
+          {{- form_row(cols_form.code, {
+            'label': 'label.account_code',
+          }) -}}
+        {%- endif -%}
+
+        {%- if cols_form.name is defined -%}
+          {{- form_row(cols_form.name, {
+            'label': 'label.username',
+          }) -}}
+        {%- endif -%}
+
+        {%- if cols_form.full_name is defined -%}
+          {{- form_row(cols_form.full_name, {
+            'label': 'label.full_name',
+          }) -}}
+        {%- endif -%}
+
+        {%- if cols_form.postcode is defined -%}
+          {{- form_row(cols_form.postcode, {
+            'label': 'label.postcode',
+          }) -}}
+        {%- endif -%}
+
+        {%- if cols_form.role is defined -%}
+          {{- form_row(cols_form.role, {
+            'label': 'label.role',
+          }) -}}
+        {%- endif -%}
+
+        {%- if cols_form.balance is defined -%}
+          {{- form_row(cols_form.balance, {
+            'label': 'label.balance',
+          }) -}}
+        {%- endif -%}
+
+        {%- if cols_form.balance_on_date is defined -%}
+          {{- form_row(cols_form.balance_on_date, {
+            'label': 'label.balance_on_date',
+          }) -}}
+        {%- endif -%}
+
+        {%- if cols_form.balance_date is defined -%}
+          {{- form_row(cols_form.balance_date, {
+            'label': 'label.balance_date',
+          }) -}}
+        {%- endif -%}
+
+        {%- if cols_form.min_limit is defined -%}
+          {{- form_row(cols_form.min_limit, {
+            'label': 'field.min_limit.label',
+          }) -}}
+        {%- endif -%}
+
+        {%- if cols_form.max_limit is defined -%}
+          {{- form_row(cols_form.max_limit, {
+            'label': 'field.max_limit.label',
+          }) -}}
+        {%- endif -%}
+
+        {%- if cols_form.comments is defined -%}
+          {{- form_row(cols_form.comments, {
+            'label': 'label.comments',
+          }) -}}
+        {%- endif -%}
+
+        {%- if cols_form.hobbies is defined -%}
+          {{- form_row(cols_form.hobbies, {
+            'label': 'label.hobbies',
+          }) -}}
+        {%- endif -%}
+
+        {%- if cols_form.birthdate is defined -%}
+          {{- form_row(cols_form.birthdate, {
+            'label': 'label.birthdate',
+          }) -}}
+        {%- endif -%}
+
+        {%- if cols_form.admin_comments is defined -%}
+          {{- form_row(cols_form.admin_comments, {
+            'label': 'label.admin_comments',
+          }) -}}
+        {%- endif -%}
+
+        {%- if cols_form.periodic_overview is defined -%}
+          {{- form_row(cols_form.periodic_overview, {
+            'label': 'label.periodic_overview',
+          }) -}}
+        {%- endif -%}
+
+        {%- if cols_form.created_at is defined -%}
+          {{- form_row(cols_form.created_at, {
+            'label': 'label.created_at',
+          }) -}}
+        {%- endif -%}
+
+        {%- if cols_form.last_edit_at is defined -%}
+          {{- form_row(cols_form.last_edit_at, {
+            'label': 'label.last_edit_at',
+          }) -}}
+        {%- endif -%}
+
+        {%- if cols_form.activated_at is defined -%}
+          {{- form_row(cols_form.activated_at, {
+            'label': 'label.activated_at',
+          }) -}}
+        {%- endif -%}
+
+        {%- if cols_form.last_login_at is defined -%}
+          {{- form_row(cols_form.last_login_at, {
+            'label': 'label.last_login_at',
+          }) -}}
+        {%- endif -%}
+      </div>
+      <div class="col-md-4">
+        {%- if cols_form.contacts is defined -%}
+          <h3>
+            {{- 'label.contacts'|trans -}}
+          </h3>
+
+          {%- for cntct in cols_form.contacts.children -%}
+            {{- form_row(cntct) -}}
+          {%- endfor -%}
+
+        {%- endif -%}
+
+        {%- if cols_form.distance is defined -%}
+          <h3>
+            {{- 'users_list.cols.distance.label'|trans -}}
+          </h3>
+          <p>
+            {{- 'users_list.cols.distance.explain'|trans -}}
+          </p>
+          {{- form_row(cols_form.distance, {
+            'label': 'users_list.cols.distance.label',
+          }) -}}
+        {%- endif -%}
+
+        {%- if cols_form.mollie is defined -%}
+          <h3>
+            {{- 'users_list.cols.mollie.title'|trans -}}
+          </h3>
+          <p>
+            {{- 'users_list.cols.mollie.explain'|trans -}}
+          </p>
+          {{- form_row(cols_form.mollie, {
+            'label': 'users_list.cols.mollie.label',
+          }) -}}
+        {%- endif -%}
+      </div>
+      <div class="col-md-4">
+        {%- if cols_form.wants or cols_form.offers is defined -%}
+          <h3>
+            {{- 'label.offers_and_wants'|trans -}}
+          </h3>
+        {%- endif -%}
+
+        {%- if cols_form.wants is defined -%}
+          {{- form_row(cols_form.wants, {
+            'label': 'label.wants',
+          }) -}}
+        {%- endif -%}
+
+        {%- if cols_form.offers is defined -%}
+          {{- form_row(cols_form.offers, {
+            'label': 'label.offers',
+          }) -}}
+        {%- endif -%}
+
+        {%- if cols_form.offers_and_wants is defined -%}
+          {{- form_row(cols_form.offers_and_wants, {
+            'label': 'label.offers_and_wants',
+          }) -}}
+        {%- endif -%}
+
+        {%- if cols_form.transactions_total is defined -%}
+          <h3>
+            {{- 'label.transactions'|trans -}}
+          </h3>
+        {%- endif -%}
+
+        {%- if cols_form.transactions_days is defined -%}
+          {{- form_row(cols_form.transactions_days, {
+            'label': 'label.over_period',
+            'pre_addon': {
+              'text': 'label.days'|trans,
+            },
+          }) -}}
+        {%- endif -%}
+
+        {%- if cols_form.transactions_exclude_code is defined -%}
+          {{- form_row(cols_form.transactions_exclude_code, {
+            'label': 'users_list.cols.transactions_exclude_code.label',
+            'pre_addon': {
+              'fa': 'user',
+            },
+          }) -}}
+        {%- endif -%}
+
+        {%- if cols_form.transactions_in is defined -%}
+          {{- form_row(cols_form.transactions_in, {
+            'label': 'users_list.cols.transactions_in.label',
+          }) -}}
+        {%- endif -%}
+
+        {%- if cols_form.transactions_out is defined -%}
+          {{- form_row(cols_form.transactions_out, {
+            'label': 'users_list.cols.transactions_out.label',
+          }) -}}
+        {%- endif -%}
+
+        {%- if cols_form.transactions_total is defined -%}
+          {{- form_row(cols_form.transactions_total, {
+            'label': 'users_list.cols.transactions_total.label',
+          }) -}}
+        {%- endif -%}
+
+        {%- if cols_form.amount_in is defined -%}
+          {{- form_row(cols_form.amount_in, {
+            'label': 'users_list.cols.amount_in.label',
+            'label_translation_parameters': {
+              'currency': config_str('transactions.currency.name'),
+            },
+          }) -}}
+        {%- endif -%}
+
+        {%- if cols_form.amount_out is defined -%}
+          {{- form_row(cols_form.amount_out, {
+            'label': 'users_list.cols.amount_out.label',
+            'label_translation_parameters': {
+              'currency': config_str('transactions.currency.name'),
+            },
+          }) -}}
+        {%- endif -%}
+
+        {%- if cols_form.amount_total is defined -%}
+          {{- form_row(cols_form.amount_total, {
+            'label': 'users_list.cols.amount_total.label',
+            'label_translation_parameters': {
+              'currency': config_str('transactions.currency.name'),
+            },
+          }) -}}
+        {%- endif -%}
+      </div>
+    </div>
+
+    {{- form_widget(cols_form.submit, {
+      'label': 'cols.submit_btn',
+      'attr': {
+        'class': 'btn btn-lg btn-default me-1',
+      },
+    }) -}}
+
+    {{- form_widget(cols_form.reset, {
+      'label': 'cols.reset_btn',
+      'attr': {
+        'class': 'btn btn-lg btn-default me-1',
+      },
+    }) -}}
+
+    {{- form_end(cols_form) -}}
+  </div>
+</div>

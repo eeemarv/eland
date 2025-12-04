@@ -62,7 +62,9 @@ class ContactsFilterType extends AbstractType
       $ustatus_choices[$label] = $us;
     }
 
-    $contact_types = $this->contact_repository->get_all_contact_types($this->pp->schema());
+    $contact_types = $this->contact_repository->get_all_contact_types(
+      schema: $this->pp->schema_o(),
+    );
 
     $type_choices = [];
     $type_choice_attr = [];

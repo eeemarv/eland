@@ -104,13 +104,23 @@ class ContactsAddController extends AbstractController
       && $form->isValid())
     {
       $command = $form->getData();
-      $created_by = $su->is_master() ? null : $su->id();
-      $contact_repository->insert($command, $created_by, $pp->schema());
-
       $user_id = $command->user_id;
       $value = $command->value;
 
-      $contact_type = $contact_repository->get_contact_type($command->contact_type_id, $pp->schema());
+      $contact_repository->insert(
+        value: $value,
+        comments: $command->comments,
+        contact_type_id: $command->contact_type_id,
+        access: $command->access,
+        user_id: $user_id,
+        created_by: $su->is_master() ? null : $su->id(),
+        schema: $pp->schema_o(),
+      );
+
+      $contact_type = $contact_repository->get_contact_type(
+        id: $command->contact_type_id,
+        schema: $pp->schema_o(),
+      );
 
       if ($contact_type['abbrev'] === 'adr')
       {
@@ -123,7 +133,11 @@ class ContactsAddController extends AbstractController
 
       if ($contact_type['abbrev'] === 'mail')
       {
-        $mail_count = $contact_repository->get_mail_count_except_for_user($value, $user_id, $pp->schema());
+        $mail_count = $contact_repository->get_mail_count_except_for_user(
+          email_address: $value,
+          user_id: $user_id,
+          schema: $pp->schema_o(),
+        );
 
         if ($mail_count && $pp->is_admin())
         {

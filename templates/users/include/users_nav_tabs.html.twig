@@ -1,0 +1,42 @@
+
+<div class="pull-right hidden-xs hidden-sm print-hide">
+  {{- 'label.total'|trans -}}: <span id="total"></span>
+</div>
+
+    if (count($status_def_ary) < 2)
+    {
+      return $out;
+    }
+
+  <ul class="nav nav-tabs" id="nav-tabs">
+
+    $nav_params = $params;
+
+    foreach ($status_def_ary as $k => $tab)
+    {
+      $nav_params['status'] = $k;
+
+      <li{%- if pag_params.status == 'active' %} class="active"{%- endif -%}>
+        <a href="" class="bg-default">
+          {{- 'label.active'|trans -}}
+        </a>
+      </li>
+
+
+      $class_ary = isset($tab['cl']) ? ['class' => 'bg-' . $tab['cl']] : [];
+
+      $out .= $link_render->link(
+        $vr->get('users'),
+        $pp->ary(),
+        $nav_params,
+        $tab['lbl'],
+        $class_ary
+      );
+
+      $out .= '</li>';
+    }
+
+    $out .= '</ul>';
+
+    return $out;
+  }

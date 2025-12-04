@@ -8,7 +8,7 @@
 {% block content_1row -%}
   <p>
     {{- 'support_form_copy.explain'|trans({
-        'system_name': config_str('system.name', schema)
+        'system_name': config_str('system.name')
     }) -}}
   </p>
 {%- endblock content_1row -%}

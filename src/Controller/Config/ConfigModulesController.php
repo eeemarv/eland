@@ -15,43 +15,43 @@ use Symfony\Component\Routing\Annotation\Route;
 #[AsController]
 class ConfigModulesController extends AbstractController
 {
-    #[Route(
-        '/{system}/{role_short}/config/modules',
-        name: 'config_modules',
-        methods: ['GET', 'POST'],
-        requirements: [
-            'system'        => '%assert.system%',
-            'role_short'    => '%assert.role_short.admin%',
-        ],
-        defaults: [
-            'module'        => 'config',
-        ],
-    )]
+  #[Route(
+    '/{system}/{role_short}/config/modules',
+    name: 'config_modules',
+    methods: ['GET', 'POST'],
+    requirements: [
+      'system'        => '%assert.system%',
+      'role_short'    => '%assert.role_short.admin%',
+    ],
+    defaults: [
+      'module'        => 'config',
+    ],
+  )]
 
-    public function __invoke(
-        Request $request,
-        ConfigService $config_service,
-        PageParamsService $pp
-    ):Response
+  public function __invoke(
+    Request $request,
+    ConfigService $config_service,
+    PageParamsService $pp,
+  ):Response
+  {
+    $command = new ConfigModulesCommand();
+    $config_service->load_command($command, $pp->schema());
+
+    $form = $this->createForm(ConfigModulesType::class, $command);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted()
+      && $form->isValid())
     {
-        $command = new ConfigModulesCommand();
-        $config_service->load_command($command, $pp->schema());
+      $command = $form->getData();
+      $config_service->store_command($command, $pp->schema());
 
-        $form = $this->createForm(ConfigModulesType::class, $command);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted()
-            && $form->isValid())
-        {
-            $command = $form->getData();
-            $config_service->store_command($command, $pp->schema());
-
-            $this->addFlash('success', 'Modules aangepast.');
-            return $this->redirectToRoute('config_modules', $pp->ary());
-        }
-
-        return $this->render('config/config_modules.html.twig', [
-            'form'  => $form->createView(),
-        ]);
+      $this->addFlash('success', 'Modules aangepast.');
+      return $this->redirectToRoute('config_modules', $pp->ary());
     }
+
+    return $this->render('config/config_modules.html.twig', [
+      'form'  => $form->createView(),
+    ]);
+  }
 }

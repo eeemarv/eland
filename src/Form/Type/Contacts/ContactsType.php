@@ -59,7 +59,9 @@ class ContactsType extends AbstractType
   {
     $user_id_enabled = $options['user_id_enabled'];
 
-    $contact_types = $this->contact_repository->get_all_contact_types($this->pp->schema());
+    $contact_types = $this->contact_repository->get_all_contact_types(
+      schema: $this->pp->schema_o(),
+    );
 
     $choices = [];
     $choice_attr = [];

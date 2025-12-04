@@ -3,7 +3,7 @@
 
 {%- block subject_render -%}
   {%- if schema is defined -%}
-    {%- set system_mail_tag = config_str('mail.tag', schema) -%}
+    {%- set system_mail_tag = config_str('mail.tag') -%}
     {%- if system_mail_tag is not empty -%}[{{-  system_mail_tag -}}] {% endif -%}
   {%- endif -%}
   {%- block subject -%}{%- endblock -%}

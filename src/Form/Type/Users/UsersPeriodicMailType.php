@@ -13,27 +13,27 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class UsersPeriodicMailType extends AbstractType
 {
-    public function __construct(
-    )
-    {
-    }
+  public function __construct(
+  )
+  {
+  }
 
-    public function buildForm(
-        FormBuilderInterface $builder,
-        array $options
-    ):void
-    {
-        $builder->add('days', IntegerType::class);
-        $builder->add('user_new_default_enabled', CheckboxType::class);
-        $builder->add('block_layout', HiddenType::class);
-        $builder->add('block_select_options', HiddenType::class);
-        $builder->add('submit', SubmitType::class);
-    }
+  public function buildForm(
+    FormBuilderInterface $builder,
+    array $options
+  ):void
+  {
+    $builder->add('days', IntegerType::class);
+    $builder->add('user_new_default_enabled', CheckboxType::class);
+    $builder->add('block_layout', HiddenType::class);
+    $builder->add('block_select_options', HiddenType::class);
+    $builder->add('submit', SubmitType::class);
+  }
 
-    public function configureOptions(OptionsResolver $resolver):void
-    {
-        $resolver->setDefaults([
-            'data_class'    => UsersPeriodicMailCommand::class,
-        ]);
-    }
+  public function configureOptions(OptionsResolver $resolver):void
+  {
+    $resolver->setDefaults([
+      'data_class'    => UsersPeriodicMailCommand::class,
+    ]);
+  }
 }

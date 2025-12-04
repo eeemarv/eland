@@ -121,7 +121,11 @@ class PasswordResetConfirmController extends AbstractController
       $password_hasher = $password_hasher_factory->getPasswordHasher(new User());
       $hashed_password = $password_hasher->hash($command->password);
 
-      $user_repository->set_password($user_id, $hashed_password, $pp->schema());
+      $user_repository->set_password(
+        id: $user_id,
+        password: $hashed_password,
+        schema: $pp->schema_o(),
+      );
 
       $email_sent_repository->set_confirmed(
         confirm_token: $uuid_confirm_token,

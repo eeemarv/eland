@@ -21,95 +21,95 @@ use Symfony\Component\Routing\Annotation\Route;
 #[AsController]
 class ForumEditTopicController extends AbstractController
 {
-    #[Route(
-        '/{system}/{role_short}/forum/{id}/edit-topic',
-        name: 'forum_edit_topic',
-        methods: ['GET', 'POST'],
-        requirements: [
-            'id'            => '%assert.id%',
-            'system'        => '%assert.system%',
-            'role_short'    => '%assert.role_short.user%',
-        ],
-        defaults: [
-            'module'        => 'forum',
-        ],
-    )]
+  #[Route(
+    '/{system}/{role_short}/forum/{id}/edit-topic',
+    name: 'forum_edit_topic',
+    methods: ['GET', 'POST'],
+    requirements: [
+      'id'            => '%assert.id%',
+      'system'        => '%assert.system%',
+      'role_short'    => '%assert.role_short.user%',
+    ],
+    defaults: [
+      'module'        => 'forum',
+    ],
+  )]
 
-    public function __invoke(
-        Request $request,
-        int $id,
-        ForumRepository $forum_repository,
-        AccountRender $account_render,
-        ConfigService $config_service,
-        ItemAccessService $item_access_service,
-        PageParamsService $pp,
-        SessionUserService $su
-    ):Response
+  public function __invoke(
+    Request $request,
+    int $id,
+    ForumRepository $forum_repository,
+    AccountRender $account_render,
+    ConfigService $config_service,
+    ItemAccessService $item_access_service,
+    PageParamsService $pp,
+    SessionUserService $su
+  ):Response
+  {
+    if (!$config_service->get_bool('forum.enabled', $pp->schema()))
     {
-        if (!$config_service->get_bool('forum.enabled', $pp->schema()))
-        {
-            throw new NotFoundHttpException('Forum module not enabled.');
-        }
-
-        $forum_topic = $forum_repository->get_topic($id, $pp->schema());
-
-        if (!$item_access_service->is_visible($forum_topic['access']))
-        {
-            throw new AccessDeniedHttpException('Access denied (1) for forum topic with id ' . $id);
-        }
-
-        if (!($su->is_owner($forum_topic['user_id']) || $pp->is_admin()))
-        {
-            throw new AccessDeniedHttpException('Access Denied (2) for forum topic with id ' . $id);
-        }
-
-        $forum_post = $forum_repository->get_first_post($id, $pp->schema());
-
-        if (!($su->is_owner($forum_post['user_id']) || $pp->is_admin()))
-        {
-            throw new AccessDeniedHttpException('Access denied (3) forum forum post');
-        }
-
-        $command = new ForumTopicCommand;
-
-        $command->subject = $forum_topic['subject'];
-        $command->content = $forum_post['content'];
-        $command->access = $forum_topic['access'];
-
-        $form_options = [
-            'validation_groups' => ['edit'],
-        ];
-
-        $form = $this->createForm(ForumTopicType::class, $command, $form_options);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted()
-            && $form->isValid())
-        {
-            $command = $form->getData();
-
-            $forum_repository->update_topic($id, $command, $pp->schema());
-
-            if ($su->is_owner($forum_topic['user_id']))
-            {
-              $this->addFlash('success', 'Je forum onderwerp is aangepast.');
-            }
-            else
-            {
-              $this->addFlash('success', 'Forum onderwerp van ' .
-                $account_render->get_str($forum_topic['user_id'], $pp->schema()) .
-                ' aangepast.');
-            }
-
-            return $this->redirectToRoute('forum_topic', [
-                ...$pp->ary(),
-                'id' => $id,
-            ]);
-        }
-
-        return $this->render('forum/forum_edit_topic.html.twig', [
-            'form'          => $form->createView(),
-            'forum_topic'   => $forum_topic,
-        ]);
+      throw new NotFoundHttpException('Forum module not enabled.');
     }
+
+    $forum_topic = $forum_repository->get_topic($id, $pp->schema());
+
+    if (!$item_access_service->is_visible($forum_topic['access']))
+    {
+      throw new AccessDeniedHttpException('Access denied (1) for forum topic with id ' . $id);
+    }
+
+    if (!($su->is_owner($forum_topic['user_id']) || $pp->is_admin()))
+    {
+      throw new AccessDeniedHttpException('Access Denied (2) for forum topic with id ' . $id);
+    }
+
+    $forum_post = $forum_repository->get_first_post($id, $pp->schema());
+
+    if (!($su->is_owner($forum_post['user_id']) || $pp->is_admin()))
+    {
+      throw new AccessDeniedHttpException('Access denied (3) forum forum post');
+    }
+
+    $command = new ForumTopicCommand;
+
+    $command->subject = $forum_topic['subject'];
+    $command->content = $forum_post['content'];
+    $command->access = $forum_topic['access'];
+
+    $form_options = [
+      'validation_groups' => ['edit'],
+    ];
+
+    $form = $this->createForm(ForumTopicType::class, $command, $form_options);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted()
+      && $form->isValid())
+    {
+      $command = $form->getData();
+
+      $forum_repository->update_topic($id, $command, $pp->schema());
+
+      if ($su->is_owner($forum_topic['user_id']))
+      {
+        $this->addFlash('success', 'Je forum onderwerp is aangepast.');
+      }
+      else
+      {
+        $this->addFlash('success', 'Forum onderwerp van ' .
+          $account_render->get_str($forum_topic['user_id'], $pp->schema()) .
+          ' aangepast.');
+      }
+
+      return $this->redirectToRoute('forum_topic', [
+        ...$pp->ary(),
+        'id' => $id,
+      ]);
+    }
+
+    return $this->render('forum/forum_edit_topic.html.twig', [
+      'form'          => $form->createView(),
+      'forum_topic'   => $forum_topic,
+    ]);
+  }
 }

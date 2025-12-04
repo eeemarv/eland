@@ -1,79 +1,80 @@
 {%- extends 'base/navbar.html.twig' -%}
 
 {%- set active_menu = 'export' -%}
+{%- set admin_heading = true -%}
 
 {%- block content -%}
 {%- endblock content -%}
 
 {%- block data -%}
-    {{- form_start(download_form) -}}
-    {{- form_errors(download_form) -}}
-    <div class="panel panel-info mb-5p">
-        <div class="panel-heading">
-            <h2>
-                {{- 'export.sql.title'|trans -}}
-            </h2>
+  {{- form_start(download_form) -}}
+  {{- form_errors(download_form) -}}
+  <div class="panel panel-info mb-5p">
+    <div class="panel-heading">
+      <h2>
+        {{- 'export.sql.title'|trans -}}
+      </h2>
 
-            {{- form_row(download_form.sql, {
-                'label': 'btn.download',
-                'attr': {
-                    'class': 'btn btn-default btn-lg'
-                }
-            }) -}}
-        </div>
+      {{- form_row(download_form.sql, {
+        'label': 'btn.download',
+        'attr': {
+            'class': 'btn btn-default btn-lg'
+        }
+      }) -}}
     </div>
-    <div class="panel panel-info">
-        <div class="panel-heading">
-            <h2>
-                {{- 'export.csv.title'|trans -}}
-            </h2>
-            <p>
-                {{- 'export.csv.explain'|trans -}}
-            </p>
+  </div>
+  <div class="panel panel-info">
+    <div class="panel-heading">
+      <h2>
+        {{- 'export.csv.title'|trans -}}
+      </h2>
+      <p>
+        {{- 'export.csv.explain'|trans -}}
+      </p>
 
-            <div class="form-group">
-                {%- for csv in download_form.children|keys -%}
-                    {%- if csv starts with 'csv__' -%}
-                        {{- form_widget(download_form[csv], {
-                            'label': csv|replace({'csv__': ''}),
-                            'translation_domain': false,
-                            'attr': {
-                                'class': 'btn btn-default btn-lg'
-                            }
-                        }) -}}
-                    {%- endif -%}
-                {%- endfor -%}
-            </div>
-
-            {{- form_row(download_form.csv_zip, {
-                'label': 'export.csv_zip.label',
-                'attr': {
-                    'class': 'btn btn-default btn-lg'
-                }
+      <div class="form-group">
+        {%- for csv in download_form.children|keys -%}
+          {%- if csv starts with 'csv__' -%}
+            {{- form_widget(download_form[csv], {
+              'label': csv|replace({'csv__': ''}),
+              'translation_domain': false,
+              'attr': {
+                'class': 'btn btn-default btn-lg'
+              }
             }) -}}
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
 
-            <p>
-                <i>
-                    {{- 'export.csv_zip.help'|trans -}}
-                </i>
-            </p>
-        </div>
+      {{- form_row(download_form.csv_zip, {
+        'label': 'export.csv_zip.label',
+        'attr': {
+          'class': 'btn btn-default btn-lg'
+        }
+      }) -}}
+
+      <p>
+        <i>
+          {{- 'export.csv_zip.help'|trans -}}
+        </i>
+      </p>
     </div>
-    {{- form_end(download_form) -}}
+  </div>
+  {{- form_end(download_form) -}}
 {%- endblock data -%}
 
 {%- block heading_fa -%}
-    download
+  download
 {%- endblock heading_fa -%}
 
 {%- block heading_title -%}
-    {{- 'export.title'|trans -}}
+  {{- 'export.title'|trans -}}
 {%- endblock heading_title -%}
 
 {%- block css -%}
-    {{- parent() -}}
+  {{- parent() -}}
 {%- endblock css -%}
 
 {%- block js -%}
-    {{- parent() -}}
+  {{- parent() -}}
 {%- endblock js -%}

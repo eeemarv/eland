@@ -1,17 +1,21 @@
 {%- extends 'messages/base/messages_base.html.twig' -%}
 
+{%- if pp_has_role('admin') -%}
+  {%- set admin_heading = true -%}
+{%- endif -%}
+
 {%- block heading_title -%}
-    {{- 'messages_del.title'|trans({
-        'offer_want': message.offer_want,
-        'self': su_is_owner(message.user_id) ? 'self' : 'some_user',
-        'user': account(message.user_id, schema)
-    }) -}}
+  {{- 'messages_del.title'|trans({
+    'offer_want': message.offer_want,
+    'self': su_is_owner(message.user_id) ? 'self' : 'some_user',
+    'user': account(message.user_id, schema)
+  }) -}}
 {%- endblock heading_title -%}
 
 {%- block css -%}
-    {{- parent() -}}
+  {{- parent() -}}
 {%- endblock css -%}
 
 {%- block js -%}
-    {{- parent() -}}
+  {{- parent() -}}
 {%- endblock js -%}

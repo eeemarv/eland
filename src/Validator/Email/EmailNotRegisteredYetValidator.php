@@ -31,7 +31,10 @@ class EmailNotRegisteredYetValidator extends ConstraintValidator
 
         $email_lowercase = strtolower($email);
 
-        $email_count = $this->user_repository->count_email($email_lowercase, $this->pp->schema());
+        $email_count = $this->user_repository->count_email(
+          email: $email_lowercase,
+          schema: $this->pp->schema_o(),
+        );
 
         if ($email_count > 0)
         {

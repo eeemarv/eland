@@ -15,46 +15,46 @@ use Symfony\Component\Routing\Annotation\Route;
 #[AsController]
 class ConfigLogoDelController extends AbstractController
 {
-    #[Route(
-        '/{system}/{role_short}/logo/del',
-        name: 'config_logo_del',
-        methods: ['GET', 'POST'],
-        requirements: [
-            'system'        => '%assert.system%',
-            'role_short'    => '%assert.role_short.admin%',
-        ],
-        defaults: [
-            'module'        => 'config',
-        ],
-    )]
+  #[Route(
+    '/{system}/{role_short}/logo/del',
+    name: 'config_logo_del',
+    methods: ['GET', 'POST'],
+    requirements: [
+      'system'        => '%assert.system%',
+      'role_short'    => '%assert.role_short.admin%',
+    ],
+    defaults: [
+      'module'        => 'config',
+    ],
+  )]
 
-    public function __invoke(
-        Request $request,
-        ConfigService $config_service,
-        PageParamsService $pp
-    ):Response
+  public function __invoke(
+    Request $request,
+    ConfigService $config_service,
+    PageParamsService $pp,
+  ):Response
+  {
+    $logo = $config_service->get_str('system.logo', $pp->schema());
+
+    if (!$logo)
     {
-        $logo = $config_service->get_str('system.logo', $pp->schema());
-
-        if (!$logo)
-        {
-            throw new ConflictHttpException('No logo is configured for this system.');
-        }
-
-        $form = $this->createForm(DelType::class);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted()
-            && $form->isValid())
-        {
-            $config_service->set_str('system.logo', '', $pp->schema());
-
-            $this->addFlash('success', 'Het logo is verwijderd.');
-            return $this->redirectToRoute('config_logo', $pp->ary());
-        }
-
-        return $this->render('config/config_logo_del.html.twig', [
-            'form'          => $form->createView(),
-        ]);
+      throw new ConflictHttpException('No logo is configured for this system.');
     }
+
+    $form = $this->createForm(DelType::class);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted()
+      && $form->isValid())
+    {
+      $config_service->set_str('system.logo', '', $pp->schema());
+
+      $this->addFlash('success', 'Het logo is verwijderd.');
+      return $this->redirectToRoute('config_logo', $pp->ary());
+    }
+
+    return $this->render('config/config_logo_del.html.twig', [
+      'form'          => $form->createView(),
+    ]);
+  }
 }

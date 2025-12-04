@@ -1,6 +1,8 @@
 {%- extends 'transactions/base/transactions_form.html.twig' -%}
 {%- import 'macro/anchor.html.twig' as a -%}
 
+{%- set admin_heading = true -%}
+
 {%- block heading_title -%}
     {{- 'transactions_autominlimit.title'|trans -}}
 {%- endblock heading_title -%}

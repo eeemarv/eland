@@ -57,7 +57,10 @@ class PasswordResetController extends AbstractController
       $command = $form->getData();
       $email = strtolower($command->email);
 
-      $user_id = $user_repository->get_active_id_by_email($email, $pp->schema());
+      $user_id = $user_repository->get_active_id_by_email(
+        email: $email,
+        schema: $pp->schema_o(),
+      );
 
       $account_str = $account_render->get_str($user_id, $pp->schema());
 

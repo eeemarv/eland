@@ -20,105 +20,105 @@ use Symfony\Component\Routing\Annotation\Route;
 #[AsController]
 class DocsDelController extends AbstractController
 {
-    #[Route(
-        '/{system}/{role_short}/docs/{id}/del',
-        name: 'docs_del',
-        methods: ['GET', 'POST'],
-        requirements: [
-            'id'            => '%assert.id%',
-            'system'        => '%assert.system%',
-            'role_short'    => '%assert.role_short.admin%',
-        ],
-        defaults: [
-            'module'        => 'docs',
-        ],
-    )]
+  #[Route(
+    '/{system}/{role_short}/docs/{id}/del',
+    name: 'docs_del',
+    methods: ['GET', 'POST'],
+    requirements: [
+      'id'            => '%assert.id%',
+      'system'        => '%assert.system%',
+      'role_short'    => '%assert.role_short.admin%',
+    ],
+    defaults: [
+      'module'        => 'docs',
+    ],
+  )]
 
-    public function __invoke(
-        Request $request,
-        int $id,
-        DocRepository $doc_repository,
-        ConfigService $config_service,
-        LoggerInterface $logger,
-        S3Service $s3_service,
-        TypeaheadService $typeahead_service,
-        PageParamsService $pp,
-        string $env_s3_url
-    ):Response
+  public function __invoke(
+    Request $request,
+    int $id,
+    DocRepository $doc_repository,
+    ConfigService $config_service,
+    LoggerInterface $logger,
+    S3Service $s3_service,
+    TypeaheadService $typeahead_service,
+    PageParamsService $pp,
+    string $env_s3_url,
+  ):Response
+  {
+    if (!$config_service->get_bool('docs.enabled', $pp->schema()))
     {
-        if (!$config_service->get_bool('docs.enabled', $pp->schema()))
-        {
-            throw new NotFoundHttpException('Documents module not enabled.');
-        }
-
-        $command = new DocsCommand();
-
-        $doc = $doc_repository->get($id, $pp->schema());
-
-        $command->file_location = $env_s3_url . $doc['filename'];
-        $command->original_filename = $doc['original_filename'];
-        $command->name = $doc['name'];
-        $command->access = $doc['access'];
-
-        if (isset($doc['map_id']))
-        {
-            $doc_map = $doc_repository->get_map($doc['map_id'], $pp->schema());
-            $command->map_name = $doc_map['name'];
-        }
-
-        $form = $this->createForm(DocsDelType::class, $command);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted()
-            && $form->isValid())
-        {
-            $alert_success_msg = [];
-
-            $doc_repository->del($id, $pp->schema());
-
-            $err = $s3_service->del($doc['filename']);
-
-            if ($err)
-            {
-                $logger->error('doc delete file fail: ' . $err,
-                    ['schema' => $pp->schema()]);
-            }
-
-            $name = $doc['name'] ?? $doc['original_filename'];
-            $alert_success_msg[] = 'Document "' . $name . '" is verwijderd.';
-
-            if (isset($doc['map_id']))
-            {
-                $map_doc_count = $doc_repository->get_count_for_map_id($doc['map_id'], $pp->schema());
-
-                if ($map_doc_count === 0)
-                {
-                    $alert_success_msg[] = 'Map "' . $doc_map['name'] . '" bevatte geen items meer en werd automatisch gewist.';
-                    $doc_repository->del_map($doc['map_id'], $pp->schema());
-                    $typeahead_service->clear_cache($pp->schema());
-                    unset($doc['map_id']);
-                }
-            }
-
-            foreach ($alert_success_msg as $success)
-            {
-              $this->addFlash('success', $success);
-            }
-
-            if (!isset($doc['map_id']))
-            {
-                return $this->redirectToRoute('docs', $pp->ary());
-            }
-
-            return $this->redirectToRoute('docs_map', [
-                ...$pp->ary(),
-                'id' => $doc['map_id'],
-            ]);
-        }
-
-        return $this->render('docs/docs_del.html.twig', [
-            'form'  => $form->createView(),
-            'doc'   => $doc,
-        ]);
+      throw new NotFoundHttpException('Documents module not enabled.');
     }
+
+    $command = new DocsCommand();
+
+    $doc = $doc_repository->get($id, $pp->schema());
+
+    $command->file_location = $env_s3_url . $doc['filename'];
+    $command->original_filename = $doc['original_filename'];
+    $command->name = $doc['name'];
+    $command->access = $doc['access'];
+
+    if (isset($doc['map_id']))
+    {
+      $doc_map = $doc_repository->get_map($doc['map_id'], $pp->schema());
+      $command->map_name = $doc_map['name'];
+    }
+
+    $form = $this->createForm(DocsDelType::class, $command);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted()
+      && $form->isValid())
+    {
+      $alert_success_msg = [];
+
+      $doc_repository->del($id, $pp->schema());
+
+      $err = $s3_service->del($doc['filename']);
+
+      if ($err)
+      {
+        $logger->error('doc delete file fail: ' . $err,
+          ['schema' => $pp->schema()]);
+      }
+
+      $name = $doc['name'] ?? $doc['original_filename'];
+      $alert_success_msg[] = 'Document "' . $name . '" is verwijderd.';
+
+      if (isset($doc['map_id']))
+      {
+        $map_doc_count = $doc_repository->get_count_for_map_id($doc['map_id'], $pp->schema());
+
+        if ($map_doc_count === 0)
+        {
+          $alert_success_msg[] = 'Map "' . $doc_map['name'] . '" bevatte geen items meer en werd automatisch gewist.';
+          $doc_repository->del_map($doc['map_id'], $pp->schema());
+          $typeahead_service->clear_cache($pp->schema());
+          unset($doc['map_id']);
+        }
+      }
+
+      foreach ($alert_success_msg as $success)
+      {
+        $this->addFlash('success', $success);
+      }
+
+      if (!isset($doc['map_id']))
+      {
+        return $this->redirectToRoute('docs', $pp->ary());
+      }
+
+      return $this->redirectToRoute('docs_map', [
+        ...$pp->ary(),
+        'id' => $doc['map_id'],
+      ]);
+    }
+
+    return $this->render('docs/docs_del.html.twig', [
+      'form'  => $form->createView(),
+      'doc'   => $doc,
+    ]);
+  }
 }

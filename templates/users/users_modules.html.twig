@@ -1,62 +1,64 @@
 {%- extends 'users/base/users_form.html.twig' -%}
 
+{%- set admin_heading = true -%}
+
 {%- block heading_title -%}
-    {{- 'users_modules.title'|trans -}}
+  {{- 'users_modules.title'|trans -}}
 {%- endblock heading_title -%}
 
 {%- block form_a -%}
-    {{- form_row(form.full_name_enabled, {
-        'label': 'label.full_name',
-        'required': false
-    }) -}}
+  {{- form_row(form.full_name_enabled, {
+    'label': 'label.full_name',
+    'required': false
+  }) -}}
 
-    {{- form_row(form.postcode_enabled, {
-        'label': 'label.postcode',
-        'required': false
-    }) -}}
+  {{- form_row(form.postcode_enabled, {
+    'label': 'label.postcode',
+    'required': false
+  }) -}}
 
-    {{- form_row(form.birthdate_enabled, {
-        'label': 'label.date_of_birth',
-        'required': false
-    }) -}}
+  {{- form_row(form.birthdate_enabled, {
+    'label': 'label.date_of_birth',
+    'required': false
+  }) -}}
 
-    {{- form_row(form.hobbies_enabled, {
-        'label': 'label.hobbies_interests',
-        'required': false
-    }) -}}
+  {{- form_row(form.hobbies_enabled, {
+    'label': 'label.hobbies_interests',
+    'required': false
+  }) -}}
 
-    {{- form_row(form.comments_enabled, {
-        'label': 'label.comment',
-        'required': false
-    }) -}}
+  {{- form_row(form.comments_enabled, {
+    'label': 'label.comment',
+    'required': false
+  }) -}}
 
-    {{- form_row(form.admin_comments_enabled, {
-        'label': 'label.admin_comment',
-        'required': false
-    }) -}}
+  {{- form_row(form.admin_comments_enabled, {
+    'label': 'label.admin_comment',
+    'required': false
+  }) -}}
 
-    {{- form_row(form.new_enabled, {
-        'label': 'label.new_users',
-        'required': false
-    }) -}}
+  {{- form_row(form.new_enabled, {
+    'label': 'label.new_users',
+    'required': false
+  }) -}}
 
-    {{- form_row(form.leaving_enabled, {
-        'label': 'label.leaving_users',
-        'required': false
-    }) -}}
+  {{- form_row(form.leaving_enabled, {
+    'label': 'label.leaving_users',
+    'required': false
+  }) -}}
 
-    {{- form_row(form.intersystem_enabled, {
-        'label': 'label.intersystem',
-        'required': false
-    }) -}}
+  {{- form_row(form.intersystem_enabled, {
+    'label': 'label.intersystem',
+    'required': false
+  }) -}}
 
-    {{- form_row(form.periodic_mail_enabled, {
-        'label': 'label.periodic_overview',
-        'required': false
-    }) -}}
+  {{- form_row(form.periodic_mail_enabled, {
+    'label': 'label.periodic_overview',
+    'required': false
+  }) -}}
 
-    {{- form_row(form.mollie_enabled, {
-        'label': 'mollie_payments.title',
-        'required': false
-    }) -}}
+  {{- form_row(form.mollie_enabled, {
+    'label': 'mollie_payments.title',
+    'required': false
+  }) -}}
 {%- endblock form_a -%}

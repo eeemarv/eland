@@ -1,58 +1,60 @@
 {%- extends 'users/base/users_form.html.twig' -%}
 {%- import 'macro/anchor.html.twig' as a -%}
 
+{%- set admin_heading = true -%}
+
 {%- block heading_title -%}
-    {{- 'users_config_leaving.title'|trans -}}
+  {{- 'users_config_leaving.title'|trans -}}
 {%- endblock heading_title -%}
 
 {%- block heading_fa -%}
-    user-times
+  user-times
 {%- endblock heading_fa -%}
 
 {%- block form_a -%}
-    {%- if form.equilibrium is defined -%}
-        {{- form_row(form.equilibrium, {
-            'label': 'users_config_leaving.equilibrium.label',
-            'help': 'users_config_leaving.equilibrium.help',
-            'pre_addon': {
-                'text': config_str('transactions.currency.name', schema)
-            }
-        }) -}}
-    {%- endif -%}
+  {%- if form.equilibrium is defined -%}
+    {{- form_row(form.equilibrium, {
+      'label': 'users_config_leaving.equilibrium.label',
+      'help': 'users_config_leaving.equilibrium.help',
+      'pre_addon': {
+          'text': config_str('transactions.currency.name', schema)
+      }
+    }) -}}
+  {%- endif -%}
 
-    {%- if form.auto_deactivate is defined -%}
-        {{- form_row(form.auto_deactivate, {
-            'label': 'users_config_leaving.auto_deactivate.label',
-            'help': 'users_config_leaving.auto_deactivate.help',
-            'required': false
-        }) -}}
-    {%- endif -%}
+  {%- if form.auto_deactivate is defined -%}
+    {{- form_row(form.auto_deactivate, {
+      'label': 'users_config_leaving.auto_deactivate.label',
+      'help': 'users_config_leaving.auto_deactivate.help',
+      'required': false
+    }) -}}
+  {%- endif -%}
 
-    {%- if form.access is defined -%}
-        {{- form_row(form.access, {
-            'label': 'users_config_leaving.access.label'
-        }) -}}
-    {%- endif -%}
+  {%- if form.access is defined -%}
+    {{- form_row(form.access, {
+      'label': 'users_config_leaving.access.label'
+    }) -}}
+  {%- endif -%}
 
-    {%- if form.access_list is defined -%}
-        {{- form_row(form.access_list, {
-            'label': 'users_config_leaving.access_list.label'
-        }) -}}
-    {%- endif -%}
+  {%- if form.access_list is defined -%}
+    {{- form_row(form.access_list, {
+      'label': 'users_config_leaving.access_list.label'
+    }) -}}
+  {%- endif -%}
 
-    {%- if form.access_pane is defined -%}
-        {{- form_row(form.access_pane, {
-            'label': 'users_config_leaving.access_pane.label'
-        }) -}}
-    {%- endif -%}
+  {%- if form.access_pane is defined -%}
+    {{- form_row(form.access_pane, {
+      'label': 'users_config_leaving.access_pane.label'
+    }) -}}
+  {%- endif -%}
 
-    {%- if config_bool('periodic_mail.enabled', schema) -%}
-        <p>
-            {{- 'users_config_leaving.periodic_mail.help'|trans({
-                    'open_link': a.open_context_path('users_periodic_mail'),
-                    'close_link': a.close()
-                })|raw
-            -}}
-        </p>
-    {%- endif -%}
+  {%- if config_bool('periodic_mail.enabled', schema) -%}
+    <p>
+      {{- 'users_config_leaving.periodic_mail.help'|trans({
+          'open_link': a.open_context_path('users_periodic_mail'),
+          'close_link': a.close()
+        })|raw
+      -}}
+    </p>
+  {%- endif -%}
 {%- endblock form_a -%}

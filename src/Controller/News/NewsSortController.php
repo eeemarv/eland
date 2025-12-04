@@ -16,48 +16,48 @@ use Symfony\Component\Routing\Annotation\Route;
 #[AsController]
 class NewsSortController extends AbstractController
 {
-    #[Route(
-        '/{system}/{role_short}/news/sort',
-        name: 'news_sort',
-        methods: ['GET', 'POST'],
-        requirements: [
-            'system'        => '%assert.system%',
-            'role_short'    => '%assert.role_short.admin%',
-        ],
-        defaults: [
-            'module'        => 'news',
-        ],
-    )]
+  #[Route(
+    '/{system}/{role_short}/news/sort',
+    name: 'news_sort',
+    methods: ['GET', 'POST'],
+    requirements: [
+      'system'        => '%assert.system%',
+      'role_short'    => '%assert.role_short.admin%',
+    ],
+    defaults: [
+      'module'        => 'news',
+    ],
+  )]
 
-    public function __invoke(
-        Request $request,
-        ConfigService $config_service,
-        PageParamsService $pp
-    ):Response
+  public function __invoke(
+    Request $request,
+    ConfigService $config_service,
+    PageParamsService $pp,
+  ):Response
+  {
+    if (!$config_service->get_bool('news.enabled', $pp->schema()))
     {
-        if (!$config_service->get_bool('news.enabled', $pp->schema()))
-        {
-            throw new AccessDeniedHttpException('News module not enabled.');
-        }
-
-        $command = new NewsSortCommand();
-        $config_service->load_command($command, $pp->schema());
-
-        $form = $this->createForm(NewsSortType::class, $command);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted()
-            && $form->isValid())
-        {
-            $command = $form->getData();
-            $config_service->store_command($command, $pp->schema());
-
-            $this->addFlash('success', 'Sortering nieuws configuratie aangepast');
-            return $this->redirectToRoute('news_sort', $pp->ary());
-        }
-
-        return $this->render('news/news_sort.html.twig', [
-            'form'          => $form->createView(),
-        ]);
+      throw new AccessDeniedHttpException('News module not enabled.');
     }
+
+    $command = new NewsSortCommand();
+    $config_service->load_command($command, $pp->schema());
+
+    $form = $this->createForm(NewsSortType::class, $command);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted()
+      && $form->isValid())
+    {
+      $command = $form->getData();
+      $config_service->store_command($command, $pp->schema());
+
+      $this->addFlash('success', 'Sortering nieuws configuratie aangepast');
+      return $this->redirectToRoute('news_sort', $pp->ary());
+    }
+
+    return $this->render('news/news_sort.html.twig', [
+      'form'          => $form->createView(),
+    ]);
+  }
 }

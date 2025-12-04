@@ -10,6 +10,7 @@ use App\Service\ConfigService;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -31,7 +32,7 @@ final class EmailDispatchHandler
     private readonly string $env_mail_from_address,
     #[Autowire('%env(MAIL_NOREPLY_ADDRESS)%')]
     private readonly string $env_mail_noreply_address,
-    #[Autowire(service: 'html_sanitizer.sanitizer.no_img_email_sanitizer')]
+    #[Target(name: 'no_img_email_sanitizer')]
     private readonly HtmlSanitizerInterface $html_sanitizer,
   ) {}
 

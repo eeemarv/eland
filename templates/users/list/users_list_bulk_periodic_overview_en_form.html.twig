@@ -7,15 +7,15 @@
   'label': 'label.periodic_overview_en',
 }) -}}
 
-{{- form_row(bulk_periodic_overview_en_form.verify, {
-  'label': 'check.verify',
-}) -}}
-
 <p class="alert alert-warning">
   <b>
   {{- 'users_list.bulk.periodic_overview_en.warning'|trans -}}
   </b>
 </p>
+
+{{- form_row(bulk_periodic_overview_en_form.verify, {
+  'label': 'check.verify',
+}) -}}
 
 {{- form_widget(bulk_periodic_overview_en_form.submit, {
   'label': 'btn.edit',

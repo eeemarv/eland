@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\DTO\Schema;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
@@ -15,77 +16,102 @@ class MessageRepository
 	{
 	}
 
-	public function get(int $id, string $schema):array
+	public function get(
+    int $id,
+    Schema $schema,
+  ):array
 	{
-        $message = $this->db->fetchAssociative('select *
-            from ' . $schema . '.messages
-            where id = ?',
-			[$id],
-			[\PDO::PARAM_INT]);
+    $message = $this->db->fetchAssociative('select *
+      from ' . $schema->str() . '.messages
+      where id = :id',
+			['id' => $id],
+			['id' => Types::INTEGER]);
 
 		if (!$message)
 		{
 			throw new NotFoundHttpException('Message ' . $id . ' not found.');
-        }
+    }
 
 		return $message;
 	}
 
+  // not used yet
 	public function get_prev_id(
 		int $ref_id,
 		array $visible_ary,
-		string $schema
+		Schema $schema
 	):int
 	{
-        $res = $this->db->executeQuery('select m.id
-            from ' . $schema . '.messages m,
-                ' . $schema . '.users u
-			where m.id > ?
+    $res = $this->db->executeQuery('select m.id
+      from ' . $schema->str() . '.messages m,
+      ' . $schema->str() . '.users u
+			where m.id > :ref_id
 				and u.status in (1, 2)
-				and m.access in (?)
-            order by m.id asc
-			limit 1',
-			[$ref_id, $visible_ary],
-			[\PDO::PARAM_INT, ArrayParameterType::STRING]);
+				and m.access in (:visible_ary)
+          order by m.id asc
+			limit 1',[
+        'ref_id' => $ref_id,
+        'visible_ary' => $visible_ary,
+      ], [
+        'ref_id' => Types::INTEGER,
+        'visible_ary' => ArrayParameterType::STRING,
+      ]);
 
 		return $res->fetchOne() ?: 0;
 	}
 
+  // not used yet
 	public function get_next_id(
 		int $ref_id,
 		array $visible_ary,
-		string $schema
+		Schema $schema
 	):int
 	{
-        $res = $this->db->executeQuery('select m.id
-            from ' . $schema . '.messages m,
-                ' . $schema . '.users u
-			where m.id < ?
+    $res = $this->db->executeQuery('select m.id
+      from ' . $schema->str() . '.messages m,
+          ' . $schema->str() . '.users u
+			where m.id < :ref_id
 				and u.status in (1, 2)
-				and m.access in (?)
+				and m.access in (:visible_ary)
             order by m.id desc
-			limit 1',
-			[$ref_id, $visible_ary],
-			[\PDO::PARAM_INT, ArrayParameterType::STRING]);
+			limit 1', [
+        'ref_id' => $ref_id,
+        'visible_ary' => $visible_ary,
+      ], [
+        'ref_id' => Types::INTEGER,
+        'visible_ary' => ArrayParameterType::STRING,
+      ]);
 
 		return $res->fetchOne() ?: 0;
 	}
 
-	public function del(int $id, string $schema):bool
+  // not used yet
+	public function del(
+    int $id,
+    Schema $schema,
+  ):bool
 	{
-		return $this->db->delete($schema . '.messages',
+		return $this->db->delete($schema->str() . '.messages',
 			['id' => $id]) ? true : false;
 	}
 
-	public function insert(array $message, string $schema):int
+  // not used yet
+	public function insert(
+    array $message,
+    Schema $schema,
+  ):int
 	{
-		$this->db->insert($schema . '.messages', $message);
+		$this->db->insert($schema->str() . '.messages', $message);
 		return (int) $this->db->lastInsertId($schema . '.messages_id_seq');
 	}
 
-	public function update(array $message, int $id, string $schema):bool
+	public function update(
+    array $message,
+    int $id,
+    Schema $schema,
+  ):bool
 	{
-		return $this->db->update($schema . '.messages', $message, ['id' => $id]) ? true : false;
+		return $this->db->update($schema->str() . '.messages', $message, ['id' => $id]) ? true : false;
 	}
 
 	public function get_count_for_user_id(
@@ -93,11 +119,13 @@ class MessageRepository
 		string $schema
 	):int
 	{
-        return $this->db->fetchOne('select count(*)
-            from ' . $schema . '.messages
-            where user_id = ?',
-			[$user_id],
-			[\PDO::PARAM_INT]);
+    return $this->db->fetchOne('select count(*)
+      from ' . $schema . '.messages
+      where user_id = :user_id', [
+        'user_id' => $user_id,
+      ], [
+        'user_id' => Types::INTEGER,
+      ]);
 	}
 
 	public function del_for_user_id(
@@ -105,7 +133,9 @@ class MessageRepository
 		string $schema
 	):void
 	{
-		$this->db->delete($schema . '.messages', ['user_id' => $user_id]);
+		$this->db->delete($schema . '.messages', [
+      'user_id' => $user_id,
+    ]);
 	}
 
 	public function add_image_file(
@@ -127,16 +157,42 @@ class MessageRepository
 		string $schema
 	):void
 	{
-        $image_files = json_encode(array_values($image_files));
+    $image_files = json_encode(array_values($image_files));
 
-		$this->db->update($schema . '.messages',
-			['image_files' => $image_files],
-			['id' => $id]);
+		$this->db->update($schema . '.messages', [
+      'image_files' => $image_files,
+    ], [
+      'id' => $id,
+    ]);
 	}
 
-	public function get_max_id(string $schema):int
+	public function get_max_id(
+    string $schema
+  ):int
 	{
 		return $this->db->fetchOne('select max(id)
 			from ' . $schema . '.messages') ?: 0;
 	}
+
+  public function get_counts_for_each_user(
+    Schema $schema,
+  ):array
+  {
+    $msgs_count = [];
+    $res = $this->db->executeQuery('select m.user_id,
+      count(m.id) filter (where m.offer_want = \'offer\') as offers,
+      count(m.id) filter (where m.offer_want = \'want\') as wants,
+      count(m.id) as total
+      from ' . $schema->str() . '.messages m
+      group by m.user_id');
+
+    while ($row = $res->fetchAssociative())
+    {
+      $msgs_count[$row['user_id']]['offers'] = $row['offers'];
+      $msgs_count[$row['user_id']]['wants'] = $row['wants'];
+      $msgs_count[$row['user_id']]['total'] = $row['total'];
+    }
+
+    return $msgs_count;
+  }
 }

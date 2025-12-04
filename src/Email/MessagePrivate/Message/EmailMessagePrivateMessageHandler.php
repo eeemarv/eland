@@ -24,7 +24,10 @@ final class EmailMessagePrivateMessageHandler
     $message_id = $message->message_id;
     $schema = $message->schema;
 
-    $ad_message = $this->message_repository->get($message_id, $schema->str());
+    $ad_message = $this->message_repository->get(
+      id: $message_id,
+      schema: $schema,
+    );
 
     $context = [
       'sender'  => [

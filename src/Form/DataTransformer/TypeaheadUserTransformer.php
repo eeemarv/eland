@@ -23,7 +23,10 @@ class TypeaheadUserTransformer implements DataTransformerInterface
       return '';
     }
 
-    $account_str = $this->user_repository->get_account_str($id, $this->pp->schema());
+    $account_str = $this->user_repository->get_account_str(
+      id: $id,
+      schema: $this->pp->schema_o(),
+    );
 
     return $account_str;
   }
@@ -37,7 +40,10 @@ class TypeaheadUserTransformer implements DataTransformerInterface
 
     [$code] = explode(' ', $account_str);
 
-    $id = $this->user_repository->get_by_typeahead_code($code, $this->pp->schema());
+    $id = $this->user_repository->get_by_typeahead_code(
+      code: $code,
+      schema: $this->pp->schema_o(),
+    );
 
     if (!$id)
     {

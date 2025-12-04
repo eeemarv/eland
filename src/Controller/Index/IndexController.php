@@ -12,30 +12,30 @@ use Symfony\Component\Routing\Annotation\Route;
 #[AsController]
 class IndexController extends AbstractController
 {
-    #[Route(
-        '/',
-        name: 'index',
-        methods: ['GET'],
-        priority: 40,
-    )]
+  #[Route(
+    '/',
+    name: 'index',
+    methods: ['GET'],
+    priority: 40,
+  )]
 
-    public function __invoke(
-        Request $request,
-        SystemsService $systems_service
-    ):Response
-    {
-        $schemas = $systems_service->get_schemas();
+  public function __invoke(
+    Request $request,
+    SystemsService $systems_service,
+  ):Response
+  {
+    $schemas = $systems_service->get_schemas();
 
-        asort($schemas);
+    asort($schemas);
 
-        $response = $this->render('index/index.html.twig', [
-            'schemas'       => $schemas,
-        ]);
+    $response = $this->render('index/index.html.twig', [
+      'schemas'       => $schemas,
+    ]);
 
-        $response->setEtag(hash('crc32b', $response->getContent()), true);
-        $response->setPublic();
-        $response->isNotModified($request);
+    $response->setEtag(hash('crc32b', $response->getContent()), true);
+    $response->setPublic();
+    $response->isNotModified($request);
 
-        return $response;
-    }
+    return $response;
+  }
 }

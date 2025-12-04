@@ -31,7 +31,10 @@ class EmailUniqueToActiveUserValidator extends ConstraintValidator
 
         $email_lowercase = strtolower($email);
 
-        $count_by_email = $this->user_repository->count_active_by_email($email_lowercase, $this->pp->schema());
+        $count_by_email = $this->user_repository->count_active_by_email(
+          email: $email_lowercase,
+          schema: $this->pp->schema_o(),
+        );
 
         if ($count_by_email > 1)
         {

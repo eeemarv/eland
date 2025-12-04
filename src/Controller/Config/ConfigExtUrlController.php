@@ -15,43 +15,43 @@ use Symfony\Component\Routing\Annotation\Route;
 #[AsController]
 class ConfigExtUrlController extends AbstractController
 {
-    #[Route(
-        '/{system}/{role_short}/config/ext-url',
-        name: 'config_ext_url',
-        methods: ['GET', 'POST'],
-        requirements: [
-            'system'        => '%assert.system%',
-            'role_short'    => '%assert.role_short.admin%',
-        ],
-        defaults: [
-            'module'        => 'config',
-        ],
-    )]
+  #[Route(
+    '/{system}/{role_short}/config/ext-url',
+    name: 'config_ext_url',
+    methods: ['GET', 'POST'],
+    requirements: [
+      'system'        => '%assert.system%',
+      'role_short'    => '%assert.role_short.admin%',
+    ],
+    defaults: [
+      'module'        => 'config',
+    ],
+  )]
 
-    public function __invoke(
-        Request $request,
-        ConfigService $config_service,
-        PageParamsService $pp
-    ):Response
+  public function __invoke(
+    Request $request,
+    ConfigService $config_service,
+    PageParamsService $pp,
+  ):Response
+  {
+    $command = new ConfigExtUrlCommand();
+    $config_service->load_command($command, $pp->schema());
+
+    $form = $this->createForm(ConfigExtUrlType::class, $command);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted()
+      && $form->isValid())
     {
-        $command = new ConfigExtUrlCommand();
-        $config_service->load_command($command, $pp->schema());
+      $command = $form->getData();
+      $config_service->store_command($command, $pp->schema());
 
-        $form = $this->createForm(ConfigExtUrlType::class, $command);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted()
-            && $form->isValid())
-        {
-            $command = $form->getData();
-            $config_service->store_command($command, $pp->schema());
-
-            $this->addFlash('success', 'Externe URL aangepast.');
-            return $this->redirectToRoute('config_ext_url', $pp->ary());
-        }
-
-        return $this->render('config/config_ext_url.html.twig', [
-            'form'  => $form->createView(),
-        ]);
+      $this->addFlash('success', 'Externe URL aangepast.');
+      return $this->redirectToRoute('config_ext_url', $pp->ary());
     }
+
+    return $this->render('config/config_ext_url.html.twig', [
+      'form'  => $form->createView(),
+    ]);
+  }
 }

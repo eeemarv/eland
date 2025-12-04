@@ -16,43 +16,43 @@ use Symfony\Component\Routing\Annotation\Route;
 #[AsController]
 class InitClearUsersCacheController extends AbstractController
 {
-    #[Route(
-        '/{system}/init/clear-users-cache',
-        name: 'init_clear_users_cache',
-        methods: ['GET'],
-        requirements: [
-            'system'        => '%assert.system%',
-        ],
-    )]
+  #[Route(
+    '/{system}/init/clear-users-cache',
+    name: 'init_clear_users_cache',
+    methods: ['GET'],
+    requirements: [
+      'system'        => '%assert.system%',
+    ],
+  )]
 
-    public function __invoke(
-        Request $request,
-        PageParamsService $pp,
-        SystemsService $systems_service,
-        UserCacheService $user_cache_service,
-        #[Autowire('%env(APP_INIT_ENABLED)%')]
-        string $env_app_init_enabled
-    ):Response
+  public function __invoke(
+    Request $request,
+    PageParamsService $pp,
+    SystemsService $systems_service,
+    UserCacheService $user_cache_service,
+    #[Autowire('%env(APP_INIT_ENABLED)%')]
+    string $env_app_init_enabled
+  ):Response
+  {
+    if (!$env_app_init_enabled)
     {
-        if (!$env_app_init_enabled)
-        {
-            throw new NotFoundHttpException('De init routes zijn niet ingeschakeld.');
-        }
-
-        set_time_limit(300);
-
-        error_log('*** clear users cache ***');
-
-        $schemas = $systems_service->get_schemas();
-
-        foreach($schemas as $schema)
-        {
-            $user_cache_service->clear_all($schema);
-        }
-
-        return $this->redirectToRoute('init', [
-            ...$pp->ary(),
-            'ok' => $request->attributes->get('_route'),
-        ]);
+      throw new NotFoundHttpException('De init routes zijn niet ingeschakeld.');
     }
+
+    set_time_limit(300);
+
+    error_log('*** clear users cache ***');
+
+    $schemas = $systems_service->get_schemas();
+
+    foreach($schemas as $schema)
+    {
+      $user_cache_service->clear_all($schema);
+    }
+
+    return $this->redirectToRoute('init', [
+      ...$pp->ary(),
+      'ok' => $request->attributes->get('_route'),
+    ]);
+  }
 }

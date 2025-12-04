@@ -29,7 +29,10 @@ class ContactsUserShowInlineController extends AbstractController
         string $env_map_tiles_url
     ):Response
     {
-        $contacts = $contact_repository->get_all_for_user($uid, $pp->schema());
+      $contacts = $contact_repository->get_all_for_user(
+        user_id: $uid,
+        schema: $pp->schema_o(),
+      );
 
 		$out = '<div class="row">';
 		$out .= '<div class="col-md-12">';

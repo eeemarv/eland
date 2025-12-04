@@ -16,54 +16,54 @@ use Symfony\Component\Routing\Annotation\Route;
 #[AsController]
 class LogoutController extends AbstractController
 {
-    #[Route(
-        '/{system}/{role_short}/logout',
-        name: 'logout',
-        methods: ['GET'],
-        priority: 30,
-        requirements: [
-            'system'        => '%assert.system%',
-            'role_short'    => '%assert.role_short.guest%',
-        ],
-    )]
+  #[Route(
+    '/{system}/{role_short}/logout',
+    name: 'logout',
+    methods: ['GET'],
+    priority: 30,
+    requirements: [
+      'system'        => '%assert.system%',
+      'role_short'    => '%assert.role_short.guest%',
+    ],
+  )]
 
-    public function __invoke(
-        Request $request,
-        Db $db,
-        RequestStack $request_stack,
-        LoggerInterface $logger,
-        PageParamsService $pp,
-        SessionUserService $su
-    ):Response
+  public function __invoke(
+    Request $request,
+    Db $db,
+    RequestStack $request_stack,
+    LoggerInterface $logger,
+    PageParamsService $pp,
+    SessionUserService $su,
+  ):Response
+  {
+    $session = $request_stack->getSession();
+
+    foreach($su->logins() as $schema => $user_id)
     {
-        $session = $request_stack->getSession();
+      if ($user_id === 'master')
+      {
+          continue;
+      }
 
-        foreach($su->logins() as $schema => $user_id)
-        {
-            if ($user_id === 'master')
-            {
-                continue;
-            }
-
-            $db->insert($schema . '.logout', [
-                'user_id'   => $user_id,
-                'agent'     => $request->server->get('HTTP_USER_AGENT'),
-                'ip'        => $request->getClientIp(),
-            ]);
-        }
-
-        $session->invalidate();
-
-        $logger->info('user logged out',
-            ['schema' => $pp->schema()]);
-
-        $this->addFlash('success', 'Je bent uitgelogd');
-
-        if ($pp->org_system() === '')
-        {
-            return $this->redirectToRoute('login', ['system' => $pp->system()]);
-        }
-
-        return $this->redirectToRoute('login', ['system' => $pp->org_system()]);
+      $db->insert($schema . '.logout', [
+        'user_id'   => $user_id,
+        'agent'     => $request->server->get('HTTP_USER_AGENT'),
+        'ip'        => $request->getClientIp(),
+      ]);
     }
+
+    $session->invalidate();
+
+    $logger->info('user logged out',
+      ['schema' => $pp->schema()]);
+
+    $this->addFlash('success', 'Je bent uitgelogd');
+
+    if ($pp->org_system() === '')
+    {
+      return $this->redirectToRoute('login', ['system' => $pp->system()]);
+    }
+
+    return $this->redirectToRoute('login', ['system' => $pp->org_system()]);
+  }
 }

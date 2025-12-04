@@ -19,22 +19,10 @@ framework:
         force_https_urls: true
         allowed_link_schemes:
           - 'https'
-      admin_email_sanitizer:
-        allow_safe_elements: true
-        allow_relative_links: false
-        force_https_urls: true
-        allowed_link_schemes:
-          - 'https'
-      no_img_email_sanitizer:
-        allow_safe_elements: true
-        allow_relative_links: false
-        force_https_urls: true
-        allowed_link_schemes:
-          - 'https'
         drop_elements:
           - img
           - figure
-      img_email_sanitizer:
+      no_img_email_sanitizer:
         allow_safe_elements: true
         allow_relative_links: false
         force_https_urls: true

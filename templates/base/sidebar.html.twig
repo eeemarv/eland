@@ -23,7 +23,7 @@
 {%- endblock assets_add -%}
 
 {%- block title -%}
-	{{- config_str('system.name', schema) -}}
+	{{- config_str('system.name') -}}
 {%- endblock -%}
 
 {%- block body_attr %} class="body-navbar
@@ -33,16 +33,16 @@
 {%- endblock body_attr -%}
 
 {%- block logo -%}
-	{%- if config_str('system.logo', schema) -%}
+	{%- if config_str('system.logo') -%}
 		<a href="{{- block('system_link') -}}" class="navbar-left hidden-xs logo">
-			<img src="{{- s3(config_str('system.logo', schema)) -}}" height="50">
+			<img src="{{- s3(config_str('system.logo')) -}}" height="50">
 		</a>
 	{%- endif -%}
 {%- endblock logo -%}
 
 {%- block system_link -%}
-	{%- if config_str('system.website_url', schema) -%}
-		{{- config_str('system.website_url', schema) -}}
+	{%- if config_str('system.website_url') -%}
+		{{- config_str('system.website_url') -}}
 	{%- else -%}
 		{{- path('home', pp_ary()) -}}
 	{%- endif -%}
@@ -202,6 +202,10 @@
 
 	{%- block heading -%}
 		<h1>
+      {%- if admin_heading is defined -%}
+        {%- include 'include/label/admin.html.twig' -%}
+        &nbsp;
+      {%- endif -%}
 			{%- block heading_fa_container -%}
 				<i class="fa fa-{%- block heading_fa -%}{{- menu_sidebar_def[active_menu].fa -}}{%- endblock heading_fa -%}"></i>&nbsp;
 			{%- endblock heading_fa_container -%}

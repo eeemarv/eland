@@ -15,48 +15,64 @@ use Symfony\Component\Routing\Annotation\Route;
 #[AsController]
 class ContactTypesAddController extends AbstractController
 {
-    #[Route(
-        '/{system}/{role_short}/contact-types/add',
-        name: 'contact_types_add',
-        methods: ['GET', 'POST'],
-        requirements: [
-            'system'        => '%assert.system%',
-            'role_short'    => '%assert.role_short.admin%',
-        ],
-        defaults: [
-            'module'        => 'users',
-            'sub_module'    => 'contact_types',
-        ],
-    )]
+  #[Route(
+    '/{system}/{role_short}/contact-types/add',
+    name: 'contact_types_add',
+    methods: ['GET', 'POST'],
+    requirements: [
+      'system'        => '%assert.system%',
+      'role_short'    => '%assert.role_short.admin%',
+    ],
+    defaults: [
+      'module'        => 'users',
+      'sub_module'    => 'contact_types',
+    ],
+  )]
 
-    public function __invoke(
-        Request $request,
-        ContactRepository $contact_repository,
-        PageParamsService $pp
-    ):Response
+  public function __invoke(
+    Request $request,
+    ContactRepository $contact_repository,
+    PageParamsService $pp,
+  ):Response
+  {
+    $command = new ContactTypesCommand();
+
+    $form_options = [
+      'validation_groups' => ['add'],
+    ];
+
+    $form = $this->createForm(
+      type: ContactTypesType::class,
+      data: $command,
+      options: $form_options,
+    );
+
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted()
+      && $form->isValid())
     {
-        $command = new ContactTypesCommand();
+      $command = $form->getData();
+      $contact_repository->insert_contact_type(
+        abbrev: $command->abbrev,
+        name: $command->name,
+        schema: $pp->schema_o(),
+      );
 
-        $form_options = [
-            'validation_groups' => ['add'],
-        ];
-
-        $form = $this->createForm(ContactTypesType::class, $command, $form_options);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted()
-            && $form->isValid())
-        {
-            $command = $form->getData();
-            $contact_repository->insert_contact_type($command, $pp->schema());
-
-            $this->addFlash('success', 'Contact type toegevoegd.');
-            return $this->redirectToRoute('contact_types', $pp->ary());
-        }
-
-        return $this->render('contact_types/contact_types_add.html.twig', [
-            'form'  => $form->createView(),
-        ]);
+      $this->addFlash(
+        type: 'success',
+        message: [
+          'key' => 'contact_types_add.flash.success',
+          'params'  => [
+            'name'  => $command->name,
+          ]
+        ] ,
+      );
+      return $this->redirectToRoute('contact_types', $pp->ary());
     }
+
+    return $this->render('contact_types/contact_types_add.html.twig', [
+      'form'  => $form->createView(),
+    ]);
+  }
 }

@@ -1,0 +1,24 @@
+<div class="panel panel-success printview">
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped table-hover footable csv"
+      data-filtering="true"
+      data-filter-delay="0"
+      data-filter="#q"
+      data-filter-min="1"
+      data-cascade="true"
+      data-empty="{{- 'users_list.filter.no_results'|trans -}}"
+      data-sorting="true"
+      data-filter-placeholder="{{- 'label.search'|trans -}}"
+      data-filter-position="left"
+    >
+      <thead>
+        <tr>
+          {%- include 'users/list/users_list_table_head.html.twig' -%}
+        </tr>
+      </thead>
+      <tbody>
+        {%- include 'users/list/users_list_table_body.html.twig' -%}
+      </tbody>
+    </table>
+  </div>
+</div>

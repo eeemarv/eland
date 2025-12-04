@@ -7,7 +7,6 @@ use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use App\Service\PageParamsService;
-use App\Validator\User\ActiveUser;
 
 // review
 class UserVisibleForCurrentRoleValidator extends ConstraintValidator
@@ -40,7 +39,10 @@ class UserVisibleForCurrentRoleValidator extends ConstraintValidator
       throw new UnexpectedTypeException($user_id, 'number');
     }
 
-    $user = $this->user_repository->get($user_id, $this->pp->schema());
+    $user = $this->user_repository->get(
+      id: $user_id,
+      schema: $this->pp->schema_o(),
+    );
 
     if (in_array($user['status'], [1, 2, 7]))
     {

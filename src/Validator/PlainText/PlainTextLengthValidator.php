@@ -30,15 +30,15 @@ class PlainTextLengthValidator extends ConstraintValidator
 
     if ($len < $constraint->min) {
       $this->context->buildViolation($constraint->message_min)
-        ->setParameter('{ min }', (string) $constraint->min)
-        ->setParameter('{ len }', (string) $len)
+        ->setParameter('min', (string) $constraint->min)
+        ->setParameter('len', (string) $len)
         ->addViolation();
     }
 
     if ($len > $constraint->max) {
       $this->context->buildViolation($constraint->message_max)
-        ->setParameter('{ max }', (string) $constraint->max)
-        ->setParameter('{ len }', (string) $len)
+        ->setParameter('max', (string) $constraint->max)
+        ->setParameter('len', (string) $len)
         ->addViolation();
     }
   }

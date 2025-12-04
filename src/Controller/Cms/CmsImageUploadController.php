@@ -16,49 +16,49 @@ use Symfony\Component\Routing\Annotation\Route;
 #[AsController]
 class CmsImageUploadController extends AbstractController
 {
-    #[Route(
-        '/{system}/{role_short}/cms/image-upload',
-        name: 'cms_image_upload',
-        methods: ['POST'],
-        requirements: [
-            'system'        => '%assert.system%',
-            'role_short'    => '%assert.role_short.admin%',
-        ],
-        defaults: [
-            'module'        => 'cms',
-        ],
-    )]
+  #[Route(
+    '/{system}/{role_short}/cms/image-upload',
+    name: 'cms_image_upload',
+    methods: ['POST'],
+    requirements: [
+      'system'        => '%assert.system%',
+      'role_short'    => '%assert.role_short.admin%',
+    ],
+    defaults: [
+      'module'        => 'cms',
+    ],
+  )]
 
-    public function __invoke(
-        Request $request,
-        Db $db,
-        LoggerInterface $logger,
-        ImageUploadService $image_upload_service,
-        PageParamsService $pp,
-        string $env_s3_url
-    ):Response
+  public function __invoke(
+    Request $request,
+    Db $db,
+    LoggerInterface $logger,
+    ImageUploadService $image_upload_service,
+    PageParamsService $pp,
+    string $env_s3_url,
+  ):Response
+  {
+    $uploaded_file = $request->files->get('image');
+
+    if (!$uploaded_file)
     {
-        $uploaded_file = $request->files->get('image');
-
-        if (!$uploaded_file)
-        {
-            throw new BadRequestHttpException('Afbeeldingsbestand ontbreekt.');
-        }
-
-        $file = $image_upload_service->upload($uploaded_file,
-            'c', 0, 600, 600, false, $pp->schema());
-
-        $db->insert($pp->schema() . '.static_content_images', [
-            'file'          => $file,
-        ]);
-
-        $logger->info('Static Content image ' . $file .
-            ' uploaded.',
-            ['schema' => $pp->schema()]);
-
-        return $this->json([
-            'file'  => $file,
-            'base_url'  => $env_s3_url,
-        ]);
+      throw new BadRequestHttpException('Afbeeldingsbestand ontbreekt.');
     }
+
+    $file = $image_upload_service->upload($uploaded_file,
+      'c', 0, 600, 600, false, $pp->schema());
+
+    $db->insert($pp->schema() . '.static_content_images', [
+      'file'          => $file,
+    ]);
+
+    $logger->info('Static Content image ' . $file .
+      ' uploaded.',
+      ['schema' => $pp->schema()]);
+
+    return $this->json([
+      'file'  => $file,
+      'base_url'  => $env_s3_url,
+    ]);
+  }
 }

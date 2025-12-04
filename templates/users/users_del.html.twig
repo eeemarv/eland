@@ -1,15 +1,17 @@
 {%- extends 'users/base/users_single_base.html.twig' -%}
 
+{%- set admin_heading = true -%}
+
 {%- block heading_title -%}
-    {{- 'users_del.title'|trans({
-        'user': account(id, schema)|link('users_show', {'id': id})
-    })|raw -}}
+  {{- 'users_del.title'|trans({
+    'user': account(id, schema)|link('users_show', {'id': id})
+  })|raw -}}
 {%- endblock heading_title -%}
 
 {%- block css -%}
-    {{- parent() -}}
+  {{- parent() -}}
 {%- endblock css -%}
 
 {%- block js -%}
-    {{- parent() -}}
+  {{- parent() -}}
 {%- endblock js -%}

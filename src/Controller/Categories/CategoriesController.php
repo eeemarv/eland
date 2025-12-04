@@ -17,76 +17,76 @@ use Symfony\Component\Routing\Annotation\Route;
 #[AsController]
 class CategoriesController extends AbstractController
 {
-    #[Route(
-        '/{system}/{role_short}/categories',
-        name: 'categories',
-        methods: ['GET', 'POST'],
-        requirements: [
-            'system'        => '%assert.system%',
-            'role_short'    => '%assert.role_short.admin%',
-        ],
-        defaults: [
-            'module'        => 'messages',
-            'sub_module'    => 'categories',
-        ],
-    )]
+  #[Route(
+    '/{system}/{role_short}/categories',
+    name: 'categories',
+    methods: ['GET', 'POST'],
+    requirements: [
+      'system'        => '%assert.system%',
+      'role_short'    => '%assert.role_short.admin%',
+    ],
+    defaults: [
+      'module'        => 'messages',
+      'sub_module'    => 'categories',
+    ],
+  )]
 
-    public function __invoke(
-        Request $request,
-        CategoryRepository $category_repository,
-        ConfigService $config_service,
-        PageParamsService $pp
-    ):Response
+  public function __invoke(
+    Request $request,
+    CategoryRepository $category_repository,
+    ConfigService $config_service,
+    PageParamsService $pp,
+  ):Response
+  {
+    if (!$config_service->get_bool('messages.fields.category.enabled', $pp->schema()))
     {
-        if (!$config_service->get_bool('messages.fields.category.enabled', $pp->schema()))
-        {
-            throw new NotFoundHttpException('Categories module not enabled.');
-        }
-
-        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
-        {
-            throw new NotFoundHttpException('messages (offer/want) module not enabled.');
-        }
-
-        $fetch = $category_repository->get_list_and_input_ary($pp->schema());
-        $categories = $fetch['categories'];
-        $input_ary = $fetch['input_ary'];
-
-        $command = new CategoriesListCommand();
-
-        $command->categories = json_encode($input_ary);
-
-        $form_options = [
-            'validation_groups' => ['edit'],
-        ];
-
-        $form = $this->createForm(CategoriesListType::class, $command, $form_options)
-            ->handleRequest($request);
-
-        if ($form->isSubmitted()
-            && $form->isValid())
-        {
-            $command = $form->getData();
-            $categories_json = $command->categories;
-            $posted_categories = json_decode($categories_json, true);
-
-            $update_count = $category_repository->update_list($posted_categories, $pp->schema());
-
-            if ($update_count)
-            {
-                $this->addFlash('success', 'Plaatsing categorieën aangepast.');
-            }
-            else
-            {
-                $this->addFlash('warning', 'Geen aangepaste plaatsing van categorieën');
-            }
-
-            return $this->redirectToRoute('categories', $pp->ary());
-        }
-
-        return $this->render('categories/categories_list.html.twig', [
-            'form'          => $form->createView(),
-            'categories'    => $categories,
-        ]);
+      throw new NotFoundHttpException('Categories module not enabled.');
     }
+
+    if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+    {
+      throw new NotFoundHttpException('messages (offer/want) module not enabled.');
+    }
+
+    $fetch = $category_repository->get_list_and_input_ary($pp->schema());
+    $categories = $fetch['categories'];
+    $input_ary = $fetch['input_ary'];
+
+    $command = new CategoriesListCommand();
+
+    $command->categories = json_encode($input_ary);
+
+    $form_options = [
+      'validation_groups' => ['edit'],
+    ];
+
+    $form = $this->createForm(CategoriesListType::class, $command, $form_options)
+      ->handleRequest($request);
+
+    if ($form->isSubmitted()
+      && $form->isValid())
+    {
+      $command = $form->getData();
+      $categories_json = $command->categories;
+      $posted_categories = json_decode($categories_json, true);
+
+      $update_count = $category_repository->update_list($posted_categories, $pp->schema());
+
+      if ($update_count)
+      {
+        $this->addFlash('success', 'Plaatsing categorieën aangepast.');
+      }
+      else
+      {
+        $this->addFlash('warning', 'Geen aangepaste plaatsing van categorieën');
+      }
+
+      return $this->redirectToRoute('categories', $pp->ary());
+    }
+
+    return $this->render('categories/categories_list.html.twig', [
+      'form'          => $form->createView(),
+      'categories'    => $categories,
+    ]);
+  }
 }

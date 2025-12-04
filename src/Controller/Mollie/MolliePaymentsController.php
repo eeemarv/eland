@@ -11,26 +11,20 @@ use App\Form\Type\Mollie\MollieBulkCancelType;
 use App\Form\Type\Mollie\MollieBulkEmailType;
 use App\Form\Type\Mollie\MollieFilterType;
 use App\Render\AccountRender;
-use App\Render\LinkRender;
 use App\Repository\MollieRepository;
 use App\Service\ConfigService;
-use App\Service\DateFormatService;
-use App\Service\FormTokenService;
-use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\UserCacheService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 #[AsController]
 class MolliePaymentsController extends AbstractController
@@ -53,18 +47,13 @@ class MolliePaymentsController extends AbstractController
     Request $request,
     MollieRepository $mollie_repository,
     AccountRender $account_render,
-    FormTokenService $form_token_service,
     ConfigService $config_service,
-    ItemAccessService $item_access_service,
-    UrlGeneratorInterface $url_generator,
-    LinkRender $link_render,
-    DateFormatService $date_format_service,
     MessageBusInterface $bus,
     PageParamsService $pp,
     SessionUserService $su,
     UserCacheService $user_cache_service,
-    #[Autowire(service: 'html_sanitizer.sanitizer.admin_email_sanitizer')] HtmlSanitizerInterface $html_sanitizer,
-    LoggerInterface $logger
+    #[Target(name: 'no_img_email_sanitizer')]
+    HtmlSanitizerInterface $html_sanitizer,
   ):Response
   {
     if (!$config_service->get_bool('mollie.enabled', $pp->schema()))

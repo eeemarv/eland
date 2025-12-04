@@ -32,6 +32,7 @@ use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -80,7 +81,7 @@ class _UsersListController extends AbstractController
     PageParamsService $pp,
     SessionUserService $su,
     VarRouteService $vr,
-    #[Autowire(service: 'html_sanitizer.sanitizer.admin_email_sanitizer')]
+    #[Target(name: 'no_img_email_sanitizer')]
     HtmlSanitizerInterface $html_sanitizer
   ):Response
   {
@@ -457,7 +458,7 @@ class _UsersListController extends AbstractController
           $m_message = new EmailUserBulkMessageMessage(
             sender_id: $su->id(),
             user_ids: $sent_to_ary,
-            message: $bulk_mail_content,
+            content: $bulk_mail_content,
             subject: $bulk_mail_subject,
             schema: $pp->schema_o(),
           );
@@ -514,9 +515,9 @@ class _UsersListController extends AbstractController
 
           $m_copy = new EmailUserBulkCopyMessage(
             sender_id: $su->id(),
-            user_ids: $sent_to_ary,
-            omitted_user_ids: array_keys($sel_ary),
-            message: $bulk_mail_content,
+            user_ids_sent: $sent_to_ary,
+            user_ids_not_sent: array_keys($sel_ary),
+            content: $bulk_mail_content,
             subject: $bulk_mail_subject,
             schema: $pp->schema_o(),
           );

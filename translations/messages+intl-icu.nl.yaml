@@ -65,6 +65,11 @@ check:
     dat de juiste gebruikers geselecteerd zijn.
   verify: Ik heb alles nagekeken
 
+cols:
+  title: Weergave Kolommen
+  submit_btn: Pas Weergave Kolommen Aan
+  reset_btn: Reset Kolommen
+
 date_format:
   technical:
     day: '%Y-%m-%d'
@@ -204,6 +209,7 @@ label:
   actions: Acties
   actif: Actief
   activated: Geactiveerd
+  activated_at: Geactiveerd
   activity: Activiteit
   admin: Admin
   admin_comment: Admin commentaar
@@ -214,9 +220,12 @@ label:
   amount: Bedrag
   approved: Goedgekeurd
   balance: Saldo
-  balance_on_date: Saldo op datum
+  balance_on_date: Saldo op Datum
+  balance_on_date_var: Saldo op {date}
+  balance_date: Datum van Saldo
   balance_sum: "Totaal Saldo: {balance_sum}"
   bg_color: Achtergrondkleur
+  birthdate: Geboortedatum
   captcha: Anti-spam verificatiecode
   category: Categorie
   code: Code
@@ -227,17 +236,20 @@ label:
   contact_type: Contact type
   content: Inhoud
   created: Aanmaak
+  created_at: Aangemaakt
   current_balance: Huidig saldo
   days: Dagen
   description: Omschrijving
   date: Datum
   date_of_birth: Geboortedatum
+  distance: Afstand
   download: Download
   email: E-mail
   email_tag: E-mail tag
   event_date: Agendadatum
   example: Voorbeeld
-  exclude_counterparties: Exclusief tegenpartijen
+  exclude_counterparties: Exclusief Tegenpartijen
+  exclude_counterparty: Exclusief Tegenpartij
   expired: Vervallen
   expires_at: Vervaldatum
   file: Bestand
@@ -250,6 +262,8 @@ label:
   from: Van
   from_date: Vanaf
   full_name: Volledige naam
+  hidden: Verborgen
+  hobbies: Hobbies
   hobbies_interests: Hobbies/interesses
   image: Afbeelding
   images: Afbeeldingen
@@ -257,7 +271,9 @@ label:
   images_remove: Afbeeldingen verwijderen
   in: In
   keep_after_date: Behoud na Datum
-  last_login: Laatste Login
+  last_edit_at: Aangepast
+  last_login: Laatst Ingelogd
+  last_login_at: Laatst Ingelogd
   last_name: Achternaam
   leaving_users: Uitstappers
   link: Link
@@ -279,14 +295,18 @@ label:
   new_users: Instappers
   not_defined: Niet bepaald
   new_password: Nieuw paswoord
+  off: Uit
   offer: Aanbod
   offers: Aanbod
   offers_and_wants: Vraag en Aanbod
+  on: Aan
   optional: Optioneel
   original_filename: Orginele bestandsnaam
+  over_period: Over Periode
   out: Uit
   periodic_overview: Periodiek overzicht (e-mail)
   periodic_overview_en: Ontvangst periodieke overzichts email
+  periodic_overview_short: Per. overzicht
   parsed_address: Ontleed Adres
   password: Paswoord
   per_unit: Per (uur, stuk...)
@@ -395,6 +415,11 @@ view:
   tiles: Tegels met foto's
   map: Kaart
   extended: Lijst met omschrijvingen
+
+role:
+  admin: Admin
+  user: Lid
+  guest: Gast
 
 service_stuff:
   service:
@@ -515,10 +540,16 @@ cms_edit:
       title: >-
         Blokken die op alle pagina's
         getoond worden.
-
   related_pages: Verwante pagina's
   form_disabled: >-
     Dit formulier is niet actief in CMS Edit Mdous.
+  flash:
+    success: >-
+      {count, plural,
+        =0 {Geen content aangepast}
+        =1 {1 content block aangepast}
+        other {# content blokken aangepast}
+      }
 
 config:
   title: Instellingen
@@ -662,13 +693,19 @@ contact_types:
 
 contact_types_add:
   title: Contact type toevoegen
+  flash:
+    success: Contact type "{name}" toegevoegd
 
 contact_types_del:
   title: >-
     Contact type verwijderen: {name}
+  flash:
+    success: Contact type "{name}" verwijderd
 
 contact_types_edit:
   title: Contact type aanpassen
+  flash:
+    success: Contact type "{name}" aangepast
 
 contacts:
   title: Contacten
@@ -1670,6 +1707,45 @@ users_list:
             other {Ontvangst periodieke overzichts email
             aangepast voor # gebruikers}
           }
+  filter:
+    no_results: >
+      Er zijn geen gebruikers volgens
+      de selectiecriteria
+  cols:
+    distance:
+      label: Afstand
+      explain: >-
+        Tussen eigen adres en adres van
+        gebruiiker. De kolom wordt niet
+        getoond wanneer het eigen adres
+        niet ingesteld is.
+    mollie:
+      title: Mollie (EUR)
+      label: Mollie
+      explain: >-
+        Status van het laatste betaalverzoek.
+    transactions_exclude_code:
+      label: >-
+        Exclusief tegenpartij
+    transactions_in:
+      label: >-
+        Transacties In
+    transactions_out:
+      label: >-
+        Transacties Uit
+    transactions_total:
+      label: >-
+        Transacties Totaal
+    amount_in:
+      label: >-
+        {currency} In
+    amount_out:
+      label: >-
+        {currency} Uit
+    amount_total:
+      label: >-
+        {currency} Totaal
+
 
 users_modules:
   title: >-

@@ -5,6 +5,10 @@
   {{- assets_add(['contacts_edit.js']) -}}
 {%- endblock assets_add -%}
 
+{%- if pp_has_role('admin') -%}
+  {%- set admin_heading = true -%}
+{%- endif -%}
+
 {%- block heading_title -%}
   {{- 'contacts_edit.title'|trans({
     'self': is_self or not user_id ? 'self' : 'some_user',

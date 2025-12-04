@@ -1,33 +1,35 @@
 {%- extends 'transactions/base/transactions_form.html.twig' -%}
 
 {%- block assets_add -%}
-    {{- parent() -}}
-    {{- assets_add(['transactions_modules.js']) -}}
+  {{- parent() -}}
+  {{- assets_add(['transactions_modules.js']) -}}
 {%- endblock assets_add -%}
 
+{%- set admin_heading = true -%}
+
 {%- block heading_title -%}
-    {{- 'transactions_modules.title'|trans -}}
+  {{- 'transactions_modules.title'|trans -}}
 {%- endblock heading_title -%}
 
 {%- block form_a -%}
-    {{- form_row(form.service_stuff_enabled, {
-        'label': 'transactions_modules.service_stuff_enabled.label',
-        'required': false
-    }) -}}
+  {{- form_row(form.service_stuff_enabled, {
+    'label': 'transactions_modules.service_stuff_enabled.label',
+    'required': false
+  }) -}}
 
-    {{- form_row(form.limits_enabled, {
-        'label': 'transactions_modules.limits_enabled.label',
-        'required': false
-    }) -}}
+  {{- form_row(form.limits_enabled, {
+    'label': 'transactions_modules.limits_enabled.label',
+    'required': false
+  }) -}}
 
-    {{- form_row(form.autominlimit_enabled, {
-        'label': 'transactions_modules.autominlimit_enabled.label',
-        'help': 'transactions_modules.autominlimit_enabled.help',
-        'required': false
-    }) -}}
+  {{- form_row(form.autominlimit_enabled, {
+    'label': 'transactions_modules.autominlimit_enabled.label',
+    'help': 'transactions_modules.autominlimit_enabled.help',
+    'required': false
+  }) -}}
 
-    {{- form_row(form.mass_enabled, {
-        'label': 'transactions_modules.mass_enabled.label',
-        'required': false
-    }) -}}
+  {{- form_row(form.mass_enabled, {
+    'label': 'transactions_modules.mass_enabled.label',
+    'required': false
+  }) -}}
 {%- endblock form_a -%}

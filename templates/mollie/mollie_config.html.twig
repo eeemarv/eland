@@ -1,6 +1,8 @@
 {%- extends 'mollie/base/mollie_base.html.twig' -%}
 {%- import 'macro/anchor.html.twig' as a -%}
 
+{%- set admin_heading = true -%}
+
 {%- block heading_title -%}
     {{- 'mollie_config.title'|trans -}}
 {%- endblock heading_title -%}

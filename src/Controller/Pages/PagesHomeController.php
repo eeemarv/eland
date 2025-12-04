@@ -12,34 +12,34 @@ use Symfony\Component\Routing\Annotation\Route;
 #[AsController]
 class PagesHomeController extends AbstractController
 {
-    #[Route(
-        '/{system}',
-        name: 'home',
-        methods: ['GET'],
-        priority: 30,
-        requirements: [
-            'system'        => '%assert.system%',
-        ],
-        defaults: [
-            'module'        => 'home',
-        ],
-    )]
+  #[Route(
+    '/{system}/p/',
+    name: 'home',
+    methods: ['GET'],
+    priority: 30,
+    requirements: [
+        'system'        => '%assert.system%',
+    ],
+    defaults: [
+        'module'        => 'home',
+    ],
+  )]
 
-    public function __invoke(
-        Request $request,
-        SessionUserService $su
-    ):Response
-    {
-        $response = $this->render('pages/home.html.twig');
+  public function __invoke(
+    Request $request,
+    SessionUserService $su,
+  ):Response
+  {
+    $response = $this->render('pages/home.html.twig');
 
-        $logins = $su->logins();
+    $logins = $su->logins();
 
-        if (empty($logins)){
-            $response->setEtag(hash('crc32b', $response->getContent()), true);
-            $response->setPublic();
-            $response->isNotModified($request);
-        }
-
-        return $response;
+    if (empty($logins)){
+      $response->setEtag(hash('crc32b', $response->getContent()), true);
+      $response->setPublic();
+      $response->isNotModified($request);
     }
+
+    return $response;
+  }
 }

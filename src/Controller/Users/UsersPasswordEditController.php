@@ -78,7 +78,11 @@ class UsersPasswordEditController extends AbstractController
       $command = $form->getData();
       $password_hasher = $password_hasher_factory->getPasswordHasher(new User());
       $hashed_password = $password_hasher->hash($command->password);
-      $user_repository->set_password($id, $hashed_password, $pp->schema());
+      $user_repository->set_password(
+        id: $id,
+        password: $hashed_password,
+        schema: $pp->schema_o(),
+      );
 
       $this->addFlash('success', 'Paswoord opgeslagen.');
 

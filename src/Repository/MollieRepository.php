@@ -33,16 +33,6 @@ class MollieRepository
     $stmt_1->bindValue('created_by', $created_by, Types::INTEGER);
     $stmt_1->executeStatement();
 
-/*
-    $this->db->insert($schema->str() . '.mollie_payment_requests', [
-      'description'   => $description,
-      'created_by'    => $created_by,
-    ], [
-      Types::STRING,
-      Types::INTEGER,
-    ]);
-*/
-
     $request_id = (int) $this->db->lastInsertId($schema->str() . '.mollie_payment_requests_id_seq');
 
     $stmt_2 = $this->db->prepare('insert into ' .
@@ -59,21 +49,6 @@ class MollieRepository
       $stmt_2->bindValue('amount', strtr($amount, ',', '.'), Types::DECIMAL);
       $stmt_2->bindValue('user_id', $user_id, Types::INTEGER);
       $stmt_2->executeStatement();
-/*
-      $this->db->insert($schema->str() . '.mollie_payments', [
-        'request_id'    => $request_id,
-        'amount'        => $amo,
-        'user_id'       => $user_id,
-        'currency'      => 'EUR',
-        'created_by'    => $created_by,
-      ], [
-        Types::STRING,
-        Types::DECIMAL,
-        Types::INTEGER,
-        Types::STRING,
-        Types::INTEGER,
-      ]);
-*/
     }
   }
 
@@ -106,16 +81,6 @@ class MollieRepository
     $stmt->bindValue('mollie_payment_id', $mollie_payment_id, Types::INTEGER);
     $stmt->bindValue('checkout_token', $checkout_token->toRfc4122(), Types::GUID);
     $stmt->executeStatement();
-
-/*
-		$this->db->update($schema->str() . '.mollie_payments', [
-			'mollie_payment_id' => $mollie_payment_id,
-		], [
-      'checkout_token' => $checkout_token,
-    ], [
-      Types::GUID,
-    ]);
-*/
 	}
 
 	public function set_paid(
@@ -131,17 +96,6 @@ class MollieRepository
     $stmt->bindValue('mollie_status', $mollie_status, Types::STRING);
     $stmt->bindValue('checkout_token', $checkout_token->toRfc4122(), Types::GUID);
     $stmt->executeStatement();
-
-/*
-		$this->db->update($schema->str() . '.mollie_payments',[
-			'mollie_status'     => $mollie_status,
-			'is_paid'           => 't',
-		], [
-      'checkout_token' => $checkout_token->toRfc4122(),
-    ], [
-      Types::GUID,
-    ]);
-*/
 	}
 
 	public function get_open_payments_for_user(
@@ -486,5 +440,29 @@ class MollieRepository
       'payments'  => $payments,
       'count_ary' => $count_ary,
     ];
+  }
+
+  public function get_last_status_ary(
+    Schema $schema
+  ):array
+  {
+    $ary = [];
+    $res = $this->db->executeQuery('select distinct on (u.id)
+      u.id, p.is_paid, p.is_canceled,
+      p.paid_at, p.canceled_at,
+      p.created_at, p.amount, r.description
+      from ' . $schema->str() . '.users u
+      inner join ' . $schema->str() . '.mollie_payments p
+        on u.id = p.user_id
+      inner join ' . $schema->str() . '.mollie_payment_requests r
+        on r.id = p.request_id
+      order by u.id asc, p.created_at desc');
+
+    while (($row = $res->fetchAssociative()))
+    {
+      $ary[$row['id']] = $row;
+    }
+
+    return $ary;
   }
 }

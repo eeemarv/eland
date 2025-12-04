@@ -33,7 +33,10 @@ class UniqueEmailContactValidator extends ConstraintValidator
       throw new UnexpectedTypeException($command, ContactsCommand::class);
     }
 
-    $mail_contact_type = $this->contact_repository->get_contact_type_by_abbrev('mail', $this->pp->schema());
+    $mail_contact_type = $this->contact_repository->get_contact_type_by_abbrev(
+      abbrev: 'mail',
+      schema: $this->pp->schema_o(),
+    );
 
     if ($command->contact_type_id !== $mail_contact_type['id'])
     {
@@ -64,7 +67,11 @@ class UniqueEmailContactValidator extends ConstraintValidator
 
     $user_id = $command->user_id ?? 0;
 
-    $count = $this->contact_repository->get_mail_count_except_for_user($email, $user_id, $this->pp->schema());
+    $count = $this->contact_repository->get_mail_count_except_for_user(
+      email_address: $email,
+      user_id: $user_id,
+      schema: $this->pp->schema_o(),
+    );
 
     if ($count)
     {

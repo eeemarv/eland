@@ -40,7 +40,7 @@ final class EmailUserBulkMessageHandler
     {
       $user = $this->user_repository->get(
         id: $user_id,
-        schema: $schema->str(),
+        schema: $schema,
       );
 
       $embedded_context = [];

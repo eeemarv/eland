@@ -16,50 +16,50 @@ use Symfony\Component\Routing\Annotation\Route;
 #[AsController]
 class MessagesModulesController extends AbstractController
 {
-    #[Route(
-        '/{system}/{role_short}/messages/modules',
-        name: 'messages_modules',
-        methods: ['GET', 'POST'],
-        requirements: [
-            'system'        => '%assert.system%',
-            'role_short'    => '%assert.role_short.admin%',
-        ],
-        defaults: [
-            'module'        => 'messages',
-        ],
-    )]
+  #[Route(
+    '/{system}/{role_short}/messages/modules',
+    name: 'messages_modules',
+    methods: ['GET', 'POST'],
+    requirements: [
+      'system'        => '%assert.system%',
+      'role_short'    => '%assert.role_short.admin%',
+    ],
+    defaults: [
+      'module'        => 'messages',
+    ],
+  )]
 
-    public function __invoke(
-        Request $request,
-        ConfigService $config_service,
-        PageParamsService $pp
-    ):Response
+  public function __invoke(
+    Request $request,
+    ConfigService $config_service,
+    PageParamsService $pp,
+  ):Response
+  {
+    if (!$config_service->get_bool('messages.enabled', $pp->schema()))
     {
-        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
-        {
-            throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
-        }
-
-        $command = new MessagesModulesCommand();
-        $config_service->load_command($command, $pp->schema());
-
-        $form = $this->createForm(MessagesModulesType::class, $command);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted()
-            && $form->isValid())
-        {
-            $command = $form->getData();
-            $config_service->store_command($command, $pp->schema());
-
-            $this->addFlash('success', 'Submodules/velden vraag en aanbod aangepast');
-
-            return $this->redirectToRoute('messages_modules', $pp->ary());
-        }
-
-        return $this->render('messages/messages_modules.html.twig', [
-            'form'          => $form->createView(),
-        ]);
+      throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
     }
+
+    $command = new MessagesModulesCommand();
+    $config_service->load_command($command, $pp->schema());
+
+    $form = $this->createForm(MessagesModulesType::class, $command);
+
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted()
+      && $form->isValid())
+    {
+      $command = $form->getData();
+      $config_service->store_command($command, $pp->schema());
+
+      $this->addFlash('success', 'Submodules/velden vraag en aanbod aangepast');
+
+      return $this->redirectToRoute('messages_modules', $pp->ary());
+    }
+
+    return $this->render('messages/messages_modules.html.twig', [
+      'form'          => $form->createView(),
+    ]);
+  }
 }

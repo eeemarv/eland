@@ -12,10 +12,6 @@ class DateFormatExtension extends AbstractExtension
 	{
 		return [
 			new TwigFilter('date_format', [DateFormatRuntime::class, 'get'], ['needs_context' => true]),
-//			new TwigFilter('sec_format', [DateFormatRuntime::class, 'get_sec']),
-//			new TwigFilter('min_format', [DateFormatRuntime::class, 'get_min']),
-//			new TwigFilter('day_format', [DateFormatRuntime::class, 'get_day']),
-//			new TwigFilter('date_format_from_unix', [DateFormatRuntime::class, 'get_from_unix']),
 		];
 	}
 

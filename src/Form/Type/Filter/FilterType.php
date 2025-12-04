@@ -24,9 +24,7 @@ class FilterType extends AbstractType
 
   public function configureOptions(OptionsResolver $resolver):void
   {
-    $resolver->setDefaults([
-      'csrf_protection'       => false,
-      'form_token_enabled'    => false,
-    ]);
+    $resolver->setDefault('csrf_protection', false);
+    $resolver->setDefault('form_token_enabled', false);
   }
 }
