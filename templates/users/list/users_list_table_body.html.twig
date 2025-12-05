@@ -1,8 +1,8 @@
 {%- for uid, u in users -%}
   {%- set u_class =
     is_new(uid) ? ' class="success"' :
-    is_active(uid) ? '' :
     is_leaving(uid) ? ' class="danger"' :
+    is_active(uid) ? '' :
     is_inactive(uid) ? ' class="inactive"' :
     is_ip(uid) ? ' class="warning"' :
     is_im(uid) ? ' class="info"' :

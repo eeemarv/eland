@@ -35,8 +35,8 @@
     {%- for p in payments -%}
       {%- set u_class =
         is_new(p.user_id) ? ' class="success"' :
-        is_active(p.user_id) ? '' :
         is_leaving(p.user_id) ? ' class="danger"' :
+        is_active(p.user_id) ? '' :
         is_inactive(p.user_id) ? ' class="inactive"' :
         is_ip(p.user_id) ? ' class="warning"' :
         is_im(p.user_id) ? ' class="info"' :

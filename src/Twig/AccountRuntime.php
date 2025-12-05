@@ -257,6 +257,10 @@ class AccountRuntime implements RuntimeExtensionInterface
 		{
 			return true;
 		}
+		if ($user['status'] === 2)
+		{
+			return true;
+		}
     return false;
 	}
 }

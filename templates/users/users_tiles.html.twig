@@ -9,6 +9,20 @@
   {%- include 'form/q_filter.html.twig' -%}
 {%- endblock filter_form_a -%}
 
+{%- block pane_select -%}
+  {%- include 'users/list/users_nav_tabs.html.twig' -%}
+{%- endblock pane_select -%}
+
+{%- block content -%}{%- endblock -%}
+
+{%- block data -%}
+  {%- if users|length -%}
+    {%- include 'users/tiles/users_tiles.html.twig' -%}
+  {%- else -%}
+    {%- include 'include/no_results.html.twig' -%}
+  {%- endif -%}
+{%- endblock data -%}
+
 {%- block css -%}
   {{- parent() -}}
 {%- endblock css -%}

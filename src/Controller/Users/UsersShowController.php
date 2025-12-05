@@ -13,7 +13,6 @@ use App\Cnst\RoleCnst;
 use App\Controller\Contacts\ContactsUserShowInlineController;
 use App\Email\UserPrivate\Copy\EmailUserPrivateCopyMessage;
 use App\Email\UserPrivate\Message\EmailUserPrivateMessageMessage;
-use App\Queue\MailQueue;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Repository\AccountRepository;
@@ -87,7 +86,6 @@ class UsersShowController extends AbstractController
         ItemAccessService $item_access_service,
         LinkRender $link_render,
         MailAddrUserService $mail_addr_user_service,
-        MailQueue $mail_queue,
         DateFormatService $date_format_service,
         UserCacheService $user_cache_service,
         DistanceService $distance_service,

@@ -36,16 +36,16 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 	public function run(string $schema, bool $update):void
 	{
-        $mollie_enabled = $this->config_service->get_bool('mollie.enabled', $schema);
-        $messages_enabled = $this->config_service->get_bool('messages.enabled', $schema);
-        $transactions_enabled = $this->config_service->get_bool('transactions.enabled', $schema);
-        $news_enabled = $this->config_service->get_bool('news.enabled', $schema);
-        $docs_enabled = $this->config_service->get_bool('docs.enabled', $schema);
+    $mollie_enabled = $this->config_service->get_bool('mollie.enabled', $schema);
+    $messages_enabled = $this->config_service->get_bool('messages.enabled', $schema);
+    $transactions_enabled = $this->config_service->get_bool('transactions.enabled', $schema);
+    $news_enabled = $this->config_service->get_bool('news.enabled', $schema);
+    $docs_enabled = $this->config_service->get_bool('docs.enabled', $schema);
 		$forum_enabled = $this->config_service->get_bool('forum.enabled', $schema);
 		$new_users_enabled = $this->config_service->get_bool('users.new.enabled', $schema);
 		$leaving_users_enabled = $this->config_service->get_bool('users.leaving.enabled', $schema);
 
-        $postcode_enabled = $this->config_service->get_bool('users.fields.postcode.enabled', $schema);
+    $postcode_enabled = $this->config_service->get_bool('users.fields.postcode.enabled', $schema);
 
 		$intersystem_en = $this->config_service->get_intersystem_en($schema);
 
