@@ -6,9 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Render\LinkRender;
-use App\Cnst\StatusCnst;
-use App\Cnst\RoleCnst;
-use App\Cnst\BulkCnst;
 use App\Command\Users\UsersBulkAdminCommentsCommand;
 use App\Command\Users\UsersBulkCommentsCommand;
 use App\Command\Users\UsersBulkEmailCommand;
@@ -41,7 +38,6 @@ use App\Repository\TransactionRepository;
 use App\Repository\UserRepository;
 use App\Service\CacheService;
 use App\Service\ConfigService;
-use App\Service\DateFormatService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -86,9 +82,7 @@ class UsersListController extends AbstractController
     AccountRender $account_render,
     CacheService $cache_service,
     ConfigService $config_service,
-    DateFormatService $date_format_service,
     ItemAccessService $item_access_service,
-    LinkRender $link_render,
     UserCacheService $user_cache_service,
     MessageBusInterface $bus,
     SessionInterface $session,
@@ -115,66 +109,15 @@ class UsersListController extends AbstractController
     $transactions_enabled = $config_service->get_bool('transactions.enabled', $pp->schema());
     $limits_enabled = $config_service->get_bool('accounts.limits.enabled', $pp->schema());
 
-    $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
-    $new_users_access_list = $config_service->get_str('users.new.access_list', $pp->schema());
-    $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
-    $leaving_users_access_list = $config_service->get_str('users.leaving.access_list', $pp->schema());
-
-    $show_new_status = $new_users_enabled;
-
-    if ($show_new_status)
-    {
-      $new_users_access = $config_service->get_str('users.new.access', $pp->schema());
-      $show_new_status = $item_access_service->is_visible($new_users_access);
-    }
-
-    $show_leaving_status = $leaving_users_enabled;
-
-    if ($show_leaving_status)
-    {
-      $leaving_users_access = $config_service->get_str('users.leaving.access', $pp->schema());
-      $show_leaving_status = $item_access_service->is_visible($leaving_users_access);
-    }
-
     $filter_form = $this->createForm(QTextSearchFilterType::class);
     $filter_form->handleRequest($request);
-
-    $show_columns = $request->query->all('sh');
-
-    $selected_users = $request->request->all('sel');
-
-    $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
-
-    $user_tabs = BulkCnst::USER_TABS;
-
-    if (!$full_name_enabled)
-    {
-      unset($user_tabs['full_name_access']);
-    }
-
-    if (!$comments_enabled)
-    {
-      unset($user_tabs['comments']);
-    }
-
-    if (!$admin_comments_enabled)
-    {
-      unset($user_tabs['admin_comments']);
-    }
-
-    if (!$transactions_enabled || !$limits_enabled)
-    {
-      unset($user_tabs['min_limit'], $user_tabs['max_limit']);
-    }
-
-    if (!$periodic_mail_enabled)
-    {
-      unset($user_tabs['periodic_overview_en']);
-    }
 
     /**
      * Begin bulk POST
      */
+
+    // To keep selected checkboxes on validation error
+    $sel = $request->request->all('sel');
 
     $bulk_email_form = null;
     $bulk_full_name_access_form = null;
@@ -931,8 +874,6 @@ class UsersListController extends AbstractController
      * End columns form
      */
 
-    $params = ['status'	=> $status];
-
     /**
      * Fetch data
      */
@@ -1069,16 +1010,8 @@ class UsersListController extends AbstractController
       );
     }
 
-    $out = self::get_tab_selector(
-      $params,
-      $link_render,
-      $item_access_service,
-      $config_service,
-      $pp,
-      $vr
-    );
-
     return $this->render('users/users_list.html.twig', [
+      'sel'               => $sel,
       'users'             => $users,
       'cols'              => $cols_command,
       'balance_ary'       => $balance_ary ?? [],
@@ -1093,11 +1026,8 @@ class UsersListController extends AbstractController
       'messages_ary'      => $messages_ary ?? [],
       'trans_ary'         => $trans_ary ?? [],
       'transactions_from_date'  => $transactions_from_date ?? null,
-
-      'columns_form_raw'  => '', //$f_col,
       'filter_form'       => $filter_form->createView(),
       'row_count'         => count($users),
-      'data_list_raw'     => $out,
       'bulk_email_form'   => $bulk_email_form?->createView(),
       'bulk_full_name_access_form' => $bulk_full_name_access_form?->createView(),
       'bulk_role_form' => $bulk_role_form?->createView(),
@@ -1260,73 +1190,5 @@ class UsersListController extends AbstractController
     $out .= '</ul>';
 
     return $out;
-  }
-
-  public static function get_contacts_str(
-    ItemAccessService $item_access_service,
-    array $contacts,
-    string $abbrev
-  ):string
-  {
-    $ret = '';
-
-    if (count($contacts))
-    {
-      end($contacts);
-      $end = key($contacts);
-
-      $tpl = '%1$s';
-
-      if ($abbrev === 'mail')
-      {
-        $tpl = '<a href="mailto:%1$s">%1$s</a>';
-      }
-      else if ($abbrev === 'web')
-      {
-        $tpl = '<a href="%1$s">%1$s</a>';
-      }
-
-      foreach ($contacts as $key => $contact)
-      {
-        if ($item_access_service->is_visible($contact['access']))
-        {
-          $ret .= sprintf($tpl, htmlspecialchars($contact['value'] ?? '', ENT_QUOTES));
-
-          if ($key === $end)
-          {
-            break;
-          }
-
-          $ret .= ',<br>';
-
-          continue;
-      }
-
-        $ret .= '<span class="btn btn-default">';
-        $ret .= 'verborgen</span>';
-        $ret .= '<br>';
-      }
-    }
-    else
-    {
-        $ret .= '&nbsp;';
-    }
-
-    return $ret;
-  }
-
-  public static function array_intersect_key_recursive(array $ary_1, array $ary_2)
-  {
-    $ary_1 = array_intersect_key($ary_1, $ary_2);
-
-    foreach ($ary_1 as $key => &$val)
-    {
-      if (is_array($val))
-      {
-        $val = is_array($ary_2[$key]) ? self::array_intersect_key_recursive($val, $ary_2[$key]) : $val;
-      }
-    }
-
-    return $ary_1;
   }
 }

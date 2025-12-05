@@ -436,9 +436,9 @@ status:
   extern: Extern
   leaving: Uitstappers
   leaving_only: Enkel uitstappers
-  im: Instap-moment
+  im: Info-moment
   inactive: Inactief
-  ip: Instap-pakket
+  ip: Info-pakket
   new: Instappers
   new_only: Enkel instappers
 

@@ -66,8 +66,8 @@ class MolliePaymentsController extends AbstractController
     $mollie_apikey = $config_service->get_str('mollie.apikey', $pp->schema());
 
     if (!$mollie_apikey ||
-        !(str_starts_with($mollie_apikey, 'test_')
-        || str_starts_with($mollie_apikey, 'live_')))
+      !(str_starts_with($mollie_apikey, 'test_')
+      || str_starts_with($mollie_apikey, 'live_')))
     {
       if ($request->isMethod('GET')){
         $this->addFlash('warning', [

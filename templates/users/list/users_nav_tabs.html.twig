@@ -1,0 +1,73 @@
+
+<div class="pull-right hidden-xs hidden-sm print-hide">
+  {{- 'label.total'|trans -}}: <span id="total"></span>
+</div>
+
+{%- set user_new_pane_en = config_bool('users.new.enabled')
+  and config_str('users.new.access_pane')|is_visible -%}
+{%- set user_leaving_pane_en = config_bool('users.leaving.enabled')
+  and config_str('users.leaving.access_pane')|is_visible -%}
+
+{%- if pp_has_role('admin')
+  or user_new_pane_en
+  or user_leaving_pane_en -%}
+<ul class="nav nav-tabs" id="nav-tabs">
+  <li{%- if all_params.status == 'active' %} class="active"{%- endif -%}>
+    <a  href="{{- path('users'|var_route, {'status': 'active'}|pp) -}}">
+      {%- if pp_has_role('admin') -%}
+        {{- 'status.active'|trans -}}
+      {%- else -%}
+        {{- 'status.all'|trans }}
+      {%- endif -%}
+    </a>
+  </li>
+
+  {%- if user_new_pane_en -%}
+    <li{%- if all_params.status == 'new' %} class="active"{%- endif -%}>
+      <a  href="{{- path('users'|var_route, {'status': 'new'}|pp) -}}" class="bg-success">
+        {{- 'status.new'|trans -}}
+      </a>
+    </li>
+  {%- endif -%}
+
+  {%- if user_leaving_pane_en -%}
+  <li{%- if all_params.status == 'leaving' %} class="active"{%- endif -%}>
+    <a href="{{- path('users'|var_route, {'status': 'leaving'}|pp) -}}" class="bg-danger">
+      {{- 'status.leaving'|trans -}}
+    </a>
+  </li>
+  {%- endif -%}
+
+  {%- if pp_has_role('admin') -%}
+    <li{%- if all_params.status == 'inactive' %} class="active"{%- endif -%}>
+      <a  href="{{- path('users'|var_route, {'status': 'inactive'}|pp) -}}" class="bg-inactive">
+        {{- 'status.inactive'|trans -}}
+      </a>
+    </li>
+
+    <li{%- if all_params.status == 'ip' %} class="active"{%- endif -%}>
+      <a  href="{{- path('users'|var_route, {'status': 'ip'}|pp) -}}" class="bg-warning">
+        {{- 'status.ip'|trans -}}
+      </a>
+    </li>
+
+    <li{%- if all_params.status == 'im' %} class="active"{%- endif -%}>
+      <a  href="{{- path('users'|var_route, {'status': 'im'}|pp) -}}" class="bg-info">
+        {{- 'status.im'|trans -}}
+      </a>
+    </li>
+
+    <li{%- if all_params.status == 'extern' %} class="active"{%- endif -%}>
+      <a  href="{{- path('users'|var_route, {'status': 'extern'}|pp) -}}" class="bg-extern">
+        {{- 'status.extern'|trans -}}
+      </a>
+    </li>
+
+    <li{%- if all_params.status == 'all' %} class="active"{%- endif -%}>
+      <a href="{{- path('users'|var_route, {'status': 'all'}|pp) -}}">
+        {{- 'status.all'|trans -}}
+      </a>
+    </li>
+  {%- endif -%}
+</ul>
+{%- endif -%}

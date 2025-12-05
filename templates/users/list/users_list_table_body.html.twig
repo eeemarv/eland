@@ -1,20 +1,3 @@
-
-{#}
-  'users'             => $users,
-  'cols'              => $cols_command,
-  'balance_ary'       => $balance_ary ?? [],
-  'balance_on_date_ary' => $balance_on_date_ary ?? [],
-  'min_limit_ary'     => $min_limit_ary ?? [],
-  'max_limit_ary'     => $max_limit_ary ?? [],
-  'last_login_ary'    => $last_login_ary ?? [],
-  'contacts_ary'      => $contacts_ary ?? [],
-  'distance_ary'      => $distance_ary ?? [],
-  'ref_geo'           => $ref_geo ?? null,
-  'mollie_ary'        => $mollie_ary ?? [],
-  'messages_ary'      => $messages_ary ?? [],
-  'trans_ary'         => $trans_ary,
-{#}
-
 {%- for uid, u in users -%}
   {%- set u_class =
     is_new(uid) ? ' class="success"' :
