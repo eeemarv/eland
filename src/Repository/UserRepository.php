@@ -663,4 +663,28 @@ class UserRepository
           ['user_id' => $user_id],
           ['user_id' => Types::INTEGER]);
   }
+
+  public function get_all_active_with_addresses(
+    Schema $schema,
+  ):array
+  {
+    $ary = [];
+    $stmt = $this->db->prepare('select
+      u.id as user_id, u.name, u.code,
+      c.value, c.access
+      from ' . $schema->str() . '.users u
+      left join ' . $schema->str() . '.contact c
+       on c.user_id = u.id
+        and c.id_type_contact = (select tc.id
+        from ' . $schema->str() . '.type_contact tc
+        where tc.abbrev = \'adr\')
+      where status in (1, 2)
+      order by u.code asc');
+    $res = $stmt->executeQuery();
+    while ($row = $res->fetchAssociative())
+    {
+      $ary[$row['user_id']][] = $row;
+    }
+    return $ary;
+  }
 }

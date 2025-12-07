@@ -1746,6 +1746,30 @@ users_list:
       label: >-
         {currency} Totaal
 
+users_map:
+  hidden:
+    title: Verborgen
+    users: >-
+      Van volgende gebruikers is
+      het adres verborgen
+  not_geocoded:
+    title: Coördinaten niet gekend
+    explain: >-
+      Wanneer een adres aangepast is of net toegevoegd,
+      duurt het enige tijd eer de coordinaten zijn
+      opgezocht door de software
+      (maximum één dag).
+      Het kan ook dat bepaalde adressen
+      niet vertaalbaar zijn door
+      de "geocoding service".
+    users: >-
+        Van volgende gebruikers zijn de
+        coördinaten nog niet gekend
+  no_address:
+    title: Geen Adres
+    users: >-
+      Van volgende gebruikers
+      is geen adres gekend
 
 users_modules:
   title: >-

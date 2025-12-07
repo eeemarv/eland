@@ -1,0 +1,66 @@
+<div class="row">
+  <div class="col-md-12">
+    <div class="users_map" id="map" data-map="{{- data_map|json_encode -}}">
+    </div>
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    {%- if hidden_ary -%}
+      <h4>
+        {{- 'users_map.hidden.title'|trans -}}
+      </h4>
+      <p>
+        {{- 'users_map.hidden.users'|trans -}}:
+      </p>
+      <ul>
+        {%- for uid, u_str in hidden_ary -%}
+          <li>
+            <a href="{{- path('users_show', {'id':uid}|pp) -}}">
+              {{- u_str -}}
+            </a>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+    {%- if no_address_ary -%}
+      <h4>
+        {{- 'users_map.no_address.title'|trans -}}
+      </h4>
+      <p>
+        {{- 'users_map.no_address.users'|trans -}}:
+      </p>
+      <ul>
+        {%- for uid, u_str in no_address_ary -%}
+          <li>
+            <a href="{{- path('users_show', {'id':uid}|pp) -}}">
+              {{- u_str -}}
+            </a>
+          </li>
+        {%- endfor -%}
+      </ul>
+
+    {%- endif -%}
+    {%- if not_geocoded_ary -%}
+      <h4>
+        {{- 'users_map.not_geocoded.title'|trans -}}
+      </h4>
+      <p>
+        {{- 'users_map.not_geocoded.explain'|trans -}}
+      </p>
+      <p>
+        {{- 'users_map.not_geocoded.users'|trans -}}:
+      </p>
+      <ul>
+        {%- for uid, u_str in not_geocoded_ary -%}
+          <li>
+            <a href="{{- path('users_show', {'id':uid}|pp) -}}">
+              {{- u_str -}}
+            </a>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+  </div>
+</div>

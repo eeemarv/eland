@@ -15,43 +15,43 @@ use Symfony\Component\Routing\Annotation\Route;
 #[AsController]
 class UsersUsernameController extends AbstractController
 {
-    #[Route(
-        '/{system}/{role_short}/users/username',
-        name: 'users_username',
-        methods: ['GET', 'POST'],
-        requirements: [
-            'system'        => '%assert.system%',
-            'role_short'    => '%assert.role_short.admin%',
-        ],
-        defaults: [
-            'module'        => 'users',
-        ],
-    )]
+  #[Route(
+    '/{system}/{role_short}/users/username',
+    name: 'users_username',
+    methods: ['GET', 'POST'],
+    requirements: [
+      'system'        => '%assert.system%',
+      'role_short'    => '%assert.role_short.admin%',
+    ],
+    defaults: [
+      'module'        => 'users',
+    ],
+  )]
 
-    public function __invoke(
-        Request $request,
-        ConfigService $config_service,
-        PageParamsService $pp
-    ):Response
+  public function __invoke(
+    Request $request,
+    ConfigService $config_service,
+    PageParamsService $pp,
+  ):Response
+  {
+    $command = new UsersUsernameCommand();
+    $config_service->load_command($command, $pp->schema());
+
+    $form = $this->createForm(UsersUsernameType::class, $command);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted()
+      && $form->isValid())
     {
-        $command = new UsersUsernameCommand();
-        $config_service->load_command($command, $pp->schema());
+      $command = $form->getData();
+      $config_service->store_command($command, $pp->schema());
 
-        $form = $this->createForm(UsersUsernameType::class, $command);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted()
-            && $form->isValid())
-        {
-            $command = $form->getData();
-            $config_service->store_command($command, $pp->schema());
-
-            $this->addFlash('success', 'Gebruikersnaam configuratie aangepast');
-            return $this->redirectToRoute('users_username', $pp->ary());
-        }
-
-        return $this->render('users/users_username.html.twig', [
-            'form'          => $form->createView(),
-        ]);
+      $this->addFlash('success', 'Gebruikersnaam configuratie aangepast');
+      return $this->redirectToRoute('users_username', $pp->ary());
     }
+
+    return $this->render('users/users_username.html.twig', [
+      'form'  => $form->createView(),
+    ]);
+  }
 }

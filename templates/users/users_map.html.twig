@@ -5,6 +5,16 @@
   {{- assets_add(['leaflet', 'users_map.js']) -}}
 {%- endblock assets_add -%}
 
+{%- block content -%}{%- endblock -%}
+
+{%- block data -%}
+  {%- if users|length -%}
+    {%- include 'users/map/users_map.html.twig' -%}
+  {%- else -%}
+    {%- include 'include/no_results.html.twig' -%}
+  {%- endif -%}
+{%- endblock data -%}
+
 {%- block css -%}
   {{- parent() -}}
 {%- endblock css -%}

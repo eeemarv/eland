@@ -15,44 +15,44 @@ use Symfony\Component\Routing\Annotation\Route;
 #[AsController]
 class UsersModulesController extends AbstractController
 {
-    #[Route(
-        '/{system}/{role_short}/users/modules',
-        name: 'users_modules',
-        methods: ['GET', 'POST'],
-        requirements: [
-            'system'        => '%assert.system%',
-            'role_short'    => '%assert.role_short.admin%',
-        ],
-        defaults: [
-            'module'        => 'users',
-        ],
-    )]
+  #[Route(
+    '/{system}/{role_short}/users/modules',
+    name: 'users_modules',
+    methods: ['GET', 'POST'],
+    requirements: [
+      'system'        => '%assert.system%',
+      'role_short'    => '%assert.role_short.admin%',
+    ],
+    defaults: [
+      'module'        => 'users',
+    ],
+  )]
 
-    public function __invoke(
-        Request $request,
-        ConfigService $config_service,
-        PageParamsService $pp
-    ):Response
+  public function __invoke(
+    Request $request,
+    ConfigService $config_service,
+    PageParamsService $pp,
+  ):Response
+  {
+    $command = new UsersModulesCommand();
+    $config_service->load_command($command, $pp->schema());
+
+    $form = $this->createForm(UsersModulesType::class, $command);
+
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted()
+      && $form->isValid())
     {
-        $command = new UsersModulesCommand();
-        $config_service->load_command($command, $pp->schema());
+      $command = $form->getData();
+      $config_service->store_command($command, $pp->schema());
 
-        $form = $this->createForm(UsersModulesType::class, $command);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted()
-            && $form->isValid())
-        {
-            $command = $form->getData();
-            $config_service->store_command($command, $pp->schema());
-
-            $this->addFlash('success', 'Submodules/velden leden aangepast');
-            return $this->redirectToRoute('users_modules', $pp->ary());
-        }
-
-        return $this->render('users/users_modules.html.twig', [
-            'form'          => $form->createView(),
-        ]);
+      $this->addFlash('success', 'Submodules/velden leden aangepast');
+      return $this->redirectToRoute('users_modules', $pp->ary());
     }
+
+    return $this->render('users/users_modules.html.twig', [
+      'form'  => $form->createView(),
+    ]);
+  }
 }
