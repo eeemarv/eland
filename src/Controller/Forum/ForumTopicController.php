@@ -50,7 +50,11 @@ class ForumTopicController extends AbstractController
     }
 
     $visible_ary = $item_access_service->get_visible_ary_for_page();
-    $topic = $forum_repository->get_topic_with_prev_next($id, $visible_ary, $pp->schema());
+    $topic = $forum_repository->get_topic_with_prev_next(
+      topic_id: $id,
+      visible_ary: $visible_ary,
+      schema: $pp->schema_o(),
+    );
 
     $command = new ForumPostCommand();
 
@@ -66,7 +70,12 @@ class ForumTopicController extends AbstractController
       && $form->isValid())
     {
       $command = $form->getData();
-      $forum_repository->insert_post($command, $su->id(), $id, $pp->schema());
+      $forum_repository->insert_post(
+        command: $command,
+        user_id: $su->id(),
+        topic_id: $id,
+        schema: $pp->schema_o(),
+      );
 
       $this->addFlash('success', 'Reactie toegevoegd.');
 
@@ -76,7 +85,10 @@ class ForumTopicController extends AbstractController
       ]);
     }
 
-    $posts = $forum_repository->get_topic_posts($id, $pp->schema());
+    $posts = $forum_repository->get_topic_posts(
+      topic_id: $id,
+      schema: $pp->schema_o(),
+    );
 
     $show_access = ($pp->is_user()
       && $config_service->get_intersystem_en($pp->schema()))

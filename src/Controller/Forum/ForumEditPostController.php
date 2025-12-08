@@ -49,8 +49,14 @@ class ForumEditPostController extends AbstractController
       throw new NotFoundHttpException('Forum module not enabled.');
     }
 
-    $forum_post = $forum_repository->get_post($id, $pp->schema());
-    $forum_topic = $forum_repository->get_topic($forum_post['topic_id'], $pp->schema());
+    $forum_post = $forum_repository->get_post(
+      post_id: $id,
+      schema: $pp->schema_o(),
+    );
+    $forum_topic = $forum_repository->get_topic(
+      topic_id: $forum_post['topic_id'],
+      schema: $pp->schema_o(),
+    );
 
     if (!$item_access_service->is_visible($forum_topic['access']))
     {
@@ -62,7 +68,10 @@ class ForumEditPostController extends AbstractController
       throw new AccessDeniedHttpException('No rights for this action.');
     }
 
-    $first_post_id = $forum_repository->get_first_post($forum_topic['id'], $pp->schema());
+    $first_post_id = $forum_repository->get_first_post(
+      topic_id: $forum_topic['id'],
+      schema: $pp->schema_o(),
+    );
 
     if ($first_post_id === $id)
     {
@@ -83,7 +92,11 @@ class ForumEditPostController extends AbstractController
       && $form->isValid())
     {
       $command = $form->getData();
-      $forum_repository->update_post($id, $command, $pp->schema());
+      $forum_repository->update_post(
+        post_id: $id,
+        command: $command,
+        schema: $pp->schema_o(),
+      );
 
       $this->addFlash('success', 'Reactie aangepast.');
       return $this->redirectToRoute('forum_topic', [

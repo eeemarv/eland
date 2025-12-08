@@ -57,7 +57,11 @@ class ForumAddTopicController extends AbstractController
       && $form->isValid())
     {
       $command = $form->getData();
-      $id = $forum_repository->insert_topic($command, $su->id(), $pp->schema());
+      $id = $forum_repository->insert_topic(
+        command: $command,
+        user_id: $su->id(),
+        schema: $pp->schema_o(),
+      );
 
       $this->addFlash('success', 'Forum onderwerp toegevoegd.');
       return $this->redirectToRoute('forum_topic', [

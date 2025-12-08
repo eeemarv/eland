@@ -51,7 +51,10 @@ class ForumDelTopicController extends AbstractController
       throw new NotFoundHttpException('Forum module not enabled.');
     }
 
-    $forum_topic = $forum_repository->get_topic($id, $pp->schema());
+    $forum_topic = $forum_repository->get_topic(
+      topic_id: $id,
+      schema: $pp->schema_o(),
+    );
 
     if (!$item_access_service->is_visible($forum_topic['access']))
     {
@@ -63,7 +66,10 @@ class ForumDelTopicController extends AbstractController
       throw new AccessDeniedHttpException('Access Denied (2) for forum topic with id ' . $id);
     }
 
-    $forum_post = $forum_repository->get_first_post($id, $pp->schema());
+    $forum_post = $forum_repository->get_first_post(
+      topic_id: $id,
+      schema: $pp->schema_o(),
+    );
 
     if (!($su->is_owner($forum_post['user_id']) || $pp->is_admin()))
     {
@@ -87,7 +93,10 @@ class ForumDelTopicController extends AbstractController
     if ($form->isSubmitted()
         && $form->isValid())
     {
-      $forum_repository->del_topic($id, $pp->schema());
+      $forum_repository->del_topic(
+        topic_id: $id,
+        schema: $pp->schema_o(),
+      );
 
       $topic_subject = $forum_topic['subject'];
       $account_str = $account_render->str($forum_topic['user_id'], $pp->schema());

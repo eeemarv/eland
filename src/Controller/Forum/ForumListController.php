@@ -48,7 +48,10 @@ class ForumListController extends AbstractController
     $filter_form->handleRequest($request);
 
     $visible_ary = $item_access_service->get_visible_ary_for_page($pp->schema());
-    $topics = $forum_repository->get_topics_with_reply_count($visible_ary, $pp->schema());
+    $topics = $forum_repository->get_topics_with_reply_count(
+      visible_ary: $visible_ary,
+      schema: $pp->schema_o(),
+    );
 
     $show_access = (!$pp->is_guest()
       && $config_service->get_intersystem_en($pp->schema()))
