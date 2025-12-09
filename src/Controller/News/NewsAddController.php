@@ -39,7 +39,10 @@ class NewsAddController extends AbstractController
     SessionUserService $su
   ):Response
   {
-    if (!$config_service->get_bool('news.enabled', $pp->schema()))
+    if (!$config_service->get_bool(
+      config_id: 'news.enabled',
+      schema: $pp->schema_o(),
+    ))
     {
       throw new NotFoundHttpException('News module not enabled.');
     }

@@ -128,7 +128,10 @@ class MessagesListController extends AbstractController
         VarRouteService $vr
     ):Response
     {
-        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+        if (!$config_service->get_bool(
+          config_id: 'messages.enabled',
+          schema: $pp->schema_o(),
+        ))
         {
             throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
         }
@@ -137,11 +140,24 @@ class MessagesListController extends AbstractController
 
         $errors = [];
 
-        $service_stuff_enabled = $config_service->get_bool('messages.fields.service_stuff.enabled', $pp->schema());
-        $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
-        $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
-        $postcode_enabled = $config_service->get_bool('users.fields.postcode.enabled', $pp->schema());
-        $intersytem_en = $config_service->get_intersystem_en($pp->schema());
+        $service_stuff_enabled = $config_service->get_bool(
+          config_id: 'messages.fields.service_stuff.enabled',
+          schema: $pp->schema_o(),
+        );
+        $category_enabled = $config_service->get_bool(
+          config_id: 'messages.fields.category.enabled',
+          schema: $pp->schema_o(),
+        );
+        $expires_at_enabled = $config_service->get_bool(
+          config_id: 'messages.fields.expires_at.enabled',
+          schema: $pp->schema_o(),
+        );
+        $postcode_enabled = $config_service->get_bool(
+          config_id: 'users.fields.postcode.enabled',
+          schema: $pp->schema_o());
+        $intersytem_en = $config_service->get_intersystem_en(
+          schema: $pp->schema_o(),
+        );
         $bulk_actions_enabled = $category_enabled || $expires_at_enabled || $intersytem_en;
 
         $selected_messages = $request->request->all('sel');
@@ -888,11 +904,22 @@ class MessagesListController extends AbstractController
         SessionUserService $su
     ):array
     {
-        $service_stuff_enabled = $config_service->get_bool('messages.fields.service_stuff.enabled', $pp->schema());
-        $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
-        $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
+        $service_stuff_enabled = $config_service->get_bool(
+          config_id: 'messages.fields.service_stuff.enabled',
+          schema: $pp->schema_o(),
+        );
+        $category_enabled = $config_service->get_bool(
+          config_id: 'messages.fields.category.enabled',
+          schema: $pp->schema_o(),
+        );
+        $expires_at_enabled = $config_service->get_bool(
+          config_id: 'messages.fields.expires_at.enabled',
+          schema: $pp->schema_o(),
+        );
 
-        $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
+        $new_user_treshold = $config_service->get_new_user_treshold(
+          schema: $pp->schema_o(),
+        );
 
         $filter_command = new MessagesFilterCommand();
 

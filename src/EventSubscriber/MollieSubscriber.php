@@ -60,7 +60,10 @@ class MollieSubscriber implements EventSubscriberInterface
       return;
     }
 
-    if (!($this->config_service->get_bool('mollie.enabled', $this->pp->schema())))
+    if (!($this->config_service->get_bool(
+      config_id: 'mollie.enabled',
+      schema: $this->pp->schema_o(),
+    )))
     {
       return;
     }

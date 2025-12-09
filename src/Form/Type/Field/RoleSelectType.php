@@ -24,7 +24,9 @@ class RoleSelectType extends AbstractType
       'access.user.label'   => 'user',
     ];
 
-    if ($this->config_service->get_intersystem_en($this->pp->schema()))
+    if ($this->config_service->get_intersystem_en(
+      schema: $this->pp->schema_o(),
+    ))
     {
       $choices['access.guest.label'] = 'guest';
     }

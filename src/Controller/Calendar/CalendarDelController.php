@@ -28,7 +28,10 @@ class CalendarDelController extends AbstractController
         VarRouteService $vr
     ):Response
     {
-        if (!$config_service->get_bool('calendar.enabled', $pp->schema()))
+        if (!$config_service->get_bool(
+          config_id: 'calendar.enabled',
+          schema: $pp->schema_o(),
+        ))
         {
             throw new NotFoundHttpException('Calendar module not enabled.');
         }

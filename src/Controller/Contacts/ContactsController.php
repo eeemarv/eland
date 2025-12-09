@@ -67,7 +67,10 @@ class ContactsController extends AbstractController
     $f_params = $request->query->all('f');
     $filter_form_error = isset($f_params['user']) && !isset($filter_command->user);
 
-    $intersystem_enabled = $config_service->get_bool('intersystem.enabled', $pp->schema());
+    $intersystem_enabled = $config_service->get_bool(
+      config_id: 'intersystem.enabled',
+      schema: $pp->schema_o(),
+    );
 
     $selected_contacts = $request->request->all('sel');
     $bulk_field = $request->request->all('bulk_field');
@@ -252,7 +255,9 @@ class ContactsController extends AbstractController
       {
         case 'new':
           $sql['ustatus']['where'][]= 'u.adate > ? and u.status = 1';
-          $sql['ustatus']['params'][]= $config_service->get_new_user_treshold($pp->schema());
+          $sql['ustatus']['params'][]= $config_service->get_new_user_treshold(
+            schema: $pp->schema_o(),
+          );
           $sql['ustatus']['types'][]= Types::DATETIME_IMMUTABLE;
           break;
         case 'leaving':

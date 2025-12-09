@@ -12,58 +12,58 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
-    name: 'process:cleanup',
-    description: 'Process to cleanup images, cache and logs'
+  name: 'process:cleanup',
+  description: 'Process to cleanup images, cache and logs'
 )]
 class ProcessCleanupConsoleCommand extends Command
 {
-    public function __construct(
-        protected MonitorProcessService $monitor_process_service,
-        protected CleanupImagesTask $cleanup_images_task,
-        protected CacheService $cache_service,
-        protected Db $db
-    )
+  public function __construct(
+    private readonly MonitorProcessService $monitor_process_service,
+    private readonly CleanupImagesTask $cleanup_images_task,
+    private readonly CacheService $cache_service,
+    private readonly Db $db,
+  )
+  {
+    parent::__construct();
+  }
+
+  protected function execute(InputInterface $input, OutputInterface $output): int
+  {
+    $this->monitor_process_service->boot('cleanup');
+
+    while (true)
     {
-        parent::__construct();
+      if (!$this->monitor_process_service->wait_most_recent())
+      {
+        continue;
+      }
+
+      $select = $this->monitor_process_service->get_loop_count() % 16;
+
+      switch ($select)
+      {
+        case 0: // cleanup logs
+          $treshold = gmdate('Y-m-d H:i:s', time() - 86400 * 120);
+
+          $this->db->executeStatement('delete from xdb.logs
+            where ts < ?', [$treshold]);
+
+          error_log('Cleanup logs.');
+        break;
+
+        case 1:
+          $this->cache_service->cleanup();
+          error_log('Cleanup cache.');
+        break;
+
+        default:
+          $this->cleanup_images_task->process();
+        break;
+      }
+
+      $this->monitor_process_service->periodic_log();
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
-    {
-        $this->monitor_process_service->boot('cleanup');
-
-        while (true)
-        {
-            if (!$this->monitor_process_service->wait_most_recent())
-            {
-                continue;
-            }
-
-            $select = $this->monitor_process_service->get_loop_count() % 16;
-
-            switch ($select)
-            {
-                case 0: // cleanup logs
-                    $treshold = gmdate('Y-m-d H:i:s', time() - 86400 * 120);
-
-                    $this->db->executeStatement('delete from xdb.logs
-                        where ts < ?', [$treshold]);
-
-                    error_log('Cleanup logs.');
-                break;
-
-                case 1:
-                    $this->cache_service->cleanup();
-                    error_log('Cleanup cache.');
-                break;
-
-                default:
-                    $this->cleanup_images_task->process();
-                break;
-            }
-
-            $this->monitor_process_service->periodic_log();
-        }
-
-        return 0;
-    }
+    return 0;
+  }
 }

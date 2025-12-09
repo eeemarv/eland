@@ -43,7 +43,9 @@ class AccessFieldSubscriber implements EventSubscriberInterface
   {
     $access_options = array_combine($access_options, $access_options);
 
-    if (!$this->config_service->get_intersystem_en($this->pp->schema()))
+    if (!$this->config_service->get_intersystem_en(
+      schema: $this->pp->schema_o(),
+    ))
     {
       unset($access_options['guest']);
     }
@@ -105,7 +107,9 @@ class AccessFieldSubscriber implements EventSubscriberInterface
       if (isset($data->$name))
       {
         if ($data->$name === 'guest'
-          && !$this->config_service->get_intersystem_en($this->pp->schema())
+          && !$this->config_service->get_intersystem_en(
+            schema: $this->pp->schema_o(),
+          )
         )
         {
           $options['data'] = 'user';

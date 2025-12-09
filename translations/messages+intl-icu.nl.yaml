@@ -171,6 +171,11 @@ flash:
         other {Wegens ontbreken van adres,
         geen emails verzonden naar:}
       }
+  no_change: Geen wijziging opgeslagen
+  maintenance: >-
+    De website is niet beschikbaar
+    wegens onderhoudswerken. Enkel admins
+    kunnen inloggen.
 
 help:
   address: >-
@@ -557,6 +562,8 @@ config:
 config_admin:
   title: Admin
   help: Voor gebruikers die admin rechten hebben
+  flash:
+    change: Admin instelling aangepast
   login_as_admin_enabled:
     label: >-
       Na login direct in admin rol (i.p.v gebruikers rol)
@@ -565,6 +572,8 @@ config_date_format:
   title: Datum en tijd
   date_format:
     label: Weergave datum en tijd
+  flash:
+    change: Datum- en tijdweergave aangepast
 
 config_ext_url:
   title: Externe URL
@@ -575,6 +584,8 @@ config_ext_url:
       linken naar deze url. Wanneer niet
       ingevuld, wordt er gelinkt naar de
       homepagina van deze installatie.
+  flash:
+    change: Externe URL aangepast
 
 config_landing_page:
   help: >-
@@ -584,6 +595,8 @@ config_landing_page:
   title: Landingspagina
   landing_page:
     label: Standaard landingspagina
+  flash:
+    change: Landingspagina aangepast
 
 config_logo:
   title: Logo
@@ -600,15 +613,21 @@ config_logo:
   error:
     type: Bestandstype is niet toegelaten.
     size: Het bestand is te groot.
+  flash:
+    change: Nieuw logo opgeladen
 
 config_logo_del:
   title: Logo verwijderen?
+  flash:
+    change: Het logo is verwijderd
 
 config_maintenance:
   title: Onderhoud
   maintenance_en:
     label: >-
       Onderhoudsmodus: alleen admins kunnen inloggen.
+  flash:
+    change: Onderhouds modus aangepast
 
 config_modules:
   title: Modules
@@ -631,6 +650,8 @@ config_modules:
     label: Contact formulier
   register_form_enabled:
     label: Inschrijving formulier
+  flash:
+    change: Modules aangepast
 
 config_mail:
   title: E-mail
@@ -644,6 +665,8 @@ config_mail:
       in onderwerp van alle E-mail-berichten\
   background:
     label: Achtergrondkleur voor e-mails
+  flash:
+    change: E-mail instellingen aangepast
 
 config_mail_addr:
   title: E-mail adressen
@@ -661,6 +684,8 @@ config_mail_addr:
       Krjgt E-mail berichten
       van het Help- en Contactformulier.
   btn_add: E-mail adres toevoegen
+  flash:
+    change: E-mail adressen aangepast
 
 config_name:
   title: Naam
@@ -669,6 +694,8 @@ config_name:
   home_header_enabled:
     label: >
       Toon standaard hoofdingpaneel met systeemnaam op de home pagina.
+  flash:
+    change: Naam systeem of hoofding paneel aangepast
 
 contact_form:
   title: Contact
@@ -995,6 +1022,10 @@ messages_cleanup:
     label: >-
       Zend een notificatie naar de eigenaar van een vraag of aanbod
       bericht op het moment dat het vervalt.
+  flash:
+    change: >-
+      Geldigheid en opruiming instellingen van
+      vraag en aanbod aangepast
 
 messages_del:
   title: >-
@@ -1047,6 +1078,9 @@ messages_modules:
     label: Geldigheid en opruiming
   units_enabled:
     label: Richtprijs
+  flash:
+    change: >-
+      Submodules/velden vraag en aanbod aangepast
 
 messages_self:
   title: Mijn vraag en aanbod
@@ -1132,6 +1166,8 @@ mollie_config:
       Ze moet beginnen met live_ of test_.
       (Met test_ kan je enkel testen en geen
       betalingen ontvangen.)
+  flash:
+    change: De Mollie Apikey is aangepast
 
 mollie_payments:
   title: Mollie betaalverzoeken
@@ -1189,6 +1225,9 @@ news_sort:
   title: Sortering nieuwsberichten.
   sort_asc: >-
     Sorteer nieuwsberichten chronologisch op agendadatum.
+  flash:
+    change: >-
+      Sortering nieuws configuratie aangepast
 
 password_reset:
   title: Paswoord vergeten
@@ -1387,6 +1426,10 @@ transactions_autominlimit:
       Individuele Account Minimum Limieten die lager zijn
       dan de {open_link}algemene Minimum Systeemslimiet{close_link} blijven
       altijd ongewijzigd.
+  flash:
+    change: >-
+      De automatische minimum limiet instellingen
+      zijn aangepast
 
 transactions_currency:
   title: Munteenheid
@@ -1403,6 +1446,9 @@ transactions_currency:
       Zij is vereist voor eLAND interSysteem-verbindingen
       zodat de Systemen een gemeenschappelijke
       tijdbasis hebben.
+  flash:
+    change: >-
+      Munteenheid aangepast
 
 transactions_edit:
   title: >-
@@ -1437,6 +1483,9 @@ transactions_modules:
       enkel mogelijk wanneer "limieten" ingeschakeld zijn.
   mass_enabled:
     label: Massa-transactie
+  flash:
+    change: >-
+      Submodules/velden transacties aangepast
 
 transactions_system_limits:
   title: Systeemslimieten
@@ -1458,6 +1507,9 @@ transactions_system_limits:
       ingesteld is. Wanneer dit veld leeg
       gelaten wordt, geldt er geen minimum
       systeemslimiet.
+  flash:
+    change: >-
+      Systeemslimieten aangepast
 
 transactions_leaving_eq:
   title: Uitstappers saldo
@@ -1512,6 +1564,9 @@ users_config_leaving:
       in de periodieke overzichtsmail, zie
       de {open_link}opmaak-configuratie van
       de e-mail{close_link}.
+  flash:
+    change: >-
+      Configuratie uitstappende leden aangepast
 
 users_config_new:
   title: Configuratie Instappers
@@ -1537,6 +1592,9 @@ users_config_new:
       in de periodieke overzichtsmail, zie
       de {open_link}opmaak-configuratie van
       de e-mail{close_link}.
+  flash:
+    change: >-
+      Configuratie instappende leden aangepast
 
 users_edit:
   title: Gebruiker {user} aanpassen
@@ -1560,6 +1618,9 @@ users_full_name:
   self_edit:
     label: >-
       Gebruikers kunnen zelf hun volledige naam aanpassen
+  flash:
+    change: >-
+      Volledige naam configuratie aangepast
 
 users_image_del:
   title: >-
@@ -1774,6 +1835,9 @@ users_map:
 users_modules:
   title: >-
     Leden submodules en velden
+  flash:
+    change: >-
+      Submodules/velden leden aangepast
 
 users_password_edit:
   title: >-
@@ -1810,6 +1874,10 @@ users_periodic_mail:
   user_new_default_enabled:
     label: >-
       Standaard AAN bij nieuwe gebruikers
+  flash:
+    change: >-
+      Periodieke overzichts e-mail configuratie
+      aangepast
 
 users_show:
   title: >-
@@ -1829,6 +1897,9 @@ users_username:
   self_edit:
     label: >-
       Gebruikers kunnen zelf hun gebruikersnaam aanpassen
+  flash:
+    change: >-
+      Gebruikersnaam configuratie aangepast
 
 welcome:
   title: Welkom bij {system_name}

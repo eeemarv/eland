@@ -96,18 +96,51 @@ class UsersListController extends AbstractController
       throw new AccessDeniedHttpException('No access for status: ' . $status);
     }
 
-    $full_name_enabled = $config_service->get_bool('users.fields.full_name.enabled', $pp->schema());
-    $postcode_enabled = $config_service->get_bool('users.fields.postcode.enabled', $pp->schema());
-    $birthdate_enabled = $config_service->get_bool('users.fields.birthdate.enabled', $pp->schema());
-    $hobbies_enabled = $config_service->get_bool('users.fields.hobbies.enabled', $pp->schema());
-    $comments_enabled = $config_service->get_bool('users.fields.comments.enabled', $pp->schema());
-    $admin_comments_enabled = $config_service->get_bool('users.fields.admin_comments.enabled', $pp->schema());
-    $periodic_mail_enabled = $config_service->get_bool('periodic_mail.enabled', $pp->schema());
+    $full_name_enabled = $config_service->get_bool(
+      config_id: 'users.fields.full_name.enabled',
+      schema: $pp->schema_o(),
+    );
+    $postcode_enabled = $config_service->get_bool(
+      config_id: 'users.fields.postcode.enabled',
+      schema: $pp->schema_o(),
+    );
+    $birthdate_enabled = $config_service->get_bool(
+      config_id: 'users.fields.birthdate.enabled',
+      schema: $pp->schema_o(),
+    );
+    $hobbies_enabled = $config_service->get_bool(
+      config_id: 'users.fields.hobbies.enabled',
+      schema: $pp->schema_o(),
+    );
+    $comments_enabled = $config_service->get_bool(
+      config_id: 'users.fields.comments.enabled',
+      schema: $pp->schema_o(),
+    );
+    $admin_comments_enabled = $config_service->get_bool(
+      config_id: 'users.fields.admin_comments.enabled',
+      schema: $pp->schema_o(),
+    );
+    $periodic_mail_enabled = $config_service->get_bool(
+      config_id: 'periodic_mail.enabled',
+      schema: $pp->schema_o(),
+    );
 
-    $mollie_enabled = $config_service->get_bool('mollie.enabled', $pp->schema());
-    $messages_enabled = $config_service->get_bool('messages.enabled', $pp->schema());
-    $transactions_enabled = $config_service->get_bool('transactions.enabled', $pp->schema());
-    $limits_enabled = $config_service->get_bool('accounts.limits.enabled', $pp->schema());
+    $mollie_enabled = $config_service->get_bool(
+      config_id: 'mollie.enabled',
+      schema: $pp->schema_o(),
+    );
+    $messages_enabled = $config_service->get_bool(
+      config_id: 'messages.enabled',
+      schema: $pp->schema_o(),
+    );
+    $transactions_enabled = $config_service->get_bool(
+      config_id: 'transactions.enabled',
+      schema: $pp->schema_o(),
+    );
+    $limits_enabled = $config_service->get_bool(
+      config_id: 'accounts.limits.enabled',
+      schema: $pp->schema_o(),
+    );
 
     $filter_form = $this->createForm(QTextSearchFilterType::class);
     $filter_form->handleRequest($request);
@@ -142,8 +175,12 @@ class UsersListController extends AbstractController
     if (isset($bulk_email_form)
       && $bulk_email_form->isSubmitted()
       && $bulk_email_form->isValid()
-      && $config_service->get_bool('mail.enabled', $pp->schema())
-      && !$su->is_master())
+      && $config_service->get_bool(
+        config_id: 'mail.enabled',
+        schema: $pp->schema_o(),
+      )
+      && !$su->is_master()
+    )
     {
       $bulk_email_command = $bulk_email_form->getData();
       $selected = $bulk_email_command->selected;
@@ -1047,7 +1084,9 @@ class UsersListController extends AbstractController
     PageParamsService $pp
   ):array
   {
-    $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
+    $new_user_treshold = $config_service->get_new_user_treshold(
+      schema: $pp->schema_o(),
+    );
 
     $status_def_ary = [];
 
@@ -1059,9 +1098,15 @@ class UsersListController extends AbstractController
       'st'	=> [1, 2],
     ];
 
-    if ($config_service->get_bool('users.new.enabled', $pp->schema()))
+    if ($config_service->get_bool(
+      config_id: 'users.new.enabled',
+      schema: $pp->schema_o(),
+    ))
     {
-      $new_users_access_pane = $config_service->get_str('users.new.access_pane', $pp->schema());
+      $new_users_access_pane = $config_service->get_str(
+        config_id: 'users.new.access_pane',
+        schema: $pp->schema_o(),
+      );
 
       if ($item_access_service->is_visible($new_users_access_pane))
       {
@@ -1078,9 +1123,15 @@ class UsersListController extends AbstractController
       }
     }
 
-    if ($config_service->get_bool('users.leaving.enabled', $pp->schema()))
+    if ($config_service->get_bool(
+      config_id: 'users.leaving.enabled',
+      schema: $pp->schema_o(),
+    ))
     {
-      $leaving_users_access_pane = $config_service->get_str('users.leaving.access_pane', $pp->schema());
+      $leaving_users_access_pane = $config_service->get_str(
+        config_id: 'users.leaving.access_pane',
+        schema: $pp->schema_o(),
+      );
 
       if ($item_access_service->is_visible($leaving_users_access_pane))
       {

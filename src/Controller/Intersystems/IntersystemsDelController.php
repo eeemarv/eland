@@ -44,7 +44,10 @@ class IntersystemsDelController extends AbstractController
         PageParamsService $pp
     ):Response
     {
-        if (!$config_service->get_bool('intersystem.enabled', $pp->schema()))
+        if (!$config_service->get_bool(
+          config_id: 'intersystem.enabled',
+          schema: $pp->schema_o(),
+        ))
         {
             throw new NotFoundHttpException('Intersystem submodule (users) not enabled.');
         }

@@ -41,7 +41,10 @@ class ContactFormConfirmController extends AbstractController
     MessageBusInterface $bus,
   ):Response
   {
-    if (!$config_service->get_bool('contact_form.enabled', $pp->schema()))
+    if (!$config_service->get_bool(
+      config_id: 'contact_form.enabled',
+      schema: $pp->schema_o(),
+    ))
     {
       throw $this->createNotFoundException('Contact form module not enabled.');
     }

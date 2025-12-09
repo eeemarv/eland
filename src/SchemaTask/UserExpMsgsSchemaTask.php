@@ -2,6 +2,7 @@
 
 namespace App\SchemaTask;
 
+use App\DTO\Schema;
 use Doctrine\DBAL\Connection as Db;
 use App\Queue\MailQueue;
 use App\Service\ConfigService;
@@ -79,8 +80,14 @@ class UserExpMsgsSchemaTask implements SchemaTaskInterface
 
 	public function is_enabled(string $schema):bool
 	{
-		return $this->config_service->get_bool('messages.fields.expires_at.enabled', $schema)
-			&& $this->config_service->get_bool('messages.expire.notify', $schema);
+    $schema_o = new Schema($schema);
+		return $this->config_service->get_bool(
+      config_id: 'messages.fields.expires_at.enabled',
+      schema: $schema_o)
+			&& $this->config_service->get_bool(
+        config_id: 'messages.expire.notify',
+        schema: $schema_o,
+      );
 	}
 
 	public function get_interval(string $schema):int

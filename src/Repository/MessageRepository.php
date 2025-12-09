@@ -11,7 +11,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class MessageRepository
 {
 	public function __construct(
-		protected Db $db
+		private readonly Db $db
 	)
 	{
 	}
@@ -23,9 +23,11 @@ class MessageRepository
 	{
     $message = $this->db->fetchAssociative('select *
       from ' . $schema->str() . '.messages
-      where id = :id',
-			['id' => $id],
-			['id' => Types::INTEGER]);
+      where id = :id', [
+        'id' => $id,
+      ], [
+        'id' => Types::INTEGER,
+      ]);
 
 		if (!$message)
 		{
@@ -91,8 +93,11 @@ class MessageRepository
     Schema $schema,
   ):bool
 	{
-		return $this->db->delete($schema->str() . '.messages',
-			['id' => $id]) ? true : false;
+		return $this->db->delete($schema->str() . '.messages', [
+      'id' => $id,
+    ], [
+      'id'  => Types::INTEGER,
+    ]) ? true : false;
 	}
 
   // not used yet
@@ -111,16 +116,21 @@ class MessageRepository
     Schema $schema,
   ):bool
 	{
-		return $this->db->update($schema->str() . '.messages', $message, ['id' => $id]) ? true : false;
+		return $this->db->update($schema->str() . '.messages', $message, [
+      'id' => $id,
+    ], [
+      'id'  => Types::INTEGER,
+    ]) ? true : false;
 	}
 
+  // not used yet
 	public function get_count_for_user_id(
 		int $user_id,
-		string $schema
+		Schema $schema
 	):int
 	{
     return $this->db->fetchOne('select count(*)
-      from ' . $schema . '.messages
+      from ' . $schema->str() . '.messages
       where user_id = :user_id', [
         'user_id' => $user_id,
       ], [
@@ -128,50 +138,61 @@ class MessageRepository
       ]);
 	}
 
+  // not used yet
 	public function del_for_user_id(
 		int $user_id,
-		string $schema
+		Schema $schema
 	):void
 	{
-		$this->db->delete($schema . '.messages', [
+		$this->db->delete($schema->str() . '.messages', [
       'user_id' => $user_id,
+    ], [
+      'user_id' => Types::INTEGER,
     ]);
 	}
 
+  // not used yet
 	public function add_image_file(
 		string $image_filename,
 		int $id,
-		string $schema
+		Schema $schema,
 	):void
 	{
-		$this->db->executeStatement('update ' . $schema . '.messages
-			set image_files = coalesce(image_files, \'[]\') || ?::jsonb
-			where id = ?',
-			[$image_filename, $id],
-			[Types::JSON, Types::INTEGER]);
+		$this->db->executeStatement('update ' . $schema->str() . '.messages
+			set image_files = coalesce(image_files, \'[]\') || :image_filename
+			where id = :id', [
+        'image_filename' => $image_filename,
+        'id'  => $id,
+      ], [
+        'image_filename' => Types::JSON,
+        'id'  => Types::INTEGER,
+      ]);
 	}
 
 	public function update_image_files(
 		array $image_files,
 		int $id,
-		string $schema
+		Schema $schema
 	):void
 	{
     $image_files = json_encode(array_values($image_files));
 
-		$this->db->update($schema . '.messages', [
+		$this->db->update($schema->str() . '.messages', [
       'image_files' => $image_files,
     ], [
       'id' => $id,
+    ], [
+      'image_files' => Types::JSON,
+      'id'  => Types::INTEGER,
     ]);
 	}
 
 	public function get_max_id(
-    string $schema
+    Schema $schema
   ):int
 	{
 		return $this->db->fetchOne('select max(id)
-			from ' . $schema . '.messages') ?: 0;
+			from ' . $schema->str() . '.messages') ?: 0;
 	}
 
   public function get_counts_for_each_user(

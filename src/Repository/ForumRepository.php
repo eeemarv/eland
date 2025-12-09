@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class ForumRepository
 {
 	public function __construct(
-		protected Db $db
+		private readonly Db $db
 	)
 	{
 	}

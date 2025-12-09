@@ -2,6 +2,7 @@
 
 namespace App\Controller\Intersystems;
 
+use App\DTO\Schema;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -41,7 +42,10 @@ class IntersystemsController extends AbstractController
         SystemsService $systems_service
     ):Response
     {
-        if (!$config_service->get_bool('intersystem.enabled', $pp->schema()))
+        if (!$config_service->get_bool(
+          config_id: 'intersystem.enabled',
+          schema: $pp->schema_o(),
+        ))
         {
             throw new NotFoundHttpException('Intersystem submodule (users) not enabled.');
         }
@@ -187,7 +191,10 @@ class IntersystemsController extends AbstractController
                     $out .= ' <span class="btn btn-info" title="Dit Systeem bevindt zich op dezelfde eland-server">';
                     $out .= 'eLAND</span>';
 
-                    if (!$config_service->get_bool('transactions.currency.timebased_en', $sys['schema']))
+                    if (!$config_service->get_bool(
+                      config_id: 'transactions.currency.timebased_en',
+                      schema: new Schema($sys['schema']),
+                    ))
                     {
                         $out .= ' <span class="label label-danger" ';
                         $out .= 'title="Dit Systeem is niet geconfigureerd als Tijdbank.">';
@@ -195,7 +202,10 @@ class IntersystemsController extends AbstractController
                         $out .= 'geen Tijdbank</span>';
                     }
 
-                    if (!$config_service->get_bool('intersystem.enabled', $sys['schema']))
+                    if (!$config_service->get_bool(
+                      config_id: 'intersystem.enabled',
+                      schema: new Schema($sys['schema']),
+                    ))
                     {
                         $out .= ' <span class="label label-danger" ';
                         $out .= 'title="InterSysteem-mogelijkheid is niet ';
@@ -379,7 +389,7 @@ class IntersystemsController extends AbstractController
 
             $out .= '<tr';
 
-            if (!$config_service->get_intersystem_en($rem_schema))
+            if (!$config_service->get_intersystem_en(new Schema($rem_schema)))
             {
                 $out .= ' class="danger"';
 
@@ -389,9 +399,14 @@ class IntersystemsController extends AbstractController
             $out .= '>';
 
             $out .= '<td>';
-            $out .= $config_service->get_str('system.name', $rem_schema);
+            $out .= $config_service->get_str(
+              config_id: 'system.name',
+              schema: new Schema($rem_schema));
 
-            if (!$config_service->get_bool('transactions.currency.timebased_en', $rem_schema))
+            if (!$config_service->get_bool(
+              config_id: 'transactions.currency.timebased_en',
+              schema: new Schema($rem_schema),
+            ))
             {
                 $out .= ' <span class="label label-danger" ';
                 $out .= 'title="Dit Systeem is niet ';
@@ -400,7 +415,10 @@ class IntersystemsController extends AbstractController
                 $out .= '</i></span>';
             }
 
-            if (!$config_service->get_bool('intersystem.enabled', $rem_schema))
+            if (!$config_service->get_bool(
+              config_id: 'intersystem.enabled',
+              schema: new Schema($rem_schema),
+            ))
             {
                 $out .= ' <span class="label label-danger" ';
                 $out .= 'title="interSysteem is niet ';
@@ -440,7 +458,9 @@ class IntersystemsController extends AbstractController
                 }
                 else
                 {
-                    if ($config_service->get_intersystem_en($rem_schema))
+                    if ($config_service->get_intersystem_en(
+                      schema: new Schema($rem_schema),
+                    ))
                     {
                         $out .= $link_render->link('intersystems_add', $pp->ary(),
                             ['add_schema' => $rem_schema], 'Creëer',

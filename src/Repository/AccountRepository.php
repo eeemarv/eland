@@ -9,7 +9,7 @@ use Doctrine\DBAL\Types\Types;
 class AccountRepository
 {
 	public function __construct(
-    protected Db $db
+    private readonly Db $db
   )
 	{
 	}
@@ -144,7 +144,7 @@ class AccountRepository
 
     while ($row = $res->fetchAssociative())
     {
-        $max_limit_ary[$row['account_id']] = $row['max_limit'];
+      $max_limit_ary[$row['account_id']] = $row['max_limit'];
     }
 
     return $max_limit_ary;

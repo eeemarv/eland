@@ -39,12 +39,18 @@ class AutoDeactivateService
 	{
     $schema_o = new Schema($schema);
 
-		if (!$this->config_service->get_bool('users.leaving.enabled', $schema))
+		if (!$this->config_service->get_bool(
+      config_id: 'users.leaving.enabled',
+      schema: $schema_o,
+    ))
 		{
 			return;
 		}
 
-		if (!$this->config_service->get_bool('users.leaving.auto_deactivate', $schema))
+		if (!$this->config_service->get_bool(
+      config_id: 'users.leaving.auto_deactivate',
+      schema: $schema_o,
+    ))
 		{
 			return;
 		}
@@ -56,7 +62,10 @@ class AutoDeactivateService
 			return;
 		}
 
-    $balance_equilibrium = $this->config_service->get_int('accounts.equilibrium', $schema) ?? 0;
+    $balance_equilibrium = $this->config_service->get_int(
+      config_id: 'accounts.equilibrium',
+      schema: $schema_o,
+    ) ?? 0;
 		$balance = $this->account_repository->get_balance(
       account_id: $user_id,
       schema: $schema_o,

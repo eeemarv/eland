@@ -57,24 +57,37 @@ class MessagesDelController extends AbstractController
     VarRouteService $vr,
   ):Response
   {
-    if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+    if (!$config_service->get_bool(
+      config_id: 'messages.enabled',
+      schema: $pp->schema_o(),
+    ))
     {
       throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
     }
 
     $message = MessagesShowController::get_message($db, $id, $pp->schema());
-    $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
-    $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
+
+    $category_enabled = $config_service->get_bool(
+      config_id: 'messages.fields.category.enabled',
+      schema: $pp->schema_o(),
+    );
+    $expires_at_enabled = $config_service->get_bool(
+      config_id: 'messages.fields.expires_at.enabled',
+      schema: $pp->schema_o(),
+    );
 
     if ($category_enabled && isset($message['category_id']))
     {
-      $category = $category_repository->get($message['category_id'], $pp->schema());
+      $category = $category_repository->get(
+        id: $message['category_id'],
+        schema: $pp->schema_o(),
+      );
     }
 
     if (!($su->is_owner($message['user_id']) || $pp->is_admin()))
     {
       throw new AccessDeniedHttpException(
-          'Je hebt onvoldoende rechten om dit bericht te verwijderen.');
+          'You have insufficient rights to remove this message.');
     }
 
     if($request->isMethod('POST'))
@@ -133,7 +146,9 @@ class MessagesDelController extends AbstractController
       $out .= '</dd>';
     }
 
-    if ($config_service->get_intersystem_en($pp->schema()) && $intersystems_service->get_count($pp->schema()))
+    if ($config_service->get_intersystem_en(
+      schema: $pp->schema_o())
+      && $intersystems_service->get_count($pp->schema()))
     {
       $out .= '<dt>Zichtbaarheid</dt>';
       $out .= '<dd>';

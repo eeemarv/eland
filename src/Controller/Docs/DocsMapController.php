@@ -41,20 +41,33 @@ class DocsMapController extends AbstractController
     PageParamsService $pp
   ):Response
   {
-    if (!$config_service->get_bool('docs.enabled', $pp->schema()))
+    if (!$config_service->get_bool(
+      config_id: 'docs.enabled',
+      schema: $pp->schema_o(),
+    ))
     {
       throw new NotFoundHttpException('Documents module not enabled.');
     }
 
     $visible_ary = $item_access_service->get_visible_ary_for_page();
-    $doc_map = $doc_repository->get_map_with_prev_next($id, $visible_ary, $pp->schema());
-    $docs = $doc_repository->get_docs_for_map_id($id, $visible_ary, $pp->schema());
+    $doc_map = $doc_repository->get_map_with_prev_next(
+      map_id: $id,
+      visible_ary: $visible_ary,
+      schema: $pp->schema_o(),
+    );
+    $docs = $doc_repository->get_docs_for_map_id(
+      map_id: $id,
+      visible_ary: $visible_ary,
+      schema: $pp->schema_o(),
+    );
 
     $filter_form = $this->createForm(QTextSearchFilterType::class);
     $filter_form->handleRequest($request);
 
     $show_access = ($pp->is_user()
-      && $config_service->get_intersystem_en($pp->schema()))
+      && $config_service->get_intersystem_en(
+        schema: $pp->schema_o(),
+      ))
       || $pp->is_admin();
 
     return $this->render('docs/docs_map.html.twig', [

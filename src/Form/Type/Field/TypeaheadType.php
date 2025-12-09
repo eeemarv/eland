@@ -2,6 +2,7 @@
 
 namespace App\Form\Type\Field;
 
+use App\DTO\Schema;
 use App\Form\DataTransformer\TypeaheadUserTransformer;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
@@ -82,7 +83,7 @@ class TypeaheadType extends AbstractType
 
           if (isset($params['remote_schema']))
           {
-            $remote_schema = $params['remote_schema'];
+            $remote_schema = new Schema($params['remote_schema']);
           }
         }
         else
@@ -115,17 +116,29 @@ class TypeaheadType extends AbstractType
         throw new InvalidConfigurationException('Either filter or render_omit can be configured, not both options.');
       }
 
-      $schema = $remote_schema ?? $this->pp->schema();
+      $schema = $remote_schema ?? $this->pp->schema_o();
 
-      $new_users_days = $this->config_service->get_int('users.new.days', $schema);
-      $new_users_enabled = $this->config_service->get_bool('users.new.enabled', $schema);
-      $leaving_users_enabled = $this->config_service->get_bool('users.leaving.enabled', $schema);
+      $new_users_days = $this->config_service->get_int(
+        config_id: 'users.new.days',
+        schema: $schema,
+      );
+      $new_users_enabled = $this->config_service->get_bool(
+        config_id: 'users.new.enabled',
+        schema: $schema,
+      );
+      $leaving_users_enabled = $this->config_service->get_bool(
+        config_id: 'users.leaving.enabled',
+        schema: $schema,
+      );
 
       $show_new_status = $new_users_enabled;
 
       if ($show_new_status)
       {
-        $new_users_access = $this->config_service->get_str('users.new.access', $schema);
+        $new_users_access = $this->config_service->get_str(
+          config_id: 'users.new.access',
+          schema: $schema,
+        );
         $show_new_status = $this->item_access_service->is_visible($new_users_access);
       }
 
@@ -133,7 +146,10 @@ class TypeaheadType extends AbstractType
 
       if ($show_leaving_status)
       {
-        $leaving_users_access = $this->config_service->get_str('users.leaving.access', $schema);
+        $leaving_users_access = $this->config_service->get_str(
+          config_id: 'users.leaving.access',
+          schema: $schema,
+        );
         $show_leaving_status = $this->item_access_service->is_visible($leaving_users_access);
       }
 

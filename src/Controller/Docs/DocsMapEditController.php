@@ -41,12 +41,18 @@ class DocsMapEditController extends AbstractController
     PageParamsService $pp,
   ):Response
   {
-    if (!$config_service->get_bool('docs.enabled', $pp->schema()))
+    if (!$config_service->get_bool(
+      config_id: 'docs.enabled',
+      schema: $pp->schema_o(),
+    ))
     {
       throw new NotFoundHttpException('Documents module not enabled.');
     }
 
-    $doc_map = $doc_repository->get_map($id, $pp->schema());
+    $doc_map = $doc_repository->get_map(
+      map_id: $id,
+      schema: $pp->schema_o(),
+    );
 
     $command = new DocsMapCommand();
     $command->id = $id;
@@ -66,7 +72,11 @@ class DocsMapEditController extends AbstractController
     {
       $command = $form->getData();
 
-      $doc_repository->update_map_name($command->name, $id, $pp->schema());
+      $doc_repository->update_map_name(
+        name: $command->name,
+        map_id: $id,
+        schema: $pp->schema_o(),
+      );
 
       $typeahead_service->clear_cache($pp->schema());
 

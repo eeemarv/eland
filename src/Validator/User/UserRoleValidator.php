@@ -36,7 +36,9 @@ class UserRoleValidator extends ConstraintValidator
 
     $allowed_ary = ['admin', 'user'];
 
-    if ($this->config_service->get_intersystem_en($this->pp->schema()))
+    if ($this->config_service->get_intersystem_en(
+      schema: $this->pp->schema_o(),
+    ))
     {
       $allowed_ary[] = 'guest';
     }

@@ -28,17 +28,50 @@ class UsersColsType extends AbstractType
     array $options
   ):void
   {
-    $full_name_enabled = $this->config_service->get_bool('users.fields.full_name.enabled', $this->pp->schema());
-    $postcode_enabled = $this->config_service->get_bool('users.fields.postcode.enabled', $this->pp->schema());
-    $birthdate_enabled = $this->config_service->get_bool('users.fields.birthdate.enabled', $this->pp->schema());
-    $hobbies_enabled = $this->config_service->get_bool('users.fields.hobbies.enabled', $this->pp->schema());
-    $comments_enabled = $this->config_service->get_bool('users.fields.comments.enabled', $this->pp->schema());
-    $admin_comments_enabled = $this->config_service->get_bool('users.fields.admin_comments.enabled', $this->pp->schema());
-    $periodic_mail_enabled = $this->config_service->get_bool('periodic_mail.enabled', $this->pp->schema());
-    $mollie_enabled = $this->config_service->get_bool('mollie.enabled', $this->pp->schema());
-    $messages_enabled = $this->config_service->get_bool('messages.enabled', $this->pp->schema());
-    $transactions_enabled = $this->config_service->get_bool('transactions.enabled', $this->pp->schema());
-    $limits_enabled = $this->config_service->get_bool('accounts.limits.enabled', $this->pp->schema());
+    $full_name_enabled = $this->config_service->get_bool(
+      config_id: 'users.fields.full_name.enabled',
+      schema: $this->pp->schema_o(),
+    );
+    $postcode_enabled = $this->config_service->get_bool(
+      config_id: 'users.fields.postcode.enabled',
+      schema: $this->pp->schema_o(),
+    );
+    $birthdate_enabled = $this->config_service->get_bool(
+      config_id: 'users.fields.birthdate.enabled',
+      schema: $this->pp->schema_o(),
+    );
+    $hobbies_enabled = $this->config_service->get_bool(
+      config_id: 'users.fields.hobbies.enabled',
+      schema: $this->pp->schema_o(),
+    );
+    $comments_enabled = $this->config_service->get_bool(
+      config_id: 'users.fields.comments.enabled',
+      schema: $this->pp->schema_o(),
+    );
+    $admin_comments_enabled = $this->config_service->get_bool(
+      config_id: 'users.fields.admin_comments.enabled',
+      schema: $this->pp->schema_o(),
+    );
+    $periodic_mail_enabled = $this->config_service->get_bool(
+      config_id: 'periodic_mail.enabled',
+      schema: $this->pp->schema_o(),
+    );
+    $mollie_enabled = $this->config_service->get_bool(
+      config_id: 'mollie.enabled',
+      schema: $this->pp->schema_o(),
+    );
+    $messages_enabled = $this->config_service->get_bool(
+      config_id: 'messages.enabled',
+      schema: $this->pp->schema_o(),
+    );
+    $transactions_enabled = $this->config_service->get_bool(
+      config_id: 'transactions.enabled',
+      schema: $this->pp->schema_o(),
+    );
+    $limits_enabled = $this->config_service->get_bool(
+      config_id: 'accounts.limits.enabled',
+      schema: $this->pp->schema_o(),
+    );
     $is_admin = $this->pp->is_admin();
 
     $builder->setMethod('GET');

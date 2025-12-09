@@ -61,13 +61,21 @@ class MessagesExtendedController extends AbstractController
         string $env_s3_url
     ):Response
     {
-        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+        if (!$config_service->get_bool(
+          config_id: 'messages.enabled',
+          schema: $pp->schema_o()))
         {
             throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
         }
 
-        $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
-        $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
+        $expires_at_enabled = $config_service->get_bool(
+          config_id: 'messages.fields.expires_at.enabled',
+          schema: $pp->schema_o(),
+        );
+        $category_enabled = $config_service->get_bool(
+          config_id: 'messages.fields.category.enabled',
+          schema: $pp->schema_o(),
+        );
 
         $fetch_and_filter = $messages_list_controller->fetch_and_filter(
             $request,

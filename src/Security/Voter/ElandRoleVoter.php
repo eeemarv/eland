@@ -45,14 +45,18 @@ class ElandRoleVoter extends Voter
         return false;
       }
 
-      if ($this->config_service->get_bool('system.maintenance_en', $schema))
+      if ($this->config_service->get_bool(
+        config_id: 'system.maintenance_en',
+        schema: $this->pp->schema_o(),
+      ))
       {
         return false;
       }
 
       if ($attribute === 'guest')
       {
-        if (!$this->config_service->get_intersystem_en($schema))
+        if (!$this->config_service->get_intersystem_en(
+          schema: $this->pp->schema_o()))
         {
           return false;
         }

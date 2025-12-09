@@ -89,7 +89,10 @@ final class EmailDispatchHandler
       if (isset($schema))
       {
         // TODO fetch email from system config
-        $sender_name = $this->config_service->get_str('system.name', $schema);
+        $sender_name = $this->config_service->get_str(
+          config_id: 'system.name',
+          schema: $message->schema,
+        );
       }
 
       $sender_email = isset($message->reply_to) ? $this->env_mail_from_address : $this->env_mail_noreply_address;

@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
@@ -33,17 +34,27 @@ class MessagesModulesController extends AbstractController
     Request $request,
     ConfigService $config_service,
     PageParamsService $pp,
+    SessionUserService $su,
   ):Response
   {
-    if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+    if (!$config_service->get_bool(
+      config_id: 'messages.enabled',
+      schema: $pp->schema_o(),
+    ))
     {
       throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
     }
 
     $command = new MessagesModulesCommand();
-    $config_service->load_command($command, $pp->schema());
+    $config_service->load_command(
+      command: $command,
+      schema: $pp->schema_o(),
+    );
 
-    $form = $this->createForm(MessagesModulesType::class, $command);
+    $form = $this->createForm(
+      type: MessagesModulesType::class,
+      data: $command,
+    );
 
     $form->handleRequest($request);
 
@@ -51,9 +62,30 @@ class MessagesModulesController extends AbstractController
       && $form->isValid())
     {
       $command = $form->getData();
-      $config_service->store_command($command, $pp->schema());
+      $changed = $config_service->store_command(
+        command: $command,
+        user_id: $su->id() ?: null,
+        schema: $pp->schema_o(),
+      );
 
-      $this->addFlash('success', 'Submodules/velden vraag en aanbod aangepast');
+      if ($changed)
+      {
+        $this->addFlash(
+          type: 'success',
+          message: [
+            'key' => 'messages_modules.flash.change',
+          ],
+        );
+      }
+      else
+      {
+        $this->addFlash(
+          type: 'warning',
+          message: [
+            'key' => 'flash.no_change',
+          ],
+        );
+      }
 
       return $this->redirectToRoute('messages_modules', $pp->ary());
     }

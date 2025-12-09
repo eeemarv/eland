@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -32,10 +33,14 @@ class ConfigAdminController extends AbstractController
     Request $request,
     ConfigService $config_service,
     PageParamsService $pp,
+    SessionUserService $su,
   ):Response
   {
     $command = new ConfigAdminCommand();
-    $config_service->load_command($command, $pp->schema());
+    $config_service->load_command(
+      command: $command,
+      schema: $pp->schema_o(),
+    );
 
     $form = $this->createForm(ConfigAdminType::class, $command);
     $form->handleRequest($request);
@@ -44,14 +49,33 @@ class ConfigAdminController extends AbstractController
       && $form->isValid())
     {
       $command = $form->getData();
-      $config_service->store_command($command, $pp->schema());
+      $changed = $config_service->store_command(
+        command: $command,
+        user_id: $su->id() ?: null,
+        schema: $pp->schema_o(),
+      );
 
-      $this->addFlash('success', 'Admin instellingen aangepast.');
+      if ($changed)
+      {
+        $this->addFlash(
+          type: 'success',
+          message: [
+            'key' => 'config_admin.flash.change',
+          ]);
+      }
+      else
+      {
+        $this->addFlash(
+          type: 'warning',
+          message: [
+            'key' => 'flash.no_change',
+          ]);
+      }
       return $this->redirectToRoute('config_admin', $pp->ary());
     }
 
     return $this->render('config/config_admin.html.twig', [
-      'form'          => $form->createView(),
+      'form' => $form->createView(),
     ]);
   }
 }

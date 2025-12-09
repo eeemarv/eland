@@ -6,6 +6,7 @@ use App\Command\Users\UsersConfigLeavingCommand;
 use App\Form\Type\Users\UsersConfigLeavingType;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,49 +17,81 @@ use Symfony\Component\Routing\Annotation\Route;
 #[AsController]
 class UsersConfigLeavingController extends AbstractController
 {
-    #[Route(
-        '/{system}/{role_short}/users/config-leaving',
-        name: 'users_config_leaving',
-        methods: ['GET', 'POST'],
-        requirements: [
-            'system'        => '%assert.system%',
-            'role_short'    => '%assert.role_short.admin%',
-        ],
-        defaults: [
-            'module'        => 'users',
-        ],
-    )]
+  #[Route(
+    '/{system}/{role_short}/users/config-leaving',
+    name: 'users_config_leaving',
+    methods: ['GET', 'POST'],
+    requirements: [
+      'system'        => '%assert.system%',
+      'role_short'    => '%assert.role_short.admin%',
+    ],
+    defaults: [
+      'module'        => 'users',
+    ],
+  )]
 
-    public function __invoke(
-        Request $request,
-        ConfigService $config_service,
-        PageParamsService $pp
-    ):Response
+  public function __invoke(
+    Request $request,
+    ConfigService $config_service,
+    PageParamsService $pp,
+    SessionUserService $su,
+  ):Response
+  {
+    if (!$config_service->get_bool(
+      config_id: 'users.leaving.enabled',
+      schema: $pp->schema_o(),
+    ))
     {
-        if (!$config_service->get_bool('users.leaving.enabled', $pp->schema()))
-        {
-            throw new NotFoundHttpException('Leaving users not enabled.');
-        }
-
-        $command = new UsersConfigLeavingCommand();
-
-        $config_service->load_command($command, $pp->schema());
-
-        $form = $this->createForm(UsersConfigLeavingType::class, $command);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted()
-            && $form->isValid())
-        {
-            $command = $form->getData();
-            $config_service->store_command($command, $pp->schema());
-
-            $this->addFlash('success', 'Configuratie uitstappende leden aangepast');
-            return $this->redirectToRoute('users_config_leaving', $pp->ary());
-        }
-
-        return $this->render('users/users_config_leaving.html.twig', [
-            'form'          => $form->createView(),
-        ]);
+      throw new NotFoundHttpException('Leaving users not enabled.');
     }
+
+    $command = new UsersConfigLeavingCommand();
+
+    $config_service->load_command(
+      command: $command,
+      schema: $pp->schema_o(),
+    );
+
+    $form = $this->createForm(
+      type: UsersConfigLeavingType::class,
+      data: $command,
+    );
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted()
+      && $form->isValid())
+    {
+      $command = $form->getData();
+      $changed = $config_service->store_command(
+        command: $command,
+        user_id: $su->id() ?: null,
+        schema: $pp->schema_o(),
+      );
+
+      if ($changed)
+      {
+        $this->addFlash(
+          type: 'success',
+          message: [
+            'key' => 'users_config_leaving.flash.change',
+          ],
+        );
+      }
+      else
+      {
+        $this->addFlash(
+          type: 'warning',
+          message: [
+            'key' => 'flash.no_change',
+          ],
+        );
+      }
+
+      return $this->redirectToRoute('users_config_leaving', $pp->ary());
+    }
+
+    return $this->render('users/users_config_leaving.html.twig', [
+        'form'          => $form->createView(),
+    ]);
+  }
 }

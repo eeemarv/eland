@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Cnst\StatusCnst;
 use App\Cnst\RoleCnst;
 use App\Cnst\ContactInputCnst;
+use App\DTO\Schema;
 use App\Queue\GeocodeQueue;
 use App\Queue\MailQueue;
 use App\Render\LinkRender;
@@ -115,14 +116,38 @@ class UsersEditController extends AbstractController
         VarRouteService $vr
     ):Response
     {
-        $full_name_enabled = $config_service->get_bool('users.fields.full_name.enabled', $pp->schema());
-        $postcode_enabled = $config_service->get_bool('users.fields.postcode.enabled', $pp->schema());
-        $birthdate_enabled = $config_service->get_bool('users.fields.birthdate.enabled', $pp->schema());
-        $hobbies_enabled = $config_service->get_bool('users.fields.hobbies.enabled', $pp->schema());
-        $comments_enabled = $config_service->get_bool('users.fields.comments.enabled', $pp->schema());
-        $admin_comments_enabled = $config_service->get_bool('users.fields.admin_comments.enabled', $pp->schema());
-        $periodic_mail_enabled = $config_service->get_bool('periodic_mail.enabled', $pp->schema());
-        $periodic_mail_default_enabled = $config_service->get_bool('periodic_mail.user.new.default.enabled', $pp->schema());
+        $full_name_enabled = $config_service->get_bool(
+          config_id: 'users.fields.full_name.enabled',
+          schema: $pp->schema_o(),
+        );
+        $postcode_enabled = $config_service->get_bool(
+          config_id: 'users.fields.postcode.enabled',
+          schema: $pp->schema_o(),
+        );
+        $birthdate_enabled = $config_service->get_bool(
+          config_id: 'users.fields.birthdate.enabled',
+          schema: $pp->schema_o(),
+        );
+        $hobbies_enabled = $config_service->get_bool(
+          config_id: 'users.fields.hobbies.enabled',
+          schema: $pp->schema_o(),
+        );
+        $comments_enabled = $config_service->get_bool(
+          config_id: 'users.fields.comments.enabled',
+          schema: $pp->schema_o(),
+        );
+        $admin_comments_enabled = $config_service->get_bool(
+          config_id: 'users.fields.admin_comments.enabled',
+          schema: $pp->schema_o(),
+        );
+        $periodic_mail_enabled = $config_service->get_bool(
+          config_id: 'periodic_mail.enabled',
+          schema: $pp->schema_o(),
+        );
+        $periodic_mail_default_enabled = $config_service->get_bool(
+          config_id: 'periodic_mail.user.new.default.enabled',
+          schema: $pp->schema_o(),
+        );
 
         $is_edit = !$is_add;
         $errors = [];
@@ -145,12 +170,30 @@ class UsersEditController extends AbstractController
         $template .= $is_edit ? 'edit' : 'add';
         $template .= '.html.twig';
 
-        $transactions_enabled = $config_service->get_bool('transactions.enabled', $pp->schema());
-        $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
-        $mail_enabled = $config_service->get_bool('mail.enabled', $pp->schema());
-        $limits_enabled = $config_service->get_bool('accounts.limits.enabled', $pp->schema());
-        $system_min_limit = $config_service->get_int('accounts.limits.global.min', $pp->schema());
-        $system_max_limit = $config_service->get_int('accounts.limits.global.max', $pp->schema());
+        $transactions_enabled = $config_service->get_bool(
+          config_id: 'transactions.enabled',
+          schema: $pp->schema_o(),
+        );
+        $currency = $config_service->get_str(
+          config_id: 'transactions.currency.name',
+          schema: $pp->schema_o(),
+        );
+        $mail_enabled = $config_service->get_bool(
+          config_id: 'mail.enabled',
+          schema: $pp->schema_o(),
+        );
+        $limits_enabled = $config_service->get_bool(
+          config_id: 'accounts.limits.enabled',
+          schema: $pp->schema_o(),
+        );
+        $system_min_limit = $config_service->get_int(
+          config_id: 'accounts.limits.global.min',
+          schema: $pp->schema_o(),
+        );
+        $system_max_limit = $config_service->get_int(
+          config_id: 'accounts.limits.global.max',
+          schema: $pp->schema_o(),
+        );
 
         $stored_min_limit = null;
         $stored_max_limit = null;
@@ -205,8 +248,14 @@ class UsersEditController extends AbstractController
         }
         else if ($is_owner)
         {
-            $username_edit_en = $config_service->get_bool('users.fields.name.self_edit', $pp->schema());
-            $full_name_edit_en = $config_service->get_bool('users.fields.full_name.self_edit', $pp->schema());
+            $username_edit_en = $config_service->get_bool(
+              config_id: 'users.fields.name.self_edit',
+              schema: $pp->schema_o(),
+            );
+            $full_name_edit_en = $config_service->get_bool(
+              config_id: 'users.fields.full_name.self_edit',
+              schema: $pp->schema_o(),
+            );
         }
 
         if ($request->isMethod('POST'))
@@ -786,8 +835,12 @@ class UsersEditController extends AbstractController
                         && ($systems_service->get_schema_from_legacy_eland_origin($group['url'])))
                     {
                         $remote_schema = $systems_service->get_schema_from_legacy_eland_origin($group['url']);
+                        $remote_schema_o = new Schema($remote_schema);
 
-                        $admin_mail = $config_service->get_ary('mail.addresses.admin', $remote_schema)[0];
+                        $admin_mail = $config_service->get_ary(
+                          config_id: 'mail.addresses.admin',
+                          schema: $remote_schema_o,
+                        )[0];
 
                         foreach ($contact as $k => $c)
                         {
@@ -799,7 +852,10 @@ class UsersEditController extends AbstractController
                         }
 
                         // name from source is preferable
-                        $name = $full_name = $config_service->get_str('system.name', $remote_schema);
+                        $name = $full_name = $config_service->get_str(
+                          config_id: 'system.name',
+                          schema: $remote_schema_o,
+                        );
                     }
                 }
 

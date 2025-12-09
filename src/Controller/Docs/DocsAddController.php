@@ -45,7 +45,10 @@ class DocsAddController extends AbstractController
     SessionUserService $su,
   ):Response
   {
-    if (!$config_service->get_bool('docs.enabled', $pp->schema()))
+    if (!$config_service->get_bool(
+      config_id: 'docs.enabled',
+      schema: $pp->schema_o(),
+    ))
     {
       throw new NotFoundHttpException('Documents module not enabled.');
     }
@@ -55,7 +58,10 @@ class DocsAddController extends AbstractController
     if ($request->query->has('map_id'))
     {
       $map_id = (int) $request->query->get('map_id');
-      $map_name = $doc_repository->get_map($map_id, $pp->schema())['name'];
+      $map_name = $doc_repository->get_map(
+        map_id: $map_id,
+        schema: $pp->schema_o(),
+      )['name'];
       $command->map_name = $map_name;
     }
 
@@ -108,11 +114,18 @@ class DocsAddController extends AbstractController
 
       if (isset($map_name) && strlen($map_name))
       {
-        $map_id = $doc_repository->get_map_id_by_name($map_name, $pp->schema());
+        $map_id = $doc_repository->get_map_id_by_name(
+          map_name: $map_name,
+          schema: $pp->schema_o(),
+        );
 
         if (!$map_id)
         {
-          $map_id = $doc_repository->insert_map($map_name, $su->id(), $pp->schema());
+          $map_id = $doc_repository->insert_map(
+            map_name: $map_name,
+            user_id: $su->id(),
+            schema: $pp->schema_o(),
+          );
           $alert_success_msg[] = 'Nieuwe map "' . $map_name . '" gecreëerd.';
           $typeahead_service->clear_cache($pp->schema());
         }
@@ -125,7 +138,10 @@ class DocsAddController extends AbstractController
         $alert_success_msg[] = 'Document opgeladen.';
       }
 
-      $doc_repository->insert_doc($doc, $pp->schema());
+      $doc_repository->insert_doc(
+        doc_ary: $doc,
+        schema: $pp->schema_o(),
+      );
 
       foreach ($alert_success_msg as $success)
       {

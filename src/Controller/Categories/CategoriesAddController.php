@@ -40,12 +40,18 @@ class CategoriesAddController extends AbstractController
     SessionUserService $su,
   ):Response
   {
-    if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+    if (!$config_service->get_bool(
+      config_id: 'messages.enabled',
+      schema: $pp->schema_o(),
+    ))
     {
       throw new NotFoundHttpException('messages (offer/want) module not enabled.');
     }
 
-    if (!$config_service->get_bool('messages.fields.category.enabled', $pp->schema()))
+    if (!$config_service->get_bool(
+      config_id: 'messages.fields.category.enabled',
+      schema: $pp->schema_o(),
+    ))
     {
       throw new NotFoundHttpException('Categories module not enabled.');
     }
@@ -62,7 +68,13 @@ class CategoriesAddController extends AbstractController
       $command = $form->getData();
       $name= $command->name;
 
-      $category_repository->insert($name, $su, $pp->schema());
+		  $created_by = $su->is_master() ? null : $su->id();
+
+      $category_repository->insert(
+        name: $name,
+        created_by: $created_by,
+        schema: $pp->schema_o(),
+      );
 
       $this->addFlash('success', 'Categorie "' . $name . '" toegevoegd.');
       return $this->redirectToRoute('categories', $pp->ary());

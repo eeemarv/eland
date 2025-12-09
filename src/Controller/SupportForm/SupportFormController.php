@@ -45,13 +45,19 @@ class SupportFormController extends AbstractController
     MailAddrSystemService $mail_addr_system_service
   ):Response
   {
-    if (!$config_service->get_bool('support_form.enabled', $pp->schema()))
+    if (!$config_service->get_bool(
+      config_id: 'support_form.enabled',
+      schema: $pp->schema_o(),
+    ))
     {
       throw $this->createNotFoundException('Support form not enabled.');
     }
 
     $is_master = $su->is_master();
-    $mail_enabled = $config_service->get_bool('mail.enabled', $pp->schema());
+    $mail_enabled = $config_service->get_bool(
+      config_id: 'mail.enabled',
+      schema: $pp->schema_o(),
+    );
     $support_addr = $mail_addr_system_service->get_support($pp->schema());
     $form_disabled = !$mail_enabled || count($support_addr) < 1 || $is_master;
 

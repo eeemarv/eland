@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\DTO\Schema;
 use App\Service\ConfigService;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 
@@ -61,7 +62,10 @@ class DateFormatService
 		string|null $schema
 	):string
 	{
-		$format = isset($schema) ? $this->config_service->get_str('system.date_format', $schema) : '%e %b %Y, %H:%M:%S';
+		$format = isset($schema) ? $this->config_service->get_str(
+      config_id: 'system.date_format',
+      schema: new Schema($schema),
+    ) : '%e %b %Y, %H:%M:%S';
 
 		if (!$format || !isset(self::FORMATS[$format]))
 		{

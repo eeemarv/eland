@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -32,27 +33,59 @@ class MollieConfigController extends AbstractController
   public function __invoke(
     Request $request,
     ConfigService $config_service,
-    PageParamsService $pp
+    PageParamsService $pp,
+    SessionUserService $su,
   ):Response
   {
-    if (!$config_service->get_bool('mollie.enabled', $pp->schema()))
+    if (!$config_service->get_bool(
+      config_id: 'mollie.enabled',
+      schema: $pp->schema_o(),
+    ))
     {
       throw $this->createNotFoundException('Mollie submodule (users) not enabled.');
     }
 
     $command = new MollieConfigCommand();
-    $config_service->load_command($command, $pp->schema());
+    $config_service->load_command(
+      command: $command,
+      schema: $pp->schema_o(),
+    );
 
-    $form = $this->createForm(MollieConfigType::class, $command);
+    $form = $this->createForm(
+      type: MollieConfigType::class,
+      data: $command,
+    );
     $form->handleRequest($request);
 
     if ($form->isSubmitted()
-        && $form->isValid())
+      && $form->isValid())
     {
       $command = $form->getData();
-      $config_service->store_command($command, $pp->schema());
+      $changed = $config_service->store_command(
+        command: $command,
+        user_id: $su->id() ?: null,
+        schema: $pp->schema_o(),
+      );
 
-      $this->addFlash('success', 'De Mollie Apikey is aangepast.');
+      if ($changed)
+      {
+        $this->addFlash(
+          type: 'success',
+          message: [
+            'key' => 'mollie_config.flash.change',
+          ],
+        );
+      }
+      else
+      {
+        $this->addFlash(
+          type: 'warning',
+          message: [
+            'key' => 'flash.no_change',
+          ],
+        );
+      }
+
       return $this->redirectToRoute('mollie_payments', $pp->ary());
     }
 

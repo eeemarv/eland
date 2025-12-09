@@ -117,32 +117,63 @@ class TransactionsMassController extends AbstractController
         SessionUserService $su
     ):Response
     {
-        if (!$config_service->get_bool('transactions.enabled', $pp->schema()))
+        if (!$config_service->get_bool(
+          config_id: 'transactions.enabled',
+          schema: $pp->schema_o(),
+        ))
         {
             throw new NotFoundHttpException('Transactions module not enabled.');
         }
 
-        if (!$config_service->get_bool('transactions.mass.enabled', $pp->schema()))
+        if (!$config_service->get_bool(
+          config_id: 'transactions.mass.enabled',
+          schema: $pp->schema_o(),
+        ))
         {
             throw new NotFoundHttpException('Submodule mass-transaction not enabled.');
         }
 
         $errors = [];
 
-        $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
-        $system_min_limit = $config_service->get_int('accounts.limits.global.min', $pp->schema());
-        $system_max_limit = $config_service->get_int('accounts.limits.global.max', $pp->schema());
-        $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
-        $new_users_days = $config_service->get_int('users.new.days', $pp->schema());
-        $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
-        $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
-        $limits_enabled = $config_service->get_bool('accounts.limits.enabled', $pp->schema());
+        $currency = $config_service->get_str(
+          config_id: 'transactions.currency.name',
+          schema: $pp->schema_o());
+        $system_min_limit = $config_service->get_int(
+          config_id: 'accounts.limits.global.min',
+          schema: $pp->schema_o(),
+        );
+        $system_max_limit = $config_service->get_int(
+          config_id: 'accounts.limits.global.max',
+          schema: $pp->schema_o(),
+        );
+        $new_user_treshold = $config_service->get_new_user_treshold(
+          schema: $pp->schema_o(),
+        );
+        $new_users_days = $config_service->get_int(
+          config_id: 'users.new.days',
+          schema: $pp->schema_o(),
+        );
+        $new_users_enabled = $config_service->get_bool(
+          config_id: 'users.new.enabled',
+          schema: $pp->schema_o(),
+        );
+        $leaving_users_enabled = $config_service->get_bool(
+          config_id: 'users.leaving.enabled',
+          schema: $pp->schema_o(),
+        );
+        $limits_enabled = $config_service->get_bool(
+          config_id: 'accounts.limits.enabled',
+          schema: $pp->schema_o(),
+        );
 
         $show_new_status = $new_users_enabled;
 
         if ($show_new_status)
         {
-            $new_users_access = $config_service->get_str('users.new.access', $pp->schema());
+            $new_users_access = $config_service->get_str(
+              config_id: 'users.new.access',
+              schema: $pp->schema_o(),
+            );
             $show_new_status = $item_access_service->is_visible($new_users_access);
         }
 
@@ -150,7 +181,10 @@ class TransactionsMassController extends AbstractController
 
         if ($show_leaving_status)
         {
-            $leaving_users_access = $config_service->get_str('users.leaving.access', $pp->schema());
+            $leaving_users_access = $config_service->get_str(
+              config_id: 'users.leaving.access',
+              schema: $pp->schema_o(),
+            );
             $show_leaving_status = $item_access_service->is_visible($leaving_users_access);
         }
 

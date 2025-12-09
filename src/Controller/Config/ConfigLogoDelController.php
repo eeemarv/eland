@@ -5,6 +5,7 @@ namespace App\Controller\Config;
 use App\Form\Type\Del\DelType;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,9 +33,13 @@ class ConfigLogoDelController extends AbstractController
     Request $request,
     ConfigService $config_service,
     PageParamsService $pp,
+    SessionUserService $su,
   ):Response
   {
-    $logo = $config_service->get_str('system.logo', $pp->schema());
+    $logo = $config_service->get_str(
+      config_id: 'system.logo',
+      schema: $pp->schema_o(),
+    );
 
     if (!$logo)
     {
@@ -47,9 +52,32 @@ class ConfigLogoDelController extends AbstractController
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $config_service->set_str('system.logo', '', $pp->schema());
+      $changed = $config_service->set_str(
+        config_id: 'system.logo',
+        value: '',
+        user_id: $su->id() ?: null,
+        schema: $pp->schema_o(),
+      );
 
-      $this->addFlash('success', 'Het logo is verwijderd.');
+      if ($changed)
+      {
+        $this->addFlash(
+          type: 'success',
+          message: [
+            'key' => 'config_logo_del.flash.change',
+          ],
+        );
+      }
+      else
+      {
+        $this->addFlash(
+          type: 'warning',
+          message: [
+            'key' => 'flash.no_change',
+          ],
+        );
+      }
+
       return $this->redirectToRoute('config_logo', $pp->ary());
     }
 

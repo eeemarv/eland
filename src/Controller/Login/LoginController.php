@@ -133,8 +133,10 @@ class LoginController extends AbstractController
       $su_ary = $su->ary();
 
       if ($su->is_admin()
-        && !$config_service->get_bool('users.admin.login.as_admin.enabled', $pp->schema())
-      )
+        && !$config_service->get_bool(
+        config_id: 'users.admin.login.as_admin.enabled',
+        schema: $pp->schema_o(),
+      ))
       {
           $su_ary['role_short'] = 'u';
       }
@@ -142,10 +144,16 @@ class LoginController extends AbstractController
       return $this->redirectToRoute($vr->get('default'), $su_ary);
     }
 
-    if($config_service->get_bool('system.maintenance_en', $pp->schema()))
+    if($config_service->get_bool(
+      config_id: 'system.maintenance_en',
+      schema: $pp->schema_o(),
+    ))
     {
-      $this->addFlash('warning', 'De website is niet beschikbaar
-        wegens onderhoudswerken.  Enkel admins kunnen inloggen', false);
+      $this->addFlash(
+        type: 'warning',
+        message: [
+          'key' => 'flash.maintenance',
+        ]);
     }
 
     if ($request->isMethod('GET') && $su->is_user())

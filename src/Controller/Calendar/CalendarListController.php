@@ -26,7 +26,10 @@ class CalendarListController extends AbstractController
         PageParamsService $pp
     ):Response
     {
-        if (!$config_service->get_bool('calendar.enabled', $pp->schema()))
+        if (!$config_service->get_bool(
+          config_id: 'calendar.enabled',
+          schema: $pp->schema_o(),
+        ))
         {
             throw new NotFoundHttpException('Calendar module not enabled.');
         }
@@ -39,7 +42,9 @@ class CalendarListController extends AbstractController
         );
 
         $show_visibility = ($pp->is_user()
-                && $config_service->get_intersystem_en($pp->schema()))
+          && $config_service->get_intersystem_en(
+            schema: $pp->schema_o(),
+          ))
             || $pp->is_admin();
 
         $out = '<div class="panel panel-warning printview">';
@@ -114,7 +119,10 @@ class CalendarListController extends AbstractController
         $query .= 'where ci.access in (?) ';
 
         $query .= 'order by event_at ';
-        $query .= $config_service->get_bool('news.sort.asc', $pp->schema()) ? 'asc' : 'desc';
+        $query .= $config_service->get_bool(
+          config_id: 'news.sort.asc',
+          schema: $pp->schema_o(),
+        ) ? 'asc' : 'desc';
 
         $access_ary = $item_access_service->get_visible_ary_for_page();
 

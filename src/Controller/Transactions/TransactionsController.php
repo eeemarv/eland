@@ -73,7 +73,10 @@ class TransactionsController extends AbstractController
         SessionUserService $su
     ):Response
     {
-        if (!$config_service->get_bool('transactions.enabled', $pp->schema()))
+        if (!$config_service->get_bool(
+          config_id: 'transactions.enabled',
+          schema: $pp->schema_o(),
+        ))
         {
             throw new NotFoundHttpException('Transactions module not enabled.');
         }
@@ -87,7 +90,10 @@ class TransactionsController extends AbstractController
         $su_intersystem_ary = $intersystems_service->get_eland($su->schema());
         $su_intersystem_ary[$su->schema()] = true;
 
-        $service_stuff_enabled = $config_service->get_bool('transactions.fields.service_stuff.enabled', $pp->schema());
+        $service_stuff_enabled = $config_service->get_bool(
+          config_id: 'transactions.fields.service_stuff.enabled',
+          schema: $pp->schema_o(),
+        );
         $bulk_actions_enabled = $service_stuff_enabled;
 
         $filter_command = new TransactionsFilterCommand();
@@ -509,7 +515,10 @@ class TransactionsController extends AbstractController
             ],
             'amount' => [
                 ...$asc_preset_ary,
-                'lbl' => $config_service->get_str('transactions.currency.name', $pp->schema()),
+                'lbl' => $config_service->get_str(
+                  config_id: 'transactions.currency.name',
+                  schema: $pp->schema_o(),
+                ),
             ],
             'created_at'	=> [
                 ...$asc_preset_ary,
@@ -619,7 +628,9 @@ class TransactionsController extends AbstractController
             {
                 $out .= '<tr';
 
-                if ($config_service->get_intersystem_en($pp->schema()) && ($t['real_to'] || $t['real_from']))
+                if ($config_service->get_intersystem_en(
+                  schema: $pp->schema_o())
+                  && ($t['real_to'] || $t['real_from']))
                 {
                     $out .= ' class="warning"';
                 }
@@ -741,7 +752,9 @@ class TransactionsController extends AbstractController
             {
                 $out .= '<tr';
 
-                if ($config_service->get_intersystem_en($pp->schema()) && ($t['real_to'] || $t['real_from']))
+                if ($config_service->get_intersystem_en(
+                  schema: $pp->schema_o())
+                  && ($t['real_to'] || $t['real_from']))
                 {
                     $out .= ' class="warning"';
                 }

@@ -76,25 +76,44 @@ class MessagesShowController extends AbstractController
         string $env_map_tiles_url
     ):Response
     {
-        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+        if (!$config_service->get_bool(
+          config_id: 'messages.enabled',
+          schema: $pp->schema_o(),
+        ))
         {
             throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
         }
 
-        $transactions_enabled = $config_service->get_bool('transactions.enabled', $pp->schema());
-
         $errors = [];
 
-        $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
-        $service_stuff_enabled = $config_service->get_bool('messages.fields.service_stuff.enabled', $pp->schema());
-        $category_enabled = $config_service->get_bool('messages.fields.category.enabled', $pp->schema());
-        $expires_at_enabled = $config_service->get_bool('messages.fields.expires_at.enabled', $pp->schema());
-        $units_enabled = $config_service->get_bool('messages.fields.units.enabled', $pp->schema());
+        $currency = $config_service->get_str(
+          config_id: 'transactions.currency.name',
+          schema: $pp->schema_o(),
+        );
+        $service_stuff_enabled = $config_service->get_bool(
+          config_id: 'messages.fields.service_stuff.enabled',
+          schema: $pp->schema_o(),
+        );
+        $category_enabled = $config_service->get_bool(
+          config_id: 'messages.fields.category.enabled',
+          schema: $pp->schema_o(),
+        );
+        $expires_at_enabled = $config_service->get_bool(
+          config_id: 'messages.fields.expires_at.enabled',
+          schema: $pp->schema_o(),
+        );
+        $units_enabled = $config_service->get_bool(
+          config_id: 'messages.fields.units.enabled',
+          schema: $pp->schema_o(),
+        );
         $message = self::get_message($db, $id, $pp->schema());
 
         if ($category_enabled && isset($message['category_id']))
         {
-            $category = $category_repository->get($message['category_id'], $pp->schema());
+          $category = $category_repository->get(
+            id: $message['category_id'],
+            schema: $pp->schema_o(),
+          );
         }
 
         $user_mail_content = $request->request->get('user_mail_content', '');

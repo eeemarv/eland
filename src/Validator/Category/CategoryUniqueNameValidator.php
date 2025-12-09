@@ -33,7 +33,11 @@ class CategoryUniqueNameValidator extends ConstraintValidator
     $name = $categories_name_command->name;
     $id = $categories_name_command->id;
 
-    $is_unique = $this->category_repository->is_unique_name_except_id($name, $id, $this->pp->schema());
+    $is_unique = $this->category_repository->is_unique_name_except_id(
+      name: $name,
+      id: $id,
+      schema: $this->pp->schema_o(),
+    );
 
     if (!$is_unique)
     {

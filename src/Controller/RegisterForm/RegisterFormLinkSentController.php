@@ -29,7 +29,10 @@ class RegisterFormLinkSentController extends AbstractController
     PageParamsService $pp
   ):Response
   {
-    if (!$config_service->get_bool('register_form.enabled', $pp->schema()))
+    if (!$config_service->get_bool(
+      config_id: 'register_form.enabled',
+      schema: $pp->schema_o(),
+    ))
     {
       throw $this->createNotFoundException('Register form not enabled.');
     }

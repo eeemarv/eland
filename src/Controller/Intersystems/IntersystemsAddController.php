@@ -2,6 +2,7 @@
 
 namespace App\Controller\Intersystems;
 
+use App\DTO\Schema;
 use App\Render\LinkRender;
 use App\Render\SelectRender;
 use App\Service\ConfigService;
@@ -48,7 +49,10 @@ class IntersystemsAddController extends AbstractController
         VarRouteService $vr
     ):Response
     {
-        if (!$config_service->get_bool('intersystem.enabled', $pp->schema()))
+        if (!$config_service->get_bool(
+          config_id: 'intersystem.enabled',
+          schema: $pp->schema_o(),
+        ))
         {
             throw new NotFoundHttpException('Intersystem submodule (users) not enabled.');
         }
@@ -116,11 +120,18 @@ class IntersystemsAddController extends AbstractController
 
             if ($add_schema = $request->query->get('add_schema'))
             {
+              $add_schema_o = new Schema($add_schema);
                 if ($systems_service->get_system($add_schema))
                 {
                     $group['url'] = $systems_service->get_legacy_eland_origin($add_schema);
-                    $group['groupname'] = $config_service->get_str('system.name', $add_schema);
-                    $group['localletscode'] = $config_service->get_str('mail.tag', $add_schema);
+                    $group['groupname'] = $config_service->get_str(
+                      config_id: 'system.name',
+                      schema: $add_schema_o,
+                    );
+                    $group['localletscode'] = $config_service->get_str(
+                      config_id: 'mail.tag',
+                      schema: $add_schema_o,
+                    );
                 }
             }
         }

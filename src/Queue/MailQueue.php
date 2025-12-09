@@ -2,6 +2,7 @@
 
 namespace App\Queue;
 
+use App\DTO\Schema;
 use App\HtmlProcess\HtmlToMarkdownConverter;
 use App\Queue\QueueInterface;
 use Psr\Log\LoggerInterface;
@@ -227,7 +228,10 @@ class MailQueue implements QueueInterface
 			return true;
 		}
 
-		if (!$this->config_service->get_bool('mail.enabled', $schema))
+		if (!$this->config_service->get_bool(
+      config_id: 'mail.enabled',
+      schema: new Schema($schema),
+    ))
 		{
 			$this->logger->info($log_prefix .
 				': mail functions are not enabled in config. ' .

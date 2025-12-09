@@ -8,7 +8,8 @@ use Symfony\Component\HttpFoundation\Request;
 class LogoutRepository
 {
 	public function __construct(
-		protected Db $db)
+		private readonly Db $db,
+  )
 	{
 	}
 

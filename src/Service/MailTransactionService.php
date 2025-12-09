@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\DTO\Schema;
 use App\Service\UserCacheService;
 use App\Service\ConfigService;
 use App\Service\MailAddrSystemService;
@@ -25,7 +26,10 @@ class MailTransactionService
 		string $schema
 	):void
 	{
-		$dec_hours = $transaction['amount'] / $this->config_service->get_int('transactions.currency.per_hour_ratio', $schema);
+		$dec_hours = $transaction['amount'] / $this->config_service->get_int(
+      config_id: 'transactions.currency.per_hour_ratio',
+      schema: new Schema($schema),
+    );
 		$seconds = $dec_hours * 3600;
 		$hours = floor($dec_hours);
 		$seconds -= $hours * 3600;

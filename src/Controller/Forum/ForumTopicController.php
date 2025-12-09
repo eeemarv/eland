@@ -44,7 +44,10 @@ class ForumTopicController extends AbstractController
     SessionUserService $su,
   ):Response
   {
-    if (!$config_service->get_bool('forum.enabled', $pp->schema()))
+    if (!$config_service->get_bool(
+      config_id: 'forum.enabled',
+      schema: $pp->schema_o(),
+    ))
     {
       throw new NotFoundHttpException('Forum module not enabled.');
     }
@@ -91,7 +94,8 @@ class ForumTopicController extends AbstractController
     );
 
     $show_access = ($pp->is_user()
-      && $config_service->get_intersystem_en($pp->schema()))
+      && $config_service->get_intersystem_en(
+        schema: $pp->schema_o()))
       || $pp->is_admin();
 
     return $this->render('forum/forum_topic.html.twig', [

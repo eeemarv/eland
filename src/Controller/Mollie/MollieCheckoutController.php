@@ -44,7 +44,10 @@ class MollieCheckoutController extends AbstractController
     PageParamsService $pp
   ):Response
   {
-    if (!$config_service->get_bool('mollie.enabled', $pp->schema()))
+    if (!$config_service->get_bool(
+      config_id: 'mollie.enabled',
+      schema: $pp->schema_o(),
+    ))
     {
       throw $this->createNotFoundException('Mollie submodule (users) not enabled.');
     }
@@ -61,7 +64,10 @@ class MollieCheckoutController extends AbstractController
       throw $this->createNotFoundException('Payment request not found.');
     }
 
-    $mollie_apikey = $config_service->get_str('mollie.apikey', $pp->schema());
+    $mollie_apikey = $config_service->get_str(
+      config_id: 'mollie.apikey',
+      schema: $pp->schema_o(),
+    );
 
     if (!($mollie_payment['is_paid'] || $mollie_payment['is_canceled']))
     {

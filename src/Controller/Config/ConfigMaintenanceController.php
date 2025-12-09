@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -32,10 +33,14 @@ class ConfigMaintenanceController extends AbstractController
     Request $request,
     ConfigService $config_service,
     PageParamsService $pp,
+    SessionUserService $su,
   ):Response
   {
     $command = new ConfigMaintenanceCommand();
-    $config_service->load_command($command, $pp->schema());
+    $config_service->load_command(
+      command: $command,
+      schema: $pp->schema_o(),
+    );
 
     $form = $this->createForm(ConfigMaintenanceType::class, $command);
     $form->handleRequest($request);
@@ -44,9 +49,31 @@ class ConfigMaintenanceController extends AbstractController
       && $form->isValid())
     {
       $command = $form->getData();
-      $config_service->store_command($command, $pp->schema());
+      $changed = $config_service->store_command(
+        command: $command,
+        user_id: $su->id() ?: null,
+        schema: $pp->schema_O(),
+      );
 
-      $this->addFlash('success', 'Onderhouds modus aangepast.');
+      if ($changed)
+      {
+        $this->addFlash(
+          type: 'success',
+          message: [
+            'key' => 'config_maintenance.flash.change',
+          ],
+        );
+      }
+      else
+      {
+        $this->addFlash(
+          type: 'warning',
+          message: [
+            'key' => 'flash.no_change',
+          ],
+        );
+      }
+
       return $this->redirectToRoute('config_maintenance', $pp->ary());
     }
 

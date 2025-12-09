@@ -38,13 +38,22 @@ class ContactFormController extends AbstractController
     MessageBusInterface $bus,
   ):Response
   {
-    if (!$config_service->get_bool('contact_form.enabled', $pp->schema()))
+    if (!$config_service->get_bool(
+      config_id: 'contact_form.enabled',
+      schema: $pp->schema_o(),
+    ))
     {
       throw $this->createNotFoundException('Contact form module not enabled.');
     }
 
-    $support_email_addr = $config_service->get_ary('mail.addresses.support', $pp->schema());
-    $mail_enabled = $config_service->get_bool('mail.enabled', $pp->schema());
+    $support_email_addr = $config_service->get_ary(
+      config_id: 'mail.addresses.support',
+      schema: $pp->schema_o(),
+    );
+    $mail_enabled = $config_service->get_bool(
+      config_id: 'mail.enabled',
+      schema: $pp->schema_o(),
+    );
     $form_disabled = !$mail_enabled || count($support_email_addr) < 1;
 
     $command = new ContactFormCommand();

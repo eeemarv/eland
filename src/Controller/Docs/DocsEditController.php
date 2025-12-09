@@ -44,14 +44,20 @@ class DocsEditController extends AbstractController
     string $env_s3_url,
   ):Response
   {
-    if (!$config_service->get_bool('docs.enabled', $pp->schema()))
+    if (!$config_service->get_bool(
+      config_id: 'docs.enabled',
+      schema: $pp->schema_o(),
+    ))
     {
       throw new NotFoundHttpException('Documents module not enabled.');
     }
 
     $command = new DocsCommand();
 
-    $doc = $doc_repository->get($id, $pp->schema());
+    $doc = $doc_repository->get(
+      id: $id,
+      schema: $pp->schema_o(),
+    );
 
     $command->file_location = $env_s3_url . $doc['filename'];
     $command->original_filename = $doc['original_filename'];
@@ -60,7 +66,10 @@ class DocsEditController extends AbstractController
 
     if (isset($doc['map_id']))
     {
-      $doc_map = $doc_repository->get_map($doc['map_id'], $pp->schema());
+      $doc_map = $doc_repository->get_map(
+        map_id: $doc['map_id'],
+        schema: $pp->schema_o(),
+      );
       $command->map_name = $doc_map['name'];
     }
 
@@ -87,7 +96,10 @@ class DocsEditController extends AbstractController
 
       if (isset($doc['map_id']))
       {
-        $map_doc_count = $doc_repository->get_count_for_map_id($doc['map_id'], $pp->schema());
+        $map_doc_count = $doc_repository->get_count_for_map_id(
+          map_id: $doc['map_id'],
+          schema: $pp->schema_o(),
+        );
       }
       else
       {
@@ -96,11 +108,18 @@ class DocsEditController extends AbstractController
 
       if (isset($map_name) && strlen($map_name))
       {
-        $map_id = $doc_repository->get_map_id_by_name($map_name, $pp->schema());
+        $map_id = $doc_repository->get_map_id_by_name(
+          map_name: $map_name,
+          schema: $pp->schema_o(),
+        );
 
         if (!$map_id)
         {
-          $map_id = $doc_repository->insert_map($map_name, $su->id(), $pp->schema());
+          $map_id = $doc_repository->insert_map(
+            map_name: $map_name,
+            user_id: $su->id(),
+            schema: $pp->schema_o(),
+          );
           $alert_success_msg[] = 'Nieuwe map "' . $map_name . '" gecreëerd.';
           $delete_thumbprint = true;
         }
@@ -117,12 +136,19 @@ class DocsEditController extends AbstractController
 
       $update['map_id'] = $map_id ?? null;
 
-      $doc_repository->update_doc($update, $id, $pp->schema());
+      $doc_repository->update_doc(
+        update_ary: $update,
+        doc_id: $id,
+        schema: $pp->schema_o(),
+      );
 
       if (isset($delete_map) && $delete_map)
       {
         $alert_success_msg[] = 'Map "' . $doc_map['name'] . '" bevatte geen items meer en werd automatisch gewist.';
-        $doc_repository->del_map($doc['map_id'], $pp->schema());
+        $doc_repository->del_map(
+          map_id: $doc['map_id'],
+          schema: $pp->schema_o(),
+        );
         $delete_thumbprint = true;
       }
 

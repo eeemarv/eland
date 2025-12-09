@@ -6,6 +6,7 @@ use App\Command\Users\UsersConfigNewCommand;
 use App\Form\Type\Users\UsersConfigNewType;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,17 +34,27 @@ class UsersConfigNewController extends AbstractController
     Request $request,
     ConfigService $config_service,
     PageParamsService $pp,
+    SessionUserService $su,
   ):Response
   {
-    if (!$config_service->get_bool('users.new.enabled', $pp->schema()))
+    if (!$config_service->get_bool(
+      config_id: 'users.new.enabled',
+      schema: $pp->schema_o(),
+    ))
     {
       throw new NotFoundHttpException('New users not enabled.');
     }
 
     $command = new UsersConfigNewCommand();
-    $config_service->load_command($command, $pp->schema());
+    $config_service->load_command(
+      command: $command,
+      schema: $pp->schema_o(),
+    );
 
-    $form = $this->createForm(UsersConfigNewType::class, $command);
+    $form = $this->createForm(
+      type: UsersConfigNewType::class,
+      data: $command,
+    );
     $form->handleRequest($request);
 
     if ($form->isSubmitted()
@@ -51,9 +62,31 @@ class UsersConfigNewController extends AbstractController
     {
       $command = $form->getData();
 
-      $config_service->store_command($command, $pp->schema());
+      $changed = $config_service->store_command(
+        command: $command,
+        user_id: $su->id() ?: null,
+        schema: $pp->schema_o(),
+      );
 
-      $this->addFlash('success', 'Configuratie instappende leden aangepast');
+      if ($changed)
+      {
+        $this->addFlash(
+          type: 'success',
+          message: [
+            'key' => 'users_config_new.flash.change',
+          ],
+        );
+      }
+      else
+      {
+        $this->addFlash(
+          type: 'warning',
+          message: [
+            'key' => 'flash.no_change',
+          ],
+        );
+      }
+
       return $this->redirectToRoute('users_config_new', $pp->ary());
     }
 

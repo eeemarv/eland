@@ -39,7 +39,9 @@ class CategoryFieldSubscriber implements EventSubscriberInterface
   {
     $form = $event->getForm();
 
-    $categories = $this->category_repository->get_all($this->pp->schema());
+    $categories = $this->category_repository->get_all(
+      schema: $this->pp->schema_o(),
+    );
 
     foreach ($this->type_options as $name => $options)
     {

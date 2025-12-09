@@ -56,14 +56,20 @@ class MolliePaymentsController extends AbstractController
     HtmlSanitizerInterface $html_sanitizer,
   ):Response
   {
-    if (!$config_service->get_bool('mollie.enabled', $pp->schema()))
+    if (!$config_service->get_bool(
+      config_id: 'mollie.enabled',
+      schema: $pp->schema_o(),
+    ))
     {
       throw new NotFoundHttpException('Mollie submodule (users) not enabled.');
     }
 
     $no_apikey = false;
     $no_live_apikey = false;
-    $mollie_apikey = $config_service->get_str('mollie.apikey', $pp->schema());
+    $mollie_apikey = $config_service->get_str(
+      config_id: 'mollie.apikey',
+      schema: $pp->schema_o(),
+    );
 
     if (!$mollie_apikey ||
       !(str_starts_with($mollie_apikey, 'test_')
@@ -128,7 +134,10 @@ class MolliePaymentsController extends AbstractController
 
     if ($bulk_email_form->isSubmitted()
       && $bulk_email_form->isValid()
-      && $config_service->get_bool('mail.enabled', $pp->schema())
+      && $config_service->get_bool(
+        config_id: 'mail.enabled',
+        schema: $pp->schema_o(),
+        )
       && !$su->is_master()
     )
     {

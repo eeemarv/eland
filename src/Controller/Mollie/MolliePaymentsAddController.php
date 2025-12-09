@@ -59,7 +59,10 @@ class MolliePaymentsAddController extends AbstractController
     SessionUserService $su
   ):Response
   {
-    if (!$config_service->get_bool('mollie.enabled', $pp->schema()))
+    if (!$config_service->get_bool(
+      config_id: 'mollie.enabled',
+      schema: $pp->schema_o(),
+    ))
     {
       throw $this->createNotFoundException('Mollie submodule (users) not enabled.');
     }
@@ -72,9 +75,18 @@ class MolliePaymentsAddController extends AbstractController
     $description = trim($request->request->get('description', ''));
     $verify = $request->request->get('verify');
 
-    $mollie_apikey = $config_service->get_str('mollie.apikey', $pp->schema());
-    $new_users_enabled = $config_service->get_bool('users.new.enabled', $pp->schema());
-    $leaving_users_enabled = $config_service->get_bool('users.leaving.enabled', $pp->schema());
+    $mollie_apikey = $config_service->get_str(
+      config_id: 'mollie.apikey',
+      schema: $pp->schema_o(),
+    );
+    $new_users_enabled = $config_service->get_bool(
+      config_id: 'users.new.enabled',
+      schema: $pp->schema_o(),
+    );
+    $leaving_users_enabled = $config_service->get_bool(
+      config_id: 'users.leaving.enabled',
+      schema: $pp->schema_o(),
+    );
 
     if (!$mollie_apikey ||
       !(str_starts_with($mollie_apikey, 'test_')
@@ -368,7 +380,9 @@ class MolliePaymentsAddController extends AbstractController
     $out .= '</thead>';
     $out .= '<tbody>';
 
-    $new_user_treshold = $config_service->get_new_user_treshold($pp->schema());
+    $new_user_treshold = $config_service->get_new_user_treshold(
+      schema: $pp->schema_o(),
+    );
 
     foreach($users as $user_id => $user)
     {

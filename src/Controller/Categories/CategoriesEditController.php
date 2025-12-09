@@ -40,17 +40,26 @@ class CategoriesEditController extends AbstractController
     PageParamsService $pp,
   ):Response
   {
-    if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+    if (!$config_service->get_bool(
+      config_id: 'messages.enabled',
+      schema: $pp->schema_o(),
+    ))
     {
       throw new NotFoundHttpException('messages (offer/want) module not enabled.');
     }
 
-    if (!$config_service->get_bool('messages.fields.category.enabled', $pp->schema()))
+    if (!$config_service->get_bool(
+      config_id: 'messages.fields.category.enabled',
+      schema: $pp->schema_o(),
+    ))
     {
       throw new NotFoundHttpException('Categories module not enabled.');
     }
 
-    $category = $category_repository->get($id, $pp->schema());
+    $category = $category_repository->get(
+      id: $id,
+      schema: $pp->schema_o(),
+    );
 
     $command = new CategoriesNameCommand();
     $command->id = $id;
@@ -65,7 +74,11 @@ class CategoriesEditController extends AbstractController
       $command = $form->getData();
       $name= $command->name;
 
-      $category_repository->update_name($id, $name, $pp->schema());
+      $category_repository->update_name(
+        id: $id,
+        name: $name,
+        schema: $pp->schema_o(),
+      );
 
       $this->addFlash('success', 'Naam van Categorie aangepast van "' . $category['name'] . '" naar "' . $name . '".');
 

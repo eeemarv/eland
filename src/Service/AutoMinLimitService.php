@@ -31,24 +31,44 @@ class AutoMinLimitService
 		string $schema
 	):void
 	{
-		if (!$this->config_service->get_bool('accounts.limits.auto_min.enabled', $schema))
+    $schema_o = new Schema($schema);
+
+		if (!$this->config_service->get_bool(
+      config_id: 'accounts.limits.auto_min.enabled',
+      schema: $schema_o,
+    ))
 		{
 			$this->logger->debug('autominlimit not enabled',
 				['schema' => $schema]);
 			return;
 		}
 
-		if (!$this->config_service->get_bool('accounts.limits.enabled', $schema))
+		if (!$this->config_service->get_bool(
+      config_id: 'accounts.limits.enabled',
+      schema: $schema_o,
+    ))
 		{
 			$this->logger->debug('no autominlimit: limits not enabled',
 				['schema' => $schema]);
 			return;
 		}
 
-		$global_min_limit = $this->config_service->get_int('accounts.limits.global.min', $schema);
-		$percentage = $this->config_service->get_int('accounts.limits.auto_min.percentage', $schema);
-		$exclude_to_str = $this->config_service->get_str('accounts.limits.auto_min.exclude.to', $schema);
-		$exclude_from_str = $this->config_service->get_str('accounts.limits.auto_min.exclude.from', $schema);
+		$global_min_limit = $this->config_service->get_int(
+      config_id: 'accounts.limits.global.min',
+      schema: $schema_o,
+    );
+		$percentage = $this->config_service->get_int(
+      config_id: 'accounts.limits.auto_min.percentage',
+      schema: $schema_o,
+    );
+		$exclude_to_str = $this->config_service->get_str(
+      config_id: 'accounts.limits.auto_min.exclude.to',
+      schema: $schema_o,
+    );
+		$exclude_from_str = $this->config_service->get_str(
+      config_id: 'accounts.limits.auto_min.exclude.from',
+      schema: $schema_o,
+    );
 
 		$exclude_to_ary = explode(',', $exclude_to_str);
 		$exclude_from_ary = explode(',', $exclude_from_str);

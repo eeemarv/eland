@@ -36,13 +36,31 @@ class MessagesType extends AbstractType
     array $options
   ):void
   {
-    //$expires_at_required = $this->config_service->get_bool('messages.fields.expires_at.required', $this->pp->schema());
-    //$expires_at_days_default = $this->config_service->get_int('messages.fields.expires_at.days_default', $this->pp->schema());
-    $service_stuff_enabled = $this->config_service->get_bool('messages.fields.service_stuff.enabled', $this->pp->schema());
-    //$category_enabled = $this->config_service->get_bool('messages.fields.category.enabled', $this->pp->schema());
-    $expires_at_enabled = $this->config_service->get_bool('messages.fields.expires_at.enabled', $this->pp->schema());
-    //$expires_at_switch_enabled = $this->config_service->get_bool('messages.fields.expires_at.switch_enabled', $this->pp->schema());
-    $units_enabled = $this->config_service->get_bool('messages.fields.units.enabled', $this->pp->schema());
+    $expires_at_required = $this->config_service->get_bool(
+      config_id: 'messages.fields.expires_at.required',
+      schema: $this->pp->schema_o(),
+    );
+    $expires_at_days_default = $this->config_service->get_int(
+      config_id: 'messages.fields.expires_at.days_default',
+      schema: $this->pp->schema_o(),
+    );
+    $service_stuff_enabled = $this->config_service->get_bool(
+      config_id: 'messages.fields.service_stuff.enabled',
+      schema: $this->pp->schema_o(),
+    );
+    $category_enabled = $this->config_service->get_bool(
+      config_id: 'messages.fields.category.enabled',
+      schema: $this->pp->schema_o(),
+    );
+    $expires_at_enabled = $this->config_service->get_bool(
+      config_id: 'messages.fields.expires_at.enabled',
+      schema: $this->pp->schema_o(),
+    );
+    $expires_at_switch_enabled = $this->config_service->get_bool(
+      config_id: 'messages.fields.expires_at.switch_enabled',
+      schema: $this->pp->schema_o(),
+    );
+    $units_enabled = $this->config_service->get_bool('messages.fields.units.enabled', schema: $this->pp->schema_o());
 
     if ($this->pp->is_admin())
     {

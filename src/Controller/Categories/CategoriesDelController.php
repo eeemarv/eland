@@ -41,17 +41,26 @@ class CategoriesDelController extends AbstractController
     PageParamsService $pp,
   ):Response
   {
-    if (!$config_service->get_bool('messages.fields.category.enabled', $pp->schema()))
+    if (!$config_service->get_bool(
+      config_id: 'messages.fields.category.enabled',
+      schema: $pp->schema_o(),
+    ))
     {
       throw new NotFoundHttpException('Categories module not enabled.');
     }
 
-    if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+    if (!$config_service->get_bool(
+      config_id: 'messages.enabled',
+      schema: $pp->schema_o(),
+    ))
     {
       throw new NotFoundHttpException('messages (offer/want) module not enabled.');
     }
 
-    $category = $category_repository->get_with_messages_count($id, $pp->schema());
+    $category = $category_repository->get_with_messages_count(
+      id: $id,
+      schema: $pp->schema_o(),
+    );
 
     if ($category['count'] !== 0)
     {
@@ -75,7 +84,10 @@ class CategoriesDelController extends AbstractController
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $category_repository->del($id, $pp->schema());
+      $category_repository->del(
+        id: $id,
+        schema: $pp->schema_o(),
+      );
 
       $this->addFlash('success', 'Categorie "' . $category['name'] . '" verwijderd.');
 

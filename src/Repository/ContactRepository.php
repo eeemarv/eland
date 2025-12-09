@@ -9,7 +9,7 @@ use Doctrine\DBAL\Types\Types;
 class ContactRepository
 {
 	public function __construct(
-		protected Db $db
+		private readonly Db $db
 	)
 	{
 	}
@@ -257,9 +257,9 @@ class ContactRepository
 		];
 
 		$this->db->update($schema->str() . '.contact',
-			$update_ary,
-			['id' => $id],
-			$type_ary);
+			$update_ary, [
+        'id' => $id,
+      ], $type_ary);
 	}
 
 	public function del(

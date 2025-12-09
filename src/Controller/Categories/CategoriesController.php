@@ -38,17 +38,25 @@ class CategoriesController extends AbstractController
     PageParamsService $pp,
   ):Response
   {
-    if (!$config_service->get_bool('messages.fields.category.enabled', $pp->schema()))
+    if (!$config_service->get_bool(
+      config_id: 'messages.fields.category.enabled',
+      schema: $pp->schema_o(),
+    ))
     {
       throw new NotFoundHttpException('Categories module not enabled.');
     }
 
-    if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+    if (!$config_service->get_bool(
+      config_id: 'messages.enabled',
+      schema: $pp->schema_o(),
+    ))
     {
       throw new NotFoundHttpException('messages (offer/want) module not enabled.');
     }
 
-    $fetch = $category_repository->get_list_and_input_ary($pp->schema());
+    $fetch = $category_repository->get_list_and_input_ary(
+      schema: $pp->schema_o(),
+    );
     $categories = $fetch['categories'];
     $input_ary = $fetch['input_ary'];
 
@@ -70,7 +78,10 @@ class CategoriesController extends AbstractController
       $categories_json = $command->categories;
       $posted_categories = json_decode($categories_json, true);
 
-      $update_count = $category_repository->update_list($posted_categories, $pp->schema());
+      $update_count = $category_repository->update_list(
+        posted_ary: $posted_categories,
+        schema: $pp->schema_o(),
+      );
 
       if ($update_count)
       {

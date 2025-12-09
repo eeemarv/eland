@@ -12,9 +12,9 @@ use Twig\Extension\RuntimeExtensionInterface;
 class AccountRuntime implements RuntimeExtensionInterface
 {
 	public function __construct(
-		protected AccountRepository $account_repository,
-		protected UserCacheService $user_cache_service,
-		protected ConfigService $config_service
+		private readonly AccountRepository $account_repository,
+		private readonly UserCacheService $user_cache_service,
+		private readonly ConfigService $config_service
 	)
 	{
 	}
@@ -72,9 +72,10 @@ class AccountRuntime implements RuntimeExtensionInterface
   ):int
 	{
     $sch_str = $schema ?? $context['schema'] ?? null;
+    $schema_o = new Schema($sch_str);
 		return $this->account_repository->get_balance(
       account_id: $user_id,
-      schema: new Schema($sch_str),
+      schema: $schema_o,
     );
 	}
 
@@ -85,6 +86,7 @@ class AccountRuntime implements RuntimeExtensionInterface
   ):string
 	{
     $sch_str = $schema ?? $context['schema'] ?? null;
+    $schema_o = new Schema($sch_str);
 
 		$user = $this->user_cache_service->get($user_id, $sch_str);
 		$status_id = $user['status'];
@@ -93,11 +95,16 @@ class AccountRuntime implements RuntimeExtensionInterface
       && $status_id === 1
 		)
     {
-      $new_users_enabled = $this->config_service->get_bool('users.new.enabled', $sch_str);
+      $new_users_enabled = $this->config_service->get_bool(
+        config_id: 'users.new.enabled',
+        schema: $schema_o,
+      );
 
       if ($new_users_enabled)
       {
-        $new_user_treshold = $this->config_service->get_new_user_treshold($sch_str);
+        $new_user_treshold = $this->config_service->get_new_user_treshold(
+          schema: $schema_o,
+        );
 
         if ($new_user_treshold->getTimestamp() < strtotime($user['adate'] . ' UTC'))
         {
@@ -113,7 +120,10 @@ class AccountRuntime implements RuntimeExtensionInterface
 
 		if ($status_id === 2)
 		{
-			$leaving_users_enabled = $this->config_service->get_bool('users.leaving.enabled', $sch_str);
+			$leaving_users_enabled = $this->config_service->get_bool(
+        config_id: 'users.leaving.enabled',
+        schema: $schema_o,
+      );
 
 			if (!$leaving_users_enabled)
 			{
@@ -137,6 +147,7 @@ class AccountRuntime implements RuntimeExtensionInterface
   ):bool
 	{
     $sch_str = $schema ?? $context['schema'] ?? null;
+    $schema_o = new Schema($sch_str);
 		$user = $this->user_cache_service->get($user_id, $sch_str);
 
     if ($user['status'] !== 1)
@@ -147,11 +158,16 @@ class AccountRuntime implements RuntimeExtensionInterface
     {
       return false;
     }
-    if (!$this->config_service->get_bool('users.new.enabled', $sch_str))
+    if (!$this->config_service->get_bool(
+      config_id: 'users.new.enabled',
+      schema: $schema_o,
+    ))
     {
       return false;
     }
-    $new_user_treshold = $this->config_service->get_new_user_treshold($sch_str);
+    $new_user_treshold = $this->config_service->get_new_user_treshold(
+      schema: $schema_o,
+    );
 
     if ($new_user_treshold->getTimestamp() < strtotime($user['adate'] . ' UTC'))
     {
@@ -167,13 +183,17 @@ class AccountRuntime implements RuntimeExtensionInterface
   ):bool
 	{
     $sch_str = $schema ?? $context['schema'] ?? null;
+    $schema_o = new Schema($sch_str);
 		$user = $this->user_cache_service->get($user_id, $sch_str);
 
 		if ($user['status'] !== 2)
 		{
 			return false;
 		}
-    if (!$this->config_service->get_bool('users.leaving.enabled', $sch_str))
+    if (!$this->config_service->get_bool(
+      config_id: 'users.leaving.enabled',
+      schema: $schema_o,
+    ))
     {
       return false;
     }

@@ -29,7 +29,10 @@ class CalendarMonthController extends AbstractController
         PageParamsService $pp
     ):Response
     {
-        if (!$config_service->get_bool('calendar.enabled', $pp->schema()))
+        if (!$config_service->get_bool(
+          config_id: 'calendar.enabled',
+          schema: $pp->schema_o(),
+        ))
         {
             throw new NotFoundHttpException('Calendar module not enabled.');
         }
@@ -42,8 +45,10 @@ class CalendarMonthController extends AbstractController
         );
 
         $show_access = ($pp->is_user()
-                && $config_service->get_intersystem_en($pp->schema()))
-            || $pp->is_admin();
+            && $config_service->get_intersystem_en(
+              schema: $pp->schema_o(),
+            ))
+          || $pp->is_admin();
 
         $out = '';
 

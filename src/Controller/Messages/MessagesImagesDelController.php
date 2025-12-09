@@ -45,7 +45,10 @@ class MessagesImagesDelController extends AbstractController
         string $env_s3_url
     ):Response
     {
-        if (!$config_service->get_bool('messages.enabled', $pp->schema()))
+        if (!$config_service->get_bool(
+          config_id: 'messages.enabled',
+          schema: $pp->schema_o(),
+        ))
         {
             throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
         }

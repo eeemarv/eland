@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\DTO\Schema;
 use Psr\Log\LoggerInterface;
 use App\Service\ConfigService;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -34,13 +35,19 @@ class MailAddrSystemService
 
 	public function get_support(string $schema):array
 	{
-		$mail_ary = $this->config_service->get_ary('mail.addresses.support', $schema);
+		$mail_ary = $this->config_service->get_ary(
+      config_id: 'mail.addresses.support',
+      schema: new Schema($schema),
+    );
 		return $this->get_validated_ary($mail_ary, 'support', $schema);
 	}
 
 	public function get_admin(string $schema):array
 	{
-		$mail_ary = $this->config_service->get_ary('mail.addresses.admin', $schema);
+		$mail_ary = $this->config_service->get_ary(
+      config_id: 'mail.addresses.admin',
+      schema: new Schema($schema),
+    );
 		return $this->get_validated_ary($mail_ary, 'admin', $schema);
 	}
 
@@ -63,7 +70,10 @@ class MailAddrSystemService
 
 			if ($this->validate($mail, $mail_id, $schema))
 			{
-				$out[] = new Address($mail, $this->config_service->get_str('system.name', $schema));
+				$out[] = new Address($mail, $this->config_service->get_str(
+          config_id: 'system.name',
+          schema: new Schema($schema),
+        ));
 			}
 		}
 

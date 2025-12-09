@@ -43,14 +43,20 @@ class MollieWebhookController extends AbstractController
     MollieRepository $mollie_repository
   ):Response
   {
-    if (!$config_service->get_bool('mollie.enabled', $pp->schema()))
+    if (!$config_service->get_bool(
+      config_id: 'mollie.enabled',
+      schema: $pp->schema_o(),
+    ))
     {
       throw $this->createNotFoundException('Mollie submodule (users) not enabled.');
     }
 
     $id = $request->request->get('id', '');
 
-    $mollie_apikey = $config_service->get_str('mollie.apikey', $pp->schema());
+    $mollie_apikey = $config_service->get_str(
+      config_id: 'mollie.apikey',
+      schema: $pp->schema_o(),
+    );
 
     $mollie = new MollieApiClient();
     $mollie->setApiKey($mollie_apikey);

@@ -39,7 +39,9 @@ class ItemAccessService
 		}
 		else if ($this->pp->is_guest())
 		{
-			if ($this->config_service->get_intersystem_en($this->pp->schema())
+			if ($this->config_service->get_intersystem_en(
+        schema: $this->pp->schema_o(),
+      )
 				&& $access === 'guest')
 			{
 				return true;
@@ -91,7 +93,9 @@ class ItemAccessService
 	):string
 	{
 		$access = $access === 'guest'
-			&& !$this->config_service->get_intersystem_en($this->pp->schema()) ? 'user' : $access;
+			&& !$this->config_service->get_intersystem_en(
+        schema: $this->pp->schema_o(),
+      ) ? 'user' : $access;
 
 		$out = '<span class="btn btn-';
 		$out .= AccessCnst::LABEL[$access]['class'];
@@ -114,7 +118,9 @@ class ItemAccessService
 	{
 		$ary = AccessCnst::ARY;
 
-		if (!$this->config_service->get_intersystem_en($this->pp->schema()))
+		if (!$this->config_service->get_intersystem_en(
+      schema: $this->pp->schema_o(),
+    ))
 		{
 			unset($ary['guest']);
 			$selected = $selected === 'guest' ? 'user' : $selected;

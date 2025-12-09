@@ -41,7 +41,10 @@ class ContactsFilterType extends AbstractType
 
       if ($us === 'new')
       {
-        if (!$this->config_service->get_bool('users.new.enabled', $this->pp->schema()))
+        if (!$this->config_service->get_bool(
+          config_id: 'users.new.enabled',
+          schema: $this->pp->schema_o(),
+        ))
         {
           continue;
         }
@@ -51,7 +54,10 @@ class ContactsFilterType extends AbstractType
 
       if ($us === 'leaving')
       {
-        if (!$this->config_service->get_bool('users.leaving.enabled', $this->pp->schema()))
+        if (!$this->config_service->get_bool(
+          config_id: 'users.leaving.enabled',
+          schema: $this->pp->schema_o(),
+        ))
         {
           continue;
         }

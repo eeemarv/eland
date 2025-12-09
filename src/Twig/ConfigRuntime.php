@@ -2,54 +2,71 @@
 
 namespace App\Twig;
 
+use App\DTO\Schema;
 use App\Service\ConfigService;
 use Twig\Extension\RuntimeExtensionInterface;
 
 class ConfigRuntime implements RuntimeExtensionInterface
 {
 	public function __construct(
-		protected ConfigService $config_service
+		private readonly ConfigService $config_service,
 	)
 	{
 	}
 
 	public function get_str(
     array $context,
-    string $path,
+    string $config_id,
     string|null $schema = null
   ):string
 	{
     $sch_str = $schema ?? $context['schema'] ?? null;
-		return $this->config_service->get_str($path, $sch_str);
+    $schema_o = new Schema($sch_str);
+		return $this->config_service->get_str(
+      config_id: $config_id,
+      schema: $schema_o,
+    );
 	}
 
 	public function get_bool(
     array $context,
-    string $path,
+    string $config_id,
     string|null $schema = null,
   ):bool
 	{
     $sch_str = $schema ?? $context['schema'] ?? null;
-		return $this->config_service->get_bool($path, $sch_str);
+    $schema_o = new Schema($sch_str);
+		return $this->config_service->get_bool(
+      config_id: $config_id,
+      schema: $schema_o,
+    );
 	}
 
 	public function get_int(
     array $context,
-    string $path,
+    string $config_id,
     string|null $schema = null,
   ):int|null
 	{
     $sch_str = $schema ?? $context['schema'] ?? null;
-		return $this->config_service->get_int($path, $sch_str);
+    $schema_o = new Schema($sch_str);
+		return $this->config_service->get_int(
+      config_id: $config_id,
+      schema: $schema_o,
+    );
 	}
 
 	public function get_ary(
     array $context,
-    string $path,
+    string $config_id,
     string|null $schema = null,
   ):array
 	{
     $sch_str = $schema ?? $context['schema'] ?? null;
-		return $this->config_service->get_ary($path, $sch_str);
+    $schema_o = new Schema($sch_str);
+		return $this->config_service->get_ary(
+      config_id: $config_id,
+      schema: $schema_o,
+    );
 	}
 }

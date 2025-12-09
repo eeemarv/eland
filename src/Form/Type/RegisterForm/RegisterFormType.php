@@ -28,7 +28,10 @@ class RegisterFormType extends AbstractType
     array $options
   ):void
   {
-    $postcode_enabled = $this->config_service->get_bool('users.fields.postcode.enabled', $this->pp->schema());
+    $postcode_enabled = $this->config_service->get_bool(
+      config_id: 'users.fields.postcode.enabled',
+      schema: $this->pp->schema_o(),
+    );
 
     $builder->add('email', EmailType::class);
     $builder->add('first_name', TextType::class);

@@ -28,7 +28,10 @@ class UsersConfigLeavingType extends AbstractType
     array $options
   ):void
   {
-    $transactions_enabled = $this->config_service->get_bool('transactions.enabled', $this->pp->schema());
+    $transactions_enabled = $this->config_service->get_bool(
+      config_id: 'transactions.enabled',
+      schema: $this->pp->schema_o(),
+    );
 
     if ($transactions_enabled)
     {

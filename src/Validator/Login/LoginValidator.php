@@ -153,7 +153,10 @@ class LoginValidator extends ConstraintValidator
       return;
     }
 
-    $maintenance_en = $this->config_service->get_bool('system.maintenance_en', $this->pp->schema());
+    $maintenance_en = $this->config_service->get_bool(
+      config_id: 'system.maintenance_en',
+      schema: $this->pp->schema_o(),
+    );
 
     if ($maintenance_en && $user['role'] !== 'admin')
     {
@@ -171,7 +174,9 @@ class LoginValidator extends ConstraintValidator
       return;
     }
 
-    $intersystem_en = $this->config_service->get_intersystem_en($this->pp->schema());
+    $intersystem_en = $this->config_service->get_intersystem_en(
+      schema: $this->pp->schema_o(),
+    );
 
     if (!$intersystem_en && !in_array($user['role'], ['admin', 'user']))
     {

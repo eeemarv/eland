@@ -4,11 +4,10 @@ namespace App\Controller\Config;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\ConfigService;
-use App\Service\SystemsService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 #[AsController]
 class ConfigRefreshController extends AbstractController
@@ -27,17 +26,11 @@ class ConfigRefreshController extends AbstractController
   )]
 
   public function __invoke(
-    ConfigService $config_service,
-    SystemsService $systems_service,
+    TagAwareCacheInterface $cache,
     PageParamsService $pp
   ):Response
   {
-    $schemas = $systems_service->get_schemas();
-
-    foreach ($schemas as $schema)
-    {
-      $config_service->clear_cache($schema);
-    }
+    $cache->invalidateTags(['config']);
 
     $this->addFlash('success', 'Config refreshed.');
 

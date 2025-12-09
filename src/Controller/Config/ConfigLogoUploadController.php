@@ -5,6 +5,7 @@ namespace App\Controller\Config;
 use App\Service\ConfigService;
 use App\Service\ImageUploadService;
 use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,6 +35,7 @@ class ConfigLogoUploadController extends AbstractController
     LoggerInterface $logger,
     ConfigService $config_service,
     PageParamsService $pp,
+    SessionUserService $su,
     ImageUploadService $image_upload_service,
   ):Response
   {
@@ -49,11 +51,17 @@ class ConfigLogoUploadController extends AbstractController
 
     if (isset($res['filename']))
     {
-      $config_service->set_str('system.logo', $res['filename'], $pp->schema());
+      $config_service->set_str(
+        config_id: 'system.logo',
+        value: $res['filename'],
+        user_id: $su->id() ?: null,
+        schema: $pp->schema_o(),
+      );
 
       $logger->info('Logo ' . $res['filename'] .
-        ' uploaded.',
-        ['schema' => $pp->schema()]);
+        ' uploaded.', [
+          'schema' => $pp->schema(),
+      ]);
     }
 
     return $this->json($res);

@@ -2,6 +2,7 @@
 
 namespace App\SchemaTask;
 
+use App\DTO\Schema;
 use App\HtmlProcess\HtmlToMarkdownConverter;
 use Doctrine\DBAL\Connection as Db;
 use App\Service\CacheService;
@@ -36,25 +37,63 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 	public function run(string $schema, bool $update):void
 	{
-    $mollie_enabled = $this->config_service->get_bool('mollie.enabled', $schema);
-    $messages_enabled = $this->config_service->get_bool('messages.enabled', $schema);
-    $transactions_enabled = $this->config_service->get_bool('transactions.enabled', $schema);
-    $news_enabled = $this->config_service->get_bool('news.enabled', $schema);
-    $docs_enabled = $this->config_service->get_bool('docs.enabled', $schema);
-		$forum_enabled = $this->config_service->get_bool('forum.enabled', $schema);
-		$new_users_enabled = $this->config_service->get_bool('users.new.enabled', $schema);
-		$leaving_users_enabled = $this->config_service->get_bool('users.leaving.enabled', $schema);
+    $schema_o = new Schema($schema);
+    $mollie_enabled = $this->config_service->get_bool(
+      config_id: 'mollie.enabled',
+      schema: $schema_o,
+    );
+    $messages_enabled = $this->config_service->get_bool(
+      config_id: 'messages.enabled',
+      schema: $schema_o,
+    );
+    $transactions_enabled = $this->config_service->get_bool(
+      config_id: 'transactions.enabled',
+      schema: $schema_o,
+    );
+    $news_enabled = $this->config_service->get_bool(
+      config_id: 'news.enabled',
+      schema: $schema_o,
+    );
+    $docs_enabled = $this->config_service->get_bool(
+      config_id: 'docs.enabled',
+      schema: $schema_o,
+    );
+		$forum_enabled = $this->config_service->get_bool(
+      config_id: 'forum.enabled',
+      schema: $schema_o,
+    );
+		$new_users_enabled = $this->config_service->get_bool(
+      config_id: 'users.new.enabled',
+      schema: $schema_o,
+    );
+		$leaving_users_enabled = $this->config_service->get_bool(
+      config_id: 'users.leaving.enabled',
+      schema: $schema_o,
+    );
 
-    $postcode_enabled = $this->config_service->get_bool('users.fields.postcode.enabled', $schema);
+    $postcode_enabled = $this->config_service->get_bool(
+      config_id: 'users.fields.postcode.enabled',
+      schema: $schema_o,
+    );
 
-		$intersystem_en = $this->config_service->get_intersystem_en($schema);
+		$intersystem_en = $this->config_service->get_intersystem_en(
+      schema: $schema_o,
+    );
 
 		$now_unix = time();
-		$days = $this->config_service->get_int('periodic_mail.days', $schema);
+		$days = $this->config_service->get_int(
+      config_id: 'periodic_mail.days',
+      schema: $schema_o,
+    );
 		$treshold_time_unix = $now_unix - ($days * 86400);
 		$treshold_time =\DateTimeImmutable::createFromFormat('U', (string) $treshold_time_unix);
-		$new_user_treshold = $this->config_service->get_new_user_treshold($schema);
-		$expires_at_enabled = $this->config_service->get_bool('messages.fields.expires_at.enabled', $schema);
+		$new_user_treshold = $this->config_service->get_new_user_treshold(
+      schema: $schema_o,
+    );
+		$expires_at_enabled = $this->config_service->get_bool(
+      config_id: 'messages.fields.expires_at.enabled',
+      schema: $schema_o,
+    );
 
 		$users = $news = $new_users = [];
 		$leaving_users = $transactions = $messages = [];
@@ -65,7 +104,10 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 		$block_options = [];
 
-		$block_ary = $this->config_service->get_ary('periodic_mail.user.layout', $schema);
+		$block_ary = $this->config_service->get_ary(
+      config_id: 'periodic_mail.user.layout',
+      schema: $schema_o,
+    );
 
 		foreach ($block_ary as $block)
 		{
@@ -73,7 +115,10 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 			if (in_array($block, ['news', 'new_users', 'leaving_users']))
 			{
-				$select = $this->config_service->get_str('periodic_mail.user.render.' . $block . '.select', $schema);
+				$select = $this->config_service->get_str(
+          config_id: 'periodic_mail.user.render.' . $block . '.select',
+          schema: $schema_o,
+        );
 				$select = $select === 'all' ? 'all' : 'recent';
 			}
 
@@ -254,16 +299,26 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 			foreach ($eland_ary as $sch => $d)
 			{
-				$intersystem_postcode_enabled = $this->config_service->get_bool('users.fields.postcode.enabled', $sch);
+        $inter_sch_o = new Schema($sch);
+				$intersystem_postcode_enabled = $this->config_service->get_bool(
+          config_id: 'users.fields.postcode.enabled',
+          schema: $inter_sch_o,
+        );
 
-				if (!$this->config_service->get_bool('messages.enabled', $sch))
+				if (!$this->config_service->get_bool(
+          config_id: 'messages.enabled',
+          schema: $inter_sch_o,
+          ))
 				{
 					continue;
 				}
 
 				$intersystem_msgs = [];
 
-				$expires_at_enabled_intersystem = $this->config_service->get_bool('messages.fields.expires_at.enabled', $sch);
+				$expires_at_enabled_intersystem = $this->config_service->get_bool(
+          config_id: 'messages.fields.expires_at.enabled',
+          schema: $inter_sch_o,
+        );
 
 				$stmt = $this->db->prepare('select m.id, m.subject,
 						m.content,
@@ -318,7 +373,10 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 			$query .= $block_options['news'] == 'recent' ? 'and n.created_at > ? ' : '';
 			$query .= 'order by ';
-			$query .= $this->config_service->get_bool('news.sort.asc', $schema) ? 'n.event_at asc, ' : '';
+			$query .= $this->config_service->get_bool(
+        config_id: 'news.sort.asc',
+        schema: $schema_o,
+      ) ? 'n.event_at asc, ' : '';
 			$query .= 'n.created_at desc';
 
 			$stmt = $this->db->prepare($query);
@@ -589,13 +647,24 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 
 	public function is_enabled(string $schema):bool
 	{
-		return $this->config_service->get_int('periodic_mail.days', $schema) > 0
-			&& $this->config_service->get_bool('periodic_mail.enabled', $schema);
+    $schema_o = new Schema($schema);
+		return $this->config_service->get_int(
+      config_id: 'periodic_mail.days',
+      schema: $schema_o,
+      ) > 0
+			&& $this->config_service->get_bool(
+        config_id: 'periodic_mail.enabled',
+        schema: $schema_o,
+      );
 	}
 
 	public function get_interval(string $schema):int
 	{
-		$days = $this->config_service->get_int('periodic_mail.days', $schema);
+    $schema_o = new Schema($schema);
+		$days = $this->config_service->get_int(
+      config_id: 'periodic_mail.days',
+      schema: $schema_o,
+    );
 		$days = $days < 1 ? 7 : $days;
 
 		return 86400 * $days;

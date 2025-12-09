@@ -38,7 +38,10 @@ class CategoryIsLeafValidator extends ConstraintValidator
       throw new UnexpectedTypeException($category_id, 'number');
     }
 
-    $category = $this->category_repository->get((int) $category_id, $this->pp->schema());
+    $category = $this->category_repository->get(
+      id: (int) $category_id,
+      schema: $this->pp->schema_o(),
+    );
 
     if (($category['left_id'] + 1) !== $category['right_id'])
     {

@@ -12,7 +12,7 @@ use Symfony\Component\Uid\Uuid;
 class EmailSentRepository
 {
 	public function __construct(
-		protected Db $db
+		private readonly Db $db
 	)
 	{
 	}

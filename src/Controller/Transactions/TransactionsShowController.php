@@ -3,6 +3,7 @@
 namespace App\Controller\Transactions;
 
 use App\Cnst\MessageTypeCnst;
+use App\DTO\Schema;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Repository\TransactionRepository;
@@ -54,13 +55,22 @@ class TransactionsShowController extends AbstractController
     SessionUserService $su
   ):Response
   {
-    if (!$config_service->get_bool('transactions.enabled', $pp->schema()))
+    if (!$config_service->get_bool(
+      config_id: 'transactions.enabled',
+      schema: $pp->schema_o(),
+    ))
     {
       throw new NotFoundHttpException('Transactions module not enabled.');
     }
 
-    $currency = $config_service->get_str('transactions.currency.name', $pp->schema());
-    $service_stuff_enabled = $config_service->get_bool('transactions.fields.service_stuff.enabled', $pp->schema());
+    $currency = $config_service->get_str(
+      config_id: 'transactions.currency.name',
+      schema: $pp->schema_o(),
+    );
+    $service_stuff_enabled = $config_service->get_bool(
+      config_id: 'transactions.fields.service_stuff.enabled',
+      schema: $pp->schema_o(),
+    );
 
     $intersystem_account_schemas = $intersystems_service->get_eland_accounts_schemas($pp->schema());
     $eland_intersystem_ary = $intersystems_service->get_eland($pp->schema());
@@ -93,7 +103,10 @@ class TransactionsShowController extends AbstractController
         where t.transid = ?',
         [$transaction['transid']], [Types::STRING]);
 
-      $inter_transactions_enabled = $config_service->get_bool('transactions.enabled', $inter_schema);
+      $inter_transactions_enabled = $config_service->get_bool(
+        config_id: 'transactions.enabled',
+        schema: new Schema($inter_schema),
+      );
     }
     else
     {
@@ -112,7 +125,10 @@ class TransactionsShowController extends AbstractController
     $real_to = $transaction['real_to'] ? true : false;
     $real_from = $transaction['real_from'] ? true : false;
 
-    $intersystem_trans = ($real_from || $real_to) && $config_service->get_intersystem_en($pp->schema());
+    $intersystem_trans = ($real_from || $real_to)
+      && $config_service->get_intersystem_en(
+      schema: $pp->schema_o(),
+    );
 
     $out = '<div class="panel panel-';
     $out .= $intersystem_trans ? 'warning' : 'default';

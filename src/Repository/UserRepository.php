@@ -563,7 +563,7 @@ class UserRepository
         $sql_where = 'u.status in (1, 2)';
         break;
       case 'new':
-        $new_user_treshold = $this->config_service->get_new_user_treshold($schema->str());
+        $new_user_treshold = $this->config_service->get_new_user_treshold(schema: $schema);
         $sql_where = 'u.status = 1 and u.adate > :activated_at';
         $sql_params['activated_at'] = $new_user_treshold;
         $sql_types['activated_at'] = Types::DATETIME_IMMUTABLE;

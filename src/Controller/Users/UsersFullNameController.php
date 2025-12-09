@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
+use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
@@ -33,17 +34,27 @@ class UsersFullNameController extends AbstractController
     Request $request,
     ConfigService $config_service,
     PageParamsService $pp,
+    SessionUserService $su,
   ):Response
   {
-    if (!$config_service->get_bool('users.fields.full_name.enabled', $pp->schema()))
+    if (!$config_service->get_bool(
+      config_id: 'users.fields.full_name.enabled',
+      schema: $pp->schema_o(),
+    ))
     {
       throw new AccessDeniedHttpException('Full name module not enabled.');
     }
 
     $command = new UsersFullNameCommand();
-    $config_service->load_command($command, $pp->schema());
+    $config_service->load_command(
+      command: $command,
+      schema: $pp->schema_o(),
+    );
 
-    $form = $this->createForm(UsersFullNameType::class, $command);
+    $form = $this->createForm(
+      type: UsersFullNameType::class,
+      data: $command,
+    );
     $form->handleRequest($request);
 
     if ($form->isSubmitted()
@@ -51,9 +62,31 @@ class UsersFullNameController extends AbstractController
     {
       $command = $form->getData();
 
-      $config_service->store_command($command, $pp->schema());
+      $changed = $config_service->store_command(
+        command: $command,
+        user_id: $su->id() ?: null,
+        schema: $pp->schema_o(),
+      );
 
-      $this->addFlash('success', 'Volledige naam configuratie aangepast');
+      if ($changed)
+      {
+        $this->addFlash(
+          type: 'success',
+          message: [
+            'key' => 'users_full_name.flash.change',
+          ],
+        );
+      }
+      else
+      {
+        $this->addFlash(
+          type: 'warning',
+          message: [
+            'key' => 'flash.no_change',
+          ],
+        );
+      }
+
       return $this->redirectToRoute('users_full_name', $pp->ary());
     }
 

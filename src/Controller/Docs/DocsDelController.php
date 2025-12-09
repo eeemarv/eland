@@ -46,14 +46,20 @@ class DocsDelController extends AbstractController
     string $env_s3_url,
   ):Response
   {
-    if (!$config_service->get_bool('docs.enabled', $pp->schema()))
+    if (!$config_service->get_bool(
+      config_id: 'docs.enabled',
+      schema: $pp->schema_o(),
+    ))
     {
       throw new NotFoundHttpException('Documents module not enabled.');
     }
 
     $command = new DocsCommand();
 
-    $doc = $doc_repository->get($id, $pp->schema());
+    $doc = $doc_repository->get(
+      id: $id,
+      schema: $pp->schema_o(),
+    );
 
     $command->file_location = $env_s3_url . $doc['filename'];
     $command->original_filename = $doc['original_filename'];
@@ -62,11 +68,17 @@ class DocsDelController extends AbstractController
 
     if (isset($doc['map_id']))
     {
-      $doc_map = $doc_repository->get_map($doc['map_id'], $pp->schema());
+      $doc_map = $doc_repository->get_map(
+        map_id: $doc['map_id'],
+        schema: $pp->schema_o(),
+      );
       $command->map_name = $doc_map['name'];
     }
 
-    $form = $this->createForm(DocsDelType::class, $command);
+    $form = $this->createForm(
+      type: DocsDelType::class,
+      data: $command,
+    );
     $form->handleRequest($request);
 
     if ($form->isSubmitted()
@@ -74,7 +86,10 @@ class DocsDelController extends AbstractController
     {
       $alert_success_msg = [];
 
-      $doc_repository->del($id, $pp->schema());
+      $doc_repository->del(
+        id: $id,
+        schema: $pp->schema_o(),
+      );
 
       $err = $s3_service->del($doc['filename']);
 
@@ -89,12 +104,18 @@ class DocsDelController extends AbstractController
 
       if (isset($doc['map_id']))
       {
-        $map_doc_count = $doc_repository->get_count_for_map_id($doc['map_id'], $pp->schema());
+        $map_doc_count = $doc_repository->get_count_for_map_id(
+          map_id: $doc['map_id'],
+          schema: $pp->schema_o(),
+        );
 
         if ($map_doc_count === 0)
         {
           $alert_success_msg[] = 'Map "' . $doc_map['name'] . '" bevatte geen items meer en werd automatisch gewist.';
-          $doc_repository->del_map($doc['map_id'], $pp->schema());
+          $doc_repository->del_map(
+            map_id: $doc['map_id'],
+            schema: $pp->schema_o(),
+          );
           $typeahead_service->clear_cache($pp->schema());
           unset($doc['map_id']);
         }

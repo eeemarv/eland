@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\DTO\Schema;
 use Doctrine\DBAL\Connection as Db;
 use Redis;
 use App\Service\SystemsService;
@@ -19,10 +20,10 @@ class IntersystemsService
 	protected array $eland_intersystems = [];
 
 	public function __construct(
-		protected Db $db,
-		protected Redis $redis,
-		protected SystemsService $systems_service,
-		protected ConfigService $config_service
+		private readonly Db $db,
+		private readonly Redis $redis,
+		private readonly SystemsService $systems_service,
+		private readonly ConfigService $config_service
 	)
 	{
 	}
@@ -44,7 +45,9 @@ class IntersystemsService
 		}
 	}
 
-	private function load_eland_intersystems_from_db(string $schema):void
+	private function load_eland_intersystems_from_db(
+    string $schema
+  ):void
 	{
 		$this->eland_intersystems[$schema] = [];
 		$this->eland_accounts_schemas[$schema] = [];
@@ -67,7 +70,9 @@ class IntersystemsService
 
 			if ($interschema = $this->systems_service->get_schema($system))
 			{
-				if (!$this->config_service->get_intersystem_en($interschema))
+				if (!$this->config_service->get_intersystem_en(
+          schema: new Schema($interschema),
+        ))
 				{
 					continue;
 				}

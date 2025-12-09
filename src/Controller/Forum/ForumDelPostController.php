@@ -46,7 +46,10 @@ class ForumDelPostController extends AbstractController
     ItemAccessService $item_access_service,
   ):Response
   {
-    if (!$config_service->get_bool('forum.enabled', $pp->schema()))
+    if (!$config_service->get_bool(
+      config_id: 'forum.enabled',
+      schema: $pp->schema_o(),
+    ))
     {
       throw new NotFoundHttpException('Forum module not enabled.');
     }

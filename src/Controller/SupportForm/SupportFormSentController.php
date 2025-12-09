@@ -30,7 +30,10 @@ class SupportFormSentController extends AbstractController
     PageParamsService $pp,
   ):Response
   {
-    if (!$config_service->get_bool('support_form.enabled', $pp->schema()))
+    if (!$config_service->get_bool(
+      config_id: 'support_form.enabled',
+      schema: $pp->schema_o(),
+    ))
     {
       throw $this->createNotFoundException('Support form not enabled.');
     }

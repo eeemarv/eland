@@ -36,16 +36,24 @@ class NewsListController extends AbstractController
     PageParamsService $pp,
   ):Response
   {
-    if (!$config_service->get_bool('news.enabled', $pp->schema()))
+    if (!$config_service->get_bool(
+      config_id: 'news.enabled',
+      schema: $pp->schema_o(),
+    ))
     {
       throw new NotFoundHttpException('News module not enabled.');
     }
 
     $show_access = ($pp->is_user()
-      && $config_service->get_intersystem_en($pp->schema()))
+      && $config_service->get_intersystem_en(
+        schema: $pp->schema_o(),
+      ))
       || $pp->is_admin();
 
-    $sort_asc = $config_service->get_bool('news.sort.asc', $pp->schema());
+    $sort_asc = $config_service->get_bool(
+      config_id: 'news.sort.asc',
+      schema: $pp->schema_o(),
+    );
     $visible_ary = $item_access_service->get_visible_ary_for_page();
     $news_items = $news_repository->get_all($sort_asc, $visible_ary, $pp->schema());
 

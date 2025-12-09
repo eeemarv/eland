@@ -11,36 +11,40 @@ use App\Service\PageParamsService;
 
 class DocMapUniqueNameValidator extends ConstraintValidator
 {
-    public function __construct(
-        protected DocRepository $doc_repository,
-        protected PageParamsService $pp
-    )
+  public function __construct(
+    private readonly DocRepository $doc_repository,
+    private readonly PageParamsService $pp,
+  )
+  {
+  }
+
+  public function validate($command, Constraint $constraint):void
+  {
+    if (!$constraint instanceof DocMapUniqueName)
     {
+      throw new UnexpectedTypeException($constraint, DocMapUniqueName::class);
     }
 
-    public function validate($command, Constraint $constraint):void
+    if (!$command instanceof DocsMapCommand)
     {
-        if (!$constraint instanceof DocMapUniqueName)
-        {
-            throw new UnexpectedTypeException($constraint, DocMapUniqueName::class);
-        }
-
-        if (!$command instanceof DocsMapCommand)
-        {
-            throw new UnexpectedTypeException($command, DocsMapCommand::class);
-        }
-
-        $name = $command->name;
-        $id = $command->id;
-
-        $is_unique = $this->doc_repository->is_unique_map_name_except_id($name, $id, $this->pp->schema());
-
-        if (!$is_unique)
-        {
-            $this->context->buildViolation('doc_map.name_not_unique')
-                ->atPath('name')
-                ->addViolation();
-            return;
-        }
+      throw new UnexpectedTypeException($command, DocsMapCommand::class);
     }
+
+    $name = $command->name;
+    $id = $command->id;
+
+    $is_unique = $this->doc_repository->is_unique_map_name_except_id(
+      name: $name,
+      map_id: $id,
+      schema: $this->pp->schema_o(),
+    );
+
+    if (!$is_unique)
+    {
+      $this->context->buildViolation('doc_map.name_not_unique')
+        ->atPath('name')
+        ->addViolation();
+      return;
+    }
+  }
 }

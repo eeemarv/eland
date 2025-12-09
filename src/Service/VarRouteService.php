@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Cnst\PagesCnst;
+use App\DTO\Schema;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -16,9 +17,9 @@ class VarRouteService
 	protected string $route;
 
 	public function __construct(
-		protected RequestStack $request_stack,
-		protected PageParamsService $pp,
-		protected ConfigService $config_service
+		private readonly RequestStack $request_stack,
+		private readonly PageParamsService $pp,
+		private readonly ConfigService $config_service
 	)
 	{
 		$this->session = $this->request_stack->getSession();
@@ -51,9 +52,15 @@ class VarRouteService
 			'news'			=> 'news_' . $view_ary['news'],
 		];
 
-		$default = $this->config_service->get_str('system.default_landing_page', $this->pp->schema());
+		$default = $this->config_service->get_str(
+      config_id: 'system.default_landing_page',
+      schema: $this->pp->schema_o(),
+    );
 
-		if (!$this->config_service->get_bool($default . '.enabled', $this->pp->schema()))
+		if (!$this->config_service->get_bool(
+      config_id: $default . '.enabled',
+      schema: $this->pp->schema_o(),
+    ))
 		{
 			$default = 'users';
 		}
@@ -61,16 +68,26 @@ class VarRouteService
 		$this->var_route_ary['default'] = $this->get($default);
 	}
 
-	public function get(string $menu_route):string
+	public function get(
+    string $menu_route
+  ):string
 	{
 		return $this->var_route_ary[$menu_route] ?? $menu_route;
 	}
 
-	public function get_fallback_route(string $active_menu, string $schema):string
+	public function get_fallback_route(
+    string $active_menu,
+    string $schema
+  ):string
 	{
+    $schema_o = new Schema($schema);
+
 		if (isset(PagesCnst::LANDING[$active_menu]))
 		{
-			$route_enabled = $this->config_service->get_bool($active_menu . '.enabled', $schema);
+			$route_enabled = $this->config_service->get_bool(
+        config_id: $active_menu . '.enabled',
+        schema: $schema_o,
+      );
 		}
 		else
 		{
@@ -79,19 +96,33 @@ class VarRouteService
 
 		if (!$route_enabled)
 		{
-			$default_route = $this->config_service->get_str('system.default_landing_page', $schema);
-			$default_enabled = $this->config_service->get_bool($default_route . '.enabled', $schema);
+			$default_route = $this->config_service->get_str(
+        config_id: 'system.default_landing_page',
+        schema: $schema_o,
+      );
+			$default_enabled = $this->config_service->get_bool(
+        config_id: $default_route . '.enabled',
+        schema: $schema_o,
+      );
 			$active_menu = $default_enabled ? $default_route : 'users';
 		}
 
 		return $this->var_route_ary[$active_menu] ?? $active_menu;
 	}
 
-	public function get_inter(string $menu_route, string $remote_schema):string
+	public function get_inter(
+    string $menu_route,
+    string $remote_schema,
+  ):string
 	{
+    $remote_schema_o = new Schema($remote_schema);
+
 		if (isset(PagesCnst::LANDING[$menu_route]))
 		{
-			$route_enabled = $this->config_service->get_bool($menu_route . '.enabled', $remote_schema);
+			$route_enabled = $this->config_service->get_bool(
+        config_id: $menu_route . '.enabled',
+        schema: $remote_schema_o,
+      );
 		}
 		else
 		{
@@ -100,8 +131,14 @@ class VarRouteService
 
 		if (!$route_enabled)
 		{
-			$default_route = $this->config_service->get_str('system.default_landing_page', $remote_schema);
-			$default_enabled = $this->config_service->get_bool($default_route . '.enabled', $remote_schema);
+			$default_route = $this->config_service->get_str(
+        config_id: 'system.default_landing_page',
+        schema: $remote_schema_o,
+      );
+			$default_enabled = $this->config_service->get_bool(
+        config_id: $default_route . '.enabled',
+        schema: $remote_schema_o,
+      );
 			$menu_route = $default_enabled ? $default_route : 'users';
 		}
 

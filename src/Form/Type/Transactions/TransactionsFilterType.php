@@ -31,7 +31,10 @@ class TransactionsFilterType extends AbstractType
     array $options
   ):void
   {
-    $service_stuff_enabled = $this->config_service->get_bool('transactions.fields.service_stuff.enabled', $this->pp->schema());
+    $service_stuff_enabled = $this->config_service->get_bool(
+      config_id: 'transactions.fields.service_stuff.enabled',
+      schema: $this->pp->schema_o(),
+    );
 
     $typeahead_add = [];
 

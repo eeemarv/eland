@@ -36,18 +36,36 @@ class MessagesFilterType extends AbstractType
     array $options
   ):void
   {
-    $service_stuff_enabled = $this->config_service->get_bool('messages.fields.service_stuff.enabled', $this->pp->schema());
-    $category_enabled = $this->config_service->get_bool('messages.fields.category.enabled', $this->pp->schema());
-    $expires_at_enabled = $this->config_service->get_bool('messages.fields.expires_at.enabled', $this->pp->schema());
+    $service_stuff_enabled = $this->config_service->get_bool(
+      config_id: 'messages.fields.service_stuff.enabled',
+      schema: $this->pp->schema_o(),
+    );
+    $category_enabled = $this->config_service->get_bool(
+      config_id: 'messages.fields.category.enabled',
+      schema: $this->pp->schema_o(),
+    );
+    $expires_at_enabled = $this->config_service->get_bool(
+      config_id: 'messages.fields.expires_at.enabled',
+      schema: $this->pp->schema_o(),
+    );
 
-    $new_users_enabled = $this->config_service->get_bool('users.new.enabled', $this->pp->schema());
-    $leaving_users_enabled = $this->config_service->get_bool('users.leaving.enabled', $this->pp->schema());
+    $new_users_enabled = $this->config_service->get_bool(
+      config_id: 'users.new.enabled',
+      schema: $this->pp->schema_o(),
+    );
+    $leaving_users_enabled = $this->config_service->get_bool(
+      config_id: 'users.leaving.enabled',
+      schema: $this->pp->schema_o(),
+    );
 
     $show_new_status = $new_users_enabled;
 
     if ($show_new_status)
     {
-      $new_users_access = $this->config_service->get_str('users.new.access', $this->pp->schema());
+      $new_users_access = $this->config_service->get_str(
+        config_id: 'users.new.access',
+        schema: $this->pp->schema_o(),
+      );
       $show_new_status = $this->item_access_service->is_visible($new_users_access);
     }
 
@@ -55,7 +73,10 @@ class MessagesFilterType extends AbstractType
 
     if ($show_leaving_status)
     {
-      $leaving_users_access = $this->config_service->get_str('users.leaving.access', $this->pp->schema());
+      $leaving_users_access = $this->config_service->get_str(
+        config_id: 'users.leaving.access',
+        schema: $this->pp->schema_o(),
+      );
       $show_leaving_status = $this->item_access_service->is_visible($leaving_users_access);
     }
 
