@@ -30,12 +30,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class TransactionsController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/transactions',
+        '/{schema}/{role_short}/transactions',
         name: 'transactions',
         methods: ['GET', 'POST'],
         priority: 10,
         requirements: [
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.guest%',
         ],
         defaults: [
@@ -45,12 +45,12 @@ class TransactionsController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/transactions/self',
+        '/{schema}/{role_short}/transactions/self',
         name: 'transactions_self',
         methods: ['GET', 'POST'],
         priority: 20,
         requirements: [
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.user%',
         ],
         defaults: [

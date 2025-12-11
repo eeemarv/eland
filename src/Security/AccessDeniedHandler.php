@@ -23,12 +23,12 @@ class AccessDeniedHandler implements AccessDeniedHandlerInterface
 
   public function handle(Request $request, AccessDeniedException $accessDeniedException): ?Response
   {
-    $system = $request->attributes->get('system', '');
+    $schema = $request->attributes->get('schema');
 
-    if ($system)
+    if ($schema)
     {
       $this->link_render->redirect('login', [
-        'system' => $system,
+        'schema' => $schema,
       ], [
         'location'  => $request->getRequestUri(),
       ]);

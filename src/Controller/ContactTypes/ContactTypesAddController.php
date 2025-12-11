@@ -16,11 +16,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class ContactTypesAddController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/contact-types/add',
+    '/{schema}/{role_short}/contact-types/add',
     name: 'contact_types_add',
     methods: ['GET', 'POST'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

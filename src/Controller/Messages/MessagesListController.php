@@ -82,12 +82,12 @@ class MessagesListController extends AbstractController
     ];
 
     #[Route(
-        '/{system}/{role_short}/messages',
+        '/{schema}/{role_short}/messages',
         name: 'messages_list',
         methods: ['GET', 'POST'],
         priority: 20,
         requirements: [
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.guest%',
         ],
         defaults: [
@@ -97,12 +97,12 @@ class MessagesListController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/messages/self',
+        '/{schema}/{role_short}/messages/self',
         name: 'messages_list_self',
         methods: ['GET', 'POST'],
         priority: 20,
         requirements: [
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.user%',
         ],
         defaults: [

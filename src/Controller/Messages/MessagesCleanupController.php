@@ -18,11 +18,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class MessagesCleanupController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/messages/cleanup',
+    '/{schema}/{role_short}/messages/cleanup',
     name: 'messages_cleanup',
     methods: ['GET', 'POST'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

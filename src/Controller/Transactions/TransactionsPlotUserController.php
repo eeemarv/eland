@@ -20,13 +20,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class TransactionsPlotUserController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/transactions/plot-user/{user_id}/{days}',
+    '/{schema}/{role_short}/transactions/plot-user/{user_id}/{days}',
     name: 'transactions_plot_user',
     methods: ['GET'],
     requirements: [
       'user_id'       => '%assert.id%',
       'days'          => '%assert.id%',
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.guest%',
     ],
     defaults: [

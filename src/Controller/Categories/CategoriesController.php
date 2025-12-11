@@ -18,11 +18,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class CategoriesController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/categories',
+    '/{schema}/{role_short}/categories',
     name: 'categories',
     methods: ['GET', 'POST'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

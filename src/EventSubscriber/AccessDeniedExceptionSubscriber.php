@@ -35,7 +35,7 @@ class AccessDeniedExceptionSubscriber implements EventSubscriberInterface
           $redirect_url = $this->url_generator->generate(
             'login',
             [
-              'system'    => $this->pp->org_system(),
+              'schema'    => $this->pp->org_schema(),
               'location'  => $request->getRequestUri(),
             ],
           );
@@ -45,7 +45,7 @@ class AccessDeniedExceptionSubscriber implements EventSubscriberInterface
           $redirect_url = $this->url_generator->generate(
             'login',
             [
-              'system'    => $this->pp->system(),
+              'schema'    => $this->pp->schema(),
               'location'  => $request->getRequestUri(),
             ]
           );

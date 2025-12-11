@@ -17,11 +17,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class ConfigNameController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/config',
+    '/{schema}/{role_short}/config',
     name: 'config_name',
     methods: ['GET', 'POST'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

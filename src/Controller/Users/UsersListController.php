@@ -55,13 +55,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class UsersListController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/users/{status}',
+    '/{schema}/{role_short}/users/{status}',
     name: 'users_list',
     methods: ['GET', 'POST'],
     priority: 20,
     requirements: [
       'status'        => '%assert.account_status%',
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.guest%',
     ],
     defaults: [

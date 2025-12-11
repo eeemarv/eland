@@ -20,13 +20,13 @@ use Symfony\Component\Uid\Uuid;
 class ContactFormConfirmController extends AbstractController
 {
   #[Route(
-    '/{system}/contact/{confirm_token}',
+    '/{schema}/contact/{confirm_token}',
     name: 'contact_form_confirm',
     methods: ['GET'],
     priority: 10,
     requirements: [
       'confirm_token'   => '%uuid_base58%',
-      'system'          => '%assert.system%',
+      'schema'          => '%assert.schema%',
     ],
     defaults: [
       'module'          => 'contact_form',

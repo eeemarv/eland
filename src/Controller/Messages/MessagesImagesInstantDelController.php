@@ -18,7 +18,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class MessagesImagesInstantDelController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/messages/{id}/images/{img}/{ext}/del/{form_token}',
+        '/{schema}/{role_short}/messages/{id}/images/{img}/{ext}/del/{form_token}',
         name: 'messages_images_instant_del',
         methods: ['POST'],
         requirements: [
@@ -26,7 +26,7 @@ class MessagesImagesInstantDelController extends AbstractController
             'img'           => '%assert.message_image%',
             'ext'           => '%assert.image_ext%',
             'form_token'    => '%assert.token%',
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.user%',
         ],
         defaults: [

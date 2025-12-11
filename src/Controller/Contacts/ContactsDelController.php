@@ -19,12 +19,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class ContactsDelController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/contacts/{id}/del',
+    '/{schema}/{role_short}/contacts/{id}/del',
     name: 'contacts_del_admin',
     methods: ['GET', 'POST'],
     requirements: [
       'id'            => '%assert.id%',
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [
@@ -38,13 +38,13 @@ class ContactsDelController extends AbstractController
   )]
 
   #[Route(
-    '/{system}/{role_short}/users/{user_id}/contacts/{contact_id}/del',
+    '/{schema}/{role_short}/users/{user_id}/contacts/{contact_id}/del',
     name: 'users_contacts_del_admin',
     methods: ['GET', 'POST'],
     requirements: [
       'user_id'       => '%assert.id%',
       'contact_id'    => '%assert.id%',
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [
@@ -57,12 +57,12 @@ class ContactsDelController extends AbstractController
   )]
 
   #[Route(
-    '/{system}/{role_short}/users/contacts/{contact_id}/del',
+    '/{schema}/{role_short}/users/contacts/{contact_id}/del',
     name: 'users_contacts_del',
     methods: ['GET', 'POST'],
     requirements: [
       'contact_id'    => '%assert.id%',
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.user%',
     ],
     defaults: [

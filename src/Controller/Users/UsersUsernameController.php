@@ -17,11 +17,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class UsersUsernameController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/users/username',
+    '/{schema}/{role_short}/users/username',
     name: 'users_username',
     methods: ['GET', 'POST'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

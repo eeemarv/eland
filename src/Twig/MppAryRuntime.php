@@ -3,7 +3,6 @@
 namespace App\Twig;
 
 use App\Service\UserCacheService;
-use App\Service\SystemsService;
 use App\Cnst\RoleCnst;
 use Twig\Extension\RuntimeExtensionInterface;
 
@@ -11,7 +10,6 @@ class MppAryRuntime implements RuntimeExtensionInterface
 {
 	public function __construct(
 		protected UserCacheService $user_cache_service,
-		protected SystemsService $systems_service
 	)
 	{
 	}
@@ -22,10 +20,8 @@ class MppAryRuntime implements RuntimeExtensionInterface
 		string $schema
 	):array
 	{
-		$system = $this->systems_service->get_system($schema);
-
 		$mpp_ary = [
-			'system'	=> $system,
+			'schema'	=> $schema,
 		];
 
 		if ($et !== '')
@@ -81,10 +77,10 @@ class MppAryRuntime implements RuntimeExtensionInterface
 
       if (isset($rem_schema)&& $rem_schema !== $schema)
       {
-			  $params['system'] = $this->systems_service->get_system($rem_schema);
-			  $org_system = $this->systems_service->get_system($schema);
-			  $params['os'] = $org_system;
-			  $params['ets'] = $org_system; // email token system
+			  $params['schema'] = $rem_schema;
+			  $org_schema = $schema;
+			  $params['os'] = $org_schema;
+			  $params['ets'] = $org_schema; // email token system
 
         if ($d_role)
         {
@@ -93,8 +89,8 @@ class MppAryRuntime implements RuntimeExtensionInterface
       }
       else if (isset($org_schema) && $org_schema !== $schema)
       {
-			  $params['system'] = $this->systems_service->get_system($schema);
-			  $params['os'] = $this->systems_service->get_system($org_schema);
+			  $params['schema'] = $schema;
+			  $params['os'] = $org_schema;
 
         if ($d_role)
         {
@@ -108,7 +104,7 @@ class MppAryRuntime implements RuntimeExtensionInterface
           $params['role_short'] = RoleCnst::SHORT['user'];
         }
 
-			  $params['system'] = $this->systems_service->get_system($schema);
+			  $params['schema'] = $schema;
       }
 
       if (isset($role) && isset(RoleCnst::SHORT[$role]))

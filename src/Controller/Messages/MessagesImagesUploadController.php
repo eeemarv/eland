@@ -21,12 +21,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class MessagesImagesUploadController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/messages/images/upload/{form_token}',
+        '/{schema}/{role_short}/messages/images/upload/{form_token}',
         name: 'messages_add_images_upload',
         methods: ['POST'],
         requirements: [
             'form_token'    => '%assert.token%',
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.user%',
         ],
         defaults: [
@@ -37,13 +37,13 @@ class MessagesImagesUploadController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/messages/{id}/images/upload/{form_token}',
+        '/{schema}/{role_short}/messages/{id}/images/upload/{form_token}',
         name: 'messages_edit_images_upload',
         methods: ['POST'],
         requirements: [
             'id'            => '%assert.id%',
             'form_token'    => '%assert.token%',
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.user%',
         ],
         defaults: [
@@ -53,12 +53,12 @@ class MessagesImagesUploadController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/messages/{id}/images/upload',
+        '/{schema}/{role_short}/messages/{id}/images/upload',
         name: 'messages_images_upload',
         methods: ['POST'],
         requirements: [
             'id'            => '%assert.id%',
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.user%',
         ],
         defaults: [

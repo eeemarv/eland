@@ -18,11 +18,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class TransactionsAutoMinLimitController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/auto-min-limit',
+    '/{schema}/{role_short}/auto-min-limit',
     name: 'transactions_autominlimit',
     methods: ['GET', 'POST'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

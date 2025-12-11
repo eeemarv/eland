@@ -20,11 +20,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class IntersystemsController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/intersystems',
+        '/{schema}/{role_short}/intersystems',
         name: 'intersystems',
         methods: ['GET'],
         requirements: [
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [

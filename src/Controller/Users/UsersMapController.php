@@ -18,13 +18,13 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class UsersMapController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/users/map/{status}',
+    '/{schema}/{role_short}/users/map/{status}',
     name: 'users_map',
     methods: ['GET'],
     priority: 20,
     requirements: [
       'status'        => '%assert.account_status%',
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.guest%',
     ],
     defaults: [

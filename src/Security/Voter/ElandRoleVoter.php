@@ -5,7 +5,6 @@ namespace App\Security\Voter;
 use App\Cnst\AccessCnst;
 use App\Cnst\RoleCnst;
 use App\Service\ConfigService;
-use App\Service\IntersystemsService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\SystemsService;
@@ -19,14 +18,13 @@ class ElandRoleVoter extends Voter
     private readonly PageParamsService $pp,
     private readonly ConfigService $config_service,
     private readonly SystemsService $systems_service,
-    private readonly IntersystemsService $intersystems_service,
   )
   {
   }
 
   protected function supports($attribute, $subject):bool
   {
-    if ($this->pp->schema() === '')
+    if (!$this->pp->schema())
     {
       return false;
     }
@@ -40,7 +38,7 @@ class ElandRoleVoter extends Voter
     {
       $schema = $this->pp->schema();
 
-      if ($schema === '')
+      if (!$schema)
       {
         return false;
       }
@@ -63,11 +61,11 @@ class ElandRoleVoter extends Voter
 
         $org_schema = $this->pp->org_schema();
 
-        if ($org_schema !== '')
+        if ($org_schema)
         {
-          $eland_ary = $this->intersystems_service->get_eland($org_schema);
+          $inter_ary = $this->systems_service->get_inter_ary($schema);
 
-          if (!isset($eland_ary[$schema]))
+          if (!isset($inter_ary[$org_schema]))
           {
             return false;
           }

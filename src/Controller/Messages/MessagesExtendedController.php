@@ -19,12 +19,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class MessagesExtendedController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/messages/extended',
+        '/{schema}/{role_short}/messages/extended',
         name: 'messages_extended',
         methods: ['GET'],
         priority: 20,
         requirements: [
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.guest%',
         ],
         defaults: [
@@ -34,12 +34,12 @@ class MessagesExtendedController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/messages/extended/self',
+        '/{schema}/{role_short}/messages/extended/self',
         name: 'messages_extended_self',
         methods: ['GET'],
         priority: 20,
         requirements: [
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.user%',
         ],
         defaults: [

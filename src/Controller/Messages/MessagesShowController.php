@@ -36,13 +36,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class MessagesShowController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/messages/{id}',
+        '/{schema}/{role_short}/messages/{id}',
         name: 'messages_show',
         methods: ['GET', 'POST'],
         priority: 10,
         requirements: [
             'id'            => '%assert.id%',
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.guest%',
         ],
         defaults: [

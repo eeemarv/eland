@@ -19,12 +19,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class DocsMapEditController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/docs/map/{id}/edit',
+    '/{schema}/{role_short}/docs/map/{id}/edit',
     name: 'docs_map_edit',
     methods: ['GET', 'POST'],
     requirements: [
       'id'            => '%assert.id%',
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

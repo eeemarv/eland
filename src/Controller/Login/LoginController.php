@@ -21,12 +21,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class LoginController extends AbstractController
 {
   #[Route(
-    '/{system}/login',
+    '/{schema}/login',
     name: 'login',
     methods: ['GET', 'POST'],
     priority: 30,
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
     ],
   )]
 
@@ -76,7 +76,7 @@ class LoginController extends AbstractController
         }
 
         $pp_ary = [
-          'system'        => $pp->system(),
+          'schema'        => $pp->schema(),
           'role_short'    => 'a',
         ];
 
@@ -160,7 +160,7 @@ class LoginController extends AbstractController
     {
       if ($location)
       {
-        if (stripos($location, $pp->system() . '/a/') === false)
+        if (stripos($location, $pp->schema() . '/a/') === false)
         {
           return $this->redirect($location);
         }

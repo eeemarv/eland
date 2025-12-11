@@ -16,11 +16,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class TagsListController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/tags/users',
+        '/{schema}/{role_short}/tags/users',
         name: 'tags_users',
         methods: ['GET', 'POST'],
         requirements: [
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
@@ -31,11 +31,11 @@ class TagsListController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/tags/messages',
+        '/{schema}/{role_short}/tags/messages',
         name: 'tags_messages',
         methods: ['GET', 'POST'],
         requirements: [
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
@@ -46,11 +46,11 @@ class TagsListController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/tags/calendar',
+        '/{schema}/{role_short}/tags/calendar',
         name: 'tags_calendar',
         methods: ['GET', 'POST'],
         requirements: [
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
@@ -61,11 +61,11 @@ class TagsListController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/tags/news',
+        '/{schema}/{role_short}/tags/news',
         name: 'tags_news',
         methods: ['GET', 'POST'],
         requirements: [
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
@@ -76,11 +76,11 @@ class TagsListController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/tags/transactions',
+        '/{schema}/{role_short}/tags/transactions',
         name: 'tags_transactions',
         methods: ['GET', 'POST'],
         requirements: [
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
@@ -91,11 +91,11 @@ class TagsListController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/tags/docs',
+        '/{schema}/{role_short}/tags/docs',
         name: 'tags_docs',
         methods: ['GET', 'POST'],
         requirements: [
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
@@ -106,11 +106,11 @@ class TagsListController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/tags/forum-topics',
+        '/{schema}/{role_short}/tags/forum-topics',
         name: 'tags_forum_topics',
         methods: ['GET', 'POST'],
         requirements: [
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
@@ -121,11 +121,11 @@ class TagsListController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/tags/blog',
+        '/{schema}/{role_short}/tags/blog',
         name: 'tags_blog',
         methods: ['GET', 'POST'],
         requirements: [
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [

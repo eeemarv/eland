@@ -13,11 +13,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class RegisterFormLinkSentController extends AbstractController
 {
   #[Route(
-    '/{system}/register/link_sent',
+    '/{schema}/register/link_sent',
     name: 'register_form_link_sent',
     methods: ['GET'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
     ],
     defaults: [
       'module'        => 'register_form',

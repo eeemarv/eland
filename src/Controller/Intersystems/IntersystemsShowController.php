@@ -18,12 +18,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class IntersystemsShowController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/intersystems/{id}',
+        '/{schema}/{role_short}/intersystems/{id}',
         name: 'intersystems_show',
         methods: ['GET'],
         requirements: [
             'id'            => '%assert.id%',
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [

@@ -25,11 +25,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class ContactsController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/contacts',
+    '/{schema}/{role_short}/contacts',
     name: 'contacts',
     methods: ['GET', 'POST'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

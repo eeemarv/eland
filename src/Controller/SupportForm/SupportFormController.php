@@ -22,12 +22,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class SupportFormController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/support',
+    '/{schema}/{role_short}/support',
     name: 'support_form',
     methods: ['GET', 'POST'],
     priority: 20,
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.user%',
     ],
     defaults: [

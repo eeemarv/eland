@@ -39,12 +39,12 @@ class ElandProcessor implements EventSubscriberInterface
       'ip'    => $request->getClientIp(),
     ];
 
-    if (!$request->attributes->has('system'))
+    if (!$request->attributes->has('schema'))
     {
       return;
     }
 
-    $this->extra['system'] = $request->attributes->get('system');
+    $this->extra['schema'] = $request->attributes->get('schema');
 
     $logins = $request->getSession()->get('logins');
 

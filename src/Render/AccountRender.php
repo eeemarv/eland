@@ -70,10 +70,8 @@ class AccountRender
 			return '*** leeg ***';
 		}
 
-		$schema = $this->systems_service->get_schema($pp_ary['system']);
-
 		return $this->link_render->link_no_attr('users_show', $pp_ary,
-			['id' => $id], $this->get_str($id, $schema));
+			['id' => $id], $this->get_str($id, $pp_ary['schema']));
 	}
 
 	public function link_url(
@@ -81,10 +79,8 @@ class AccountRender
 		array $pp_ary
 	):string
 	{
-		$schema = $this->systems_service->get_schema($pp_ary['system']);
-
 		return $this->link_render->link_url('users_show', $pp_ary,
-			['id' => $id], $this->get_str($id, $schema), []);
+			['id' => $id], $this->get_str($id, $pp_ary['schema']), []);
 	}
 
 	public function inter_link(
@@ -94,7 +90,7 @@ class AccountRender
 	):string
 	{
 		$pp_ary = [
-			'system'	=> $this->systems_service->get_system($schema),
+			'schema'	=> $schema,
 		];
 
 		if ($su->schema() === $schema)
@@ -104,7 +100,7 @@ class AccountRender
 		else
 		{
 			$pp_ary['role_short'] = 'g';
-			$pp_ary['os'] = $su->system();
+			$pp_ary['os'] = $su->schema();
 		}
 
 		return $this->link_render->link_no_attr('users_show', $pp_ary,

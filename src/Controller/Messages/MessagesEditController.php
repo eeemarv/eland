@@ -34,12 +34,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class MessagesEditController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/messages/add',
+        '/{schema}/{role_short}/messages/add',
         name: 'messages_add',
         methods: ['GET', 'POST'],
         priority: 10,
         requirements: [
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.user%',
         ],
         defaults: [
@@ -50,13 +50,13 @@ class MessagesEditController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/messages/{id}/edit',
+        '/{schema}/{role_short}/messages/{id}/edit',
         name: 'messages_edit',
         methods: ['GET', 'POST'],
         priority: 10,
         requirements: [
             'id'            => '%assert.id%',
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.user%',
         ],
         defaults: [

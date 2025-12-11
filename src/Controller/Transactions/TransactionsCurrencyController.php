@@ -18,11 +18,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class TransactionsCurrencyController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/transactions/currency',
+    '/{schema}/{role_short}/transactions/currency',
     name: 'transactions_currency',
     methods: ['GET', 'POST'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

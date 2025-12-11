@@ -21,12 +21,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class DocsDelController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/docs/{id}/del',
+    '/{schema}/{role_short}/docs/{id}/del',
     name: 'docs_del',
     methods: ['GET', 'POST'],
     requirements: [
       'id'            => '%assert.id%',
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

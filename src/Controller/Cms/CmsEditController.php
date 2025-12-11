@@ -27,11 +27,11 @@ class CmsEditController extends AbstractController
   ];
 
   #[Route(
-    '/{system}/{role_short}/cms-edit',
+    '/{schema}/{role_short}/cms-edit',
     name: 'cms_edit',
     methods: ['POST'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

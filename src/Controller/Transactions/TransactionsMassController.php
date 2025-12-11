@@ -83,11 +83,11 @@ class TransactionsMassController extends AbstractController
     ];
 
     #[Route(
-        '/{system}/{role_short}/transactions/mass',
+        '/{schema}/{role_short}/transactions/mass',
         name: 'transactions_mass',
         methods: ['GET', 'POST'],
         requirements: [
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
@@ -389,7 +389,7 @@ class TransactionsMassController extends AbstractController
                         'id_from' 		=> $from_id,
                         'amount' 		=> $amo,
                         'description' 	=> $description,
-                        'transid'		=> $transaction_service->generate_transid($su->id(), $pp->system()),
+                        'transid'		=> $transaction_service->generate_transid($su->id(), $pp->schema()),
                     ];
 
                     if (!$su->is_master())

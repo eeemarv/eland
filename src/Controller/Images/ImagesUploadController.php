@@ -18,12 +18,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class ImagesUploadController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/images/upload/{form_token}',
+    '/{schema}/{role_short}/images/upload/{form_token}',
     name: 'images_upload',
     methods: ['POST'],
     requirements: [
       'form_token'    => '%assert.token%',
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.user%',
     ],
     defaults: [

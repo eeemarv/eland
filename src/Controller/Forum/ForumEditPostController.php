@@ -21,12 +21,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class ForumEditPostController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/forum/{id}/edit-post',
+    '/{schema}/{role_short}/forum/{id}/edit-post',
     name: 'forum_edit_post',
     methods: ['GET', 'POST'],
     requirements: [
       'id'            => '%assert.id%',
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.user%',
     ],
     defaults: [

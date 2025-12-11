@@ -26,12 +26,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class TransactionsEditController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/transactions/{id}/edit',
+    '/{schema}/{role_short}/transactions/{id}/edit',
     name: 'transactions_edit',
     methods: ['GET', 'POST'],
     requirements: [
       'id'            => '%assert.id%',
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

@@ -18,13 +18,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class DocsMapController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/docs/{id}',
+    '/{schema}/{role_short}/docs/{id}',
     name: 'docs_map',
     priority: 20,
     methods: ['GET'],
     requirements: [
       'id'            => '%assert.id%',
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.guest%',
     ],
     defaults: [

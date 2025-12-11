@@ -18,11 +18,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class ContactsAddController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/contacts/add',
+    '/{schema}/{role_short}/contacts/add',
     name: 'contacts_add',
     methods: ['GET', 'POST'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [
@@ -35,12 +35,12 @@ class ContactsAddController extends AbstractController
   )]
 
   #[Route(
-    '/{system}/{role_short}/users/{user_id}/contacts/add',
+    '/{schema}/{role_short}/users/{user_id}/contacts/add',
     name: 'users_contacts_add',
     methods: ['GET', 'POST'],
     requirements: [
       'user_id'       => '%assert.id%',
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [
@@ -52,11 +52,11 @@ class ContactsAddController extends AbstractController
   )]
 
   #[Route(
-    '/{system}/{role_short}/users/contacts/add',
+    '/{schema}/{role_short}/users/contacts/add',
     name: 'users_contacts_add_self',
     methods: ['GET', 'POST'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.user%',
     ],
     defaults: [

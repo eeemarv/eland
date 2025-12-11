@@ -14,11 +14,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class TypeaheadAccountCodesController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/typeahead-account-codes/{thumbprint}',
+        '/{schema}/{role_short}/typeahead-account-codes/{thumbprint}',
         name: 'typeahead_account_codes',
         methods: ['GET'],
         requirements: [
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.user%',
             'thumbprint'    => '%assert.thumbprint%',
         ],

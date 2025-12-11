@@ -27,12 +27,12 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class MolliePaymentsAddController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/mollie/payments/add/{status}',
+    '/{schema}/{role_short}/mollie/payments/add/{status}',
     name: 'mollie_payments_add',
     methods: ['GET', 'POST'],
     requirements: [
       'status'        => '%assert.account_status%',
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

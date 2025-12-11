@@ -17,12 +17,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class LogoutController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/logout',
+    '/{schema}/{role_short}/logout',
     name: 'logout',
     methods: ['GET'],
     priority: 30,
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.system%',
       'role_short'    => '%assert.role_short.guest%',
     ],
   )]
@@ -59,11 +59,11 @@ class LogoutController extends AbstractController
 
     $this->addFlash('success', 'Je bent uitgelogd');
 
-    if ($pp->org_system() === '')
+    if (!$pp->org_schema())
     {
-      return $this->redirectToRoute('login', ['system' => $pp->system()]);
+      return $this->redirectToRoute('login', ['schema' => $pp->schema()]);
     }
 
-    return $this->redirectToRoute('login', ['system' => $pp->org_system()]);
+    return $this->redirectToRoute('login', ['schema' => $pp->org_schema()]);
   }
 }

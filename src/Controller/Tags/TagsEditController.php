@@ -16,12 +16,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class TagsEditController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/tags/users/{id}/edit',
+        '/{schema}/{role_short}/tags/users/{id}/edit',
         name: 'tags_users_edit',
         methods: ['GET', 'POST'],
         requirements: [
             'id'            => '%assert.id%',
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
@@ -32,12 +32,12 @@ class TagsEditController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/tags/messages/{id}/edit',
+        '/{schema}/{role_short}/tags/messages/{id}/edit',
         name: 'tags_messages_edit',
         methods: ['GET', 'POST'],
         requirements: [
             'id'            => '%assert.id%',
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
@@ -48,12 +48,12 @@ class TagsEditController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/tags/calendar/{id}/edit',
+        '/{schema}/{role_short}/tags/calendar/{id}/edit',
         name: 'tags_calendar_edit',
         methods: ['GET', 'POST'],
         requirements: [
             'id'            => '%assert.id%',
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
@@ -64,12 +64,12 @@ class TagsEditController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/tags/news/{id}/edit',
+        '/{schema}/{role_short}/tags/news/{id}/edit',
         name: 'tags_news_edit',
         methods: ['GET', 'POST'],
         requirements: [
             'id'            => '%assert.id%',
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
@@ -80,12 +80,12 @@ class TagsEditController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/tags/transactions/{id}/edit',
+        '/{schema}/{role_short}/tags/transactions/{id}/edit',
         name: 'tags_transactions_edit',
         methods: ['GET', 'POST'],
         requirements: [
             'id'            => '%assert.id%',
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
@@ -96,12 +96,12 @@ class TagsEditController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/tags/docs/{id}/edit',
+        '/{schema}/{role_short}/tags/docs/{id}/edit',
         name: 'tags_docs_edit',
         methods: ['GET', 'POST'],
         requirements: [
             'id'            => '%assert.id%',
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
@@ -112,12 +112,12 @@ class TagsEditController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/tags/forum-topics/{id}/edit',
+        '/{schema}/{role_short}/tags/forum-topics/{id}/edit',
         name: 'tags_forum_topics_edit',
         methods: ['GET', 'POST'],
         requirements: [
             'id'            => '%assert.id%',
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
@@ -128,12 +128,12 @@ class TagsEditController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/tags/blog/{id}/edit',
+        '/{schema}/{role_short}/tags/blog/{id}/edit',
         name: 'tags_blog_edit',
         methods: ['GET', 'POST'],
         requirements: [
             'id'            => '%assert.id%',
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [

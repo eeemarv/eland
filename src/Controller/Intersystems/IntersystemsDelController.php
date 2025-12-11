@@ -19,12 +19,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class IntersystemsDelController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/intersystems/{id}/del',
+        '/{schema}/{role_short}/intersystems/{id}/del',
         name: 'intersystems_del',
         methods: ['GET', 'POST'],
         requirements: [
             'id'            => '%assert.id%',
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [

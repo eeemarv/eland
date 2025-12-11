@@ -14,11 +14,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class TypeaheadTagsCheckController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/typeahead-tags-users-check/{thumbprint}',
+        '/{schema}/{role_short}/typeahead-tags-users-check/{thumbprint}',
         name: 'typeahead_tags_users_check',
         methods: ['GET'],
         requirements: [
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
             'thumbprint'    => '%assert.thumbprint%',
         ],
@@ -29,11 +29,11 @@ class TypeaheadTagsCheckController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/typeahead-tags-messages-check/{thumbprint}',
+        '/{schema}/{role_short}/typeahead-tags-messages-check/{thumbprint}',
         name: 'typeahead_tags_messages_check',
         methods: ['GET'],
         requirements: [
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
             'thumbprint'    => '%assert.thumbprint%',
         ],
@@ -44,11 +44,11 @@ class TypeaheadTagsCheckController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/typeahead-tags-calendar-check/{thumbprint}',
+        '/{schema}/{role_short}/typeahead-tags-calendar-check/{thumbprint}',
         name: 'typeahead_tags_calendar_check',
         methods: ['GET'],
         requirements: [
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
             'thumbprint'    => '%assert.thumbprint%',
         ],
@@ -59,11 +59,11 @@ class TypeaheadTagsCheckController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/typeahead-tags-news-check/{thumbprint}',
+        '/{schema}/{role_short}/typeahead-tags-news-check/{thumbprint}',
         name: 'typeahead_tags_news_check',
         methods: ['GET'],
         requirements: [
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
             'thumbprint'    => '%assert.thumbprint%',
         ],
@@ -74,11 +74,11 @@ class TypeaheadTagsCheckController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/typeahead-tags-transactions-check/{thumbprint}',
+        '/{schema}/{role_short}/typeahead-tags-transactions-check/{thumbprint}',
         name: 'typeahead_tags_transactions_check',
         methods: ['GET'],
         requirements: [
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
             'thumbprint'    => '%assert.thumbprint%',
         ],
@@ -89,11 +89,11 @@ class TypeaheadTagsCheckController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/typeahead-tags-docs-check/{thumbprint}',
+        '/{schema}/{role_short}/typeahead-tags-docs-check/{thumbprint}',
         name: 'typeahead_tags_docs_check',
         methods: ['GET'],
         requirements: [
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
             'thumbprint'    => '%assert.thumbprint%',
         ],
@@ -104,11 +104,11 @@ class TypeaheadTagsCheckController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/typeahead-tags-forum-topics-check/{thumbprint}',
+        '/{schema}/{role_short}/typeahead-tags-forum-topics-check/{thumbprint}',
         name: 'typeahead_tags_forum_topics_check',
         methods: ['GET'],
         requirements: [
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
             'thumbprint'    => '%assert.thumbprint%',
         ],
@@ -119,11 +119,11 @@ class TypeaheadTagsCheckController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/typeahead-tags-blog-check/{thumbprint}',
+        '/{schema}/{role_short}/typeahead-tags-blog-check/{thumbprint}',
         name: 'typeahead_tags_blog_check',
         methods: ['GET'],
         requirements: [
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
             'thumbprint'    => '%assert.thumbprint%',
         ],

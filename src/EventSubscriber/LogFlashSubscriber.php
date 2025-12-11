@@ -29,7 +29,7 @@ class LogFlashSubscriber implements EventSubscriberInterface
       return;
     }
 
-    if (!$request->attributes->has('system'))
+    if (!$request->attributes->has('schema'))
     {
       return;
     }

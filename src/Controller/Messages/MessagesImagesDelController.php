@@ -20,12 +20,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class MessagesImagesDelController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/messages/{id}/images/del',
+        '/{schema}/{role_short}/messages/{id}/images/del',
         name: 'messages_images_del',
         methods: ['GET', 'POST'],
         requirements: [
             'id'            => '%assert.id%',
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.user%',
         ],
         defaults: [

@@ -36,7 +36,8 @@ class ClearRedisCacheConsoleCommand extends Command
       'assets',
       'response',
       'config',
-      'static_content'
+      'static_content',
+      'systems',
     ]);
 
     $schemas = $this->systems_service->get_schemas();

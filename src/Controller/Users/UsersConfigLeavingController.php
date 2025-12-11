@@ -18,11 +18,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class UsersConfigLeavingController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/users/config-leaving',
+    '/{schema}/{role_short}/users/config-leaving',
     name: 'users_config_leaving',
     methods: ['GET', 'POST'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

@@ -19,11 +19,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class UsersPeriodicMailController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/users/periodic-mail',
+    '/{schema}/{role_short}/users/periodic-mail',
     name: 'users_periodic_mail',
     methods: ['GET', 'POST'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

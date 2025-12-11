@@ -17,12 +17,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class InitQueueGeocodingController extends AbstractController
 {
   #[Route(
-    '/{system}/init/queue-geocoding/{start}',
+    '/{schema}/init/queue-geocoding/{start}',
     name: 'init_queue_geocoding',
     methods: ['GET'],
     requirements: [
       'start'         => '%assert.id%',
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
     ],
     defaults: [
       'start'         => 0,

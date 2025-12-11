@@ -18,11 +18,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class ConfigLogoUploadController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/logo/upload',
+    '/{schema}/{role_short}/logo/upload',
     name: 'config_logo_upload',
     methods: ['POST'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

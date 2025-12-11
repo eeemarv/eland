@@ -18,12 +18,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class NewsEditController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/news/{id}/edit',
+    '/{schema}/{role_short}/news/{id}/edit',
     name: 'news_edit',
     methods: ['GET', 'POST'],
     requirements: [
       'id'            => '%assert.id%',
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

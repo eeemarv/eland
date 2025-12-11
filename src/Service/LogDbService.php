@@ -11,9 +11,8 @@ class LogDbService
 	const KEY = 'monolog';
 
 	public function __construct(
-		protected Db $db,
-		protected Redis $redis,
-		protected SystemsService $systems_service
+		private readonly Db $db,
+		private readonly Redis $redis,
 	)
 	{
 	}
@@ -60,13 +59,12 @@ class LogDbService
 			}
 			else
 			{
-				if (!isset($extra['system']))
+				if (!isset($extra['schema']))
 				{
 					continue;
 				}
 
-				$system = $extra['system'];
-				$schema = $this->systems_service->get_schema($system);
+				$schema = $extra['schema'];
 			}
 
 			if (!$schema)
@@ -79,7 +77,7 @@ class LogDbService
 			if (isset($extra['os'])
 				&& $extra['os'])
 			{
-				$org_schema = $this->systems_service->get_schema($extra['os']);
+				$org_schema = $extra['os'];
 
 				if ($org_schema)
 				{

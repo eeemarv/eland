@@ -23,11 +23,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class LogsController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/logs',
+    '/{schema}/{role_short}/logs',
     name: 'logs',
     methods: ['GET'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

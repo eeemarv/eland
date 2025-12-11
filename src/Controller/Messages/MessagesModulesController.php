@@ -18,11 +18,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class MessagesModulesController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/messages/modules',
+    '/{schema}/{role_short}/messages/modules',
     name: 'messages_modules',
     methods: ['GET', 'POST'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

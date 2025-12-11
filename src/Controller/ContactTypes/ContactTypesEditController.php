@@ -17,12 +17,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class ContactTypesEditController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/contact-types/{id}/edit',
+    '/{schema}/{role_short}/contact-types/{id}/edit',
     name: 'contact_types_edit',
     methods: ['GET', 'POST'],
     requirements: [
       'id'            => '%assert.id%',
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

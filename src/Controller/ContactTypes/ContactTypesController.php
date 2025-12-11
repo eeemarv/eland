@@ -15,11 +15,11 @@ class ContactTypesController extends AbstractController
   const PROTECTED = ['mail', 'gsm', 'tel', 'adr', 'web'];
 
   #[Route(
-    '/{system}/{role_short}/contact-types',
+    '/{schema}/{role_short}/contact-types',
     name: 'contact_types',
     methods: ['GET'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

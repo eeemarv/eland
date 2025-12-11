@@ -13,11 +13,11 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 class ConfigRefreshController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/config/refresh',
+    '/{schema}/{role_short}/config/refresh',
     name: 'config_refresh',
     methods: ['GET'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

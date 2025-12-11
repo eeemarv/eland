@@ -16,13 +16,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class UsersTilesController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/users/tiles/{status}',
+    '/{schema}/{role_short}/users/tiles/{status}',
     name: 'users_tiles',
     methods: ['GET'],
     priority: 20,
     requirements: [
       'status'        => '%assert.account_status%',
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.guest%',
     ],
     defaults: [

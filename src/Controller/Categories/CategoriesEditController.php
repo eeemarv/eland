@@ -18,11 +18,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class CategoriesEditController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/categories/{id}/edit',
+    '/{schema}/{role_short}/categories/{id}/edit',
     name: 'categories_edit',
     methods: ['GET', 'POST'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
       'id'            => '%assert.id%',
     ],

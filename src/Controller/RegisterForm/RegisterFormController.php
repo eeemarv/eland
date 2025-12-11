@@ -20,12 +20,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class RegisterFormController extends AbstractController
 {
   #[Route(
-    '/{system}/register',
+    '/{schema}/register',
     name: 'register_form',
     methods: ['GET', 'POST'],
     priority: 30,
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
     ],
     defaults: [
       'module'        => 'register_form',

@@ -3,7 +3,6 @@
 namespace App\EventSubscriber;
 
 use App\Repository\EmailSentRepository;
-use App\Service\EmailVerifyService;
 use App\Service\SystemsService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
@@ -15,7 +14,6 @@ class EmailVerifySubscriber implements EventSubscriberInterface
   public function __construct(
     private readonly EmailSentRepository $email_sent_repository,
     private readonly SystemsService $systems_service,
-    private readonly EmailVerifyService $email_verify_service
   )
   {
   }
@@ -50,7 +48,7 @@ class EmailVerifySubscriber implements EventSubscriberInterface
 
     $schema = null;
 
-    if ($request->attributes->has('system'))
+    if ($request->attributes->has('schema'))
     {
       if ($request->attributes->has('role_short')
         && $request->attributes->get('role_short') === 'g'
@@ -58,21 +56,25 @@ class EmailVerifySubscriber implements EventSubscriberInterface
       )
       {
         // link refers to other system than email
-        $email_token_system = $request->query->get('ets');
-        $schema = $this->systems_service->get_schema_o($email_token_system);
+        $schema = $request->query->get('ets');
         $request->query->remove('ets');
       }
       else
       {
-        $system = $request->attributes->get('system');
-        $schema = $this->systems_service->get_schema_o($system);
+        $schema = $request->attributes->get('schema');
       }
     }
-    else if ($request->query->has('system'))
+    else if ($request->query->has('schema'))
     {
-      $system = $request->query->get('system');
-      $schema = $this->systems_service->get_schema_o($system);
+      $schema = $request->query->get('schema');
       $request->query->remove('ets');
+    }
+
+    if (isset($schema)
+      && !$this->systems_service->has_schema($schema)
+    )
+    {
+      return;
     }
 
     $this->email_sent_repository->register_on_email_token(

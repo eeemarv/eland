@@ -11,11 +11,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class PasswordResetSuccessController extends AbstractController
 {
   #[Route(
-    '/{system}/password-reset/success',
+    '/{schema}/password-reset/success',
     name: 'password_reset_success',
     methods: ['GET'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
     ],
     defaults: [
       'module'        => 'users',

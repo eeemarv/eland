@@ -20,12 +20,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class DocsEditController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/docs/{id}/edit',
+    '/{schema}/{role_short}/docs/{id}/edit',
     name: 'docs_edit',
     methods: ['GET', 'POST'],
     requirements: [
       'id'            => '%assert.id%',
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

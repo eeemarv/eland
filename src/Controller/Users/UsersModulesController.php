@@ -17,11 +17,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class UsersModulesController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/users/modules',
+    '/{schema}/{role_short}/users/modules',
     name: 'users_modules',
     methods: ['GET', 'POST'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

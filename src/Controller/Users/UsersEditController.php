@@ -40,11 +40,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class UsersEditController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/users/add',
+        '/{schema}/{role_short}/users/add',
         name: 'users_add',
         methods: ['GET', 'POST'],
         requirements: [
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
@@ -56,13 +56,13 @@ class UsersEditController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/users/{id}/edit',
+        '/{schema}/{role_short}/users/{id}/edit',
         name: 'users_edit',
         methods: ['GET', 'POST'],
         priority: 10,
         requirements: [
             'id'            => '%assert.id%',
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
@@ -73,11 +73,11 @@ class UsersEditController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/users/edit-self',
+        '/{schema}/{role_short}/users/edit-self',
         name: 'users_edit_self',
         methods: ['GET', 'POST'],
         requirements: [
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.user%',
         ],
         defaults: [

@@ -37,12 +37,12 @@ class CmsEditFormSubscriber implements EventSubscriberInterface
       return;
     }
 
-    if (!$request->attributes->has('system'))
+    if (!$request->attributes->has('schema'))
     {
       return;
     }
 
-    if (!$this->pp->system())
+    if (!$this->pp->schema())
     {
       return;
     }

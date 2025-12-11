@@ -20,11 +20,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class ExportController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/export',
+    '/{schema}/{role_short}/export',
     name: 'export',
     methods: ['GET', 'POST'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

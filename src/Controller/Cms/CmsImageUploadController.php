@@ -17,11 +17,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class CmsImageUploadController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/cms/image-upload',
+    '/{schema}/{role_short}/cms/image-upload',
     name: 'cms_image_upload',
     methods: ['POST'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

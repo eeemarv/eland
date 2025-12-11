@@ -19,11 +19,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class CategoriesDelController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/categories/{id}/del',
+    '/{schema}/{role_short}/categories/{id}/del',
     name: 'categories_del',
     methods: ['GET', 'POST'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
       'id'            => '%assert.id%',
     ],

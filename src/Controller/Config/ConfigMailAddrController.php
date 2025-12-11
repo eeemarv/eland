@@ -17,11 +17,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class ConfigMailAddrController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/config/mail-addr',
+    '/{schema}/{role_short}/config/mail-addr',
     name: 'config_mail_addr',
     methods: ['GET', 'POST'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

@@ -20,12 +20,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class PasswordResetController extends AbstractController
 {
   #[Route(
-    '/{system}/password-reset',
+    '/{schema}/password-reset',
     name: 'password_reset',
     methods: ['GET', 'POST'],
     priority: 30,
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
     ],
     defaults: [
       'module'        => 'users',

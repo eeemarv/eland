@@ -13,11 +13,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class ContactFormLinkSentController extends AbstractController
 {
   #[Route(
-    '/{system}/contact/link-sent',
+    '/{schema}/contact/link-sent',
     name: 'contact_form_link_sent',
     methods: ['GET'],
     requirements: [
-      'system'  => '%assert.system%',
+      'schema'  => '%assert.schema%',
     ],
     defaults: [
       'module'  => 'contact_form',

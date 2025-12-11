@@ -17,11 +17,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class MollieConfigController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/mollie/config',
+    '/{schema}/{role_short}/mollie/config',
     name: 'mollie_config',
     methods: ['GET', 'POST'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

@@ -14,11 +14,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class TypeaheadLogTypesController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/typeahead-log-types/{thumbprint}',
+        '/{schema}/{role_short}/typeahead-log-types/{thumbprint}',
         name: 'typeahead_log_types',
         methods: ['GET'],
         requirements: [
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
             'thumbprint'    => '%assert.thumbprint%',
         ],

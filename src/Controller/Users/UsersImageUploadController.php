@@ -18,12 +18,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class UsersImageUploadController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/users/{id}/image/upload',
+    '/{schema}/{role_short}/users/{id}/image/upload',
     name: 'users_image_upload_admin',
     methods: ['POST'],
     requirements: [
       'id'            => '%assert.id%',
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [
@@ -33,11 +33,11 @@ class UsersImageUploadController extends AbstractController
   )]
 
   #[Route(
-    '/{system}/{role_short}/users/image/upload',
+    '/{schema}/{role_short}/users/image/upload',
     name: 'users_image_upload',
     methods: ['POST'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.user%',
     ],
     defaults: [

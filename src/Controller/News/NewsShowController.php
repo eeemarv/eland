@@ -16,13 +16,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class NewsShowController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/news/{id}',
+    '/{schema}/{role_short}/news/{id}',
     name: 'news_show',
     methods: ['GET'],
     priority: 10,
     requirements: [
       'id'            => '%assert.id%',
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.guest%',
     ],
     defaults: [

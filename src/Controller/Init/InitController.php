@@ -21,11 +21,11 @@ class InitController extends AbstractController
   ];
 
   #[Route(
-    '/{system}/init',
+    '/{schema}/init',
     name: 'init',
     methods: ['GET'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
     ],
   )]
 

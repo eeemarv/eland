@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Cnst\RoleCnst;
 use App\DTO\Schema;
+use Deprecated;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,23 +14,23 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 #[Autoconfigure(lazy: true)]
 class PageParamsService
 {
-	protected Request $request;
-	protected string $role_short;
-	protected string $role;
-	protected string $system;
-	protected string $schema;
-  protected Schema $schema_o;
-	protected array $edit;
-	protected array $ary;
+	private Request $request;
+	private string|null $role_short;
+	private string $role;
+	private string $system;
+	private string $schema;
+  private Schema $schema_o;
+	private array $edit;
+	private array $ary;
 
-	protected bool $is_admin;
-	protected bool $is_user;
-	protected bool $is_guest;
-	protected bool $is_anonymous;
+	private bool $is_admin;
+	private bool $is_user;
+	private bool $is_guest;
+	private bool $is_anonymous;
 
-	protected string $org_system;
-	protected string $org_schema;
-	protected string $route;
+	private string $org_system;
+	private string|null $org_schema;
+	private string $route;
 
 	public function __construct(
 		protected RequestStack $request_stack,
@@ -45,62 +46,75 @@ class PageParamsService
 	{
 		$this->request = $this->request_stack->getCurrentRequest();
 		$this->route = $this->request->attributes->get('_route');
-		$this->role_short = $this->request->attributes->get('role_short', '');
-		$this->role = RoleCnst::LONG[$this->role_short] ?? 'anonymous';
+		$this->role_short = $this->request->attributes->get('role_short');
 
-		if ($this->role === 'anonymous')
-		{
-			$this->role_short = '';
-		}
+    switch ($this->role_short)
+    {
+      case 'a':
+        $this->role = 'admin';
+        break;
+      case 'u':
+        $this->role = 'user';
+        break;
+      case 'g':
+        $this->role = 'guest';
+        break;
+      case null:
+        $this->role = 'anonymous';
+        break;
+      default:
+        throw new NotFoundHttpException('No valid role for route');
+        break;
+    }
 
 		$this->is_admin = $this->role === 'admin';
 		$this->is_user = $this->role === 'user';
 		$this->is_guest = $this->role === 'guest';
 		$this->is_anonymous = $this->role === 'anonymous';
 
-		$this->system = $this->request->attributes->get('system', '');
+		$this->schema = $this->request->attributes->get('schema');
 
-		if ($this->system === '')
+		if (!$this->schema)
 		{
 			throw new NotFoundHttpException('No system defined.');
 		}
 
-		if (!$this->systems_service->get_schema($this->system))
+		if (!$this->systems_service->has_schema($this->schema))
 		{
-			$system_redirects = json_decode($this->env_app_system_redirects, true) ?? [];
+			$schema_redirects = json_decode($this->env_app_system_redirects, true) ?? [];
 
-			if (isset($system_redirects[$this->system()]))
+			if (isset($schema_redirects[$this->schema]))
 			{
-				header('Location: ' . $system_redirects[$this->system()]);
+				header('Location: ' . $schema_redirects[$this->schema]);
 				exit;
 			}
 
-			throw new NotFoundHttpException('Systeem "' . $this->system . '" niet gevonden.');
+			throw new NotFoundHttpException('System/schema "' . $this->schema . '" not found.');
 		}
 
-		$this->schema = $this->systems_service->get_schema($this->system);
     $this->schema_o = new Schema($this->schema);
 
-		$this->org_system = $this->request->query->get('os', '');
+		$this->org_schema = $this->request->query->get('os');
 
-		if ($this->org_system === $this->system
-			|| !$this->is_guest
-			|| !$this->systems_service->get_schema($this->org_system))
-		{
-			$this->org_system = '';
-		}
-
-		$this->org_schema = $this->org_system === '' ? '' : $this->systems_service->get_schema($this->org_system);
+    if ($this->org_schema)
+    {
+      if ($this->org_schema === $this->schema
+        || !$this->is_guest
+        || !$this->systems_service->has_schema($this->org_schema))
+      {
+        $this->org_schema = null;
+      }
+    }
 
 		$this->ary = [];
 
-		if ($this->system !== '')
+		if ($this->schema)
 		{
-			$this->ary['system'] = $this->system;
+			$this->ary['schema'] = $this->schema;
 
-			if ($this->org_system !== '')
+			if ($this->org_schema)
 			{
-				$this->ary['os'] = $this->org_system;
+				$this->ary['os'] = $this->org_schema;
 			}
 			else
 			{
@@ -125,7 +139,7 @@ class PageParamsService
 				}
 			}
 
-			if ($this->role_short !== '')
+			if ($this->role_short)
 			{
 				$this->ary['role_short'] = $this->role_short;
 			}
@@ -142,7 +156,7 @@ class PageParamsService
 		return $this->role;
 	}
 
-	public function role_short():string
+	public function role_short():string|null
 	{
 		return $this->role_short;
 	}
@@ -192,6 +206,7 @@ class PageParamsService
 		return isset($this->edit['inline']);
 	}
 
+  #[Deprecated()]
 	public function system():string
 	{
 		return $this->system;
@@ -207,12 +222,13 @@ class PageParamsService
 		return $this->schema_o;
 	}
 
+  #[Deprecated()]
 	public function org_system():string
 	{
 		return $this->org_system;
 	}
 
-	public function org_schema():string
+	public function org_schema():string|null
 	{
 		return $this->org_schema;
 	}

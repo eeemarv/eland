@@ -17,11 +17,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class InitClearUsersCacheController extends AbstractController
 {
   #[Route(
-    '/{system}/init/clear-users-cache',
+    '/{schema}/init/clear-users-cache',
     name: 'init_clear_users_cache',
     methods: ['GET'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
     ],
   )]
 

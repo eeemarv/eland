@@ -20,13 +20,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class ForumTopicController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/forum/{id}',
+    '/{schema}/{role_short}/forum/{id}',
     name: 'forum_topic',
     methods: ['GET', 'POST'],
     priority: 10,
     requirements: [
       'id'            => '%assert.id%',
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.guest%',
     ],
     defaults: [

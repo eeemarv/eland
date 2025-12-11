@@ -2,19 +2,19 @@
 
 namespace App\Twig;
 
-use App\Service\IntersystemsService;
+use App\Service\SystemsService;
 use Twig\Extension\RuntimeExtensionInterface;
 
 class IntersystemsRuntime implements RuntimeExtensionInterface
 {
 	public function __construct(
-		protected IntersystemsService $intersystems_service
+    private readonly SystemsService $systems_service,
 	)
 	{
 	}
 
 	public function get_schemas(string $schema):array
 	{
-		return array_values($this->intersystems_service->get_eland_accounts_schemas($schema));
+		return array_keys($this->systems_service->get_inter_ary($schema));
 	}
 }

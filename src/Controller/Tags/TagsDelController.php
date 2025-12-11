@@ -17,12 +17,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class TagsDelController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/tags/users/{id}/del',
+        '/{schema}/{role_short}/tags/users/{id}/del',
         name: 'tags_users_del',
         methods: ['GET', 'POST'],
         requirements: [
             'id'            => '%assert.id%',
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
@@ -33,12 +33,12 @@ class TagsDelController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/tags/messages/{id}/del',
+        '/{schema}/{role_short}/tags/messages/{id}/del',
         name: 'tags_messages_del',
         methods: ['GET', 'POST'],
         requirements: [
             'id'            => '%assert.id%',
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
@@ -49,12 +49,12 @@ class TagsDelController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/tags/calendar/{id}/del',
+        '/{schema}/{role_short}/tags/calendar/{id}/del',
         name: 'tags_calendar_del',
         methods: ['GET', 'POST'],
         requirements: [
             'id'            => '%assert.id%',
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
@@ -65,12 +65,12 @@ class TagsDelController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/tags/news/{id}/del',
+        '/{schema}/{role_short}/tags/news/{id}/del',
         name: 'tags_news_del',
         methods: ['GET', 'POST'],
         requirements: [
             'id'            => '%assert.id%',
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
@@ -81,12 +81,12 @@ class TagsDelController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/tags/transactions/{id}/del',
+        '/{schema}/{role_short}/tags/transactions/{id}/del',
         name: 'tags_transactions_del',
         methods: ['GET', 'POST'],
         requirements: [
             'id'            => '%assert.id%',
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
@@ -97,12 +97,12 @@ class TagsDelController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/tags/docs/{id}/del',
+        '/{schema}/{role_short}/tags/docs/{id}/del',
         name: 'tags_docs_del',
         methods: ['GET', 'POST'],
         requirements: [
             'id'            => '%assert.id%',
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
@@ -113,12 +113,12 @@ class TagsDelController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/tags/forum-topics/{id}/del',
+        '/{schema}/{role_short}/tags/forum-topics/{id}/del',
         name: 'tags_forum_topics_del',
         methods: ['GET', 'POST'],
         requirements: [
             'id'            => '%assert.id%',
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
@@ -129,12 +129,12 @@ class TagsDelController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/tags/blog/{id}/del',
+        '/{schema}/{role_short}/tags/blog/{id}/del',
         name: 'tags_blog_del',
         methods: ['GET', 'POST'],
         requirements: [
             'id'            => '%assert.id%',
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [

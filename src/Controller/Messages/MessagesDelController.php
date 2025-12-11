@@ -26,13 +26,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class MessagesDelController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/messages/{id}/del',
+    '/{schema}/{role_short}/messages/{id}/del',
     name: 'messages_del',
     methods: ['GET', 'POST'],
     priority: 10,
     requirements: [
       'id'            => '%assert.id%',
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.user%',
     ],
     defaults: [

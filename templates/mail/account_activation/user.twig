@@ -47,7 +47,7 @@
 
 {%- include 'mail/include/info_panel.html.twig' with {
     'info': 'account_activation.login'|trans({
-        'login_url': a_open('login', mpp_anon_ary(schema)) ~ context_url('login', {'system': system}, {}) ~ '</a>',
+        'login_url': a_open('login', mpp_anon_ary(schema)) ~ context_url('login', {'schema': schema}, {}) ~ '</a>',
     })|raw
 } -%}
 

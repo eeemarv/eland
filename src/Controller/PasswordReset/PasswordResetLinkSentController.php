@@ -11,11 +11,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class PasswordResetLinkSentController extends AbstractController
 {
   #[Route(
-    '/{system}/password-reset/link-sent',
+    '/{schema}/password-reset/link-sent',
     name: 'password_reset_link_sent',
     methods: ['GET'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
     ],
     defaults: [
       'module'        => 'users',

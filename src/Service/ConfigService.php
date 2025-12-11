@@ -28,13 +28,13 @@ class ConfigService
 		$this->local_cache_en = php_sapi_name() !== 'cli';
 	}
 
-	public function read_all(
+	private function read_all(
     Schema $schema,
   ):array
 	{
 		$data = $this->cache->get(self::CACHE_PREFIX . $schema->str(), function(ItemInterface $item) use ($schema){
 			$item->expiresAfter(self::CACHE_TTL);
-			$item->tag(['config']);
+			$item->tag('config');
 			return $this->config_repository->get_all($schema);
 		}, self::CACHE_BETA);
 

@@ -24,9 +24,7 @@ class IndexController extends AbstractController
     SystemsService $systems_service,
   ):Response
   {
-    $schemas = $systems_service->get_schemas();
-
-    asort($schemas);
+    $schemas = array_keys($systems_service->get_all());
 
     $response = $this->render('index/index.html.twig', [
       'schemas'       => $schemas,

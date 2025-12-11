@@ -16,12 +16,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class TypeaheadElandIntersystemAccountsController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/typeahead-eland-intersystem-accounts/{remote_schema}/{thumbprint}',
+        '/{schema}/{role_short}/typeahead-eland-intersystem-accounts/{remote_schema}/{thumbprint}',
         name: 'typeahead_eland_intersystem_accounts',
         methods: ['GET'],
         requirements: [
             'remote_schema' => '%assert.schema%',
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.user%',
             'thumbprint'    => '%assert.thumbprint%',
         ],

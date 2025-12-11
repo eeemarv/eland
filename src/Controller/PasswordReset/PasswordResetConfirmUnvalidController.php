@@ -15,12 +15,12 @@ use Symfony\Component\Uid\Uuid;
 class PasswordResetConfirmUnvalidController extends AbstractController
 {
   #[Route(
-    '/{system}/password-reset/unvalid/{confirm_token}',
+    '/{schema}/password-reset/unvalid/{confirm_token}',
     name: 'password_reset_confirm_unvalid',
     methods: ['GET'],
     requirements: [
       'confirm_token' => '%uuid_base58%',
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
     ],
     defaults: [
       'module'        => 'users',

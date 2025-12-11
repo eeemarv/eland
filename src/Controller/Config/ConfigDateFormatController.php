@@ -17,11 +17,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class ConfigDateFormatController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/config/date-format',
+    '/{schema}/{role_short}/config/date-format',
     name: 'config_date_format',
     methods: ['GET', 'POST'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

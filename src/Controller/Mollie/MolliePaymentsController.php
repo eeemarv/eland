@@ -30,11 +30,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class MolliePaymentsController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/mollie/payments',
+    '/{schema}/{role_short}/mollie/payments',
     name: 'mollie_payments',
     methods: ['GET', 'POST'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

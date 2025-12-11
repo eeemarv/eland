@@ -14,11 +14,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class TypeaheadDocMapNamesController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/typeahead-doc-map-names/{thumbprint}',
+        '/{schema}/{role_short}/typeahead-doc-map-names/{thumbprint}',
         name: 'typeahead_doc_map_names',
         methods: ['GET'],
         requirements: [
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
             'thumbprint'    => '%assert.thumbprint%',
         ],

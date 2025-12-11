@@ -49,10 +49,6 @@ class MailQueue implements QueueInterface
 
 		$data['vars']['schema'] = $schema;
 
-		$system = $this->systems_service->get_system($schema);
-
-		$data['vars']['system'] = $system;
-
 		if (isset($data['pre_html_template']))
 		{
 			try

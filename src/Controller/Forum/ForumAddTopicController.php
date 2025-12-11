@@ -19,11 +19,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class ForumAddTopicController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/forum/add-topic',
+    '/{schema}/{role_short}/forum/add-topic',
     name: 'forum_add_topic',
     methods: ['GET', 'POST'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.user%',
     ],
     defaults: [

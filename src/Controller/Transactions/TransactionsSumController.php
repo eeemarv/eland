@@ -15,12 +15,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class TransactionsSumController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/transactions/sum-in/{days}',
+        '/{schema}/{role_short}/transactions/sum-in/{days}',
         name: 'transactions_sum_in',
         methods: ['GET'],
         requirements: [
             'days'          => '%assert.id%',
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
@@ -30,12 +30,12 @@ class TransactionsSumController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/transactions/sum-out/{days}',
+        '/{schema}/{role_short}/transactions/sum-out/{days}',
         name: 'transactions_sum_out',
         methods: ['GET'],
         requirements: [
             'days'          => '%assert.id%',
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
@@ -56,7 +56,7 @@ class TransactionsSumController extends AbstractController
 
         if (!is_array($ex_codes))
         {
-            return [];
+            return $this->json([]);
         }
 
         array_walk($ex_codes, function(&$value){ $value = trim($value); });

@@ -17,13 +17,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class MessagesExtendController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/messages/{id}/extend/{days}',
+    '/{schema}/{role_short}/messages/{id}/extend/{days}',
     name: 'messages_extend',
     methods: ['GET', 'POST'],
     requirements: [
       'id'            => '%assert.id%',
       'days'          => '%assert.id%',
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.user%',
     ],
     defaults: [

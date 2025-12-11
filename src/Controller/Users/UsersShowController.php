@@ -37,14 +37,14 @@ use Symfony\Component\Routing\Annotation\Route;
 class UsersShowController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/users/{id}/{status}',
+        '/{schema}/{role_short}/users/{id}/{status}',
         name: 'users_show',
         methods: ['GET', 'POST'],
         priority: 10,
         requirements: [
             'id'            => '%assert.id%',
             'status'        => '%assert.account_status%',
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.guest%',
         ],
         defaults: [
@@ -55,12 +55,12 @@ class UsersShowController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/users/self',
+        '/{schema}/{role_short}/users/self',
         name: 'users_show_self',
         methods: ['GET'],
         priority: 10,
         requirements: [
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.user%',
         ],
         defaults: [

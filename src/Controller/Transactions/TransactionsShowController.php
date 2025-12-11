@@ -26,13 +26,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class TransactionsShowController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/transactions/{id}',
+    '/{schema}/{role_short}/transactions/{id}',
     name: 'transactions_show',
     methods: ['GET'],
     priority: 10,
     requirements: [
       'id'            => '%assert.id%',
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.guest%',
     ],
     defaults: [
@@ -365,16 +365,16 @@ class TransactionsShowController extends AbstractController
           if ($su->schema() === $inter_schema)
           {
             $out .= $link_render->link_no_attr('transactions_show', [
-              'system'	    => $su->system(),
+              'schema'	    => $su->schema(),
               'role_short'	=> $su->role_short(),
             ], ['id' => $inter_transaction['id']], $str);
           }
           else
           {
             $out .= $link_render->link_no_attr('transactions_show', [
-              'system'	    => $systems_service->get_system($inter_schema),
+              'schema'	    => $inter_schema,
               'role_short'	=> 'g',
-              'os'            => $su->system(),
+              'os'            => $su->schema(),
             ], ['id' => $inter_transaction['id']], $str);
           }
         }
@@ -503,16 +503,16 @@ class TransactionsShowController extends AbstractController
           if ($su->schema() === $inter_schema)
           {
             $out .= $link_render->link_no_attr('transactions_show', [
-              'system'	    => $su->system(),
+              'schema'	    => $su->schema(),
               'role_short'	=> $su->role_short(),
             ], ['id' => $inter_transaction['id']], $str);
           }
           else
           {
             $out .= $link_render->link_no_attr('transactions_show', [
-              'system'	    => $systems_service->get_system($inter_schema),
+              'schema'	    => $inter_schema,
               'role_short'	=> 'g',
-              'os'            => $su->system(),
+              'os'            => $su->schema(),
             ], ['id' => $inter_transaction['id']], $str);
           }
         }

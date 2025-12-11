@@ -15,12 +15,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class WeightedBalancesController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/weighted-balances/{days}',
+        '/{schema}/{role_short}/weighted-balances/{days}',
         name: 'weighted_balances',
         methods: ['GET'],
         requirements: [
             'days'          => '%assert.id%',
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [

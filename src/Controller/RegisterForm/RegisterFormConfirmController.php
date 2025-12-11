@@ -20,13 +20,13 @@ use Symfony\Component\Uid\Uuid;
 class RegisterFormConfirmController extends AbstractController
 {
   #[Route(
-    '/{system}/register/{confirm_token}',
+    '/{schema}/register/{confirm_token}',
     name: 'register_form_confirm',
     methods: ['GET'],
     priority: 30,
     requirements: [
       'confirm_token' => '%uuid_base58%',
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
     ],
     defaults: [
       'module'        => 'register_form',

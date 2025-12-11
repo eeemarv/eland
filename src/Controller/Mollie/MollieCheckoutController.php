@@ -20,13 +20,13 @@ use Symfony\Component\Uid\Uuid;
 class MollieCheckoutController extends AbstractController
 {
   #[Route(
-    '/{system}/mollie/checkout/{checkout_token}',
+    '/{schema}/mollie/checkout/{checkout_token}',
     name: 'mollie_checkout',
     methods: ['GET', 'POST'],
     priority: 30,
     requirements: [
       'checkout_token'   => '%uuid_base58%',
-      'system'           => '%assert.system%',
+      'schema'           => '%assert.schema%',
     ],
     defaults: [
       'module'        => 'users',
@@ -104,7 +104,7 @@ class MollieCheckoutController extends AbstractController
       ], UrlGeneratorInterface::ABSOLUTE_URL);
 
       $webhook_url = $url_generator->generate('mollie_webhook', [
-        'system'  => $pp->system(),
+        'schema'  => $pp->schema(),
       ], UrlGeneratorInterface::ABSOLUTE_URL);
 
       $payment = $mollie->payments->create([

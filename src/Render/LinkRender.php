@@ -59,7 +59,7 @@ class LinkRender
 		return $out;
 	}
 
-    public function path(
+  public function path(
 		string $route,
 		array $params
 	):string

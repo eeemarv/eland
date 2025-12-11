@@ -18,11 +18,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class TransactionsSystemLimitsController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/transactions/system-limits',
+    '/{schema}/{role_short}/transactions/system-limits',
     name: 'transactions_system_limits',
     methods: ['GET', 'POST'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

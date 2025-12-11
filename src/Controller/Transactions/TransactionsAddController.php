@@ -36,12 +36,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class TransactionsAddController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/transactions/add',
+        '/{schema}/{role_short}/transactions/add',
         name: 'transactions_add',
         methods: ['GET', 'POST'],
         priority: 10,
         requirements: [
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.user%',
         ],
         defaults: [
@@ -163,7 +163,7 @@ class TransactionsAddController extends AbstractController
                 $errors[] = $error_token;
             }
 
-            $transid = $transaction_service->generate_transid($su->id(), $pp->system());
+            $transid = $transaction_service->generate_transid($su->id(), $pp->schema());
             $description = trim($request->request->get('description', ''));
             $real_from = $request->request->get('real_from');
             $service_stuff = $request->request->get('service_stuff', '');

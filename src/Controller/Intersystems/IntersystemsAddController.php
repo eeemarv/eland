@@ -23,11 +23,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class IntersystemsAddController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/intersystems/add',
+        '/{schema}/{role_short}/intersystems/add',
         name: 'intersystems_add',
         methods: ['GET', 'POST'],
         requirements: [
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
@@ -121,7 +121,7 @@ class IntersystemsAddController extends AbstractController
             if ($add_schema = $request->query->get('add_schema'))
             {
               $add_schema_o = new Schema($add_schema);
-                if ($systems_service->get_system($add_schema))
+                if ($systems_service->has_schema($add_schema))
                 {
                     $group['url'] = $systems_service->get_legacy_eland_origin($add_schema);
                     $group['groupname'] = $config_service->get_str(

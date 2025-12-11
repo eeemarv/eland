@@ -35,7 +35,7 @@
 
 	{%- block navbar_menu -%}
 		{%- set su_logins_role_short = su_logins_role_short() -%}
-		{%- set intersystem_schemas = config_bool('intersystem.enabled', schema) ? intersystem_schemas(su_schema()) : [] -%}
+		{%- set intersystem_schemas = intersystem_schemas(su_schema()) -%}
 
 		{%- if su_logins_role_short|length > 1 or (intersystem_schemas|length and su_logins_role_short|length) -%}
 			{%- embed 'embed/menu_dropdown.html.twig' -%}
@@ -51,7 +51,7 @@
 					</li>
 					{%- for sch, rlshrt in su_logins_role_short -%}
 						<li{%- if sch == su_schema() %} class="active{%- if sch != schema -%}-group{%- endif -%}"{%- endif -%}>
-							<a href="{{- path(route|fallback_route(sch), {'system': system(sch), 'role_short': rlshrt}) -}}">
+							<a href="{{- path(route|fallback_route(sch), {'schema': sch, 'role_short': rlshrt}) -}}">
 								{{- config_str('system.name', sch) -}}
 							</a>
 						</li>
@@ -67,7 +67,7 @@
 					{%- endif -%}
 					{%- for sch in intersystem_schemas -%}
 						<li{%- if sch == schema %} class="active"{%- endif -%}>
-							<a href="{{- path(route|fallback_route(sch), {'system': system(sch), 'os': system(su_schema()), 'role_short': 'g', 'welcome': '1'}) -}}">
+							<a href="{{- path(route|fallback_route(sch), {'schema': sch, 'os': su_schema(), 'role_short': 'g', 'welcome': '1'}) -}}">
 								{{- config_str('system.name', sch) -}}
 							</a>
 						</li>

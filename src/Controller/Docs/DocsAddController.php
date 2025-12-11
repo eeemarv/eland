@@ -22,11 +22,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class DocsAddController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/docs/add',
+    '/{schema}/{role_short}/docs/add',
     name: 'docs_add',
     methods: ['GET', 'POST'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

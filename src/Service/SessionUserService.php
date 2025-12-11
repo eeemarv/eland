@@ -6,6 +6,7 @@ use App\Cnst\RoleCnst;
 use App\DTO\Schema;
 use App\Service\UserCacheService;
 use App\Service\PageParamsService;
+use Deprecated;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -48,7 +49,7 @@ class SessionUserService
 	private function load_user_role():void
 	{
 		$this->schema = $this->pp->org_schema() ?: $this->pp->schema();
-		$this->system = $this->pp->org_system() ?: $this->pp->system();
+		//$this->system = $this->pp->org_system() ?: $this->pp->system();
 		$this->is_system_self = $this->schema() === $this->pp->schema();
 
 		$id = $this->logins[$this->schema] ?? 0;
@@ -74,10 +75,10 @@ class SessionUserService
 		$this->is_user = $this->role === 'user';
 		$this->is_admin = $this->role === 'admin';
 
-		if ($this->system && $this->role_short)
+		if ($this->schema && $this->role_short)
 		{
 			$this->ary = [
-				'system'		=> $this->system,
+				'schema'		  => $this->schema,
 				'role_short'	=> $this->role_short,
 			];
 		}
@@ -111,6 +112,7 @@ class SessionUserService
     return new Schema($this->schema);
   }
 
+  #[Deprecated()]
 	public function system():string
 	{
 		return $this->system;

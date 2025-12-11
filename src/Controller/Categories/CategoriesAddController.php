@@ -19,11 +19,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class CategoriesAddController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/categories/add',
+    '/{schema}/{role_short}/categories/add',
     name: 'categories_add',
     methods: ['GET', 'POST'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

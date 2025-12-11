@@ -19,12 +19,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class UsersPasswordEditController extends AbstractController
 {
   #[Route(
-    '/{system}/{role_short}/users/{id}/password-edit',
+    '/{schema}/{role_short}/users/{id}/password-edit',
     name: 'users_password_edit',
     methods: ['GET', 'POST'],
     requirements: [
       'id'            => '%assert.id%',
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [
@@ -34,11 +34,11 @@ class UsersPasswordEditController extends AbstractController
   )]
 
   #[Route(
-    '/{system}/{role_short}/users/{id}/password-edit-self',
+    '/{schema}/{role_short}/users/{id}/password-edit-self',
     name: 'users_password_edit_self',
     methods: ['GET', 'POST'],
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.user%',
     ],
     defaults: [

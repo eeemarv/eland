@@ -45,12 +45,12 @@ class MollieSubscriber implements EventSubscriberInterface
       return;
     }
 
-    if (!$request->attributes->has('system'))
+    if (!$request->attributes->has('schema'))
     {
       return;
     }
 
-    if (!$this->pp->system())
+    if (!$this->pp->schema())
     {
       return;
     }
@@ -100,7 +100,7 @@ class MollieSubscriber implements EventSubscriberInterface
       $checkout_token = Uuid::fromRfc4122($payment['checkout_token']);
 
       $action = $this->url_generator->generate('mollie_checkout', [
-        'system' => $this->pp->system(),
+        'schema' => $this->pp->schema(),
         'checkout_token' => $checkout_token->toBase58(),
       ]);
 

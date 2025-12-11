@@ -23,13 +23,13 @@ use Symfony\Component\Uid\Uuid;
 class PasswordResetConfirmController extends AbstractController
 {
   #[Route(
-    '/{system}/password-reset/{confirm_token}',
+    '/{schema}/password-reset/{confirm_token}',
     name: 'password_reset_confirm',
     methods: ['GET', 'POST'],
     priority: 30,
     requirements: [
       'confirm_token' => '%uuid_base58%',
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
     ],
     defaults: [
       'module'        => 'users',

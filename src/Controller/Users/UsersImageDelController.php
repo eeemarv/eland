@@ -18,12 +18,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class UsersImageDelController extends AbstractController
 {
     #[Route(
-        '/{system}/{role_short}/users/{id}/image/del',
+        '/{schema}/{role_short}/users/{id}/image/del',
         name: 'users_image_del_admin',
         methods: ['GET', 'POST'],
         requirements: [
             'id'            => '%assert.id%',
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
@@ -33,11 +33,11 @@ class UsersImageDelController extends AbstractController
     )]
 
     #[Route(
-        '/{system}/{role_short}/users/image/del',
+        '/{schema}/{role_short}/users/image/del',
         name: 'users_image_del',
         methods: ['GET', 'POST'],
         requirements: [
-            'system'        => '%assert.system%',
+            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.user%',
         ],
         defaults: [

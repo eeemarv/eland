@@ -19,12 +19,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class ContactFormController extends AbstractController
 {
   #[Route(
-    '/{system}/contact',
+    '/{schema}/contact',
     name: 'contact_form',
     methods: ['GET', 'POST'],
     priority: 30,
     requirements: [
-      'system'  => '%assert.system%',
+      'schema'  => '%assert.schema%',
     ],
     defaults: [
       'module'  => 'contact_form',

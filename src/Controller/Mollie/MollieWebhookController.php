@@ -20,12 +20,12 @@ use Symfony\Component\Uid\Uuid;
 class MollieWebhookController extends AbstractController
 {
   #[Route(
-    '/{system}/mollie/webhook',
+    '/{schema}/mollie/webhook',
     name: 'mollie_webhook',
     methods: ['POST'],
     priority: 30,
     requirements: [
-      'system'        => '%assert.system%',
+      'schema'        => '%assert.schema%',
     ],
     defaults: [
       'module'        => 'users',
