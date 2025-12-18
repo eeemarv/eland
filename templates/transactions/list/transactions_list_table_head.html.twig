@@ -1,0 +1,90 @@
+{%- set order_by = pag_params.s.order_by -%}
+{%- set asc = pag_params.s.asc -%}
+{%- set pag = {'start': 0, 'limit':pag_params.p.limit} -%}
+
+{%- if pp_has_role('admin') and bulk_actions_enabled -%}
+{# selector column #}
+<th>
+  &nbsp;
+</th>
+{%- endif -%}
+
+<th>
+  <a href="{{- path('transactions', pag_params|merge({
+    's': {
+      'order_by': 'description',
+      'asc': asc ? '0' : '1',
+    },
+    'p': pag,
+    })|pp) -}}">
+    <i class="fa fa-sort{{- order_by == 'description' ? (asc ? '-asc' : '-desc') : '' -}}"></i>
+    &nbsp;
+    {{- 'label.description'|trans -}}
+  </a>
+</th>
+
+<th>
+  <a href="{{- path('transactions', pag_params|merge({
+    's': {
+      'order_by': 'amount',
+      'asc': asc ? '0' : '1',
+    },
+    'p': pag,
+    })|pp) -}}">
+    <i class="fa fa-sort{{- order_by == 'amount' ? (asc ? '-asc' : '-desc') : '' -}}"></i>
+    &nbsp;
+    {{- config_str('transactions.currency.name') -}}
+  </a>
+</th>
+
+<th>
+  <a href="{{- path('transactions', pag_params|merge({
+    's': {
+      'order_by': 'created_at',
+      'asc': asc ? '0' : '1',
+    },
+    'p': pag,
+    })|pp) -}}">
+    <i class="fa fa-sort{{- order_by == 'created_at' ? (asc ? '-asc' : '-desc') : '' -}}"></i>
+    &nbsp;
+    {{- 'label.time'|trans -}}
+  </a>
+</th>
+
+{%- if uid -%}
+
+  <th data-hide="phone,tablet">
+    {{- 'label.counterparty'|trans -}}
+  </th>
+
+{%- else -%}
+
+  <th data-hide="phone,tablet">
+    <a href="{{- path('transactions', pag_params|merge({
+      's': {
+        'order_by': 'from_code',
+        'asc': asc ? '0' : '1',
+      },
+      'p': pag,
+      })|pp) -}}">
+      <i class="fa fa-sort{{- order_by == 'from_code' ? (asc ? '-asc' : '-desc') : '' -}}"></i>
+      &nbsp;
+      {{- 'label.from_account'|trans -}}
+    </a>
+  </th>
+
+  <th data-hide="phone,tablet">
+    <a href="{{- path('transactions', pag_params|merge({
+      's': {
+        'order_by': 'to_code',
+        'asc': asc ? '0' : '1',
+      },
+      'p': pag,
+      })|pp) -}}">
+      <i class="fa fa-sort{{- order_by == 'to_code' ? (asc ? '-asc' : '-desc') : '' -}}"></i>
+      &nbsp;
+      {{- 'label.to_account'|trans -}}
+    </a>
+  </th>
+
+{%- endif -%}

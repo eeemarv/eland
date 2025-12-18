@@ -7,9 +7,11 @@ label:
   dear_username: Beste {username},
   description: Omschrijving
   destination: Bestemming
+  details: Details
   email: E-mail
   expired: Vervallen
   from: Van
+  from_account: Van
   full_name: Volledige Naam
   hours: Uren
   link: Link
@@ -28,6 +30,7 @@ label:
   seconds: Seconden
   system: Systeem
   to: Naar
+  to_account: Aan
   total: Totaal
   transaction_id: Transactie ID
   username: Gebruikersnaam
@@ -211,6 +214,11 @@ index_contact_success:
     Je bericht is succesvol verzonden naar de
     administratie van de eLAND server. Hieronder
     vind je een kopie van je bericht.
+
+mollie_confirmation:
+  subject: Betaling ontvangen
+  message: >-
+    We hebben je betaling goed ontvangen!
 
 mollie:
   is_paid:

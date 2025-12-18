@@ -46,7 +46,9 @@ class ExportController extends AbstractController
     set_time_limit(300);
     exec('echo "Throw exception when php exec() function is not available" > /dev/null');
 
-    $table_ary = $schema_repository->get_tables($pp->schema());
+    $table_ary = $schema_repository->get_tables(
+      schema: $pp->schema_o(),
+    );
     $builder = $this->createFormBuilder(null, [
       'form_token_prevent_double' => false,
     ]);

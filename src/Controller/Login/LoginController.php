@@ -8,6 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Render\AccountRender;
+use App\Repository\LoginRepository;
 use App\Repository\UserRepository;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -33,6 +34,7 @@ class LoginController extends AbstractController
   public function __invoke(
     Request $request,
     UserRepository $user_repository,
+    LoginRepository $login_repository,
     ConfigService $config_service,
     LoggerInterface $logger,
     AccountRender $account_render,
@@ -67,7 +69,12 @@ class LoginController extends AbstractController
       {
         $su->set_master_login($pp->schema());
 
-        $this->addFlash('success', 'OK - Gebruiker ingelogd als master.');
+        $this->addFlash(
+          type: 'success',
+          message: [
+            'key' => 'login.flash.success_master',
+          ],
+        );
 
         if ($location)
         {
@@ -116,14 +123,19 @@ class LoginController extends AbstractController
         $logger->info('Password hashing updated', $log_ary);
       }
 
-      $user_repository->insert_login(
+      $login_repository->insert(
         user_id: $command->id,
         agent: $agent,
         ip: $ip,
         schema: $pp->schema_o(),
       );
 
-      $this->addFlash('success', 'Je bent ingelogd.');
+      $this->addFlash(
+        type: 'success',
+        message: [
+          'key' => 'login.flash.success',
+        ],
+      );
 
       if ($location)
       {
@@ -138,7 +150,7 @@ class LoginController extends AbstractController
         schema: $pp->schema_o(),
       ))
       {
-          $su_ary['role_short'] = 'u';
+        $su_ary['role_short'] = 'u';
       }
 
       return $this->redirectToRoute($vr->get('default'), $su_ary);
@@ -153,7 +165,8 @@ class LoginController extends AbstractController
         type: 'warning',
         message: [
           'key' => 'flash.maintenance',
-        ]);
+        ],
+      );
     }
 
     if ($request->isMethod('GET') && $su->is_user())

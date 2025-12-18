@@ -66,7 +66,6 @@
 
 {%- block bulk_actions -%}
   {%- if pp_has_role('admin') -%}
-    {%- include 'include/bulk_select_btns.html.twig' -%}
     {%- include 'users/list/users_list_bulk.html.twig' -%}
   {%- endif -%}
 {%- endblock bulk_actions -%}

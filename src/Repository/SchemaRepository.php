@@ -2,26 +2,31 @@
 
 namespace App\Repository;
 
+use App\DTO\Schema;
 use Doctrine\DBAL\Connection as Db;
+use Doctrine\DBAL\Types\Types;
 
 class SchemaRepository
 {
 	public function __construct(
-		protected Db $db
+		private readonly Db $db
 	)
 	{
 	}
 
-	public function get_tables(string $schema):array
+	public function get_tables(
+    Schema $schema,
+  ):array
 	{
 		$tables = [];
 
-        $rows = $this->db->fetchAllAssociative('select table_name from information_schema.tables
-            where table_schema = ?
-            order by table_name asc',
-			[$schema],
-			[\PDO::PARAM_STR]
-		);
+    $rows = $this->db->fetchAllAssociative('select table_name from information_schema.tables
+      where table_schema = :schema
+      order by table_name asc', [
+      'schema'  => $schema,
+    ], [
+      'schema' => Types::STRING,
+    ]);
 
 		foreach ($rows as $row)
 		{

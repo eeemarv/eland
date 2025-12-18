@@ -1,0 +1,93 @@
+<div class="table-responsive">
+  <table class="table table-bordered table-striped
+    table-hover table-condensed">
+    <tbody>
+      <tr>
+        <td>
+          {{- 'transactions.amount_sum'|trans({
+            'amount_sum': count_ary.amount_sum,
+            'currency': config_str('transactions.currency.name')
+          }) -}}
+          {%- if config_bool('transactions.currency.timebased_en', schema)
+            and config_int('transactions.currency.per_hour_ratio', schema) > 0
+            -%}&nbsp;
+            <span>(
+              {{- 'transactions.per_hour_ratio'|trans({
+                'per_hour_ratio': config_int('transactions.currency.per_hour_ratio'),
+                'currency': config_str('transactions.currency.name')
+              }) -}})
+            </span>
+          {%- endif -%}
+        </td>
+
+        <td>
+          <span class="label label-success">
+            {{- 'label.confirmed'|trans -}}: {{ count_ary.confirmed -}}
+          </span>
+        </td>
+
+      </tr>
+
+      <tr>
+
+        <td>
+          {{- 'transactions.total_accounts_count'|trans({
+            'count': count_ary.total_accounts
+          }) -}}
+        </td>
+
+        <td class="info">
+          <span class="label label-info">
+            {{- 'label.pending'|trans -}}: {{ count_ary.pending -}}
+          </span>
+        </td>
+
+      </tr>
+
+      <tr>
+
+        <td>
+          {{- 'transactions.from_accounts_count'|trans({
+            'count': count_ary.from_accounts
+          }) -}}
+        </td>
+
+        <td class="bg-inactive">
+          <span class="label label-default">
+            {{- 'label.canceled'|trans -}}: {{ count_ary.canceled -}}
+          </span>
+        </td>
+
+      </tr>
+
+      <tr>
+
+        <td>
+          {{- 'transactions.to_accounts_count'|trans({
+            'count': count_ary.to_accounts
+          }) -}}
+        </td>
+
+        <td class="bg-inactive">
+          <span class="label label-default">
+            {{- 'label.expired'|trans -}}: {{ count_ary.expired -}}
+          </span>
+        </td>
+      </tr>
+
+      {%- if config_bool('intersystem.enabled') -%}
+      <tr>
+        <td>
+
+        </td>
+        <td class="bg-warning">
+          <span class="label label-warning">
+            {{- 'label.intersystem'|trans -}}: {{ count_ary.intersystem -}}
+          </span>
+        </td>
+      </tr>
+      {%- endif -%}
+
+    </tbody>
+  </table>
+</div>

@@ -2,8 +2,9 @@
 
 namespace App\Repository;
 
+use App\DTO\Schema;
 use Doctrine\DBAL\Connection as Db;
-use Symfony\Component\HttpFoundation\Request;
+use Doctrine\DBAL\Types\Types;
 
 class LogoutRepository
 {
@@ -15,17 +16,19 @@ class LogoutRepository
 
 	public function insert(
 		int $user_id,
-		Request $request,
-		string $schema
+    string $agent,
+    string $ip,
+		Schema $schema
 	):void
 	{
-		$agent = $request->server->get('HTTP_USER_AGENT');
-		$ip = $request->getClientIp();
-
-		$this->db->insert($schema . '.logout', [
-			'user_id'       => $user_id,
-			'agent'         => $agent,
-			'ip'            => $ip,
-		]);
+		$this->db->insert($schema->str() . '.logout', [
+      'user_id' => $user_id,
+			'agent'   => $agent,
+			'ip'      => $ip,
+		], [
+      'user_id' => Types::INTEGER,
+      'agent'   => Types::STRING,
+      'ip'      => Types::STRING,
+    ]);
 	}
 }

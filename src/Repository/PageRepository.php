@@ -8,7 +8,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class PageRepository
 {
 	public function __construct(
-		protected Db $db
+		private readonly Db $db,
 	)
 	{
 	}

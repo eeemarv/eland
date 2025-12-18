@@ -82,9 +82,12 @@ class CleanupMessagesSchemaTask implements SchemaTaskInterface
 
 			$this->db->executeStatement('delete
 				from ' . $schema . '.messages
-				where user_id in (?)',
-				[$user_ids],
-				[ArrayParameterType::INTEGER]);
+				where user_id in (:user_ids)', [
+          'user_ids'  => $user_ids,
+        ], [
+          'user_ids'  => ArrayParameterType::INTEGER,
+        ]
+      );
 		}
 	}
 

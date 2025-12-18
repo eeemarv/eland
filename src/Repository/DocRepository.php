@@ -179,7 +179,7 @@ class DocRepository
         'visible_ary' => ArrayParameterType::STRING,
       ]);
 
-    return $res->fetchAllAssociative() ?: [];
+    return $res->fetchAllAssociative();
 	}
 
 	public function get_unmapped_docs(

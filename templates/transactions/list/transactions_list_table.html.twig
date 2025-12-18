@@ -1,0 +1,20 @@
+<div class="panel panel-primary printview">
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped
+      table-hover footable csv transactions"
+      data-sort="false"
+    >
+      <thead>
+        <tr>
+          {%- include 'transactions/list/transactions_list_table_head.html.twig' -%}
+        </tr>
+      </thead>
+      <tbody>
+        {%- include 'transactions/list/transactions_list_table_body.html.twig' -%}
+      </tbody>
+      {%- if bulk_actions_enabled and pp_has_role('admin') -%}
+        {%- include 'include/tfoot_bulk_btns.html.twig' -%}
+      {%- endif -%}
+    </table>
+  </div>
+</div>

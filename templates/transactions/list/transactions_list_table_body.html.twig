@@ -1,0 +1,178 @@
+{%- for tid, t in transactions -%}
+	{%- set t_class =
+    t.is_canceled ? ' class="inactive"' :
+    t.is_expired ? ' class="inactive"' :
+    not t.is_confirmed ? ' class="info"' :
+    t.real_to or t.real_from or t.remote_ref ? ' class="warning"' :
+    ''
+  -%}
+	<tr{{-t_class|raw-}}>
+		{%- if bulk_actions_enabled and pp_has_role('admin') -%}
+			<td>
+				<label for="sel[{{- tid -}}]">
+					<input type="checkbox" name="sel[{{- tid -}}]" id="sel[{{- tid -}}]" value="{{- tid -}}" {%- if sel[tid] is defined %} checked {%- endif -%}/>
+					&nbsp;&nbsp;
+				</label>
+			</td>
+		{%- endif -%}
+
+		<td>
+			<a href="{{- path('transactions_show', {'id': tid}|pp) -}}">
+				<b>
+					{{- t.description -}}
+				</b>
+			</a>
+		</td>
+
+		<td>
+      {%- if uid -%}
+        {%- if uid == t.id_to -%}
+          <b class="text-success">
+            +{{- t.amount -}}
+          </b>
+        {%- else -%}
+          <b class="text-danger">
+            -{{- t.amount -}}
+          </b>
+        {%- endif -%}
+      {%- else -%}
+        <b>
+			    {{- t.amount -}}
+        </b>
+      {%- endif -%}
+		</td>
+
+		<td>
+			{{- t.created_at|date_format('min') -}}
+		</td>
+
+    {%- if (uid and uid == t.id_to) or not uid -%}
+		<td>
+			{%- if t.real_from -%}
+				<div class="clearfix">
+					<div class="btn btn-default pull-left me-1">
+						<i class="fa fa-share-alt"></i>
+					</div>
+					<div>
+            {%- set has_from_remote =
+              t.from_remote_schema
+              and t.remote_ref
+              and inter_ary[t.from_remote_schema] is defined
+              and inter_ary[t.from_remote_schema][t.remote_ref] is defined
+              ? true : false
+            -%}
+            {%- set from_system_name =
+              has_from_remote
+              ? config_str('system.name', t.from_remote_schema)
+              : t.from_code ~ ' ' ~ t.from_name
+            -%}
+            {%- if t.from_is_active or pp_has_role('admin') -%}
+              <a href="{{- path('users_show', {'id':t.id_from}|pp) -}}">
+                {{- t.from_code }} {{ from_system_name -}}
+              </a>
+            {%- else -%}
+              {{- t.from_code }} {{ from_system_name -}}
+            {%- endif -%}
+            <br>
+						{%- if has_from_remote -%}
+              {%- set from_remote =
+                inter_ary[t.from_remote_schema][t.remote_ref]
+              -%}
+              {%- if (pp_has_role('admin')
+                or pp_has_role('user'))
+                and from_remote.from_is_active
+              -%}
+                <a href="{{- path('users_show', {
+                  'id': from_remote.id_from,
+                  'schema': t.from_remote_schema,
+                  'os': schema,
+                  'role_short': 'g'
+                }) -}}">
+                  {{- from_remote.from_code }} {{ from_remote.from_name -}}
+                </a>
+              {%- else -%}
+                {{- from_remote.from_code }} {{ from_remote.from_name -}}
+              {%- endif -%}
+            {%- else -%}
+							{{- t.real_from -}}
+						{%- endif -%}
+					</div>
+				</div>
+			{%- elseif t.from_is_active or pp_has_role('admin') -%}
+				<a href="{{- path('users_show', {'id': t.id_from}|pp) -}}">
+					{{- t.from_code }}
+					{{ t.from_name -}}
+				</a>
+			{%- else -%}
+				{{- t.from_code }}
+				{{ t.from_name -}}
+			{%- endif -%}
+		</td>
+    {%- endif -%}
+
+    {%- if (uid and uid == t.id_from) or not uid -%}
+		<td>
+			{%- if t.real_to -%}
+				<div class="clearfix">
+					<div class="btn btn-default pull-left me-1">
+						<i class="fa fa-share-alt"></i>
+					</div>
+					<div>
+            {%- set has_to_remote =
+              t.to_remote_schema
+              and t.remote_ref
+              and inter_ary[t.to_remote_schema] is defined
+              and inter_ary[t.to_remote_schema][t.remote_ref] is defined
+              ? true : false
+            -%}
+            {%- set to_system_name =
+              has_to_remote
+              ? config_str('system.name', t.to_remote_schema)
+              : t.to_code ~ ' ' ~ t.to_name
+            -%}
+            {%- if t.to_is_active or pp_has_role('admin') -%}
+              <a href="{{- path('users_show', {'id':t.id_to}|pp) -}}">
+                {{- t.to_code }} {{ to_system_name -}}
+              </a>
+            {%- else -%}
+              {{- t.to_code }} {{ to_system_name -}}
+            {%- endif -%}
+            <br>
+						{%- if has_to_remote -%}
+              {%- set to_remote =
+                inter_ary[t.to_remote_schema][t.remote_ref]
+              -%}
+              {%- if (pp_has_role('admin')
+                or pp_has_role('user'))
+                and to_remote.to_is_active
+              -%}
+                <a href="{{- path('users_show', {
+                  'id': to_remote.id_to,
+                  'schema': t.to_remote_schema,
+                  'os': schema,
+                  'role_short': 'g'
+                }) -}}">
+                  {{- to_remote.to_code }} {{ to_remote.to_name -}}
+                </a>
+              {%- else -%}
+                {{- to_remote.to_code }} {{ to_remote.to_name -}}
+              {%- endif -%}
+            {%- else -%}
+							{{- t.real_to -}}
+						{%- endif -%}
+					</div>
+				</div>
+			{%- elseif t.to_is_active or pp_has_role('admin') -%}
+				<a href="{{- path('users_show', {'id': t.id_to}|pp) -}}">
+					{{- t.to_code }}
+					{{ t.to_name -}}
+				</a>
+			{%- else -%}
+				{{- t.to_code }}
+				{{ t.to_name -}}
+			{%- endif -%}
+		</td>
+    {%- endif -%}
+
+	</tr>
+{%- endfor -%}

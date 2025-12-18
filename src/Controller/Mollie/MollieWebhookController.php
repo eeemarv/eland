@@ -2,10 +2,9 @@
 
 namespace App\Controller\Mollie;
 
-use App\Queue\MailQueue;
+use App\Email\Mollie\Confirmation\EmailMollieConfirmationMessage;
 use App\Repository\MollieRepository;
 use App\Service\ConfigService;
-use App\Service\MailAddrUserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\PageParamsService;
@@ -38,8 +37,6 @@ class MollieWebhookController extends AbstractController
     ConfigService $config_service,
     MessageBusInterface $bus,
     PageParamsService $pp,
-    MailQueue $mail_queue,
-    MailAddrUserService $mail_addr_user_service,
     MollieRepository $mollie_repository
   ):Response
   {
@@ -48,21 +45,47 @@ class MollieWebhookController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw $this->createNotFoundException('Mollie submodule (users) not enabled.');
+      throw $this->createNotFoundException(
+        'Mollie submodule (users) not enabled.'
+      );
     }
 
-    $id = $request->request->get('id', '');
+    $id = $request->request->get('id');
+
+    if (!isset($id))
+    {
+      throw $this->createNotFoundException(
+        'Mollie payment id missing'
+      );
+    }
 
     $mollie_apikey = $config_service->get_str(
       config_id: 'mollie.apikey',
       schema: $pp->schema_o(),
     );
 
+    if (!(str_starts_with($mollie_apikey, 'live_')
+      || str_starts_with($mollie_apikey, 'test_')))
+    {
+      throw $this->createNotFoundException(
+        'Mollie apikey not configured with live_ or test_'
+      );
+    }
+
     $mollie = new MollieApiClient();
     $mollie->setApiKey($mollie_apikey);
 
     $payment = $mollie->payments->get($id);
+
     $checkout_token = $payment->metadata->checkout_token;
+
+    if (!$checkout_token)
+    {
+      throw $this->createNotFoundException(
+        'checkout_token not found'
+      );
+    }
+
     $uuid_checkout_token = Uuid::fromBase58($checkout_token);
 
     $mollie_payment = $mollie_repository->get_payment(
@@ -72,7 +95,9 @@ class MollieWebhookController extends AbstractController
 
     if (!$mollie_payment)
     {
-      throw $this->createNotFoundException('Payment request not found');
+      throw $this->createNotFoundException(
+        'Mollie payment request not found'
+      );
     }
 
     if ($payment->isPaid())
@@ -83,21 +108,11 @@ class MollieWebhookController extends AbstractController
         schema: $pp->schema_o(),
       );
 
-      $amount = strtr($mollie_payment['amount'], '.', ',');
-      $description = $mollie_payment['code'] . ' ' . $mollie_payment['description'];
-
-      $vars = [
-        'amount'        => $amount,
-        'description'   => $description,
-        'user_id'       => $mollie_payment['user_id'],
-      ];
-
-      $mail_queue->queue([
-        'schema'	=> $pp->schema(),
-        'template'	=> 'mollie/is_paid',
-        'vars'		=> $vars,
-        'to'		=> $mail_addr_user_service->get($mollie_payment['user_id'], $pp->schema()),
-      ], 8500);
+      $m_confirm = new EmailMollieConfirmationMessage(
+        payment_id: $mollie_payment['id'],
+        schema: $pp->schema_o(),
+      );
+      $bus->dispatch($m_confirm);
     }
 
     return new Response('');

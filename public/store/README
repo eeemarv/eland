@@ -13,11 +13,11 @@ dokku storage:mount <app> /var/lib/dokku/data/storage/eland:/app/public/store
 ```
 
 structure
-<system_name>/d/ docs
-<system_name>/l/ logo image
-<system_name>/u/ user profile images
-<system_name>/m/ message images (ads)
-<system_name>/c/ cms images
+<system_name>/docs/ docs
+<system_name>/logo/ logo image
+<system_name>/users/ user profile images
+<system_name>/ads/ message images (ads)
+<system_name>/cms/ cms images
 
 images for web:
 original file (downsized to maximum size 1000 or less)

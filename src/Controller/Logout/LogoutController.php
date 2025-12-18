@@ -2,12 +2,12 @@
 
 namespace App\Controller\Logout;
 
+use App\Repository\LogoutRepository;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -29,8 +29,8 @@ class LogoutController extends AbstractController
 
   public function __invoke(
     Request $request,
-    Db $db,
     RequestStack $request_stack,
+    LogoutRepository $logout_repository,
     LoggerInterface $logger,
     PageParamsService $pp,
     SessionUserService $su,
@@ -45,19 +45,26 @@ class LogoutController extends AbstractController
           continue;
       }
 
-      $db->insert($schema . '.logout', [
-        'user_id'   => $user_id,
-        'agent'     => $request->server->get('HTTP_USER_AGENT'),
-        'ip'        => $request->getClientIp(),
-      ]);
+      $logout_repository->insert(
+        user_id: $user_id,
+        agent: $request->server->get('HTTP_USER_AGENT'),
+        ip: $request->getClientIp(),
+        schema: $pp->schema_o(),
+      );
     }
 
     $session->invalidate();
 
-    $logger->info('user logged out',
-      ['schema' => $pp->schema()]);
+    $logger->info('user logged out', [
+      'schema' => $pp->schema(),
+    ]);
 
-    $this->addFlash('success', 'Je bent uitgelogd');
+    $this->addFlash(
+      type: 'success',
+      message: [
+        'key' => 'logout.flash.success',
+      ],
+    );
 
     if (!$pp->org_schema())
     {

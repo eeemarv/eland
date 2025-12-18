@@ -116,6 +116,44 @@ class MollieRepository
     return $res->fetchAllAssociative();
 	}
 
+  public function get_payment_with_email_addresses(
+    int $payment_id,
+    Schema $schema
+  ):array|false
+  {
+    $res = $this->db->executeQuery('select p.*,
+      u.code, u.name,
+      r.description,
+      coalesce(jsonb_agg(c.value) filter(where c.value is not null), \'[]\') as email_addresses
+      from ' . $schema->str() . '.mollie_payments p
+      inner join ' . $schema->str() . '.mollie_payment_requests r
+        on p.request_id = r.id
+      inner join ' . $schema->str() . '.users u
+        on p.user_id = u.id
+      left join ' . $schema->str() . '.contact c
+        on c.user_id = u.id
+          and c.id_type_contact = (select t.id
+            from ' . $schema->str() . '.type_contact t
+            where t.abbrev = \'mail\')
+      where p.id = :payment_id
+      group by p.id, u.code, u.name, r.description', [
+        'payment_id' => $payment_id,
+      ], [
+        'payment_id' => Types::INTEGER,
+      ]);
+
+    $row = $res->fetchAssociative();
+
+    if (!$row)
+    {
+      return false;
+    }
+
+    $row['email_addresses'] = json_decode($row['email_addresses']);
+
+    return $row;
+  }
+
   public function get_payments_with_email_addresses(
     array $payment_ids,
     Schema $schema
@@ -395,7 +433,7 @@ class MollieRepository
       limit :limit offset :offset',
       $sql['params'], $sql['types']);
 
-    while (($row = $res->fetchAssociative()) !== false)
+    while ($row = $res->fetchAssociative())
     {
       $payments[$row['id']] = [
         ...$row,

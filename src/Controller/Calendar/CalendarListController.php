@@ -116,7 +116,7 @@ class CalendarListController extends AbstractController
 
         $query = 'select ci.subject, cip.start_at
             from ' . $pp->schema() . '.calendar_items ci, ' ;
-        $query .= 'where ci.access in (?) ';
+        $query .= 'where ci.access in (:visible_ary) ';
 
         $query .= 'order by event_at ';
         $query .= $config_service->get_bool(
@@ -124,9 +124,13 @@ class CalendarListController extends AbstractController
           schema: $pp->schema_o(),
         ) ? 'asc' : 'desc';
 
-        $access_ary = $item_access_service->get_visible_ary_for_page();
+        $visible_ary = $item_access_service->get_visible_ary_for_page();
 
-        $res = $db->executeQuery($query, [$access_ary], [ArrayParameterType::STRING]);
+        $res = $db->executeQuery($query, [
+          'visible_ary' => $visible_ary,
+        ], [
+          'visible_ary' => ArrayParameterType::STRING,
+        ]);
 
         while ($row = $res->fetchAssociative())
         {

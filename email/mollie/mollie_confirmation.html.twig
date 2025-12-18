@@ -1,0 +1,38 @@
+{%- extends '@email/base/base.html.twig' -%}
+{%- trans_default_domain 'mail' -%}
+
+{%- block subject -%}
+  {{- 'mollie_confirmation.subject'|trans -}}
+{%- endblock subject -%}
+
+{% block content -%}
+  <row>
+    <columns>
+      <spacer size="8"></spacer>
+      <p>
+        <b>
+          {{- 'mollie_confirmation.message'|trans -}}
+        </b>
+      </p>
+    </columns>
+  </row>
+  <row class="b-{{- email_background -}}-9 l-{{- email_background -}}-4">
+    <columns>
+      <spacer size="8"></spacer>
+      <h4>
+        {{- 'label.details'|trans -}}
+      </h4>
+      <p>
+        {{- 'label.amount'|trans -}}: <b>{{- amount -}}</b>
+        <br/>
+        {{- 'label.description'|trans -}}: <b>{{- description -}}</b>
+        <br/>
+        {{- 'label.from_account'|trans -}}: <b>{{- code }} {{ name -}}</b>
+        <br/>
+        {{- 'label.to_account'|trans -}}: <b>{{- config_str('system.name') -}}</b>
+      </p>
+    </columns>
+  </row>
+  <spacer size="8"></spacer>
+
+{%- endblock content -%}

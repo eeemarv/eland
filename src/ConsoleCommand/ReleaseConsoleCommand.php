@@ -12,54 +12,54 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
-    name: 'app:release',
-    description: 'Tasks for release: clearing caches, calculating hashes.'
+  name: 'app:release',
+  description: 'Tasks for release: clearing caches, calculating hashes.'
 )]
 class ReleaseConsoleCommand extends Command
 {
-    public function __construct(
-        protected MonitorProcessService $monitor_process_service,
-        protected AssetsService $assets_service,
-        protected SchemaTaskSchedule $schema_task_schedule
-    )
+  public function __construct(
+    private readonly MonitorProcessService $monitor_process_service,
+    private readonly AssetsService $assets_service,
+    private readonly SchemaTaskSchedule $schema_task_schedule
+  )
+  {
+    parent::__construct();
+  }
+
+  protected function execute(InputInterface $input, OutputInterface $output): int
+  {
+    error_log('+------------------------+');
+    error_log('| RELEASE                |');
+    error_log('+------------------------+');
+    error_log('');
+
+    $clear_redis_cache_command = $this->getApplication()->find('app:clear-redis-cache');
+    $clear_redis_cache_input = new ArrayInput([]);
+    $clear_redis_cache_command->run($clear_redis_cache_input, $output);
+
+    error_log('+------------------------+');
+    error_log('| Redis cache cleared    |');
+    error_log('+------------------------+');
+
+    $this->assets_service->write_file_hash_ary();
+
+    error_log('+------------------------+');
+    error_log('| Schema Tasks           |');
+    error_log('+------------------------+');
+
+    foreach ($this->schema_task_schedule->get_schema_task_names() as $name)
     {
-        parent::__construct();
+      error_log((string) $name);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
-    {
-        error_log('+------------------------+');
-        error_log('| RELEASE                |');
-        error_log('+------------------------+');
-        error_log('');
+    error_log('+------------------------+');
+    error_log('| Last runs              |');
+    error_log('+------------------------+');
 
-        $clear_redis_cache_command = $this->getApplication()->find('app:clear-redis-cache');
-        $clear_redis_cache_input = new ArrayInput([]);
-        $clear_redis_cache_command->run($clear_redis_cache_input, $output);
+    error_log(json_encode($this->schema_task_schedule->get_last_run_ary()));
 
-        error_log('+------------------------+');
-        error_log('| Redis cache cleared    |');
-        error_log('+------------------------+');
+    error_log('+------------------------+');
 
-        $this->assets_service->write_file_hash_ary();
-
-        error_log('+------------------------+');
-        error_log('| Schema Tasks           |');
-        error_log('+------------------------+');
-
-        foreach ($this->schema_task_schedule->get_schema_task_names() as $name)
-        {
-            error_log((string) $name);
-        }
-
-        error_log('+------------------------+');
-        error_log('| Last runs              |');
-        error_log('+------------------------+');
-
-        error_log(json_encode($this->schema_task_schedule->get_last_run_ary()));
-
-        error_log('+------------------------+');
-
-        return 0;
-    }
+    return 0;
+  }
 }

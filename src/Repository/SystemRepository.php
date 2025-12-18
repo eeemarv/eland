@@ -7,7 +7,7 @@ use Doctrine\DBAL\Connection as Db;
 class SystemRepository
 {
 	public function __construct(
-		protected Db $db
+		private readonly Db $db
 	)
 	{
 	}

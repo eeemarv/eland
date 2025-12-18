@@ -32,6 +32,7 @@ use App\Form\Type\Users\UsersColsType;
 use App\Render\AccountRender;
 use App\Repository\AccountRepository;
 use App\Repository\ContactRepository;
+use App\Repository\LoginRepository;
 use App\Repository\MessageRepository;
 use App\Repository\MollieRepository;
 use App\Repository\TransactionRepository;
@@ -79,6 +80,7 @@ class UsersListController extends AbstractController
     MollieRepository $mollie_repository,
     MessageRepository $message_repository,
     TransactionRepository $transaction_repository,
+    LoginRepository $login_repository,
     AccountRender $account_render,
     CacheService $cache_service,
     ConfigService $config_service,
@@ -94,6 +96,10 @@ class UsersListController extends AbstractController
     if (!$pp->is_admin() && !in_array($status, ['active', 'new', 'leaving']))
     {
       throw new AccessDeniedHttpException('No access for status: ' . $status);
+    }
+    if (!$request->isMethod('GET') && !$pp->is_admin())
+    {
+      throw new BadRequestException('POST not allowed');
     }
 
     $full_name_enabled = $config_service->get_bool(
@@ -959,7 +965,7 @@ class UsersListController extends AbstractController
 
     if ($cols_command->last_login_at)
     {
-      $last_login_ary = $user_repository->get_last_login_ary(
+      $last_login_ary = $login_repository->get_last_login_ary(
         schema: $pp->schema_o(),
       );
     }

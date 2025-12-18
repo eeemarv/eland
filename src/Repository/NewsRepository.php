@@ -12,7 +12,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class NewsRepository
 {
 	public function __construct(
-		protected Db $db
+		private readonly Db $db
 	)
 	{
 	}
@@ -46,15 +46,19 @@ class NewsRepository
 	{
 		$order = $sort_event_at_asc ? 'event_at asc, ' : '';
 
-        $news = $this->db->fetchAssociative('select n.*
+    $news = $this->db->fetchAssociative('select n.*
 			from (select *,
 				lag(id) over (order by ' . $order . 'created_at asc) as prev_id,
 				lead(id) over (order by ' . $order . 'created_at asc) as next_id
             	from ' . $schema . '.news
-				where access in (?)) n
-            where n.id = ?',
-			[$visible_ary, $id],
-			[ArrayParameterType::STRING, Types::INTEGER]
+				where access in (:visible_ary)) n
+            where n.id = :id', [
+        'visible_ary' => $visible_ary,
+        'id'  => $id,
+      ], [
+        'visible_ary' => ArrayParameterType::STRING,
+        'id'  => Types::INTEGER,
+      ]
 		);
 
 		if ($news === false)

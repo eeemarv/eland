@@ -5,7 +5,6 @@ namespace App\Form\EventSubscriber;
 use App\Cnst\AccessCnst;
 use App\Form\Type\Field\BtnChoiceType;
 use App\Service\ConfigService;
-use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
@@ -20,7 +19,6 @@ class AccessFieldSubscriber implements EventSubscriberInterface
   protected array $type_options = [];
 
   public function __construct(
-    private readonly ItemAccessService $item_access_service,
     private readonly PageParamsService $pp,
     private readonly ConfigService $config_service
   )

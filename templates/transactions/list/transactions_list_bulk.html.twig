@@ -1,0 +1,29 @@
+<h3>
+  {%- include 'include/label/admin.html.twig' -%}
+  &nbsp;
+  {{- 'transactions.bulk.title'|trans -}}
+</h3>
+
+<div class="panel panel-info">
+  <div class="panel-heading">
+    <ul class="nav nav-tabs" role="tablist">
+      <li class="active">
+        <a href="#service_stuff_tab" data-toggle="tab">
+          {{- 'label.service_stuff'|trans -}}
+        </a>
+      </li>
+    </ul>
+    <div class="tab-content">
+      <div
+        role="tabpanel"
+        class="tab-pane active"
+        id="service_stuff_tab"
+      >
+        <h4>
+          {{- 'transactions.bulk.service_stuff.title'|trans -}}
+        </h4>
+        {%- include 'transactions/list/transactions_list_bulk_service_stuff_form.html.twig' -%}
+      </div>
+    </div>
+  </div>
+</div>

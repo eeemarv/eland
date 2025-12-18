@@ -148,10 +148,14 @@ class ContactsController extends AbstractController
         }
 
         $db->executeStatement('update ' . $pp->schema() . '.contact
-          set access = ?
-          where id in (?)',
-          [$bulk_field_value, array_keys($selected_contacts)],
-          [Types::STRING, ArrayParameterType::INTEGER]);
+          set access = :access
+          where id in (:id_ary)', [
+            'access'  => $bulk_field_value,
+            'id_ary'  => array_keys($selected_contacts),
+          ], [
+            'access'  => Types::STRING,
+            'id_ary'  => ArrayParameterType::INTEGER,
+          ]);
 
         if (count($selected_contacts) > 1)
         {

@@ -3,25 +3,36 @@
 {%- set csv_en = true -%}
 
 {%- block assets_add -%}
-    {{- parent() -}}
-    {%- if pp_has_role('admin') -%}
-        {{- assets_add(['table_sel.js']) -}}
-    {%- endif -%}
-    {{- assets_add(['datepicker']) -}}
+  {{- parent() -}}
+  {%- if pp_has_role('admin') -%}
+    {{- assets_add(['table_sel.js']) -}}
+  {%- endif -%}
+  {{- assets_add(['datepicker']) -}}
 {%- endblock assets_add -%}
 
 {%- block btn_top_add -%}
   {%- if pp_has_role('admin') or pp_has_role('user') -%}
-    {%- include 'include/btn_top/add.html.twig' with {
-      'btn_route': 'transactions_add',
-      'btn_title': 'transactions_add.title'
-    } -%}
+    {%- if uid and uid != su_id() -%}
+      {%- include 'include/btn_top/add.html.twig' with {
+        'btn_route': 'transactions_add',
+        'btn_route_params': {'tuid': uid},
+        'btn_title': 'transactions_add.btn_add_to_user',
+        'btn_title_trans_params': {
+          'user': account(uid, schema)
+        }
+      } -%}
+    {%- else -%}
+      {%- include 'include/btn_top/add.html.twig' with {
+        'btn_route': 'transactions_add',
+        'btn_title': 'transactions_add.title'
+      } -%}
+    {%- endif -%}
   {%- endif -%}
 {%- endblock btn_top_add -%}
 
 {%- block btn_top_bulk -%}
   {%- if pp_has_role('admin') and bulk_actions_enabled -%}
-      {%- include 'include/btn_top/bulk.html.twig' -%}
+    {%- include 'include/btn_top/bulk.html.twig' -%}
   {%- endif -%}
 {%- endblock btn_top_bulk -%}
 
@@ -37,6 +48,19 @@
   {%- include 'include/filter/heading_btn_filter.html.twig' -%}
 {%- endblock heading_append -%}
 
+{%- block heading_sub -%}
+  {%- if uid -%}
+  <h2>
+    {{- 'label.current_balance'|trans -}}:
+    <span class="label label-info">
+      {{- account_balance(uid, schema) -}}
+    </span>
+    &nbsp;
+    {{- config_str('transactions.currency.name', schema) -}}
+  </h2>
+  {%- endif -%}
+{%- endblock heading_sub -%}
+
 {%- block filter_form_a -%}
   {%- include 'transactions/include/transactions_filter_form.html.twig' -%}
 {%- endblock filter_form_a -%}
@@ -49,33 +73,19 @@
 
 {%- block data -%}
   {%- if row_count -%}
-    {{- data_list_raw|raw -}}
+    {%- include 'transactions/list/transactions_list_table.html.twig' -%}
   {%- else -%}
     {%- include 'include/no_results.html.twig' -%}
   {%- endif -%}
 {%- endblock data -%}
 
 {%- block footnote -%}
-  <ul>
-    <li>
-      {{- 'transactions.account_count'|trans({
-        'account_count': account_count
-      }) -}}
-    </li>
-    <li>
-      {{- 'transactions.amount_sum'|trans({
-        'amount_sum': amount_sum,
-        'currency': config_str('transactions.currency.name')
-      }) -}}
-    </li>
-    {%- include 'transactions/include/valuation.html.twig' -%}
-  </ul>
+  {%- include 'transactions/list/transactions_list_stats.html.twig' -%}
 {%- endblock footnote -%}
 
 {%- block bulk_actions -%}
-  {%- if bulk_actions_raw -%}
-    {%- include 'include/bulk_select_btns.html.twig' -%}
-    {{- bulk_actions_raw|raw -}}
+  {%- if pp_has_role('admin') and bulk_actions_enabled -%}
+    {%- include 'transactions/list/transactions_list_bulk.html.twig' -%}
   {%- endif -%}
 {%- endblock bulk_actions -%}
 

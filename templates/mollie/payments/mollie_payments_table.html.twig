@@ -2,12 +2,13 @@
 {%- set order_by = pag_params.s.order_by -%}
 {%- set asc = pag_params.s.asc ? true : false -%}
 
-<div class="panel panel-info">
+<div class="panel panel-primary">
   <table class="table table-bordered table-striped
     table-hover panel-body footable csv"
     data-filter="#combined-filter"
     data-filter-minimum="1"
-    data-sort="false">
+    data-sort="false"
+  >
     <thead>
       <tr>
         {%- for c in cols -%}
@@ -101,5 +102,6 @@
       </tr>
     {%- endfor -%}
     </tbody>
+    {%- include 'include/tfoot_bulk_btns.html.twig' -%}
   </table>
 </div>

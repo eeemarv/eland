@@ -1,0 +1,27 @@
+{{- form_start(bulk_service_stuff_form, {'attr': {'novalidate': 'novalidate'}}) -}}
+{{- form_errors(bulk_service_stuff_form) -}}
+
+{{- form_widget(bulk_service_stuff_form.selected) -}}
+
+{{- form_row(bulk_service_stuff_form.service_stuff, {
+  'label': false,
+}) -}}
+
+<p class="alert alert-warning">
+  <b>
+  {{- 'transactions.bulk.service_stuff.warning'|trans -}}
+  </b>
+</p>
+
+{{- form_row(bulk_service_stuff_form.verify, {
+  'label': 'check.verify',
+}) -}}
+
+{{- form_widget(bulk_service_stuff_form.submit, {
+  'label': 'btn.edit',
+  'attr': {
+    'class': 'btn btn-lg btn-primary',
+  },
+}) -}}
+
+{{- form_end(bulk_service_stuff_form) -}}

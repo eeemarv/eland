@@ -42,7 +42,9 @@ class MollieConfigController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw $this->createNotFoundException('Mollie submodule (users) not enabled.');
+      throw $this->createNotFoundException(
+        'Mollie submodule (users) not enabled.'
+      );
     }
 
     $command = new MollieConfigCommand();

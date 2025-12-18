@@ -1,5 +1,4 @@
 {%- extends 'mollie/base/mollie_base.html.twig' -%}
-{%- import 'macro/anchor.html.twig' as a -%}
 
 {%- set admin_heading = true -%}
 
@@ -13,8 +12,8 @@
 {%- block form_a -%}
   <p>
     {{- 'mollie_config.explain'|trans({
-      'link_open': a.open('https://www.mollie.com/nl/'),
-      'link_close': a.close()
+      'ao': '<a href="https://www.mollie.com/nl/">',
+      'ac': '</a>',
     })|raw -}}
   </p>
 
@@ -26,8 +25,8 @@
     'help_html': true,
     'help': 'mollie_config.apikey.help',
     'help_translation_parameters': {
-      'link_open': a.open('https://www.mollie.com/nl/'),
-      'link_close': a.close()
+      'ao': '<a href="https://www.mollie.com/nl/">',
+      'ac': '</a>',
     },
     'required': false
   }) -}}

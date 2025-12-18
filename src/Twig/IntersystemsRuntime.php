@@ -15,6 +15,6 @@ class IntersystemsRuntime implements RuntimeExtensionInterface
 
 	public function get_schemas(string $schema):array
 	{
-		return array_keys($this->systems_service->get_inter_ary($schema));
+		return $this->systems_service->get_inter_ary($schema);
 	}
 }

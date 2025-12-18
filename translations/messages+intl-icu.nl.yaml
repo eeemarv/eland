@@ -231,15 +231,18 @@ label:
   balance_sum: "Totaal Saldo: {balance_sum}"
   bg_color: Achtergrondkleur
   birthdate: Geboortedatum
+  canceled: Geannuleerd
   captcha: Anti-spam verificatiecode
   category: Categorie
   code: Code
   columns: Kolommen
   comment: Commentaar
   comments: Commentaar
+  confirmed: Bevestigd
   contacts: Contacten
   contact_type: Contact type
   content: Inhoud
+  counterparty: Tegenpartij
   created: Aanmaak
   created_at: Aangemaakt
   current_balance: Huidig saldo
@@ -259,12 +262,12 @@ label:
   expires_at: Vervaldatum
   file: Bestand
   file_location: Bestandslocatie
-  file_location_link:
   filtered: Gefilterd
   filters: Filters
   first_name: Voornaam
   for_user: Voor gebruiker
   from: Van
+  from_account: Van
   from_date: Vanaf
   full_name: Volledige naam
   hidden: Verborgen
@@ -309,6 +312,7 @@ label:
   original_filename: Orginele bestandsnaam
   over_period: Over Periode
   out: Uit
+  pending: In Afwachting
   periodic_overview: Periodiek overzicht (e-mail)
   periodic_overview_en: Ontvangst periodieke overzichts email
   periodic_overview_short: Per. overzicht
@@ -327,6 +331,7 @@ label:
   search: Zoeken
   send_cc: Stuur een kopie van het bericht naar mezelf
   send_notification_email: Stuur een notificatie E-mail
+  service_stuff: Diensten/Spullen
   services: Diensten
   split_by_char: Split door Teken
   status: Status
@@ -339,6 +344,7 @@ label:
   time: Tijdstip
   title: Titel
   to: Naar
+  to_account: Aan
   total: Totaal
   to_date: Tot
   type: Type
@@ -361,9 +367,9 @@ label:
 
 link:
   count: >-
-    Aantal: {open}{count}{close}
+    Aantal: {ao}{count}{ac}
   file_location: >-
-    Bestandslocatie ({open}link{close})
+    Bestandslocatie ({ao}link{ac})
 
 logic:
   and: en
@@ -941,10 +947,16 @@ login:
     label: Login
     help: E-mail, Gebruikersnaam of Account Code
   password_reset_link: >-
-    {open_link}Klik hier als je je paswoord vergeten bent.{close_link}
+    {ao}Klik hier als je je
+    paswoord vergeten bent.{ac}
+  flash:
+    success: Je bent ingelogd
+    success_master: Ingelogd als master
 
 logout:
   title: Uitloggen
+  flash:
+    success: Je bent uitgelogd
 
 logs:
   title: Logs
@@ -1154,7 +1166,7 @@ mollie_config:
   explain: >-
     Om betalingen met {link_open}Mollie{link_close}
     te ontvangen moet je op de
-    {link_open}Mollie-website{link_close} een account
+    {ao}Mollie-website{ac} een account
     aanmaken voor je organisatie. Dit kan enkel
     voor organisaties met handelsregisternummer
     en zakelijk bankaccount.
@@ -1162,7 +1174,7 @@ mollie_config:
     label: Mollie apikey
     help: >-
       Kopiëer de apikey die je bekomt van
-      de {link_open}Mollie website{link_close}.
+      de {ao}Mollie website{ac}.
       Ze moet beginnen met live_ of test_.
       (Met test_ kan je enkel testen en geen
       betalingen ontvangen.)
@@ -1373,12 +1385,37 @@ transactions:
       some_user {Transacties van {account}}
       other {Transacties}
     }
-  account_count: >-
-    Aantal accounts: {account_count}
+  from_accounts_count: >-
+    Van Aantal Accounts: {count}
+  to_accounts_count: >-
+    Naar Aantal Accounts: {count}
+  total_accounts_count: >-
+    Totaal Aantal Accounts: {count}
   amount_sum: >-
     Totaal: {amount_sum} {currency}
+  per_hour_ratio: >-
+    {per_hour_ratio} {currency} per uur
   valuation: >-
     Valuatie: {per_hour_ratio} {currency} per uur.
+  bulk:
+    title: >-
+      Bulk acties met geselecteerde transacties
+    service_stuff:
+      title: >-
+        Veld Diensten/Spullen aanpassen
+      warning: >-
+        Let op, het veld Diensten/Spullen
+        van de geselecteerde transacties
+        wordt overschreven!
+      flash:
+        success: >-
+          {count, plural,
+            =0 {Niets aangepast}
+            =1 {Diensten/spullen veld van 1
+            transactie aangepast}
+            other {Diensten/spullen veld van #
+            transacties aangepast}
+          }
 
 transactions_add:
   title: Nieuwe transactie
@@ -1413,18 +1450,18 @@ transactions_autominlimit:
       Met dit formulier kan een Automatische Minimum
       Limiet ingesteld worden. De individuele Minimum
       Limiet van Accounts zal zo automatisch lager
-      worden door ontvangen transacties tot de {open_link}Minimum
-      Systeemslimiet{close_link} bereikt wordt. De individuele
+      worden door ontvangen transacties tot de {ao}Minimum
+      Systeemslimiet{ac} bereikt wordt. De individuele
       Account Minimum Limiet wordt gewist wanneer
-      de {open_link}Minimum Systeemslimiet{close_link} bereikt of onderschreden
+      de {ao}Minimum Systeemslimiet{ac} bereikt of onderschreden
       wordt.
     no_min_system_limit: >-
-      Wanneer geen {open_link}Minimum Systeemslimiet{close_link} is ingesteld,
+      Wanneer geen {ao}Minimum Systeemslimiet{ac} is ingesteld,
       dan blijft de individuele Account Minimum Limiet
       bij elke transactie naar het Account telkens dalen.
     lower_than_min_system_limit: >-
       Individuele Account Minimum Limieten die lager zijn
-      dan de {open_link}algemene Minimum Systeemslimiet{close_link} blijven
+      dan de {ao}algemene Minimum Systeemslimiet{ac} blijven
       altijd ongewijzigd.
   flash:
     change: >-
@@ -1562,8 +1599,8 @@ users_config_leaving:
     help: >-
       Voor al dan niet weergeven van uitstappers
       in de periodieke overzichtsmail, zie
-      de {open_link}opmaak-configuratie van
-      de e-mail{close_link}.
+      de {ao}opmaak-configuratie van
+      de e-mail{ac}.
   flash:
     change: >-
       Configuratie uitstappende leden aangepast
@@ -1590,8 +1627,8 @@ users_config_new:
     help: >-
       Voor al dan niet weergeven van instappers
       in de periodieke overzichtsmail, zie
-      de {open_link}opmaak-configuratie van
-      de e-mail{close_link}.
+      de {ao}opmaak-configuratie van
+      de e-mail{ac}.
   flash:
     change: >-
       Configuratie instappende leden aangepast
