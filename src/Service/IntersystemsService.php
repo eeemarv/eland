@@ -57,6 +57,7 @@ class IntersystemsService
 			where g.apimethod = \'elassoap\'
 				and u.code = g.localletscode
 				and u.code <> \'\'
+        and u.code is not null
 				and u.role = \'guest\'
 				and u.status in (1, 2, 7)');
 

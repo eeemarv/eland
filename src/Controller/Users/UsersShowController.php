@@ -29,6 +29,7 @@ use App\Service\SessionUserService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
+use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -330,7 +331,7 @@ class UsersShowController extends AbstractController
                 from ' . $pp->schema() . '.letsgroups
                 where localletscode = ?',
                 [$user['code']],
-                [\PDO::PARAM_STR]);
+                [Types::STRING]);
 
             if (!$intersystem_id)
             {

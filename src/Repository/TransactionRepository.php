@@ -224,9 +224,9 @@ class TransactionRepository
     if (isset($filter_command->to_date))
     {
       $to_date = \DateTimeImmutable::createFromFormat('U', (string) strtotime($filter_command->to_date . ' UTC'));
-      $sql['to_date']['where'] = 't.created_at <= :to_date';
-      $sql['to_date']['params'] = $to_date;
-      $sql['to_date']['types'] = Types::DATETIME_IMMUTABLE;
+      $sql['where']['to_date'] = 't.created_at <= :to_date';
+      $sql['params']['to_date'] = $to_date;
+      $sql['types']['to_date'] = Types::DATETIME_IMMUTABLE;
     }
 
     if (isset($filter_command->srvc))
@@ -374,7 +374,7 @@ class TransactionRepository
     unset($sql_all['types']['offset']);
 
     $sql_where_intersystem = $sql_all['where'];
-    $sql_where_intersystem['intersystem'] = 't.real_from is not null or t.real_to is not null';
+    $sql_where_intersystem['intersystem'] = '(t.real_from is not null or t.real_to is not null)';
     $sql_where_intersystem = implode(' and ', $sql_where_intersystem);
 
     $sql_where_confirmed = $sql_all['where'];

@@ -13,54 +13,55 @@ use Symfony\Component\Routing\Annotation\Route;
 #[AsController]
 class TypeaheadAccountCodesController extends AbstractController
 {
-    #[Route(
-        '/{schema}/{role_short}/typeahead-account-codes/{thumbprint}',
-        name: 'typeahead_account_codes',
-        methods: ['GET'],
-        requirements: [
-            'schema'        => '%assert.schema%',
-            'role_short'    => '%assert.role_short.user%',
-            'thumbprint'    => '%assert.thumbprint%',
-        ],
-        defaults: [
-            'module'        => 'users',
-        ],
-    )]
+  #[Route(
+    '/{schema}/{role_short}/typeahead-account-codes/{thumbprint}',
+    name: 'typeahead_account_codes',
+    methods: ['GET'],
+    requirements: [
+      'schema'        => '%assert.schema%',
+      'role_short'    => '%assert.role_short.user%',
+      'thumbprint'    => '%assert.thumbprint%',
+    ],
+    defaults: [
+      'module'        => 'users',
+    ],
+  )]
 
-    public function __invoke(
-        string $thumbprint,
-        Db $db,
-        TypeaheadService $typeahead_service,
-        PageParamsService $pp
-    ):Response
+  public function __invoke(
+    string $thumbprint,
+    Db $db,
+    TypeaheadService $typeahead_service,
+    PageParamsService $pp,
+  ):Response
+  {
+    $cached = $typeahead_service->get_cached_data($thumbprint, $pp, []);
+
+    if ($cached !== false)
     {
-        $cached = $typeahead_service->get_cached_data($thumbprint, $pp, []);
-
-        if ($cached !== false)
-        {
-            return new Response($cached, 200, ['Content-Type' => 'application/json']);
-        }
-
-        $account_codes = [];
-
-        $stmt = $db->prepare('select code
-            from ' . $pp->schema() . '.users
-            order by code asc');
-
-        $res = $stmt->executeQuery();
-
-        while ($row = $res->fetchAssociative())
-        {
-            if (empty($row['code']))
-            {
-                continue;
-            }
-
-            $account_codes[] = $row['code'];
-        }
-
-        $data = json_encode($account_codes);
-        $typeahead_service->set_thumbprint($thumbprint, $data, $pp, []);
-        return new Response($data, 200, ['Content-Type' => 'application/json']);
+      return new Response($cached, 200, ['Content-Type' => 'application/json']);
     }
+
+    $account_codes = [];
+
+    $stmt = $db->prepare('select code
+      from ' . $pp->schema() . '.users
+      where code is not null
+      order by code asc');
+
+    $res = $stmt->executeQuery();
+
+    while ($row = $res->fetchAssociative())
+    {
+      if (empty($row['code']))
+      {
+        continue;
+      }
+
+      $account_codes[] = $row['code'];
+    }
+
+    $data = json_encode($account_codes);
+    $typeahead_service->set_thumbprint($thumbprint, $data, $pp, []);
+    return new Response($data, 200, ['Content-Type' => 'application/json']);
+  }
 }

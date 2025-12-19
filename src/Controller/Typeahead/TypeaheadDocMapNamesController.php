@@ -13,49 +13,49 @@ use Symfony\Component\Routing\Annotation\Route;
 #[AsController]
 class TypeaheadDocMapNamesController extends AbstractController
 {
-    #[Route(
-        '/{schema}/{role_short}/typeahead-doc-map-names/{thumbprint}',
-        name: 'typeahead_doc_map_names',
-        methods: ['GET'],
-        requirements: [
-            'schema'        => '%assert.schema%',
-            'role_short'    => '%assert.role_short.admin%',
-            'thumbprint'    => '%assert.thumbprint%',
-        ],
-        defaults: [
-            'module'        => 'docs',
-        ],
-    )]
+  #[Route(
+    '/{schema}/{role_short}/typeahead-doc-map-names/{thumbprint}',
+    name: 'typeahead_doc_map_names',
+    methods: ['GET'],
+    requirements: [
+      'schema'        => '%assert.schema%',
+      'role_short'    => '%assert.role_short.admin%',
+      'thumbprint'    => '%assert.thumbprint%',
+    ],
+    defaults: [
+      'module'        => 'docs',
+    ],
+  )]
 
-    public function __invoke(
-        string $thumbprint,
-        Db $db,
-        TypeaheadService $typeahead_service,
-        PageParamsService $pp
-    ):Response
+  public function __invoke(
+    string $thumbprint,
+    Db $db,
+    TypeaheadService $typeahead_service,
+    PageParamsService $pp,
+  ):Response
+  {
+    $cached = $typeahead_service->get_cached_data($thumbprint, $pp, []);
+
+    if ($cached !== false)
     {
-        $cached = $typeahead_service->get_cached_data($thumbprint, $pp, []);
-
-        if ($cached !== false)
-        {
-            return new Response($cached, 200, ['Content-Type' => 'application/json']);
-        }
-
-        $map_names = [];
-
-        $stmt = $db->prepare('select name
-            from ' . $pp->schema() . '.doc_maps
-            order by name asc');
-
-        $res = $stmt->executeQuery();
-
-        while ($name = $res->fetchOne())
-        {
-            $map_names[] = $name;
-        }
-
-        $data = json_encode($map_names);
-        $typeahead_service->set_thumbprint($thumbprint, $data, $pp, []);
-        return new Response($data, 200, ['Content-Type' => 'application/json']);
+      return new Response($cached, 200, ['Content-Type' => 'application/json']);
     }
+
+    $map_names = [];
+
+    $stmt = $db->prepare('select name
+      from ' . $pp->schema() . '.doc_maps
+      order by name asc');
+
+    $res = $stmt->executeQuery();
+
+    while ($name = $res->fetchOne())
+    {
+      $map_names[] = $name;
+    }
+
+    $data = json_encode($map_names);
+    $typeahead_service->set_thumbprint($thumbprint, $data, $pp, []);
+    return new Response($data, 200, ['Content-Type' => 'application/json']);
+  }
 }

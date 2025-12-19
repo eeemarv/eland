@@ -10,36 +10,36 @@ use Symfony\Component\Validator\Constraints\Type;
 
 class CmsEditCommand
 {
-    #[Sequentially(constraints: [
-        new NotNull(),
-        new Type(type: 'string'),
-    ])]
-    public $route;
+  #[Sequentially(constraints: [
+    new NotNull(),
+    new Type(type: 'string'),
+  ])]
+  public $route;
 
-    #[ExpressionSyntax(
-        allowedVariables: ['0', '1']
-    )]
-    public $route_en;
+  #[ExpressionSyntax(
+    allowedVariables: ['0', '1']
+  )]
+  public $route_en;
 
-    #[ExpressionSyntax(
-        allowedVariables: ['admin', 'user', 'guest', 'anonymous']
-    )]
-    public $role;
+  #[ExpressionSyntax(
+    allowedVariables: ['admin', 'user', 'guest', 'anonymous']
+  )]
+  public $role;
 
-    #[ExpressionSyntax(
-        allowedVariables: ['0', '1']
-    )]
-    public $role_en;
+  #[ExpressionSyntax(
+    allowedVariables: ['0', '1']
+  )]
+  public $role_en;
 
-    #[Sequentially(constraints: [
-        new NotNull(),
-        new Json(),
-    ])]
-    public $all_params;
+  #[Sequentially(constraints: [
+    new NotNull(),
+    new Json(),
+  ])]
+  public $all_params;
 
-    #[Sequentially(constraints: [
-        new NotNull(),
-        new Json(),
-    ])]
-    public $content;
+  #[Sequentially(constraints: [
+    new NotNull(),
+    new Json(),
+  ])]
+  public $content;
 }

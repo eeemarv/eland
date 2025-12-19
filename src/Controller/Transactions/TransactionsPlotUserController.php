@@ -99,18 +99,22 @@ class TransactionsPlotUserController extends AbstractController
         u.role, u.status
       from ' . $pp->schema() . '.transactions t, ' .
         $pp->schema() . '.users u
-      where (t.id_to = ? or t.id_from = ?)
+      where (t.id_to = :user_id or t.id_from = :user_id)
         and (u.id = t.id_to or u.id = t.id_from)
-        and u.id <> ?
-        and t.created_at >= ?
-        and t.created_at <= ?
+        and u.id <> :user_id
+        and t.created_at >= :begin_datetime
+        and t.created_at <= :end_datetime
       order by t.created_at asc';
 
-    $fetched_transactions = $db->fetchAllAssociative($query,
-      [$user_id, $user_id, $user_id, $begin_datetime, $end_datetime],
-      [\PDO::PARAM_INT, \PDO::PARAM_INT, \PDO::PARAM_INT,
-      Types::DATETIME_IMMUTABLE, Types::DATETIME_IMMUTABLE]
-    );
+    $fetched_transactions = $db->fetchAllAssociative($query, [
+      'user_id' => $user_id,
+      'begin_datetime'  => $begin_datetime,
+      'end_datetime'  => $end_datetime,
+    ], [
+      'user_id' => Types::INTEGER,
+      'begin_datetime' => Types::DATETIME_IMMUTABLE,
+      'end_datetime'  => Types::DATETIME_IMMUTABLE,
+    ]);
 
     foreach ($fetched_transactions as $t)
     {
@@ -181,7 +185,7 @@ class TransactionsPlotUserController extends AbstractController
         'time'              => $time,
         'fdate'             => $date_format_service->get_from_unix($time, 'day', $pp->schema()),
         'link' 		        => $link_render->context_path('transactions_show',
-            $pp->ary(), ['id' => $t['id']]),
+          $pp->ary(), ['id' => $t['id']]),
         'user'              => $tr_user,
       ];
     }

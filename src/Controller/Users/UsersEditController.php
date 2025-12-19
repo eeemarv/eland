@@ -31,6 +31,7 @@ use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
+use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
@@ -827,7 +828,7 @@ class UsersEditController extends AbstractController
                     from ' . $pp->schema() . '.letsgroups
                     where localletscode = ?
                         and apimethod <> \'internal\'',
-                        [$intersystem_code], [\PDO::PARAM_STR]))
+                        [$intersystem_code], [Types::STRING]))
                 {
                     $name = $full_name = $group['groupname'];
 

@@ -188,7 +188,8 @@ class TransactionsController extends AbstractController
       || isset($filter_command->to_account)
       || isset($filter_command->from_date)
       || isset($filter_command->to_date)
-      || isset($filter_command->srvc)
+      || (isset($filter_command->srvc)
+        && $filter_command->srvc)
     );
 
     $filter_collapse = !$filtered;

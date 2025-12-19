@@ -13,50 +13,48 @@ use Symfony\Component\Routing\Annotation\Route;
 #[AsController]
 class TypeaheadIntersystemMailAccountsController extends AbstractController
 {
-    #[Route(
-        '/{schema}/{role_short}/typeahead-intersystem-mail-accounts/{thumbprint}',
-        name: 'typeahead_intersystem_mail_accounts',
-        methods: ['GET'],
-        requirements: [
-            'schema'        => '%assert.schema%',
-            'role_short'    => '%assert.role_short.admin%',
-            'thumbprint'    => '%assert.thumbprint%',
-        ],
-        defaults: [
-            'module'        => 'transactions',
-        ],
-    )]
+  #[Route(
+    '/{schema}/{role_short}/typeahead-intersystem-mail-accounts/{thumbprint}',
+    name: 'typeahead_intersystem_mail_accounts',
+    methods: ['GET'],
+    requirements: [
+      'schema'        => '%assert.schema%',
+      'role_short'    => '%assert.role_short.admin%',
+      'thumbprint'    => '%assert.thumbprint%',
+    ],
+    defaults: [
+      'module'        => 'transactions',
+    ],
+  )]
 
-    public function __invoke(
-        string $thumbprint,
-        Db $db,
-        TypeaheadService $typeahead_service,
-        PageParamsService $pp
-    ):Response
+  public function __invoke(
+    string $thumbprint,
+    Db $db,
+    TypeaheadService $typeahead_service,
+    PageParamsService $pp,
+  ):Response
+  {
+    $cached = $typeahead_service->get_cached_data($thumbprint, $pp, []);
+
+    if ($cached !== false)
     {
-        $cached = $typeahead_service->get_cached_data($thumbprint, $pp, []);
-
-        if ($cached !== false)
-        {
-            return new Response($cached, 200, ['Content-Type' => 'application/json']);
-        }
-
-        $accounts = $db->fetchAllAssociative(
-            'select u.code as c,
-                u.name as n,
-                extract(epoch from u.adate) as a,
-                u.status as s,
-                \'mail\' as api
-            from ' . $pp->schema() . '.users u,
-               ' . $pp->schema() . '.letsgroups l
-            where u.status = 7
-                and l.apimethod = \'mail\'
-                and l.localletscode = u.code
-            order by u.id asc', [], []
-        );
-
-        $data = json_encode($accounts);
-        $typeahead_service->set_thumbprint($thumbprint, $data, $pp, []);
-        return new Response($data, 200, ['Content-Type' => 'application/json']);
+      return new Response($cached, 200, ['Content-Type' => 'application/json']);
     }
+
+    $accounts = $db->fetchAllAssociative(
+      'select u.code as c,
+        u.name as n,
+        extract(epoch from u.adate) as a,
+        u.status as s,
+        \'mail\' as api
+      from ' . $pp->schema() . '.users u
+      where u.status in (1,2,7)
+        and remote_email is not null
+      order by u.id asc', [], []
+    );
+
+    $data = json_encode($accounts);
+    $typeahead_service->set_thumbprint($thumbprint, $data, $pp, []);
+    return new Response($data, 200, ['Content-Type' => 'application/json']);
+  }
 }
