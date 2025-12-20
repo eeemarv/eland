@@ -2,22 +2,17 @@
 
 namespace App\Service;
 
-use App\Cnst\RoleCnst;
 use App\DTO\Schema;
-use Deprecated;
-use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-#[Autoconfigure(lazy: true)]
 class PageParamsService
 {
 	private Request $request;
 	private string|null $role_short;
 	private string $role;
-	private string $system;
 	private string $schema;
   private Schema $schema_o;
 	private array $edit;
@@ -28,7 +23,6 @@ class PageParamsService
 	private bool $is_guest;
 	private bool $is_anonymous;
 
-	private string $org_system;
 	private string|null $org_schema;
 	private string $route;
 
@@ -39,7 +33,6 @@ class PageParamsService
 		protected string $env_app_system_redirects
 	)
 	{
-		$this->init();
 	}
 
 	private function init():void
@@ -148,93 +141,145 @@ class PageParamsService
 
 	public function route():string
 	{
+    if (!isset($this->route))
+    {
+      $this->init();
+    }
 		return $this->route;
 	}
 
 	public function role():string
 	{
+    if (!isset($this->route))
+    {
+      $this->init();
+    }
 		return $this->role;
 	}
 
 	public function role_short():string|null
 	{
+    if (!isset($this->route))
+    {
+      $this->init();
+    }
 		return $this->role_short;
 	}
 
 	public function is_admin():bool
 	{
+    if (!isset($this->route))
+    {
+      $this->init();
+    }
 		return $this->is_admin;
 	}
 
 	public function is_user():bool
 	{
+    if (!isset($this->route))
+    {
+      $this->init();
+    }
 		return $this->is_user;
 	}
 
 	public function is_guest():bool
 	{
+    if (!isset($this->route))
+    {
+      $this->init();
+    }
 		return $this->is_guest;
 	}
 
 	public function is_anonymous():bool
 	{
+    if (!isset($this->route))
+    {
+      $this->init();
+    }
 		return $this->is_anonymous;
 	}
 
 	public function edit():array
 	{
+    if (!isset($this->route))
+    {
+      $this->init();
+    }
 		return $this->edit;
 	}
 
 	public function edit_en():bool
 	{
+    if (!isset($this->route))
+    {
+      $this->init();
+    }
 		return isset($this->edit['en']);
 	}
 
 	public function edit_route_en():bool
 	{
+    if (!isset($this->route))
+    {
+      $this->init();
+    }
 		return isset($this->edit['route']);
 	}
 
 	public function edit_role_en():bool
 	{
+    if (!isset($this->route))
+    {
+      $this->init();
+    }
 		return isset($this->edit['role']);
 	}
 
 	public function edit_inline_en():bool
 	{
+    if (!isset($this->route))
+    {
+      $this->init();
+    }
 		return isset($this->edit['inline']);
-	}
-
-  #[Deprecated()]
-	public function system():string
-	{
-		return $this->system;
 	}
 
 	public function schema():string
 	{
+    if (!isset($this->route))
+    {
+      $this->init();
+    }
 		return $this->schema;
 	}
 
 	public function schema_o():Schema
 	{
+    if (!isset($this->route))
+    {
+      $this->init();
+    }
 		return $this->schema_o;
-	}
-
-  #[Deprecated()]
-	public function org_system():string
-	{
-		return $this->org_system;
 	}
 
 	public function org_schema():string|null
 	{
+    if (!isset($this->route))
+    {
+      $this->init();
+    }
 		return $this->org_schema;
 	}
 
 	public function ary():array
 	{
+    if (!isset($this->route))
+    {
+      $this->init();
+    }
 		return $this->ary;
 	}
 }

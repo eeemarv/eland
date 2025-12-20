@@ -95,7 +95,10 @@ class LoginController extends AbstractController
         throw new \LogicException('No user id set in validator.');
       }
 
-      $su->set_login($pp->schema(), $command->id);
+      $su->set_login(
+        schema: $pp->schema(),
+        user_id: $command->id
+      );
 
       $agent = $request->server->get('HTTP_USER_AGENT');
       $ip = $request->getClientIp();
@@ -142,15 +145,18 @@ class LoginController extends AbstractController
         return $this->redirect($location);
       }
 
-      $su_ary = $su->ary();
+      $su_ary = [
+        'schema'      => $pp->schema(),
+        'role_short'  => 'u',
+      ];
 
-      if ($su->is_admin()
-        && !$config_service->get_bool(
+      if ($user['role'] === 'admin'
+        && $config_service->get_bool(
         config_id: 'users.admin.login.as_admin.enabled',
         schema: $pp->schema_o(),
       ))
       {
-        $su_ary['role_short'] = 'u';
+        $su_ary['role_short'] = 'a';
       }
 
       return $this->redirectToRoute($vr->get('default'), $su_ary);

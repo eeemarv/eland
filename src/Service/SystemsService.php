@@ -25,39 +25,9 @@ class SystemsService
     private readonly SystemRepository $system_repository,
     private readonly TagAwareCacheInterface $cache,
     private readonly ConfigService $config_service,
-		//protected Db $db,
-		//#[Autowire('%env(LEGACY_ELAND_ORIGIN_PATTERN)%')]
-		//protected string $env_legacy_eland_origin_pattern
 	)
 	{
 		$this->local_en = php_sapi_name() !== 'cli';
-
-    /*
-		$stmt = $this->db->prepare('select schema_name
-			from information_schema.schemata');
-
-		$res = $stmt->executeQuery();
-
-		while($row = $res->fetchAssociative())
-		{
-			$schema = $row['schema_name'];
-
-			if (isset(self::IGNORE[$schema]))
-			{
-				continue;
-			}
-
-			if (str_starts_with($schema, 'pg_'))
-			{
-				continue;
-			}
-
-			$system = $schema;
-
-			$this->schemas[$system] = $schema;
-			$this->systems[$schema] = $system;
-		}
-    */
 	}
 
   private function read_ary():array
@@ -78,32 +48,6 @@ class SystemsService
 
 		return $ary;
 	}
-
-  /*
-	public function get_legacy_eland_origin(string $schema):string
-	{
-		if (!isset($this->systems[$schema]))
-		{
-			return '';
-		}
-
-		return str_replace('_', $this->systems[$schema], $this->env_legacy_eland_origin_pattern);
-	}
-
-	public function get_schema_from_legacy_eland_origin(string $origin):string
-	{
-		$host = strtolower(parse_url($origin, PHP_URL_HOST) ?? '');
-
-		if (!$host)
-		{
-			return '';
-		}
-
-		[$system] = explode('.', $host);
-
-		return $this->schemas[$system] ?? '';
- 	}
-  */
 
   public function has_schema(string $schema):bool
 	{
