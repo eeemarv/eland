@@ -8,7 +8,7 @@ use Twig\Extension\RuntimeExtensionInterface;
 class RDefaultRuntime implements RuntimeExtensionInterface
 {
 	public function __construct(
-		protected VarRouteService $vr
+		private readonly VarRouteService $vr
 	)
 	{
 	}

@@ -2,3 +2,6 @@ symfonycasts_sass:
   root_sass:
     - '%kernel.project_dir%/assets/styles/app.scss'
     - '%kernel.project_dir%/assets/styles/email.scss'
+  sass_options:
+    load_path:
+      - '%kernel.project_dir%/node_modules'

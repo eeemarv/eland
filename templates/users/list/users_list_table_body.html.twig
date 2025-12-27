@@ -222,7 +222,7 @@
         <td data-value="5000000"{%- if distance_ary[uid].lat is defined %} data-lat="{{- distance_ary[uid].lat -}}" data-lng="{{- distance_ary[uid].lng -}}"
         {%- if su_id() == uid %} data-distance-self{%- endif -%}
         {%- endif -%}>
-          <i class="fa fa-times"></i>
+          <twig:ux:icon name="lucide:x"/>
         </td>
       {%- endif -%}
     {%- endif -%}

@@ -273,7 +273,7 @@ class MolliePaymentsAddController extends AbstractController
     $out .= 'Bedrag (Invul-hulp)</label>';
     $out .= '<div class="input-group">';
     $out .= '<span class="input-group-addon">';
-    $out .= '<i class="fa fa-eur"></i>';
+    $out .= '<i class="fa fa-eur"></i>EUR';
     $out .= '</span>';
     $out .= '<input type="number" class="form-control margin-bottom" id="fixed" ';
     $out .= 'min="0" value="" step="0.01">';

@@ -11,9 +11,9 @@
   {{- 'users_periodic_mail.title'|trans -}}
 {%- endblock heading_title -%}
 
-{%- block heading_fa -%}
-  envelope-o
-{%- endblock heading_fa -%}
+{%- block heading_icon -%}
+<twig:ux:icon name="lucide:mails"/>
+{%- endblock heading_icon -%}
 
 {%- block form_a -%}
 
@@ -22,9 +22,7 @@
     'attr': {
       'min': 1
     },
-    'pre_addon': {
-      'text': 'label.days'|trans
-    }
+    'addon': 'label.days'|trans,
   }) -}}
 
   {{- form_row(form.user_new_default_enabled, {

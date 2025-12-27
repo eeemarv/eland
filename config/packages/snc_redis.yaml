@@ -1,52 +1,52 @@
 snc_redis:
-    clients:
-        default:
-            type: phpredis
-            alias: default
-            # See https://github.com/snc/SncRedisBundle/issues/709
-            dsn: '%env(temp_redis_dsn_fix:REDIS_URL)%'
-            logging: '%kernel.debug%'
-            options:
-                prefix: eland.
-        monolog:
-            type: phpredis
-            alias: monolog
-            # See https://github.com/snc/SncRedisBundle/issues/709
-            dsn: '%env(temp_redis_dsn_fix:REDIS_URL)%'
-            logging: false #'%kernel.debug%'
-            options:
-                prefix: eland.
-        lock:
-            type: phpredis
-            alias: lock
-            # See https://github.com/snc/SncRedisBundle/issues/709
-            dsn: '%env(temp_redis_dsn_fix:REDIS_URL)%/9'
-            logging: '%kernel.debug%'
-        messages:  # not used, directly configured in messenger.yaml
-            type: phpredis
-            alias: messages
-            # See https://github.com/snc/SncRedisBundle/issues/709
-            dsn: '%env(temp_redis_dsn_fix:REDIS_URL)%/10'
-            logging: '%kernel.debug%'
-        static:
-            type: phpredis
-            alias: static
-            # See https://github.com/snc/SncRedisBundle/issues/709
-            dsn: '%env(temp_redis_dsn_fix:REDIS_URL)%/13'
-            logging: '%kernel.debug%'
-        cache:
-            type: phpredis
-            alias: cache
-            # See https://github.com/snc/SncRedisBundle/issues/709
-            dsn: '%env(temp_redis_dsn_fix:REDIS_URL)%/14'
-            logging: '%kernel.debug%'
-        session:
-            type: phpredis
-            alias: session
-            dsn: '%env(temp_redis_dsn_fix:REDIS_URL)%/15'
-            logging: '%kernel.debug%'
-
+  clients:
+    default:
+      type: phpredis
+      alias: default
+      # See https://github.com/snc/SncRedisBundle/issues/709
+      dsn: '%env(temp_redis_dsn_fix:REDIS_URL)%'
+      logging: '%kernel.debug%'
+      options:
+        prefix: eland.
     monolog:
-        client: monolog
-        key: monolog
-        formatter: monolog.formatter.json
+      type: phpredis
+      alias: monolog
+      # See https://github.com/snc/SncRedisBundle/issues/709
+      dsn: '%env(temp_redis_dsn_fix:REDIS_URL)%'
+      logging: false #'%kernel.debug%'
+      options:
+          prefix: eland.
+    lock:
+      type: phpredis
+      alias: lock
+      # See https://github.com/snc/SncRedisBundle/issues/709
+      dsn: '%env(temp_redis_dsn_fix:REDIS_URL)%/9'
+      logging: '%kernel.debug%'
+    messages:  # not used, directly configured in messenger.yaml
+      type: phpredis
+      alias: messages
+      # See https://github.com/snc/SncRedisBundle/issues/709
+      dsn: '%env(temp_redis_dsn_fix:REDIS_URL)%/10'
+      logging: '%kernel.debug%'
+    static:
+      type: phpredis
+      alias: static
+      # See https://github.com/snc/SncRedisBundle/issues/709
+      dsn: '%env(temp_redis_dsn_fix:REDIS_URL)%/13'
+      logging: '%kernel.debug%'
+    cache:
+      type: phpredis
+      alias: cache
+      # See https://github.com/snc/SncRedisBundle/issues/709
+      dsn: '%env(temp_redis_dsn_fix:REDIS_URL)%/14'
+      logging: '%kernel.debug%'
+    session:
+      type: phpredis
+      alias: session
+      dsn: '%env(temp_redis_dsn_fix:REDIS_URL)%/15'
+      logging: '%kernel.debug%'
+
+  monolog:
+    client: monolog
+    key: monolog
+    formatter: monolog.formatter.json

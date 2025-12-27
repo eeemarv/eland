@@ -9,9 +9,7 @@
   {%- if form.subject is defined -%}
     {{- form_row(form.subject, {
       'label': false,
-      'pre_addon': {
-        'fa': 'chevron-right'
-      },
+      'addon': ux_icon('lucide:chevron-right'),
       'attr': {
         'placeholder': 'label.subject'
       }

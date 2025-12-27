@@ -22,10 +22,7 @@
 								<div class="weekday">{{- d.WEEKDAY_ABBREV -}}</div>
 								{%- if SHOW_MOON_PHASE and d.MOON_ICON -%}
 									<div class="moon">
-										<span class="fa-stack" title="{{- d.MOON_TITLE -}}">
-											<i class="fa fa-circle fa-inverse fa-stack-1x"></i>
-											<i class="fa {{ d.MOON_ICON }} fa-stack-1x"></i>
-										</span>
+                    <twig:ux:icon name="lucide:moon"/>
 									</div>
 								{%- elseif d.WEEKDAY == 1 and SHOW_ISOWEEK -%}
 									<div class="isoweek">

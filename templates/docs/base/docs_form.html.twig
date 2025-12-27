@@ -9,18 +9,14 @@
         'ac': '</a>',
       },
       'label_html': true,
-      'pre_addon': {
-        'fa': 'file-o'
-      }
+      'addon': ux_icon('lucide:file'),
     }) -}}
   {%- endif -%}
 
   {%- if form.original_filename is defined -%}
     {{- form_row(form.original_filename, {
       'label': 'label.original_filename',
-      'pre_addon': {
-        'fa': 'file-o'
-      }
+      'addon': ux_icon('lucide:file'),
     }) -}}
   {%- endif -%}
 
@@ -28,9 +24,7 @@
   {%- if form.file is defined -%}
     {{- form_row(form.file, {
       'label': 'label.file',
-      'pre_addon': {
-        'fa': 'file-o'
-      }
+      'addon': ux_icon('lucide:file'),
     }) -}}
   {%- endif -%}
 
@@ -38,9 +32,7 @@
     {{- form_row(form.name, {
       'label': 'label.name',
       'help': is_del_form is defined ? '' : 'label.optional',
-      'pre_addon': {
-        'fa': 'file-o'
-      },
+      'addon': ux_icon('lucide:file'),
       'required': false
     }) -}}
   {%- endif -%}
@@ -55,9 +47,7 @@
     {{- form_row(form.map_name, {
       'label': 'label.map',
       'help': is_del_form is defined ? '' : 'docs_add.map_name.help',
-      'pre_addon': {
-        'fa': 'folder-o'
-      },
+      'addon': ux_icon('lucide:folder'),
       'required': false
     }) -}}
   {%- endif -%}

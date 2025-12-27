@@ -1,8 +1,8 @@
 {%- extends 'transactions/base/transactions_form.html.twig' -%}
 
-{%- block heading_fa -%}
-    arrows-v
-{%- endblock heading_fa -%}
+{%- block heading_icon -%}
+<twig:ux:icon name="lucide:arrow-down-up"/>
+{%- endblock heading_icon -%}
 
 {%- set admin_heading = true -%}
 
@@ -11,23 +11,19 @@
 {%- endblock heading_title -%}
 
 {%- block form_a -%}
-  {{- form_row(form.min, {
-    'label': 'transactions_system_limits.min.label',
-    'pre_addon': {
-      'fa': 'arrow-down',
-      'text': config_str('transactions.currency.name', schema)
-    },
-    'help': 'transactions_system_limits.min.help',
+  {{- form_row(form.max, {
+    'label': 'transactions_system_limits.max.label',
+    'addon': config_str('transactions.currency.name')
+      ~ ' ' ~ ux_icon('lucide:arrow-up-to-line'),
+    'help': 'transactions_system_limits.max.help',
     'required': false
   }) -}}
 
-  {{- form_row(form.max, {
-    'label': 'transactions_system_limits.max.label',
-    'pre_addon': {
-      'fa': 'arrow-up',
-      'text': config_str('transactions.currency.name', schema)
-    },
-    'help': 'transactions_system_limits.max.help',
+  {{- form_row(form.min, {
+    'label': 'transactions_system_limits.min.label',
+    'addon': config_str('transactions.currency.name')
+      ~ ' ' ~ ux_icon('lucide:arrow-down-to-line'),
+    'help': 'transactions_system_limits.min.help',
     'required': false
   }) -}}
 {%- endblock form_a -%}

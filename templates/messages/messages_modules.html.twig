@@ -2,6 +2,10 @@
 
 {%- set admin_heading = true -%}
 
+{%- block heading_icon -%}
+<twig:ux:icon name="lucide:package"/>
+{%- endblock heading_icon -%}
+
 {%- block heading_title -%}
   {{- 'messages_modules.title'|trans -}}
 {%- endblock heading_title -%}

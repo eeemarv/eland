@@ -9,7 +9,7 @@ use Twig\Extension\RuntimeExtensionInterface;
 class LinkUrlRuntime implements RuntimeExtensionInterface
 {
 	public function __construct(
-		protected UrlGeneratorInterface $url_generator
+		private readonly UrlGeneratorInterface $url_generator
 	)
 	{
 	}

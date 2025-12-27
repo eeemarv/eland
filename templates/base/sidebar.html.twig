@@ -9,7 +9,7 @@
 		'typeahead', 'typeahead.js'
 	]) -}}
 
-	{%- if csv_en is defined -%}
+	{%- if block('csv_download_btn') -%}
 		{{- assets_add(['csv.js']) -}}
 	{%- endif -%}
 
@@ -48,22 +48,6 @@
 	{%- endif -%}
 {%- endblock -%}
 
-{%- set menu_sidebar_def = {
-	'messages': {'fa': 'newspaper-o', 'access': 'guest'},
-	'users': {'fa': 'users', 'access': 'guest', 'always_enabled': true},
-	'accounts': {'fa': 'coffee'},
-	'transactions': {'fa': 'exchange', 'access': 'guest'},
-	'news': {'fa': 'calendar-o', 'access': 'guest'},
-	'calendar': {'fa': 'calendar'},
-	'docs': {'fa': 'files-o', 'access': 'guest'},
-	'forum': {'fa': 'comments-o', 'access': 'guest'},
-	'support_form': {'fa': 'ambulance', 'access': 'user'},
-	'home': {'fa': 'home', 'access': 'anonymous', 'menu_config': true},
-	'login': {'fa': 'sign-in', 'access': 'anonymous', 'always_enabled': true},
-	'contact_form': {'fa': 'comment-o', 'access': 'anonymous'},
-	'register_form': {'fa': 'check-square-o', 'access': 'anonymous'}
-} -%}
-
 {%- block page_container -%}
 	<div class="swiper-container">
 	<div class="row-offcanvas row-offcanvas-left">
@@ -72,25 +56,138 @@
 	<br>
 	<ul class="nav nav-pills nav-stacked">
 
-	{%- block menu_sidebar -%}
-		{%- for r, m in menu_sidebar_def -%}
-			{%- if m.access is defined and item_visible(m.access)
-				and (m.always_enabled is defined
-				or (m.menu_config is not defined and config_bool(r ~ '.enabled', schema))
-				or (m.menu_config is defined and config_bool(r ~'.menu.enabled', schema)))
-			-%}
-				<li{%- if r == active_menu %} class="active"{%- endif -%}>
-					<a href="{{- path(r|var_route, pp_ary()) -}}">
-					<i class="fa fa-{{- m.fa -}}"></i>&nbsp;
-						{{- (r ~ '.title')|trans({
-							'self': 'all_users',
-							'with_without_category': 'all_categories'
-						}) -}}
-					</a>
-				</li>
-			{%- endif -%}
-		{%- endfor -%}
-	{%- endblock menu_sidebar -%}
+    {%- if config_bool('messages.enabled')
+      and item_visible('guest')
+    -%}
+    <li{%- if 'messages' == active_menu %} class="active"{%- endif -%}>
+      <a href="{{- path('messages'|var_route, {}|pp) -}}">
+        <twig:ux:icon name="lucide:newspaper"/>
+        &nbsp;
+        {{- ('messages.title')|trans({
+          'self': 'all_users',
+          'with_without_category': 'all_categories'
+        }) -}}
+      </a>
+    </li>
+    {%- endif -%}
+
+    {%- if item_visible('guest') -%}
+    <li{%- if 'users' == active_menu %} class="active"{%- endif -%}>
+      <a href="{{- path('users'|var_route, {}|pp) -}}">
+        <twig:ux:icon name="lucide:users"/>
+        &nbsp;
+        {{- ('users.title')|trans -}}
+      </a>
+    </li>
+    {%- endif -%}
+
+    {%- if config_bool('transactions.enabled')
+      and item_visible('guest')
+    -%}
+    <li{%- if 'transactions' == active_menu %} class="active"{%- endif -%}>
+      <a href="{{- path('transactions', {}|pp) -}}">
+        <twig:ux:icon name="lucide:arrow-left-right"/>
+        &nbsp;
+        {{- ('transactions.title')|trans({
+          'self': 'all_users',
+        }) -}}
+      </a>
+    </li>
+    {%- endif -%}
+
+    {%- if config_bool('news.enabled')
+      and item_visible('guest')
+    -%}
+    <li{%- if 'news' == active_menu %} class="active"{%- endif -%}>
+      <a href="{{- path('news'|var_route, {}|pp) -}}">
+        <twig:ux:icon name="lucide:calendar-range"/>
+        &nbsp;
+        {{- ('news.title')|trans -}}
+      </a>
+    </li>
+    {%- endif -%}
+
+    {%- if config_bool('docs.enabled')
+      and item_visible('guest')
+    -%}
+    <li{%- if 'docs' == active_menu %} class="active"{%- endif -%}>
+      <a href="{{- path('docs', {}|pp) -}}">
+        <twig:ux:icon name="lucide:files"/>
+        &nbsp;
+        {{- ('docs.title')|trans -}}
+      </a>
+    </li>
+    {%- endif -%}
+
+    {%- if config_bool('forum.enabled')
+      and item_visible('guest')
+    -%}
+    <li{%- if 'forum' == active_menu %} class="active"{%- endif -%}>
+      <a href="{{- path('forum', {}|pp) -}}">
+        <twig:ux:icon name="lucide:messages-square"/>
+        &nbsp;
+        {{- ('forum.title')|trans -}}
+      </a>
+    </li>
+    {%- endif -%}
+
+    {%- if config_bool('support_form.enabled')
+      and item_visible('user')
+    -%}
+    <li{%- if 'support_form' == active_menu %} class="active"{%- endif -%}>
+      <a href="{{- path('support_form', {}|pp) -}}">
+        <twig:ux:icon name="lucide:ambulance"/>
+        &nbsp;
+        {{- ('support_form.title')|trans -}}
+      </a>
+    </li>
+    {%- endif -%}
+
+    {%- if config_bool('home.menu.enabled')
+      and item_visible('anonymous')
+    -%}
+    <li{%- if 'home' == active_menu %} class="active"{%- endif -%}>
+      <a href="{{- path('home', {}|pp) -}}">
+        <twig:ux:icon name="lucide:home"/>
+        &nbsp;
+        {{- ('home.title')|trans -}}
+      </a>
+    </li>
+    {%- endif -%}
+
+    {%- if item_visible('anonymous') -%}
+    <li{%- if 'login' == active_menu %} class="active"{%- endif -%}>
+      <a href="{{- path('login', {}|pp) -}}">
+        <twig:ux:icon name="lucide:log-in"/>
+        &nbsp;
+        {{- ('login.title')|trans -}}
+      </a>
+    </li>
+    {%- endif -%}
+
+    {%- if config_bool('contact_form.enabled')
+      and item_visible('anonymous')
+    -%}
+    <li{%- if 'contact_form' == active_menu %} class="active"{%- endif -%}>
+      <a href="{{- path('contact_form', {}|pp) -}}">
+        <twig:ux:icon name="lucide:message-circle-question-mark"/>
+        &nbsp;
+        {{- ('contact_form.title')|trans -}}
+      </a>
+    </li>
+    {%- endif -%}
+
+    {%- if config_bool('register_form.enabled')
+      and item_visible('anonymous')
+    -%}
+    <li{%- if 'register_form' == active_menu %} class="active"{%- endif -%}>
+      <a href="{{- path('register_form', {}|pp) -}}">
+        <twig:ux:icon name="lucide:square-check"/>
+        &nbsp;
+        {{- ('register_form.title')|trans -}}
+      </a>
+    </li>
+    {%- endif -%}
 
 	</ul>
 
@@ -168,7 +265,7 @@
 		<div class="col-md-12 top-buttons mt-5p">
 			<div class="visible-xs pull-left button-offcanvas menu-button">
 				<button type="button" class="btn btn-primary btn-lg" data-toggle="offcanvas" title="Menu">
-					<i class="fa fa-chevron-left"></i>
+          <twig:ux:icon name="lucide:chevron-left"/>
 				</button>
 			</div>
 
@@ -183,8 +280,13 @@
 			{%- if block('btn_nav_top_right') -%}
 				<div class="pull-right">
 					{%- block btn_nav_top_right -%}
-						{%- if pp_has_role('admin') and block('local_admin_menu') -%}
+						{%- if pp_has_role('admin')
+              and (block('csv_download_btn')
+                or block('local_admin_menu'))
+            -%}
 							<div class="btn-group" role="group">
+                {%- block csv_download_btn -%}
+                {%- endblock csv_download_btn -%}
 								{%- block local_admin_menu -%}
 									{%- include 'include/menu/local_admin_menu.html.twig' -%}
 								{%- endblock local_admin_menu -%}
@@ -206,9 +308,9 @@
         {%- include 'include/label/admin.html.twig' -%}
         &nbsp;
       {%- endif -%}
-			{%- block heading_fa_container -%}
-				<i class="fa fa-{%- block heading_fa -%}{{- menu_sidebar_def[active_menu].fa -}}{%- endblock heading_fa -%}"></i>&nbsp;
-			{%- endblock heading_fa_container -%}
+      {%- block heading_icon -%}
+      {%- endblock heading_icon -%}
+      &nbsp;
 			{%- block heading_title -%}
 				{{- (active_menu ~ '.title')|trans -}}
 			{%- endblock heading_title -%}

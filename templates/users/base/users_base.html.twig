@@ -2,15 +2,108 @@
 
 {%- set active_menu = 'users' -%}
 
-{%- set local_admin_menu = {
-    'users_modules': {'fa': 'cog'},
-    'users_username': {'fa': 'user'},
-    'users_full_name': {'fa': 'user', 'config_en': 'users.fields.full_name.enabled'},
-    'contacts': {'fa': 'map-marker'},
-    'contact_types': {'fa': 'circle-o-notch'},
-    'users_config_new': {'fa': 'user-plus', 'config_en': 'users.new.enabled'},
-    'users_config_leaving': {'fa': 'user-times', 'config_en': 'users.leaving.enabled'},
-    'users_periodic_mail': {'fa': 'envelope-o', 'config_en': 'periodic_mail.enabled'},
-    'intersystems': {'fa': 'share-alt', 'config_en': 'intersystem.enabled'},
-    'mollie_payments': {'fa': 'eur', 'config_en': 'mollie.enabled'}
-} -%}
+{%- block heading_icon -%}
+<twig:ux:icon name="lucide:users"/>
+{%- endblock heading_icon -%}
+
+{%- block local_admin_menu -%}
+{%- embed 'embed/local_admin_menu.html.twig' -%}
+  {%- block menu_items -%}
+    <li class="dropdown-header">
+      {%- include 'include/label/admin.html.twig' -%}
+      &nbsp;
+      {{- 'users.admin_config'|trans -}}
+    </li>
+
+    <li{%- if route == 'users_modules' %} class="active"{%- endif -%}>
+      <a href="{{- path('users_modules', {}|pp) -}}">
+        <twig:ux:icon name="lucide:package"/>
+        &nbsp;
+        {{- ('users_modules.menu')|trans -}}
+      </a>
+    </li>
+
+    <li{%- if route == 'users_username' %} class="active"{%- endif -%}>
+      <a href="{{- path('users_username', {}|pp) -}}">
+        <twig:ux:icon name="lucide:user-pen"/>
+        &nbsp;
+        {{- ('users_username.menu')|trans -}}
+      </a>
+    </li>
+
+    {%- if config_bool('users.fields.full_name.enabled') -%}
+    <li{%- if route == 'users_full_name' %} class="active"{%- endif -%}>
+      <a href="{{- path('users_full_name', {}|pp) -}}">
+        <twig:ux:icon name="lucide:user-pen"/>
+        &nbsp;
+        {{- ('users_full_name.menu')|trans -}}
+      </a>
+    </li>
+    {%- endif -%}
+
+    <li{%- if active_local_admin_menu is defined and 'contacts' == active_local_admin_menu %} class="active"{%- endif -%}>
+      <a href="{{- path('contacts', {}|pp) -}}">
+        <twig:ux:icon name="lucide:map-pin"/>
+        &nbsp;
+        {{- ('contacts.menu')|trans -}}
+      </a>
+    </li>
+
+    <li{%- if active_local_admin_menu is defined and 'contact_types' == active_local_admin_menu %} class="active"{%- endif -%}>
+      <a href="{{- path('contact_types', {}|pp) -}}">
+        <twig:ux:icon name="lucide:rectangle-circle"/>
+        &nbsp;
+        {{- ('contact_types.menu')|trans -}}
+      </a>
+    </li>
+
+    {%- if config_bool('users.new.enabled') -%}
+    <li{%- if route == 'users_config_new' %} class="active"{%- endif -%}>
+      <a href="{{- path('users_config_new', {}|pp) -}}">
+        <twig:ux:icon name="lucide:user-plus"/>
+        &nbsp;
+        {{- ('users_config_new.menu')|trans -}}
+      </a>
+    </li>
+    {%- endif -%}
+
+    {%- if config_bool('users.leaving.enabled') -%}
+    <li{%- if route == 'users_config_leaving' %} class="active"{%- endif -%}>
+      <a href="{{- path('users_config_leaving', {}|pp) -}}">
+        <twig:ux:icon name="lucide:user-minus"/>
+        &nbsp;
+        {{- ('users_config_leaving.menu')|trans -}}
+      </a>
+    </li>
+    {%- endif -%}
+
+    {%- if config_bool('periodic_mail.enabled') -%}
+    <li{%- if route == 'users_periodic_mail' %} class="active"{%- endif -%}>
+      <a href="{{- path('users_periodic_mail', {}|pp) -}}">
+        <twig:ux:icon name="lucide:mails"/>
+        &nbsp;
+        {{- ('users_periodic_mail.menu')|trans -}}
+      </a>
+    </li>
+    {%- endif -%}
+
+    {%- if config_bool('intersystem.enabled') -%}
+    <li{%- if route == 'intersystems' %} class="active"{%- endif -%}>
+      <a href="{{- path('intersystems', {}|pp) -}}">
+        <twig:ux:icon name="lucide:share-2"/>
+        &nbsp;
+        {{- ('intersystems.menu')|trans -}}
+      </a>
+    </li>
+    {%- endif -%}
+
+    <li{%- if active_local_admin_menu is defined and 'mollie_payments' == active_local_admin_menu %} class="active"{%- endif -%}>
+      <a href="{{- path('mollie_payments', {}|pp) -}}">
+        <twig:ux:icon name="lucide:euro"/>
+        &nbsp;
+        {{- ('mollie_payments.menu')|trans -}}
+      </a>
+    </li>
+  {%- endblock menu_items -%}
+{%- endembed -%}
+{%- endblock local_admin_menu -%}

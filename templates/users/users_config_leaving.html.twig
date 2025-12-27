@@ -6,18 +6,16 @@
   {{- 'users_config_leaving.title'|trans -}}
 {%- endblock heading_title -%}
 
-{%- block heading_fa -%}
-  user-times
-{%- endblock heading_fa -%}
+{%- block heading_icon -%}
+<twig:ux:icon name="lucide:user-minus"/>
+{%- endblock heading_icon -%}
 
 {%- block form_a -%}
   {%- if form.equilibrium is defined -%}
     {{- form_row(form.equilibrium, {
       'label': 'users_config_leaving.equilibrium.label',
       'help': 'users_config_leaving.equilibrium.help',
-      'pre_addon': {
-        'text': config_str('transactions.currency.name', schema)
-      }
+      'addon': config_str('transactions.currency.name'),
     }) -}}
   {%- endif -%}
 

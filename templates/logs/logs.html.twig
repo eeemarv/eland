@@ -1,12 +1,16 @@
 {%- extends 'base/navbar.html.twig' -%}
 
 {%- set active_menu = 'logs' -%}
-{%- set csv_en = true -%}
+
 {%- set admin_heading = true -%}
 
-{%- block heading_fa -%}
-  history
-{%- endblock heading_fa -%}
+{%- block csv_download_btn -%}
+  {%- include 'include/btn_top/csv_download.html.twig' -%}
+{%- endblock csv_download_btn -%}
+
+{%- block heading_icon -%}
+<twig:ux:icon name="lucide:history"/>
+{%- endblock heading_icon -%}
 
 {%- block heading_title -%}
   {{- 'logs.title'|trans -}}

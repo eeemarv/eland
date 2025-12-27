@@ -11,49 +11,49 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 class UserProvider implements UserProviderInterface
 {
-    public function __construct(
-        protected UserCacheService $user_cache_service,
-        protected SessionUserService $su
-    )
+  public function __construct(
+    private readonly UserCacheService $user_cache_service,
+    private readonly SessionUserService $su
+  )
+  {
+  }
+
+  /**
+  * For switch user or remember me in Symfony security
+    */
+  public function loadUserByUsername($username): UserInterface
+  {
+    throw new \LogicException('UserProvider::loadUserByUsername is not implemented in eLAND.');
+    throw new UserNotFoundException();
+
+    $user = new User();
+    return $user;
+  }
+
+  public function loadUserByIdentifier(string $identifier): UserInterface
+  {
+    throw new \LogicException('UserProvider::loadUserByIdentifier is not implemented in eLAND.');
+    throw new UserNotFoundException();
+
+    $user = new User();
+    return $user;
+  }
+
+  public function refreshUser(UserInterface $user): UserInterface
+  {
+    if (!$user instanceof User)
     {
+      throw new UnsupportedUserException('Invalid user class "' . get_class($user) . '".');
     }
 
-    /**
-    * For switch user or remember me in Symfony security
-     */
-    public function loadUserByUsername($username): UserInterface
-    {
-        throw new \LogicException('UserProvider::loadUserByUsername is not implemented in eLAND.');
-        throw new UserNotFoundException();
+    // just a dummy user in eLAND
 
-        $user = new User();
-        return $user;
-    }
+    $fresh_user = new User();
+    return $fresh_user;
+  }
 
-    public function loadUserByIdentifier(string $identifier): UserInterface
-    {
-        throw new \LogicException('UserProvider::loadUserByIdentifier is not implemented in eLAND.');
-        throw new UserNotFoundException();
-
-        $user = new User();
-        return $user;
-    }
-
-    public function refreshUser(UserInterface $user): UserInterface
-    {
-        if (!$user instanceof User)
-        {
-            throw new UnsupportedUserException('Invalid user class "' . get_class($user) . '".');
-        }
-
-        // just a dummy user in eLAND
-
-        $fresh_user = new User();
-        return $fresh_user;
-    }
-
-    public function supportsClass($class): bool
-    {
-        return User::class === $class;
-    }
+  public function supportsClass($class): bool
+  {
+    return User::class === $class;
+  }
 }

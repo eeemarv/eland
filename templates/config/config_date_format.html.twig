@@ -3,9 +3,7 @@
 {%- block form_a-%}
   {{- form_row(form.date_format, {
     'label': 'config_date_format.date_format.label',
-    'pre_addon': {
-      'fa': 'calendar',
-    },
+    'addon': ux_icon('lucide:calendar'),
     'choice_translation_domain': false
   }) -}}
 {%- endblock form_a -%}

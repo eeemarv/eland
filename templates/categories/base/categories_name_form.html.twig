@@ -5,8 +5,6 @@
 {%- block form_a -%}
   {{- form_row(form.name, {
     'label': 'label.name',
-    'pre_addon': {
-      'fa': 'clone'
-    }
+    'addon': ux_icon('lucide:copy'),
   }) -}}
 {%- endblock form_a -%}

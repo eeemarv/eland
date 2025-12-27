@@ -5,18 +5,18 @@
     <button class="btn btn-default active" data-sort-by="code">
       {{- 'label.account_code'|trans -}}
       &nbsp;
-      <i class="fa fa-sort-asc"></i>
+      <twig:ux:icon name="lucide:arrow-down-up"/>
     </button>
     <button class="btn btn-default" data-sort-by="name">
       {{ 'label.name'|trans -}}
       &nbsp;
-      <i class="fa fa-sort"></i>
+      <twig:ux:icon name="lucide:arrow-down-up"/>
     </button>
     {%- if postcode_enabled -%}
       <button class="btn btn-default" data-sort-by="postcode">
         {{- 'label.postcode'|trans -}}
         &nbsp;
-        <i class="fa fa-sort"></i>
+        <twig:ux:icon name="lucide:arrow-down-up"/>
       </button>
     {%- endif -%}
   </span>

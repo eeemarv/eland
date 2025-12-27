@@ -1,88 +1,88 @@
 {%- extends 'tags/base/tags_base.html.twig' -%}
 
-{%- block heading_fa -%}
-    tags
-{%- endblock -%}
+{%- block heading_icon -%}
+<twig:ux:icon name="lucide:tags"/>
+{%- endblock heading_icon -%}
 
 {%- block heading_title -%}
-    {{- 'tags.list.title'|trans({
-        'tag_type': tag_type
-    }) -}}
+  {{- 'tags.list.title'|trans({
+    'tag_type': tag_type
+  }) -}}
 {%- endblock heading_title -%}
 
 {%- block btn_top_add -%}
-    {%- include 'include/btn_top/add.html.twig' with {
-        'btn_route': 'tags_' ~ tag_type ~ '_add',
-        'btn_title': 'tags.add.title',
-        'btn_title_trans_params': {
-            'tag_type': tag_type
-        }
-    } -%}
+  {%- include 'include/btn_top/add.html.twig' with {
+    'btn_route': 'tags_' ~ tag_type ~ '_add',
+    'btn_title': 'tags.add.title',
+    'btn_title_trans_params': {
+      'tag_type': tag_type
+    }
+  } -%}
 {%- endblock btn_top_add -%}
 
 {%- set cancel_route = module|var_route -%}
 
 {%- block assets_add -%}
-    {{- parent() -}}
-    {{- assets_add(['sortable', 'tags_list.js']) -}}
+  {{- parent() -}}
+  {{- assets_add(['sortable', 'tags_list.js']) -}}
 {%- endblock assets_add -%}
 
 {%- block pre_form -%}
-    <p>
-        <ul>
-            <li>
-                {{- 'tags.list.explain'|trans({
-                    'tag_type': tag_type })
-                -}}
-            </li>
-            <li>{{- 'tags.explain.drag'|trans -}}</li>
-            <li>{{- 'tags.explain.store'|trans -}}</li>
-            <li>{{- 'tags.explain.del'|trans -}}</li>
-        </ul>
-    </p>
-    <div class="list-group list-group-striped list-group-hover{% if tags|length > 1 %} grab{%- endif -%}" data-sortable data-sort-base>
+  <p>
+    <ul>
+      <li>
+        {{- 'tags.list.explain'|trans({
+            'tag_type': tag_type })
+        -}}
+      </li>
+      <li>{{- 'tags.explain.drag'|trans -}}</li>
+      <li>{{- 'tags.explain.store'|trans -}}</li>
+      <li>{{- 'tags.explain.del'|trans -}}</li>
+    </ul>
+  </p>
+  <div class="list-group list-group-striped list-group-hover{% if tags|length > 1 %} grab{%- endif -%}" data-sortable data-sort-base>
     {%- for tag in tags -%}
-        <div class="list-group-item" data-id="{{- tag.id -}}">
+      <div class="list-group-item" data-id="{{- tag.id -}}">
         {%- set style = 'color:' ~ tag.txt_color ~ ';background-color:' ~ tag.bg_color ~ '; border-color:' ~ tag.txt_color ~ ';' -%}
         <span class="label tag-eland" title="{{- tag.description -}}" style="{{- style -}}" data-tag="{{- tag.id -}}">
-            {{- tag.txt -}}
+          {{- tag.txt -}}
         </span>
-            {%- if tag.count > 0 %} (
-                <a href="{{- path(module|var_route, pp_ary()|merge({'f': {'tag[]': tag.id}})) -}}">
-                    {{- tag.count -}}
-                </a> )
-            {%- endif -%}
+        {%- if tag.count > 0 %} (
+          <a href="{{- path(module|var_route, pp_ary()|merge({'f': {'tag[]': tag.id}})) -}}">
+            {{- tag.count -}}
+          </a> )
+        {%- endif -%}
         <div class="pull-right">
-            {%- include 'include/btn/edit.html.twig' with {
-                'btn_route': 'tags_' ~ tag_type ~ '_edit',
-                'id': tag.id,
-                'btn_title': 'tags.edit.title',
-                'btn_title_trans_params': {
-                    'txt': tag.txt,
-                    'tag_type': tag_type
-                }
-            } -%}
+          {%- include 'include/btn/edit.html.twig' with {
+            'btn_route': 'tags_' ~ tag_type ~ '_edit',
+            'id': tag.id,
+            'btn_title': 'tags.edit.title',
+            'btn_title_trans_params': {
+              'txt': tag.txt,
+              'tag_type': tag_type
+            }
+          } -%}
 
-            {%- if tag.count == 0 -%}
-                {%- include 'include/btn/del.html.twig' with {
-                    'btn_route': 'tags_' ~ tag_type ~ '_del',
-                    'id': tag.id,
-                    'btn_title': 'tags.del.title',
-                    'btn_title_trans_params': {
-                        'txt': tag.txt,
-                        'tag_type': tag_type
-                    }
-                } -%}
-            {%- endif -%}
+          {%- if tag.count == 0 -%}
+            {%- include 'include/btn/del.html.twig' with {
+              'btn_route': 'tags_' ~ tag_type ~ '_del',
+              'id': tag.id,
+              'btn_title': 'tags.del.title',
+              'btn_title_trans_params': {
+                'txt': tag.txt,
+                'tag_type': tag_type
+              }
+            } -%}
+          {%- endif -%}
         </div>
-        </div>
-        {%- endfor -%}
-    </div>
-    <div class="mb-5p"></div>
+      </div>
+    {%- endfor -%}
+  </div>
+  <div class="mb-5p"></div>
 {%- endblock pre_form -%}
 
 {%- block form_a -%}
-    {{- form_row(form.tags,{
-        'attr': {'data-tags-input': ''}
-    }) -}}
+  {{- form_row(form.tags,{
+    'attr': {'data-tags-input': ''}
+  }) -}}
 {%- endblock form_a -%}

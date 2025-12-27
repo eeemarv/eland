@@ -2,8 +2,46 @@
 
 {%- set active_menu = 'messages' -%}
 
-{%- set local_admin_menu = {
-    'messages_modules': {'fa': 'cog'},
-    'categories': {'fa': 'clone', 'config_en': 'messages.fields.category.enabled'},
-    'messages_cleanup': {'fa': 'trash-o', 'config_en': 'messages.fields.expires_at.enabled'}
-}-%}
+{%- block heading_icon -%}
+<twig:ux:icon name="lucide:newspaper"/>
+{%- endblock heading_icon -%}
+
+{%- block local_admin_menu -%}
+{%- embed 'embed/local_admin_menu.html.twig' -%}
+  {%- block menu_items -%}
+    <li class="dropdown-header">
+      {%- include 'include/label/admin.html.twig' -%}
+      &nbsp;
+      {{- 'messages.admin_config'|trans -}}
+    </li>
+
+    <li{%- if route == 'messages_modules' %} class="active"{%- endif -%}>
+      <a href="{{- path('messages_modules', {}|pp) -}}">
+        <twig:ux:icon name="lucide:package"/>
+        &nbsp;
+        {{- ('messages_modules.menu')|trans -}}
+      </a>
+    </li>
+
+    {%- if config_bool('messages.fields.category.enabled') -%}
+    <li{%- if active_local_admin_menu is defined and 'categories' == active_local_admin_menu %} class="active"{%- endif -%}>
+      <a href="{{- path('categories', {}|pp) -}}">
+        <twig:ux:icon name="lucide:copy"/>
+        &nbsp;
+        {{- ('categories.menu')|trans -}}
+      </a>
+    </li>
+    {%- endif -%}
+
+    {%- if config_bool('messages.fields.expires_at.enabled') -%}
+    <li{%- if route == 'messages_cleanup' %} class="active"{%- endif -%}>
+      <a href="{{- path('messages_cleanup', {}|pp) -}}">
+        <twig:ux:icon name="lucide:brush-cleaning"/>
+        &nbsp;
+        {{- ('messages_cleanup.menu')|trans -}}
+      </a>
+    </li>
+    {%- endif -%}
+  {%- endblock menu_items -%}
+{%- endembed -%}
+{%- endblock local_admin_menu -%}

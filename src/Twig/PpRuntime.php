@@ -9,8 +9,8 @@ use Twig\Extension\RuntimeExtensionInterface;
 class PpRuntime implements RuntimeExtensionInterface
 {
 	public function __construct(
-		protected PageParamsService $pp,
-		protected SessionUserService $su
+		private readonly PageParamsService $pp,
+		private readonly SessionUserService $su
 	)
 	{
 	}

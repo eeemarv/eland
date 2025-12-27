@@ -1,13 +1,17 @@
 {%- extends 'users/base/users_base.html.twig' -%}
 
-{%- set users_view_btns = {
-  'users_list': {'fa': 'align-justify', 'title': 'view.list'},
-  'users_tiles': {'fa': 'th', 'title': 'view.tiles'},
-  'users_map': {'fa': 'map-marker', 'title': 'view.map'}
-} -%}
-
 {%- block btn_view -%}
-  {%- include 'include/nav/view_btn_group.html.twig' with {'btns': users_view_btns} -%}
+<div class="btn-group ml-5p" role="group">
+  <a href="{{- path('users_list', route_params|merge(query_params)|merge(d.params|default({}))) -}}" class="btn btn-default btn-lg{%- if 'users_list' == route %} active{%- endif -%}" title="{{- 'view.list'|trans -}}">
+    <twig:ux:icon name="lucide:list"/>
+  </a>
+  <a href="{{- path('users_tiles', route_params|merge(query_params)|merge(d.params|default({}))) -}}" class="btn btn-default btn-lg{%- if 'users_tiles' == route %} active{%- endif -%}" title="{{- 'view.tiles'|trans -}}">
+    <twig:ux:icon name="lucide:layout-grid"/>
+  </a>
+  <a href="{{- path('users_map', route_params|merge(query_params)|merge(d.params|default({}))) -}}" class="btn btn-default btn-lg{%- if 'users_map' == route %} active{%- endif -%}" title="{{- 'view.map'|trans -}}">
+    <twig:ux:icon name="lucide:map-pin"/>
+  </a>
+</div>
 {%- endblock btn_view -%}
 
 {%- block btn_top_add -%}

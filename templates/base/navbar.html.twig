@@ -1,25 +1,5 @@
 {%- extends 'base/sidebar.html.twig' -%}
 
-{%- set user_menu_self =  {
-	'users_show_self': {
-		'fa': 'user',
-		'title': 'users_show.title',
-		'title_trans_params': {'self': 'self', 'user': ''}
-	},
-	'messages_self': {
-		'fa': 'newspaper-o',
-		'title': 'messages.title',
-		'title_trans_params': {'self': 'self', 'with_without_category': 'all'},
-		'config_en': 'messages.enabled'
-	},
-	'transactions_self': {
-		'fa': 'exchange',
-		'title': 'transactions.title',
-		'title_trans_params': {'self': 'self'},
-		'config_en': 'transactions.enabled'
-	},
-} -%}
-
 {%- block navbar_toggle_button -%}
 	<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1" aria-expanded="false">
 		<span class="sr-only">Toggle navigation</span>
@@ -39,7 +19,9 @@
 
 		{%- if su_logins_role_short|length > 1 or (intersystem_schemas|length and su_logins_role_short|length) -%}
 			{%- embed 'embed/menu_dropdown.html.twig' -%}
-				{%- block fa -%}share-alt{%- endblock fa -%}
+        {%- block icon -%}
+          <twig:ux:icon name="lucide:share-2"/>
+        {%- endblock icon -%}
 				{%- block label -%}{{- 'system_menu.system'|trans -}}{%- endblock label -%}
 				{%- block menu_items -%}
 					<li class="dropdown-header">
@@ -90,19 +72,57 @@
 			{%- set su_role_short = su_role('admin') ? 'a' : 'u' -%}
 
 			{%- embed 'embed/menu_dropdown.html.twig' -%}
-				{%- block fa -%}user{%- endblock fa -%}
+        {%- block icon -%}
+          <twig:ux:icon name="lucide:user"/>
+        {%- endblock icon -%}
 				{%- block label -%}{{- account_name -}}{%- endblock label -%}
 				{%- block menu_items -%}
 					{%- set pp_su_role_short = pp_ary().role_short is defined and pp_ary().role_short != 'g' ? pp_ary().role_short : su_role_short -%}
 					{%- if su_is_system_self() and not su_is_master() -%}
-						{%- for rt, dt in user_menu_self -%}
-							{%- include 'include/menu/menu_item_self.html.twig' -%}
-						{%- endfor -%}
+
+            <li{%- if 'users_show_self' == route %} class="active"{%- endif -%}>
+              <a href="{{- path('users_show_self', {}|pp|merge({'role_short': pp_su_role_short})) -}}">
+                <twig:ux:icon name="lucide:user"/>
+                &nbsp;
+                {{- ('users_show.title')|trans({
+                  'self': 'self',
+                  'user': '',
+                }) -}}
+              </a>
+            </li>
+
+            {%- if config_bool('messages.enabled') -%}
+              <li{%- if 'messages_self'|var_route == route %} class="active"{%- endif -%}>
+                <a href="{{- path('messages_self'|var_route, {}|pp|merge({'role_short': pp_su_role_short})) -}}">
+                  <twig:ux:icon name="lucide:newspaper"/>
+                  &nbsp;
+                  {{- 'messages.title'|trans({
+                    'self': 'self',
+                    'with_without_category': 'all',
+                  }) -}}
+                </a>
+              </li>
+            {%- endif -%}
+
+            {%- if config_bool('transactions.enabled') -%}
+              <li{%- if 'transactions_self' == route %} class="active"{%- endif -%}>
+                <a href="{{- path('transactions_self', {}|pp|merge({'role_short': pp_su_role_short})) -}}">
+                  <twig:ux:icon name="lucide:arrow-left-right"/>
+                  &nbsp;
+                  {{- 'transactions.title'|trans({
+                    'self': 'self',
+                  }) -}}
+                </a>
+              </li>
+            {%- endif -%}
+
 						<li class="divider"></li>
+
 					{%- endif -%}
+
 					<li>
 						<a href="{{- path('logout', su_ary()) -}}">
-							<i class="fa fa-sign-out"></i>
+              <twig:ux:icon name="lucide:log-out"/>
 							&nbsp;
 							{{- 'logout.title'|trans -}}
 						</a>
@@ -114,56 +134,80 @@
 		{%- if su_role('admin') and su_is_system_self() -%}
 			{%- embed 'embed/menu_dropdown.html.twig' -%}
 				{%- block menu_class %} bg-info{%- endblock menu_class -%}
-				{%- block fa -%}cog{%- endblock fa -%}
-				{%- block label -%}{{- 'label.admin'|trans -}}{%- endblock label -%}
+        {%- block icon -%}
+          <twig:ux:icon name="lucide:settings"/>
+        {%- endblock icon -%}
+				{%- block label -%}
+          {{- 'label.admin'|trans -}}
+        {%- endblock label -%}
 				{%- block menu_items -%}
-					{%- include 'include/menu/menu_item_role_modus.html.twig' with {
-						'rt': route,
-						'rl_shrt': 'a',
-						'fa': 'cog',
-						'lbl': 'modus.admin'
-					} -%}
-					{%- include 'include/menu/menu_item_role_modus.html.twig' with {
-						'rt': route|fallback_route(schema),
-						'rl_shrt': 'u',
-						'fa': 'user',
-						'lbl': 'modus.user'
-					} -%}
-					{%- if config_bool('intersystem.enabled', schema) -%}
-						{%- include 'include/menu/menu_item_role_modus.html.twig' with {
-							'rt': route|fallback_route(schema),
-							'rl_shrt': 'g',
-							'fa': 'share-alt',
-							'lbl': 'modus.guest'
-						} -%}
+          <li{%- if pp_has_role('admin') %} class="active-group"{%- endif -%}>
+            <a href="{{- path(route, all_params|merge({'role_short': 'a'})) -}}">
+              <twig:ux:icon name="lucide:settings"/>
+              &nbsp;
+              {{- 'modus.admin'|trans -}}
+            </a>
+          </li>
+
+          <li{%- if pp_has_role('user') %} class="active-group"{%- endif -%}>
+            <a href="{{- path(route|fallback_route(schema), all_params|merge({'role_short': 'u'})) -}}">
+              <twig:ux:icon name="lucide:user"/>
+              &nbsp;
+              {{- 'modus.user'|trans -}}
+            </a>
+          </li>
+
+					{%- if config_bool('intersystem.enabled') -%}
+            <li{%- if pp_has_role('guest') %} class="active-group"{%- endif -%}>
+              <a href="{{- path(route|fallback_route(schema), all_params|merge({'role_short': 'g'})) -}}">
+                <twig:ux:icon name="lucide:share-2"/>
+                &nbsp;
+                {{- 'modus.guest'|trans -}}
+              </a>
+            </li>
 					{%- endif -%}
+
 					<li class="divider"></li>
-					{%- if pp_ary().edit.en is defined -%}
+
+					{%- if {}|pp.edit.en is defined -%}
 						<li class="active-group">
 							<a href="{{- path(route, all_params|merge({'edit': {'en': '0'}})) -}}">
 					{%- else -%}
 						<li>
 							<a href="{{- path(route, all_params|merge({'edit': {'en': '1', 'route': '1', 'inline': '1'}})) -}}">
 					{%- endif -%}
-								<i class="fa fa-pencil"></i>
+                <twig:ux:icon name="lucide:pencil"/>
 								&nbsp;
 								{{- 'cms_edit.title'|trans -}}
 							</a>
 						</li>
+
 					<li class="divider"></li>
-					{%- include 'include/menu/menu_item_admin.html.twig' with {
-						'menu': 'config',
-						'rt': 'config_name',
-						'fa': 'cogs'
-					} -%}
-					{%- include 'include/menu/menu_item_admin.html.twig' with {
-						'rt': 'export',
-						'fa': 'download'
-					} -%}
-					{%- include 'include/menu/menu_item_admin.html.twig' with {
-						'rt': 'logs',
-						'fa': 'history'
-					} -%}
+
+          <li{%- if active_menu == 'config' %} class="active"{%- endif -%}>
+            <a href="{{- path('config_name', {}|pp|merge({'role_short':'a'})) -}}">
+              <twig:ux:icon name="lucide:wrench"/>
+              &nbsp;
+              {{- ('config.title')|trans -}}
+            </a>
+          </li>
+
+          <li{%- if active_menu == 'export' %} class="active"{%- endif -%}>
+            <a href="{{- path('export', {}|pp|merge({'role_short':'a'})) -}}">
+              <twig:ux:icon name="lucide:download"/>
+              &nbsp;
+              {{- ('export.title')|trans -}}
+            </a>
+          </li>
+
+          <li{%- if active_menu == 'logs' %} class="active"{%- endif -%}>
+            <a href="{{- path('logs', {}|pp|merge({'role_short':'a'})) -}}">
+              <twig:ux:icon name="lucide:history"/>
+              &nbsp;
+              {{- ('logs.title')|trans -}}
+            </a>
+          </li>
+
 				{%- endblock menu_items -%}
 			{%- endembed -%}
 		{%- endif -%}

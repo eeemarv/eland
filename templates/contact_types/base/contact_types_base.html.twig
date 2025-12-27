@@ -2,9 +2,11 @@
 
 {%- set admin_heading = true -%}
 
-{%- block heading_fa -%}
-    circle-o-notch
-{%- endblock heading_fa -%}
+{%- set active_local_admin_menu = 'contact_types' -%}
+
+{%- block heading_icon -%}
+<twig:ux:icon name="lucide:rectangle-circle"/>
+{%- endblock heading_icon -%}
 
 {%- block content -%}
 {%- endblock content -%}

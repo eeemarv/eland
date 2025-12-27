@@ -7,47 +7,35 @@
   {{- form_row(form.email, {
     'label': 'label.your_email',
     'help': 'help.email_validation_link',
-    'pre_addon': {
-      'fa': 'envelope-o'
-    }
+    'addon': ux_icon('lucide:mail'),
   }) -}}
 
   {{- form_row(form.first_name, {
     'label': 'label.first_name',
-    'pre_addon': {
-      'fa': 'user'
-    }
+    'addon': ux_icon('lucide:user'),
   }) -}}
 
   {{- form_row(form.last_name, {
     'label': 'label.last_name',
-    'pre_addon': {
-      'fa': 'user'
-    }
+    'addon': ux_icon('lucide:user'),
   }) -}}
 
   {{- form_row(form.postcode, {
     'label': 'label.postcode',
-    'pre_addon': {
-      'fa': 'map-marker'
-    }
+    'addon': ux_icon('lucide:map-pin'),
   }) -}}
 
   {{- form_row(form.mobile, {
     'label': 'label.mobile',
     'sub_label': 'label.optional',
-    'pre_addon': {
-      'fa': 'mobile'
-    },
+    'addon': ux_icon('lucide:smartphone'),
     'required': false
   }) -}}
 
   {{- form_row(form.phone, {
     'label': 'label.phone',
     'sub_label': 'label.optional',
-    'pre_addon': {
-      'fa': 'phone'
-    },
+    'addon': ux_icon('lucide:phone'),
     'required': false
   }) -}}
 

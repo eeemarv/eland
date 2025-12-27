@@ -2,82 +2,74 @@
 
 {%- set cancel_route = 'tags_' ~ tag_type -%}
 
-{%- block heading_fa -%}
-    tag
-{%- endblock -%}
+{%- block heading_icon -%}
+<twig:ux:icon name="lucide:tag"/>
+{%- endblock heading_icon -%}
 
 {%- block assets_add -%}
-    {{- parent() -}}
+  {{- parent() -}}
 	{{- assets_add([
 		'tags_def.js'
 	]) -}}
 {%- endblock assets_add -%}
 
 {%- block form_a -%}
-    <div class="row">
-        <div class="col-sm-6">
-            {{- form_row(form.txt, {
-                'label': 'label.text',
-                'pre_addon': {
-                    'fa': 'pencil'
-                },
-                'attr': {
-                    'data-tag-txt': ''
-                }
-            }) -}}
-        </div>
-        <div class="col-sm-6">
-            <div class="form-group">
-                <label class="control-label" for="tag-i">
-                    {{- 'label.example'|trans -}}
-                </label>
-                <div class="input-group">
-                    <span class="tag-eland label" data-tag-exp title="{{- form.children.description.vars.value -}}">
-                        {{- form.children.txt.vars.value -}}
-                    </span>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-6">
-            {{- form_row(form.bg_color, {
-                'label': 'label.bg_color',
-                'pre_addon': {
-                    'fa': 'hashtag'
-                },
-                'attr': {
-                    'data-tag-bg-color': ''
-                }
-            }) -}}
-        </div>
-        <div class="col-sm-6">
-            {{- form_row(form.txt_color, {
-                'label': 'label.txt_color',
-                'pre_addon': {
-                    'fa': 'hashtag'
-                },
-                'attr': {
-                    'data-tag-txt-color': ''
-                }
-            }) -}}
-        </div>
-    </div>
-    {{- form_row(form.description, {
-        'label': 'label.description',
-        'pre_addon': {
-            'fa': 'pencil'
-        },
+  <div class="row">
+    <div class="col-sm-6">
+      {{- form_row(form.txt, {
+        'label': 'label.text',
+        'addon': ux_icon('lucide:pencil'),
         'attr': {
-            'data-tag-description': ''
+          'data-tag-txt': ''
         }
-    }) -}}
+      }) -}}
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+          <label class="control-label" for="tag-i">
+            {{- 'label.example'|trans -}}
+          </label>
+          <div class="input-group">
+            <span class="tag-eland label" data-tag-exp title="{{- form.children.description.vars.value -}}">
+              {{- form.children.txt.vars.value -}}
+            </span>
+          </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+      <div class="col-sm-6">
+        {{- form_row(form.bg_color, {
+          'label': 'label.bg_color',
+          'addon': ux_icon('lucide:palette'),
+          'attr': {
+            'data-tag-bg-color': ''
+          }
+        }) -}}
+      </div>
+      <div class="col-sm-6">
+        {{- form_row(form.txt_color, {
+          'label': 'label.txt_color',
+          'addon': ux_icon('lucide:palette'),
+          'attr': {
+            'data-tag-txt-color': ''
+          }
+        }) -}}
+      </div>
+  </div>
+  {{- form_row(form.description, {
+    'label': 'label.description',
+    'addon': ux_icon('lucide:pencil'),
+    'attr': {
+      'data-tag-description': ''
+    }
+  }) -}}
 {%- endblock form_a -%}
 
 {%- block css -%}
-    {{- parent() -}}
+  {{- parent() -}}
 {%- endblock css -%}
 
 {%- block js -%}
-    {{- parent() -}}
+  {{- parent() -}}
 {%- endblock js -%}

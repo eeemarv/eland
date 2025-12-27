@@ -213,7 +213,7 @@ class DocRepository
 				coalesce(name, original_filename) as name,
 				id, filename, access, created_at
 			from ' . $schema->str() . '.docs
-			where access in (:visble_ary)
+			where access in (:visible_ary)
 				and map_id = :map_id
 			order by name, original_filename asc', [
         'visible_ary' => $visible_ary,

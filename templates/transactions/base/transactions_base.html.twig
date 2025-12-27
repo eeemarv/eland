@@ -2,10 +2,65 @@
 
 {%- set active_menu = 'transactions' -%}
 
-{%- set local_admin_menu = {
-    'transactions_modules': {'fa': 'cog'},
-    'transactions_currency': {'fa': 'money'},
-    'transactions_system_limits': {'fa': 'arrows-v', 'config_en': 'accounts.limits.enabled'},
-    'transactions_autominlimit': {'fa': 'chevron-down', 'config_en': 'accounts.limits.auto_min.enabled'},
-    'transactions_mass': {'fa': 'exchange', 'config_en': 'transactions.mass.enabled'}
-} -%}
+{%- block heading_icon -%}
+<twig:ux:icon name="lucide:arrow-left-right"/>
+{%- endblock heading_icon -%}
+
+{%- block local_admin_menu -%}
+{%- embed 'embed/local_admin_menu.html.twig' -%}
+  {%- block menu_items -%}
+    <li class="dropdown-header">
+      {%- include 'include/label/admin.html.twig' -%}
+      &nbsp;
+      {{- 'transactions.admin_config'|trans -}}
+    </li>
+
+    <li{%- if route == 'transactions_modules' %} class="active"{%- endif -%}>
+      <a href="{{- path('transactions_modules', {}|pp) -}}">
+        <twig:ux:icon name="lucide:package"/>
+        &nbsp;
+        {{- ('transactions_modules.menu')|trans -}}
+      </a>
+    </li>
+
+    <li{%- if route == 'transactions_currency' %} class="active"{%- endif -%}>
+      <a href="{{- path('transactions_currency', {}|pp) -}}">
+        <twig:ux:icon name="lucide:banknote"/>
+        &nbsp;
+        {{- ('transactions_currency.menu')|trans -}}
+      </a>
+    </li>
+
+    {%- if config_bool('accounts.limits.enabled') -%}
+    <li{%- if route == 'transactions_system_limits' %} class="active"{%- endif -%}>
+      <a href="{{- path('transactions_system_limits', {}|pp) -}}">
+        <twig:ux:icon name="lucide:arrow-down-up"/>
+        &nbsp;
+        {{- ('transactions_system_limits.menu')|trans -}}
+      </a>
+    </li>
+
+      {%- if config_bool('accounts.limits.auto_min.enabled') -%}
+      <li{%- if route == 'transactions_autominlimit' %} class="active"{%- endif -%}>
+        <a href="{{- path('transactions_autominlimit', {}|pp) -}}">
+          <twig:ux:icon name="lucide:arrow-down-from-line"/>
+          &nbsp;
+          {{- ('transactions_autominlimit.menu')|trans -}}
+        </a>
+      </li>
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- if config_bool('transactions.mass.enabled') -%}
+      <li{%- if route == 'transactions_mass' %} class="active"{%- endif -%}>
+        <a href="{{- path('transactions_mass', {}|pp) -}}">
+          <twig:ux:icon name="lucide:arrow-left-right"/>
+          &nbsp;
+          {{- ('transactions_mass.menu')|trans -}}
+        </a>
+      </li>
+    {%- endif -%}
+
+  {%- endblock menu_items -%}
+{%- endembed -%}
+{%- endblock local_admin_menu -%}

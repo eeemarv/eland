@@ -9,7 +9,9 @@
   {%- endif -%}
 {%- endblock btn_top_add -%}
 
-{%- set csv_en = true -%}
+{%- block csv_download_btn -%}
+  {%- include 'include/btn_top/csv_download.html.twig' -%}
+{%- endblock csv_download_btn -%}
 
 {%- block filter_form_a -%}
   {%- include 'form/q_filter.html.twig' -%}

@@ -14,45 +14,46 @@
 {%- set logo = config_str('system.logo') -%}
 
 <div class="panel-body bg-info">
-    <div class="col-md-6">
-        <div class="text-center center-block" id="img_user">
-            <img id="img"
-                {%- if logo == '' %} style="display:none;"{%- endif %}
-                class="img-rounded img-responsive center-block"
-                src="{%- if logo == '' %}{{- assets('1.gif') -}}{%- else -%}{{- s3(logo) -}}{%- endif -%}"
-                data-base-url="{{- s3() -}}"
-                data-replace-logo="1" />
-            <div id="no_img"{%- if logo is not same as ('') %} style="display:none;"{%- endif -%}>
-                <i class="fa fa-image fa-5x text-muted"></i>
-                <br>
-                {{- 'config_logo.help.no_logo'|trans -}}
-            </div>
-        </div>
+  <div class="col-md-6">
+    <div class="text-center center-block" id="img_user">
+      <img id="img"
+        {%- if logo == '' %} style="display:none;"{%- endif %}
+        class="img-rounded img-responsive center-block"
+        src="{%- if logo == '' %}{{- assets('1.gif') -}}{%- else -%}{{- s3(logo) -}}{%- endif -%}"
+        data-base-url="{{- s3() -}}"
+        data-replace-logo="1" />
+      <div id="no_img"{%- if logo is not same as ('') %} style="display:none;"{%- endif -%}>
+        <twig:ux:icon name="lucide:image" class="text-muted h200 w-100 h-100" />
         <br>
-        <span class="btn btn-success btn-lg btn-block fileinput-button">
-            <i class="fa fa-plus" id="img_plus"></i>
-            &nbsp;
-            {{- 'config_logo.btn.upload'|trans -}}
-            <input type="file"
-                name="image"
-                data-url="{{- path('config_logo_upload', pp_ary()) -}}"
-                data-fileupload
-                data-message-file-type-not-allowed="{{- 'config_logo.error.type'|trans -}}"
-                data-message-max-file-size="{{- 'config_logo.error.size'|trans -}}"
-                data-message-uploaded-bytes="{{- 'config_logo.error.size'|trans -}}">
-        </span>
-        <p class="text-warning">
-            {{- 'config_logo.help.upload'|trans -}}
-        </p>
-        <a href="{{- path('config_logo_del', pp_ary()) -}}"
-            id="btn_remove"
-            {%- if logo is same as('') %} style="display:none;"{%- endif %}
-            class="btn btn-danger btn-block btn-lg">
-            <i class="fa fa-times"></i>
-            &nbsp;
-            {{- 'config_logo.btn.del'|trans -}}
-        </a>
+        {{- 'config_logo.help.no_logo'|trans -}}
+      </div>
     </div>
+    <br>
+    <span class="btn btn-success btn-lg btn-block fileinput-button">
+      <twig:ux:icon name="lucide:image-plus" id="img_plus" />
+      &nbsp;
+      {{- 'config_logo.btn.upload'|trans -}}
+      <input type="file"
+        name="image"
+        data-url="{{- path('config_logo_upload', {}|pp) -}}"
+        data-fileupload
+        data-message-file-type-not-allowed="{{- 'config_logo.error.type'|trans -}}"
+        data-message-max-file-size="{{- 'config_logo.error.size'|trans -}}"
+        data-message-uploaded-bytes="{{- 'config_logo.error.size'|trans -}}">
+    </span>
+    <p class="text-warning">
+      {{- 'config_logo.help.upload'|trans -}}
+    </p>
+    <a href="{{- path('config_logo_del', {}|pp) -}}"
+      id="btn_remove"
+      {%- if logo is same as('') %} style="display:none;"{%- endif %}
+      class="btn btn-danger btn-block btn-lg">
+      <twig:ux:icon name="lucide:trash"/>
+
+      &nbsp;
+      {{- 'config_logo.btn.del'|trans -}}
+    </a>
+  </div>
 </div>
 
 {%- endblock form_content -%}

@@ -8,7 +8,7 @@ use Twig\Extension\RuntimeExtensionInterface;
 class AssetsRuntime implements RuntimeExtensionInterface
 {
 	public function __construct(
-		protected AssetsService $assets_service
+		private readonly AssetsService $assets_service
 	)
 	{
 	}

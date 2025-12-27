@@ -75,6 +75,8 @@
 		"symfony/twig-bridge": "7.2.*",
 		"symfony/twig-bundle": "7.2.*",
 		"symfony/uid": "7.2.*",
+		"symfony/ux-icons": "^2.31",
+		"symfony/ux-twig-component": "^2.31",
 		"symfony/validator": "7.2.*",
 		"symfony/var-dumper": "7.2.*",
 		"symfony/yaml": "7.2.*",

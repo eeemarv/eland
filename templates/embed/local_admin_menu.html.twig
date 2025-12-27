@@ -1,0 +1,11 @@
+<div class="btn-group pull-right" role="group">
+  <button type="button" class="btn btn-info btn-lg dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="{{- 'label.admin_functions'|trans -}}">
+    <twig:ux:icon name="lucide:settings"/>
+    &nbsp;
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu dropleft">
+    {%- block menu_items -%}
+    {%- endblock menu_items -%}
+  </ul>
+</div>

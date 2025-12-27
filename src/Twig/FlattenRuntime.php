@@ -8,27 +8,27 @@ class FlattenRuntime implements RuntimeExtensionInterface
 {
 	public function get_flatten(array $params):array
 	{
-        if (!$params)
-        {
-            return [];
-        }
+    if (!$params)
+    {
+      return [];
+    }
 
 		$out_ary = [];
 
-        $params = http_build_query($params, 'prefix', '&');
-        $params = explode('&', $params);
+    $params = http_build_query($params, 'prefix', '&');
+    $params = explode('&', $params);
 
-        foreach ($params as $param)
-        {
-            [$name, $value] = explode('=', $param);
+    foreach ($params as $param)
+    {
+      [$name, $value] = explode('=', $param);
 
-            if (!isset($value) || $value === '')
-            {
-                continue;
-            }
+      if (!isset($value) || $value === '')
+      {
+          continue;
+      }
 
-			$out_ary[urldecode($name)] = urldecode($value);
-        }
+      $out_ary[urldecode($name)] = urldecode($value);
+    }
 
 		return $out_ary;
 	}

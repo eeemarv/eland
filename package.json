@@ -17,7 +17,7 @@
     "build:css": "sass assets/styles:assets/build"
   },
   "dependencies": {
-    "@fontsource/ubuntu": "^5.2.6",
+    "autocompleter": "^9.3.2",
     "bootstrap-sass": "^3.4.3",
     "foundation-emails": "^2.4.0",
     "sass": "^1.89.2",

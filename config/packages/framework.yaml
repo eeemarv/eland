@@ -1,31 +1,31 @@
 # see https://symfony.com/doc/current/reference/configuration/framework.html
 framework:
-    handle_all_throwables: true
-    # the IP address (or range) of your proxy
-    trusted_proxies: '127.0.0.1,172.17.0.0/8'
-    # trust *all* "X-Forwarded-*" headers
-    trusted_headers: ['x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto', 'x-forwarded-port', 'x-forwarded-prefix']
-    secret: '%env(APP_SECRET)%'
-    csrf_protection: true
-    form: true
-    http_method_override: true
+  handle_all_throwables: true
+  # the IP address (or range) of your proxy
+  trusted_proxies: '127.0.0.1,172.17.0.0/8'
+  # trust *all* "X-Forwarded-*" headers
+  trusted_headers: ['x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto', 'x-forwarded-port', 'x-forwarded-prefix']
+  secret: '%env(APP_SECRET)%'
+  csrf_protection: true
+  form: true
+  http_method_override: true
 
-    session:
-        handler_id: Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler
-        cookie_secure: auto
-        cookie_samesite: strict
-        name: eland
-        # sid_bits_per_character: 5 # depreciated
-        cookie_lifetime: 2592000 # 30 days
-        gc_maxlifetime: 864000 # 10 days
+  session:
+    handler_id: Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler
+    cookie_secure: auto
+    cookie_samesite: strict
+    name: eland
+    # sid_bits_per_character: 5 # depreciated
+    cookie_lifetime: 2592000 # 30 days
+    gc_maxlifetime: 864000 # 10 days
 
-    #esi: true
-    #fragments: true
-    php_errors:
-        log: true
+  #esi: true
+  #fragments: true
+  php_errors:
+    log: true
 
 when@test:
-    framework:
-        test: true
-        session:
-            storage_factory_id: session.storage.factory.mock_file
+  framework:
+    test: true
+    session:
+      storage_factory_id: session.storage.factory.mock_file

@@ -1,23 +1,19 @@
 {%- extends 'contact_types/base/contact_types_base.html.twig' -%}
 
 {%- block form_a -%}
-    {%- if form.name is defined -%}
-        {{- form_row(form.name, {
-            'label': 'label.name',
-            'pre_addon': {
-                'fa': 'circle-o-notch'
-            }
-        }) -}}
-    {%- endif -%}
+  {%- if form.name is defined -%}
+    {{- form_row(form.name, {
+      'label': 'label.name',
+      'addon': ux_icon('lucide:rectangle-circle')
+    }) -}}
+  {%- endif -%}
 
-    {%- if form.abbrev is defined -%}
-        {{- form_row(form.abbrev, {
-            'label': 'label.abbrev',
-            'pre_addon': {
-                'fa': 'hand-o-right'
-            }
-        }) -}}
-    {%- endif -%}
+  {%- if form.abbrev is defined -%}
+    {{- form_row(form.abbrev, {
+      'label': 'label.abbrev',
+      'addon': ux_icon('lucide:arrow-big-right'),
+    }) -}}
+  {%- endif -%}
 {%- endblock form_a -%}
 
 {%- set cancel_route = 'contact_types' -%}

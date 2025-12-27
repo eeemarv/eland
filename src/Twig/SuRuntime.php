@@ -10,8 +10,8 @@ use Twig\Extension\RuntimeExtensionInterface;
 class SuRuntime implements RuntimeExtensionInterface
 {
 	public function __construct(
-		protected SessionUserService $su,
-		protected UserCacheService $user_cache_service
+		private readonly SessionUserService $su,
+		private readonly UserCacheService $user_cache_service
 	)
 	{
 	}

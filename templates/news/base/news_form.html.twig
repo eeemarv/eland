@@ -13,9 +13,7 @@
   {%- if form.subject is defined -%}
     {{- form_row(form.subject, {
       'label': 'label.title',
-      'pre_addon': {
-        'fa': 'chevron-right'
-      }
+      'addon': ux_icon('lucide:chevron-right'),
     }) -}}
   {%- endif -%}
 
@@ -30,9 +28,7 @@
     {{- form_row(form.location, {
       'label': 'label.location',
       'help': 'help.location',
-      'pre_addon': {
-        'fa': 'map-marker',
-      },
+      'addon': ux_icon('lucide:map-pin'),
     }) -}}
   {%- endif -%}
 

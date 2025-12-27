@@ -1,5 +1,5 @@
-{%- include 'include/btn/btn.html.twig' with {
-    'btn_class': 'success',
-    'btn_label': 'btn.add',
-    'fa': 'plus'
-} -%}
+<a href="{{- path(btn_route, {}|pp|merge(btn_route_params|default({}))) -}}" class="btn btn-success"{%- if btn_title is defined %} title="{{- btn_title|trans(btn_title_trans_params|default({})) -}}"{%- endif -%}{%- for n, v in btn_attr|default({}) %} {{ n -}}="{{- v -}}"{%- endfor -%}>
+  <twig:ux:icon name="lucide:circle-plus"/>
+  &nbsp;
+  {{- 'btn.add'|trans -}}
+</a>

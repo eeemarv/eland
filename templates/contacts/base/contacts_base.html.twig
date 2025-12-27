@@ -1,5 +1,7 @@
 {%- extends 'users/base/users_base.html.twig' -%}
 
-{%- block heading_fa -%}
-    map-marker
-{%- endblock heading_fa -%}
+{%- set active_local_admin_menu = 'contacts' -%}
+
+{%- block heading_icon -%}
+<twig:ux:icon name="lucide:map-pin"/>
+{%- endblock heading_icon -%}

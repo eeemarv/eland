@@ -9,9 +9,7 @@
   {{- form_row(form.login, {
     'label': 'login.login.label',
     'help': 'login.login.help',
-    'pre_addon': {
-      'fa': 'user'
-    }
+    'addon': ux_icon('lucide:user'),
   }) -}}
 
   {{- form_row(form.password, {
@@ -22,9 +20,7 @@
       'ac': '</a>',
     },
     'help_html': true,
-    'pre_addon': {
-      'fa': 'key'
-    }
+    'addon': ux_icon('lucide:key-round'),
   }) -}}
 {%- endblock form_a -%}
 

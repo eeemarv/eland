@@ -1,6 +1,5 @@
-{%- include 'include/btn/btn.html.twig' with {
-    'btn_route_params': {'id': id},
-    'btn_class': 'danger',
-    'btn_label': 'btn.del',
-    'fa': 'times'
-} -%}
+<a href="{{- path(btn_route, {}|pp|merge({'id': id})) -}}" class="btn btn-danger"{%- if btn_title is defined %} title="{{- btn_title|trans(btn_title_trans_params|default({})) -}}"{%- endif -%}{%- for n, v in btn_attr|default({}) %} {{ n -}}="{{- v -}}"{%- endfor -%}>
+  <twig:ux:icon name="lucide:trash"/>
+  &nbsp;
+  {{- 'btn.del'|trans -}}
+</a>

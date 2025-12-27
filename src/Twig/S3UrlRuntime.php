@@ -7,7 +7,7 @@ use Twig\Extension\RuntimeExtensionInterface;
 class S3UrlRuntime implements RuntimeExtensionInterface
 {
 	public function __construct(
-		protected string $env_s3_url
+		private readonly string $env_s3_url
 	)
 	{
 	}

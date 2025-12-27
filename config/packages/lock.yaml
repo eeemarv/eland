@@ -1,2 +1,2 @@
 framework:
-    lock: 'snc_redis.lock'
+  lock: 'snc_redis.lock'

@@ -3,9 +3,7 @@
   {{- form_row(filter_form.q, {
     'label': false,
     'col': 'sm-12',
-    'pre_addon': {
-      'fa': 'search'
-    },
+    'addon': ux_icon('lucide:search'),
     'attr': {
       'placeholder': 'label.search'
     },
@@ -18,10 +16,7 @@
   {{- form_row(filter_form.from_account, {
     'label': false,
     'col': 'sm-5',
-    'pre_addon': {
-      'text': 'label.from'|trans,
-      'fa': 'user'
-    },
+    'addon': 'label.from'|trans ~ ' ' ~ ux_icon('lucide:user'),
     'attr': {
       'placeholder': 'label.account_code'
     }
@@ -35,10 +30,7 @@
   {{- form_row(filter_form.to_account, {
     'label': false,
     'col': 'sm-5',
-    'pre_addon': {
-      'text': 'label.to'|trans,
-      'fa': 'user'
-    },
+    'addon': 'label.to'|trans ~ ' ' ~ ux_icon('lucide:user'),
     'attr': {
       'placeholder': 'label.account_code'
     }
@@ -50,17 +42,13 @@
   {{- form_row(filter_form.from_date, {
     'label': false,
     'col': filter_form.srvc is defined ? 'sm-6' : 'sm-5',
-    'pre_addon': {
-      'text': 'label.from_date'|trans,
-    }
+    'addon': 'label.from_date'|trans ~ ' ' ~ ux_icon('lucide:calendar'),
   }) -}}
 
   {{- form_row(filter_form.to_date, {
     'label': false,
     'col': filter_form.srvc is defined ? 'sm-6' : 'sm-5',
-    'pre_addon': {
-      'text': 'label.to_date'|trans,
-    }
+    'addon': 'label.to_date'|trans ~ ' ' ~ ux_icon('lucide:calendar'),
   }) -}}
 
 {%- if filter_form.srvc is defined -%}

@@ -2,6 +2,10 @@
 
 {%- set active_menu = 'support_form' -%}
 
+{%- block heading_icon -%}
+<twig:ux:icon name="lucide:ambulance"/>
+{%- endblock heading_icon -%}
+
 {%- block content -%}
 
   {% if 'sent' in app.flashes('content') %}

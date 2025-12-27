@@ -3,9 +3,7 @@
 {%- block form_a -%}
   {{- form_row(form.url, {
     'label': 'config_ext_url.url.label',
-    'pre_addon': {
-      'fa': 'share-alt',
-    },
+    'addon': ux_icon('lucide:link'),
     'help': 'config_ext_url.url.help',
     'required': false
   }) -}}

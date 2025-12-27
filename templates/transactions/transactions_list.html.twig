@@ -1,6 +1,8 @@
 {%- extends 'transactions/base/transactions_base.html.twig' -%}
 
-{%- set csv_en = true -%}
+{%- block csv_download_btn -%}
+  {%- include 'include/btn_top/csv_download.html.twig' -%}
+{%- endblock csv_download_btn -%}
 
 {%- block assets_add -%}
   {{- parent() -}}

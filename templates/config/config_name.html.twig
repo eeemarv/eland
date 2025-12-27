@@ -1,21 +1,19 @@
 {%- extends 'config/base/config_form.html.twig' -%}
 
 {%- block form_a -%}
-    {{- form_row(form.system_name, {
-        'label': 'config_name.config_name.label',
-        'pre_addon': {
-            'fa': 'share-alt',
-        }
-    }) -}}
+  {{- form_row(form.system_name, {
+    'label': 'config_name.config_name.label',
+    'addon': ux_icon('lucide:omega'),
+  }) -}}
 
-    {{- form_row(form.home_header_enabled, {
-        'label': 'config_name.home_header_enabled.label',
-        'required': false
-    }) -}}
+  {{- form_row(form.home_header_enabled, {
+    'label': 'config_name.home_header_enabled.label',
+    'required': false
+  }) -}}
 {%- endblock form_a -%}
 
 {%- block css -%}
-    {{- parent() -}}
+  {{- parent() -}}
 {%- endblock css -%}
 
 {%- block js -%}

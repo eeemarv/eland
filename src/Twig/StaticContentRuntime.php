@@ -9,8 +9,8 @@ use Twig\Extension\RuntimeExtensionInterface;
 class StaticContentRuntime implements RuntimeExtensionInterface
 {
 	public function __construct(
-		protected PageParamsService $pp,
-		protected StaticContentService $static_content_service
+		private readonly PageParamsService $pp,
+		private readonly StaticContentService $static_content_service
 	)
 	{
 	}

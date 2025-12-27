@@ -17,7 +17,13 @@
     },
     'p': pag,
     })|pp) -}}">
-    <i class="fa fa-sort{{- order_by == 'description' ? (asc ? '-asc' : '-desc') : '' -}}"></i>
+    {%- if order_by != 'description' -%}
+      <twig:ux:icon name="lucide:arrow-down-up"/>
+    {%- elseif asc -%}
+      <twig:ux:icon name="lucide:arrow-up-a-z"/>
+    {%- else -%}
+      <twig:ux:icon name="lucide:arrow-down-z-a"/>
+    {%- endif -%}
     &nbsp;
     {{- 'label.description'|trans -}}
   </a>
@@ -31,7 +37,13 @@
     },
     'p': pag,
     })|pp) -}}">
-    <i class="fa fa-sort{{- order_by == 'amount' ? (asc ? '-asc' : '-desc') : '' -}}"></i>
+    {%- if order_by != 'amount' -%}
+      <twig:ux:icon name="lucide:arrow-down-up"/>
+    {%- elseif asc -%}
+      <twig:ux:icon name="lucide:arrow-up-0-1"/>
+    {%- else -%}
+      <twig:ux:icon name="lucide:arrow-down-1-0"/>
+    {%- endif -%}
     &nbsp;
     {{- config_str('transactions.currency.name') -}}
   </a>
@@ -45,7 +57,13 @@
     },
     'p': pag,
     })|pp) -}}">
-    <i class="fa fa-sort{{- order_by == 'created_at' ? (asc ? '-asc' : '-desc') : '' -}}"></i>
+    {%- if order_by != 'created_at' -%}
+      <twig:ux:icon name="lucide:arrow-down-up"/>
+    {%- elseif asc -%}
+      <twig:ux:icon name="lucide:arrow-up-0-1"/>
+    {%- else -%}
+      <twig:ux:icon name="lucide:arrow-down-1-0"/>
+    {%- endif -%}
     &nbsp;
     {{- 'label.time'|trans -}}
   </a>
@@ -67,7 +85,13 @@
       },
       'p': pag,
       })|pp) -}}">
-      <i class="fa fa-sort{{- order_by == 'from_code' ? (asc ? '-asc' : '-desc') : '' -}}"></i>
+      {%- if order_by != 'from_code' -%}
+        <twig:ux:icon name="lucide:arrow-down-up"/>
+      {%- elseif asc -%}
+        <twig:ux:icon name="lucide:arrow-up-a-z"/>
+      {%- else -%}
+        <twig:ux:icon name="lucide:arrow-down-z-a"/>
+      {%- endif -%}
       &nbsp;
       {{- 'label.from_account'|trans -}}
     </a>
@@ -81,7 +105,13 @@
       },
       'p': pag,
       })|pp) -}}">
-      <i class="fa fa-sort{{- order_by == 'to_code' ? (asc ? '-asc' : '-desc') : '' -}}"></i>
+      {%- if order_by != 'to_code' -%}
+        <twig:ux:icon name="lucide:arrow-down-up"/>
+      {%- elseif asc -%}
+        <twig:ux:icon name="lucide:arrow-up-a-z"/>
+      {%- else -%}
+        <twig:ux:icon name="lucide:arrow-down-z-a"/>
+      {%- endif -%}
       &nbsp;
       {{- 'label.to_account'|trans -}}
     </a>

@@ -6,9 +6,9 @@
   {{- 'transactions_autominlimit.title'|trans -}}
 {%- endblock heading_title -%}
 
-{%- block heading_fa -%}
-  chevron-down
-{%- endblock heading_fa -%}
+{%- block heading_icon -%}
+<twig:ux:icon name="lucide:arrow-down-from-line"/>
+{%- endblock heading_icon -%}
 
 {%- block form_header -%}
   <div class="panel-heading">
@@ -44,9 +44,7 @@
   {{- form_row(form.exclude_from, {
     'label': 'transactions_autominlimit.exclude_from.label',
     'help': 'transactions_autominlimit.exclude_from.help',
-    'pre_addon': {
-      'fa': 'user'
-    }
+    'addon': ux_icon('lucide:user'),
   }) -}}
 
   <h2>
@@ -58,17 +56,13 @@
 
   {{- form_row(form.percentage, {
     'label': 'transactions_autominlimit.percentage.label',
-    'pre_addon': {
-      'fa': 'percent'
-    }
+    'addon': ux_icon('lucide:percent'),
   }) -}}
 
   {{- form_row(form.exclude_to, {
     'label': 'transactions_autominlimit.exclude_to.label',
     'help': 'transactions_autominlimit.exclude_to.help',
-    'pre_addon': {
-      'fa': 'user'
-    }
+    'addon': ux_icon('lucide:user'),
   }) -}}
 
 {%- endblock form_a -%}

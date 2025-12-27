@@ -1,7 +1,5 @@
-{%- include 'include/btn/btn.html.twig' with {
-    'btn_route_params': {'id': id},
-    'btn_class': 'primary',
-    'btn_label': 'btn.edit',
-    'btn_title': btn_title|default('btn.edit'),
-    'fa': 'pencil'
-} -%}
+<a href="{{- path(btn_route, {}|pp|merge({'id': id})) -}}" class="btn btn-primary"{%- if btn_title is defined %} title="{{- btn_title|trans(btn_title_trans_params|default({})) -}}"{%- endif -%}{%- for n, v in btn_attr|default({}) %} {{ n -}}="{{- v -}}"{%- endfor -%}>
+  <twig:ux:icon name="lucide:pencil"/>
+  &nbsp;
+  {{- 'btn.edit'|trans -}}
+</a>

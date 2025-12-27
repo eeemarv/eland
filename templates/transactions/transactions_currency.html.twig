@@ -2,9 +2,9 @@
 
 {%- set admin_heading = true -%}
 
-{%- block heading_fa -%}
-  money
-{%- endblock heading_fa -%}
+{%- block heading_icon -%}
+<twig:ux:icon name="lucide:banknote"/>
+{%- endblock heading_icon -%}
 
 {%- block heading_title -%}
   {{- 'transactions_currency.title'|trans -}}
@@ -13,9 +13,7 @@
 {%- block form_a -%}
   {{- form_row(form.currency, {
     'label': 'transactions_currency.currency.label',
-    'pre_addon': {
-      'fa': 'money'
-    }
+    'addon': ux_icon('lucide:banknote'),
   }) -}}
 
   {{- form_row(form.timebased_en, {
@@ -26,9 +24,7 @@
   {{- form_row(form.per_hour_ratio, {
     'label': 'transactions_currency.per_hour_ratio.label',
     'help': 'transactions_currency.per_hour_ratio.help',
-    'pre_addon': {
-      'fa': 'clock-o'
-    },
+    'addon': ux_icon('lucide:clock'),
     'attr': {'min': 1},
     'required': false
   }) -}}

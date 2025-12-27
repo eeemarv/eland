@@ -490,7 +490,8 @@ categories_select_type:
     ** zonder categorie **
 
 categories:
-  title: Vraag en aanbod categorieën
+  title: Vraag en Aanbod Categorieën
+  menu: Categorieën
   explain:
     drag: >-
       Versleep categorieën om plaats en volgorde te veranderen..
@@ -718,7 +719,8 @@ contact_form_confirm:
     Ongeldig token.
 
 contact_types:
-  title: Contact types
+  title: Contact Types
+  menu: Contact Types
   explain_protected: >-
     Kunnen niet verwijderd worden: contact
     types waarvan contacten bestaan en
@@ -742,6 +744,7 @@ contact_types_edit:
 
 contacts:
   title: Contacten
+  menu: Contacten
   type:
     label: Contact type
 
@@ -962,7 +965,8 @@ logs:
   title: Logs
 
 intersystems:
-  title: eLAND interSysteem
+  title: eLAND InterSysteem
+  menu: eLAND InterSysteem
 intersystems_add:
   title: InterSysteem toevoegen
 intersystems_del:
@@ -975,6 +979,8 @@ intersystems_show:
     InterSysteem {name}
 
 messages:
+  admin_config: >-
+    Vraag en Aanbod Configuratie
   title: >-
     {self, select,
       self {{with_without_category, select,
@@ -993,7 +999,6 @@ messages:
         other {Vraag en aanbod}
       }}
     }
-
   image_files:
     help: >-
       Toegestane formaten: jpg/jpeg, png, webp, gif en svg.
@@ -1006,7 +1011,9 @@ messages_add:
 
 messages_cleanup:
   title: >-
-    Geldigheid en opruiming instellingen vraag en aanbod
+    Geldigheid en Opruiming Instellingen Vraag en Aanbod
+  menu: >-
+    Geldigheid en Opruiming
   expires_at_days_default:
     label: >-
       Standaard geldigheidsduur
@@ -1079,7 +1086,8 @@ messages_images_del:
 
 messages_modules:
   title: >-
-    Submodules en velden vraag en aanbod
+    Submodules en Velden Vraag en Aanbod
+  menu: Submodules en Velden
   explain: >-
     Noot: Uitgeschakelde submodules blijven hun data behouden.
   service_stuff_enabled:
@@ -1182,7 +1190,8 @@ mollie_config:
     change: De Mollie Apikey is aangepast
 
 mollie_payments:
-  title: Mollie betaalverzoeken
+  title: Mollie Betaalverzoeken
+  menu: Mollie Betaalverzoeken
   col:
     amount: Bedrag (EUR)
     description: Omschrijving
@@ -1216,6 +1225,8 @@ mollie_payments_add:
   title: Mollie betaalverzoeken aanmaken
 
 news:
+  admin_config: >-
+    Nieuws Configuratie
   title: Nieuws
   no_items: >-
     Er zijn momenteel geen nieuwsberichten.
@@ -1234,7 +1245,8 @@ news_show:
     {subject}
 
 news_sort:
-  title: Sortering nieuwsberichten.
+  title: Sortering Nieuwsberichten
+  menu: Sortering
   sort_asc: >-
     Sorteer nieuwsberichten chronologisch op agendadatum.
   flash:
@@ -1379,6 +1391,8 @@ tags:
       }
 
 transactions:
+  admin_config: >-
+    Transacties Configuratie
   title: >-
     {self, select,
       self {Mijn transacties}
@@ -1422,7 +1436,8 @@ transactions_add:
   btn_add_to_user: Nieuwe transactie naar {user}
 
 transactions_autominlimit:
-  title: Automatische minimum limiet
+  title: Automatische Minimum Limiet
+  menu: Automatische Minimum Limiet
   exclude_from:
     label: Exclusief accounts
     help: Account codes gescheiden door comma's
@@ -1470,6 +1485,7 @@ transactions_autominlimit:
 
 transactions_currency:
   title: Munteenheid
+  menu: Munteenheid
   currency:
     label: Naam munteenheid (meervoud)
   timebased_en:
@@ -1504,13 +1520,15 @@ transactions_edit:
       bij vergissing.
 
 transactions_mass:
-  title: Massa transactie
+  title: Massa Transactie
+  menu: Massa Transactie
 
 transactions_modules:
   title: >-
-    Transacties submodules en velden
+    Transacties Submodules en Velden
+  menu: Submodules en Velden
   service_stuff_enabled:
-    label: Diensten/spullen schakelaar
+    label: Diensten/Spullen Schakelaar
   limits_enabled:
     label: Limieten
   autominlimit_enabled:
@@ -1526,6 +1544,7 @@ transactions_modules:
 
 transactions_system_limits:
   title: Systeemslimieten
+  menu: Systeemslimieten
   max:
     label: Maximum systeemslimiet
     help: >-
@@ -1563,6 +1582,8 @@ transactions_show:
     Transactie
 
 users:
+  admin_config: >-
+    Leden Configuratie
   title: Leden
 
 users_add:
@@ -1570,6 +1591,7 @@ users_add:
 
 users_config_leaving:
   title: Configuratie Uitstappers
+  menu: Configuratie Uitstappers
   equilibrium:
     label: >-
       Uitstappers-saldo (equilibrium).
@@ -1607,6 +1629,7 @@ users_config_leaving:
 
 users_config_new:
   title: Configuratie Instappers
+  menu: Configuratie Instappers
   days:
     label: >-
       Periode dat een nieuw lid als
@@ -1651,7 +1674,9 @@ users_del:
 
 users_full_name:
   title: >-
-    Volledige naam configuratie
+    Volledige Naam Configuratie
+  menu: >-
+    Volledige Naam Configuratie
   self_edit:
     label: >-
       Gebruikers kunnen zelf hun volledige naam aanpassen
@@ -1872,6 +1897,7 @@ users_map:
 users_modules:
   title: >-
     Leden submodules en velden
+  menu: Submodules en Velden
   flash:
     change: >-
       Submodules/velden leden aangepast
@@ -1889,7 +1915,9 @@ users_password_edit:
 
 users_periodic_mail:
   title: >-
-    Periodieke overzichts e-mail
+    Periodieke Overzichts Email Configuratie
+  menu: >-
+    Periodieke Overzichts Email
   days:
     label: >-
       Interval tot volgende overzichts e-mail
@@ -1930,7 +1958,9 @@ users_show:
 
 users_username:
   title: >-
-    Gebruikersnaam configuratie
+    Gebruikersnaam Configuratie
+  menu: >-
+    Gebruikersnaam Configuratie
   self_edit:
     label: >-
       Gebruikers kunnen zelf hun gebruikersnaam aanpassen

@@ -1,5 +1,7 @@
-{%- include 'include/btn_top/btn.html.twig' with {
-    'btn_class': 'success',
-    'btn_label': 'btn.add',
-    'fa': 'plus'
-} -%}
+<a href="{{- path(btn_route, {}|pp|merge(btn_route_params|default({}))) -}}" class="btn btn-success btn-lg" title="{{- (btn_title|default('btn.add'))|trans(btn_title_trans_params|default({})) -}}">
+  <twig:ux:icon name="lucide:plus"/>
+  <span class="hidden-xs hidden-sm">
+    &nbsp;
+    {{- 'btn.add'|trans -}}
+  </span>
+</a>

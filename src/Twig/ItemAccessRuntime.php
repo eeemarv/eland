@@ -8,7 +8,7 @@ use Twig\Extension\RuntimeExtensionInterface;
 class ItemAccessRuntime implements RuntimeExtensionInterface
 {
 	public function __construct(
-		protected ItemAccessService $item_access_service
+		private readonly ItemAccessService $item_access_service
 	)
 	{
 	}

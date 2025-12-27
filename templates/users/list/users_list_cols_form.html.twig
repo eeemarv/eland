@@ -190,18 +190,14 @@
         {%- if cols_form.transactions_days is defined -%}
           {{- form_row(cols_form.transactions_days, {
             'label': 'label.over_period',
-            'pre_addon': {
-              'text': 'label.days'|trans,
-            },
+            'addon': 'label.days'|trans,
           }) -}}
         {%- endif -%}
 
         {%- if cols_form.transactions_exclude_code is defined -%}
           {{- form_row(cols_form.transactions_exclude_code, {
             'label': 'users_list.cols.transactions_exclude_code.label',
-            'pre_addon': {
-              'fa': 'user',
-            },
+            'addon': ux_icon('lucide:user'),
           }) -}}
         {%- endif -%}
 

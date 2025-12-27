@@ -20,13 +20,16 @@
     {%- endif -%}
 {%- endblock btn_top_add -%}
 
-{%- set messages_view_btns = {
-    ('messages_list'~ (is_self ? '_self' : '')): {'fa': 'align-justify', 'title': 'view.list'},
-    ('messages_extended' ~ (is_self ? '_self' : '')): {'fa': 'th-list', 'title': 'view.extended'}
-} -%}
-
 {%- block btn_view -%}
-    {%- include 'include/nav/view_btn_group.html.twig' with {'btns': messages_view_btns} -%}
+{%- set r_self = is_self ? '_self' : '' -%}
+<div class="btn-group ml-5p" role="group">
+  <a href="{{- path('messages_list' ~ r_self, route_params|merge(query_params)|merge(d.params|default({}))) -}}" class="btn btn-default btn-lg{%- if ('messages_list' ~ r_self) == route %} active{%- endif -%}" title="{{- 'view.list'|trans -}}">
+    <twig:ux:icon name="lucide:list"/>
+  </a>
+  <a href="{{- path('messages_extended' ~ r_self, route_params|merge(query_params)|merge(d.params|default({}))) -}}" class="btn btn-default btn-lg{%- if ('messages_extended' ~ r_self) == route %} active{%- endif -%}" title="{{- 'view.extended'|trans -}}">
+    <twig:ux:icon name="lucide:rows-2"/>
+  </a>
+</div>
 {%- endblock btn_view -%}
 
 {%- block heading_title -%}

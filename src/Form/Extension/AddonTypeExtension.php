@@ -17,10 +17,8 @@ class AddonTypeExtension extends AbstractTypeExtension
 
   public function configureOptions(OptionsResolver $resolver):void
   {
-    $resolver->setDefault('pre_addon', null);
-    $resolver->setAllowedTypes('pre_addon', ['null', 'array']);
-    $resolver->setDefault('post_addon', null);
-    $resolver->setAllowedTypes('post_addon', ['null', 'array']);
+    $resolver->setDefault('addon', null);
+    $resolver->setAllowedTypes('addon', ['null', 'string']);
   }
 
   public function buildView(
@@ -29,14 +27,9 @@ class AddonTypeExtension extends AbstractTypeExtension
     array $options
   ):void
   {
-    if (isset($options['pre_addon']))
+    if (isset($options['addon']))
     {
-      $view->vars['pre_addon'] = $options['pre_addon'];
-    }
-
-    if (isset($options['post_addon']))
-    {
-      $view->vars['post_addon'] = $options['post_addon'];
+      $view->vars['addon'] = $options['addon'];
     }
   }
 }

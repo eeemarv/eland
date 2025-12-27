@@ -21,9 +21,7 @@
     {{- form_errors(form.admin) -}}
     <div id="admin"
       data-prototype="{{ form_widget(form.admin.vars.prototype, {
-        'pre_addon': {
-          'fa': 'envelope-o'
-        },
+        'addon': ux_icon('lucide:mail'),
         'required': false
       })|e }}"
       data-widget-tags="{{ '<li></li>'|e }}"
@@ -31,16 +29,14 @@
       {%- for a in form.admin -%}
         {{- form_errors(a) -}}
         {{- form_widget(a, {
-          'pre_addon': {
-            'fa': 'envelope-o'
-          },
+          'addon': ux_icon('lucide:mail'),
           'required': false
         }) -}}
       {%- endfor -%}
     </div>
     <br />
     <button type="button" data-btn-add class="btn btn-default">
-      <i class="fa fa-plus"></i>
+      <twig:ux:icon name="lucide:plus" />
       &nbsp;
       {{- 'config_mail_addr.btn_add'|trans -}}
     </button>
@@ -55,9 +51,7 @@
     {{- form_errors(form.support) -}}
     <div id="support"
       data-prototype="{{ form_widget(form.support.vars.prototype, {
-        'pre_addon': {
-          'fa': 'envelope-o'
-        },
+        'addon': ux_icon('lucide:mail'),
         'required': false
       })|e }}"
       data-widget-tags="{{ '<li></li>'|e }}"
@@ -65,16 +59,14 @@
       {%- for s in form.support -%}
         {{- form_errors(s) -}}
         {{- form_widget(s, {
-          'pre_addon': {
-            'fa': 'envelope-o'
-          },
+          'addon': ux_icon('lucide:mail'),
           'required': false
         }) -}}
       {%- endfor -%}
     </div>
     <br />
     <button type="button" data-btn-add class="btn btn-default">
-      <i class="fa fa-plus"></i>
+      <twig:ux:icon name="lucide:plus" />
       &nbsp;
       {{- 'config_mail_addr.btn_add'|trans -}}
     </button>

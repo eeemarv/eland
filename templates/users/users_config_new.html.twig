@@ -6,17 +6,17 @@
   {{- 'users_config_new.title'|trans -}}
 {%- endblock heading_title -%}
 
-{%- block heading_fa -%}
-  user-plus
-{%- endblock heading_fa -%}
+{%- block heading_icon -%}
+<twig:ux:icon name="lucide:user-plus"/>
+{%- endblock heading_icon -%}
 
 {%- block form_a -%}
   {{- form_row(form.days, {
     'label': 'users_config_new.days.label',
-    'pre_addon': {
-      'text': 'label.days'|trans
-    },
-    'attr': {'min': 1}
+    'addon': 'label.days'|trans,
+    'attr': {
+      'min': 1,
+    }
   }) -}}
 
   {%- if form.access is defined -%}

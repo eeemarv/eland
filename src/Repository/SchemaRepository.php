@@ -23,7 +23,7 @@ class SchemaRepository
     $rows = $this->db->fetchAllAssociative('select table_name from information_schema.tables
       where table_schema = :schema
       order by table_name asc', [
-      'schema'  => $schema,
+      'schema'  => $schema->str(),
     ], [
       'schema' => Types::STRING,
     ]);

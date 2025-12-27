@@ -12,13 +12,18 @@
 {%- endblock btn_top_bulk -%}
 
 {%- block btn_top_config -%}
-  {%- include 'include/btn_top/config.html.twig' with {
-    'btn_route': 'mollie_config',
-    'btn_title': 'mollie_config.title'
-  } -%}
+<a href="{{- path('mollie_config', {}|pp) -}}" class="btn btn-info btn-lg" title="{{- 'mollie_config.title'|trans -}}">
+  <twig:ux:icon name="lucide:settings"/>
+  <span class="hidden-xs hidden-sm">
+    &nbsp;
+    {{- 'btn.config'|trans -}}
+  </span>
+</a>
 {%- endblock btn_top_config -%}
 
-{%- set csv_en = true -%}
+{%- block csv_download_btn -%}
+  {%- include 'include/btn_top/csv_download.html.twig' -%}
+{%- endblock csv_download_btn -%}
 
 {%- block assets_add -%}
   {{- parent() -}}

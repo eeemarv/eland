@@ -1,19 +1,21 @@
 {%- extends 'news/base/news_base.html.twig' -%}
 
 {%- block btn_top_add -%}
-    {%- if pp_has_role('admin') -%}
-        {%- include 'include/btn_top/add.html.twig' with {
-            'btn_route': 'news_add',
-            'btn_title': 'news_add.title'
-        } -%}
-    {%- endif -%}
+  {%- if pp_has_role('admin') -%}
+    {%- include 'include/btn_top/add.html.twig' with {
+      'btn_route': 'news_add',
+      'btn_title': 'news_add.title',
+    } -%}
+  {%- endif -%}
 {%- endblock btn_top_add -%}
 
-{%- set news_view_btns = {
-    'news_list': {'fa': 'align-justify', 'title': 'view.list'},
-    'news_extended': {'fa': 'th-list', 'title': 'view.extended'}
-} -%}
-
 {%- block btn_view -%}
-    {%- include 'include/nav/view_btn_group.html.twig' with {'btns': news_view_btns} -%}
+<div class="btn-group ml-5p" role="group">
+  <a href="{{- path('news_list', route_params|merge(query_params)|merge(d.params|default({}))) -}}" class="btn btn-default btn-lg{%- if 'news_list' == route %} active{%- endif -%}" title="{{- 'view.list'|trans -}}">
+    <twig:ux:icon name="lucide:list"/>
+  </a>
+  <a href="{{- path('news_extended', route_params|merge(query_params)|merge(d.params|default({}))) -}}" class="btn btn-default btn-lg{%- if 'news_extended' == route %} active{%- endif -%}" title="{{- 'view.extended'|trans -}}">
+    <twig:ux:icon name="lucide:rows-2"/>
+  </a>
+</div>
 {%- endblock btn_view -%}

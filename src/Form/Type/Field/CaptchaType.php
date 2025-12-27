@@ -19,8 +19,8 @@ class CaptchaType extends AbstractType
   public function __construct(
     private readonly Redis $redis,
     private readonly TokenGeneratorService $token_generator_service,
-    #[Autowire('%kernel.project_dir%')]
-    private readonly string $project_dir,
+    #[Autowire('%kernel.project_dir%/fonts/ubuntu_subset.ttf')]
+    private readonly string $font,
   )
   {
   }
@@ -103,7 +103,7 @@ class CaptchaType extends AbstractType
     $resolver->setDefault('spacing', 4);
     $resolver->setDefault('max_x_offset', 2);
     $resolver->setDefault('max_y_offset', 4);
-    $resolver->setDefault('font', $this->project_dir . '/fonts/ubuntu_subset.ttf');
+    $resolver->setDefault('font', $this->font);
     $resolver->setRequired('width');
     $resolver->setRequired('height');
     $resolver->setRequired('char_count');

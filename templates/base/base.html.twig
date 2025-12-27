@@ -26,6 +26,9 @@
 <head>
 	<title>{%- block title -%}{%- endblock -%}</title>
 
+  <link rel="stylesheet" href="{{- asset('styles/app.scss') -}}" media="screen">
+
+  {#}
 	{%- for c in assets_ary('css') -%}
 		<link type="text/css" rel="stylesheet" href="{{- c -}}" media="screen">
 	{%- endfor -%}
@@ -33,6 +36,9 @@
 	{%- for c in assets_ary('css_print') -%}
 		<link type="text/css" rel="stylesheet" href="{{- c -}}" media="print">
 	{%- endfor -%}
+  {#}
+
+  <link rel="stylesheet" href="{{- asset('styles/print.css') -}}" media="print">
 
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">

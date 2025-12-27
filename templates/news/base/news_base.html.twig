@@ -2,9 +2,29 @@
 
 {%- set active_menu = 'news' -%}
 
-{%- set local_admin_menu = {
-    'news_sort': {'fa': 'sort'}
-} -%}
+{%- block heading_icon -%}
+<twig:ux:icon name="lucide:calendar-range"/>
+{%- endblock heading_icon -%}
+
+{%- block local_admin_menu -%}
+{%- embed 'embed/local_admin_menu.html.twig' -%}
+  {%- block menu_items -%}
+    <li class="dropdown-header">
+      {%- include 'include/label/admin.html.twig' -%}
+      &nbsp;
+      {{- 'news.admin_config'|trans -}}
+    </li>
+
+    <li{%- if route == 'news_sort' %} class="active"{%- endif -%}>
+      <a href="{{- path('news_sort', {}|pp) -}}">
+        <twig:ux:icon name="lucide:clock-arrow-down"/>
+        &nbsp;
+        {{- ('news_sort.menu')|trans -}}
+      </a>
+    </li>
+  {%- endblock menu_items -%}
+{%- endembed -%}
+{%- endblock local_admin_menu -%}
 
 {%- block content -%}
 {%- endblock content -%}

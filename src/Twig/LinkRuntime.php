@@ -9,8 +9,8 @@ use Twig\Extension\RuntimeExtensionInterface;
 class LinkRuntime implements RuntimeExtensionInterface
 {
 	public function __construct(
-		protected UrlGeneratorInterface $url_generator,
-		protected PageParamsService $pp
+		private readonly UrlGeneratorInterface $url_generator,
+		private readonly PageParamsService $pp
 	)
 	{
 	}

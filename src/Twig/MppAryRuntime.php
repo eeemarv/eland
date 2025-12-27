@@ -9,7 +9,7 @@ use Twig\Extension\RuntimeExtensionInterface;
 class MppAryRuntime implements RuntimeExtensionInterface
 {
 	public function __construct(
-		protected UserCacheService $user_cache_service,
+		private readonly UserCacheService $user_cache_service,
 	)
 	{
 	}
