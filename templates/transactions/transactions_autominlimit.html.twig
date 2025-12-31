@@ -34,23 +34,17 @@
 {%- endblock form_header -%}
 
 {%- block form_a -%}
-  <h2>
-    {{- 'transactions_autominlimit.for_accounts.title'|trans -}}
-  </h2>
   <p>
+    <b>
+      {{- 'transactions_autominlimit.for_accounts.title'|trans -}}
+    </b>:
     {{- 'transactions_autominlimit.for_accounts.explain'|trans -}}
   </p>
 
-  {{- form_row(form.exclude_from, {
-    'label': 'transactions_autominlimit.exclude_from.label',
-    'help': 'transactions_autominlimit.exclude_from.help',
-    'addon': ux_icon('lucide:user'),
-  }) -}}
-
-  <h2>
-    {{- 'transactions_autominlimit.trigger.title'|trans -}}
-  </h2>
   <p>
+    <b>
+    {{- 'transactions_autominlimit.trigger.title'|trans -}}
+    </b>:
     {{- 'transactions_autominlimit.trigger.explain'|trans -}}
   </p>
 
@@ -58,13 +52,6 @@
     'label': 'transactions_autominlimit.percentage.label',
     'addon': ux_icon('lucide:percent'),
   }) -}}
-
-  {{- form_row(form.exclude_to, {
-    'label': 'transactions_autominlimit.exclude_to.label',
-    'help': 'transactions_autominlimit.exclude_to.help',
-    'addon': ux_icon('lucide:user'),
-  }) -}}
-
 {%- endblock form_a -%}
 
 {%- block css -%}

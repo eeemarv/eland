@@ -1438,23 +1438,15 @@ transactions_add:
 transactions_autominlimit:
   title: Automatische Minimum Limiet
   menu: Automatische Minimum Limiet
-  exclude_from:
-    label: Exclusief accounts
-    help: Account codes gescheiden door comma's
   percentage:
     label: Percentage van ontvangen bedrag
-  exclude_to:
-    label: Exclusief accounts tegenpartijen
-    help: Account codes gescheiden door comma's
   for_accounts:
     title: Voor accounts
     explain: >-
       De automatische minimum limiet is enkel van
       toepassing op actieve accounts die rol van
       gewone gebruiker hebben (user) en die niet
-      de status uitstapper hebben. Hieronder
-      kunnen nog verder individuele accounts
-      uitgesloten worden.
+      de status uitstapper hebben.
   trigger:
     title: >-
       Trigger voor daling van de minimum limiet.
@@ -1480,8 +1472,8 @@ transactions_autominlimit:
       altijd ongewijzigd.
   flash:
     change: >-
-      De automatische minimum limiet instellingen
-      zijn aangepast
+      Het automatische minimum limiet percentage
+      is aangepast
 
 transactions_currency:
   title: Munteenheid
