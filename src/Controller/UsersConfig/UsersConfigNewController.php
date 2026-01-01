@@ -1,75 +1,67 @@
 <?php declare(strict_types=1);
 
-namespace App\Controller\Transactions;
+namespace App\Controller\UsersConfig;
 
-use App\Command\Transactions\TransactionsAutoMinLimitCommand;
-use App\Form\Type\Transactions\TransactionsAutoMinLimitType;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use App\Command\UsersConfig\UsersConfigNewCommand;
+use App\Form\Type\UsersConfig\UsersConfigNewType;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
-class TransactionsAutoMinLimitController extends AbstractController
+class UsersConfigNewController extends AbstractController
 {
   #[Route(
-    '/{schema}/{role_short}/auto-min-limit',
-    name: 'transactions_autominlimit',
+    '/{schema}/{role_short}/users/config/new',
+    name: 'users_config_new',
     methods: ['GET', 'POST'],
     requirements: [
       'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [
-      'module'        => 'transactions',
-      'sub_module'    => 'autominlimit',
+      'module'        => 'users',
     ],
   )]
 
   public function __invoke(
     Request $request,
+    ConfigService $config_service,
     PageParamsService $pp,
     SessionUserService $su,
-    ConfigService $config_service,
   ):Response
   {
     if (!$config_service->get_bool(
-      config_id: 'transactions.enabled',
+      config_id: 'users.new.enabled',
       schema: $pp->schema_o(),
     ))
     {
-      throw new NotFoundHttpException('Transactions module not enabled.');
+      throw new NotFoundHttpException('New users not enabled.');
     }
 
-    if (!$config_service->get_bool(
-      config_id: 'accounts.limits.auto_min.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw new NotFoundHttpException('Submodule auto min limit not enabled.');
-    }
-
-    $command = new TransactionsAutoMinLimitCommand();
+    $command = new UsersConfigNewCommand();
     $config_service->load_command(
       command: $command,
       schema: $pp->schema_o(),
     );
 
     $form = $this->createForm(
-      type: TransactionsAutoMinLimitType::class,
+      type: UsersConfigNewType::class,
       data: $command,
     );
     $form->handleRequest($request);
 
     if ($form->isSubmitted()
-        && $form->isValid())
+      && $form->isValid())
     {
       $command = $form->getData();
+
       $changed = $config_service->store_command(
         command: $command,
         user_id: $su->id() ?: null,
@@ -81,7 +73,7 @@ class TransactionsAutoMinLimitController extends AbstractController
         $this->addFlash(
           type: 'success',
           message: [
-            'key' => 'transactions_autominlimit.flash.change',
+            'key' => 'users_config_new.flash.change',
           ],
         );
       }
@@ -95,11 +87,11 @@ class TransactionsAutoMinLimitController extends AbstractController
         );
       }
 
-      return $this->redirectToRoute('transactions_autominlimit', $pp->ary());
+      return $this->redirectToRoute('users_config_new', $pp->ary());
     }
 
-    return $this->render('transactions/transactions_autominlimit.html.twig', [
-      'form'      => $form->createView(),
+    return $this->render('users_config/users_config_new.html.twig', [
+      'form'          => $form->createView(),
     ]);
   }
 }

@@ -1581,6 +1581,26 @@ users:
 users_add:
   title: Gebruiker toevoegen
 
+users_config_modules:
+  title: >-
+    Configuratie Leden Submodules en Velden
+  menu: Submodules en Velden
+  flash:
+    change: >-
+      Submodules/velden leden aangepast
+
+users_config_full_name:
+  title: >-
+    Volledige Naam Configuratie
+  menu: >-
+    Volledige Naam Configuratie
+  self_edit:
+    label: >-
+      Gebruikers kunnen zelf hun volledige naam aanpassen
+  flash:
+    change: >-
+      Volledige naam configuratie aangepast
+
 users_config_leaving:
   title: Configuratie Uitstappers
   menu: Configuratie Uitstappers
@@ -1648,6 +1668,49 @@ users_config_new:
     change: >-
       Configuratie instappende leden aangepast
 
+users_config_periodic_mail:
+  title: >-
+    Periodieke Overzichts Email Configuratie
+  menu: >-
+    Periodieke Overzichts Email
+  days:
+    label: >-
+      Interval tot volgende overzichts e-mail
+  users_help: >-
+    Noot: Leden kunnen steeds ontvangst
+    van de Periodieke Overzichts E-mail
+    aan- of afzetten in hun profielinstellingen.
+  layout:
+    title: E-mail opmaak (versleep blokken)
+    help: >-
+      Verslepen gaat met muis of touchpad, maar
+      misschien niet met touch-screen. "Recent"
+      betekent "sinds de laatste periodieke
+      overzichtsmail".
+    active:
+      title: Inhoud
+    inactive:
+      title: Ongebruikte blokken
+  user_new_default_enabled:
+    label: >-
+      Standaard AAN bij nieuwe gebruikers
+  flash:
+    change: >-
+      Periodieke overzichts e-mail configuratie
+      aangepast
+
+users_config_username:
+  title: >-
+    Gebruikersnaam Configuratie
+  menu: >-
+    Gebruikersnaam Configuratie
+  self_edit:
+    label: >-
+      Gebruikers kunnen zelf hun gebruikersnaam aanpassen
+  flash:
+    change: >-
+      Gebruikersnaam configuratie aangepast
+
 users_edit:
   title: Gebruiker {user} aanpassen
 
@@ -1663,18 +1726,6 @@ users_del:
     Alle Gegevens, Vraag en aanbod,
     Contacten en Afbeeldingen van {name}
     worden verwijderd.
-
-users_full_name:
-  title: >-
-    Volledige Naam Configuratie
-  menu: >-
-    Volledige Naam Configuratie
-  self_edit:
-    label: >-
-      Gebruikers kunnen zelf hun volledige naam aanpassen
-  flash:
-    change: >-
-      Volledige naam configuratie aangepast
 
 users_image_del:
   title: >-
@@ -1886,14 +1937,6 @@ users_map:
       Van volgende gebruikers
       is geen adres gekend
 
-users_modules:
-  title: >-
-    Leden submodules en velden
-  menu: Submodules en Velden
-  flash:
-    change: >-
-      Submodules/velden leden aangepast
-
 users_password_edit:
   title: >-
     {self, select,
@@ -1904,37 +1947,6 @@ users_password_edit:
     help: >-
       Verzin voor de veiligheid een orgineel
       paswoord.
-
-users_periodic_mail:
-  title: >-
-    Periodieke Overzichts Email Configuratie
-  menu: >-
-    Periodieke Overzichts Email
-  days:
-    label: >-
-      Interval tot volgende overzichts e-mail
-  users_help: >-
-    Noot: Leden kunnen steeds ontvangst
-    van de Periodieke Overzichts E-mail
-    aan- of afzetten in hun profielinstellingen.
-  layout:
-    title: E-mail opmaak (versleep blokken)
-    help: >-
-      Verslepen gaat met muis of touchpad, maar
-      misschien niet met touch-screen. "Recent"
-      betekent "sinds de laatste periodieke
-      overzichtsmail".
-    active:
-      title: Inhoud
-    inactive:
-      title: Ongebruikte blokken
-  user_new_default_enabled:
-    label: >-
-      Standaard AAN bij nieuwe gebruikers
-  flash:
-    change: >-
-      Periodieke overzichts e-mail configuratie
-      aangepast
 
 users_show:
   title: >-
@@ -1947,18 +1959,6 @@ users_show:
     De interSysteem-verbinding ontbreekt
   coupled_intersystem: >-
     Gekoppeld interSysteem
-
-users_username:
-  title: >-
-    Gebruikersnaam Configuratie
-  menu: >-
-    Gebruikersnaam Configuratie
-  self_edit:
-    label: >-
-      Gebruikers kunnen zelf hun gebruikersnaam aanpassen
-  flash:
-    change: >-
-      Gebruikersnaam configuratie aangepast
 
 welcome:
   title: Welkom bij {system_name}

@@ -1,33 +1,39 @@
 <?php declare(strict_types=1);
 
-namespace App\Form\Type\Transactions;
+namespace App\Form\Type\UsersBulk;
 
-use App\Command\Transactions\TransactionsModulesCommand;
+use App\Command\UsersBulk\UsersBulkAdminCommentsCommand;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 
-class TransactionsModulesType extends AbstractType
+class UsersBulkAdminCommentsType extends AbstractType
 {
+  public function __construct(
+  )
+  {
+  }
+
   public function buildForm(
     FormBuilderInterface $builder,
-    array $options,
+    array $options
   ):void
   {
     $builder
-      ->add('service_stuff_enabled', CheckboxType::class)
-      ->add('limits_enabled', CheckboxType::class)
-      ->add('autominlimit_enabled', CheckboxType::class)
-      ->add('mass_enabled', CheckboxType::class)
+      ->add('selected', HiddenType::class)
+      ->add('admin_comments', TextType::class)
+      ->add('verify', CheckboxType::class)
       ->add('submit', SubmitType::class);
   }
 
   public function configureOptions(OptionsResolver $resolver):void
   {
     $resolver->setDefaults([
-      'data_class'    => TransactionsModulesCommand::class,
+      'data_class'  => UsersBulkAdminCommentsCommand::class,
     ]);
   }
 }

@@ -1,0 +1,110 @@
+{%- extends 'transactions/base/transactions_base.html.twig' -%}
+
+{%- block assets_add -%}
+    {{- parent() -}}
+    {{- assets_add(['transactions_add.js']) -}}
+{%- endblock assets_add -%}
+
+{%- block heading_title -%}
+  {{- 'transactions_add.title'|trans -}}
+{%- endblock heading_title -%}
+
+{%- block content -%}
+{%- endblock content -%}
+
+{%- set cancel_route = 'transactions' -%}
+
+{%- block form_submit_btn -%}
+  {%- include 'form/submit_add_btn.html.twig' -%}
+{%- endblock form_submit_btn -%}
+
+{%- block form_a -%}
+  <div class="row">
+    <div id="col_from_id" class="col-md-12">
+      {{- form_row(form.from_id, {
+        'label': 'transactions_add.from_id.label',
+        'addon': ux_icon('lucide:user'),
+      }) -}}
+    </div>
+  </div>
+
+  <div class="row">
+    <div id="col_from_remote_account" class="col-md-12 alert-warning pb-1">
+      {{- form_row(form.from_remote_account, {
+        'label': 'transactions_add.from_remote_account.label',
+        'addon': ux_icon('lucide:user'),
+      }) -}}
+    </div>
+  </div>
+
+  <div class="row">
+    <div id="col_to_id" class="col-md-12">
+      {{- form_row(form.to_id, {
+        'label': 'transactions_add.to_id.label',
+        'addon': ux_icon('lucide:user'),
+      }) -}}
+    </div>
+  </div>
+
+  <div class="row">
+    <div id="col_to_remote_id" class="col-md-12 alert-warning pb-1">
+      {{- form_row(form.to_remote_id, {
+        'label': 'transactions_add.to_remote_id.label',
+        'addon': ux_icon('lucide:user'),
+      }) -}}
+    </div>
+  </div>
+
+  <div class="row">
+    <div id="col_to_remote_account" class="col-md-12 alert-warning pb-1">
+      {{- form_row(form.to_remote_account, {
+        'label': 'transactions_add.to_remote_account.label',
+        'addon': ux_icon('lucide:user'),
+      }) -}}
+    </div>
+  </div>
+
+  <div class="row">
+    <div id="col_amount" class="col-md-6">
+      {{- form_row(form.amount, {
+        'label': 'transactions_add.amount.label',
+        'addon': config_str('transactions.currency.name'),
+        'attr': {
+            'min': '1',
+        },
+      }) -}}
+    </div>
+
+    <div id="col_remote_amount" class="col-md-6 alert-warning">
+      {{- form_row(form.remote_amount, {
+        'label': 'transactions_add.remote_amount.label',
+        'addon': ' ',
+        'help': '',
+      }) -}}
+    </div>
+  </div>
+
+  <div class="row">
+    <div id="col_description" class="col-md-12">
+      {{- form_row(form.description, {
+        'label': 'label.description',
+        'addon': ux_icon('lucide:terminal'),
+        'attr': {
+          'minlength': '3',
+          'maxlength': '60',
+        }
+      }) -}}
+    </div>
+  </div>
+
+  {%- if form.service_stuff is defined -%}
+  <div class="row">
+    <div id="col_service_stuff" class="col-md-12" style="display:none;">
+      {{- form_row(form.service_stuff, {
+        'label': false,
+      }) -}}
+    </div>
+  </div>
+  {%- endif -%}
+
+{%- endblock form_a -%}

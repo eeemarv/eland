@@ -1,0 +1,18 @@
+{%- extends 'users/base/users_form.html.twig' -%}
+
+{%- set admin_heading = true -%}
+
+{%- block heading_icon -%}
+<twig:ux:icon name="lucide:user-pen"/>
+{%- endblock heading_icon -%}
+
+{%- block heading_title -%}
+  {{- 'users_config_full_name.title'|trans -}}
+{%- endblock heading_title -%}
+
+{%- block form_a -%}
+  {{- form_row(form.self_edit, {
+    'label': 'users_config_full_name.self_edit.label',
+    'required': false
+  }) -}}
+{%- endblock form_a -%}

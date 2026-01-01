@@ -15,28 +15,28 @@
       {{- 'users.admin_config'|trans -}}
     </li>
 
-    <li{%- if route == 'users_modules' %} class="active"{%- endif -%}>
-      <a href="{{- path('users_modules', {}|pp) -}}">
+    <li{%- if route == 'users_config_modules' %} class="active"{%- endif -%}>
+      <a href="{{- path('users_config_modules', {}|pp) -}}">
         <twig:ux:icon name="lucide:package"/>
         &nbsp;
-        {{- ('users_modules.menu')|trans -}}
+        {{- ('users_config_modules.menu')|trans -}}
       </a>
     </li>
 
-    <li{%- if route == 'users_username' %} class="active"{%- endif -%}>
-      <a href="{{- path('users_username', {}|pp) -}}">
+    <li{%- if route == 'users_config_username' %} class="active"{%- endif -%}>
+      <a href="{{- path('users_config_username', {}|pp) -}}">
         <twig:ux:icon name="lucide:user-pen"/>
         &nbsp;
-        {{- ('users_username.menu')|trans -}}
+        {{- ('users_config_username.menu')|trans -}}
       </a>
     </li>
 
     {%- if config_bool('users.fields.full_name.enabled') -%}
-    <li{%- if route == 'users_full_name' %} class="active"{%- endif -%}>
-      <a href="{{- path('users_full_name', {}|pp) -}}">
+    <li{%- if route == 'users_config_full_name' %} class="active"{%- endif -%}>
+      <a href="{{- path('users_config_full_name', {}|pp) -}}">
         <twig:ux:icon name="lucide:user-pen"/>
         &nbsp;
-        {{- ('users_full_name.menu')|trans -}}
+        {{- ('users_config_full_name.menu')|trans -}}
       </a>
     </li>
     {%- endif -%}
@@ -78,11 +78,11 @@
     {%- endif -%}
 
     {%- if config_bool('periodic_mail.enabled') -%}
-    <li{%- if route == 'users_periodic_mail' %} class="active"{%- endif -%}>
-      <a href="{{- path('users_periodic_mail', {}|pp) -}}">
+    <li{%- if route == 'users_config_periodic_mail' %} class="active"{%- endif -%}>
+      <a href="{{- path('users_config_periodic_mail', {}|pp) -}}">
         <twig:ux:icon name="lucide:mails"/>
         &nbsp;
-        {{- ('users_periodic_mail.menu')|trans -}}
+        {{- ('users_config_periodic_mail.menu')|trans -}}
       </a>
     </li>
     {%- endif -%}

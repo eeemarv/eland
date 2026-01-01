@@ -1,30 +1,34 @@
 <?php declare(strict_types=1);
 
-namespace App\Form\Type\Transactions;
+namespace App\Form\Type\UsersConfig;
 
-use App\Command\Transactions\TransactionsAutoMinLimitCommand;
+use App\Command\UsersConfig\UsersConfigUsernameCommand;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class TransactionsAutoMinLimitType extends AbstractType
+class UsersConfigUsernameType extends AbstractType
 {
+  public function __construct(
+  )
+  {
+  }
+
   public function buildForm(
     FormBuilderInterface $builder,
-    array $options
+    array $options,
   ):void
   {
-    $builder
-      ->add('percentage', IntegerType::class)
-      ->add('submit', SubmitType::class);
+    $builder->add('self_edit', CheckboxType::class);
+    $builder->add('submit', SubmitType::class);
   }
 
   public function configureOptions(OptionsResolver $resolver):void
   {
     $resolver->setDefaults([
-      'data_class'    => TransactionsAutoMinLimitCommand::class,
+      'data_class'    => UsersConfigUsernameCommand::class,
     ]);
   }
 }

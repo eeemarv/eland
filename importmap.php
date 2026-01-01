@@ -29,4 +29,11 @@ return [
     'bootstrap-sass' => [
         'version' => '3.4.3',
     ],
+    'autocompleter' => [
+        'version' => '9.3.2',
+    ],
+    'autocompleter/autocomplete.min.css' => [
+        'version' => '9.3.2',
+        'type' => 'css',
+    ],
 ];

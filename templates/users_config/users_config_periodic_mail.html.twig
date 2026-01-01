@@ -1,0 +1,70 @@
+{%- extends 'users/base/users_form.html.twig' -%}
+
+{%- block assets_add -%}
+  {{- parent() -}}
+  {{- assets_add(['sortable', 'users_periodic_mail.js']) -}}
+{%- endblock assets_add -%}
+
+{%- set admin_heading = true -%}
+
+{%- block heading_title -%}
+  {{- 'users_config_periodic_mail.title'|trans -}}
+{%- endblock heading_title -%}
+
+{%- block heading_icon -%}
+<twig:ux:icon name="lucide:mails"/>
+{%- endblock heading_icon -%}
+
+{%- block form_a -%}
+
+  {{- form_row(form.days, {
+    'label': 'users_config_periodic_mail.days.label',
+    'attr': {
+      'min': 1
+    },
+    'addon': 'label.days'|trans,
+  }) -}}
+
+  {{- form_row(form.user_new_default_enabled, {
+    'label': 'users_config_periodic_mail.user_new_default_enabled.label',
+  }) -}}
+
+  <p>
+    {{- 'users_config_periodic_mail.users_help'|trans -}}
+  </p>
+
+  <h2>
+    {{- 'users_config_periodic_mail.layout.title'|trans -}}
+  </h2>
+
+  <p>
+    {{- 'users_config_periodic_mail.layout.help'|trans -}}
+  </p>
+
+  <div class="row">
+    {%- include 'users_config/include/config_periodic_mail_list.html.twig' with {
+      'title': 'users_config_periodic_mail.layout.active.title',
+      'list_attr': ' data-active-blocks',
+      'block_list': block_layout,
+      'item_class': 'bg-success'
+    } -%}
+    {%- include 'users_config/include/config_periodic_mail_list.html.twig' with {
+      'title': 'users_config_periodic_mail.layout.inactive.title',
+      'list_attr': ' data-inactive-blocks',
+      'block_list': block_inactive_layout,
+      'item_class': 'bg-danger'
+    } -%}
+  </div>
+
+  {{- form_row(form.block_layout, {
+    'attr': {
+      'data-block-layout': '1'
+    }
+  }) -}}
+
+  {{- form_row(form.block_select_options, {
+    'attr': {
+      'data-block-select-options': '1'
+    }
+  }) -}}
+{%- endblock form_a -%}
