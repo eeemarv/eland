@@ -19,7 +19,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -60,7 +59,7 @@ class TransactionsShowController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw new NotFoundHttpException('Transactions module not enabled.');
+      throw $this->createNotFoundException('Transactions module not enabled.');
     }
 
     $currency = $config_service->get_str(
@@ -82,6 +81,13 @@ class TransactionsShowController extends AbstractController
       id: $id,
       schema: $pp->schema_o(),
     );
+
+		if ($transaction === false)
+		{
+			throw $this->createNotFoundException(
+        'Transaction ' . $id . ' not found'
+      );
+		}
 
     $inter_schema = false;
 

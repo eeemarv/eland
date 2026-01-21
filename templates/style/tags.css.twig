@@ -1,0 +1,7 @@
+{% for tag in tags %}
+.tag-{{- tag.id -}}{
+  color: {{- tag.txt_color|raw -}};
+  border-color: {{- tag.txt_color|raw -}};
+  background-color: {{- tag.bg_color|raw -}};
+}
+{% endfor %}

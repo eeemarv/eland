@@ -1,16 +1,16 @@
 {%- extends 'forum/base/forum_form.html.twig' -%}
 
 {%- block heading_title -%}
-    {{- 'forum_del_post.title'|trans({
-        'self': su_is_owner(forum_post.user_id) ? 'self' : 'some_user',
-        'topic_subject': forum_topic.subject,
-        'user': account(forum_post.user_id, schema)
-    }) -}}
+  {{- 'forum_del_post.title'|trans({
+    'self': su_is_owner(forum_post.user_id) ? 'self' : 'some_user',
+    'topic_subject': forum_topic.subject,
+    'user': account(forum_post.user_id)
+  }) -}}
 {%- endblock heading_title -%}
 
 {%- set cancel_route = 'forum_topic' -%}
 {%- set cancel_route_params = {'id': forum_topic.id} -%}
 
 {%- block form_submit_btn -%}
-    {%- include 'form/submit_del_btn.html.twig' -%}
+  {%- include 'form/submit_del_btn.html.twig' -%}
 {%- endblock form_submit_btn -%}

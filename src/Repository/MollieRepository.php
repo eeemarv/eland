@@ -90,7 +90,7 @@ class MollieRepository
 	):void
 	{
     $stmt = $this->db->prepare('update ' . $schema->str() . '.mollie_payments
-      set is_paid = \'t\'::bool,
+      set is_paid = true,
         mollie_status = :mollie_status
       where checkout_token = :checkout_token');
     $stmt->bindValue('mollie_status', $mollie_status, Types::STRING);
@@ -109,8 +109,8 @@ class MollieRepository
 				' . $schema->str() . '.mollie_payment_requests r
 			where p.request_id = r.id
 				and user_id = :user_id
-				and is_canceled = \'f\'::bool
-				and is_paid = \'f\'::bool');
+				and not is_canceled
+				and not is_paid');
     $stmt->bindValue('user_id', $user_id, Types::INTEGER);
     $res = $stmt->executeQuery();
     return $res->fetchAllAssociative();
@@ -279,7 +279,7 @@ class MollieRepository
       $schema->str() . '.mollie_payments
       set canceled_by = :canceled_by
       where id in (:payment_ids)
-        and is_paid = \'f\'::bool', [
+        and not is_paid', [
         'canceled_by' => $canceled_by,
         'payment_ids' => $payment_ids
     ], [
@@ -300,7 +300,7 @@ class MollieRepository
       inner join ' . $schema->str() . '.mollie_payment_requests r
         on p.request_id = r.id
       where p.id in (:payment_ids)
-        and p.is_canceled = \'t\'::bool
+        and p.is_canceled
       order by p.created_at desc', [
         'payment_ids' => $payment_ids,
       ], [
@@ -332,7 +332,9 @@ class MollieRepository
 
     if (!isset($allowed_sort_cols[$order_by]))
     {
-      throw new \Exception('Not allowed order_by ' . $order_by);
+      throw new \Exception(
+        'Not allowed order_by ' . $order_by
+      );
     }
 
     $prefixed_order_by = $allowed_sort_cols[$order_by] . '.' . $order_by;
@@ -365,17 +367,17 @@ class MollieRepository
 
       if (in_array('open', $filter_command->status))
       {
-        $st_where_or[] = '(p.is_paid = \'f\'::bool and p.is_canceled = \'f\'::bool)';
+        $st_where_or[] = '(not p.is_paid and not p.is_canceled)';
       }
 
       if (in_array('paid', $filter_command->status))
       {
-        $st_where_or[] = 'p.is_paid = \'t\'::bool';
+        $st_where_or[] = 'p.is_paid';
       }
 
       if (in_array('canceled', $filter_command->status))
       {
-        $st_where_or[] = 'p.is_canceled = \'t\'::bool';
+        $st_where_or[] = 'p.is_canceled';
       }
 
       if (count($st_where_or))
@@ -448,13 +450,13 @@ class MollieRepository
     unset($sql_all['params']['offset']);
     unset($sql_all['types']['offset']);
     $sql_where_open = $sql_all['where'];
-    $sql_where_open['status'] = 'p.is_paid = \'f\'::bool and p.is_canceled = \'f\'::bool';
+    $sql_where_open['status'] = 'not p.is_paid and not p.is_canceled';
     $sql_where_open = implode(' and ', $sql_where_open);
     $sql_where_paid = $sql_all['where'];
-    $sql_where_paid['status'] = 'p.is_paid = \'t\'::bool';
+    $sql_where_paid['status'] = 'p.is_paid';
     $sql_where_paid = implode(' and ', $sql_where_paid);
     $sql_where_canceled = $sql_all['where'];
-    $sql_where_canceled['status'] = 'p.is_canceled = \'t\'::bool';
+    $sql_where_canceled['status'] = 'p.is_canceled';
     $sql_where_canceled = implode(' and ', $sql_where_canceled);
 
     $count_ary = $this->db->fetchAssociative('select

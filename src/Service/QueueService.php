@@ -4,6 +4,7 @@ namespace App\Service;
 
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection as Db;
+use Doctrine\DBAL\Types\Types;
 
 /*
                                         Table "xdb.queue"
@@ -87,7 +88,7 @@ class QueueService
 		{
 			return $this->db->fetchOne('select count(*)
 				from xdb.queue
-				where topic = ?', [$topic], [\PDO::PARAM_STR]);
+				where topic = ?', [$topic], [Types::STRING]);
 		}
 
 		return $this->db->fetchOne('select count(*) from xdb.queue');

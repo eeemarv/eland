@@ -3,11 +3,9 @@
 namespace App\Form\Type\Config;
 
 use App\Command\Config\ConfigMailCommand;
-use App\Form\Type\Field\BtnChoiceType;
 use App\Form\Type\Field\ColorChoiceType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -40,16 +38,15 @@ class ConfigMailType extends AbstractType
       'cn'  => '#8fcfb5',
     ];
 
-    $builder
-      ->add('enabled', CheckboxType::class)
-      ->add('tag', TextType::class)
-      ->add('background', ColorChoiceType::class, [
-        'choices'   => $choices,
-        'color_ary' => $color_ary,
-        'multiple'  => false,
-        'required'  => true
-      ])
-      ->add('submit', SubmitType::class);
+    $builder->add('enabled', CheckboxType::class);
+    $builder->add('tag', TextType::class);
+    $builder->add('background', ColorChoiceType::class, [
+      'choices'   => $choices,
+      'color_ary' => $color_ary,
+      'multiple'  => false,
+      'required'  => true
+    ]);
+    $builder->add('submit', SubmitType::class);
   }
 
   public function configureOptions(OptionsResolver $resolver):void

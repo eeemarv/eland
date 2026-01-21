@@ -6,17 +6,15 @@ use App\DTO\AddressAry;
 use App\DTO\Schema;
 use App\Service\ConfigService;
 use Doctrine\DBAL\Connection as Db;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use App\Service\UserCacheService;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Types\Types;
+use LogicException;
 use Symfony\Component\Mime\Address;
 
 class UserRepository
 {
 	public function __construct(
 		private readonly Db $db,
-		private readonly UserCacheService $user_cache_service,
     private readonly ConfigService $config_service,
 	)
 	{
@@ -87,18 +85,15 @@ class UserRepository
 	public function get_account_str(
     int $id,
     Schema $schema,
-  ):string
+  ):string|false
 	{
     $account_str = $this->db->fetchOne('select trim(concat(coalesce(code,\'\'), \' \', coalesce(name, \'\')))
-            from ' . $schema->str() . '.users
-			where id = ?',
-			[$id],
-			[Types::INTEGER]);
-
-		if (!$account_str)
-		{
-			throw new NotFoundHttpException('User with id ' . $id . ' not found.');
-		}
+      from ' . $schema->str() . '.users
+			where id = :id', [
+        'id'  => $id,
+      ], [
+        'id'  => Types::INTEGER,
+      ]);
 
 		return $account_str;
 	}
@@ -115,9 +110,11 @@ class UserRepository
 				$schema->str() . '.type_contact tc
 			where c.id_type_contact = tc.id
 				and tc.abbrev = \'mail\'
-				and lower(c.value) = ?',
-				[$email_lowercase],
-				[Types::STRING]);
+				and lower(c.value) = :email_lowercase', [
+      'email_lowercase' => $email_lowercase,
+    ], [
+      'email_lowercase' => Types::STRING,
+    ]);
 	}
 
 	public function count_active_by_email(
@@ -135,15 +132,17 @@ class UserRepository
 				and tc.abbrev = \'mail\'
 				and c.user_id = u.id
 				and u.status in (1, 2)
-				and lower(c.value) = ?',
-				[$email_lowercase],
-				[Types::STRING]);
+				and lower(c.value) = :email_lowercase', [
+      'email_lowercase' => $email_lowercase,
+    ], [
+      'email_lowercase' => Types::STRING,
+    ]);
 	}
 
 	public function get_active_id_by_email(
 		string $email,
 		Schema $schema
-	):int
+	):int|false
 	{
 		$email_lowercase = strtolower($email);
 
@@ -155,14 +154,11 @@ class UserRepository
 				and tc.abbrev = \'mail\'
 				and c.user_id = u.id
 				and u.status in (1, 2)
-				and lower(c.value) = ?',
-				[$email_lowercase],
-				[Types::STRING]);
-
-		if (!$id)
-		{
-			throw new NotFoundHttpException('User with email ' . $email . ' not found.');
-		}
+				and lower(c.value) = :email_lowercase', [
+      'email_lowercase' => $email_lowercase,
+    ], [
+      'email_lowercase' => Types::STRING,
+    ]);
 
 		return $id;
 	}
@@ -177,31 +173,28 @@ class UserRepository
 		return $this->db->fetchOne('select count(u.*)
 			from ' . $schema->str() . '.users u
 			where u.status in (1, 2)
-				and lower(u.name) = ?',
-				[$name_lowercase],
-				[Types::STRING]
-			);
+				and lower(u.name) = :name_lowercase', [
+      'name_lowercase'  => $name_lowercase,
+    ], [
+      'name_lowercase'  => Types::STRING,
+    ]);
 	}
 
 	public function get_active_id_by_name(
     string $name,
     Schema $schema,
-  ):int
+  ):int|false
 	{
 		$name_lowercase = strtolower($name);
 
 		$id = $this->db->fetchOne('select u.id
 			from ' . $schema->str() . '.users u
 			where u.status in (1, 2)
-				and lower(u.name) = ?',
-				[$name_lowercase],
-				[Types::STRING]
-			);
-
-		if (!$id)
-		{
-			throw new NotFoundHttpException('User with name ' . $name . ' not found.');
-		}
+				and lower(u.name) = :name_lowercase', [
+      'name_lowercase'  => $name_lowercase,
+    ], [
+      'name_lowercase'  => Types::STRING,
+    ]);
 
 		return $id;
 	}
@@ -216,31 +209,27 @@ class UserRepository
 		return $this->db->fetchOne('select count(u.*)
 			from ' . $schema->str() . '.users u
 			where u.status in (1, 2)
-				and lower(u.code) = ?',
-				[$code_lowercase],
-				[Types::STRING]
-			);
+				and lower(u.code) = :code_lowercase', [
+      'code_lowercase'  => $code_lowercase,
+    ], [
+      'code_lowercase' => Types::STRING,
+    ]);
 	}
-
 
 	public function get_by_typeahead_code(
     string $code,
     Schema $schema,
-  ):int
+  ):int|false
 	{
 		$code_lowercase = strtolower($code);
 
 		$id = $this->db->fetchOne('select u.id
 			from ' . $schema->str() . '.users u
-			where lower(u.code) = ?',
-			[$code_lowercase],
-			[Types::STRING]
-		);
-
-		if (!$id)
-		{
-			return 0;
-		}
+			where lower(u.code) = :code_lowercase', [
+      'code_lowercase'  => $code_lowercase,
+    ], [
+      'code_lowercase'  => Types::STRING,
+    ]);
 
 		return $id;
 	}
@@ -248,22 +237,18 @@ class UserRepository
 	public function get_active_id_by_code(
     string $code,
     Schema $schema,
-  ):int
+  ):int|false
 	{
 		$code_lowercase = strtolower($code);
 
 		$id = $this->db->fetchOne('select u.id
 			from ' . $schema->str() . '.users u
 			where u.status in (1, 2)
-				and lower(u.code) = ?',
-				[$code_lowercase],
-				[Types::STRING]
-			);
-
-		if (!$id)
-		{
-			throw new NotFoundHttpException('User with code ' . $code . ' not found.');
-		}
+				and lower(u.code) = :code_lowercase', [
+      'code_lowercase'  => $code_lowercase,
+    ], [
+      'code_lowercase'  => Types::STRING,
+    ]);
 
 		return $id;
 	}
@@ -271,35 +256,313 @@ class UserRepository
 	public function get(
     int $id,
     Schema $schema,
-  ):array
+  ):array|false
 	{
 		$user = $this->db->fetchAssociative('select u.*
 			from ' . $schema->str() . '.users u
-			where u.id = ?',
-			[$id],
-			[Types::INTEGER]
-		);
-
-		if (!$user)
-		{
-			throw new NotFoundHttpException('User with id ' . $id . ' not found');
-		}
+			where u.id = :id', [
+      'id'  => $id,
+    ], [
+      'id'  => Types::INTEGER,
+    ]);
 
 		return $user;
+	}
+
+	public function add(
+		string $name,
+		string $email,
+    int $created_by,
+		Schema $schema,
+	):int
+	{
+    $this->db->beginTransaction();
+    $this->db->insert($schema->str() . '.users', [
+      'name'  => $name,
+      'created_by', $created_by,
+    ], [
+      'name'  => Types::STRING,
+      'created_by'  => Types::INTEGER,
+    ]);
+
+    $user_id = (int) $this->db->lastInsertId($schema->str() . '.users_id_seq');
+
+		$stmt = $this->db->prepare('insert into ' . $schema->str() . '.contact c
+			(user_id, value, created_by, is_email, id_type_contact)
+			values(:user_id, :email, :created_by, true, (
+				select id from ' . $schema->str() . '.type_contact
+				where abbrev = \'mail\'
+			))');
+
+		$stmt->bindValue('user_id', $user_id, Types::INTEGER);
+		$stmt->bindValue('email', $email, Types::STRING);
+		$stmt->bindValue('created_by', $created_by, Types::INTEGER);
+		$stmt->executeStatement();
+
+    $this->db->commit();
+
+    return $user_id;
 	}
 
 	public function set_password(
 		int $id,
 		string $password,
 		Schema $schema,
-	):void
+	):int
 	{
-		$this->db->update($schema->str() . '.users',
-			['password' => $password],
-			['id' => $id],
-			['password' => Types::STRING, 'id' => Types::INTEGER]
-		);
-		$this->user_cache_service->clear($id, $schema->str());
+		$affected_rows = (int) $this->db->update($schema->str() . '.users', [
+      'password' => $password,
+    ], [
+      'id' => $id,
+    ], [
+      'password' => Types::STRING,
+      'id' => Types::INTEGER,
+    ]);
+    return $affected_rows;
+	}
+
+	public function set_postcode(
+		int $id,
+		string $postcode,
+		Schema $schema,
+	):int
+	{
+		$affected_rows = (int) $this->db->update($schema->str() . '.users', [
+      'postcode' => $postcode,
+    ], [
+      'id' => $id,
+    ], [
+      'postcode' => Types::STRING,
+      'id' => Types::INTEGER,
+    ]);
+    return $affected_rows;
+	}
+
+	public function del_postcode(
+		int $id,
+		Schema $schema,
+	):int
+	{
+		$affected_rows = (int) $this->db->update($schema->str() . '.users', [
+      'postcode' => null,
+    ], [
+      'id' => $id,
+    ], [
+      'postcode' => Types::STRING,
+      'id' => Types::INTEGER,
+    ]);
+    return $affected_rows;
+	}
+
+	public function del_image_file(
+		int $id,
+		Schema $schema,
+	):int
+	{
+		$affected_rows = (int) $this->db->update($schema->str() . '.users', [
+      'image_file' => null,
+    ], [
+      'id' => $id,
+    ], [
+      'image_file' => Types::STRING,
+      'id' => Types::INTEGER,
+    ]);
+    return $affected_rows;
+	}
+
+	public function set_code(
+		int $id,
+		string|null $code,
+		Schema $schema,
+	):int
+	{
+		$affected_rows = (int) $this->db->update($schema->str() . '.users', [
+      'code' => $code,
+    ], [
+      'id' => $id,
+    ], [
+      'code' => Types::STRING,
+      'id' => Types::INTEGER,
+    ]);
+    return $affected_rows;
+	}
+
+	public function set_name(
+		int $id,
+		string $name,
+		Schema $schema,
+	):int
+	{
+		$affected_rows = (int) $this->db->update($schema->str() . '.users', [
+      'name' => $name,
+    ], [
+      'id' => $id,
+    ], [
+      'name' => Types::STRING,
+      'id' => Types::INTEGER,
+    ]);
+    return $affected_rows;
+	}
+
+	public function set_full_name(
+		int $id,
+		string $full_name,
+    string $full_name_access,
+		Schema $schema,
+	):int
+	{
+		$affected_rows = (int) $this->db->update($schema->str() . '.users', [
+      'full_name' => $full_name,
+      'full_name_access' => $full_name_access,
+    ], [
+      'id' => $id,
+    ], [
+      'full_name' => Types::STRING,
+      'full_name_access' => Types::STRING,
+      'id' => Types::INTEGER,
+    ]);
+    return $affected_rows;
+	}
+
+	public function set_comments(
+		int $id,
+		string|null $comments,
+		Schema $schema,
+	):int
+	{
+		$affected_rows = (int) $this->db->update($schema->str() . '.users', [
+      'comments' => $comments,
+    ], [
+      'id' => $id,
+    ], [
+      'comments' => Types::STRING,
+      'id' => Types::INTEGER,
+    ]);
+    return $affected_rows;
+	}
+
+	public function set_hobbies(
+		int $id,
+		string|null $hobbies,
+		Schema $schema,
+	):int
+	{
+		$affected_rows = (int) $this->db->update($schema->str() . '.users', [
+      'hobbies' => $hobbies,
+    ], [
+      'id' => $id,
+    ], [
+      'hobbies' => Types::STRING,
+      'id' => Types::INTEGER,
+    ]);
+    return $affected_rows;
+	}
+
+	public function set_admin_comments(
+		int $id,
+		string|null $admin_comments,
+		Schema $schema,
+	):int
+	{
+		$affected_rows = (int) $this->db->update($schema->str() . '.users', [
+      'admin_comments' => $admin_comments,
+    ], [
+      'id' => $id,
+    ], [
+      'admin_comments' => Types::STRING,
+      'id' => Types::INTEGER,
+    ]);
+    return $affected_rows;
+	}
+
+	public function set_role(
+		int $id,
+		string $role,
+		Schema $schema,
+	):int
+	{
+    if (isset($role))
+    {
+      if (!in_array($role, ['admin', 'user']))
+      {
+        throw new LogicException('wrong role: ' . $role);
+      }
+    }
+
+		$affected_rows = (int) $this->db->update($schema->str() . '.users', [
+      'role' => $role,
+    ], [
+      'id' => $id,
+    ], [
+      'role' => Types::STRING,
+      'id' => Types::INTEGER,
+    ]);
+    return $affected_rows;
+	}
+
+	public function set_is_leaving(
+		int $id,
+		bool $is_leaving,
+		Schema $schema,
+	):int
+	{
+    $status = match($is_leaving){
+      true => 2,
+      false => 1,
+    };
+    $affected_rows = (int) $this->db->executeStatement('update ' . $schema->str() . '.users
+      set is_leaving = :is_leaving, status = :status
+      where id = :id', [
+        'is_leaving'  => $is_leaving,
+        'status'  => $status,
+        'id'  => $id,
+      ], [
+        'is_leaving'  => Types::BOOLEAN,
+        'status'  => Types::INTEGER,
+        'id'  => Types::INTEGER,
+      ]);
+    return $affected_rows;
+	}
+
+	public function set_is_active(
+		int $id,
+		bool $is_active,
+		Schema $schema,
+	):int
+	{
+    $status = match($is_active){
+      true => 1,
+      false => 0,
+    };
+    $affected_rows = (int) $this->db->executeStatement('update ' . $schema->str() . '.users
+      set is_leaving = :is_active, status = :status
+      where id = :id', [
+        'is_active'  => $is_active,
+        'status'  => $status,
+        'id'  => $id,
+      ], [
+        'is_active'  => Types::BOOLEAN,
+        'status'  => Types::INTEGER,
+        'id'  => Types::INTEGER,
+      ]);
+    return $affected_rows;
+	}
+
+	public function set_periodic_overview_en(
+		int $id,
+		bool $periodic_overview_en,
+		Schema $schema,
+	):int
+	{
+		$affected_rows = (int) $this->db->update($schema->str() . '.users', [
+      'periodic_overview_en' => $periodic_overview_en,
+    ], [
+      'id' => $id,
+    ], [
+      'periodic_overview_en' => Types::BOOLEAN,
+      'id' => Types::INTEGER,
+    ]);
+    return $affected_rows;
 	}
 
   /**
@@ -374,19 +637,15 @@ class UserRepository
 	public function del(
     int $id,
     Schema $schema,
-  ):bool
+  ):int
 	{
-    // change to on delete cascade in db
-    $this->db->delete($schema->str() . '.contact',
-      ['user_id' => $id]);
-    $success = $this->db->delete($schema->str() . '.users',
-      ['id' => $id]) ? true : false;
-		if ($success)
-		{
-      $this->user_cache_service->clear($id, $schema->str());
-		}
+    $affected_rows = (int) $this->db->delete($schema->str() . '.users', [
+      'id' => $id,
+    ], [
+      'id'  => Types::INTEGER,
+    ]);
 
-		return $success;
+		return $affected_rows;
 	}
 
 	public function is_active(
@@ -397,16 +656,20 @@ class UserRepository
 		return $this->db->fetchOne('select id
 			from ' . $schema->str() . '.users
 			where status in (1, 2)
-				and id = ?', [$id], [Types::INTEGER]) ? true : false;
+				and id = :id', [
+      'id'  => $id,
+    ], [
+      'id'  => Types::INTEGER,
+    ]) ? true : false;
 	}
 
   public function set_bulk_full_name_access(
     string $full_name_access,
     array $user_ids,
     Schema $schema,
-  ):void
+  ):int
   {
-    $this->db->executeStatement('update ' .
+    return (int) $this->db->executeStatement('update ' .
       $schema->str() . '.users
       set full_name_access = :full_name_access
       where id in (:user_ids)', [
@@ -422,11 +685,11 @@ class UserRepository
     string|null $comments,
     array $user_ids,
     Schema $schema,
-  ):void
+  ):int
   {
     if (isset($comments))
     {
-      $this->db->executeStatement('update ' .
+      return (int) $this->db->executeStatement('update ' .
         $schema->str() . '.users
         set comments = :comments
         where id in (:user_ids)', [
@@ -436,9 +699,8 @@ class UserRepository
           'comments'  => Types::STRING,
           'user_ids'  => ArrayParameterType::INTEGER,
         ]);
-      return;
     }
-    $this->db->executeStatement('update ' .
+    return (int) $this->db->executeStatement('update ' .
       $schema->str() . '.users
       set comments = null
       where id in (:user_ids)', [
@@ -452,11 +714,11 @@ class UserRepository
     string|null $admin_comments,
     array $user_ids,
     Schema $schema,
-  ):void
+  ):int
   {
     if (isset($admin_comments))
     {
-      $this->db->executeStatement('update ' .
+      return (int) $this->db->executeStatement('update ' .
         $schema->str() . '.users
         set admin_comments = :admin_comments
         where id in (:user_ids)', [
@@ -466,9 +728,8 @@ class UserRepository
           'admin_comments'  => Types::STRING,
           'user_ids'  => ArrayParameterType::INTEGER,
         ]);
-      return;
     }
-    $this->db->executeStatement('update ' .
+    return (int) $this->db->executeStatement('update ' .
       $schema->str() . '.users
       set admin_comments = null
       where id in (:user_ids)', [
@@ -482,9 +743,9 @@ class UserRepository
     string $role,
     array $user_ids,
     Schema $schema,
-  ):void
+  ):int
   {
-    $this->db->executeStatement('update ' .
+    return (int) $this->db->executeStatement('update ' .
       $schema->str() . '.users
       set role = :role
       where id in (:user_ids)', [
@@ -500,9 +761,9 @@ class UserRepository
     int $status,
     array $user_ids,
     Schema $schema,
-  ):void
+  ):int
   {
-    $this->db->executeStatement('update ' .
+    return (int) $this->db->executeStatement('update ' .
       $schema->str() . '.users
       set status = :status
       where id in (:user_ids)', [
@@ -518,9 +779,9 @@ class UserRepository
     bool $periodic_overview_en,
     array $user_ids,
     Schema $schema,
-  ):void
+  ):int
   {
-    $this->db->executeStatement('update ' .
+    return (int) $this->db->executeStatement('update ' .
       $schema->str() . '.users
       set periodic_overview_en = :periodic_overview_en
       where id in (:user_ids)', [
@@ -537,41 +798,27 @@ class UserRepository
     Schema $schema,
   ):array
   {
-    $sql_where = '1 = 1';
+		$sql_where = match($status){
+      'all' => '1 = 1',
+      'active' => 'status in (1, 2)',
+      'leaving' => 'status = 2',
+      'new' => 'status = 1 and u.adate > :activated_at',
+      'inactive'  => 'status = 0',
+      'ip'  => 'status = 5',
+      'im'  => 'status = 6',
+      'extern'  => 'status = 7',
+    };
+
     $sql_params = [];
     $sql_types = [];
 
-    switch ($status)
+    if  ($status === 'new')
     {
-      case 'all':
-        break;
-      case 'active':
-        $sql_where = 'u.status in (1, 2)';
-        break;
-      case 'new':
-        $new_user_treshold = $this->config_service->get_new_user_treshold(schema: $schema);
-        $sql_where = 'u.status = 1 and u.adate > :activated_at';
-        $sql_params['activated_at'] = $new_user_treshold;
-        $sql_types['activated_at'] = Types::DATETIME_IMMUTABLE;
-        break;
-      case 'leaving':
-        $sql_where = 'u.status = 2';
-        break;
-      case 'inactive':
-        $sql_where = 'u.status = 0';
-        break;
-      case 'ip':
-        $sql_where = 'u.status = 5';
-        break;
-      case 'im':
-        $sql_where = 'u.status = 6';
-        break;
-      case 'extern':
-        $sql_where = 'u.status = 7';
-        break;
-      default:
-        throw new \Exception('wrong value for status: ' . $status);
-        break;
+      $new_user_treshold = $this->config_service->get_new_user_treshold(
+        schema: $schema
+      );
+      $sql_params['activated_at'] = $new_user_treshold;
+      $sql_types['activated_at'] = Types::DATETIME_IMMUTABLE;
     }
 
     $users = [];
@@ -627,9 +874,11 @@ class UserRepository
       where c.user_id = :user_id
         and c.id_type_contact = tc.id
         and tc.abbrev = \'adr\'
-      limit 1',
-          ['user_id' => $user_id],
-          ['user_id' => Types::INTEGER]);
+      limit 1', [
+        'user_id' => $user_id,
+      ], [
+        'user_id' => Types::INTEGER,
+      ]);
   }
 
   public function get_all_active_with_addresses(
@@ -655,4 +904,238 @@ class UserRepository
     }
     return $ary;
   }
+
+  public function get_with_page_data(
+    int $id,
+    string|null $status,
+    Schema $schema,
+  ):array|false
+  {
+		$sql_where = match($status){
+      'all' => '1 = 1',
+      'active' => '%table%.status in (1, 2)',
+      'leaving' => '%table%.status = 2',
+      'new' => '%table%.status = 1 and %table%.adate > :activated_at',
+      'inactive'  => '%table%.status = 0',
+      'ip'  => '%table%.status = 5',
+      'im'  => '%table%.status = 6',
+      'extern'  => '%table%.status = 7',
+    };
+
+    $sql_where_pu = strtr($sql_where, [
+      '%table%' => 'pu'
+    ]);
+    $sql_where_nu = strtr($sql_where, [
+      '%table%' => 'nu'
+    ]);
+
+    $sql_params = [
+      'id'  => $id,
+    ];
+    $sql_types = [
+      'id'  => Types::INTEGER,
+    ];
+
+    if  ($status === 'new')
+    {
+      $new_user_treshold = $this->config_service->get_new_user_treshold(
+        schema: $schema
+      );
+      $sql_params['activated_at'] = $new_user_treshold;
+      $sql_types['activated_at'] = Types::DATETIME_IMMUTABLE;
+    }
+
+    $data = $this->db->fetchAssociative('select u.*,
+      coalesce(cd.contacts, \'[]\'::jsonb) as contacts,
+      coalesce(msg.count, 0) as message_count,
+      coalesce(trns.count, 0) as transaction_count,
+      login.max as last_login,
+      min_limit.min_limit,
+      max_limit.max_limit,
+      coalesce(balance.balance, 0) as balance,
+      coalesce(tags.tags, \'[]\'::jsonb) as tags,
+      nav.prev_id,
+      nav.next_id
+			from ' . $schema->str() . '.users u
+      left join lateral (
+        select
+          (select pu.id
+            from ' . $schema->str() . '.users pu
+            where pu.code < u.code
+              and ' . $sql_where_pu . '
+            order by pu.code desc
+            limit 1
+          ) as prev_id,
+          (select nu.id
+            from ' . $schema->str() . '.users nu
+            where nu.code > u.code
+              and ' . $sql_where_nu . '
+            order by nu.code asc
+            limit 1
+          ) as next_id
+      ) nav on true
+      left join lateral (
+        select jsonb_agg(
+          jsonb_build_object(
+            \'value\', c.value,
+            \'comments\', c.comments,
+            \'abbrev\', tc.abbrev,
+            \'name\', tc.name
+          )
+        ) as contacts
+        from ' . $schema->str() . '.contact c
+        join ' . $schema->str() . '.type_contact tc
+          on c.id_type_contact = tc.id
+        where c.user_id = u.id
+      ) cd on true
+      left join lateral (
+        select count(m.*)
+        from ' . $schema->str() . '.messages m
+        where m.user_id = u.id
+      ) msg on true
+      left join lateral (
+        select count(t.*)
+        from ' . $schema->str() . '.transactions t
+        where t.id_to = u.id or t.id_from = u.id
+      ) trns on true
+      left join lateral (
+        select max(l.created_at)
+        from ' . $schema->str() . '.login l
+        where l.user_id = u.id
+      ) login on true
+      left join lateral (
+        select minl.min_limit
+        from ' . $schema->str() . '.min_limit minl
+        where minl.account_id = u.id
+        order by minl.created_at desc
+        limit 1
+      ) min_limit on true
+      left join lateral (
+        select maxl.max_limit
+        from ' . $schema->str() . '.max_limit maxl
+        where maxl.account_id = u.id
+        order by maxl.created_at desc
+        limit 1
+      ) max_limit on true
+      left join lateral (
+        select bal.balance
+        from ' . $schema->str() . '.balance bal
+        where bal.account_id = u.id
+        order by bal.created_at desc
+        limit 1
+      ) balance on true
+      left join lateral (
+        select jsonb_agg(
+          jsonb_build_object(
+            \'txt\', tg.txt,
+            \'description\', tg.description,
+            \'id\', tg.id
+          )
+        ) as tags
+        from ' . $schema->str() . '.tags tg
+        join ' . $schema->str() . '.users_tags ut
+          on ut.tag_id = tg.id
+        where ut.user_id = u.id
+        group by tg.id
+        order by tg.pos asc
+      ) tags on true
+      where u.id = :id',
+      $sql_params,
+      $sql_types
+    );
+
+    if ($data !== false)
+    {
+      $data['contacts'] = json_decode($data['contacts'], true);
+      $data['tags'] = json_decode($data['tags'], true);
+    }
+
+		return $data;
+  }
+
+	public function is_unique_code(
+		string $code,
+		null|int $except_id,
+		Schema $schema
+	):bool
+	{
+		if ($code === '')
+		{
+			throw new LogicException('Code can not be empty string.');
+		}
+
+		$lower_code = strtolower($code);
+
+		$query = 'select id
+			from ' . $schema->str() . '.users
+			where code is not null
+				and lower(code) = :lower_code';
+
+		if (isset($except_id))
+		{
+			$query .= ' and id <> :except_id';
+		}
+
+		$stmt = $this->db->prepare($query);
+
+		$stmt->bindValue('lower_code', $lower_code, Types::STRING);
+
+		if (isset($except_id))
+		{
+			$stmt->bindValue('except_id', $except_id, Types::INTEGER);
+		}
+
+		$res = $stmt->executeQuery();
+		$id = $res->fetchOne();
+
+		if ($id === false)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	public function is_unique_name(
+		string $name,
+		null|int $except_id,
+		Schema $schema
+	):bool
+	{
+		if ($name === '')
+		{
+			throw new LogicException('Name can not be empty string.');
+		}
+
+		$lower_name = strtolower($name);
+
+		$query = 'select id
+			from ' . $schema->str() . '.users
+			where name is not null
+				and lower(name) = :lower_name';
+
+		if (isset($except_id))
+		{
+			$query .= ' and id <> :except_id';
+		}
+
+		$stmt = $this->db->prepare($query);
+
+		$stmt->bindValue('lower_name', $lower_name, \PDO::PARAM_STR);
+
+		if (isset($except_id))
+		{
+			$stmt->bindValue('except_id', $except_id, \PDO::PARAM_INT);
+		}
+
+		$res = $stmt->executeQuery();
+		$id = $res->fetchOne();
+
+		if ($id === false)
+		{
+			return true;
+		}
+
+		return false;
+	}
 }

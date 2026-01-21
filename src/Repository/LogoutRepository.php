@@ -19,9 +19,9 @@ class LogoutRepository
     string $agent,
     string $ip,
 		Schema $schema
-	):void
+	):int
 	{
-		$this->db->insert($schema->str() . '.logout', [
+		return (int) $this->db->insert($schema->str() . '.logout', [
       'user_id' => $user_id,
 			'agent'   => $agent,
 			'ip'      => $ip,

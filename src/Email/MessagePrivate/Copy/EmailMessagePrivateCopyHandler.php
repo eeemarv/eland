@@ -29,6 +29,12 @@ final class EmailMessagePrivateCopyHandler
       schema: $schema,
     );
 
+    if ($ad_message === false)
+    {
+      error_log('message ' . $message_id . ' not found');
+      return;
+    }
+
     $context = [
       'sender' => [
         'id'      => $sender_id,

@@ -23,9 +23,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Doctrine\DBAL\Types\Types;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -122,7 +122,7 @@ class TransactionsMassController extends AbstractController
           schema: $pp->schema_o(),
         ))
         {
-            throw new NotFoundHttpException('Transactions module not enabled.');
+            throw $this->createNotFoundException('Transactions module not enabled.');
         }
 
         if (!$config_service->get_bool(
@@ -130,7 +130,7 @@ class TransactionsMassController extends AbstractController
           schema: $pp->schema_o(),
         ))
         {
-            throw new NotFoundHttpException('Submodule mass-transaction not enabled.');
+            throw $this->createNotFoundException('Submodule mass-transaction not enabled.');
         }
 
         $errors = [];
@@ -291,7 +291,7 @@ class TransactionsMassController extends AbstractController
                 $one_uid = $db->fetchOne('select id
                     from ' . $pp->schema() . '.users
                     where code = ?',
-                    [$code], [\PDO::PARAM_STR]);
+                    [$code], [Types::STRING]);
 
                 if (!$one_uid)
                 {
@@ -515,7 +515,7 @@ class TransactionsMassController extends AbstractController
             if ($to_name = $db->fetchOne('select name
                 from ' . $pp->schema() . '.users
                 where code = ?',
-                [$to_code], [\PDO::PARAM_STR]))
+                [$to_code], [Types::STRING]))
             {
                 $to_code .= ' ' . $to_name;
             }
@@ -526,7 +526,7 @@ class TransactionsMassController extends AbstractController
             if ($from_name = $db->fetchOne('select name
                 from ' . $pp->schema() . '.users
                 where code = ?',
-                [$from_code], [\PDO::PARAM_STR]))
+                [$from_code], [Types::STRING]))
             {
                 $from_code .= ' ' . $from_name;
             }

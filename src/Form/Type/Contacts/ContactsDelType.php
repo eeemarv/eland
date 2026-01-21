@@ -58,9 +58,7 @@ class ContactsDelType extends AbstractType
 
   public function configureOptions(OptionsResolver $resolver):void
   {
-    $resolver->setDefaults([
-      'contact_type_abbrev'   => null,
-      'data_class'            => ContactsCommand::class,
-    ]);
+    $resolver->setDefault('contact_type_abbrev', null);
+    $resolver->setDefault('data_class', ContactsCommand::class);
   }
 }

@@ -4,9 +4,7 @@ namespace App\Controller\Messages;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App\Service\FormTokenService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -56,12 +54,12 @@ class MessagesImagesInstantDelController extends AbstractController
 
         if (!$message)
         {
-            throw new NotFoundHttpException('Bericht niet gevonden.');
+            throw $this->createNotFoundException('Bericht niet gevonden.');
         }
 
         if (!($su->is_owner($message['user_id']) || $pp->is_admin()))
         {
-            throw new AccessDeniedHttpException('Geen rechten om deze afbeelding te verwijderen');
+            throw $this->createAccessDeniedException('Geen rechten om deze afbeelding te verwijderen');
         }
 
         $image_file_ary = array_values(json_decode($message['image_files'] ?? '[]', true));
@@ -70,7 +68,7 @@ class MessagesImagesInstantDelController extends AbstractController
 
         if ($key === false)
         {
-            throw new NotFoundHttpException('Afbeelding niet gevonden');
+            throw $this->createNotFoundException('Afbeelding niet gevonden');
         }
 
         unset($image_file_ary[$key]);

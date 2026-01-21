@@ -13,18 +13,15 @@ class TagsListType extends AbstractType
 {
   public function buildForm(
     FormBuilderInterface $builder,
-    array $options
+    array $options,
   ):void
   {
-    $builder
-      ->add('tags', HiddenType::class)
-      ->add('submit', SubmitType::class);
+    $builder->add('tags', HiddenType::class);
+    $builder->add('submit', SubmitType::class);
   }
 
   public function configureOptions(OptionsResolver $resolver):void
   {
-    $resolver->setDefaults([
-      'data_class'    => TagsListCommand::class,
-    ]);
+    $resolver->setDefault('data_class', TagsListCommand::class);
   }
 }

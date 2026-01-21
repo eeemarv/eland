@@ -16,18 +16,15 @@ class TransactionsModulesType extends AbstractType
     array $options,
   ):void
   {
-    $builder
-      ->add('service_stuff_enabled', CheckboxType::class)
-      ->add('limits_enabled', CheckboxType::class)
-      ->add('autominlimit_enabled', CheckboxType::class)
-      ->add('mass_enabled', CheckboxType::class)
-      ->add('submit', SubmitType::class);
+    $builder->add('service_stuff_enabled', CheckboxType::class);
+    $builder->add('limits_enabled', CheckboxType::class);
+    $builder->add('autominlimit_enabled', CheckboxType::class);
+    $builder->add('mass_enabled', CheckboxType::class);
+    $builder->add('submit', SubmitType::class);
   }
 
   public function configureOptions(OptionsResolver $resolver):void
   {
-    $resolver->setDefaults([
-      'data_class'    => TransactionsModulesCommand::class,
-    ]);
+    $resolver->setDefault('data_class', TransactionsModulesCommand::class);
   }
 }

@@ -103,12 +103,18 @@ password_strength:
 
 plain_text_length:
   min: >-
-    De tekst bestaat uit {len} tekens; ze moet minstens {min} tekens bevatten.
+    De tekst bestaat uit {len} tekens;
+    ze moet minstens {min} tekens bevatten.
   max: >-
-    De tekst bestaat uit {len} tekens; ze mag maximaal {max} tekens bevatten.
+    De tekst bestaat uit {len} tekens;
+    ze mag maximaal {max} tekens bevatten.
 
 tag:
   txt_not_unique: Deze tag-tekst is niet uniek.
+
+tags_users:
+  not_active: >-
+    Bevat een niet-actieve tag
 
 type:
   not_an_integer: >-
@@ -125,3 +131,14 @@ user:
     Deze gebruikers account code bestaat niet.
   role: Ongeldige rol
   status: Ongeldige status
+
+users_account_edit:
+  code_not_unique: >-
+    Deze account code bestaat reeds in het systeem
+  code_chars_not_allowed: >-
+    Enkel alfanumerieke tekens en
+    koppeltekens zijn toegelaten
+
+users_name_edit:
+  name_not_unique: >-
+    Deze gebruikersnaam bestaat reeds in het systeem

@@ -2,13 +2,10 @@
 
 namespace App\Repository;
 
-use App\Command\Forum\ForumPostCommand;
-use App\Command\Forum\ForumTopicCommand;
 use App\DTO\Schema;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ForumRepository
 {
@@ -21,7 +18,7 @@ class ForumRepository
 	public function get_topic(
     int $topic_id,
     Schema $schema,
-  ):array
+  ):array|false
 	{
     $topic = $this->db->fetchAssociative('select *
       from ' . $schema->str() . '.forum_topics
@@ -31,11 +28,6 @@ class ForumRepository
         'topic_id' => Types::INTEGER,
       ]);
 
-    if ($topic === false)
-    {
-      throw new NotFoundHttpException('Forum topic ' . $topic_id . ' not found.');
-		}
-
 		return $topic;
 	}
 
@@ -43,7 +35,7 @@ class ForumRepository
 		int $topic_id,
 		array $visible_ary,
 		Schema $schema,
-	):array
+	):array|false
 	{
     $topic = $this->db->fetchAssociative('select s.*
 			from (select t.*, count(p.*) - 1 as reply_count,
@@ -60,11 +52,6 @@ class ForumRepository
         'visible_ary'   => ArrayParameterType::STRING,
         'topic_id'      => Types::INTEGER,
       ]);
-
-		if ($topic === false)
-		{
-			throw new NotFoundHttpException('Forum topic ' . $topic_id . ' not found.');
-		}
 
 		return $topic;
 	}
@@ -106,7 +93,7 @@ class ForumRepository
 	public function get_post(
     int $post_id,
     Schema $schema,
-  ):array
+  ):array|false
 	{
     $post = $this->db->fetchAssociative('select *
       from ' . $schema->str() . '.forum_posts
@@ -115,11 +102,6 @@ class ForumRepository
       ], [
         'post_id'   => Types::INTEGER,
       ]);
-
-    if (!isset($post) || !$post)
-    {
-      throw new NotFoundHttpException('Forum post not found.');
-		}
 
 		return $post;
 	}
@@ -202,53 +184,47 @@ class ForumRepository
 	}
 
 	public function insert_topic(
-		ForumTopicCommand $command,
+    string $subject,
+    string $content,
+    string $access,
 		int $user_id,
 		Schema $schema
 	):int
 	{
-		$topic_insert = [
-			'subject'   => $command->subject,
-			'access'    => $command->access,
+		$this->db->insert($schema->str() . '.forum_topics', [
+			'subject'   => $subject,
+			'access'    => $access,
 			'user_id'   => $user_id,
-		];
-
-		$topic_types = [
+		], [
       'subject' => Types::STRING,
       'access'  => Types::STRING,
       'user_id' => Types::INTEGER,
-    ];
-
-		$this->db->insert($schema->str() . '.forum_topics', $topic_insert, $topic_types);
+    ]);
 
 		$id = (int) $this->db->lastInsertId($schema->str() . '.forum_topics_id_seq');
 
-		$post_insert = [
-			'content'   => $command->content,
+		$this->db->insert($schema->str() . '.forum_posts', [
+			'content'   => $content,
 			'topic_id'  => $id,
 			'user_id'   => $user_id,
-		];
-
-		$post_types = [
+		], [
       'content'   => Types::STRING,
       'topic_id'  => Types::INTEGER,
       'user_id'   => Types::INTEGER,
-    ];
-
-		$this->db->insert($schema->str() . '.forum_posts', $post_insert, $post_types);
+    ]);
 
 		return $id;
 	}
 
 	public function insert_post(
-		ForumPostCommand $command,
+    string $content,
 		int $user_id,
 		int $topic_id,
 		Schema $schema
 	):int
 	{
 		$this->db->insert($schema->str() . '.forum_posts', [
-			'content'		=> $command->content,
+			'content'		=> $content,
 			'user_id'		=> $user_id,
 			'topic_id'	=> $topic_id,
 		], [
@@ -261,23 +237,25 @@ class ForumRepository
 
 	public function update_post(
 		int $post_id,
-		ForumPostCommand $command,
+		string $content,
 		Schema $schema
-	):bool
+	):int
 	{
-		return $this->db->update($schema->str() . '.forum_posts', [
-			'content'	=> $command->content,
+		return (int) $this->db->update($schema->str() . '.forum_posts', [
+			'content'	=> $content,
 		], [
       'id' => $post_id,
     ], [
       'content' => Types::STRING,
       'id'      => Types::INTEGER,
-    ]) ? true : false;
+    ]);
 	}
 
 	public function update_topic(
 		int $topic_id,
-		ForumTopicCommand $command,
+    string $subject,
+    string $content,
+    string $access,
 		Schema $schema
 	):bool
 	{
@@ -289,8 +267,8 @@ class ForumRepository
 		$this->db->beginTransaction();
 
 		$this->db->update($schema->str() . '.forum_topics', [
-			'subject'       => $command->subject,
-			'access'        => $command->access,
+			'subject'       => $subject,
+			'access'        => $access,
 		], [
       'id' => $topic_id,
     ], [
@@ -299,7 +277,7 @@ class ForumRepository
       'id'      => Types::INTEGER,
     ]);
 		$this->db->update($schema->str() . '.forum_posts', [
-			'content'	=> $command->content,
+			'content'	=> $content,
 		], [
       'id' => $post_id,
     ], [

@@ -3,14 +3,15 @@
 namespace App\Service;
 
 use Doctrine\DBAL\Connection as Db;
+use Doctrine\DBAL\Types\Types;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Mime\Address;
 
 class MailAddrUserService
 {
 	public function __construct(
-		protected Db $db,
-		protected LoggerInterface $logger
+		private readonly Db $db,
+		private readonly LoggerInterface $logger
 	)
 	{
 	}
@@ -46,7 +47,7 @@ class MailAddrUserService
 				and tc.abbrev = \'mail\''
 				. $status_sql);
 
-		$stmt->bindValue('user_id', $user_id, \PDO::PARAM_INT);
+		$stmt->bindValue('user_id', $user_id, Types::INTEGER);
 		$res = $stmt->executeQuery();
 
 		while ($row = $res->fetchAssociative())

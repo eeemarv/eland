@@ -288,7 +288,6 @@
                 {%- block csv_download_btn -%}
                 {%- endblock csv_download_btn -%}
 								{%- block local_admin_menu -%}
-									{%- include 'include/menu/local_admin_menu.html.twig' -%}
 								{%- endblock local_admin_menu -%}
 							</div>
 						{%- endif -%}
@@ -409,6 +408,9 @@
 						{%- block form_a -%}{{- form_a|default('') -}}{%- endblock -%}
 						{%- block form_b -%}{{- form_b|default('') -}}{%- endblock -%}
 						{%- block form_c -%}{{- form_c|default('') -}}{%- endblock -%}
+            {%- block form_log_comment -%}
+							{%- include 'form/log_comment.html.twig' -%}
+            {%- endblock form_log_comment -%}
 						{%- block form_cancel_btn -%}
 							{%- include 'form/cancel_btn.html.twig' -%}
 						{%- endblock form_cancel_btn -%}

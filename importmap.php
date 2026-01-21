@@ -36,4 +36,36 @@ return [
         'version' => '9.3.2',
         'type' => 'css',
     ],
+    'bootstrap-tagsinput' => [
+        'version' => '0.7.1',
+    ],
+    'jssor-slider' => [
+        'version' => '28.0.0',
+    ],
+    'jquery' => [
+        'version' => '3.7.1',
+    ],
+    'blueimp-file-upload' => [
+        'version' => '10.32.0',
+    ],
+    'bootstrap-datepicker' => [
+        'version' => '1.10.1',
+    ],
+    'leaflet' => [
+        'version' => '1.9.4',
+    ],
+    'leaflet/dist/leaflet.min.css' => [
+        'version' => '1.9.4',
+        'type' => 'css',
+    ],
+    'summernote' => [
+        'version' => '0.9.1',
+    ],
+    'codemirror' => [
+        'version' => '5.65.12',
+    ],
+    'codemirror/lib/codemirror.min.css' => [
+        'version' => '5.65.12',
+        'type' => 'css',
+    ],
 ];

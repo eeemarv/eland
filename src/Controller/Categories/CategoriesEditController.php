@@ -11,7 +11,6 @@ use App\Repository\CategoryRepository;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -45,7 +44,7 @@ class CategoriesEditController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw new NotFoundHttpException('messages (offer/want) module not enabled.');
+      throw $this->createNotFoundException('messages (offer/want) module not enabled.');
     }
 
     if (!$config_service->get_bool(
@@ -53,13 +52,20 @@ class CategoriesEditController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw new NotFoundHttpException('Categories module not enabled.');
+      throw $this->createNotFoundException('Categories module not enabled.');
     }
 
     $category = $category_repository->get(
       id: $id,
       schema: $pp->schema_o(),
     );
+
+    if ($category === false)
+    {
+      throw $this->createNotFoundException(
+        'Category ' . $id . ' not found.'
+      );
+    }
 
     $command = new CategoriesNameCommand();
     $command->id = $id;

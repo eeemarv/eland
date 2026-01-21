@@ -11,7 +11,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -46,7 +45,7 @@ class IntersystemsShowController extends AbstractController
           schema: $pp->schema_o(),
         ))
         {
-            throw new NotFoundHttpException('Intersystem submodule (users) not enabled.');
+            throw $this->createNotFoundException('Intersystem submodule (users) not enabled.');
         }
 
         $group = $db->fetchAssociative('select *

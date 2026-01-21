@@ -12,26 +12,26 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ConfigDateFormatType extends AbstractType
 {
-    public function __construct(
-        protected DateFormatService $date_format_service
-    )
-    {
-    }
+  public function __construct(
+    private readonly DateFormatService $date_format_service
+  )
+  {
+  }
 
-    public function buildForm(
-        FormBuilderInterface $builder,
-        array $options
-    ):void
-    {
-        $builder
-            ->add('date_format', ChoiceType::class, [
-                'choices'   => $this->date_format_service->get_choices(),
-            ])
-            ->add('submit', SubmitType::class);
-    }
+  public function buildForm(
+    FormBuilderInterface $builder,
+    array $options,
+  ):void
+  {
+    $builder
+      ->add('date_format', ChoiceType::class, [
+        'choices'   => $this->date_format_service->get_choices(),
+      ])
+      ->add('submit', SubmitType::class);
+  }
 
-    public function configureOptions(OptionsResolver $resolver):void
-    {
-        $resolver->setDefault('data_class', ConfigDateFormatCommand::class);
-    }
+  public function configureOptions(OptionsResolver $resolver):void
+  {
+    $resolver->setDefault('data_class', ConfigDateFormatCommand::class);
+  }
 }

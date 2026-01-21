@@ -13,12 +13,12 @@ class CategoriesChoiceLoader extends AbstractChoiceLoader implements ChoiceLoade
   protected $choice_list;
 
   public function __construct(
-      private readonly bool $parent_selectable,
-      private readonly bool $null_selectable,
-      private readonly bool $all_choice,
-      private readonly CategoryRepository $category_repository,
-      private readonly PageParamsService $pp,
-      private readonly TranslatorInterface $translator,
+    private readonly bool $parent_selectable,
+    private readonly bool $null_selectable,
+    private readonly bool $all_choice,
+    private readonly CategoryRepository $category_repository,
+    private readonly PageParamsService $pp,
+    private readonly TranslatorInterface $translator,
   )
   {
   }

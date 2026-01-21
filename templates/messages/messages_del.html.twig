@@ -8,7 +8,7 @@
   {{- 'messages_del.title'|trans({
     'offer_want': message.offer_want,
     'self': su_is_owner(message.user_id) ? 'self' : 'some_user',
-    'user': account(message.user_id, schema)
+    'user': account(message.user_id)
   }) -}}
 {%- endblock heading_title -%}
 

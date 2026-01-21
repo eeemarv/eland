@@ -346,7 +346,7 @@ class CategoryRepository
   public function get(
     int $id,
     Schema $schema,
-  ):array
+  ):array|false
   {
     $category = $this->db->fetchAssociative('select c.*, cp.name as parent_name
       from ' . $schema->str() . '.categories c
@@ -358,18 +358,13 @@ class CategoryRepository
         'id'  => Types::INTEGER,
       ]);
 
-    if (!$category)
-    {
-      throw new NotFoundHttpException('Category ' . $id . ' not found.');
-    }
-
     return $category;
 	}
 
   public function get_with_messages_count(
     int $id,
     Schema $schema,
-  ):array
+  ):array|false
   {
 		$category = $this->db->fetchAssociative('select c.*,
 			cp.name as parent_name, count(m.*)
@@ -384,11 +379,6 @@ class CategoryRepository
       ], [
         'id'  => Types::INTEGER,
       ]);
-
-    if (!$category)
-    {
-      throw new NotFoundHttpException('Category ' . $id . ' not found.');
-    }
 
     return $category;
   }

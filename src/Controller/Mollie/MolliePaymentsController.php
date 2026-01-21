@@ -22,7 +22,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -61,7 +60,7 @@ class MolliePaymentsController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw new NotFoundHttpException('Mollie submodule (users) not enabled.');
+      throw $this->createNotFoundException('Mollie submodule (users) not enabled.');
     }
 
     $no_apikey = false;

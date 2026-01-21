@@ -11,9 +11,9 @@ use Doctrine\DBAL\ArrayParameterType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Doctrine\DBAL\Types\Types;
 use Redis;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -47,7 +47,7 @@ class IntersystemsController extends AbstractController
           schema: $pp->schema_o(),
         ))
         {
-            throw new NotFoundHttpException('Intersystem submodule (users) not enabled.');
+            throw $this->createNotFoundException('Intersystem submodule (users) not enabled.');
         }
 
         $intersystems = $db->fetchAllAssociative('select *
@@ -332,7 +332,7 @@ class IntersystemsController extends AbstractController
                 from ' . $rem_schema . '.letsgroups
                 where url = ?',
                 [$this_origin],
-                [\PDO::PARAM_STR]
+                [Types::STRING]
             );
 
             $group_user_count_ary[$rem_schema] = $db->fetchOne('select count(*)
@@ -350,7 +350,7 @@ class IntersystemsController extends AbstractController
                     $rem_account = $db->fetchAssociative('select id, code, status, role
                         from ' . $rem_schema . '.users where code = ?',
                         [$rem_group['localletscode']],
-                        [\PDO::PARAM_STR]
+                        [Types::STRING]
                     );
 
                     if ($rem_account)

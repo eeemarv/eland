@@ -15,7 +15,7 @@ class FilterType extends AbstractType
 
   public function buildForm(
     FormBuilderInterface $builder,
-    array $options
+    array $options,
   ):void
   {
     $builder->setMethod('GET');

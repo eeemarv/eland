@@ -9,7 +9,6 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -39,7 +38,7 @@ class InitController extends AbstractController
   {
     if (!$env_app_init_enabled)
     {
-      throw new NotFoundHttpException('De init routes zijn niet ingeschakeld.');
+      throw $this->createNotFoundException('De init routes zijn niet ingeschakeld.');
     }
 
     $done = $request->query->get('ok', '');

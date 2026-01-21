@@ -15,9 +15,8 @@ class DelVerifyType extends AbstractType
     array $options,
   ):void
   {
-    $builder
-      ->add('verify', CheckboxType::class)
-      ->add('submit', SubmitType::class);
+    $builder->add('verify', CheckboxType::class);
+    $builder->add('submit', SubmitType::class);
   }
 
   public function configureOptions(OptionsResolver $resolver):void

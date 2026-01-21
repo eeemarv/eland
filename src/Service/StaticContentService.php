@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use Doctrine\DBAL\Connection as Db;
+use Doctrine\DBAL\Types\Types;
 use Redis;
 
 class StaticContentService
@@ -46,8 +47,8 @@ class StaticContentService
 				$block,
 			],
 			'types'	=> [
-				\PDO::PARAM_STR,
-				\PDO::PARAM_STR,
+				Types::STRING,
+				Types::STRING,
 			],
 		];
 
@@ -60,7 +61,7 @@ class StaticContentService
 			$sql['where'][] = 'role = ?';
 			$sql['columns'][] = 'role';
 			$sql['params'][] = $role;
-			$sql['types'][] = \PDO::PARAM_STR;
+			$sql['types'][] = Types::STRING;
 		}
 
 		if ($route === '')
@@ -72,7 +73,7 @@ class StaticContentService
 			$sql['where'][] = 'route = ?';
 			$sql['columns'][] = 'route';
 			$sql['params'][] = $route;
-			$sql['types'][] = \PDO::PARAM_STR;
+			$sql['types'][] = Types::STRING;
 		}
 
 		return $sql;
@@ -113,7 +114,7 @@ class StaticContentService
 		else
 		{
 			$sql_params = [$content, $su->id(), ...$sql['params']];
-			$sql_types = [\PDO::PARAM_STR, \PDO::PARAM_INT, ...$sql['types']];
+			$sql_types = [Types::STRING, Types::INTEGER, ...$sql['types']];
 
 			$affected_rows = $this->db->executeStatement('update ' . $schema . '.s_content
 				set content = ?, last_edit_by = ?
@@ -126,7 +127,7 @@ class StaticContentService
 				$sql_columns = ['content', 'last_edit_by', ...$sql['columns']];
 				$insert_ary = array_combine($sql_columns, $sql_params);
 				$insert_ary['created_by'] = $su->id();
-				$sql_types[] = \PDO::PARAM_INT;
+				$sql_types[] = Types::INTEGER;
 
 				$this->db->insert($schema . '.s_content',
 					$insert_ary,

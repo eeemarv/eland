@@ -11,18 +11,17 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ConfigMaintenanceType extends AbstractType
 {
-    public function buildForm(
-        FormBuilderInterface $builder,
-        array $options
-    ):void
-    {
-        $builder
-            ->add('maintenance_en', CheckboxType::class)
-            ->add('submit', SubmitType::class);
-    }
+  public function buildForm(
+    FormBuilderInterface $builder,
+    array $options,
+  ):void
+  {
+    $builder->add('maintenance_en', CheckboxType::class);
+    $builder->add('submit', SubmitType::class);
+  }
 
-    public function configureOptions(OptionsResolver $resolver):void
-    {
-        $resolver->setDefault('data_class', ConfigMaintenanceCommand::class);
-    }
+  public function configureOptions(OptionsResolver $resolver):void
+  {
+    $resolver->setDefault('data_class', ConfigMaintenanceCommand::class);
+  }
 }

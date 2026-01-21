@@ -12,7 +12,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 #[AsController]
 class CalendarDelController extends AbstractController
@@ -33,7 +32,7 @@ class CalendarDelController extends AbstractController
           schema: $pp->schema_o(),
         ))
         {
-            throw new NotFoundHttpException('Calendar module not enabled.');
+            throw $this->createNotFoundException('Calendar module not enabled.');
         }
 
         if ($request->isMethod('POST'))

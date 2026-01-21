@@ -19,9 +19,9 @@ class LoginRepository
     string $agent,
     string $ip,
 		Schema $schema
-	):void
+	):int
 	{
-		$this->db->insert($schema->str() . '.login', [
+		return (int) $this->db->insert($schema->str() . '.login', [
 			'user_id'       => $user_id,
 			'agent'         => $agent,
 			'ip'            => $ip,

@@ -62,6 +62,13 @@ class PasswordResetController extends AbstractController
         schema: $pp->schema_o(),
       );
 
+      if ($user_id === false)
+      {
+        throw $this->createNotFoundException(
+          'User with email ' . $email . ' not found.'
+        );
+      }
+
       $account_str = $account_render->get_str($user_id, $pp->schema());
 
       $m_confirm = new EmailPasswordResetConfirmMessage(

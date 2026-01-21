@@ -17,9 +17,9 @@ class TypeaheadService
 	protected array $fetch_ary;
 
 	public function __construct(
-		protected Redis $redis,
-		protected LoggerInterface $logger,
-		protected UrlGeneratorInterface $url_generator
+		private readonly Redis $redis,
+		private readonly LoggerInterface $logger,
+		private readonly UrlGeneratorInterface $url_generator
 	)
 	{
 	}

@@ -34,7 +34,7 @@ final class EmailUserBulkMessageHandler
       'subject' => $message->subject,
     ];
 
-    $bulk_id = Uuid::v4();
+    $bulk_id = Uuid::v7();
 
     foreach ($user_ids as $user_id)
     {
@@ -42,6 +42,12 @@ final class EmailUserBulkMessageHandler
         id: $user_id,
         schema: $schema,
       );
+
+      if ($user === false)
+      {
+        error_log('user with id ' . $user_id . ' not found');
+        continue;
+      }
 
       $embedded_context = [];
 

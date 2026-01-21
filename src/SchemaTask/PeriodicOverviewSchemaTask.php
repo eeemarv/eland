@@ -265,7 +265,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 				order by m.created_at desc');
 
 			$stmt->bindValue(1, $treshold_time, Types::DATETIME_IMMUTABLE);
-			$stmt->bindValue(2, $expires_at_enabled, \PDO::PARAM_BOOL);
+			$stmt->bindValue(2, $expires_at_enabled, Types::BOOLEAN);
 			$res = $stmt->executeQuery();
 
 			while ($row = $res->fetchAssociative())
@@ -336,7 +336,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 					order by m.created_at desc');
 
 				$stmt->bindValue(1, $treshold_time, Types::DATETIME_IMMUTABLE);
-				$stmt->bindValue(2, $expires_at_enabled_intersystem, \PDO::PARAM_BOOL);
+				$stmt->bindValue(2, $expires_at_enabled_intersystem, Types::BOOLEAN);
 				$res = $stmt->executeQuery();
 
 				while ($row = $res->fetchAssociative())
@@ -572,7 +572,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 					where m.user_id = ?
 					order by m.created_at desc');
 
-				$stmt->bindValue(1, $user_id, \PDO::PARAM_INT);
+				$stmt->bindValue(1, $user_id, Types::INTEGER);
 
 				$res = $stmt->executeQuery();
 
@@ -594,10 +594,10 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 						' . $schema . '.mollie_payment_requests r
 					where p.request_id = r.id
 						and user_id = ?
-						and is_canceled = \'f\'::bool
-						and is_paid = \'f\'::bool');
+						and not is_canceled
+						and not is_paid');
 
-				$stmt->bindValue(1, $user_id, \PDO::PARAM_INT);
+				$stmt->bindValue(1, $user_id, Types::INTEGER);
 				$res = $stmt->executeQuery();
 
 				while ($row = $res->fetchAssociative())

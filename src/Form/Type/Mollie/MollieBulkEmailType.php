@@ -15,29 +15,25 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 class MollieBulkEmailType extends AbstractType
 {
   public function __construct(
-
   )
   {
   }
 
   public function buildForm(
     FormBuilderInterface $builder,
-    array $options
+    array $options,
   ):void
   {
-    $builder
-      ->add('selected', HiddenType::class)
-      ->add('subject', TextType::class)
-      ->add('content', SummernoteType::class)
-      ->add('copy', CheckboxType::class)
-      ->add('verify', CheckboxType::class)
-      ->add('submit', SubmitType::class);
+    $builder->add('selected', HiddenType::class);
+    $builder->add('subject', TextType::class);
+    $builder->add('content', SummernoteType::class);
+    $builder->add('copy', CheckboxType::class);
+    $builder->add('verify', CheckboxType::class);
+    $builder->add('submit', SubmitType::class);
   }
 
   public function configureOptions(OptionsResolver $resolver):void
   {
-    $resolver->setDefaults([
-      'data_class'  => MollieBulkEmailCommand::class,
-    ]);
+    $resolver->setDefault('data_class', MollieBulkEmailCommand::class);
   }
 }

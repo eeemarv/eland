@@ -3,7 +3,7 @@
 
 {%- block subject_line -%}
 {{- 'auto_deactivate_admin.subject'|trans({
-    'account': account(user_id, schema)
+    'account': account(user_id)
 }) -}}
 {%- endblock subject_line %}
 
@@ -20,7 +20,7 @@
             'info': 'auto_deactivate_admin.message'|trans({
             'ao': context_url_open('users_show', mpp_admin_ary(schema), {'id': user_id}),
             'ac': '</a>',
-            'account': account(user_id, schema),
+            'account': account(user_id),
         })|raw}
     -%}
 
@@ -45,7 +45,7 @@
 {{ 'auto_deactivate_admin.message'|trans({
     'ao': '',
     'ac': '',
-    'account': account(user_id, schema),
+    'account': account(user_id),
 }) }}
 
 {{ context_url('users_show', mpp_admin_ary(schema), {'id': user_id}) }}

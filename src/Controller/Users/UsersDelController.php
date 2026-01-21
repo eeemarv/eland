@@ -6,8 +6,6 @@ use App\Cnst\BulkCnst;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App\Cnst\StatusCnst;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
@@ -19,6 +17,7 @@ use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
+use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -58,24 +57,26 @@ class UsersDelController extends AbstractController
 
         if ($su->id() === $id)
         {
-            throw new AccessDeniedHttpException(
-                'You can not remove your own user account.');
+            throw $this->createAccessDeniedException(
+                'You can not remove your own user account.'
+            );
         }
 
         if ($db->fetchOne('select id
             from ' . $pp->schema() . '.transactions
             where id_to = ? or id_from = ?',
-            [$id, $id], [\PDO::PARAM_INT, \PDO::PARAM_INT]))
+            [$id, $id], [Types::INTEGER, Types::INTEGER]))
         {
-            throw new AccessDeniedHttpException('Een gebruiker met transacties
-                kan niet worden verwijderd.');
+            throw $this->createAccessDeniedException(
+              'A user with transactions can not be removed.
+            ');
         }
 
         $user = $user_cache_service->get($id, $pp->schema());
 
         if (!$user)
         {
-            throw new NotFoundHttpException('The user with id ' . $id . ' does not exist.');
+            throw $this->createNotFoundException('The user with id ' . $id . ' does not exist.');
         }
 
         if ($request->isMethod('POST'))

@@ -1,19 +1,16 @@
 {%- extends 'users/base/users_single_base.html.twig' -%}
 
 {%- block heading_title -%}
-    {%- if is_self -%}
-        {{- 'users_image_del_self.title'|trans -}}
-    {%- else -%}
-        {{- 'users_image_del.title'|trans({
-            'user': account(id, schema)|link('users_show', {'id': id})
-        })|raw -}}
-    {%- endif -%}
+  {{- 'users_image_del.title'|trans({
+    'user': user.name,
+    'self': is_self ? 'yes' : 'no',
+  }) -}}
 {%- endblock heading_title -%}
 
 {%- block css -%}
-    {{- parent() -}}
+  {{- parent() -}}
 {%- endblock css -%}
 
 {%- block js -%}
-    {{- parent() -}}
+  {{- parent() -}}
 {%- endblock js -%}

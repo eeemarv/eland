@@ -22,17 +22,18 @@ class ForumTopicDelType extends AbstractType
 
   public function buildForm(
     FormBuilderInterface $builder,
-    array $options
+    array $options,
   ):void
   {
-    $builder
-      ->add('subject', TextType::class, [
-        'disabled'  => true,
-      ])
-      ->add('content', SummernoteType::class, [
-        'disabled'  => true,
-      ])
-      ->add('submit', SubmitType::class);
+    $builder->add('subject', TextType::class, [
+      'disabled'  => true,
+    ]);
+
+    $builder->add('content', SummernoteType::class, [
+      'disabled'  => true,
+    ]);
+
+    $builder->add('submit', SubmitType::class);
 
     $this->access_field_subscriber->add(
       type_options: [
@@ -44,8 +45,6 @@ class ForumTopicDelType extends AbstractType
 
   public function configureOptions(OptionsResolver $resolver):void
   {
-    $resolver->setDefaults([
-      'data_class'    => ForumTopicCommand::class,
-    ]);
+    $resolver->setDefault('data_class', ForumTopicCommand::class);
   }
 }

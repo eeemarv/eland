@@ -1,0 +1,36 @@
+{%- if not is_intersystem and (pp_has_role('admin') or su_is_owner(id)) -%}
+{%- embed 'embed/list_item.html.twig' -%}
+  {%- import 'macro/lbl.html.twig' as l -%}
+  {% block class %} owner{% endblock class %}
+  {%- block dl -%}
+    <dt>
+      {{- 'label.periodic_overview_reception'|trans -}}
+    </dt>
+    <dd>
+      {%- if user.periodic_overview_en -%}
+        {{- l.label_lg('enabled') -}}
+      {%- else -%}
+        {{- l.label_lg('disabled') -}}
+      {%- endif -%}
+    </dd>
+  {%- endblock dl -%}
+  {%- block div_right -%}
+  {%- if pp_has_role('admin') or is_self -%}
+
+    <a href="{{- path('users_periodic_overview_edit' ~ (is_self ? '_self' : ''), (is_self ? {} : {'id': id})|pp) -}}"
+      class="btn btn-primary"
+      title="{{- 'users_periodic_overview_edit.title'|trans({
+        'user': user.name,
+        'self': is_self ? 'yes' : 'no',
+      }) -}}">
+      <twig:ux:icon name="lucide:pencil"/>
+      &nbsp;
+      <span class="hidden-sm">
+        {{- 'btn.edit'|trans -}}
+      </span>
+    </a>
+
+  {%- endif -%}
+  {%- endblock div_right -%}
+{%- endembed -%}
+{%- endif -%}

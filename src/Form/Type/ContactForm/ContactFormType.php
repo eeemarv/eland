@@ -13,20 +13,19 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 
 class ContactFormType extends AbstractType
 {
-    public function buildForm(
-        FormBuilderInterface $builder,
-        array $options
-    ):void
-    {
-        $builder
-            ->add('email', EmailType::class)
-            ->add('message', TextareaType::class)
-            ->add('captcha', CaptchaType::class)
-            ->add('submit', SubmitType::class);
-    }
+  public function buildForm(
+    FormBuilderInterface $builder,
+    array $options,
+  ):void
+  {
+    $builder->add('email', EmailType::class);
+    $builder->add('message', TextareaType::class);
+    $builder->add('captcha', CaptchaType::class);
+    $builder->add('submit', SubmitType::class);
+  }
 
-    public function configureOptions(OptionsResolver $resolver):void
-    {
-        $resolver->setDefault('data_class', ContactFormCommand::class);
-    }
+  public function configureOptions(OptionsResolver $resolver):void
+  {
+    $resolver->setDefault('data_class', ContactFormCommand::class);
+  }
 }

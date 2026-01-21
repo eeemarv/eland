@@ -14,8 +14,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -51,26 +49,41 @@ class ForumDelPostController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw new NotFoundHttpException('Forum module not enabled.');
+      throw $this->createNotFoundException('Forum module not enabled.');
     }
 
     $forum_post = $forum_repository->get_post(
       post_id: $id,
       schema: $pp->schema_o(),
     );
+
+    if ($forum_post === false)
+    {
+      throw $this->createNotFoundException(
+        'Forum post ' . $id . ' not found.'
+      );
+		}
+
     $forum_topic = $forum_repository->get_topic(
       topic_id: $forum_post['topic_id'],
       schema: $pp->schema_o(),
     );
 
+		if ($forum_topic === false)
+		{
+			throw $this->createNotFoundException(
+        'Forum topic ' . $forum_post['topic_id'] . ' not found.'
+      );
+		}
+
     if (!$item_access_service->is_visible($forum_topic['access']))
     {
-      throw new AccessDeniedHttpException('Access denied for forum topic ' . $forum_topic['id'] . '.');
+      throw $this->createAccessDeniedException('Access denied for forum topic ' . $forum_topic['id'] . '.');
     }
 
     if (!($su->is_owner($forum_post['user_id']) || $pp->is_admin()))
     {
-      throw new AccessDeniedHttpException('No rights for this action.');
+      throw $this->createAccessDeniedException('No rights for this action.');
     }
 
     $first_post_id = $forum_repository->get_first_post_id(
@@ -80,7 +93,7 @@ class ForumDelPostController extends AbstractController
 
     if ($first_post_id === $id)
     {
-      throw new AccessDeniedHttpException('Wrong route for this action.');
+      throw $this->createAccessDeniedException('Wrong route for this action.');
     }
 
     $command = new ForumPostCommand();

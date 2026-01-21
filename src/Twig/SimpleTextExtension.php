@@ -11,12 +11,7 @@ class SimpleTextExtension extends AbstractExtension
 	{
 		return [
 			new TwigFilter('underline', [$this, 'underline']),
-		];
-	}
-
-	public function getFunctions():array
-	{
-		return [
+			new TwigFilter('replace_when_zero', [$this, 'replace_when_zero']),
 		];
 	}
 
@@ -24,5 +19,10 @@ class SimpleTextExtension extends AbstractExtension
 	{
 		$len = strlen($input);
 		return $input . "\r\n" . str_repeat($char, $len);
+	}
+
+	public function replace_when_zero(int $input, $replace = null):string
+	{
+		return $input === 0 ? $replace : $input;
 	}
 }

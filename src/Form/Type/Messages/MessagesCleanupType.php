@@ -17,20 +17,17 @@ class MessagesCleanupType extends AbstractType
     array $options
   ):void
   {
-    $builder
-      ->add('cleanup_enabled', CheckboxType::class)
-      ->add('cleanup_after_days', IntegerType::class)
-      ->add('expires_at_days_default', IntegerType::class)
-      ->add('expires_at_required', CheckboxType::class)
-      ->add('expires_at_switch_enabled', CheckboxType::class)
-      ->add('expire_notify', CheckboxType::class)
-      ->add('submit', SubmitType::class);
+    $builder->add('cleanup_enabled', CheckboxType::class);
+    $builder->add('cleanup_after_days', IntegerType::class);
+    $builder->add('expires_at_days_default', IntegerType::class);
+    $builder->add('expires_at_required', CheckboxType::class);
+    $builder->add('expires_at_switch_enabled', CheckboxType::class);
+    $builder->add('expire_notify', CheckboxType::class);
+    $builder->add('submit', SubmitType::class);
   }
 
   public function configureOptions(OptionsResolver $resolver):void
   {
-    $resolver->setDefaults([
-      'data_class'    => MessagesCleanupCommand::class,
-    ]);
+    $resolver->setDefault('data_class', MessagesCleanupCommand::class);
   }
 }

@@ -5,7 +5,7 @@
     <tr>
         <td>
             <a href="{{- context_url('login', mpp_anon_ary(schema),
-            {'login': account_code(user_id, schema)}) -}}">
+            {'login': account_code(user_id)}) -}}">
             {{- 'label.login'|trans -}}
             </a>
         </td>
@@ -18,7 +18,7 @@
             {{- 'label.account_code'|trans -}}
         </td>
         <td style="font-style: bold; padding-left: 10px">
-            {{- account_code(user_id, schema) -}}
+            {{- account_code(user_id) -}}
         </td>
     </tr>
     <tr>
@@ -26,7 +26,7 @@
             {{- 'label.username'|trans -}}
         </td>
         <td style="font-style: bold; padding-left: 10px">
-            {{- username(user_id, schema) -}}
+            {{- username(user_id) -}}
         </td>
     </tr>
     <tr>
@@ -34,9 +34,9 @@
             {{- 'label.balance'|trans -}}
         </td>
         <td style="font-style: bold; padding-left: 10px">
-            {{- account_balance(user_id, schema) -}}
+            {{- account_balance(user_id) -}}
             &nbsp;
-            {{- config_str('transactions.currency.name', schema) -}}
+            {{- config_str('transactions.currency.name') -}}
         </td>
     </tr>
 </table>

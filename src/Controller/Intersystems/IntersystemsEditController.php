@@ -14,8 +14,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -55,7 +55,7 @@ class IntersystemsEditController extends AbstractController
           schema: $pp->schema_o(),
         ))
         {
-            throw new NotFoundHttpException('Intersystem submodule (users) not enabled.');
+            throw $this->createNotFoundException('Intersystem submodule (users) not enabled.');
         }
 
         if ($request->isMethod('POST'))
@@ -70,7 +70,7 @@ class IntersystemsEditController extends AbstractController
                 where url = ?
                     and id <> ?',
                     [$group['url'], $id],
-                    [\PDO::PARAM_STR, \PDO::PARAM_INT]))
+                    [Types::STRING, Types::INTEGER]))
             {
                 $errors[] = 'Er bestaat al een interSysteem met deze url.';
             }
@@ -78,7 +78,7 @@ class IntersystemsEditController extends AbstractController
             if ($db->fetchOne('select id
                 from ' . $pp->schema() . '.letsgroups
                 where localletscode = ?
-                    and id <> ?', [$group['localletscode'], $id], [\PDO::PARAM_STR, \PDO::PARAM_INT]))
+                    and id <> ?', [$group['localletscode'], $id], [Types::STRING, Types::INTEGER]))
             {
                 $errors[] = 'Er bestaat al een interSysteem met deze Account Code.';
             }
@@ -114,7 +114,7 @@ class IntersystemsEditController extends AbstractController
             $group = $db->fetchAssociative('select *
             from ' . $pp->schema() . '.letsgroups
             where id = ?',
-            [$id], [\PDO::PARAM_INT]);
+            [$id], [Types::INTEGER]);
 
             if (!$group)
             {

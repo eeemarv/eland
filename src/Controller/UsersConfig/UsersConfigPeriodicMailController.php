@@ -12,7 +12,6 @@ use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -43,7 +42,7 @@ class UsersConfigPeriodicMailController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw new NotFoundHttpException('Periodic mail module not enabled');
+      throw $this->createNotFoundException('Periodic mail module not enabled');
     }
 
     $mollie_enabled = $config_service->get_bool(

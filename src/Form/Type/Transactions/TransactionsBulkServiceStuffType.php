@@ -20,27 +20,24 @@ class TransactionsBulkServiceStuffType extends AbstractType
 
   public function buildForm(
     FormBuilderInterface $builder,
-    array $options
+    array $options,
   ):void
   {
-    $builder
-      ->add('selected', HiddenType::class)
-      ->add('service_stuff', BtnChoiceType::class, [
-        'choices' => [
-          'service'   => 'service',
-          'stuff'     => 'stuff',
-          'null_service_stuff'  => 'null_service_stuff',
-        ],
-        'multiple'  => false,
-      ])
-      ->add('verify', CheckboxType::class)
-      ->add('submit', SubmitType::class);
+    $builder->add('selected', HiddenType::class);
+    $builder->add('service_stuff', BtnChoiceType::class, [
+      'choices' => [
+        'service'   => 'service',
+        'stuff'     => 'stuff',
+        'null_service_stuff'  => 'null_service_stuff',
+      ],
+      'multiple'  => false,
+    ]);
+    $builder->add('verify', CheckboxType::class);
+    $builder->add('submit', SubmitType::class);
   }
 
   public function configureOptions(OptionsResolver $resolver):void
   {
-    $resolver->setDefaults([
-      'data_class'  => TransactionsBulkServiceStuffCommand::class,
-    ]);
+    $resolver->setDefault('data_class', TransactionsBulkServiceStuffCommand::class);
   }
 }

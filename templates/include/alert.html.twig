@@ -12,6 +12,17 @@
               {%- set params = message.params is defined ? message.params : [] -%}
               {%- if message.is_raw is defined and message.is_raw -%}
                 {{- message.key|trans(params)|raw -}}
+              {%- elseif message.user is defined
+                and message.user.id is defined
+                and message.user.name is defined -%}
+                {%- if pp_has_role('admin') -%}
+                  <a href="{{- path('users_show', {
+                  'id': message.user.id}|pp) -}}">
+                    {{- message.user.code ?? '***' }} {{ message.user.name -}}
+                  </a>
+                {%- else -%}
+                  {{- message.user.code ?? '***' }} {{ message.user.name -}}
+                {%- endif -%}
               {%- else -%}
                 {{- message.key|trans(params) -}}
               {%- endif -%}

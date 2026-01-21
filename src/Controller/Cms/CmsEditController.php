@@ -10,11 +10,11 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\StaticContentService;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\DependencyInjection\Attribute\Target;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 #[AsController]
 class CmsEditController extends AbstractController
@@ -55,7 +55,7 @@ class CmsEditController extends AbstractController
     if (!$form->isSubmitted()
       || !$form->isValid())
     {
-      throw new BadRequestException('Invalid form');
+      throw new BadRequestHttpException('Invalid form');
     }
 
     $command = $form->getData();

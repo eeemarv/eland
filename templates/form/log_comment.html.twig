@@ -1,0 +1,20 @@
+{%- if form.log_comment is defined -%}
+
+</div>
+<ul class="list-group">
+  <li class="list-group-item list-group-item-warning">
+  {{- form_row(form.log_comment, {
+    'label': 'users.log_comment.label',
+    'help': 'users.log_comment.help',
+    'help_translation_parameters': {
+      'ao': id is defined ? '<a href="' ~ path('users_log', {'id': id}|pp) ~ '">' : '',
+      'ac': id is defined ? '</a>' : '',
+    },
+    'help_html': true,
+    'addon': ux_icon('lucide:info'),
+  }) -}}
+  </li>
+</ul>
+<div class="panel-heading">
+
+{%- endif -%}

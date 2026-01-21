@@ -20,20 +20,17 @@ class UsersBulkStatusType extends AbstractType
 
   public function buildForm(
     FormBuilderInterface $builder,
-    array $options
+    array $options,
   ):void
   {
-    $builder
-      ->add('selected', HiddenType::class)
-      ->add('status', StatusSelectType::class)
-      ->add('verify', CheckboxType::class)
-      ->add('submit', SubmitType::class);
+    $builder->add('selected', HiddenType::class);
+    $builder->add('status', StatusSelectType::class);
+    $builder->add('verify', CheckboxType::class);
+    $builder->add('submit', SubmitType::class);
   }
 
   public function configureOptions(OptionsResolver $resolver):void
   {
-    $resolver->setDefaults([
-      'data_class'  => UsersBulkStatusCommand::class,
-    ]);
+    $resolver->setDefault('data_class', UsersBulkStatusCommand::class);
   }
 }

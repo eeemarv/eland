@@ -13,7 +13,6 @@ use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 #[AsController]
 class CalendarEditController extends AbstractController
@@ -35,7 +34,7 @@ class CalendarEditController extends AbstractController
           schema: $pp->schema_o(),
         ))
         {
-            throw new NotFoundHttpException('Calendar module not enabled.');
+            throw $this->createNotFoundException('Calendar module not enabled.');
         }
 
         $errors = [];

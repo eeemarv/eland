@@ -12,7 +12,6 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -65,7 +64,7 @@ class MessagesExtendedController extends AbstractController
           config_id: 'messages.enabled',
           schema: $pp->schema_o()))
         {
-            throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
+            throw $this->createNotFoundException('Messages (offers/wants) module not enabled.');
         }
 
         $expires_at_enabled = $config_service->get_bool(

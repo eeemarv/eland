@@ -44,7 +44,10 @@ class FormTypeFormTokenExtension extends AbstractTypeExtension
     array $options,
   ):void
   {
-    if ($options[FormTokenManagerInterface::OPTION_ENABLED] && !$view->parent && $options['compound'])
+    if ($options[FormTokenManagerInterface::OPTION_ENABLED]
+      && !$view->parent
+      && $options['compound']
+    )
     {
       $factory = $form->getConfig()->getFormFactory();
 
@@ -62,24 +65,16 @@ class FormTypeFormTokenExtension extends AbstractTypeExtension
     }
   }
 
-  public function configureOptions(OptionsResolver $resolver):void
+  public function configureOptions(
+    OptionsResolver $resolver,
+  ):void
   {
-    $resolver->setDefaults([
-      FormTokenManagerInterface::OPTION_ENABLED => true,
-      FormTokenManagerInterface::OPTION_PREVENT_DOUBLE => true,
-    ]);
+    $resolver->setDefault(FormTokenManagerInterface::OPTION_ENABLED, true);
+    $resolver->setDefault(FormTokenManagerInterface::OPTION_PREVENT_DOUBLE, true);
   }
 
   public static function getExtendedTypes():iterable
   {
     yield FormType::class;
-  }
-
-  public function getDefaultOptions(array $options)
-  {
-    return [
-      FormTokenManagerInterface::OPTION_ENABLED => true,
-      FormTokenManagerInterface::OPTION_PREVENT_DOUBLE => true,
-    ];
   }
 }

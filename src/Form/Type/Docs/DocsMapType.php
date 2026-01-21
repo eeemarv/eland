@@ -11,29 +11,27 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class DocsMapType extends AbstractType
 {
-    public function __construct(
-    )
-    {
-    }
+  public function __construct(
+  )
+  {
+  }
 
-    public function buildForm(
-        FormBuilderInterface $builder,
-        array $options
-    ):void
-    {
-        $builder
-            ->add('name',TypeaheadType::class, [
-                'add'           => 'doc_map_names',
-                'render_omit'   => $options['render_omit'],
-            ])
-            ->add('submit', SubmitType::class);
-    }
+  public function buildForm(
+    FormBuilderInterface $builder,
+    array $options,
+  ):void
+  {
+    $builder->add('name',TypeaheadType::class, [
+      'add'           => 'doc_map_names',
+      'render_omit'   => $options['render_omit'],
+    ]);
 
-    public function configureOptions(OptionsResolver $resolver):void
-    {
-        $resolver->setDefaults([
-            'render_omit'   => '',
-            'data_class'    => DocsMapCommand::class,
-        ]);
-    }
+    $builder->add('submit', SubmitType::class);
+  }
+
+  public function configureOptions(OptionsResolver $resolver):void
+  {
+    $resolver->setDefault('render_omit', '');
+    $resolver->setDefault('data_class', DocsMapCommand::class);
+  }
 }

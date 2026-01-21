@@ -7,8 +7,8 @@ use Symfony\Component\Validator\Constraint;
 #[\Attribute]
 class DocMapUniqueName extends Constraint
 {
-    public function getTargets():string
-    {
-        return self::CLASS_CONSTRAINT;
-    }
+  public function getTargets():string
+  {
+    return self::CLASS_CONSTRAINT;
+  }
 }

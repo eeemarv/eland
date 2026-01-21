@@ -20,7 +20,7 @@
             'ao': context_url_open(
                 'home', mpp_anon_ary(schema), {}),
             'ac': '</a>',
-            'system_name': config_str('system.name', schema)
+            'system_name': config_str('system.name')
         })|raw -}}
     {%- endset -%}
 
@@ -53,7 +53,7 @@
 {{ 'contact_support.explain'|trans({
     'ao': '',
     'ac': '',
-    'system_name': config_str('system.name', schema)
+    'system_name': config_str('system.name')
 }) }}
 
 {{ context_url('home', mpp_anon_ary(schema), {}) }}

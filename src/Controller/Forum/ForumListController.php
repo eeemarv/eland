@@ -11,7 +11,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -44,13 +43,14 @@ class ForumListController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw new NotFoundHttpException('Forum module not enabled.');
+      throw $this->createNotFoundException('Forum module not enabled.');
     }
 
     $filter_form = $this->createForm(QTextSearchFilterType::class);
     $filter_form->handleRequest($request);
 
     $visible_ary = $item_access_service->get_visible_ary_for_page($pp->schema());
+
     $topics = $forum_repository->get_topics_with_reply_count(
       visible_ary: $visible_ary,
       schema: $pp->schema_o(),

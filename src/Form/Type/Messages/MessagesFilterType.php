@@ -26,14 +26,14 @@ class MessagesFilterType extends AbstractType
     private readonly UrlGeneratorInterface $url_generator,
     private readonly AccessFieldSubscriber $access_field_subscriber,
     private readonly PageParamsService $pp,
-    private readonly VarRouteService $vr
+    private readonly VarRouteService $vr,
   )
   {
   }
 
   public function buildForm(
     FormBuilderInterface $builder,
-    array $options
+    array $options,
   ):void
   {
     $service_stuff_enabled = $this->config_service->get_bool(

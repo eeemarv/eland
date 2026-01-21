@@ -11,18 +11,17 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ConfigAdminType extends AbstractType
 {
-    public function buildForm(
-        FormBuilderInterface $builder,
-        array $options
-    ):void
-    {
-        $builder
-            ->add('login_as_admin_enabled', CheckboxType::class)
-            ->add('submit', SubmitType::class);
-    }
+  public function buildForm(
+    FormBuilderInterface $builder,
+    array $options,
+  ):void
+  {
+    $builder->add('login_as_admin_enabled', CheckboxType::class);
+    $builder->add('submit', SubmitType::class);
+  }
 
-    public function configureOptions(OptionsResolver $resolver):void
-    {
-        $resolver->setDefault('data_class', ConfigAdminCommand::class);
-    }
+  public function configureOptions(OptionsResolver $resolver):void
+  {
+    $resolver->setDefault('data_class', ConfigAdminCommand::class);
+  }
 }

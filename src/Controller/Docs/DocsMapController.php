@@ -11,7 +11,6 @@ use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -46,15 +45,24 @@ class DocsMapController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw new NotFoundHttpException('Documents module not enabled.');
+      throw $this->createNotFoundException('Documents module not enabled.');
     }
 
     $visible_ary = $item_access_service->get_visible_ary_for_page();
+
     $doc_map = $doc_repository->get_map_with_prev_next(
       map_id: $id,
       visible_ary: $visible_ary,
       schema: $pp->schema_o(),
     );
+
+		if ($doc_map === false)
+		{
+			throw $this->createNotFoundException(
+        'Document map ' . $id . ' not found.'
+      );
+		}
+
     $docs = $doc_repository->get_docs_for_map_id(
       map_id: $id,
       visible_ary: $visible_ary,

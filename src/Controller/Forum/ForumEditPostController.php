@@ -13,8 +13,6 @@ use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -49,26 +47,41 @@ class ForumEditPostController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw new NotFoundHttpException('Forum module not enabled.');
+      throw $this->createNotFoundException('Forum module not enabled.');
     }
 
     $forum_post = $forum_repository->get_post(
       post_id: $id,
       schema: $pp->schema_o(),
     );
+
+    if ($forum_post === false)
+    {
+      throw $this->createNotFoundException(
+        'Forum post ' . $id . ' not found.'
+      );
+		}
+
     $forum_topic = $forum_repository->get_topic(
       topic_id: $forum_post['topic_id'],
       schema: $pp->schema_o(),
     );
 
+		if ($forum_topic === false)
+		{
+			throw $this->createNotFoundException(
+        'Forum topic ' . $forum_post['topic_id'] . ' not found.'
+      );
+		}
+
     if (!$item_access_service->is_visible($forum_topic['access']))
     {
-      throw new AccessDeniedHttpException('Access denied for forum topic ' . $forum_topic['id']);
+      throw $this->createAccessDeniedException('Access denied for forum topic ' . $forum_topic['id']);
     }
 
     if (!($pp->is_admin() || $su->is_owner($forum_post['user_id'])))
     {
-      throw new AccessDeniedHttpException('No rights for this action.');
+      throw $this->createAccessDeniedException('No rights for this action.');
     }
 
     $first_post_id = $forum_repository->get_first_post(
@@ -78,7 +91,7 @@ class ForumEditPostController extends AbstractController
 
     if ($first_post_id === $id)
     {
-      throw new AccessDeniedHttpException('Verkeerde route om eerste post aan te passen');
+      throw $this->createAccessDeniedException('Verkeerde route om eerste post aan te passen');
     }
 
     $command = new ForumPostCommand();
@@ -95,13 +108,16 @@ class ForumEditPostController extends AbstractController
       && $form->isValid())
     {
       $command = $form->getData();
+      $content = $command->content;
+
       $forum_repository->update_post(
         post_id: $id,
-        command: $command,
+        content: $content,
         schema: $pp->schema_o(),
       );
 
       $this->addFlash('success', 'Reactie aangepast.');
+
       return $this->redirectToRoute('forum_topic', [
         ...$pp->ary(),
         'id' => $forum_topic['id'],

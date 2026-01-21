@@ -200,7 +200,7 @@ class ContactsController extends AbstractController
     {
       $sql['user']['where'][]= 'c.user_id = ?';
       $sql['user']['params'][]= $filter_command->user;
-      $sql['user']['types'][]= \PDO::PARAM_INT;
+      $sql['user']['types'][]= Types::INTEGER;
     }
 
     if (isset($filter_command->q))
@@ -209,8 +209,8 @@ class ContactsController extends AbstractController
       $sql['q']['where'][]= '(c.value ilike ? or c.comments ilike ?)';
       $sql['q']['params'][]= '%' . $filter_command->q . '%';
       $sql['q']['params'][]= '%' . $filter_command->q . '%';
-      $sql['q']['types'][]= \PDO::PARAM_STR;
-      $sql['q']['types'][]= \PDO::PARAM_STR;
+      $sql['q']['types'][]= Types::STRING;
+      $sql['q']['types'][]= Types::STRING;
     }
 
     if (isset($filter_command->type))
@@ -218,7 +218,7 @@ class ContactsController extends AbstractController
       $sql['type'] = $sql_map;
       $sql['type']['where'][]= 'c.id_type_contact = ?';
       $sql['type']['params'][]= $filter_command->type;
-      $sql['type']['types'][]= \PDO::PARAM_INT;
+      $sql['type']['types'][]= Types::INTEGER;
     }
 
     if (isset($filter_command->access))

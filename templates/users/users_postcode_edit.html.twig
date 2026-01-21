@@ -1,0 +1,16 @@
+{%- extends 'users/base/users_single_form.html.twig' -%}
+
+{%- block heading_title -%}
+  {{- 'users_postcode_edit.title'|trans({
+    'self': is_self ? 'yes' : 'no',
+    'user': user.name,
+    'mode': mode,
+  }) -}}
+{%- endblock heading_title -%}
+
+{%- block form_a -%}
+  {{- form_row(form.postcode, {
+    'label': 'label.postcode',
+    'addon': ux_icon('lucide:map-pin-house'),
+  }) -}}
+{%- endblock form_a -%}

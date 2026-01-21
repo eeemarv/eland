@@ -108,6 +108,13 @@ class LoginController extends AbstractController
         schema: $pp->schema_o(),
       );
 
+      if ($user === false)
+      {
+        throw $this->createNotFoundException(
+          'User with id ' . $command->id . ' not found'
+        );
+      }
+
       $log_ary = [
         'user_id'	=> $user['id'],
         'code'	    => $user['code'],

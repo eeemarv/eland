@@ -11,30 +11,27 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ContactTypesDelType extends AbstractType
 {
-    public function __construct(
-    )
-    {
-    }
+  public function __construct(
+  )
+  {
+  }
 
-    public function buildForm(
-        FormBuilderInterface $builder,
-        array $options
-    ):void
-    {
-        $builder
-            ->add('name', TextType::class, [
-                'disabled'  => true,
-            ])
-            ->add('abbrev', TextType::class, [
-                'disabled'  => true,
-            ])
-            ->add('submit', SubmitType::class);
-    }
+  public function buildForm(
+    FormBuilderInterface $builder,
+    array $options,
+  ):void
+  {
+    $builder->add('name', TextType::class, [
+      'disabled'  => true,
+    ]);
+    $builder->add('abbrev', TextType::class, [
+      'disabled'  => true,
+    ]);
+    $builder->add('submit', SubmitType::class);
+  }
 
-    public function configureOptions(OptionsResolver $resolver):void
-    {
-        $resolver->setDefaults([
-            'data_class'    => ContactTypesCommand::class,
-        ]);
-    }
+  public function configureOptions(OptionsResolver $resolver):void
+  {
+    $resolver->setDefault('data_class', ContactTypesCommand::class);
+  }
 }

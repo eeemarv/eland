@@ -48,13 +48,19 @@ use Doctrine\DBAL\Types\Types;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
 class UsersListController extends AbstractController
 {
+  const USER_AKEYS = [
+    'id'  => true,
+    'name'  => true,
+    'code'  => true,
+  ];
+
   #[Route(
     '/{schema}/{role_short}/users/{status}',
     name: 'users_list',
@@ -95,11 +101,12 @@ class UsersListController extends AbstractController
   {
     if (!$pp->is_admin() && !in_array($status, ['active', 'new', 'leaving']))
     {
-      throw new AccessDeniedHttpException('No access for status: ' . $status);
+      throw $this->createAccessDeniedException('No access for status: ' . $status);
     }
+
     if (!$request->isMethod('GET') && !$pp->is_admin())
     {
-      throw new BadRequestException('POST not allowed');
+      throw new BadRequestHttpException('POST not allowed');
     }
 
     $full_name_enabled = $config_service->get_bool(
@@ -212,16 +219,16 @@ class UsersListController extends AbstractController
 
       foreach ($m_users as $u)
       {
-        $str = $account_render->link($u['id'], $pp->ary());
+        $u_sect = array_intersect_key($u, self::USER_AKEYS);
         if (count($u['email_addresses']))
         {
           $user_ids_sent[] = $u['id'];
-          $flash_sent_ary[] = $str;
+          $flash_sent_ary[] = $u_sect;
         }
         else
         {
           $user_ids_not_sent[] = $u['id'];
-          $flash_not_sent_ary[] = $str;
+          $flash_not_sent_ary[] = $u_sect;
         }
       }
 
@@ -257,17 +264,19 @@ class UsersListController extends AbstractController
             'count' => count($flash_sent_ary),
           ],
       ]);
-      foreach($flash_sent_ary as $msg)
+      foreach($flash_sent_ary as $u_sect)
       {
         $this->addFlash(
           type: 'success',
-          message: $msg,
+          message: [
+            'user'  => $u_sect,
+          ],
         );
       }
       if (count($flash_not_sent_ary))
       {
         $this->addFlash(
-          type: 'success',
+          type: 'warning',
           message: [
             'key'   => 'flash.email.not_sent_to',
             'params'  => [
@@ -275,16 +284,34 @@ class UsersListController extends AbstractController
           ],
         ]);
       }
-      foreach($flash_not_sent_ary as $msg)
+      foreach($flash_not_sent_ary as $u_sect)
       {
         $this->addFlash(
-          type: 'success',
-          message: $msg,
+          type: 'warning',
+          message: [
+            'user'  => $u_sect,
+          ],
         );
       }
       return $this->redirectToRoute(
         route: $vr->get('users'),
         parameters: $pp->ary(),
+      );
+    }
+
+    /**
+     * Bulk actions
+     */
+
+    if ($request->isMethod('POST'))
+    {
+      /**
+       * fetch users to compare old data to new data
+       * in bulk action
+       */
+      $users = $user_repository->get_all_by_status(
+        status: $status,
+        schema: $pp->schema_o(),
       );
     }
 
@@ -313,6 +340,9 @@ class UsersListController extends AbstractController
       foreach ($select_ary as $sel_id)
       {
         $s_user_ids[] = (int) trim($sel_id);
+
+
+
       }
       $user_repository->set_bulk_full_name_access(
         full_name_access: $access,
@@ -747,6 +777,13 @@ class UsersListController extends AbstractController
      * End bulk POST
      */
 
+    if (!$request->isMethod('GET'))
+    {
+      throw new BadRequestHttpException(
+        'Invalid request method'
+      );
+    }
+
     /**
      * Columns select form
      */
@@ -911,7 +948,9 @@ class UsersListController extends AbstractController
       $cols_command->mollie = false;
     }
 
-    /* end remove columns disabled by configuration */
+    /**
+     * end remove columns disabled by configuration
+     */
 
     /**
      * End columns form

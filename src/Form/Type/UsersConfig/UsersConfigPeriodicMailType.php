@@ -20,7 +20,7 @@ class UsersConfigPeriodicMailType extends AbstractType
 
   public function buildForm(
     FormBuilderInterface $builder,
-    array $options
+    array $options,
   ):void
   {
     $builder->add('days', IntegerType::class);
@@ -32,8 +32,6 @@ class UsersConfigPeriodicMailType extends AbstractType
 
   public function configureOptions(OptionsResolver $resolver):void
   {
-    $resolver->setDefaults([
-      'data_class'    => UsersConfigPeriodicMailCommand::class,
-    ]);
+    $resolver->setDefault('data_class', UsersConfigPeriodicMailCommand::class);
   }
 }

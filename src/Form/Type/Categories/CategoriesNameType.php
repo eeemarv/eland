@@ -12,26 +12,25 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class CategoriesNameType extends AbstractType
 {
     public function buildForm(
-        FormBuilderInterface $builder,
-        array $options
+      FormBuilderInterface $builder,
+      array $options,
     ):void
     {
-        $opt_ary = [];
+      $opt_ary = [];
 
-        if ($options['del'] === true)
-        {
-            $opt_ary = ['disabled' => true];
-        }
+      if ($options['del'] === true)
+      {
+        $opt_ary = ['disabled' => true];
+      }
 
-        $builder
-            ->add('name', TextType::class, $opt_ary)
-            ->add('submit', SubmitType::class);
+      $builder->add('name', TextType::class, $opt_ary);
+      $builder->add('submit', SubmitType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver):void
     {
-        $resolver->setDefault('data_class', CategoriesNameCommand::class);
-        $resolver->setDefault('del', false);
-        $resolver->setAllowedTypes('del', 'bool');
+      $resolver->setDefault('data_class', CategoriesNameCommand::class);
+      $resolver->setDefault('del', false);
+      $resolver->setAllowedTypes('del', 'bool');
     }
 }

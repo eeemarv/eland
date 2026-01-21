@@ -6,7 +6,6 @@ use App\DTO\Schema;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class DocRepository
 {
@@ -19,7 +18,7 @@ class DocRepository
 	public function get(
     int $id,
     Schema $schema,
-  ):array
+  ):array|false
 	{
 		$doc = $this->db->fetchAssociative('select *
 			from ' . $schema->str() . '.docs
@@ -29,18 +28,13 @@ class DocRepository
         'id'  => Types::INTEGER,
       ]);
 
-		if (!$doc)
-		{
-			throw new NotFoundHttpException('Document ' . $id . ' not found.');
-		}
-
 		return $doc;
 	}
 
 	public function get_map(
     int $map_id,
     Schema $schema,
-  ):array
+  ):array|false
 	{
 		$map =  $this->db->fetchAssociative('select *
 			from ' . $schema->str() . '.doc_maps
@@ -50,11 +44,6 @@ class DocRepository
         'map_id'  => Types::INTEGER,
       ]);
 
-		if ($map === false)
-		{
-			throw new NotFoundHttpException('Document map ' . $map_id . ' not found.');
-		}
-
 		return $map;
 	}
 
@@ -62,7 +51,7 @@ class DocRepository
     int $map_id,
     array $visible_ary,
     Schema $schema,
-  ):array
+  ):array|false
 	{
     $map = $this->db->fetchAssociative('select s.*
 			from (select dm.*, count(d.*) as doc_count,
@@ -80,11 +69,6 @@ class DocRepository
         'visible_ary' => ArrayParameterType::STRING,
         'map_id'  => Types::INTEGER,
       ]);
-
-		if ($map === false)
-		{
-			throw new NotFoundHttpException('Document map ' . $map_id . ' not found.');
-		}
 
     return $map;
 	}

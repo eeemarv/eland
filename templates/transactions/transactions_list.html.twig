@@ -41,7 +41,7 @@
 {%- block heading_title -%}
   {{- 'transactions.title'|trans({
     'self': is_self ? 'self' : (uid ? 'some_user' : 'all'),
-    'account': uid ? account(uid, schema)|link('users_show', {'id': uid})
+    'account': uid ? account(uid)|link('users_show', {'id': uid})
   })|raw -}}
 {%- endblock heading_title -%}
 

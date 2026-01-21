@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use Doctrine\DBAL\Connection as Db;
+use Doctrine\DBAL\Types\Types;
 use Redis;
 use Psr\Log\LoggerInterface;
 
@@ -66,7 +67,7 @@ class CacheService
 
 		if ($this->db->fetchOne('select id
 			from xdb.cache
-			where id = ?', [$id], [\PDO::PARAM_STR]))
+			where id = ?', [$id], [Types::STRING]))
 		{
 			$this->db->update('xdb.cache',
 				['data' => $data],
@@ -104,7 +105,7 @@ class CacheService
 			where id = ?
 				and (expires < timezone(\'utc\', now())
 					or expires is null)',
-			[$id], [\PDO::PARAM_STR]);
+			[$id], [Types::STRING]);
 
 		if ($row)
 		{
@@ -141,7 +142,7 @@ class CacheService
 			where id = ?
 				and (expires < timezone(\'utc\', now())
 					or expires is null)',
-			[$id], [\PDO::PARAM_STR]);
+			[$id], [Types::STRING]);
 
 		if ($exists)
 		{

@@ -1,4 +1,4 @@
-<a href="{{- path(btn_route, {}|pp|merge({'id': id})) -}}" class="btn btn-primary"{%- if btn_title is defined %} title="{{- btn_title|trans(btn_title_trans_params|default({})) -}}"{%- endif -%}{%- for n, v in btn_attr|default({}) %} {{ n -}}="{{- v -}}"{%- endfor -%}>
+<a href="{{- path(btn_route, {}|pp|merge({'id': id, ...btn_route_params|default({})})) -}}" class="btn btn-primary"{%- if btn_title is defined %} title="{{- btn_title|trans(btn_title_trans_params|default({})) -}}"{%- endif -%}{%- for n, v in btn_attr|default({}) %} {{ n -}}="{{- v -}}"{%- endfor -%}>
   <twig:ux:icon name="lucide:pencil"/>
   &nbsp;
   {{- 'btn.edit'|trans -}}

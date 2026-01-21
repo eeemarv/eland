@@ -1,0 +1,33 @@
+{%- if pp_has_role('admin') and config_bool('users.fields.admin_comments.enabled', schema) -%}
+{%- embed 'embed/list_item.html.twig' -%}
+  {%- block class %} list-group-item-info{% endblock class -%}
+  {%- block dl -%}
+    <dt>
+      {{- 'label.admin_comments'|trans -}}
+    </dt>
+    <dd>
+      {%- if user.admin_comments is empty -%}
+        <twig:ux:icon name="lucide:x" class="text-bold"/>
+      {%- else -%}
+        {{- user.admin_comments -}}
+      {%- endif -%}
+    </dd>
+  {%- endblock dl -%}
+  {%- block div_right -%}
+
+    <a href="{{- path('users_admin_comments_edit' ~ (is_self ? '_self' : ''), (is_self ? {} : {'id': id})|pp) -}}"
+      class="btn btn-primary"
+      title="{{- 'users_admin_comments_edit.title'|trans({
+        'user': user.name,
+        'self': is_self ? 'yes' : 'no',
+      }) -}}">
+      <twig:ux:icon name="lucide:pencil"/>
+      &nbsp;
+      <span class="hidden-sm">
+        {{- 'btn.edit'|trans -}}
+      </span>
+    </a>
+
+  {%- endblock div_right -%}
+{%- endembed -%}
+{%- endif -%}

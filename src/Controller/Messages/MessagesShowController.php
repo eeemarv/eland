@@ -6,7 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Doctrine\DBAL\Connection as Db;
 use App\Cnst\MessageTypeCnst;
 use App\Controller\Contacts\ContactsUserShowInlineController;
@@ -28,6 +27,7 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
+use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -81,7 +81,7 @@ class MessagesShowController extends AbstractController
           schema: $pp->schema_o(),
         ))
         {
-            throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
+            throw $this->createNotFoundException('Messages (offers/wants) module not enabled.');
         }
 
         $errors = [];
@@ -114,6 +114,13 @@ class MessagesShowController extends AbstractController
             id: $message['category_id'],
             schema: $pp->schema_o(),
           );
+
+          if ($category === false)
+          {
+            throw $this->createNotFoundException(
+              'Category ' . $id . ' not found.'
+            );
+          }
         }
 
         $user_mail_content = $request->request->get('user_mail_content', '');
@@ -124,7 +131,7 @@ class MessagesShowController extends AbstractController
 
         if ($message['access'] === 'user' && $pp->is_guest())
         {
-            throw new AccessDeniedHttpException('Je hebt geen toegang tot dit bericht.');
+            throw $this->createAccessDeniedException('You have no access to this message.');
         }
 
         $user = $user_cache_service->get($message['user_id'], $pp->schema());
@@ -137,13 +144,15 @@ class MessagesShowController extends AbstractController
 
             if (!$pp->is_admin() && !in_array($to_user['status'], [1, 2]))
             {
-                throw new AccessDeniedHttpException('You dan\'t have enough rights
-                    to send a message to a non-active user.');
+              throw $this->createAccessDeniedException('You dan\'t have enough rights
+                  to send a message to a non-active user.');
             }
 
             if ($su->is_master())
             {
-                throw new AccessDeniedHttpException('The master account can not send messages.');
+              throw $this->createAccessDeniedException(
+                'The master account can not send messages.'
+              );
             }
 
             $token_error = $form_token_service->get_error();
@@ -229,7 +238,7 @@ class MessagesShowController extends AbstractController
             ' . $sql_where . '
             order by m.id asc
             limit 1',
-            [$id], [\PDO::PARAM_INT]);
+            [$id], [Types::INTEGER]);
 
         $next_id = $db->fetchOne('select m.id
             from ' . $pp->schema() . '.messages m,
@@ -238,7 +247,7 @@ class MessagesShowController extends AbstractController
             ' . $sql_where . '
             order by m.id desc
             limit 1',
-            [$id], [\PDO::PARAM_INT]);
+            [$id], [Types::INTEGER]);
 
         $contacts_response = $contacts_user_show_inline_controller(
             $user['id'],
@@ -514,8 +523,12 @@ class MessagesShowController extends AbstractController
     public static function get_message(Db $db, int $id, string $pp_schema):array
     {
         $message = $db->fetchAssociative('select m.*
-            from ' . $pp_schema . '.messages m
-            where m.id = ?', [$id], [\PDO::PARAM_INT]);
+          from ' . $pp_schema . '.messages m
+          where m.id = :id', [
+            'id'  => $id,
+          ], [
+            'id'  => Types::INTEGER,
+          ]);
 
         if (!$message)
         {

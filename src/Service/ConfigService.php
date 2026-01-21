@@ -17,8 +17,8 @@ class ConfigService
 	const CACHE_TTL = 86400;
 	const CACHE_BETA = 1;
 
-	protected bool $local_cache_en = false;
-	protected array $local_cache = [];
+	private bool $local_cache_en = false;
+	private array $local_cache = [];
 
 	public function __construct(
     private readonly ConfigRepository $config_repository,

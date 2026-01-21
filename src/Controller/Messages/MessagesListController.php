@@ -26,7 +26,6 @@ use App\Service\VarRouteService;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -133,7 +132,7 @@ class MessagesListController extends AbstractController
           schema: $pp->schema_o(),
         ))
         {
-            throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
+            throw $this->createNotFoundException('Messages (offers/wants) module not enabled.');
         }
 
         $vr_route = $vr->get('messages' . ($is_self ? '_self' : ''));
@@ -241,7 +240,7 @@ class MessagesListController extends AbstractController
             {
                 if (!$pp->is_admin() && !$su->is_owner($row['user_id']))
                 {
-                    throw new AccessDeniedHttpException('You are not the owner of this message: ' .
+                    throw $this->createAccessDeniedException('You are not the owner of this message: ' .
                         $row['subject'] . ' ( ' . $row['id'] . ')');
                 }
 
@@ -332,7 +331,7 @@ class MessagesListController extends AbstractController
                     from ' . $pp->schema() . '.categories
                     where id = ?',
                     [$to_category_id],
-                    [\PDO::PARAM_INT]);
+                    [Types::INTEGER]);
 
                 if (!$test_category)
                 {
@@ -984,15 +983,15 @@ class MessagesListController extends AbstractController
             $sql['q']['where'][] = '(m.subject ilike ? or m.content ilike ?)';
             $sql['q']['params'][] = '%' . $filter_command->q . '%';
             $sql['q']['params'][] = '%' . $filter_command->q . '%';
-            $sql['q']['types'][] = \PDO::PARAM_INT;
-            $sql['q']['types'][] = \PDO::PARAM_INT;
+            $sql['q']['types'][] = Types::INTEGER;
+            $sql['q']['types'][] = Types::INTEGER;
         }
 
         if (isset($filter_command->user))
         {
             $sql['user']['where'][] = 'u.id = ?';
             $sql['user']['params'][] = $filter_command->user;
-            $sql['user']['types'][] = \PDO::PARAM_INT;
+            $sql['user']['types'][] = Types::INTEGER;
         }
 
         $filter_valid_expired = $expires_at_enabled
@@ -1160,7 +1159,7 @@ class MessagesListController extends AbstractController
                     from ' . $pp->schema() . '.categories
                     where id = ?',
                     [$filter_command->cat],
-                    [\PDO::PARAM_INT]);
+                    [Types::INTEGER]);
 
                 if (!$cat_lr)
                 {
@@ -1170,16 +1169,16 @@ class MessagesListController extends AbstractController
                 $sql['category']['where'][] = 'c.left_id >= ? and c.right_id <= ?';
                 $sql['category']['params'][] = $cat_lr['left_id'];
                 $sql['category']['params'][] = $cat_lr['right_id'];
-                $sql['category']['types'][] = \PDO::PARAM_INT;
-                $sql['category']['types'][] = \PDO::PARAM_INT;
+                $sql['category']['types'][] = Types::INTEGER;
+                $sql['category']['types'][] = Types::INTEGER;
             }
         }
 
         $sql['pagination'] = $sql_map;
         $sql['pagination']['params'][] = $pag_limit;
-        $sql['pagination']['types'][] = \PDO::PARAM_INT;
+        $sql['pagination']['types'][] = Types::INTEGER;
         $sql['pagination']['params'][] = $pag_start;
-        $sql['pagination']['types'][] = \PDO::PARAM_INT;
+        $sql['pagination']['types'][] = Types::INTEGER;
 
         $sql_where = implode(' and ', array_merge(...array_column($sql, 'where')));
 

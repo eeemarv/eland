@@ -13,7 +13,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -49,15 +48,23 @@ class ForumTopicController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw new NotFoundHttpException('Forum module not enabled.');
+      throw $this->createNotFoundException('Forum module not enabled.');
     }
 
     $visible_ary = $item_access_service->get_visible_ary_for_page();
+
     $topic = $forum_repository->get_topic_with_prev_next(
       topic_id: $id,
       visible_ary: $visible_ary,
       schema: $pp->schema_o(),
     );
+
+		if ($topic === false)
+		{
+			throw $this->createNotFoundException(
+        'Forum topic ' . $id . ' not found.'
+      );
+		}
 
     $command = new ForumPostCommand();
 
@@ -73,8 +80,10 @@ class ForumTopicController extends AbstractController
       && $form->isValid())
     {
       $command = $form->getData();
+      $content = $command->content;
+
       $forum_repository->insert_post(
-        command: $command,
+        content: $content,
         user_id: $su->id(),
         topic_id: $id,
         schema: $pp->schema_o(),

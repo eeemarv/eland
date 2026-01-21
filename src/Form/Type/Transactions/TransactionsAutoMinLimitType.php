@@ -13,18 +13,16 @@ class TransactionsAutoMinLimitType extends AbstractType
 {
   public function buildForm(
     FormBuilderInterface $builder,
-    array $options
+    array $options,
   ):void
   {
-    $builder
-      ->add('percentage', IntegerType::class)
-      ->add('submit', SubmitType::class);
+    $builder->add('percentage', IntegerType::class);
+
+    $builder->add('submit', SubmitType::class);
   }
 
   public function configureOptions(OptionsResolver $resolver):void
   {
-    $resolver->setDefaults([
-      'data_class'    => TransactionsAutoMinLimitCommand::class,
-    ]);
+    $resolver->setDefault('data_class', TransactionsAutoMinLimitCommand::class);
   }
 }

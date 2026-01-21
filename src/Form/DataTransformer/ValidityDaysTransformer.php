@@ -44,7 +44,9 @@ class ValidityDaysTransformer implements DataTransformerInterface
 
     if (!filter_var($validity_days, FILTER_VALIDATE_INT, $filter_options))
     {
-      throw new TransformationFailedException('No valid input for expires at: ' . $validity_days);
+      throw new TransformationFailedException(
+        'No valid input for expires at: ' . $validity_days
+      );
     }
 
     $expires_at_unix = time() + ((int) $validity_days * 86400);

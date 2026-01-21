@@ -1,0 +1,40 @@
+{%- if pp_has_role('admin') -%}
+{%- embed 'embed/list_item.html.twig' -%}
+  {%- block class %} list-group-item-info{% endblock class -%}
+  {%- block dl -%}
+    <dt>
+      {{- 'label.creation_time'|trans -}}
+    </dt>
+    <dd>
+      {%- if user.created_at is empty -%}
+        <twig:ux:icon name="lucide:x" class="text-bold"/>
+      {%- else -%}
+        {{- user.created_at|date_format('min') -}}
+      {%- endif -%}
+    </dd>
+    <dt>
+      {{- 'label.activation_time'|trans -}}
+    </dt>
+    <dd>
+      {%- if user.activated_at is empty -%}
+        <twig:ux:icon name="lucide:x" class="text-bold"/>
+      {%- else -%}
+        {{- user.activated_at|date_format('min') -}}
+      {%- endif -%}
+    </dd>
+    <dt>
+      {{- 'label.last_login'|trans -}}
+    </dt>
+    <dd>
+      {%- if user.last_login is empty -%}
+        <twig:ux:icon name="lucide:x" class="text-bold"/>
+      {%- else -%}
+        {{- last_login|date_format('min') -}}
+      {%- endif -%}
+    </dd>
+  {%- endblock dl -%}
+  {%- block div_right -%}
+
+  {%- endblock div_right -%}
+{%- endembed -%}
+{%- endif -%}

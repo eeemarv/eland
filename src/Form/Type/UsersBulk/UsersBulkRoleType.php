@@ -20,20 +20,17 @@ class UsersBulkRoleType extends AbstractType
 
   public function buildForm(
     FormBuilderInterface $builder,
-    array $options
+    array $options,
   ):void
   {
-    $builder
-      ->add('selected', HiddenType::class)
-      ->add('role', RoleSelectType::class)
-      ->add('verify', CheckboxType::class)
-      ->add('submit', SubmitType::class);
+    $builder->add('selected', HiddenType::class);
+    $builder->add('role', RoleSelectType::class);
+    $builder->add('verify', CheckboxType::class);
+    $builder->add('submit', SubmitType::class);
   }
 
   public function configureOptions(OptionsResolver $resolver):void
   {
-    $resolver->setDefaults([
-      'data_class'  => UsersBulkRoleCommand::class,
-    ]);
+    $resolver->setDefault('data_class', UsersBulkRoleCommand::class);
   }
 }

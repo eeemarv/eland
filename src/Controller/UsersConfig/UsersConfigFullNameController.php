@@ -42,7 +42,7 @@ class UsersConfigFullNameController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw new AccessDeniedHttpException('Full name module not enabled.');
+      throw $this->createAccessDeniedException('Full name module not enabled.');
     }
 
     $command = new UsersConfigFullNameCommand();

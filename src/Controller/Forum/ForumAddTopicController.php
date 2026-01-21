@@ -12,7 +12,6 @@ use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -44,7 +43,7 @@ class ForumAddTopicController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw new NotFoundHttpException('Forum module not enabled.');
+      throw $this->createNotFoundException('Forum module not enabled.');
     }
 
     $command = new ForumTopicCommand();
@@ -60,13 +59,21 @@ class ForumAddTopicController extends AbstractController
       && $form->isValid())
     {
       $command = $form->getData();
+
+      $subject = $command->subject;
+      $content = $command->content;
+      $access = $command->access;
+
       $id = $forum_repository->insert_topic(
-        command: $command,
+        subject: $subject,
+        content: $content,
+        access: $access,
         user_id: $su->id(),
         schema: $pp->schema_o(),
       );
 
       $this->addFlash('success', 'Forum onderwerp toegevoegd.');
+
       return $this->redirectToRoute('forum_topic', [
         ...$pp->ary(),
         'id' => $id,

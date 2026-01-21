@@ -48,7 +48,7 @@ class UsersMapController extends AbstractController
     if (!$pp->is_admin()
       && !in_array($status, ['active', 'new', 'leaving']))
     {
-      throw new AccessDeniedHttpException('No access for this user status');
+      throw $this->createAccessDeniedException('No access for this user status');
     }
 
     $ref_geo = [];

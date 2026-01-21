@@ -1,0 +1,26 @@
+{%- extends 'users/base/users_single_form.html.twig' -%}
+
+{%- block assets_add -%}
+    {{- parent() -}}
+    {{- assets_add([
+        'datepicker'
+    ]) -}}
+{%- endblock assets_add -%}
+
+{%- block heading_title -%}
+    {{- 'users_birthdate_edit.title'|trans({
+        'self': is_self ? 'self' : 'some_user',
+        'user': account(id, schema)
+    }) -}}
+{%- endblock heading_title -%}
+
+{%- block form_a -%}
+    {{- form_row(form.birthdate, {
+        'label': 'label.birthdate',
+        'attr': {
+            'data-date-default-view': '2',
+            'data-date-start-view': '2',
+            'data-date-end-date': 'today',
+        }
+    }) -}}
+{%- endblock form_a -%}

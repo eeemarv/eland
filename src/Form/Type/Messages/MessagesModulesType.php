@@ -13,21 +13,18 @@ class MessagesModulesType extends AbstractType
 {
   public function buildForm(
     FormBuilderInterface $builder,
-    array $options
+    array $options,
   ):void
   {
-    $builder
-      ->add('service_stuff_enabled', CheckboxType::class)
-      ->add('category_enabled', CheckboxType::class)
-      ->add('expires_at_enabled', CheckboxType::class)
-      ->add('units_enabled', CheckboxType::class)
-      ->add('submit', SubmitType::class);
+    $builder->add('service_stuff_enabled', CheckboxType::class);
+    $builder->add('category_enabled', CheckboxType::class);
+    $builder->add('expires_at_enabled', CheckboxType::class);
+    $builder->add('units_enabled', CheckboxType::class);
+    $builder->add('submit', SubmitType::class);
   }
 
   public function configureOptions(OptionsResolver $resolver):void
   {
-    $resolver->setDefaults([
-      'data_class'    => MessagesModulesCommand::class,
-    ]);
+    $resolver->setDefault('data_class', MessagesModulesCommand::class);
   }
 }

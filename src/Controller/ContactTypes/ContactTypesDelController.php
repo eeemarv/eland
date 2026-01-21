@@ -9,8 +9,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\PageParamsService;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Attribute\AsController;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -45,7 +45,7 @@ class ContactTypesDelController extends AbstractController
 
     if (in_array($contact_type['abbrev'], ContactTypesController::PROTECTED))
     {
-      throw new BadRequestException('Protected contact type.');
+      throw new BadRequestHttpException('Protected contact type.');
     }
 
     $count_contacts = $contact_repository->get_count_for_contact_type(
@@ -55,7 +55,7 @@ class ContactTypesDelController extends AbstractController
 
     if ($count_contacts > 0)
     {
-      throw new BadRequestException('A contact type with contacts can not be deleted.');
+      throw new BadRequestHttpException('A contact type with contacts can not be deleted.');
     }
 
     $command = new ContactTypesCommand();

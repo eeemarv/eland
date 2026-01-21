@@ -24,7 +24,7 @@ class MollieFilterType extends AbstractType
 
   public function buildForm(
     FormBuilderInterface $builder,
-    array $options
+    array $options,
   ):void
   {
     $typeahead_add = [];
@@ -83,8 +83,6 @@ class MollieFilterType extends AbstractType
 
   public function configureOptions(OptionsResolver $resolver):void
   {
-    $resolver->setDefaults([
-      'data_class'  => MollieFilterCommand::class,
-    ]);
+    $resolver->setDefault('data_class', MollieFilterCommand::class);
   }
 }

@@ -1,0 +1,55 @@
+{%- if not is_intersystem and (pp_has_role('admin') or su_is_owner(id)) -%}
+{%- embed 'embed/list_item.html.twig' -%}
+  {%- import 'macro/lbl.html.twig' as l -%}
+  {% block class -%}
+    {%- if pp_has_role('admin') %} list-group-item-info
+    {%- else %} owner
+    {%- endif -%}
+  {% endblock class %}
+  {%- block dl -%}
+    <dt>
+        {{- 'label.permissions_role'|trans -}}
+    </dt>
+    <dd>
+      {%- if user.role is empty -%}
+        <twig:ux:icon name="lucide:x" class="text-bold"/>
+      {%- else -%}
+        {{- l.label_lg(user.role ~ '_role') -}}
+      {%- endif -%}
+    </dd>
+  {%- endblock dl -%}
+  {%- block div_right -%}
+    {%- if pp_has_role('admin') or su_is_owner(id) -%}
+
+      <a href="{{- path('users_password_edit' ~ (is_self ? '_self' : ''), (is_self ? {} : {'id': id})|pp) -}}"
+        class="btn btn-info me-1"
+        title="{{- 'users_password_edit.title'|trans({
+          'user': user.name,
+          'self': is_self ? 'yes' : 'no',
+        }) -}}">
+        <twig:ux:icon name="lucide:key"/>
+        &nbsp;
+        <span class="hidden-sm">
+          {{- 'btn.password'|trans -}}
+        </span>
+      </a>
+
+    {%- endif -%}
+    {%- if pp_has_role('admin') and not is_self -%}
+
+      <a href="{{- path('users_role_edit', {'id': id}|pp) -}}"
+        class="btn btn-primary"
+        title="{{- 'users_role_edit.title'|trans({
+          'user': user.name,
+        }) -}}">
+        <twig:ux:icon name="lucide:pencil"/>
+        &nbsp;
+        <span class="hidden-sm">
+          {{- 'btn.edit'|trans -}}
+        </span>
+      </a>
+
+    {%- endif -%}
+  {%- endblock div_right -%}
+{%- endembed -%}
+{%- endif -%}

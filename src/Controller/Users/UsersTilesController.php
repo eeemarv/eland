@@ -9,7 +9,6 @@ use App\Form\Type\Filter\QTextSearchFilterType;
 use App\Repository\UserRepository;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -40,7 +39,9 @@ class UsersTilesController extends AbstractController
   {
     if (!$pp->is_admin() && !in_array($status, ['active', 'new', 'leaving']))
     {
-      throw new AccessDeniedHttpException('No access for status: ' . $status);
+      throw $this->createAccessDeniedException(
+        'No access for status: ' . $status
+      );
     }
 
     $filter_form = $this->createForm(QTextSearchFilterType::class);

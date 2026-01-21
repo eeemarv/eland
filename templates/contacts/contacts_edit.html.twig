@@ -12,7 +12,7 @@
 {%- block heading_title -%}
   {{- 'contacts_edit.title'|trans({
     'self': is_self or not user_id ? 'self' : 'some_user',
-    'user': user_id ? account(user_id, schema)|link('users_show', {'id': user_id}) : ''
+    'user': user_id ? account(user_id)|link('users_show', {'id': user_id}) : ''
   })|raw -}}
 {%- endblock heading_title -%}
 

@@ -7,6 +7,9 @@
   {%- if pp_has_role('admin') or su_is_owner(id) -%}
     {{- assets_add(['fileupload', 'upload_image.js']) -}}
   {%- endif -%}
+  {%- if tags_form is defined and tags_form is not null -%}
+    {{- assets_add(['tagsinput', 'tagsinput.js']) -}}
+  {%- endif -%}
 {%- endblock assets_add -%}
 
 {%- block btn_top_edit -%}
@@ -28,41 +31,11 @@
       'btn_route': 'users_del',
       'btn_title': 'users_del.title',
       'btn_title_trans_params': {
-        'user': account(id, schema)
+        'user': username(id)
       }
     } -%}
   {%- endif -%}
 {%- endblock btn_top_del -%}
-
-{%- block btn_top_password_edit -%}
-  {%- if pp_has_role('admin') or su_is_owner(id) -%}
-    {%- set password_edit_route = 'users_password_edit' ~ (su_is_owner(id) ? '_self' : '') -%}
-    <a href="{{- path(password_edit_route, {'id': id}|pp) -}}" class="btn btn-info btn-lg" title="{{- 'users_password_edit.title'|trans({
-      'user': account(id),
-      'self': is_self ? 'self' : 'some_user'
-    }) -}}"
-    >
-      <twig:ux:icon name="lucide:key"/>
-      <span class="hidden-xs hidden-sm">
-        &nbsp;
-        {{- 'btn.password'|trans -}}
-      </span>
-    </a>
-  {%- endif -%}
-{%- endblock btn_top_password_edit -%}
-
-{%- block btn_top_transaction -%}
-  {%- if config_bool('transactions.enabled', schema)
-    and config_bool('transactions.enabled', su_schema())
-    and (pp_has_role('admin') or not su_is_owner(id))  -%}
-    {%- include 'include/btn_top/transaction.html.twig' with {
-      'btn_route_params': su_ary()|merge({'tuid': id, 'tus': schema}),
-      'btn_title_trans_params': {
-        'user': account(id)
-      }
-    } -%}
-  {%- endif -%}
-{%- endblock btn_top_transaction -%}
 
 {%- block btn_item_nav -%}
 <div class="btn-group ml-5p" role="group">
@@ -92,35 +65,112 @@
 
 {%- block heading_title -%}
   {{- 'users_show.title'|trans({
-    'self': is_self ? 'self' : 'other',
-    'user': account(id, schema),
+      'self': is_self ? 'self' : 'other',
+      'user': account(id),
   }) -}}
-  {{- account_status(id, schema)|raw -}}
+  {{- account_status(id)|raw -}}
+  {# intersystem link here #}
+  {#
   {%- if pp_has_role('admin') -%}
-    {%- if intersystem_missing -%}
-      &nbsp;
-      <small>
-        <span class="label label-warning">
-          <twig:ux:icon name="lucide:triangle-alert"/>
+      {%- if intersystem_missing -%}
           &nbsp;
-          {{- 'users_show.intersystem_missing'|trans -}}
-        </span>
-      </small>
-    {%- elseif intersystem_id -%}
-      &nbsp;
-      <a href="{{- link('intersystems_show', {'id': intersystem_id}) -}}" class="btn btn-default">
-        <twig:ux:icon name="lucide:share-2"/>
-        &nbsp;
-        {{- 'users_show.coupled_intersystem'|trans -}}
-      </a>
-    {%- endif -%}
+          <small>
+              <span class="label label-warning">
+                  <i class="fa fa-exclamation-triangle"></i>
+                  &nbsp;
+                  {{- 'users_show.intersystem_missing'|trans -}}
+              </span>
+          </small>
+      {%- elseif intersystem_id -%}
+          &nbsp;
+          <a href="{{- link('intersystems_show', {'id': intersystem_id}) -}}" class="btn btn-default">
+              <i class="fa fa-share-alt"></i>
+              &nbsp;
+              {{- 'users_show.coupled_intersystem'|trans -}}
+          </a>
+      {%- endif -%}
   {%- endif -%}
+  #}
 {%- endblock heading_title -%}
 
-{%- block css -%}
-  {{- parent() -}}
-{%- endblock css -%}
+{%- block heading_append -%}
+  {%- if pp_has_role('admin')
+    or (su_is_owner(id)
+    and config_bool('users.fields.name.self_edit', schema))
+  -%}
+  <div class="pull-right">
 
-{%- block js -%}
-  {{- parent() -}}
-{%- endblock js -%}
+    <a href="{{- path('users_name_edit' ~ (is_self ? '_self' : ''), (is_self ? {} : {'id': id})|pp) -}}"
+      class="btn btn-primary"
+      title="{{- 'users_name_edit.title'|trans({
+        'user': user.name,
+        'self': is_self ? 'yes' : 'no',
+      }) -}}">
+      <twig:ux:icon name="lucide:pencil"/>
+      &nbsp;
+      <span class="hidden-sm">
+        {{- 'btn.edit'|trans -}}
+      </span>
+    </a>
+
+  </div>
+  {%- endif -%}
+{%- endblock heading_append -%}
+
+{%- block tags -%}
+  {%- include 'form/tags.html.twig' with {
+    'help': 'tags_users.help.only_for_admins'
+  } -%}
+{%- endblock tags -%}
+
+{%- block content -%}
+  <div class="row">
+    <div class="col-sm-4">
+      {%- include 'users/users_show/image_panel.html.twig' -%}
+    </div>
+    <div class="col-sm-8">
+      <div class="panel panel-default">
+        <ul class="list-group">
+          {%- include 'users/users_show/full_name.html.twig' -%}
+          {%- include 'users/users_show/role.html.twig' -%}
+          {%- include 'users/users_show/accounts.html.twig' -%}
+          {%- include 'users/users_show/postcode.html.twig' -%}
+          {%- include 'users/users_show/birthdate.html.twig' -%}
+          {%- include 'users/users_show/hobbies.html.twig' -%}
+          {%- include 'users/users_show/comments.html.twig' -%}
+          {%- include 'users/users_show/admin_comments.html.twig' -%}
+          {%- include 'users/users_show/history.html.twig' -%}
+          {%- include 'users/users_show/periodic_overview.html.twig' -%}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  {%- block mail_contact_form_panel -%}
+    <h3>
+      <span class="fa fa-envelope-o"></span>&nbsp;
+      {{- 'users_show.mail_contact.title'|trans({
+        'user': account(id, schema)
+      }) -}}
+    </h3>
+    {%- embed 'embed/mail_contact_form.html.twig' -%}
+    {%- endembed -%}
+  {%- endblock mail_contact_form_panel -%}
+
+  {%- block user_contacts_table -%}
+    {{- user_contacts_table_raw|raw -}}
+  {%- endblock user_contacts_table -%}
+
+  {%- if config_bool('transactions.enabled', schema) -%}
+    {%- include 'users/users_show/transactions_graph.html.twig' -%}
+  {%- endif -%}
+
+  {%- if not is_self
+    and not is_intersystem
+    and (config_bool('transactions.enabled', schema)
+      or config_bool('messages.enabled', schema))
+
+  -%}
+    {%- include 'users/users_show/btns_transactions_messages.html.twig' -%}
+  {%- endif -%}
+{%- endblock content -%}

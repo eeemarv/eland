@@ -12,34 +12,33 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ConfigLandingPageType extends AbstractType
 {
-    public function buildForm(
-        FormBuilderInterface $builder,
-        array $options
-    ):void
+  public function buildForm(
+    FormBuilderInterface $builder,
+    array $options,
+  ):void
+  {
+    $choices = [];
+    $choice_translation_parameters = [];
+
+    foreach(ConfigCnst::LANDING_PAGE_OPTIONS as $opt => $lang)
     {
-        $choices = [];
-        $choice_translation_parameters = [];
-
-        foreach(ConfigCnst::LANDING_PAGE_OPTIONS as $opt => $lang)
-        {
-            $key = $opt . '.title';
-            $choices[$key] = $opt;
-            $choice_translation_parameters[$key] = [
-                'self'      =>  'all',
-                'with_without_category' => 'all',
-            ];
-        }
-
-        $builder
-            ->add('landing_page', ChoiceType::class, [
-                'choices'   => $choices,
-                'choice_translation_parameters' => $choice_translation_parameters,
-            ])
-            ->add('submit', SubmitType::class);
+      $key = $opt . '.title';
+      $choices[$key] = $opt;
+      $choice_translation_parameters[$key] = [
+        'self'      =>  'all',
+        'with_without_category' => 'all',
+      ];
     }
 
-    public function configureOptions(OptionsResolver $resolver):void
-    {
-        $resolver->setDefault('data_class', ConfigLandingPageCommand::class);
-    }
+    $builder->add('landing_page', ChoiceType::class, [
+      'choices'   => $choices,
+      'choice_translation_parameters' => $choice_translation_parameters,
+    ]);
+    $builder->add('submit', SubmitType::class);
+  }
+
+  public function configureOptions(OptionsResolver $resolver):void
+  {
+    $resolver->setDefault('data_class', ConfigLandingPageCommand::class);
+  }
 }

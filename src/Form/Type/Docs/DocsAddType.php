@@ -32,15 +32,17 @@ class DocsAddType extends AbstractType
       ->add('doc_map_names', [])
       ->str_raw();
 
-    $builder
-      ->add('file', FileType::class)
-      ->add('name', TextType::class)
-      ->add('map_name', TextType::class, [
-        'attr'  => [
-          'data-typeahead'    => $data_typeahead,
-        ],
-      ])
-      ->add('submit', SubmitType::class);
+    $builder->add('file', FileType::class);
+
+    $builder->add('name', TextType::class);
+
+    $builder->add('map_name', TextType::class, [
+      'attr'  => [
+        'data-typeahead'    => $data_typeahead,
+      ],
+    ]);
+
+    $builder->add('submit', SubmitType::class);
 
     $this->access_field_subscriber->add();
     $builder->addEventSubscriber($this->access_field_subscriber);
@@ -48,8 +50,6 @@ class DocsAddType extends AbstractType
 
   public function configureOptions(OptionsResolver $resolver):void
   {
-    $resolver->setDefaults([
-      'data_class'    => DocsCommand::class,
-    ]);
+    $resolver->setDefault('data_class', DocsCommand::class);
   }
 }

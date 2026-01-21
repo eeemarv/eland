@@ -1,0 +1,24 @@
+{%- extends 'users/base/users_single_form.html.twig' -%}
+
+{%- block heading_title -%}
+  {{- 'users_full_name_edit.title'|trans({
+    'self': is_self ? 'yes' : 'no',
+    'edit': full_name_edit_en ? 'full_name' : 'access',
+    'user': account(id, schema)
+  }) -}}
+{%- endblock heading_title -%}
+
+{%- block form_a -%}
+  {%- if form.full_name is defined -%}
+    {{- form_row(form.full_name, {
+      'label': 'label.full_name',
+      'addon': ux_icon('lucide:user'),
+    }) -}}
+  {%- endif -%}
+
+  {%- if form.full_name_access is defined -%}
+    {{- form_row(form.full_name_access, {
+      'label': 'users_full_name.visible.label',
+    }) -}}
+  {%- endif -%}
+{%- endblock form_a -%}

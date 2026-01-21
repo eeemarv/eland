@@ -19,7 +19,7 @@ class UsersImageUploadController extends AbstractController
 {
   #[Route(
     '/{schema}/{role_short}/users/{id}/image/upload',
-    name: 'users_image_upload_admin',
+    name: 'users_image_upload',
     methods: ['POST'],
     requirements: [
       'id'            => '%assert.id%',
@@ -33,8 +33,8 @@ class UsersImageUploadController extends AbstractController
   )]
 
   #[Route(
-    '/{schema}/{role_short}/users/image/upload',
-    name: 'users_image_upload',
+    '/{schema}/{role_short}/users/self/image/upload',
+    name: 'users_image_upload_self',
     methods: ['POST'],
     requirements: [
       'schema'        => '%assert.schema%',

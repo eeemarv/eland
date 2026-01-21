@@ -11,6 +11,7 @@ use App\Repository\UserRepository;
 use App\Security\User;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
+use App\Service\UserCacheService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -43,6 +44,7 @@ class PasswordResetConfirmController extends AbstractController
     string $confirm_token,
     UserRepository $user_repository,
     EmailSentRepository $email_sent_repository,
+    UserCacheService $user_cache_service,
     PageParamsService $pp,
     SessionUserService $su
   ):Response
@@ -125,6 +127,11 @@ class PasswordResetConfirmController extends AbstractController
         id: $user_id,
         password: $hashed_password,
         schema: $pp->schema_o(),
+      );
+
+		  $user_cache_service->clear(
+        id: $user_id,
+        schema: $pp->schema(),
       );
 
       $email_sent_repository->set_confirmed(

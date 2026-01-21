@@ -23,11 +23,10 @@ use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
+use Doctrine\DBAL\Types\Types;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -91,7 +90,7 @@ class MessagesEditController extends AbstractController
           schema: $pp->schema_o(),
         ))
         {
-          throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
+          throw $this->createNotFoundException('Messages (offers/wants) module not enabled.');
         }
 
         $errors = [];
@@ -197,7 +196,7 @@ class MessagesEditController extends AbstractController
 
             if (!($pp->is_admin() || $su->is_owner($message['user_id'])))
             {
-                throw new AccessDeniedHttpException('Je hebt onvoldoende rechten om ' .
+                throw $this->createAccessDeniedException('Je hebt onvoldoende rechten om ' .
                     $message['label']['offer_want_this'] . ' aan te passen.');
             }
         }
@@ -282,7 +281,7 @@ class MessagesEditController extends AbstractController
                         from ' . $pp->schema() . '.users
                         where code = ?
                             and status in (1, 2)',
-                        [$account_code_expl], [\PDO::PARAM_STR]);
+                        [$account_code_expl], [Types::STRING]);
 
                     if (!$user_id)
                     {
@@ -345,17 +344,19 @@ class MessagesEditController extends AbstractController
                         from ' . $pp->schema() . '.categories
                         where id = ?',
                         [$category_id],
-                        [\PDO::PARAM_INT]
+                        [Types::INTEGER]
                     );
 
                     if (!$category)
                     {
-                        throw new BadRequestHttpException('Category with id ' . $category_id . ' does not exist!');
+                      throw new BadRequestHttpException('Category with id ' . $category_id . ' does not exist!');
                     }
 
                     if (($category['left_id'] + 1) !== $category['right_id'])
                     {
-                        throw new BadRequestException('A category containing sub-categories can not contain messages. (id: ' . $category_id . ')');
+                      throw new BadRequestHttpException(
+                        'A category containing sub-categories can not contain messages. (id: ' . $category_id . ')'
+                      );
                     }
                 }
             }
@@ -383,7 +384,7 @@ class MessagesEditController extends AbstractController
             if(!($db->fetchOne('select id
                 from ' . $pp->schema() . '.users
                 where id = ? and status in (1, 2)',
-                [$user_id], [\PDO::PARAM_INT])))
+                [$user_id], [Types::INTEGER])))
             {
                 $errors[] = 'Gebruiker bestaat niet of is niet actief.';
             }
@@ -523,7 +524,7 @@ class MessagesEditController extends AbstractController
             }
             else if (!count($errors))
             {
-                throw new HttpException(500, 'Onbekende modus');
+                throw new HttpException(500, 'Unknown mode');
             }
 
             foreach ($errors as $error)

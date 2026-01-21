@@ -156,7 +156,7 @@ class MolliePaymentsAddController extends AbstractController
           and r.id = p.request_id
         order by p.created_at desc
         limit 1) p1
-      on \'t\'::bool
+      on true
       where ' . $sql_where . '
       order by u.code asc', $sql_params, $sql_types);
 

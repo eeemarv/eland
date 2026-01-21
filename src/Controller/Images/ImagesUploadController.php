@@ -11,7 +11,6 @@ use App\Service\ImageUploadService;
 use App\Service\PageParamsService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -46,7 +45,7 @@ class ImagesUploadController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
+      throw $this->createNotFoundException('Messages (offers/wants) module not enabled.');
     }
 
     if ($error = $form_token_service->get_ajax_error($form_token))

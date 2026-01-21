@@ -7,6 +7,7 @@ use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
 use App\Service\S3Service;
 use App\Service\SystemsService;
+use Doctrine\DBAL\Types\Types;
 
 class CleanupImagesTask
 {
@@ -90,7 +91,7 @@ class CleanupImagesTask
 		{
 			$user = $this->db->fetchAssociative('select id, image_file
 				from ' . $sch . '.users
-				where id = ?', [$id], [\PDO::PARAM_INT]);
+				where id = ?', [$id], [Types::INTEGER]);
 
 			if (!$user)
 			{
@@ -110,7 +111,7 @@ class CleanupImagesTask
 		{
 			$image_files = $this->db->fetchOne('select image_files
 				from ' . $sch . '.messages
-				where id = ?', [$id], [\PDO::PARAM_INT]);
+				where id = ?', [$id], [Types::INTEGER]);
 
 			$image_files = $image_files ?? '[]';
 			$image_files = $image_files === false ? '[]' : $image_files;
@@ -148,6 +149,6 @@ class CleanupImagesTask
 				and c.relname = ?
 				and c.relkind = \'r\'',
 				[$schema, $table],
-				[\PDO::PARAM_STR, \PDO::PARAM_STR]) ? true : false;
+				[Types::STRING, Types::STRING]) ? true : false;
 	}
 }

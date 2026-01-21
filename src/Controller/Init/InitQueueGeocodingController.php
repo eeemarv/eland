@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -41,7 +40,7 @@ class InitQueueGeocodingController extends AbstractController
   {
     if (!$env_app_init_enabled)
     {
-      throw new NotFoundHttpException('De init routes zijn niet ingeschakeld.');
+      throw $this->createNotFoundException('De init routes zijn niet ingeschakeld.');
     }
 
     set_time_limit(300);

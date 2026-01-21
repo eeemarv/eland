@@ -14,7 +14,6 @@ use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -87,7 +86,7 @@ class MessagesImagesUploadController extends AbstractController
           schema: $pp->schema_o(),
         ))
         {
-            throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
+            throw $this->createNotFoundException('Messages (offers/wants) module not enabled.');
         }
 
         if (in_array($mode, ['add', 'edit']))
@@ -172,7 +171,7 @@ class MessagesImagesUploadController extends AbstractController
                 set image_files = image_files || ?
                 where id = ?',
                 [$filename_ary, $id],
-                [Types::JSON, \PDO::PARAM_INT]
+                [Types::JSON, Types::INTEGER]
             );
         }
 

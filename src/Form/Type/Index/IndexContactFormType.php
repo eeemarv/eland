@@ -15,14 +15,13 @@ class IndexContactFormType extends AbstractType
 {
   public function buildForm(
     FormBuilderInterface $builder,
-    array $options
+    array $options,
   ):void
   {
-    $builder
-    ->add('email_address', EmailType::class)
-    ->add('message', TextareaType::class)
-    ->add('captcha', CaptchaType::class)
-    ->add('submit', SubmitType::class);
+    $builder->add('email_address', EmailType::class);
+    $builder->add('message', TextareaType::class);
+    $builder->add('captcha', CaptchaType::class);
+    $builder->add('submit', SubmitType::class);
   }
 
   public function configureOptions(OptionsResolver $resolver):void

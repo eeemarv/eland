@@ -56,7 +56,9 @@ class PageParamsService
         $this->role = 'anonymous';
         break;
       default:
-        throw new NotFoundHttpException('No valid role for route');
+        throw new NotFoundHttpException(
+          'No valid role for route'
+        );
         break;
     }
 
@@ -69,7 +71,9 @@ class PageParamsService
 
 		if (!$this->schema)
 		{
-			throw new NotFoundHttpException('No system defined.');
+			throw new NotFoundHttpException(
+        'No system defined.'
+      );
 		}
 
 		if (!$this->systems_service->has_schema($this->schema))
@@ -82,7 +86,9 @@ class PageParamsService
 				exit;
 			}
 
-			throw new NotFoundHttpException('System/schema "' . $this->schema . '" not found.');
+			throw new NotFoundHttpException(
+        'System/schema "' . $this->schema . '" not found.'
+      );
 		}
 
     $this->schema_o = new Schema($this->schema);

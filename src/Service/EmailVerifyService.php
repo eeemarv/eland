@@ -5,6 +5,7 @@ namespace App\Service;
 use Doctrine\DBAL\Connection as Db;
 use App\Service\CacheService;
 use App\Service\TokenGeneratorService;
+use Doctrine\DBAL\Types\Types;
 use Psr\Log\LoggerInterface;
 
 class EmailVerifyService
@@ -64,6 +65,6 @@ class EmailVerifyService
 	{
 		return $this->db->fetchOne('select id
 			form ' . $schema . '.email_verify
-			where email = ?', [$email], [\PDO::PARAM_STR]) ? true : false;
+			where email = ?', [$email], [Types::STRING]) ? true : false;
 	}
 }

@@ -33,7 +33,7 @@ class MessagesType extends AbstractType
 
   public function buildForm(
     FormBuilderInterface $builder,
-    array $options
+    array $options,
   ):void
   {
     $expires_at_required = $this->config_service->get_bool(

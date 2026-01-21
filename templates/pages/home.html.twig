@@ -3,25 +3,25 @@
 {%- set active_menu = 'home' -%}
 
 {%- block heading -%}
-    {%- if config_bool('home.header.enabled', schema) -%}
-        <div class="jumbotron">
-            <h1>
-                {{- config_str('system.name', schema) -}}
-            </h1>
-        </div>
-    {%- endif -%}
+  {%- if config_bool('home.header.enabled') -%}
+    <div class="jumbotron">
+      <h1>
+        {{- config_str('system.name') -}}
+      </h1>
+    </div>
+  {%- endif -%}
 {%- endblock heading -%}
 
 {%- block content_top -%}
 {%- endblock content_top -%}
 
 {%- block content -%}
-    {%- embed 'embed/static_content.html.twig' with {
-        'with_role': false,
-        'with_route': true
-    } -%}
-        {%- block block_name -%}mid{%- endblock -%}
-    {%- endembed -%}
+  {%- embed 'embed/static_content.html.twig' with {
+    'with_role': false,
+    'with_route': true,
+  } -%}
+    {%- block block_name -%}mid{%- endblock -%}
+  {%- endembed -%}
 {%- endblock content -%}
 
 {%- block content_bottom -%}

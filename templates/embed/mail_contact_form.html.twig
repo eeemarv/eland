@@ -1,0 +1,38 @@
+<div class="panel panel-info">
+    {%- block form_header -%}{%- endblock -%}
+    <div class="panel-heading">
+        {%- block form_start -%}
+            {{- form_start(mail_form, {'attr': {'novalidate': 'novalidate'}}) -}}
+            {{- form_errors(mail_form) -}}
+        {%- endblock form_start -%}
+        {%- block form_content -%}
+            {%- block form_a -%}
+                {{- form_row(mail_form.message, {
+                    'label': 'label.your_message',
+                    'attr': {
+                        'rows': 5
+                    }
+                }) -}}
+
+                {{- form_row(mail_form.cc, {
+                    'label': 'support_form.cc.label',
+                    'label_translation_parameters': {
+                        'can_reply': 'can_reply',
+                    },
+                }) -}}
+
+            {%- endblock form_a -%}
+            {%- block form_cancel_btn -%}
+            {%- endblock form_cancel_btn -%}
+            {%- block form_submit_btn -%}
+                {%- include 'form/submit_send_btn.html.twig' with {
+                    'form': mail_form
+                } -%}
+            {%- endblock form_submit_btn -%}
+        {%- endblock form_content -%}
+        {%- block form_end -%}
+            {{- form_end(mail_form) -}}
+        {%- endblock form_end -%}
+    </div>
+    {%- block form_footer -%}{%- endblock -%}
+</div>

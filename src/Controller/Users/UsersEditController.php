@@ -41,8 +41,8 @@ use Symfony\Component\Routing\Annotation\Route;
 class UsersEditController extends AbstractController
 {
     #[Route(
-        '/{schema}/{role_short}/users/add',
-        name: 'users_add',
+        '/{schema}/{role_short}/users/add2',
+        name: 'users_add2',
         methods: ['GET', 'POST'],
         requirements: [
             'schema'        => '%assert.schema%',
@@ -366,31 +366,31 @@ class UsersEditController extends AbstractController
                 from ' . $pp->schema() . '.users
                 where code = ?';
             $code_sql['params'] = [$code];
-            $code_sql['types'] = [\PDO::PARAM_STR];
+            $code_sql['types'] = [Types::STRING];
 
             $name_sql['query'] = 'select name
                 from ' . $pp->schema() . '.users
                 where name = ?';
             $name_sql['params'] = [$name];
-            $name_sql['types'] = [\PDO::PARAM_STR];
+            $name_sql['types'] = [Types::STRING];
 
             $full_name_sql['query'] = 'select full_name
                 from ' . $pp->schema() . '.users
                 where full_name = ?';
             $full_name_sql['params'] = [$full_name];
-            $full_name_sql['types'] = [\PDO::PARAM_STR];
+            $full_name_sql['types'] = [Types::STRING];
 
             if ($is_edit)
             {
                 $code_sql['query'] .= ' and id <> ?';
                 $code_sql['params'][] = $id;
-                $code_sql['types'][] = \PDO::PARAM_INT;
+                $code_sql['types'][] = Types::INTEGER;
                 $name_sql['query'] .= ' and id <> ?';
                 $name_sql['params'][] = $id;
-                $name_sql['types'][] = \PDO::PARAM_INT;
+                $name_sql['types'][] = Types::INTEGER;
                 $full_name_sql['query'] .= ' and id <> ?';
                 $full_name_sql['params'][] = $id;
-                $full_name_sql['types'][] = \PDO::PARAM_INT;
+                $full_name_sql['types'][] = Types::INTEGER;
             }
 
             if (!$full_name_access && $full_name_enabled)

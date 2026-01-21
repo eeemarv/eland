@@ -42,7 +42,9 @@ class NewsSortController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw new AccessDeniedHttpException('News module not enabled.');
+      throw $this->createAccessDeniedException(
+        'News module not enabled.'
+      );
     }
 
     $command = new NewsSortCommand();

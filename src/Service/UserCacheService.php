@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use Doctrine\DBAL\Connection as Db;
+use Doctrine\DBAL\Types\Types;
 use Redis;
 
 class UserCacheService
@@ -15,8 +16,8 @@ class UserCacheService
 	protected array $local = [];
 
 	public function __construct(
-		protected Db $db,
-		protected Redis $redis
+		private readonly Db $db,
+		private readonly Redis $redis
 	)
 	{
 		$this->is_cli = php_sapi_name() === 'cli' ? true : false;
@@ -93,16 +94,20 @@ class UserCacheService
 	protected function read_from_db(int $id, string $schema):array
 	{
 		$user = $this->db->fetchAssociative('select u.*,
-				case when mp.id is null
-					then \'f\'::bool
-					else \'t\'::bool
-					end has_open_mollie_payment
+      case when mp.id is null
+        then false
+        else true
+        end has_open_mollie_payment
 			from ' . $schema . '.users u
 			left join ' . $schema . '.mollie_payments mp
 				on (u.id = mp.user_id
-					and mp.is_paid = \'f\'::bool
-					and mp.is_canceled = \'f\'::bool)
-			where u.id = ?', [$id], [\PDO::PARAM_INT]);
+					and mp.is_paid = false
+					and mp.is_canceled = false)
+			where u.id = :id', [
+        'id'  => $id,
+      ], [
+        'id'  => Types::INTEGER,
+      ]);
 
 		if ($user === false)
 		{

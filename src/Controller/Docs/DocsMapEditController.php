@@ -12,7 +12,6 @@ use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\TypeaheadService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -46,13 +45,20 @@ class DocsMapEditController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw new NotFoundHttpException('Documents module not enabled.');
+      throw $this->createNotFoundException('Documents module not enabled.');
     }
 
     $doc_map = $doc_repository->get_map(
       map_id: $id,
       schema: $pp->schema_o(),
     );
+
+    if ($doc_map === false)
+    {
+      throw $this->createNotFoundException(
+        'Document with id ' . $id . ' not found'
+      );
+    }
 
     $command = new DocsMapCommand();
     $command->id = $id;

@@ -4,6 +4,7 @@ namespace App\Service;
 
 use Doctrine\DBAL\Connection as Db;
 use App\Service\CacheService;
+use Doctrine\DBAL\Types\Types;
 
 class DistanceService
 {
@@ -40,7 +41,7 @@ class DistanceService
 				where c.user_id = ?
 					and c.id_type_contact = tc.id
 					and tc.abbrev = \'adr\'',
-				[$s_id], [\PDO::PARAM_STR]);
+				[$s_id], [Types::STRING]);
 		}
 
 		if (!$adr)

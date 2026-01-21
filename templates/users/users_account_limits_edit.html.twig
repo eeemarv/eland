@@ -1,0 +1,47 @@
+{%- extends 'users/base/users_single_form.html.twig' -%}
+
+{%- block heading_title -%}
+  {{- 'users_account_limits_edit.title'|trans({
+    'self': is_self ? 'self' : 'some_user',
+    'code': user.code,
+    'user': account(id)
+  }) -}}
+{%- endblock heading_title -%}
+
+{%- block form_a -%}
+  {%- if form.max_limit is defined -%}
+    {%- set max_system = config_int('accounts.limits.global.max') -%}
+    {{- form_row(form.max_limit, {
+      'label': 'label.max_limit',
+      'addon': ux_icon('lucide:arrow-up-to-line')
+      ~ ' ' ~ config_str('transactions.currency.name'),
+      'help': 'users_account_limits_edit.max_limit.help',
+      'help_translation_parameters': {
+        'max_system': max_system,
+        'currency': config_str('transactions.currency.name'),
+        'system': max_system is null ? 'null' : 'defined',
+        'ao': '<a href="' ~ path('transactions_system_limits', {}|pp) ~ '">',
+        'ac': '</a>',
+      },
+      'help_html': true,
+    }) -}}
+  {%- endif -%}
+
+  {%- if form.min_limit is defined -%}
+    {%- set min_system = config_int('accounts.limits.global.min') -%}
+    {{- form_row(form.min_limit, {
+      'label': 'label.min_limit',
+      'addon': ux_icon('lucide:arrow-down-to-line')
+      ~ ' ' ~ config_str('transactions.currency.name'),
+      'help': 'users_account_limits_edit.min_limit.help',
+      'help_translation_parameters': {
+        'min_system': min_system,
+        'currency': config_str('transactions.currency.name'),
+        'system': min_system is null ? 'null' : 'defined',
+        'ao': '<a href="' ~ path('transactions_system_limits', {}|pp) ~ '">',
+        'ac': '</a>',
+      },
+      'help_html': true,
+    }) -}}
+  {%- endif -%}
+{%- endblock form_a -%}

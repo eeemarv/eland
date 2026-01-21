@@ -15,7 +15,6 @@ use App\Service\SessionUserService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 #[AsController]
 class CalendarAddController extends AbstractController
@@ -38,7 +37,7 @@ class CalendarAddController extends AbstractController
           schema: $pp->schema_o(),
         ))
         {
-            throw new NotFoundHttpException('Calendar module not enabled.');
+            throw $this->createNotFoundException('Calendar module not enabled.');
         }
 
         $news = [];

@@ -8,6 +8,7 @@ use App\Repository\UserRepository;
 use App\Security\User;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
+use App\Service\UserCacheService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -34,7 +35,7 @@ class UsersPasswordEditController extends AbstractController
   )]
 
   #[Route(
-    '/{schema}/{role_short}/users/{id}/password-edit-self',
+    '/{schema}/{role_short}/users/self/password-edit',
     name: 'users_password_edit_self',
     methods: ['GET', 'POST'],
     requirements: [
@@ -49,13 +50,14 @@ class UsersPasswordEditController extends AbstractController
   )]
 
   public function __invoke(
-      Request $request,
-      PasswordHasherFactoryInterface $password_hasher_factory,
-      int $id,
-      bool $is_self,
-      UserRepository $user_repository,
-      PageParamsService $pp,
-      SessionUserService $su
+    Request $request,
+    PasswordHasherFactoryInterface $password_hasher_factory,
+    int $id,
+    bool $is_self,
+    UserRepository $user_repository,
+    UserCacheService $user_cache_service,
+    PageParamsService $pp,
+    SessionUserService $su,
   ):Response
   {
     if ($is_self)
@@ -63,13 +65,28 @@ class UsersPasswordEditController extends AbstractController
       $id = $su->id();
     }
 
+    $user = $user_repository->get(
+      id: $id,
+      schema: $pp->schema_o(),
+    );
+
+    if ($user === false)
+    {
+      throw $this->createNotFoundException(
+        'User with id ' . $id . ' not found'
+      );
+    }
+
     $form_options = [
       'validation_groups' => [$pp->role()],
     ];
 
     $command = new UsersPasswordEditCommand();
-    $form = $this->createForm(UsersPasswordEditType::class,
-      $command, $form_options);
+    $form = $this->createForm(
+      type: UsersPasswordEditType::class,
+      data: $command,
+      options: $form_options,
+    );
     $form->handleRequest($request);
 
     if ($form->isSubmitted()
@@ -84,20 +101,41 @@ class UsersPasswordEditController extends AbstractController
         schema: $pp->schema_o(),
       );
 
-      $this->addFlash('success', 'Paswoord opgeslagen.');
+		  $user_cache_service->clear(
+        id: $id,
+        schema: $pp->schema(),
+      );
+
+      $this->addFlash(
+        type: 'success',
+        message: [
+          'key' => 'users_password_edit.flash.success',
+          'params'  => [
+            'self'  => $is_self ? 'yes' : 'no',
+            'user'  => $user['name'],
+          ]
+        ],
+      );
 
       if ($is_self)
       {
-        return $this->redirectToRoute('users_show_self', $pp->ary());
+        return $this->redirectToRoute(
+          route: 'users_show_self',
+          parameters: $pp->ary(),
+        );
       }
 
-      return $this->redirectToRoute('users_show', [
-        ...$pp->ary(),
-        'id' => $id,
-      ]);
+      return $this->redirectToRoute(
+        route: 'users_show',
+        parameters: [
+          ...$pp->ary(),
+          'id' => $id,
+        ],
+      );
     }
 
     return $this->render('users/users_password_edit.html.twig', [
+      'user'              => $user,
       'form'              => $form->createView(),
       'is_self'           => $is_self,
       'id'                => $id,

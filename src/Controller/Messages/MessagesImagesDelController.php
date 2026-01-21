@@ -5,7 +5,6 @@ namespace App\Controller\Messages;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use App\Render\LinkRender;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
@@ -13,7 +12,6 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -50,7 +48,7 @@ class MessagesImagesDelController extends AbstractController
           schema: $pp->schema_o(),
         ))
         {
-            throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
+            throw $this->createNotFoundException('Messages (offers/wants) module not enabled.');
         }
 
         $errors = [];
@@ -59,7 +57,7 @@ class MessagesImagesDelController extends AbstractController
 
         if (!($su->is_owner($message['user_id']) || $pp->is_admin()))
         {
-            throw new AccessDeniedHttpException('No access');
+            throw $this->createAccessDeniedException('No access');
         }
 
         $images = array_values(json_decode($message['image_files'] ?? '[]', true));

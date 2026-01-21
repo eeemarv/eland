@@ -19,7 +19,7 @@
 {%- block heading_sub -%}
   <h2>
   {{- 'messages_images_del.user'|trans({
-    'user': account(message.user_id, schema)|link('users_show', {'id': message.user_id})
+    'user': account(message.user_id)|link('users_show', {'id': message.user_id})
   })|raw -}}
   </h2>
 {%- endblock heading_sub -%}

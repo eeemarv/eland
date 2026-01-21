@@ -6,7 +6,6 @@ use App\DTO\Schema;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class MessageRepository
 {
@@ -19,7 +18,7 @@ class MessageRepository
 	public function get(
     int $id,
     Schema $schema,
-  ):array
+  ):array|false
 	{
     $message = $this->db->fetchAssociative('select *
       from ' . $schema->str() . '.messages
@@ -29,11 +28,6 @@ class MessageRepository
         'id' => Types::INTEGER,
       ]);
 
-		if (!$message)
-		{
-			throw new NotFoundHttpException('Message ' . $id . ' not found.');
-    }
-
 		return $message;
 	}
 
@@ -42,7 +36,7 @@ class MessageRepository
 		int $ref_id,
 		array $visible_ary,
 		Schema $schema
-	):int
+	):int|false
 	{
     $res = $this->db->executeQuery('select m.id
       from ' . $schema->str() . '.messages m,
@@ -59,7 +53,7 @@ class MessageRepository
         'visible_ary' => ArrayParameterType::STRING,
       ]);
 
-		return $res->fetchOne() ?: 0;
+		return $res->fetchOne();
 	}
 
   // not used yet
@@ -67,7 +61,7 @@ class MessageRepository
 		int $ref_id,
 		array $visible_ary,
 		Schema $schema
-	):int
+	):int|false
 	{
     $res = $this->db->executeQuery('select m.id
       from ' . $schema->str() . '.messages m,
@@ -84,20 +78,20 @@ class MessageRepository
         'visible_ary' => ArrayParameterType::STRING,
       ]);
 
-		return $res->fetchOne() ?: 0;
+		return $res->fetchOne();
 	}
 
   // not used yet
 	public function del(
     int $id,
     Schema $schema,
-  ):bool
+  ):int
 	{
-		return $this->db->delete($schema->str() . '.messages', [
+		return (int) $this->db->delete($schema->str() . '.messages', [
       'id' => $id,
     ], [
       'id'  => Types::INTEGER,
-    ]) ? true : false;
+    ]);
 	}
 
   // not used yet
@@ -110,17 +104,18 @@ class MessageRepository
 		return (int) $this->db->lastInsertId($schema . '.messages_id_seq');
 	}
 
+  // not used
 	public function update(
     array $message,
     int $id,
     Schema $schema,
-  ):bool
+  ):int
 	{
-		return $this->db->update($schema->str() . '.messages', $message, [
+		return (int) $this->db->update($schema->str() . '.messages', $message, [
       'id' => $id,
     ], [
       'id'  => Types::INTEGER,
-    ]) ? true : false;
+    ]);
 	}
 
   // not used yet
@@ -142,9 +137,9 @@ class MessageRepository
 	public function del_for_user_id(
 		int $user_id,
 		Schema $schema
-	):void
+	):int
 	{
-		$this->db->delete($schema->str() . '.messages', [
+		return (int) $this->db->delete($schema->str() . '.messages', [
       'user_id' => $user_id,
     ], [
       'user_id' => Types::INTEGER,

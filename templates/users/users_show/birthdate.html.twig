@@ -1,0 +1,45 @@
+{%- if not is_intersystem and config_bool('users.fields.birthdate.enabled', schema) -%}
+{%- embed 'embed/list_item.html.twig' -%}
+  {%- import 'macro/lbl.html.twig' as l -%}
+  {%- block dl -%}
+    <dt>
+      {{- 'label.birthdate'|trans -}}
+    </dt>
+    <dd>
+      {%- if user.birthdate -%}
+        {{- user.birthdate|date_format('day') -}}
+      {%- else -%}
+        <twig:ux:icon name="lucide:x"/>
+      {%- endif -%}
+    </dd>
+    {#
+    {%- if pp_has_role('admin') or su_is_owner(user.id) -%}
+      <dt>
+          {{- 'users_full_name.visible.label'|trans -}}
+      </dt>
+      <dd>
+          {{- l.label(user.full_name_access) -}}
+      </dd>
+    {%- endif -%}
+    #}
+  {%- endblock dl -%}
+  {%- block div_right -%}
+  {%- if pp_has_role('admin') or is_self -%}
+
+    <a href="{{- path('users_birthdate_edit' ~ (is_self ? '_self' : ''), (is_self ? {} : {'id': id})|pp) -}}"
+      class="btn btn-primary"
+      title="{{- 'users_birthdate_edit.title'|trans({
+        'user': user.name,
+        'self': is_self ? 'yes' : 'no',
+      }) -}}">
+      <twig:ux:icon name="lucide:pencil"/>
+      &nbsp;
+      <span class="hidden-sm">
+        {{- 'btn.edit'|trans -}}
+      </span>
+    </a>
+
+  {%- endif -%}
+  {%- endblock div_right -%}
+{%- endembed -%}
+{%- endif -%}

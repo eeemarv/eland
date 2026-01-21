@@ -28,6 +28,11 @@ class TypeaheadUserTransformer implements DataTransformerInterface
       schema: $this->pp->schema_o(),
     );
 
+    if ($account_str === false)
+    {
+      return '';
+    }
+
     return $account_str;
   }
 
@@ -45,9 +50,11 @@ class TypeaheadUserTransformer implements DataTransformerInterface
       schema: $this->pp->schema_o(),
     );
 
-    if (!$id)
+    if ($id === false)
     {
-      throw new TransformationFailedException('user account with code ' . $code . ' does not exist.');
+      throw new TransformationFailedException(
+        'user account with code ' . $code . ' does not exist.'
+      );
     }
 
     return $id;

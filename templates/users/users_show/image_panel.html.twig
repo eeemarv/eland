@@ -1,0 +1,52 @@
+{%- set show_img = user.image_file is not null and user.image_file != '' -%}
+<div class="panel panel-default">
+  <div class="panel-body text-center center-block img-upload" id="img_user">
+  <img id="img"
+  {%- if not show_img %} style="display:none;"{%- endif %}
+  class="img-rounded img-responsive center-block w-100"
+  src="{{- show_img ? s3(user.image_file) : assets('1.gif') -}}"
+  data-base-url="{{- s3() -}}">
+  <div id="no_img"
+  {%- if show_img %} style="display:none;"{%- endif -%}>
+    <twig:ux:icon name="lucide:square-user" class="text-muted h-75 w-75" />
+    <br>
+    {{- 'users_show.image.none'|trans -}}
+  </div>
+</div>
+{%- if is_self or pp_has_role('admin') -%}
+<div class="panel-footer">
+  <span class="btn btn-success btn-lg btn-block fileinput-button">
+    <twig:ux:icon name="lucide:image-plus"/>
+    &nbsp;
+    {{- 'btn.image.upload'|trans -}}
+    <input type="file" name="image"
+    data-url="
+    {%- if is_self -%}
+      {{- path('users_image_upload_self', pp_ary()) -}}
+    {%- else -%}
+      {{- path('users_image_upload', pp_ary()|merge({'id': id})) -}}
+    {%- endif -%}"
+    data-image-crop
+    data-fileupload
+    data-message-file-type-not-allowed="{{- 'upload.error.type'|trans -}}"
+    data-message-max-file-size="{{- 'upload.error.size.too_big'|trans -}}"
+    data-message-min-file-size="{{- 'upload.error.size.too_small'|trans -}}"
+    data-message-uploaded-bytes="{{- 'upload.error.size.too_big'|trans -}}">
+  </span>
+
+  <p class="text-warning">
+    {{- 'users_show.image.help'|trans -}}
+  </p>
+
+  <a href="{{- path('users_image_del' ~ (is_self ? '_self' : ''), (is_self ? {} : {'id': id})|pp) -}}"
+    id="btn_remove"
+    {% if not show_img %} style="display:none;"{%- endif %}
+    class="btn btn-danger btn-block">
+    <twig:ux:icon name="lucide:trash"/>
+    &nbsp;
+    {{- 'btn.image.del'|trans -}}
+  </a>
+
+</div>
+{%- endif -%}
+</div>

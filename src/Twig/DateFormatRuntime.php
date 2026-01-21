@@ -25,11 +25,15 @@ class DateFormatRuntime implements RuntimeExtensionInterface
 
 	public function get(
     array $context,
-		string $ts,
+		string|null $ts,
 		string $precision,
     string|null $schema = null
-	):string
+	):string|null
 	{
+    if (!isset($ts))
+		{
+			return null;
+		}
     $sch = $schema ?? $context['schema'] ?? null;
 		return $this->date_format_service->get($ts, $precision, $sch);
 	}

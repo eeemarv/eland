@@ -12,7 +12,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -46,10 +45,21 @@ class NewsDelController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw new NotFoundHttpException('News module not enabled.');
+      throw $this->createNotFoundException('News module not enabled.');
     }
 
-    $news_item = $news_repository->get($id, $pp->schema());
+    $news_item = $news_repository->get(
+      id: $id,
+      schema: $pp->schema_o(),
+    );
+
+		if ($news_item === false)
+		{
+			throw $this->createNotFoundException(
+        'News item with id ' . $id . ' not found'
+      );
+		}
+
     $command = new NewsCommand();
     $command->id = $id;
     $command->subject = $news_item['subject'];
@@ -68,8 +78,13 @@ class NewsDelController extends AbstractController
     if ($form->isSubmitted()
         && $form->isValid())
     {
-      $news_repository->del($id, $pp->schema());
+      $news_repository->del(
+        id: $id,
+        schema: $pp->schema_o(),
+      );
+
       $this->addFlash('success', 'Nieuwsbericht "' . $news_item['subject'] . '" verwijderd.');
+
       return $this->redirectToRoute($vr->get('news'), $pp->ary());
     }
 

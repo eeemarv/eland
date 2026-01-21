@@ -12,7 +12,6 @@ use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -44,7 +43,7 @@ class NewsAddController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw new NotFoundHttpException('News module not enabled.');
+      throw $this->createNotFoundException('News module not enabled.');
     }
 
     $command = new NewsCommand();
@@ -60,9 +59,31 @@ class NewsAddController extends AbstractController
       && $form->isValid())
     {
       $command = $form->getData();
-      $id = $news_repository->insert($command, $su->id(), $pp->schema());
+
+      $subject = $command->subject;
+      $content = $command->content;
+      $access = $command->access;
+      $location = $command->location;
+      $event_at = $command->event_at;
+
+      if (isset($event_at))
+      {
+        $utc = new \DateTimeZone('UTC');
+        $event_at = new \DateTimeImmutable($event_at, $utc);
+      }
+
+      $id = $news_repository->insert(
+        subject: $subject,
+        content: $content,
+        access: $access,
+        location: $location,
+        event_at: $event_at,
+        user_id: $su->id(),
+        schema: $pp->schema_o(),
+      );
 
       $this->addFlash('success', 'Nieuwsbericht opgeslagen.');
+
       return $this->redirectToRoute('news_show', [
         ...$pp->ary(),
         'id' => $id,

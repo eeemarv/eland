@@ -14,7 +14,9 @@ class UsersColsContactsType extends AbstractType
   {
   }
 
-  private function sanitize_field_name(string $abbrev): string
+  private function sanitize_field_name(
+    string $abbrev
+  ): string
   {
     $field = trim($abbrev);
     $field = strtolower($field);
@@ -29,7 +31,7 @@ class UsersColsContactsType extends AbstractType
 
   public function buildForm(
     FormBuilderInterface $builder,
-    array $options
+    array $options,
   ):void
   {
     $field_map = [];

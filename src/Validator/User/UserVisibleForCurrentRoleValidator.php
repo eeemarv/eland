@@ -7,6 +7,7 @@ use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use App\Service\PageParamsService;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 // review
 class UserVisibleForCurrentRoleValidator extends ConstraintValidator
@@ -43,6 +44,13 @@ class UserVisibleForCurrentRoleValidator extends ConstraintValidator
       id: $user_id,
       schema: $this->pp->schema_o(),
     );
+
+    if ($user === false)
+    {
+      throw new NotFoundHttpException(
+        'User with id ' . $user_id . ' not found'
+      );
+    }
 
     if (in_array($user['status'], [1, 2, 7]))
     {

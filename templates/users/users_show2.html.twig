@@ -1,0 +1,126 @@
+{%- extends 'users/base/users_single_base.html.twig' -%}
+
+{%- block assets_add -%}
+  {{- parent() -}}
+  {{- assets_add(['leaflet', 'contacts_user_map.js']) -}}
+  {{- assets_add(['jqplot', 'transactions_plot_user.js']) -}}
+  {%- if pp_has_role('admin') or su_is_owner(id) -%}
+    {{- assets_add(['fileupload', 'upload_image.js']) -}}
+  {%- endif -%}
+{%- endblock assets_add -%}
+
+{%- block btn_top_edit -%}
+  {%- if pp_has_role('admin') -%}
+    {%- include 'include/btn_top/edit.html.twig' with {
+      'btn_route': 'users_edit'
+    } -%}
+  {%- elseif su_is_owner(id) -%}
+    {%- include 'include/btn_top/edit.html.twig' with {
+      'btn_route': 'users_edit_self',
+      'btn_title': 'users_edit_self.title'
+    } -%}
+  {%- endif -%}
+{%- endblock btn_top_edit -%}
+
+{%- block btn_top_del -%}
+  {%- if pp_has_role('admin') and count_transactions is same as 0 and not su_is_owner(id) -%}
+    {%- include 'include/btn_top/del.html.twig' with {
+      'btn_route': 'users_del',
+      'btn_title': 'users_del.title',
+      'btn_title_trans_params': {
+        'user': account(id, schema)
+      }
+    } -%}
+  {%- endif -%}
+{%- endblock btn_top_del -%}
+
+{%- block btn_top_password_edit -%}
+  {%- if pp_has_role('admin') or su_is_owner(id) -%}
+    {%- set password_edit_route = 'users_password_edit' ~ (su_is_owner(id) ? '_self' : '') -%}
+    <a href="{{- path(password_edit_route, {'id': id}|pp) -}}" class="btn btn-info btn-lg" title="{{- 'users_password_edit.title'|trans({
+      'user': account(id),
+      'self': is_self ? 'self' : 'some_user'
+    }) -}}"
+    >
+      <twig:ux:icon name="lucide:key"/>
+      <span class="hidden-xs hidden-sm">
+        &nbsp;
+        {{- 'btn.password'|trans -}}
+      </span>
+    </a>
+  {%- endif -%}
+{%- endblock btn_top_password_edit -%}
+
+{%- block btn_top_transaction -%}
+  {%- if config_bool('transactions.enabled', schema)
+    and config_bool('transactions.enabled', su_schema())
+    and (pp_has_role('admin') or not su_is_owner(id))  -%}
+    {%- include 'include/btn_top/transaction.html.twig' with {
+      'btn_route_params': su_ary()|merge({'tuid': id, 'tus': schema}),
+      'btn_title_trans_params': {
+        'user': account(id)
+      }
+    } -%}
+  {%- endif -%}
+{%- endblock btn_top_transaction -%}
+
+{%- block btn_item_nav -%}
+<div class="btn-group ml-5p" role="group">
+  <a href="
+  {%- if prev_id -%}
+    {{- path('users_show', {}|pp|merge({'id': prev_id, 'status': status})) -}}"
+  {%- else -%}
+  #" disabled
+  {%- endif %} class="btn btn-default btn-lg" title="{{- 'nav.prev'|trans -}}">
+    <twig:ux:icon name="lucide:chevron-up"/>
+  </a>
+
+  <a href="
+  {%- if next_id -%}
+    {{- path('users_show', {}|pp|merge({'id': next_id, 'status': status})) -}}"
+  {%- else -%}
+  #" disabled
+  {%- endif %} class="btn btn-default btn-lg" title="{{- 'nav.next'|trans -}}">
+    <twig:ux:icon name="lucide:chevron-down"/>
+  </a>
+
+  <a href="{{- path('users'|var_route, {}|pp|merge({'status': status})) -}}" class="btn btn-default btn-lg" title="{{- 'nav.list'|trans -}}">
+    <twig:ux:icon name="lucide:users"/>
+  </a>
+</div>
+{%- endblock btn_item_nav -%}
+
+{%- block heading_title -%}
+  {{- 'users_show.title'|trans({
+    'self': is_self ? 'self' : 'other',
+    'user': account(id, schema),
+  }) -}}
+  {{- account_status(id, schema)|raw -}}
+  {%- if pp_has_role('admin') -%}
+    {%- if intersystem_missing -%}
+      &nbsp;
+      <small>
+        <span class="label label-warning">
+          <twig:ux:icon name="lucide:triangle-alert"/>
+          &nbsp;
+          {{- 'users_show.intersystem_missing'|trans -}}
+        </span>
+      </small>
+    {%- elseif intersystem_id -%}
+      &nbsp;
+      <a href="{{- link('intersystems_show', {'id': intersystem_id}) -}}" class="btn btn-default">
+        <twig:ux:icon name="lucide:share-2"/>
+        &nbsp;
+        {{- 'users_show.coupled_intersystem'|trans -}}
+      </a>
+    {%- endif -%}
+  {%- endif -%}
+{%- endblock heading_title -%}
+
+{%- block css -%}
+  {{- parent() -}}
+{%- endblock css -%}
+
+{%- block js -%}
+  {{- parent() -}}
+{%- endblock js -%}

@@ -13,7 +13,7 @@ class TagsFilterType extends AbstractType
 {
   public function buildForm(
     FormBuilderInterface $builder,
-    array $options
+    array $options,
   ):void
   {
     $builder->add('contact_type_id', TextType::class, [
@@ -33,8 +33,6 @@ class TagsFilterType extends AbstractType
 
   public function configureOptions(OptionsResolver $resolver):void
   {
-    $resolver->setDefaults([
-      'data_class'            => ContactsCommand::class,
-    ]);
+    $resolver->setDefault('data_class', ContactsCommand::class);
   }
 }

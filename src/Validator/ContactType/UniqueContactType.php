@@ -7,10 +7,10 @@ use Symfony\Component\Validator\Constraint;
 #[\Attribute]
 class UniqueContactType extends Constraint
 {
-    public array $properties = [];
+  public array $properties = [];
 
-    public function getTargets():string
-    {
-        return self::CLASS_CONSTRAINT;
-    }
+  public function getTargets():string
+  {
+    return self::CLASS_CONSTRAINT;
+  }
 }

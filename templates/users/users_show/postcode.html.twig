@@ -1,0 +1,51 @@
+{%- if config_bool('users.fields.postcode.enabled', schema) -%}
+{%- embed 'embed/list_item.html.twig' -%}
+  {%- block dl -%}
+    <dt>
+      {{- 'label.postcode'|trans -}}
+    </dt>
+    <dd>
+      {%- if user.postcode is empty -%}
+        <twig:ux:icon name="lucide:x" class="text-bold"/>
+      {%- else -%}
+        {{- user.postcode -}}
+      {%- endif -%}
+    </dd>
+  {%- endblock dl -%}
+  {%- block div_right -%}
+  {%- if pp_has_role('admin') or is_self -%}
+
+    {%- if user.postcode -%}
+      <a href="{{- path('users_postcode_edit' ~ (is_self ? '_self' : ''), (is_self ? {} : {'id': id})|pp) -}}"
+        class="btn btn-primary"
+        title="{{- 'users_postcode_edit.title'|trans({
+          'user': user.name,
+          'self': is_self ? 'yes' : 'no',
+          'mode': 'edit',
+        }) -}}">
+        <twig:ux:icon name="lucide:pencil"/>
+        &nbsp;
+        <span class="hidden-sm">
+          {{- 'btn.edit'|trans -}}
+        </span>
+      </a>
+    {%- else -%}
+      <a href="{{- path('users_postcode_add' ~ (is_self ? '_self' : ''), (is_self ? {} : {'id': id})|pp) -}}"
+        class="btn btn-success"
+        title="{{- 'users_postcode_edit.title'|trans({
+          'user': user.name,
+          'self': is_self ? 'yes' : 'no',
+          'mode': 'add',
+        }) -}}">
+        <twig:ux:icon name="lucide:circle-plus"/>
+        &nbsp;
+        <span class="hidden-sm">
+          {{- 'btn.edit'|trans -}}
+        </span>
+      </a>
+    {%- endif -%}
+
+  {%- endif -%}
+  {%- endblock div_right -%}
+{%- endembed -%}
+{%- endif -%}

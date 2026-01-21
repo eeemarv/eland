@@ -1,0 +1,29 @@
+{%- extends 'users/base/users_single_form.html.twig' -%}
+
+{%- block heading_title -%}
+  {{- 'users_account_leaving_edit.title'|trans({
+    'self': is_self ? 'yes' : 'no',
+    'leaving': user.is_leaving ? 'yes' : 'no',
+    'user': account(id),
+    'code': user.code,
+  }) -}}
+{%- endblock heading_title -%}
+
+{%- block form_a -%}
+  {{- form_row(form.is_leaving, {
+    'label': 'users_account_leaving_edit.leaving.label',
+    'label_translation_parameters': {
+      'self': is_self ? 'yes' : 'no',
+      'user': account(id),
+      'code': user.code,
+    },
+    'help': 'users_account_leaving_edit.leaving.help',
+    'help_translation_parameters': {
+      'self': is_self ? 'yes' : 'no',
+      'user': account(id),
+      'code': user.code,
+      'balance': balance,
+      'currency': config_str('transactions.currency.name'),
+    }
+  }) -}}
+{%- endblock form_a -%}

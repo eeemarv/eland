@@ -4,7 +4,7 @@
 
 {%- block heading_title -%}
   {{- 'users_del.title'|trans({
-    'user': account(id, schema)|link('users_show', {'id': id})
+    'user': account(id)|link('users_show', {'id': id})
   })|raw -}}
 {%- endblock heading_title -%}
 

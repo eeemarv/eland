@@ -37,7 +37,7 @@ final class EmailMollieBulkMessageHandler
       schema: $schema,
     );
 
-    $bulk_id = Uuid::v4();
+    $bulk_id = Uuid::v7();
 
     foreach ($m_payments as $payment_id => $payment)
     {

@@ -10,7 +10,7 @@ class MollieCheckoutType extends AbstractType
 {
   public function buildForm(
     FormBuilderInterface $builder,
-    array $options
+    array $options,
   ):void
   {
     $builder

@@ -13,7 +13,7 @@ class UsersConfigModulesType extends AbstractType
 {
   public function buildForm(
     FormBuilderInterface $builder,
-    array $options
+    array $options,
   ):void
   {
     $builder->add('full_name_enabled', CheckboxType::class);
@@ -32,8 +32,6 @@ class UsersConfigModulesType extends AbstractType
 
   public function configureOptions(OptionsResolver $resolver):void
   {
-    $resolver->setDefaults([
-      'data_class'    => UsersConfigModulesCommand::class,
-    ]);
+    $resolver->setDefault('data_class', UsersConfigModulesCommand::class);
   }
 }

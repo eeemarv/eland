@@ -10,7 +10,9 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use App\Service\PageParamsService;
 use App\Security\User;
 use App\Service\ConfigService;
+use App\Service\UserCacheService;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 
 class LoginValidator extends ConstraintValidator
@@ -18,6 +20,7 @@ class LoginValidator extends ConstraintValidator
   public function __construct(
     private readonly PasswordHasherFactoryInterface $password_hasher_factory,
     private readonly UserRepository $user_repository,
+    private readonly UserCacheService $user_cache_service,
     private readonly ConfigService $config_service,
     private readonly PageParamsService $pp,
     #[Autowire('%env(base64:MASTER_PASSWORD)%')]
@@ -67,10 +70,19 @@ class LoginValidator extends ConstraintValidator
 
       if ($count_by_email === 1)
       {
-        $command->id = $this->user_repository->get_active_id_by_email(
+        $user_id = $this->user_repository->get_active_id_by_email(
           email: $login_lowercase,
           schema: $this->pp->schema_o(),
         );
+
+        if ($user_id === false)
+        {
+          throw new NotFoundHttpException(
+            'User with email ' . $login_lowercase . ' not found.'
+          );
+        }
+
+        $command->id = $user_id;
       }
     }
 
@@ -91,10 +103,19 @@ class LoginValidator extends ConstraintValidator
 
       if ($count_by_name === 1)
       {
-        $command->id = $this->user_repository->get_active_id_by_name(
+        $user_id = $this->user_repository->get_active_id_by_name(
           name: $login_lowercase,
           schema: $this->pp->schema_o(),
         );
+
+        if ($user_id === false)
+        {
+          throw new NotFoundHttpException(
+            'User with name ' . $login_lowercase . ' not found.'
+          );
+        }
+
+        $command->id = $user_id;
       }
     }
 
@@ -115,10 +136,19 @@ class LoginValidator extends ConstraintValidator
 
       if ($count_by_code === 1)
       {
-        $command->id = $this->user_repository->get_active_id_by_code(
+        $user_id = $this->user_repository->get_active_id_by_code(
           code: $login_lowercase,
           schema: $this->pp->schema_o(),
         );
+
+        if ($user_id === false)
+        {
+          throw new NotFoundHttpException(
+            'User with code ' . $login_lowercase . ' not found.'
+          );
+        }
+
+        $command->id = $user_id;
       }
     }
 
@@ -135,7 +165,7 @@ class LoginValidator extends ConstraintValidator
       schema: $this->pp->schema_o(),
     );
 
-    if (!$user)
+    if ($user === false)
     {
       // should never happen
       $this->context->buildViolation('login.login.unknown')
@@ -197,6 +227,11 @@ class LoginValidator extends ConstraintValidator
         schema: $this->pp->schema_o(),
       );
 
+		  $this->user_cache_service->clear(
+        id: $command->id,
+        schema: $this->pp->schema(),
+      );
+
       $command->password_hashing_updated = true;
 
       return;
@@ -218,6 +253,11 @@ class LoginValidator extends ConstraintValidator
         id: $command->id,
         password: $hashed_password,
         schema: $this->pp->schema_o(),
+      );
+
+		  $this->user_cache_service->clear(
+        id: $command->id,
+        schema: $this->pp->schema(),
       );
 
       $command->password_hashing_updated = true;

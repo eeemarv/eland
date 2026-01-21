@@ -1,0 +1,168 @@
+{%- embed 'embed/list_item.html.twig' -%}
+  {%- import 'macro/lbl.html.twig' as l -%}
+  {%- block class %} p-0{% endblock class -%}
+  {%- block item -%}
+    <table class="table table-bordered mb-0">
+      <thead>
+        <tr>
+          <th>
+            {{- 'label.account_code'|trans -}}
+          </th>
+          <th>
+            {{- 'label.balance'|trans -}}
+          </th>
+
+          {%- if config_bool('accounts.limits.enabled') -%}
+            <th>
+              {{- 'label.min'|trans -}}
+            </th>
+            <th>
+              {{- 'label.max'|trans -}}
+            </th>
+          {%- endif -%}
+
+          <th>
+            &nbsp;
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+        {%- if user.is_leaving %} class="bg-danger"
+        {%- elseif is_new %} class="bg-success"
+        {%- endif -%}>
+          <td>
+            <em>
+              <b>
+                {{- user.code -}}
+              </b>
+            </em>
+          </td>
+          <td title="{{- 'balance.title'|trans({
+            'currency': config_str('transactions.currency.name')
+          }) -}}">
+            {{- l.txt_label(balance, 'info') -}}
+          </td>
+
+          {%- if config_bool('accounts.limits.enabled') -%}
+
+            {%- if min_limit is not null -%}
+              <td title="{{- 'balance.min'|trans -}}">
+                {{- l.txt_label(min_limit, 'danger') -}}
+              </td>
+            {%- elseif config_int('accounts.limits.global.min') is not null -%}
+              <td title="{{- 'balance.min_system'|trans -}}">
+                {{- l.txt_label(config_int('accounts.limits.global.min')) -}}
+              </td>
+            {%- else -%}
+              <td title="{{- 'balance.no_min'|trans -}}">
+                <twig:ux:icon name="lucide:x" class="text-bold"/>
+              </td>
+            {%- endif -%}
+
+            {%- if max_limit is not null -%}
+              <td title="{{- 'balance.max'|trans -}}">
+                {{- l.txt_label(max_limit, 'success') -}}
+              </td>
+            {%- elseif config_int('accounts.limits.global.max') is not null -%}
+              <td title="{{- 'balance.max_system'|trans -}}">
+                {{- l.txt_label(config_int('accounts.limits.global.max')) -}}
+              </td>
+            {%- else -%}
+              <td title="{{- 'balance.no_max'|trans -}}">
+                <twig:ux:icon name="lucide:x" class="text-bold"/>
+              </td>
+            {%- endif -%}
+
+          {%- endif -%}
+
+          <td>
+            <div class="pull-right">
+            {%- if config_bool('transactions.enabled', su_schema())
+              and (pp_has_role('admin') or not su_is_owner(id))  -%}
+
+              <a href="{{- path('transactions_add', su_ary()|merge({'tuid': id, 'tus': schema})) -}}"
+                class="btn btn-warning"
+                title="{{- 'btn.transaction_to'|trans({
+                      'user': account(id),
+                    }) -}}">
+                <twig:ux:icon name="lucide:arrow-left-right"/>
+                &nbsp;
+                <span class="hidden-sm">
+                  {{- 'btn.transaction'|trans -}}
+                </span>
+              </a>
+
+            {%- endif -%}
+            </div>
+          </td>
+        </tr>
+
+        {%- if pp_has_role('admin') -%}
+        <tr class="bg-info">
+          <td>
+
+            <a href="{{- path('users_account_code_edit' ~ (is_self ? '_self' : ''), (is_self ? {} : {'id': id})|pp) -}}"
+              class="btn btn-primary"
+              title="{{- 'users_account_code_edit.title'|trans({
+                'user': account(id),
+                'self': is_self ? 'yes' : 'no',
+                'mode': 'edit',
+              }) -}}">
+              <twig:ux:icon name="lucide:pencil"/>
+              &nbsp;
+              <span class="hidden-sm">
+                {{- 'btn.edit'|trans -}}
+              </span>
+            </a>
+
+          </td>
+          <td>
+            {%- if config_bool('users.leaving.enabled') -%}
+
+            <a href="{{- path('users_account_leaving_edit' ~ (is_self ? '_self' : ''), (is_self ? {} : {'id': id})|pp) -}}"
+              class="btn btn-danger"
+              title="{{- 'users_account_leaving_edit.title'|trans({
+                'user': account(id),
+                'code': user.code,
+                'self': is_self ? 'yes' : 'no',
+                'leaving': user.is_leaving ? 'yes' : 'no',
+              }) -}}">
+              <twig:ux:icon name="lucide:user-minus"/>
+              &nbsp;
+              <span class="hidden-sm">
+                {{- 'btn.leaving'|trans -}}
+              </span>
+            </a>
+
+            {%- else -%}
+              &nbsp;
+            {%- endif -%}
+          </td>
+          {%- if config_bool('accounts.limits.enabled') -%}
+          <td colspan="2">
+
+            <a href="{{- path('users_account_limits_edit' ~ (is_self ? '_self' : ''), (is_self ? {} : {'id': id})|pp) -}}"
+              class="btn btn-primary"
+              title="{{- 'users_account_limits_edit.title'|trans({
+                'user': account(id),
+                'self': is_self ? 'yes' : 'no',
+              }) -}}">
+              <twig:ux:icon name="lucide:pencil"/>
+              &nbsp;
+              <span class="hidden-sm">
+                {{- 'btn.edit'|trans -}}
+              </span>
+            </a>
+
+          </td>
+          {%- endif -%}
+          <td>
+            &nbsp;
+          </td>
+        </tr>
+        {%- endif -%}
+      </tbody>
+    </table>
+  {%- endblock item -%}
+{%- endembed -%}

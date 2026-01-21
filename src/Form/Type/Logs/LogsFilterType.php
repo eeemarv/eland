@@ -21,7 +21,7 @@ class LogsFilterType extends AbstractType
     array $options
   ):void
   {
-  $builder->add('q', TextType::class, [
+    $builder->add('q', TextType::class, [
       'required' => false,
     ]);
 
@@ -55,8 +55,6 @@ class LogsFilterType extends AbstractType
 
   public function configureOptions(OptionsResolver $resolver):void
   {
-    $resolver->setDefaults([
-      'data_class'    => LogsFilterCommand::class,
-    ]);
+    $resolver->setDefault('data_class', LogsFilterCommand::class);
   }
 }

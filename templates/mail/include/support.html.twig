@@ -15,9 +15,9 @@
 {%- include 'mail/include/info_panel.html.twig' with {
     'info': 'b.support.explain'|trans({
             'ao': context_url_open('support_form',
-                mpp_ary(user_id, schema), {}),
+                mpp_ary(user_id), {}),
             'ac': '</a>',
-            'system_name': config_str('system.name', schema)
+            'system_name': config_str('system.name')
         })|raw
 } -%}
 

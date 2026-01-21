@@ -8,6 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -70,7 +71,7 @@ class TransactionsSumController extends AbstractController
 
         $sql_where = [];
         $sql_params = [$begin];
-        $sql_types = [\PDO::PARAM_STR];
+        $sql_types = [Types::STRING];
 
         if (count($ex_codes))
         {

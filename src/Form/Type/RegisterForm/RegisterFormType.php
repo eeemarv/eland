@@ -25,7 +25,7 @@ class RegisterFormType extends AbstractType
 
   public function buildForm(
     FormBuilderInterface $builder,
-    array $options
+    array $options,
   ):void
   {
     $postcode_enabled = $this->config_service->get_bool(
@@ -55,8 +55,6 @@ class RegisterFormType extends AbstractType
 
   public function configureOptions(OptionsResolver $resolver):void
   {
-    $resolver->setDefaults([
-      'data_class'    => RegisterFormCommand::class,
-    ]);
+    $resolver->setDefault('data_class', RegisterFormCommand::class);
   }
 }

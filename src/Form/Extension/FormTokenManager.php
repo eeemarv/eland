@@ -8,7 +8,7 @@ use Redis;
 
 class FormTokenManager implements FormTokenManagerInterface
 {
-  protected string $token;
+  private string $token;
 
   public function __construct(
     private readonly Redis $redis,

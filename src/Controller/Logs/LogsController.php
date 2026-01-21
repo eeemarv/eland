@@ -81,7 +81,7 @@ class LogsController extends AbstractController
     $sql['schema'] = $sql_map;
     $sql['schema']['where'][] = 'schema = ?';
     $sql['schema']['params'][] = $pp->schema();
-    $sql['schema']['types'][] = \PDO::PARAM_STR;
+    $sql['schema']['types'][] = Types::STRING;
 
     if (isset($filter_command->user))
     {
@@ -89,8 +89,8 @@ class LogsController extends AbstractController
       $sql['code']['where'][] = 'user_id = ? and user_schema = ?';
       $sql['code']['params'][] = $filter_command->user;
       $sql['code']['params'][] = $pp->schema();
-      $sql['code']['types'][] = \PDO::PARAM_INT;
-      $sql['code']['types'][] = \PDO::PARAM_STR;
+      $sql['code']['types'][] = Types::INTEGER;
+      $sql['code']['types'][] = Types::STRING;
       $params['f']['user'] = $filter_command->user;
     }
 
@@ -99,7 +99,7 @@ class LogsController extends AbstractController
       $sql['type'] = $sql_map;
       $sql['type']['where'][] = 'type ilike ?';
       $sql['type']['params'][] = strtolower($filter_command->type);
-      $sql['type']['types'][] = \PDO::PARAM_STR;
+      $sql['type']['types'][] = Types::STRING;
       $params['f']['type'] = $filter_command->type;
     }
 
@@ -108,7 +108,7 @@ class LogsController extends AbstractController
       $sql['q'] = $sql_map;
       $sql['q']['where'][] = 'event ilike ?';
       $sql['q']['params'][] = '%' . $filter_command->q . '%';
-      $sql['q']['types'][] = \PDO::PARAM_STR;
+      $sql['q']['types'][] = Types::STRING;
       $params['f']['q'] = $filter_command->q;
     }
 
@@ -136,9 +136,9 @@ class LogsController extends AbstractController
 
     $sql['pagination'] = $sql_map;
     $sql['pagination']['params'][] = $params['p']['limit'];
-    $sql['pagination']['types'][] = \PDO::PARAM_INT;
+    $sql['pagination']['types'][] = Types::INTEGER;
     $sql['pagination']['params'][] = $params['p']['start'];
-    $sql['pagination']['types'][] = \PDO::PARAM_INT;
+    $sql['pagination']['types'][] = Types::INTEGER;
 
     $sql_where = implode(' and ', array_merge(...array_column($sql, 'where')));
 

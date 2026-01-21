@@ -22,6 +22,28 @@ access:
   visible_for: Zichtbaar voor
   visible_for_access: Zichtbaar voor {access}
 
+balance:
+  title: >-
+    Saldo van het account in {currency}
+  no_min: >-
+    Er is geen minimum limiet voor dit
+    account en er is ook geen minimum limiet
+    ingesteld voor het hele systeem.
+  min: >-
+    Minimum limiet geldig voor dit account
+  min_system: >-
+    De minimum limiet voor het hele systeem
+    is van toepassing op dit account
+  no_max: >-
+    Er is geen maximum limiet voor dit
+    account en er is ook geen maximum limiet
+    ingesteld voor het hele systeem.
+  max: >-
+    Maximum limiet geldig voor dit account
+  max_system: >-
+    De maximum limiet voor het hele systeem
+    is van toepassing op dit account
+
 btn:
   add: Toevoegen
   approve: Goedkeuren
@@ -37,7 +59,14 @@ btn:
   download_csv: Download CSV
   edit: Aanpassen
   filter: Filter
+  leaving: Uitstap
   login: Inloggen
+  image:
+    upload: Afbeelding opladen
+    del: Afbeelding verwijderen
+  images:
+    upload: Afbeeldingen opladen
+    del: Afbeeldingen verwijderen
   password: Paswoord
   password_reset: Reset Paswoord
   register: Inschrijven
@@ -165,13 +194,19 @@ flash:
       }
     not_sent_to: >-
       {count, plural,
-        =0 {}
+        =0 {*-ERR-0-*}
         =1 {Wegens ontbreken van adres,
         geen emails verzonden naar:}
         other {Wegens ontbreken van adres,
         geen emails verzonden naar:}
       }
   no_change: Geen wijziging opgeslagen
+  no_change_for: >-
+    {count, plural,
+      =0  {*-ERR-0-*}
+      =1 {Geen wijziging voor gebruiker:}
+      other {Geen wijziging voor gebruikers:}
+    }
   maintenance: >-
     De website is niet beschikbaar
     wegens onderhoudswerken. Enkel admins
@@ -215,11 +250,13 @@ label:
   actif: Actief
   activated: Geactiveerd
   activated_at: Geactiveerd
+  activation_time: Tijdstip Activering
   activity: Activiteit
   admin: Admin
   admin_comment: Admin commentaar
   admin_comments: Admin Commentaar
   admin_functions: Admin functies
+  admin_role: Admin
   address: Adres
   already_exists: Bestaat reeds
   amount: Bedrag
@@ -245,15 +282,18 @@ label:
   counterparty: Tegenpartij
   created: Aanmaak
   created_at: Aangemaakt
+  creation_time: Tijdstip Aanmaak
   current_balance: Huidig saldo
   days: Dagen
   description: Omschrijving
   date: Datum
   date_of_birth: Geboortedatum
+  disabled: Uit
   distance: Afstand
   download: Download
   email: E-mail
   email_tag: E-mail tag
+  enabled: Aan
   event_date: Agendadatum
   example: Voorbeeld
   exclude_counterparties: Exclusief Tegenpartijen
@@ -292,10 +332,12 @@ label:
   map: Map
   map_name: Map naam
   max: Max
+  max_limit: Maximum Limiet
   maximum_limit: Maximum Limiet
   menu: Menu
   message: Bericht
   min: Min
+  min_limit: Minimum Limiet
   minimum_limit: Minimum Limiet
   modified: Aangepast
   mobile: GSM
@@ -316,11 +358,13 @@ label:
   periodic_overview: Periodiek overzicht (e-mail)
   periodic_overview_en: Ontvangst periodieke overzichts email
   periodic_overview_short: Per. overzicht
+  permissions_role: Rechten/rol
   parsed_address: Ontleed Adres
   password: Paswoord
   per_unit: Per (uur, stuk...)
   period_days: Periode in Dagen
   periodic_mail: Periodieke Overzichts E-mail
+  periodic_overview_reception: Ontvangst periodieke overzichts e-mail
   permanent: Permanent
   phone: Telefoon
   postcode: Postcode
@@ -349,10 +393,13 @@ label:
   to_date: Tot
   type: Type
   transactions: Transacties
+  transaction_account: Transactie-account
   transaction_id: Transactie Id
+  transactions_last_year: Transacties laatste jaar
   txt_color: Tekstkleur
   upload: Opladen
   user: Gebruiker
+  user_role: Lid
   username: Gebruikersnaam
   value: Waarde
   valid: Geldig
@@ -421,6 +468,13 @@ unique_filter:
   existing_items: >-
     Reeds bestaand:
 
+upload:
+  error:
+    type: Bestandstype is niet toegelaten
+    size:
+      too_big: Het bestand is te groot
+      too_small: Het bestand is te klein
+
 view:
   list: lijst
   tiles: Tegels met foto's
@@ -442,16 +496,22 @@ service_stuff:
     title: Diensten of spullen onbepaald
 
 status:
+  account_leaving: Uitstapper
+  account_not_leaving: Geen uitstapper
   all: Alle
   active: Actief
+  active_user: Actief
   extern: Extern
-  leaving: Uitstappers
-  leaving_only: Enkel uitstappers
-  im: Info-moment
   inactive: Inactief
-  ip: Info-pakket
+  intersystem: InterSysteem
+  im: Info-Moment
+  ip: Info-Pakket
+  leaving: Uitstappers
+  leaving_only: Enkel Uitstappers
   new: Instappers
-  new_only: Enkel instappers
+  new_only: Enkel Instappers
+  post_active: Post-Actief
+  pre_active: Pre-Actief
 
 system_menu:
   linked_intersystem: Gekoppeld interSysteem
@@ -977,6 +1037,28 @@ intersystems_edit:
 intersystems_show:
   title: >-
     InterSysteem {name}
+
+mail_contact:
+  disabled:
+    no_from: >-
+      Om het E-mail formulier te gebruiken
+      moet een E-mail adres ingesteld zijn
+      voor je eigen Account.
+    no_to: >-
+      Er is geen E-mail adres
+      bekend van deze gebruiker.
+    master: >-
+      Het master account kan geen
+      berichten versturen.
+    self: >-
+      Je kan geen E-mail berichten
+      naar jezelf verzenden.
+    system: >-
+      De email functionaliteit is
+      niet geactiveerd in dit systeem.
+  flash:
+    success: >-
+      Mail verzonden naar {user}
 
 messages:
   admin_config: >-
@@ -1577,9 +1659,194 @@ users:
   admin_config: >-
     Leden Configuratie
   title: Leden
+  log_comment:
+    label: >-
+      Commentaar bij deze Actie (optioneel)
+    help: >-
+      Deze commentaar wordt bewaard bij deze actie
+      in {ao}de historiek van de gebruiker{ac}.
+      Deze historiek kan alleen door admins
+      geraadpleegd worden.
+
+users_account:
+  no_account_yet: >-
+    Nog geen account aangemaakt
+
+users_account_code_edit:
+  title: >-
+    {self, select,
+      self {{mode, select,
+        add {Transactie-account voor jezelf aanmaken}
+        edit {Je account code {user} aanpassen}
+        other {**ERR mode 0**}
+      }}
+      other {{mode, select,
+        add {Transactie-account voor {user} aanmaken}
+        edit {Account code voor {user} aanpassen}
+        other {**ERR mode 1**}
+      }}
+    }
+  flash:
+    success: >-
+      {mode, select,
+        add {Het transactie-account is aangemaakt met code {code}}
+        edit {De code van het account is aangepast van
+        "{old_code}" naar "{new_code}"}
+        other {**ERR**}
+      }
+
+users_account_leaving_edit:
+  title: >-
+    {self, select,
+      self {{leaving, select,
+        yes {Status "uitstapper" voor je account {code} aanpassen}
+        no {Je account {code} de status "uitstapper" geven}
+        other {**ERR**}
+      }}
+      other {{leaving, select,
+        yes {Status "uitstapper" voor account {user} aanpassen}
+        no {Account {code} de status "uitstapper" geven}
+        other {**ERR**}
+      }}
+      other {**ERR**}
+    }
+  leaving:
+    label: >-
+      {self, select,
+        self {"Uitstapper" status voor je account {code}}
+        other {"Uitstapper" status voor account {user}}
+      }
+    help: >-
+      De uitstapper status wil zeggen dat het saldo van het
+      account enkel nog maar kan bewegen in de richting van
+      het geconfigureerde "uitstappers saldo". Dus kan het
+      het account enkel {currency} ontvangen OF uitgeven.
+      In het geval van dit account {user} met een saldo van
+      {balance} {currency} betekent dit dat het account enkel
+  flash:
+    success: >-
+      {leaving, select,
+        yes {Account {code} heeft nu "uitstapper" status}
+        no {De "uitstapper" status is verwijderd van account {code}}
+        other {**ERR**}
+      }
+
+users_account_limits_edit:
+  title: >-
+    {self, select,
+      self {Limieten voor je account {code} aanpassen}
+      other {Limieten voor account {user} aanpassen}
+    }
+  min_limit:
+    help: >-
+      {system, select,
+        defined {Een algemene minimum limiet van {min_system} {currency} is
+          {ao}ingesteld in dit systeem{ac}. Deze geldt voor alle
+          accounts waar geen individuele minimum limiet is ingesteld.
+          Vul hier enkel een individuele minimum limiet in
+          als die moet afwijken van de algemeen geldende minimum
+          limiet van {min_system} {currency}.
+        }
+        null {Vul hier enkel een minimum limiet in als die
+          moet afwijken van de andere accounts. Een algemene
+          minimum limiet die geldt voor alle accounts kan
+          {ao}hier{ac} ingesteld worden.}
+        other {**ERR**}
+      }
+  max_limit:
+    help: >-
+      {system, select,
+        defined {Een algemene maximum limiet van {max_system} {currency} is
+          {ao}ingesteld in dit systeem{ac}. Deze geldt voor alle
+          accounts waar geen individuele maximum limiet is ingesteld.
+          Vul hier enkel een individuele maximum limiet in
+          als die moet afwijken van de algemeen geldende maximum
+          limiet van {max_system} {currency}.
+        }
+        null {Vul hier enkel een maximum limiet in als die
+          moet afwijken van de andere accounts. Een algemene
+          maximum limiet die geldt voor alle accounts kan
+          {ao}hier{ac} ingesteld worden.}
+        other {**ERR**}
+      }
+  flash:
+    success:
+      max: >-
+        {action, select,
+          add {De maximum limiet van
+          account {code} is ingesteld op {new_max_limit}
+          {currency}}
+          edit {De maximum limiet van account {code} is
+          aangepast van {old_max_limit} naar {new_max_limit}
+          {currency}}
+          del {De maximum limiet
+          van account {code} is gewist}
+          other {**ERR**}
+        }
+      min: >-
+        {action, select,
+          add {De minimum limiet van
+          account {code} is ingesteld op {new_min_limit}
+          {currency}}
+          edit {De minimum limiet van account {code} is
+          aangepast van {old_min_limit} naar {new_min_limit}
+          {currency}}
+          del {De minimum limiet
+          van account {code} is gewist}
+          other {**ERR**}
+        }
+
+users_activate:
+  flash:
+    success:
+      activated: >-
+        Het account "{user}" is geactiveerd
+      email_sent: >-
+        Een notificatie email werd verzonden naar {email}
 
 users_add:
   title: Gebruiker toevoegen
+
+users_admin_comments_edit:
+  title: >-
+    {self, select,
+      self {Admin commentaaar in je profiel aanpassen}
+      other {Admin commentaar voor {user} aanpassen}
+    }
+  flash:
+    success: >-
+      Admin commentaar voor {user} is aangepast.
+
+users_birthdate_edit:
+  title: >-
+    {self, select,
+      yes {Geboortedatum in je profiel aanpassen}
+      no {Geboortedatum voor {user} aanpassen}
+      other {**ERR**}
+    }
+  flash:
+    success: >-
+      {self, select,
+        yes {Je geboortedatum is aangepast}
+        no {De geboortedatum van {user} is aangepast}
+        other {**ERR**}
+      }
+
+users_comments_edit:
+  title: >-
+    {self, select,
+      yes {Commentaaar in je profiel aanpassen}
+      no {Commentaar voor {user} aanpassen}
+      other {**ERR**}
+    }
+  flash:
+    success: >-
+      {self, select,
+        yes {De commentaar voor je profiel is
+        aangepast}
+        no {De commentaar voor {user} is aangepast}
+        other {**ERR**}
+      }
 
 users_config_modules:
   title: >-
@@ -1599,7 +1866,7 @@ users_config_full_name:
       Gebruikers kunnen zelf hun volledige naam aanpassen
   flash:
     change: >-
-      Volledige naam configuratie aangepast
+      Configuratie volledige naam aangepast
 
 users_config_leaving:
   title: Configuratie Uitstappers
@@ -1711,12 +1978,6 @@ users_config_username:
     change: >-
       Gebruikersnaam configuratie aangepast
 
-users_edit:
-  title: Gebruiker {user} aanpassen
-
-users_edit_self:
-  title: Je profiel aanpassen
-
 users_del:
   title: Gebruiker {user} verwijderen?
   verify_label: >-
@@ -1727,13 +1988,144 @@ users_del:
     Contacten en Afbeeldingen van {name}
     worden verwijderd.
 
+users_edit:
+  title: Gebruiker {user} aanpassen
+
+users_edit_self:
+  title: Je profiel aanpassen
+
+users_full_name:
+  visible:
+    label: Volledige naam zichtbaar voor
+
+users_full_name_edit:
+  title: >-
+    {self, select,
+      yes {{edit, select,
+        access {Zichtbaarheid volledige naam in je profiel aanpassen}
+        other {Volledige naam in je profiel aanpassen}
+      }}
+      no {Volledige naam voor {user} aanpassen}
+      other {**ERR**}
+    }
+  flash:
+    success:
+      full_name: >-
+        {self, select,
+          yes {Je volledige naam is aangepast van
+          "{old_full_name}" naar "{new_full_name}"}
+          no {De volledige naam van {user} is
+          aangepast van "{old_full_name}" naar
+          "{new_full_name}"}
+          other {**ERR**}
+        }
+      access: >-
+        {self, select,
+          yes {De zichtbaarheid van je volledige naam
+          is aangepast}
+          no {De zichtbaarheid van de volledige naam van
+          {user} is aangepast}
+          other {**ERR**}
+        }
+
+users_hobbies_edit:
+  title: >-
+    {self, select,
+      yes {Hobbies/interesses in je profiel aanpassen}
+      no {Hobbies/interesses van {user} aanpassen}
+      other {**ERR**}
+    }
+  flash:
+    success: >-
+      {self, select,
+        yes {Hobbies en interesses in je profiel aangepast}
+        no {Hobbies en interesses van {user} aangepast}
+        other {**ERR**}
+      }
+
 users_image_del:
   title: >-
-    Profielfoto/-afbeelding van {user} verwijderen?
+    {self, select,
+      yes {Verwijder je profielafbeelding?}
+      no {Profielafbeelding van {user} verwijderen?}
+      other {**ERR**}
+    }
+  flash:
+    success: >-
+      {self, select,
+        yes {Je profielafbeelding is verwijderd}
+        no {De profielafbeelding van {user} is verwijderd}
+        other {**ERR**}
+      }
 
-users_image_del_self:
+users_name_edit:
   title: >-
-    Profielfoto/-afbeelding verwijderen?
+    {self, select,
+      yes {Je gebruikersnaam {user} aanpassen}
+      no {Gebruikersnaam voor {user} aanpassen}
+      other {**ERR**}
+    }
+  flash:
+    success: >-
+      {self, select,
+        yes {Je gebruikersnaam is aangepast
+        van "{old_name}" naar "{new_name}"}
+        no {Gebruikersnaam aangepast van
+        "{old_name}" naar "{new_name}"}
+        other {**ERR**}
+      }
+
+users_periodic_overview_edit:
+  title: >-
+    {self, select,
+      yes {Ontvangst periodieke overzichts email voor je profiel aanpassen}
+      no {Ontvangst periodieke overzichts email voor {user} aanpassen}
+      other {**ERR**}
+    }
+  flash:
+    success: >-
+      {self, select,
+        yes {{switch, select,
+          on {Je ontvangt vanaf nu de periodieke email}
+          off {Je ontvangt vanaf nu niet meer de periodieke email}
+          other {** ** ** ERR ** ** **}
+        }}
+        no {{switch, select,
+          on {{user} ontvangt vanaf nu de periodieke email}
+          off {{user} ontvangt vanaf nu niet meer de periodieke email}
+          other {** ** ERR ** **}
+        }}
+        other {**ERR**}
+      }
+
+users_postcode_edit:
+  title: >-
+    {mode, select,
+      add {{self, select,
+        yes {Postcode toevoegen voor je profiel}
+        no {Postcode toevoegen voor {user}}
+        other {**ERR-add**}
+      }}
+      edit {{self, select,
+        yes {Postcode in je profiel aanpassen}
+        no {Postcode voor {user} aanpassen}
+        other {**ERR-edit**}
+      }}
+      other {**ERR**}
+    }
+  flash:
+    success: >-
+      {mode, select,
+        add {}
+        edit {{self, select,
+          yes {De postcode in je profiel is aangepast
+          van {old_postcode} naar {new_postcode}}
+          no {De postcode voor {user} is aangepast van
+          {old_postcode} naar {new_postcode}}
+          other {**ERR**}
+        }}
+        other {**ERR**}
+      }
 
 users_list:
   bulk:
@@ -1940,13 +2332,28 @@ users_map:
 users_password_edit:
   title: >-
     {self, select,
-      self {Nieuw paswoord ingeven voor je gebruikersaccount}
-      other{Nieuw paswoord ingeven voor {user}}
+      yes {Nieuw paswoord ingeven voor je gebruikersaccount}
+      no {Nieuw paswoord ingeven voor {user}}
+      other {**ERR**}
     }
   password:
     help: >-
       Verzin voor de veiligheid een orgineel
       paswoord.
+  flash:
+    success: >-
+      {self, select,
+        yes {Je paswoord is gewijzigd}
+        no {Het paswoord van {user} is gewijzigd}
+        other {**ERR**}
+      }
+
+users_role_edit:
+  title: >-
+    Rol/rechten voor {user} aanpassen
+  flash:
+    success: >-
+      De rol/rechten van {user} zijn aangepast
 
 users_show:
   title: >-
@@ -1959,6 +2366,25 @@ users_show:
     De interSysteem-verbinding ontbreekt
   coupled_intersystem: >-
     Gekoppeld interSysteem
+  image:
+    help: >-
+      Toegestane formaten: jpg/jpeg, png, webp, gif, svg.
+      Je kan ook een afbeelding hierheen verslepen.
+    none: Geen profielfoto/afbeelding
+    del:
+      label: afbeelding verwijderen
+  mail_contact:
+    title: >-
+      Stuur een e-mail bericht naar {user}
+  btn:
+    messages:
+      label: Vraag en aanbod van {user} ({count})
+    transactions:
+      label: Transacties van {user} ({count})
+  tags:
+    flash:
+      success: >-
+        Wijzigingen van tags opgeslagen ({count})
 
 welcome:
   title: Welkom bij {system_name}

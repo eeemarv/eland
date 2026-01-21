@@ -1,0 +1,7 @@
+{%- if config_bool('transactions.enabled') -%}
+{%- if user.code is defined and user.code is not null and user.code != '' -%}
+  {%- include 'users/users_show/accounts_edit.html.twig' -%}
+{%- else -%}
+  {%- include 'users/users_show/accounts_add.html.twig' -%}
+{%- endif -%}
+{%- endif -%}

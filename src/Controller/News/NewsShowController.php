@@ -9,7 +9,6 @@ use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -43,7 +42,7 @@ class NewsShowController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw new NotFoundHttpException('News module not enabled.');
+      throw $this->createNotFoundException('News module not enabled.');
     }
 
     $show_access = ($pp->is_user()
@@ -56,8 +55,22 @@ class NewsShowController extends AbstractController
       config_id: 'news.sort.asc',
       schema: $pp->schema_o(),
     );
+
     $visible_ary = $item_access_service->get_visible_ary_for_page();
-    $news_item = $news_repository->get_with_prev_next($id, $sort_asc, $visible_ary, $pp->schema());
+
+    $news_item = $news_repository->get_with_prev_next(
+      id: $id,
+      sort_event_at_asc: $sort_asc,
+      visible_ary: $visible_ary,
+      schema: $pp->schema_o(),
+    );
+
+		if ($news_item === false)
+		{
+			throw $this->createNotFoundException(
+        'News item with id ' . $id . ' not found'
+      );
+		}
 
     return $this->render('news/news_show.html.twig', [
       'news_item'     => $news_item,

@@ -86,7 +86,9 @@ class ContactRepository
 
 		if ($contact_type === false)
 		{
-			throw new \Exception('Contact type with id ' . $id . ' not found.');
+			throw new \Exception(
+        'Contact type with id ' . $id . ' not found.'
+      );
 		}
 
 		return $contact_type;

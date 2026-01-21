@@ -13,9 +13,8 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -65,12 +64,12 @@ class TransactionsController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw new NotFoundHttpException('Transactions module not enabled.');
+      throw $this->createNotFoundException('Transactions module not enabled.');
     }
 
     if (!$request->isMethod('GET') && !$pp->is_admin())
     {
-      throw new BadRequestException('POST not allowed');
+      throw new BadRequestHttpException('POST not allowed');
     }
 
     $service_stuff_enabled = $config_service->get_bool(

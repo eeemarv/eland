@@ -28,7 +28,7 @@ class TransactionsFilterType extends AbstractType
 
   public function buildForm(
     FormBuilderInterface $builder,
-    array $options
+    array $options,
   ):void
   {
     $service_stuff_enabled = $this->config_service->get_bool(
@@ -122,8 +122,6 @@ class TransactionsFilterType extends AbstractType
 
   public function configureOptions(OptionsResolver $resolver):void
   {
-    $resolver->setDefaults([
-      'data_class'  => TransactionsFilterCommand::class,
-    ]);
+    $resolver->setDefault('data_class', TransactionsFilterCommand::class);
   }
 }

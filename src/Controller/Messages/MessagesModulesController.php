@@ -11,7 +11,6 @@ use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -42,7 +41,7 @@ class MessagesModulesController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
+      throw $this->createNotFoundException('Messages (offers/wants) module not enabled.');
     }
 
     $command = new MessagesModulesCommand();

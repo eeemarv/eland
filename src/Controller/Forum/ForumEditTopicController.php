@@ -14,8 +14,6 @@ use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -51,7 +49,7 @@ class ForumEditTopicController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw new NotFoundHttpException('Forum module not enabled.');
+      throw $this->createNotFoundException('Forum module not enabled.');
     }
 
     $forum_topic = $forum_repository->get_topic(
@@ -59,14 +57,21 @@ class ForumEditTopicController extends AbstractController
       schema: $pp->schema_o(),
     );
 
+		if ($forum_topic === false)
+		{
+			throw $this->createNotFoundException(
+        'Forum topic ' . $id . ' not found.'
+      );
+		}
+
     if (!$item_access_service->is_visible($forum_topic['access']))
     {
-      throw new AccessDeniedHttpException('Access denied (1) for forum topic with id ' . $id);
+      throw $this->createAccessDeniedException('Access denied (1) for forum topic with id ' . $id);
     }
 
     if (!($su->is_owner($forum_topic['user_id']) || $pp->is_admin()))
     {
-      throw new AccessDeniedHttpException('Access Denied (2) for forum topic with id ' . $id);
+      throw $this->createAccessDeniedException('Access Denied (2) for forum topic with id ' . $id);
     }
 
     $forum_post = $forum_repository->get_first_post(
@@ -76,7 +81,7 @@ class ForumEditTopicController extends AbstractController
 
     if (!($su->is_owner($forum_post['user_id']) || $pp->is_admin()))
     {
-      throw new AccessDeniedHttpException('Access denied (3) forum forum post');
+      throw $this->createAccessDeniedException('Access denied (3) forum forum post');
     }
 
     $command = new ForumTopicCommand;
@@ -96,10 +101,15 @@ class ForumEditTopicController extends AbstractController
       && $form->isValid())
     {
       $command = $form->getData();
+      $subject = $command->subject;
+      $content = $command->content;
+      $access = $command->access;
 
       $forum_repository->update_topic(
         topic_id: $id,
-        command: $command,
+        subject: $subject,
+        content: $content,
+        access: $access,
         schema: $pp->schema_o(),
       );
 

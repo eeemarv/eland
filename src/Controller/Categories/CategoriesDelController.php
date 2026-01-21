@@ -12,7 +12,6 @@ use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -46,7 +45,7 @@ class CategoriesDelController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw new NotFoundHttpException('Categories module not enabled.');
+      throw $this->createNotFoundException('Categories module not enabled.');
     }
 
     if (!$config_service->get_bool(
@@ -54,13 +53,22 @@ class CategoriesDelController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw new NotFoundHttpException('messages (offer/want) module not enabled.');
+      throw $this->createNotFoundException(
+        'messages (offer/want) module not enabled.'
+      );
     }
 
     $category = $category_repository->get_with_messages_count(
       id: $id,
       schema: $pp->schema_o(),
     );
+
+    if ($category === false)
+    {
+      throw $this->createNotFoundException(
+        'Category ' . $id . ' not found.'
+      );
+    }
 
     if ($category['count'] !== 0)
     {

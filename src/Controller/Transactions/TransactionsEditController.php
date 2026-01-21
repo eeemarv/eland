@@ -19,7 +19,6 @@ use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -59,7 +58,7 @@ class TransactionsEditController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw new NotFoundHttpException('Transactions module not enabled.');
+      throw $this->createNotFoundException('Transactions module not enabled.');
     }
 
     $errors = [];

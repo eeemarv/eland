@@ -24,7 +24,10 @@ class TransactionsAddType extends AbstractType
   {
   }
 
-  public function buildForm(FormBuilderInterface $builder, array $options):void
+  public function buildForm(
+    FormBuilderInterface $builder,
+    array $options,
+  ):void
   {
     $service_stuff_enabled = $this->config_service->get_bool('transactions.fields.service_stuff.enabled', $this->pp->schema_o());
 

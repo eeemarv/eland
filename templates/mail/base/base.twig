@@ -1,7 +1,7 @@
 {%- trans_default_domain 'mail' -%}
 
 {%- block subject -%}
-    {%- if schema is defined -%}[{{- config_str('mail.tag', schema) }}] {% endif -%}
+    {%- if schema is defined -%}[{{- config_str('mail.tag') }}] {% endif -%}
     {%- block subject_line -%}{%- endblock -%}
 {%- endblock subject -%}
 
@@ -52,7 +52,7 @@
                 {%- block td_bottom -%}30px{%- endblock -%}
                 {%- block td_style %}font-size: 24px; color: #ffffff;{%- endblock -%}
                 {%- block td_content -%}
-                {{- config_str('system.name', schema) -}}
+                {{- config_str('system.name') -}}
                 {%- endblock td_content -%}
             {%- endembed -%}
         {%- endif -%}
@@ -83,7 +83,7 @@
                         'ao': context_url_open(
                             'home', mpp_anon_ary(schema), {}),
                         'ac': '</a>',
-                        'system_name': config_str('system.name', schema)
+                        'system_name': config_str('system.name')
                     })|raw -}}
                 {%- endblock td_content -%}
             {%- endembed -%}
@@ -114,7 +114,7 @@
 {{ 'b.footer'|trans({
     'ao': '',
     'ac': '',
-    'system_name': config_str('system.name', schema)
+    'system_name': config_str('system.name')
 })|raw }}
 {{ context_url('home', mpp_anon_ary(schema), {})|raw }}
 {% endif %}

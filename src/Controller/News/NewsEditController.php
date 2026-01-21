@@ -11,7 +11,6 @@ use App\Repository\NewsRepository;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -44,10 +43,21 @@ class NewsEditController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw new NotFoundHttpException('News module not enabled.');
+      throw $this->createNotFoundException('News module not enabled.');
     }
 
-    $news_item = $news_repository->get($id, $pp->schema());
+    $news_item = $news_repository->get(
+      id: $id,
+      schema: $pp->schema_o(),
+    );
+
+    if ($news_item === false)
+    {
+      throw $this->createNotFoundException(
+        'News item with id ' . $id . ' not found'
+      );
+    }
+
     $command = new NewsCommand();
     $command->id = $id;
     $command->subject = $news_item['subject'];
@@ -60,16 +70,43 @@ class NewsEditController extends AbstractController
       'validation_groups' => ['edit'],
     ];
 
-    $form = $this->createForm(NewsType::class, $command, $form_options);
+    $form = $this->createForm(
+      type: NewsType::class,
+      data: $command,
+      options: $form_options,
+    );
+
     $form->handleRequest($request);
 
     if ($form->isSubmitted()
       && $form->isValid())
     {
       $command = $form->getData();
-      $news_repository->update($command, $pp->schema());
+
+      $subject = $command->subject;
+      $content = $command->content;
+      $access = $command->access;
+      $location = $command->location;
+      $event_at = $command->event_at;
+
+      if (isset($event_at))
+      {
+        $utc = new \DateTimeZone('UTC');
+        $event_at = new \DateTimeImmutable($event_at, $utc);
+      }
+
+      $news_repository->update(
+        id: $id,
+        subject: $subject,
+        content: $content,
+        access: $access,
+        location: $location,
+        event_at: $event_at,
+        schema: $pp->schema_o(),
+      );
 
       $this->addFlash('success', 'Nieuwsbericht aangepast.');
+
       return $this->redirectToRoute('news_show', [
         ...$pp->ary(),
         'id' => $id,

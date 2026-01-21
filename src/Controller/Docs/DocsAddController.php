@@ -15,7 +15,6 @@ use App\Service\SessionUserService;
 use App\Service\TypeaheadService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -50,7 +49,7 @@ class DocsAddController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw new NotFoundHttpException('Documents module not enabled.');
+      throw $this->createNotFoundException('Documents module not enabled.');
     }
 
     $command = new DocsCommand();
@@ -58,17 +57,29 @@ class DocsAddController extends AbstractController
     if ($request->query->has('map_id'))
     {
       $map_id = (int) $request->query->get('map_id');
-      $map_name = $doc_repository->get_map(
+      $doc_map = $doc_repository->get_map(
         map_id: $map_id,
         schema: $pp->schema_o(),
-      )['name'];
+      );
+
+      if ($doc_map === false)
+      {
+        throw $this->createNotFoundException(
+          'Document with id ' . $map_id . ' not found'
+        );
+      }
+
+      $map_name = $doc_map['name'];
       $command->map_name = $map_name;
     }
 
     $form_options = ['validation_groups' => ['add']];
 
-    $form = $this->createForm(DocsAddType::class,
-            $command, $form_options);
+    $form = $this->createForm(
+      type: DocsAddType::class,
+      data: $command,
+      options: $form_options,
+    );
     $form->handleRequest($request);
 
     if ($form->isSubmitted()

@@ -8,7 +8,6 @@ use App\Service\SystemsService;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class TransactionRepository
 {
@@ -36,7 +35,7 @@ class TransactionRepository
 	public function get(
     int $id,
     Schema $schema,
-  ):array
+  ):array|false
 	{
 		$stmt = $this->db->prepare('select *
 			from ' . $schema->str() . '.transactions
@@ -44,11 +43,6 @@ class TransactionRepository
 		$stmt->bindValue('id', $id, Types::INTEGER);
 		$res = $stmt->executeQuery();
 		$data = $res->fetchAssociative();
-
-		if ($data === false)
-		{
-			throw new NotFoundHttpException('Transaction ' . $id . ' does not exist');
-		}
 
 		return $data;
 	}
@@ -267,12 +261,14 @@ class TransactionRepository
       fu.name as from_name,
       fu.code as from_code,
       case
-        when fu.status in (1,2) or fu.is_active then \'t\'::bool
-        else \'f\'::bool
+        when fu.status in (1,2) or fu.is_active
+          then true
+          else false
         end as from_is_active,
       case
-        when tu.status in (1,2) or tu.is_active then \'t\'::bool
-        else \'f\'::bool
+        when tu.status in (1,2) or tu.is_active
+          then true
+          else false
         end as to_is_active,
       fu.remote_schema as from_remote_schema,
       fu.remote_email as from_remote_email,
@@ -335,12 +331,14 @@ class TransactionRepository
         fu.code as from_code,
         fu.remote_schema as from_remote_schema,
         case
-          when fu.status in (1,2) or fu.is_active then \'t\'::bool
-          else \'f\'::bool
+          when fu.status in (1,2) or fu.is_active
+          then true
+          else false
           end as from_is_active,
         case
-          when tu.status in (1,2) or tu.is_active then \'t\'::bool
-          else \'f\'::bool
+          when tu.status in (1,2) or tu.is_active
+          then true
+          else false
           end as to_is_active,
         tu.name as to_name,
         tu.code as to_code,

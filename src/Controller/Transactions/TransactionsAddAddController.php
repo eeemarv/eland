@@ -26,10 +26,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Doctrine\DBAL\Types\Types;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -76,7 +76,7 @@ class TransactionsAddAddController extends AbstractController
           schema: $pp->schema_o(),
         ))
         {
-            throw new NotFoundHttpException('Transactions module not enabled.');
+            throw $this->createNotFoundException('Transactions module not enabled.');
         }
 
         $errors = [];
@@ -185,7 +185,7 @@ class TransactionsAddAddController extends AbstractController
                 $group = $db->fetchAssociative('select *
                     from ' . $pp->schema() . '.letsgroups
                     where id = ?',
-                [$group_id], [\PDO::PARAM_INT]);
+                [$group_id], [Types::INTEGER]);
 
                 if (!isset($group) || $group === false)
                 {
@@ -202,14 +202,14 @@ class TransactionsAddAddController extends AbstractController
                 $from_user = $db->fetchAssociative('select *
                     from ' . $pp->schema() . '.users
                     where id = ?',
-                    [$su->id()], [\PDO::PARAM_INT]);
+                    [$su->id()], [Types::INTEGER]);
             }
             else
             {
                 $from_user = $db->fetchAssociative('select *
                     from ' . $pp->schema() . '.users
                     where code = ?',
-                    [$code_from], [\PDO::PARAM_STR]);
+                    [$code_from], [Types::STRING]);
             }
 
             $code_to_self = $group_id == 'self' ? $code_to : $group['localletscode'];
@@ -217,7 +217,7 @@ class TransactionsAddAddController extends AbstractController
             $to_user = $db->fetchAssociative('select *
                 from ' . $pp->schema() . '.users
                 where code = ?',
-                [$code_to_self], [\PDO::PARAM_STR]);
+                [$code_to_self], [Types::STRING]);
 
             if(!is_array($from_user))
             {
@@ -550,7 +550,7 @@ class TransactionsAddAddController extends AbstractController
                 $to_remote_user = $db->fetchAssociative('select *
                     from ' . $remote_schema . '.users
                     where code = ?',
-                    [$code_to], [\PDO::PARAM_STR]);
+                    [$code_to], [Types::STRING]);
 
                 if (!$to_remote_user)
                 {
@@ -570,7 +570,7 @@ class TransactionsAddAddController extends AbstractController
                 $remote_group = $db->fetchAssociative('select *
                     from ' . $remote_schema . '.letsgroups
                     where url = ?',
-                    [$legacy_eland_origin], [\PDO::PARAM_STR]);
+                    [$legacy_eland_origin], [Types::STRING]);
 
                 if (!count($errors) && !$remote_group)
                 {
@@ -588,7 +588,7 @@ class TransactionsAddAddController extends AbstractController
                 $from_remote_user = $db->fetchAssociative('select *
                     from ' . $remote_schema . '.users
                     where code = ?',
-                    [$remote_group['localletscode']], [\PDO::PARAM_STR]);
+                    [$remote_group['localletscode']], [Types::STRING]);
 
                 if (!count($errors) && !$from_remote_user)
                 {
@@ -885,7 +885,7 @@ class TransactionsAddAddController extends AbstractController
                     $group_id = $db->fetchOne('select id
                         from ' . $pp->schema() . '.letsgroups
                         where url = ?',
-                        [$origin_from_tus], [\PDO::PARAM_STR]);
+                        [$origin_from_tus], [Types::STRING]);
 
                     if ($mid)
                     {
@@ -898,7 +898,7 @@ class TransactionsAddAddController extends AbstractController
                             where u.id = m.user_id
                                 and u.status in (1, 2)
                                 and m.id = ?',
-                            [$mid], [\PDO::PARAM_INT]);
+                            [$mid], [Types::INTEGER]);
 
                         if ($row)
                         {
@@ -949,7 +949,7 @@ class TransactionsAddAddController extends AbstractController
                         '. $pp->schema() . '.users u
                     where u.id = m.user_id
                         and m.id = ?',
-                    [$mid], [\PDO::PARAM_INT]);
+                    [$mid], [Types::INTEGER]);
 
                 if ($row)
                 {

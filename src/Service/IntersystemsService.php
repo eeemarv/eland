@@ -7,6 +7,7 @@ use Doctrine\DBAL\Connection as Db;
 use Redis;
 use App\Service\SystemsService;
 use App\Service\ConfigService;
+use Doctrine\DBAL\Types\Types;
 
 class IntersystemsService
 {
@@ -156,7 +157,7 @@ class IntersystemsService
 					and u.status in (1, 2, 7)
 					and u.role = \'guest\'
 					and g.url = ?',
-				[$s_url], [\PDO::PARAM_STR]);
+				[$s_url], [Types::STRING]);
 
 			if (!$url)
 			{

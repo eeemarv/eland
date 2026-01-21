@@ -1,0 +1,51 @@
+{%- if not is_intersystem and config_bool('users.fields.full_name.enabled', schema) -%}
+{%- embed 'embed/list_item.html.twig' -%}
+  {%- import 'macro/lbl.html.twig' as l -%}
+  {%- block dl -%}
+    <dt>
+      {{- 'label.full_name'|trans -}}
+    </dt>
+    <dd>
+      {%- if item_visible(user.full_name_access)
+        or su_is_owner(user.id)
+        or pp_has_role('admin')
+      -%}
+        {%- if user.full_name is empty -%}
+          <twig:ux:icon name="lucide:x" class="text-bold"/>
+        {%- else -%}
+          {{- user.full_name -}}
+        {%- endif -%}
+      {%- else -%}
+        {{- l.label_lg('hidden') -}}
+      {%- endif -%}
+    </dd>
+    {%- if pp_has_role('admin') or su_is_owner(user.id) -%}
+      <dt>
+        {{- 'users_full_name.visible.label'|trans -}}
+      </dt>
+      <dd>
+        {{- l.label_lg(user.full_name_access) -}}
+      </dd>
+    {%- endif -%}
+  {%- endblock dl -%}
+  {%- block div_right -%}
+  {%- if pp_has_role('admin') or is_self -%}
+
+    <a href="{{- path('users_full_name_edit' ~ (is_self ? '_self' : ''), (is_self ? {} : {'id': id})|pp) -}}"
+      class="btn btn-primary"
+      title="{{- 'users_full_name_edit.title'|trans({
+        'user': user.name,
+        'self': is_self ? 'yes' : 'no',
+        'edit': full_name_edit_en ? 'full_name' : 'access',
+      }) -}}">
+      <twig:ux:icon name="lucide:pencil"/>
+      &nbsp;
+      <span class="hidden-sm">
+        {{- 'btn.edit'|trans -}}
+      </span>
+    </a>
+
+  {%- endif -%}
+  {%- endblock div_right -%}
+{%- endembed -%}
+{%- endif -%}

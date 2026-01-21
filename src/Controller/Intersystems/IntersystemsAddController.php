@@ -15,8 +15,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
+use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -54,7 +54,7 @@ class IntersystemsAddController extends AbstractController
           schema: $pp->schema_o(),
         ))
         {
-            throw new NotFoundHttpException('Intersystem submodule (users) not enabled.');
+            throw $this->createNotFoundException('Intersystem submodule (users) not enabled.');
         }
 
         if ($request->isMethod('POST'))
@@ -70,7 +70,7 @@ class IntersystemsAddController extends AbstractController
                     from ' . $pp->schema() . '.letsgroups
                     where url = ?',
                     [$group['url']],
-                    [\PDO::PARAM_STR]))
+                    [Types::STRING]))
                 {
                     $errors[] = 'Er bestaat al een interSysteem met deze URL.';
                 }
@@ -78,7 +78,7 @@ class IntersystemsAddController extends AbstractController
 
             if ($db->fetchOne('select id
                 from ' . $pp->schema() . '.letsgroups
-                where localletscode = ?', [$group['localletscode']], [\PDO::PARAM_STR]))
+                where localletscode = ?', [$group['localletscode']], [Types::STRING]))
             {
                 $errors[] = 'Er bestaat al een interSysteem met deze Account Code.';
             }

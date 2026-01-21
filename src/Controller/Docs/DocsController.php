@@ -11,7 +11,6 @@ use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -44,7 +43,7 @@ class DocsController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw new NotFoundHttpException('Documents module not enabled.');
+      throw $this->createNotFoundException('Documents module not enabled.');
     }
 
     $visible_ary = $item_access_service->get_visible_ary_for_page();

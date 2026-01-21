@@ -127,9 +127,7 @@ class ContactsType extends AbstractType
 
   public function configureOptions(OptionsResolver $resolver):void
   {
-    $resolver->setDefaults([
-      'user_id_enabled'   => false,
-      'data_class'        => ContactsCommand::class,
-    ]);
+    $resolver->setDefault('user_id_enabled', false);
+    $resolver->setDefault('data_class', ContactsCommand::class);
   }
 }

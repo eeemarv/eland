@@ -17,7 +17,7 @@
       'btn_title_trans_params': {
         'offer_want': message.offer_want,
         'self': su_is_owner(message.user_id) ? 'self': 'some_user',
-        'user': account(message.user_id, schema),
+        'user': account(message.user_id),
         'subject': message.subject
       }
     } -%}
@@ -32,7 +32,7 @@
       'btn_title_trans_params': {
         'offer_want': message.offer_want,
         'self': su_is_owner(message.user_id) ? 'self' : 'some_user',
-        'user': account(message.user_id, schema)
+        'user': account(message.user_id)
       }
     } -%}
   {%- endif -%}
@@ -40,7 +40,7 @@
 
 {%- block btn_top_transaction -%}
   {%- if message.offer_want is same as 'offer'
-    and config_bool('transactions.enabled', schema)
+    and config_bool('transactions.enabled')
     and config_bool('transactions.enabled', su_schema())
     and (pp_has_role('admin') or not su_is_owner(message.user_id))  -%}
     {%- include 'include/btn_top/transaction.html.twig' with {

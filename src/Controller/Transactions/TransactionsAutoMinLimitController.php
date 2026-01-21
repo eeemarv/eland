@@ -11,7 +11,6 @@ use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -43,7 +42,7 @@ class TransactionsAutoMinLimitController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw new NotFoundHttpException('Transactions module not enabled.');
+      throw $this->createNotFoundException('Transactions module not enabled.');
     }
 
     if (!$config_service->get_bool(
@@ -51,7 +50,7 @@ class TransactionsAutoMinLimitController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw new NotFoundHttpException('Submodule auto min limit not enabled.');
+      throw $this->createNotFoundException('Submodule auto min limit not enabled.');
     }
 
     $command = new TransactionsAutoMinLimitCommand();

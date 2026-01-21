@@ -12,7 +12,6 @@ use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -45,7 +44,7 @@ class CategoriesAddController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw new NotFoundHttpException('messages (offer/want) module not enabled.');
+      throw $this->createNotFoundException('messages (offer/want) module not enabled.');
     }
 
     if (!$config_service->get_bool(
@@ -53,7 +52,7 @@ class CategoriesAddController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw new NotFoundHttpException('Categories module not enabled.');
+      throw $this->createNotFoundException('Categories module not enabled.');
     }
 
     $command = new CategoriesNameCommand();

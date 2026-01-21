@@ -9,8 +9,6 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -45,7 +43,7 @@ class MessagesExtendController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw new NotFoundHttpException('Expire messages submodule not enabled.');
+      throw $this->createNotFoundException('Expire messages submodule not enabled.');
     }
 
     if (!$config_service->get_bool(
@@ -53,14 +51,14 @@ class MessagesExtendController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
+      throw $this->createNotFoundException('Messages (offers/wants) module not enabled.');
     }
 
     $message = MessagesShowController::get_message($db, $id, $pp->schema());
 
     if (!($su->is_owner($message['user_id']) || $pp->is_admin()))
     {
-      throw new AccessDeniedHttpException('You have insufficient rights for this action.');
+      throw $this->createAccessDeniedException('You have insufficient rights for this action.');
     }
 
     if (!isset($message['expires_at']))

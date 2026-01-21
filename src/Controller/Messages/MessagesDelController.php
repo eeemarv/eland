@@ -19,7 +19,6 @@ use App\Service\SessionUserService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -62,7 +61,7 @@ class MessagesDelController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw new NotFoundHttpException('Messages (offers/wants) module not enabled.');
+      throw $this->createNotFoundException('Messages (offers/wants) module not enabled.');
     }
 
     $message = MessagesShowController::get_message($db, $id, $pp->schema());
@@ -82,12 +81,19 @@ class MessagesDelController extends AbstractController
         id: $message['category_id'],
         schema: $pp->schema_o(),
       );
+
+      if ($category === false)
+      {
+        throw $this->createNotFoundException(
+          'Category ' . $id . ' not found.'
+        );
+      }
     }
 
     if (!($su->is_owner($message['user_id']) || $pp->is_admin()))
     {
-      throw new AccessDeniedHttpException(
-          'You have insufficient rights to remove this message.');
+      throw $this->createAccessDeniedException(
+        'You have insufficient rights to remove this message.');
     }
 
     if($request->isMethod('POST'))

@@ -13,18 +13,15 @@ class UsersPasswordEditType extends AbstractType
 {
   public function buildForm(
     FormBuilderInterface $builder,
-    array $options
+    array $options,
   ):void
   {
-    $builder
-      ->add('password', PasswordType::class)
-      ->add('submit', SubmitType::class);
+    $builder->add('password', PasswordType::class);
+    $builder->add('submit', SubmitType::class);
   }
 
   public function configureOptions(OptionsResolver $resolver):void
   {
-    $resolver->setDefaults([
-      'data_class'    => UsersPasswordEditCommand::class,
-    ]);
+    $resolver->setDefault('data_class', UsersPasswordEditCommand::class);
   }
 }

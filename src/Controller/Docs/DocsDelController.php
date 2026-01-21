@@ -14,7 +14,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -51,7 +50,7 @@ class DocsDelController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw new NotFoundHttpException('Documents module not enabled.');
+      throw $this->createNotFoundException('Documents module not enabled.');
     }
 
     $command = new DocsCommand();
@@ -60,6 +59,13 @@ class DocsDelController extends AbstractController
       id: $id,
       schema: $pp->schema_o(),
     );
+
+    if ($doc === false)
+    {
+      throw $this->createNotFoundException(
+        'Document with id ' . $id . ' not found'
+      );
+    }
 
     $command->file_location = $env_s3_url . $doc['filename'];
     $command->original_filename = $doc['original_filename'];
@@ -72,6 +78,14 @@ class DocsDelController extends AbstractController
         map_id: $doc['map_id'],
         schema: $pp->schema_o(),
       );
+
+      if ($doc_map === false)
+      {
+        throw $this->createNotFoundException(
+          'Document with id ' . $doc['map_id'] . ' not found'
+        );
+      }
+
       $command->map_name = $doc_map['name'];
     }
 

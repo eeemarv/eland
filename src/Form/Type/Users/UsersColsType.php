@@ -25,7 +25,7 @@ class UsersColsType extends AbstractType
 
   public function buildForm(
     FormBuilderInterface $builder,
-    array $options
+    array $options,
   ):void
   {
     $full_name_enabled = $this->config_service->get_bool(

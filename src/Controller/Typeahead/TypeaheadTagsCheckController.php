@@ -14,122 +14,14 @@ use Symfony\Component\Routing\Annotation\Route;
 class TypeaheadTagsCheckController extends AbstractController
 {
   #[Route(
-    '/{schema}/{role_short}/typeahead-tags-users-check/{thumbprint}',
-    name: 'typeahead_tags_users_check',
+    '/{schema}/{role_short}/typeahead-tags-check/{tag_type}/{thumbprint}',
+    name: 'typeahead_tags_check',
     methods: ['GET'],
     requirements: [
       'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
       'thumbprint'    => '%assert.thumbprint%',
-    ],
-    defaults: [
-      'module'        => 'users',
-      'tag_type'      => 'users',
-    ],
-  )]
-
-  #[Route(
-    '/{schema}/{role_short}/typeahead-tags-messages-check/{thumbprint}',
-    name: 'typeahead_tags_messages_check',
-    methods: ['GET'],
-    requirements: [
-      'schema'        => '%assert.schema%',
-      'role_short'    => '%assert.role_short.admin%',
-      'thumbprint'    => '%assert.thumbprint%',
-    ],
-    defaults: [
-      'module'        => 'messages',
-      'tag_type'      => 'messages',
-    ],
-  )]
-
-  #[Route(
-    '/{schema}/{role_short}/typeahead-tags-calendar-check/{thumbprint}',
-    name: 'typeahead_tags_calendar_check',
-    methods: ['GET'],
-    requirements: [
-      'schema'        => '%assert.schema%',
-      'role_short'    => '%assert.role_short.admin%',
-      'thumbprint'    => '%assert.thumbprint%',
-    ],
-    defaults: [
-      'module'        => 'calendar',
-      'tag_type'      => 'calendar',
-    ],
-  )]
-
-  #[Route(
-    '/{schema}/{role_short}/typeahead-tags-news-check/{thumbprint}',
-    name: 'typeahead_tags_news_check',
-    methods: ['GET'],
-    requirements: [
-      'schema'        => '%assert.schema%',
-      'role_short'    => '%assert.role_short.admin%',
-      'thumbprint'    => '%assert.thumbprint%',
-    ],
-    defaults: [
-      'module'        => 'news',
-      'tag_type'      => 'news',
-    ],
-  )]
-
-  #[Route(
-    '/{schema}/{role_short}/typeahead-tags-transactions-check/{thumbprint}',
-    name: 'typeahead_tags_transactions_check',
-    methods: ['GET'],
-    requirements: [
-      'schema'        => '%assert.schema%',
-      'role_short'    => '%assert.role_short.admin%',
-      'thumbprint'    => '%assert.thumbprint%',
-    ],
-    defaults: [
-      'module'        => 'transactions',
-      'tag_type'      => 'transactions',
-    ],
-  )]
-
-  #[Route(
-    '/{schema}/{role_short}/typeahead-tags-docs-check/{thumbprint}',
-    name: 'typeahead_tags_docs_check',
-    methods: ['GET'],
-    requirements: [
-      'schema'        => '%assert.schema%',
-      'role_short'    => '%assert.role_short.admin%',
-      'thumbprint'    => '%assert.thumbprint%',
-    ],
-    defaults: [
-      'module'        => 'docs',
-      'tag_type'      => 'docs',
-    ],
-  )]
-
-  #[Route(
-    '/{schema}/{role_short}/typeahead-tags-forum-topics-check/{thumbprint}',
-    name: 'typeahead_tags_forum_topics_check',
-    methods: ['GET'],
-    requirements: [
-      'schema'        => '%assert.schema%',
-      'role_short'    => '%assert.role_short.admin%',
-      'thumbprint'    => '%assert.thumbprint%',
-    ],
-    defaults: [
-      'module'        => 'forum',
-      'tag_type'      => 'forum_topics',
-    ],
-  )]
-
-  #[Route(
-    '/{schema}/{role_short}/typeahead-tags-blog-check/{thumbprint}',
-    name: 'typeahead_tags_blog_check',
-    methods: ['GET'],
-    requirements: [
-      'schema'        => '%assert.schema%',
-      'role_short'    => '%assert.role_short.admin%',
-      'thumbprint'    => '%assert.thumbprint%',
-    ],
-    defaults: [
-      'module'        => 'blog',
-      'tag_type'      => 'blog',
+      'tag_type'      => '%assert.tag_type%',
     ],
   )]
 
@@ -148,7 +40,11 @@ class TypeaheadTagsCheckController extends AbstractController
       return new Response($cached, 200, ['Content-Type' => 'application/json']);
     }
 
-    $tags = $tag_repository->get_flat_ary($tag_type, $pp->schema());
+    $tags = $tag_repository->get_flat_ary(
+      tag_type: $tag_type,
+      schema: $pp->schema_o(),
+    );
+
     $data = json_encode($tags);
     $typeahead_service->set_thumbprint($thumbprint, $data, $pp, []);
     return new Response($data, 200, ['Content-Type' => 'application/json']);

@@ -1,0 +1,34 @@
+{%- if config_bool('users.fields.comments.enabled', schema) -%}
+{%- embed 'embed/list_item.html.twig' -%}
+  {%- block dl -%}
+    <dt>
+      {{- 'label.comments'|trans -}}
+    </dt>
+    <dd>
+      {%- if user.comments is empty -%}
+        <twig:ux:icon name="lucide:x" class="text-bold"/>
+      {%- else -%}
+        {{- user.comments -}}
+      {%- endif -%}
+    </dd>
+  {%- endblock dl -%}
+  {%- block div_right -%}
+    {%- if pp_has_role('admin') or is_self -%}
+
+      <a href="{{- path('users_comments_edit' ~ (is_self ? '_self' : ''), (is_self ? {} : {'id': id})|pp) -}}"
+        class="btn btn-primary"
+        title="{{- 'users_comments_edit.title'|trans({
+          'user': user.name,
+          'self': is_self ? 'yes' : 'no',
+        }) -}}">
+        <twig:ux:icon name="lucide:pencil"/>
+        &nbsp;
+        <span class="hidden-sm">
+          {{- 'btn.edit'|trans -}}
+        </span>
+      </a>
+
+    {%- endif -%}
+  {%- endblock div_right -%}
+{%- endembed -%}
+{%- endif -%}

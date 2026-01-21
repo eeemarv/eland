@@ -7,6 +7,7 @@ use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use App\Service\PageParamsService;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CategoryIsLeafValidator extends ConstraintValidator
 {
@@ -42,6 +43,13 @@ class CategoryIsLeafValidator extends ConstraintValidator
       id: (int) $category_id,
       schema: $this->pp->schema_o(),
     );
+
+    if ($category === false)
+    {
+      throw new NotFoundHttpException(
+        'Category ' . $category_id . ' not found.'
+      );
+    }
 
     if (($category['left_id'] + 1) !== $category['right_id'])
     {

@@ -1,23 +1,23 @@
 {%- extends 'messages/base/messages_base.html.twig' -%}
 
 {%- block btn_top_add -%}
-    {%- if pp_has_role('admin')
-        and uid is not empty
-        and not su_is_owner(uid) -%}
-        {%- include 'include/btn_top/add.html.twig' with {
-            'btn_route': 'messages_add',
-            'btn_route_params': {'uid': uid},
-            'btn_title': 'messages_add.btn_add_for_user',
-            'btn_title_trans_params': {
-                'user': account(uid, schema)
-            }
-        } -%}
-    {%- elseif pp_has_role('admin') or pp_has_role('user') -%}
-        {%- include 'include/btn_top/add.html.twig' with {
-            'btn_route': 'messages_add',
-            'btn_title': 'messages_add.title'
-        } -%}
-    {%- endif -%}
+  {%- if pp_has_role('admin')
+    and uid is not empty
+    and not su_is_owner(uid) -%}
+    {%- include 'include/btn_top/add.html.twig' with {
+      'btn_route': 'messages_add',
+      'btn_route_params': {'uid': uid},
+      'btn_title': 'messages_add.btn_add_for_user',
+      'btn_title_trans_params': {
+        'user': account(uid)
+      }
+    } -%}
+  {%- elseif pp_has_role('admin') or pp_has_role('user') -%}
+    {%- include 'include/btn_top/add.html.twig' with {
+      'btn_route': 'messages_add',
+      'btn_title': 'messages_add.title'
+    } -%}
+  {%- endif -%}
 {%- endblock btn_top_add -%}
 
 {%- block btn_view -%}
@@ -33,24 +33,24 @@
 {%- endblock btn_view -%}
 
 {%- block heading_title -%}
-    {{- 'messages.title'|trans({
-        'self': uid is empty ? 'all_users' : (is_self ? 'self' : 'some_user'),
-        'with_without_category': cat_id is null ? 'all_categories' : (cat_id == 'null' ? 'without' : 'with'),
-        'user': uid is empty ? '*** ***' : account(uid, schema)|link('users_show', {'id': uid}),
-        'category_name': categories[cat_id] ?? ''
-    })|raw -}}
+  {{- 'messages.title'|trans({
+    'self': uid is empty ? 'all_users' : (is_self ? 'self' : 'some_user'),
+    'with_without_category': cat_id is null ? 'all_categories' : (cat_id == 'null' ? 'without' : 'with'),
+    'user': uid is empty ? '*** ***' : account(uid)|link('users_show', {'id': uid}),
+    'category_name': categories[cat_id] ?? ''
+  })|raw -}}
 {%- endblock heading_title -%}
 
 {%- block heading_append -%}
-    {%- include 'include/filter/heading_filter.html.twig' -%}
+  {%- include 'include/filter/heading_filter.html.twig' -%}
 {%- endblock heading_append -%}
 
 {%- block filter_form_a -%}
-    {%- include 'messages/include/messages_filter_form.html.twig' -%}
+  {%- include 'messages/include/messages_filter_form.html.twig' -%}
 {%- endblock filter_form_a -%}
 
 {%- block pagination -%}
-    {%- include 'include/pagination/pagination.html.twig' -%}
+  {%- include 'include/pagination/pagination.html.twig' -%}
 {%- endblock pagination -%}
 
 {%- block content -%}{%- endblock -%}
