@@ -5,6 +5,7 @@ namespace App\Form\Type\Users;
 use App\Command\Users\UsersAccountLeavingCommand;
 use App\Form\Type\Field\BtnChoiceType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -20,9 +21,10 @@ class UsersAccountLeavingType extends AbstractType
       'choices'   => [
         'account_not_leaving'   => false,
         'account_leaving'       => true,
-      ]
+      ],
     ]);
-
+    $builder->add('send_email', CheckboxType::class);
+    $builder->add('send_email_cc', CheckboxType::class);
     $builder->add('submit', SubmitType::class);
   }
 

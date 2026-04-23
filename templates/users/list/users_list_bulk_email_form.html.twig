@@ -1,5 +1,7 @@
-{{- form_start(bulk_email_form, {'attr': {'novalidate': 'novalidate'}}) -}}
-{{- form_errors(bulk_email_form) -}}
+
+{%- include 'component/bulkchecktable/form_start.html.twig' with {
+  'form': bulk_email_form,
+} -%}
 
 {%- set email_enabled = config_bool('mail.enabled') -%}
 
@@ -15,8 +17,6 @@
   </div>
   {%- set email_enabled = false -%}
 {%- endif -%}
-
-{{- form_widget(bulk_email_form.selected) -}}
 
 {{- form_row(bulk_email_form.subject, {
   'label': false,

@@ -1,0 +1,25 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Determine the RewriteBase automatically
+  RewriteCond %{REQUEST_URI}::$1 ^(/.+)/(.*)::\2$
+  RewriteRule ^(.*) - [E=BASE:%1]
+
+  # Sets the HTTP_AUTHORIZATION header removed by Apache
+  RewriteCond %{HTTP:Authorization} .
+  RewriteRule ^ - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+  # Redirect to index.php if the file doesn't exist
+  RewriteCond %{ENV:REDIRECT_STATUS} ^$
+  RewriteRule ^index\.php(?:/(.*)|$) %{ENV:BASE}/$1 [R=301,L]
+
+  # If the requested filename is not a directory and is not a real file
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteRule ^ %{ENV:BASE}/index.php [L]
+</IfModule>
+
+<IfModule !mod_rewrite.c>
+  <IfModule mod_alias.c>
+    RedirectMatch 302 ^/$ /index.php/
+  </IfModule>
+</IfModule>

@@ -1,0 +1,5 @@
+/* config: periodic mail */
+ul#list_active li[data-block],
+ul#list_inactive li[data-block] {
+  cursor: move;
+}

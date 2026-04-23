@@ -1,16 +1,35 @@
+{%- if block('controllers') -%}
+<div data-controller="{%- block controllers -%}{% endblock -%}"
+{%- if block('controllers_attr') %} {% block controllers_attr -%}{% endblock -%}
+{%- endif -%}>
+{%- endif -%}
 <div class="panel panel-default printview">
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped table-hover footable csv" data-filter="#q" data-filter-minimum="1">
-            <thead>
-                <tr>
-                    {%- block thead -%}
-                    {%- endblock thead -%}
-                </tr>
-            </thead>
-            <tbody>
-                {%- block tbody -%}
-                {%- endblock tbody -%}
-            </tbody>
-        </table>
-    </div>
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped table-hover"
+      {%- if block('attr') %} {% block attr -%}{% endblock -%}
+      {%- endif -%}
+      {%- if block('id') %} id="{%- block id -%}{%- endblock -%}"
+      {%- endif -%}
+    >
+      <thead>
+        <tr>
+          {%- block thead -%}
+          {%- endblock thead -%}
+        </tr>
+      </thead>
+      <tbody>
+        {%- block tbody -%}
+        {%- endblock tbody -%}
+      </tbody>
+      {%- if block('tfoot') -%}
+        <tfoot>
+          {%- block tfoot -%}
+          {%- endblock tfoot -%}
+        </tfoot>
+      {%- endif -%}
+    </table>
+  </div>
 </div>
+{%- if block('controllers') -%}
+</div>
+{%- endif -%}

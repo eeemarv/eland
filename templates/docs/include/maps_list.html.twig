@@ -1,31 +1,37 @@
 {%- embed 'embed/table.html.twig' -%}
-    {%- block thead -%}
-        <th data-sort-initial="true">
-            {{- 'label.map'|trans -}}
-        </th>
+  {%- block controllers -%}
+    datatable
+  {%- endblock controllers -%}
+  {%- block controllers_attr -%}
+    data-datatable-sortable-value="true"
+  {%- endblock controllers_attr -%}
+  {%- block thead -%}
+    <th data-priority="1">
+      {{- 'label.map'|trans -}}
+    </th>
+    {%- if pp_has_role('admin') -%}
+      <th data-priority="10" data-orderable="false">
+        &nbsp;
+      </th>
+    {%- endif -%}
+  {%- endblock thead -%}
+  {%- block tbody -%}
+    {%- for m in maps -%}
+      <tr class="info">
+        <td>
+          <a href="{{- path('docs_map', {'id': m.id}|pp) -}}">
+            {{- m.name }} ({{- m.doc_count -}})
+          </a>
+        </td>
         {%- if pp_has_role('admin') -%}
-            <th data-sort-ignore="true">
-                &nbsp;
-            </th>
+          <td>
+            {%- include 'include/btn/edit.html.twig' with {
+              'btn_route': 'docs_map_edit',
+              'id': m.id,
+            } -%}
+          </td>
         {%- endif -%}
-    {%- endblock thead -%}
-    {%- block tbody -%}
-        {%- for m in maps -%}
-            <tr class="info">
-                <td>
-                    <a href="{{- path('docs_map', pp_ary()|merge({'id': m.id})) -}}">
-                        {{- m.name }} ({{- m.doc_count -}})
-                    </a>
-                </td>
-                {%- if pp_has_role('admin') -%}
-                    <td>
-                        {%- include 'include/btn/edit.html.twig' with {
-                            'btn_route': 'docs_map_edit',
-                            'id': m.id
-                        } -%}
-                    </td>
-                {%- endif -%}
-            </tr>
-        {%- endfor -%}
-    {%- endblock tbody -%}
+      </tr>
+    {%- endfor -%}
+  {%- endblock tbody -%}
 {%- endembed -%}

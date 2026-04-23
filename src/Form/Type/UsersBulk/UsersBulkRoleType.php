@@ -3,6 +3,7 @@
 namespace App\Form\Type\UsersBulk;
 
 use App\Command\UsersBulk\UsersBulkRoleCommand;
+use App\Form\Type\Field\BtnChoiceType;
 use App\Form\Type\Field\RoleSelectType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -24,7 +25,12 @@ class UsersBulkRoleType extends AbstractType
   ):void
   {
     $builder->add('selected', HiddenType::class);
-    $builder->add('role', RoleSelectType::class);
+    $builder->add('role', BtnChoiceType::class, [
+      'choices'   => [
+        'user_role'   => 'user',
+        'admin_role'  => 'admin',
+      ],
+    ]);
     $builder->add('verify', CheckboxType::class);
     $builder->add('submit', SubmitType::class);
   }

@@ -48,7 +48,11 @@
       'label': 'label.map',
       'help': is_del_form is defined ? '' : 'docs_add.map_name.help',
       'addon': ux_icon('lucide:folder'),
-      'required': false
+      'required': false,
+      'attr': {
+        'data-controller': 'autocomplete',
+        'data-autocomplete-url-value': path('autocomplete_doc_map_names', {}|pp),
+      }
     }) -}}
   {%- endif -%}
 {%- endblock form_a -%}

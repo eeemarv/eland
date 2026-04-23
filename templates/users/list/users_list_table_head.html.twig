@@ -1,47 +1,47 @@
 {%- if pp_has_role('admin') -%}
-<th data-sort-ignore="true">
+<th data-orderable="false" data-priority="1">
   &nbsp;
 </th>
 {%- endif -%}
 
 {%- if cols.code -%}
-<th data-sort-initial="true">
+<th data-priority="1" data-dt-order="asc">
   {{- 'label.code'|trans -}}
 </th>
 {%- endif -%}
 
 {%- if cols.name -%}
-<th>
+<th data-priority="1">
   {{- 'label.name'|trans -}}
 </th>
 {%- endif -%}
 
 {%- if cols.full_name -%}
-<th>
+<th data-priority="4">
   {{- 'label.full_name'|trans -}}
 </th>
 {%- endif -%}
 
 {%- if cols.postcode -%}
-<th>
+<th data-priority="2">
   {{- 'label.postcode'|trans -}}
 </th>
 {%- endif -%}
 
 {%- if cols.role -%}
-<th>
+<th data-priority="3">
   {{- 'label.role'|trans -}}
 </th>
 {%- endif -%}
 
 {%- if cols.balance -%}
-<th data-type="numeric">
+<th data-type="num" data-priority="5">
   {{- 'label.balance'|trans -}}
 </th>
 {%- endif -%}
 
 {%- if cols.balance_on_date and cols.balance_date -%}
-<th data-type="numeric">
+<th data-type="num" data-priority="6">
   {{- 'label.balance_on_date_var'|trans({
     'date': cols.balance_date|date_format('day')
   }) -}}
@@ -49,129 +49,129 @@
 {%- endif -%}
 
 {%- if cols.min_limit -%}
-<th data-type="numeric">
+<th data-type="num" data-priority="7">
   {{- 'label.min'|trans -}}
 </th>
 {%- endif -%}
 
 {%- if cols.max_limit -%}
-<th data-type="numeric">
+<th data-type="num" data-priority="7">
   {{- 'label.max'|trans -}}
 </th>
 {%- endif -%}
 
 {%- if cols.comments -%}
-<th>
+<th data-priority="10">
   {{- 'label.comments'|trans -}}
 </th>
 {%- endif -%}
 
 {%- if cols.hobbies -%}
-<th>
+<th data-priority="12">
   {{- 'label.hobbies'|trans -}}
 </th>
 {%- endif -%}
 
 {%- if cols.birthdate -%}
-<th>
+<th data-type="num" data-priority="9">
   {{- 'label.birthdate'|trans -}}
 </th>
 {%- endif -%}
 
 {%- if cols.admin_comments -%}
-<th>
+<th data-priority="10">
   {{- 'label.admin_comments'|trans -}}
 </th>
 {%- endif -%}
 
 {%- if cols.periodic_overview -%}
-<th>
+<th data-priority="8">
   {{- 'label.periodic_overview_short'|trans -}}
 </th>
 {%- endif -%}
 
 {%- if cols.created_at -%}
-<th>
+<th data-type="num" data-priority="12">
   {{- 'label.created'|trans -}}
 </th>
 {%- endif -%}
 
 {%- if cols.last_edit_at -%}
-<th>
+<th data-type="num" data-priority="13">
   {{- 'label.modified'|trans -}}
 </th>
 {%- endif -%}
 
 {%- if cols.activated_at -%}
-<th>
+<th data-type="num" data-priority="13">
   {{- 'label.activated'|trans -}}
 </th>
 {%- endif -%}
 
 {%- if cols.last_login_at -%}
-<th>
+<th data-type="num" data-priority="14">
   {{- 'label.last_login'|trans -}}
 </th>
 {%- endif -%}
 
 {%- for abbrev, b in cols.contacts -%}
 {%- if b -%}
-<th>
+<th data-priority="6">
   {{- abbrev -}}
 </th>
 {%- endif -%}
 {%- endfor -%}
 
 {%- if cols.distance -%}
-<th data-type="numeric">
+<th data-type="num" data-priority="8">
   {{- 'label.distance'|trans -}}
 </th>
 {%- endif -%}
 
 {%- if cols.mollie -%}
-<th>
+<th data-priority="8">
   {{- 'users_list.cols.mollie.label'|trans -}}
 </th>
 {%- endif -%}
 
 {%- if cols.wants -%}
-<th data-type="numeric">
+<th data-type="num" data-priority="10">
   {{- 'label.wants'|trans -}}
 </th>
 {%- endif -%}
 
 {%- if cols.offers -%}
-<th data-type="numeric">
+<th data-type="num" data-priority="10">
   {{- 'label.offers'|trans -}}
 </th>
 {%- endif -%}
 
 {%- if cols.offers_and_wants -%}
-<th data-type="numeric">
+<th data-type="num" data-priority="9">
   {{- 'label.offers_and_wants'|trans -}}
 </th>
 {%- endif -%}
 
 {%- if cols.transactions_in -%}
-<th data-type="numeric">
-  {{- 'users_list.cols.transactions_in.label'|trans -}}
+<th data-type="num" data-priority="10">
+  {{- 'users_list.cols.transactions_in.label'|trans -}} {# No priority set, will be hidden early #}
 </th>
 {%- endif -%}
 
 {%- if cols.transactions_out -%}
-<th data-type="numeric">
-  {{- 'users_list.cols.transactions_out.label'|trans -}}
+<th data-type="num" data-priority="10">
+  {{- 'users_list.cols.transactions_out.label'|trans -}} {# No priority set, will be hidden early #}
 </th>
 {%- endif -%}
 
 {%- if cols.transactions_total -%}
-<th data-type="numeric">
+<th data-type="num" data-priority="9">
   {{- 'users_list.cols.transactions_total.label'|trans -}}
 </th>
 {%- endif -%}
 
 {%- if cols.amount_in -%}
-<th data-type="numeric">
+<th data-type="num" data-priority="10">
   {{- 'users_list.cols.amount_in.label'|trans({
     'currency': config_str('transactions.currency.name')
   }) -}}
@@ -179,7 +179,7 @@
 {%- endif -%}
 
 {%- if cols.amount_out -%}
-<th data-type="numeric">
+<th data-type="num" data-priority="10">
   {{- 'users_list.cols.amount_out.label'|trans({
     'currency': config_str('transactions.currency.name')
   }) -}}
@@ -187,7 +187,7 @@
 {%- endif -%}
 
 {%- if cols.amount_total -%}
-<th data-type="numeric">
+<th data-type="num" data-priority="9"> {# Amounts can be hidden #}
   {{- 'users_list.cols.amount_total.label'|trans({
     'currency': config_str('transactions.currency.name')
   }) -}}

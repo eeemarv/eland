@@ -63,6 +63,16 @@
 </div>
 {%- endblock btn_item_nav -%}
 
+{%- block heading_class -%}
+{%- if is_leaving(user) -%}
+bg-danger
+{%- elseif is_new(user) -%}
+bg-success
+{%- elseif is_inactive(user) -%}
+bg-inactive
+{%- endif -%}
+{%- endblock -%}
+
 {%- block heading_title -%}
   {{- 'users_show.title'|trans({
       'self': is_self ? 'self' : 'other',
@@ -150,7 +160,7 @@
     <h3>
       <span class="fa fa-envelope-o"></span>&nbsp;
       {{- 'users_show.mail_contact.title'|trans({
-        'user': account(id, schema)
+        'user': account(id, schema),
       }) -}}
     </h3>
     {%- embed 'embed/mail_contact_form.html.twig' -%}
@@ -169,7 +179,6 @@
     and not is_intersystem
     and (config_bool('transactions.enabled', schema)
       or config_bool('messages.enabled', schema))
-
   -%}
     {%- include 'users/users_show/btns_transactions_messages.html.twig' -%}
   {%- endif -%}

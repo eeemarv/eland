@@ -1,0 +1,36 @@
+
+.autocomplete {
+  display: block;
+  position: absolute;
+  z-index: 2000;
+  cursor: pointer;
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #aaa;
+  border-radius: 5px;
+  background-color: #fff;
+  color: #333;
+  font-size: 16px;
+  padding: 3px 0;
+  margin: 3px 0 0 0;
+}
+
+.autocomplete div {
+  display: block;
+  padding: 5px 10px;
+  clear: both;
+  font-weight: normal;
+  line-height: 1.5;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.autocomplete div:hover{
+  background-color: #ddd;
+}
+
+.autocomplete div.selected {
+  color: #fff;
+  background-color: #337ab7;
+  text-decoration: none;
+}

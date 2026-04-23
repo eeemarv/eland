@@ -34,16 +34,7 @@ class UserRoleValidator extends ConstraintValidator
       throw new UnexpectedTypeException($role, 'string');
     }
 
-    $allowed_ary = ['admin', 'user'];
-
-    if ($this->config_service->get_intersystem_en(
-      schema: $this->pp->schema_o(),
-    ))
-    {
-      $allowed_ary[] = 'guest';
-    }
-
-    if (!in_array($role, $allowed_ary))
+    if (!in_array($role, ['admin', 'user']))
     {
       $this->context->buildViolation('user.role')
         ->addViolation();

@@ -35,6 +35,25 @@
   {%- endblock dl -%}
   {%- block div_right -%}
 
+    <a href="{{- path('users_active_edit', {'id': id}|pp) -}}"
+      class="btn btn-{{- user.is_active ? 'danger' : 'success' -}}"
+      title="{{- 'users_active_edit.title'|trans({
+        'mode': user.is_active ? 'deactivate' : 'activate',
+        'user': user.name,
+      }) -}}">
+      {%- if user.is_active -%}
+        <twig:ux:icon name="lucide:heart-off"/>
+      {%- else -%}
+        <twig:ux:icon name="lucide:heart-pulse"/>
+      {%- endif -%}
+      &nbsp;
+      <span class="hidden-sm">
+        {{- 'users_active_edit.btn'|trans({
+          'mode': user.is_active ? 'deactivate' : 'activate',
+        }) -}}
+      </span>
+    </a>
+
   {%- endblock div_right -%}
 {%- endembed -%}
 {%- endif -%}

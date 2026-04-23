@@ -54,6 +54,7 @@ class ConfigLogoUploadController extends AbstractController
       $config_service->set_str(
         config_id: 'system.logo',
         value: $res['filename'],
+        route: $pp->route(),
         user_id: $su->id() ?: null,
         schema: $pp->schema_o(),
       );

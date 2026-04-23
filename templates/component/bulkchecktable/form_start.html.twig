@@ -1,0 +1,14 @@
+{{- form_start(form, {
+  'attr': {
+    'novalidate': 'novalidate',
+    'data-action': 'submit->bulkchecktable#prepareSubmit',
+  }})
+-}}
+
+{{- form_errors(form) -}}
+
+{{- form_widget(form.selected, {
+  'attr': {
+    'data-bulkchecktable-selected': '1',
+  }
+}) -}}

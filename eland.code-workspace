@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+  ],
+  "settings": {
+    "intelephense.diagnostics.undefinedTypes": false,
+    "emmet.includeLanguages": {
+      "html": "html",
+      "twig": "html"
+    }
+  }
+}

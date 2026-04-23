@@ -79,7 +79,7 @@ class UserLogRepository
     return $affected_rows;
 	}
 
-	public function bulk_insert(
+	public function bulk_insert2(
 		array $users_old_data_ary,
     array $new_data,
     string|null $comment,
@@ -146,6 +146,68 @@ class UserLogRepository
         :created_by, :bulk_id, :meta_data
       from (values  ' . $placeholders . ')
       as v (user_id, old_data, new_data)';
+    $affected_rows = (int) $this->db->executeStatement(
+      $sql, $params, $types
+    );
+
+    return $affected_rows;
+	}
+
+  public function bulk_insert(
+		array $users_old_data_ary,
+    array $new_data,
+    string|null $comment,
+    int|null $created_by,
+    string $route,
+    string $action,
+		Schema $schema,
+    array|null $meta_data = null,
+	):int
+	{
+    $bulk_id = Uuid::v7();
+    $rows = [];
+
+    foreach ($users_old_data_ary as $user_id => $old_data)
+    {
+      $old_data_ref = $old_data ?? [];
+      $diff = array_diff_assoc($new_data, $old_data_ref);
+      $rows[] = [
+        'user_id' => (int) $user_id,
+        'old_data'  => array_intersect_key($old_data_ref, $diff),
+        'new_data'  => array_intersect_key($new_data, $diff),
+      ];
+    }
+
+    $params = [
+      'route' => $route,
+      'action'  => $action,
+      'comment' => $comment,
+      'created_by'  => $created_by,
+      'bulk_id' => $bulk_id->toRfc4122(),
+      'meta_data' => $meta_data,
+      'rows'  => $rows,
+    ];
+
+    $types = [
+      'route' => Types::STRING,
+      'action'  => Types::STRING,
+      'comment' => Types::STRING,
+      'created_by'  => Types::INTEGER,
+      'bulk_id' => Types::GUID,
+      'meta_data' => Types::JSON,
+      'rows'  => Types::JSON,
+    ];
+
+    $sql = 'insert into ' . $schema->str() . '.users_logs
+      (user_id, old_data, new_data, action, route,
+        comment, created_by, bulk_id, meta_data)
+      select i->>\'user_id\'::int,
+        i->\'old_data\',
+        i->\'new_data\',
+        :action, :route, :comment,
+        :created_by, :bulk_id, :meta_data
+      from jsonb_array_elements(:rows) AS
+      as i';
     $affected_rows = (int) $this->db->executeStatement(
       $sql, $params, $types
     );

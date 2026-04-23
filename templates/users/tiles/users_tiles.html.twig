@@ -25,13 +25,13 @@
 <div class="row tiles">
 {%- for uid, u in users -%}
   {%- set u_class =
-    is_new(uid) ? ' class="bg-success"' :
-    is_leaving(uid) ? ' class="bg-danger"' :
-    is_active(uid) ? '' :
-    is_inactive(uid) ? ' class="bg-inactive"' :
-    is_ip(uid) ? ' class="bg-warning"' :
-    is_im(uid) ? ' class="bg-info"' :
-    is_extern(uid) ? ' class="bg-extern"' : ''
+    is_new(u) ? ' class="bg-success"' :
+    is_leaving(u) ? ' class="bg-danger"' :
+    is_active(u) ? '' :
+    is_inactive(u) ? ' class="bg-inactive"' :
+    is_ip(u) ? ' class="bg-warning"' :
+    is_im(u) ? ' class="bg-info"' :
+    is_extern(u) ? ' class="bg-extern"' : ''
   -%}
   {%- set can_link = is_active(uid) or pp_has_role('admin') -%}
   {%- set u_link = can_link ? path('users_show', {'id': uid, 'status': all_params.status}|pp) : null -%}

@@ -71,6 +71,7 @@ class TransactionsAutoMinLimitController extends AbstractController
       $command = $form->getData();
       $changed = $config_service->store_command(
         command: $command,
+        route: $pp->route(),
         user_id: $su->id() ?: null,
         schema: $pp->schema_o(),
       );

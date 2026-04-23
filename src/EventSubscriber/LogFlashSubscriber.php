@@ -120,12 +120,30 @@ class LogFlashSubscriber implements EventSubscriberInterface
   )
   {
     $text_ary = [];
+    $ln = count($msg_ary);
+    $count = 0;
 
     foreach ($msg_ary as $msg)
     {
+      $count++;
+
       if (is_string($msg))
       {
         $text_ary[] = $msg;
+        continue;
+      }
+
+      if (isset($msg['user']))
+      {
+        $u_str = $msg['user']['code'] ?? '***';
+        $u_str .= ' ';
+        $u_str .= $msg['user']['name'];
+        if ($count !== $ln)
+        {
+          $u_str .= ',';
+        }
+        $u_str .= ' ';
+        $text_ary[] = $u_str;
         continue;
       }
 

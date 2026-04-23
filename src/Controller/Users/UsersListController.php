@@ -16,6 +16,8 @@ use App\Command\UsersBulk\UsersBulkPeriodicOverviewEnCommand;
 use App\Command\UsersBulk\UsersBulkRoleCommand;
 use App\Command\UsersBulk\UsersBulkStatusCommand;
 use App\Command\Users\UsersColsCommand;
+use App\Command\UsersBulk\UsersBulkAccountLeavingCommand;
+use App\Command\UsersBulk\UsersBulkActiveCommand;
 use App\Email\UserBulk\Copy\EmailUserBulkCopyMessage;
 use App\Email\UserBulk\Message\EmailUserBulkMessageMessage;
 use App\Form\Type\Filter\QTextSearchFilterType;
@@ -29,6 +31,8 @@ use App\Form\Type\UsersBulk\UsersBulkPeriodicOverviewEnType;
 use App\Form\Type\UsersBulk\UsersBulkRoleType;
 use App\Form\Type\UsersBulk\UsersBulkStatusType;
 use App\Form\Type\Users\UsersColsType;
+use App\Form\Type\UsersBulk\UsersBulkAccountLeavingType;
+use App\Form\Type\UsersBulk\UsersBulkActiveType;
 use App\Render\AccountRender;
 use App\Repository\AccountRepository;
 use App\Repository\ContactRepository;
@@ -36,6 +40,7 @@ use App\Repository\LoginRepository;
 use App\Repository\MessageRepository;
 use App\Repository\MollieRepository;
 use App\Repository\TransactionRepository;
+use App\Repository\UserLogRepository;
 use App\Repository\UserRepository;
 use App\Service\CacheService;
 use App\Service\ConfigService;
@@ -82,6 +87,7 @@ class UsersListController extends AbstractController
     string $status,
     AccountRepository $account_repository,
     UserRepository $user_repository,
+    UserLogRepository $user_log_repository,
     ContactRepository $contact_repository,
     MollieRepository $mollie_repository,
     MessageRepository $message_repository,
@@ -162,9 +168,6 @@ class UsersListController extends AbstractController
      * Begin bulk POST
      */
 
-    // To keep selected checkboxes on validation error
-    $sel = $request->request->all('sel');
-
     $bulk_email_form = null;
     $bulk_full_name_access_form = null;
     $bulk_role_form = null;
@@ -174,6 +177,8 @@ class UsersListController extends AbstractController
     $bulk_min_limit_form = null;
     $bulk_max_limit_form = null;
     $bulk_periodic_overview_en_form = null;
+    $bulk_active_form = null;
+    $bulk_leaving_form = null;
 
     if ($pp->is_admin())
     {
@@ -303,18 +308,6 @@ class UsersListController extends AbstractController
      * Bulk actions
      */
 
-    if ($request->isMethod('POST'))
-    {
-      /**
-       * fetch users to compare old data to new data
-       * in bulk action
-       */
-      $users = $user_repository->get_all_by_status(
-        status: $status,
-        schema: $pp->schema_o(),
-      );
-    }
-
     if ($full_name_enabled
       && $pp->is_admin()
     )
@@ -337,41 +330,95 @@ class UsersListController extends AbstractController
       $access = $bulk_full_name_access_command->access;
       $select_ary = explode(',', $selected);
       $s_user_ids = [];
+
       foreach ($select_ary as $sel_id)
       {
         $s_user_ids[] = (int) trim($sel_id);
-
-
-
       }
-      $user_repository->set_bulk_full_name_access(
-        full_name_access: $access,
+
+      $s_user_ary = $user_repository->get_selected(
         user_ids: $s_user_ids,
         schema: $pp->schema_o(),
       );
-      foreach ($s_user_ids as $uid)
+
+      $change_ary = [];
+      $no_change_ary = [];
+
+      foreach($s_user_ary as $uid => $user)
       {
-        $user_cache_service->clear(
-          id: $uid,
-          schema: $pp->schema(),
-        );
+        if ($user['full_name_access'] === $access)
+        {
+          $no_change_ary[] = $uid;
+        }
+        else
+        {
+          $change_ary[] = $uid;
+        }
       }
-      $this->addFlash(
-        type: 'success',
-        message: [
-          'key' => 'users_list.bulk.full_name_access.flash.success',
-          'params'  => [
-            'count' => count($s_user_ids),
-          ],
-        ],
-      );
-      foreach ($s_user_ids as $uid)
+
+      if (count($change_ary))
       {
+        $user_repository->set_bulk_full_name_access(
+          full_name_access: $access,
+          user_ids: $change_ary,
+          schema: $pp->schema_o(),
+        );
+        foreach ($change_ary as $uid)
+        {
+          $user_cache_service->clear(
+            id: $uid,
+            schema: $pp->schema(),
+          );
+        }
+
         $this->addFlash(
           type: 'success',
-          message: $account_render->link($uid, $pp->ary()),
+          message: [
+            'key' => 'users_list.bulk.full_name_access.flash.success',
+            'params'  => [
+              'count' => count($change_ary),
+            ],
+          ],
         );
+        foreach ($change_ary as $uid)
+        {
+          $this->addFlash(
+            type: 'success',
+            message: [
+              'user'  => array_intersect_key(
+                $s_user_ary[$uid],
+                self::USER_AKEYS,
+              ),
+            ],
+          );
+        }
       }
+
+      if (count($no_change_ary))
+      {
+        $this->addFlash(
+          type: 'warning',
+          message: [
+            'key' => 'flash.no_change_for',
+            'params'  => [
+              'count' => count($no_change_ary),
+            ],
+          ],
+        );
+        foreach ($no_change_ary as $uid)
+        {
+          $this->addFlash(
+            type: 'warning',
+            message: [
+              'user'  => array_intersect_key(
+                $s_user_ary[$uid],
+                self::USER_AKEYS
+              ),
+            ],
+          );
+        }
+      }
+
       return $this->redirectToRoute(
         route: $vr->get('users'),
         parameters: $pp->ary(),
@@ -402,6 +449,26 @@ class UsersListController extends AbstractController
       {
         $s_user_ids[] = (int) trim($sel_id);
       }
+      $s_user_ary = $user_repository->get_selected(
+        user_ids: $s_user_ids,
+        schema: $pp->schema_o(),
+      );
+
+      $change_ary = [];
+      $no_change_ary = [];
+
+      foreach($s_user_ary as $uid => $user)
+      {
+        if ($user['comments'] === $comments)
+        {
+          $no_change_ary[] = $uid;
+        }
+        else
+        {
+          $change_ary[] = $uid;
+        }
+      }
+
       $user_repository->set_bulk_comments(
         comments: $comments,
         user_ids: $s_user_ids,
@@ -456,10 +523,32 @@ class UsersListController extends AbstractController
       $admin_comments = $bulk_admin_comments_command->admin_comments;
       $select_ary = explode(',', $selected);
       $s_user_ids = [];
+
       foreach ($select_ary as $sel_id)
       {
         $s_user_ids[] = (int) trim($sel_id);
       }
+
+      $s_user_ary = $user_repository->get_selected(
+        user_ids: $s_user_ids,
+        schema: $pp->schema_o(),
+      );
+
+      $change_ary = [];
+      $no_change_ary = [];
+
+      foreach($s_user_ary as $uid => $user)
+      {
+        if ($user['admin_comments'] === $admin_comments)
+        {
+          $no_change_ary[] = $uid;
+        }
+        else
+        {
+          $change_ary[] = $uid;
+        }
+      }
+
       $user_repository->set_bulk_admin_comments(
         admin_comments: $admin_comments,
         user_ids: $s_user_ids,
@@ -517,6 +606,28 @@ class UsersListController extends AbstractController
       {
         $s_user_ids[] = (int) trim($sel_id);
       }
+
+      $s_user_ary = $user_repository->get_selected(
+        user_ids: $s_user_ids,
+        schema: $pp->schema_o(),
+      );
+
+      $change_ary = [];
+      $no_change_ary = [];
+
+      foreach($s_user_ary as $uid => $user)
+      {
+        if ($user['status'] === $status)
+        {
+          $no_change_ary[] = $uid;
+        }
+        else
+        {
+          $change_ary[] = $uid;
+        }
+      }
+
+
       $user_repository->set_bulk_status(
         status: $status,
         user_ids: $s_user_ids,
@@ -551,12 +662,17 @@ class UsersListController extends AbstractController
       );
     }
 
+    /*
+
     if ($pp->is_admin())
     {
       $bulk_role_command = new UsersBulkRoleCommand();
       $bulk_role_form = $this->createForm(
         type: UsersBulkRoleType::class,
         data: $bulk_role_command,
+        options: [
+          'log_comment_enabled' => true,
+        ],
       );
       $bulk_role_form->handleRequest($request);
     }
@@ -568,12 +684,35 @@ class UsersListController extends AbstractController
       $bulk_role_command = $bulk_role_form->getData();
       $selected = $bulk_role_command->selected;
       $role = $bulk_role_command->role;
+      $log_comment = $bulk_role_command->get('log_comment')->getData();
       $select_ary = explode(',', $selected);
       $s_user_ids = [];
+
       foreach ($select_ary as $sel_id)
       {
         $s_user_ids[] = (int) trim($sel_id);
       }
+
+      $s_user_ary = $user_repository->get_selected(
+        user_ids: $s_user_ids,
+        schema: $pp->schema_o(),
+      );
+
+      $change_ary = [];
+      $no_change_ary = [];
+
+      foreach($s_user_ary as $uid => $user)
+      {
+        if ($user['role'] === $role)
+        {
+          $no_change_ary[] = $uid;
+        }
+        else
+        {
+          $change_ary[] = $uid;
+        }
+      }
+
       $user_repository->set_bulk_role(
         role: $role,
         user_ids: $s_user_ids,
@@ -607,6 +746,7 @@ class UsersListController extends AbstractController
         parameters: $pp->ary(),
       );
     }
+    */
 
     if ($pp->is_admin())
     {
@@ -631,6 +771,27 @@ class UsersListController extends AbstractController
       {
         $s_user_ids[] = (int) trim($sel_id);
       }
+
+      $s_user_ary = $user_repository->get_selected(
+        user_ids: $s_user_ids,
+        schema: $pp->schema_o(),
+      );
+
+      $change_ary = [];
+      $no_change_ary = [];
+
+      foreach($s_user_ary as $uid => $user)
+      {
+        if ($user['periodic_overview_en'] === $periodic_overview_en)
+        {
+          $no_change_ary[] = $uid;
+        }
+        else
+        {
+          $change_ary[] = $uid;
+        }
+      }
+
       $user_repository->set_bulk_periodic_overview_en(
         periodic_overview_en: $periodic_overview_en,
         user_ids: $s_user_ids,
@@ -688,31 +849,80 @@ class UsersListController extends AbstractController
       $s_user_ids = [];
       foreach ($select_ary as $sel_id)
       {
-        $uid = (int) trim($sel_id);
-        $account_repository->update_min_limit(
-          account_id: $uid,
+        $s_user_ids[] = (int) trim($sel_id);
+      }
+
+      $s_user_ary = $user_repository->get_selected_min_limit(
+        account_ids: $s_user_ids,
+        schema: $pp->schema_o(),
+      );
+
+      $change_ary = [];
+      $no_change_ary = [];
+
+      foreach($s_user_ary as $uid => $user)
+      {
+        if ($user['min_limit'] === $min_limit)
+        {
+          $no_change_ary[] = (int) $uid;
+        }
+        else
+        {
+          $change_ary[] = (int) $uid;
+        }
+      }
+
+      if (count($change_ary))
+      {
+        $account_repository->set_bulk_min_limit(
+          account_ids: $change_ary,
           min_limit: $min_limit,
           created_by: $su->id() ?: null,
           schema: $pp->schema_o(),
         );
-        $s_user_ids[] = $uid;
-      }
-      $this->addFlash(
-        type: 'success',
-        message: [
-          'key' => 'users_list.bulk.min_limit.flash.success',
-          'params'  => [
-            'count' => count($s_user_ids),
-          ],
-        ],
-      );
-      foreach ($s_user_ids as $uid)
-      {
+
         $this->addFlash(
           type: 'success',
-          message: $account_render->link($uid, $pp->ary()),
+          message: [
+            'key' => 'users_list.bulk.min_limit.flash.success',
+            'params'  => [
+              'count' => count($change_ary),
+            ],
+          ],
         );
+        foreach ($change_ary as $uid)
+        {
+          $this->addFlash(
+            type: 'success',
+            message: [
+              'user'  => $s_user_ary[$uid],
+            ],
+          );
+        }
       }
+
+      if (count($no_change_ary))
+      {
+        $this->addFlash(
+          type: 'warning',
+          message: [
+            'key' => 'flash.no_change_for',
+            'params'  => [
+              'count' => count($no_change_ary),
+            ],
+          ],
+        );
+        foreach ($no_change_ary as $uid)
+        {
+          $this->addFlash(
+            type: 'warning',
+            message: [
+              'user'  => $s_user_ary[$uid],
+            ],
+          );
+        }
+      }
+
       return $this->redirectToRoute(
         route: $vr->get('users'),
         parameters: $pp->ary(),
@@ -735,38 +945,338 @@ class UsersListController extends AbstractController
       && $bulk_max_limit_form->isSubmitted()
       && $bulk_max_limit_form->isValid())
     {
-      $bulk_min_limit_command = $bulk_max_limit_form->getData();
+      $bulk_max_limit_command = $bulk_max_limit_form->getData();
       $selected = $bulk_max_limit_command->selected;
       $max_limit = $bulk_max_limit_command->max_limit;
       $select_ary = explode(',', $selected);
       $s_user_ids = [];
       foreach ($select_ary as $sel_id)
       {
-        $uid = (int) trim($sel_id);
-        $account_repository->update_max_limit(
-          account_id: $uid,
+        $s_user_ids[] = (int) trim($sel_id);
+      }
+
+      $s_user_ary = $user_repository->get_selected_max_limit(
+        account_ids: $s_user_ids,
+        schema: $pp->schema_o(),
+      );
+
+      $change_ary = [];
+      $no_change_ary = [];
+
+      foreach($s_user_ary as $uid => $user)
+      {
+        if ($user['max_limit'] === $max_limit)
+        {
+          $no_change_ary[] = (int) $uid;
+        }
+        else
+        {
+          $change_ary[] = (int) $uid;
+        }
+      }
+
+      if (count($change_ary))
+      {
+        $account_repository->set_bulk_max_limit(
+          account_ids: $change_ary,
           max_limit: $max_limit,
           created_by: $su->id() ?: null,
           schema: $pp->schema_o(),
         );
-        $s_user_ids[] = $uid;
-      }
-      $this->addFlash(
-        type: 'success',
-        message: [
-          'key' => 'users_list.bulk.max_limit.flash.success',
-          'params'  => [
-            'count' => count($s_user_ids),
-          ],
-        ],
-      );
-      foreach ($s_user_ids as $uid)
-      {
+
         $this->addFlash(
           type: 'success',
-          message: $account_render->link($uid, $pp->ary()),
+          message: [
+            'key' => 'users_list.bulk.max_limit.flash.success',
+            'params'  => [
+              'count' => count($change_ary),
+            ],
+          ],
         );
+        foreach ($change_ary as $uid)
+        {
+          $this->addFlash(
+            type: 'success',
+            message: [
+              'user'  => $s_user_ary[$uid],
+            ],
+          );
+        }
       }
+
+      if (count($no_change_ary))
+      {
+        $this->addFlash(
+          type: 'warning',
+          message: [
+            'key' => 'flash.no_change_for',
+            'params'  => [
+              'count' => count($no_change_ary),
+            ],
+          ],
+        );
+        foreach ($no_change_ary as $uid)
+        {
+          $this->addFlash(
+            type: 'warning',
+            message: [
+              'user'  => $s_user_ary[$uid],
+            ],
+          );
+        }
+      }
+
+      return $this->redirectToRoute(
+        route: $vr->get('users'),
+        parameters: $pp->ary(),
+      );
+    }
+
+    if ($pp->is_admin())
+    {
+      $bulk_active_command = new UsersBulkActiveCommand();
+      $bulk_active_form = $this->createForm(
+        type: UsersBulkActiveType::class,
+        data: $bulk_active_command,
+        options: [
+          'log_comment_enabled' => true,
+        ],
+      );
+      $bulk_active_form->handleRequest($request);
+    }
+
+    if ($bulk_active_form
+      && $bulk_active_form->isSubmitted()
+      && $bulk_active_form->isValid())
+    {
+      $bulk_active_command = $bulk_active_form->getData();
+      $selected = $bulk_active_command->selected;
+      $is_active = $bulk_active_command->is_active;
+      $send_email = $bulk_active_command->send_email;
+      $send_email_cc = $bulk_active_command->send_email_cc;
+      $log_comment = $bulk_active_form->get('log_comment')->getData();
+      $select_ary = explode(',', $selected);
+      $s_user_ids = [];
+      foreach ($select_ary as $sel_id)
+      {
+        $s_user_ids[] = (int) trim($sel_id);
+      }
+
+      $s_user_ary = $user_repository->get_selected(
+        user_ids: $s_user_ids,
+        schema: $pp->schema_o(),
+      );
+
+      $change_ary = [];
+      $no_change_ary = [];
+
+      foreach($s_user_ary as $uid => $user)
+      {
+        if ($user['is_active'] === $is_active)
+        {
+          $no_change_ary[] = (int) $uid;
+        }
+        else
+        {
+          $change_ary[] = (int) $uid;
+        }
+      }
+
+      if (count($change_ary))
+      {
+        $user_repository->set_bulk_active(
+          is_active: $is_active,
+          user_ids: $change_ary,
+          schema: $pp->schema_o(),
+        );
+
+        $user_log_repository->bulk_insert(
+          users_old_data_ary: [],
+          new_data: [],
+          comment: $log_comment,
+          created_by: $su->id() ?: null,
+          route: $pp->route(),
+          action: 'active_edit',
+          schema: $pp->schema_o(),
+        );
+
+        $this->addFlash(
+          type: 'success',
+          message: [
+            'key' => 'users_list.bulk.max_limit.flash.success',
+            'params'  => [
+              'count' => count($change_ary),
+            ],
+          ],
+        );
+        foreach ($change_ary as $uid)
+        {
+          $this->addFlash(
+            type: 'success',
+            message: [
+              'user'  => $s_user_ary[$uid],
+            ],
+          );
+        }
+      }
+
+      if (count($no_change_ary))
+      {
+        $this->addFlash(
+          type: 'warning',
+          message: [
+            'key' => 'flash.no_change_for',
+            'params'  => [
+              'count' => count($no_change_ary),
+            ],
+          ],
+        );
+        foreach ($no_change_ary as $uid)
+        {
+          $this->addFlash(
+            type: 'warning',
+            message: [
+              'user'  => $s_user_ary[$uid],
+            ],
+          );
+        }
+      }
+
+      return $this->redirectToRoute(
+        route: $vr->get('users'),
+        parameters: $pp->ary(),
+      );
+    }
+
+    if ($pp->is_admin()
+      && $transactions_enabled
+      && !in_array($status, ['pre-active', 'post-active', 'ip', 'im', 'extern', 'inactive'])
+    )
+    {
+      $bulk_leaving_command = new UsersBulkAccountLeavingCommand();
+      $bulk_leaving_form = $this->createForm(
+        type: UsersBulkAccountLeavingType::class,
+        data: $bulk_leaving_command,
+        options: [
+          'log_comment_enabled' => true,
+        ],
+      );
+      $bulk_leaving_form->handleRequest($request);
+    }
+
+    if ($bulk_leaving_form
+      && $bulk_leaving_form->isSubmitted()
+      && $bulk_leaving_form->isValid())
+    {
+      $bulk_leaving_command = $bulk_leaving_form->getData();
+      $selected = $bulk_leaving_command->selected;
+      $is_leaving = $bulk_leaving_command->is_leaving;
+      $send_email = $bulk_active_command->send_email;
+      $send_email_cc = $bulk_active_command->send_email_cc;
+      $log_comment = $bulk_active_form->get('log_comment')->getData();
+      $select_ary = explode(',', $selected);
+      $s_user_ids = [];
+      foreach ($select_ary as $sel_id)
+      {
+        $s_user_ids[] = (int) trim($sel_id);
+      }
+
+      $s_user_ary = $user_repository->get_selected(
+        user_ids: $s_user_ids,
+        schema: $pp->schema_o(),
+      );
+
+      $change_ary = [];
+      $no_change_ary = [];
+      $users_old_data_ary = [];
+
+      foreach($s_user_ary as $uid => $user)
+      {
+        if ($user['is_leaving'] === $is_leaving
+          || !$user['is_active']
+          || isset($user['remote_schema'])
+          || isset($user['remote_email'])
+        )
+        {
+          $no_change_ary[] = (int) $uid;
+        }
+        else
+        {
+          $change_ary[] = (int) $uid;
+          $users_old_data_ary[$uid] = [
+            'is_leaving'  => $is_leaving,
+          ];
+        }
+      }
+
+      if (count($change_ary))
+      {
+        $user_repository->set_bulk_leaving(
+          is_leaving: $is_leaving,
+          user_ids: $change_ary,
+          schema: $pp->schema_o(),
+        );
+
+        $meta_data = array_intersect_key((array) $bulk_leaving_command, [
+          'send_email'  => true,
+          'send_email_cc' => true,
+        ]);
+
+        $user_log_repository->bulk_insert(
+          users_old_data_ary: $users_old_data_ary,
+          new_data: ['is_leaving' => $is_leaving],
+          comment: $log_comment,
+          created_by: $su->id() ?: null,
+          route: $pp->route(),
+          action: 'active_edit',
+          schema: $pp->schema_o(),
+          meta_data: $meta_data,
+        );
+
+        $this->addFlash(
+          type: 'success',
+          message: [
+            'key' => 'users_list.bulk.leaving.flash.success',
+            'params'  => [
+              'count' => count($change_ary),
+            ],
+          ],
+        );
+
+        foreach ($change_ary as $uid)
+        {
+          $this->addFlash(
+            type: 'success',
+            message: [
+              'user'  => $s_user_ary[$uid],
+            ],
+          );
+        }
+      }
+
+      if (count($no_change_ary))
+      {
+        $this->addFlash(
+          type: 'warning',
+          message: [
+            'key' => 'flash.no_change_for',
+            'params'  => [
+              'count' => count($no_change_ary),
+            ],
+          ],
+        );
+
+        foreach ($no_change_ary as $uid)
+        {
+          $this->addFlash(
+            type: 'warning',
+            message: [
+              'user'  => $s_user_ary[$uid],
+            ],
+          );
+        }
+      }
+
       return $this->redirectToRoute(
         route: $vr->get('users'),
         parameters: $pp->ary(),
@@ -774,15 +1284,27 @@ class UsersListController extends AbstractController
     }
 
     /**
+     * restore checkboxes after form error
+     */
+    $sel = [];
+
+    if ($request->isMethod('POST'))
+    {
+      $all_posted = $request->request->all();
+      foreach ($all_posted as $form_data)
+      {
+        if (is_array($form_data) && isset($form_data['selected']))
+        {
+          $sel_ids = array_filter(explode(',', $form_data['selected']));
+          $sel = array_fill_keys($sel_ids, true);
+          break;
+        }
+      }
+    }
+
+    /**
      * End bulk POST
      */
-
-    if (!$request->isMethod('GET'))
-    {
-      throw new BadRequestHttpException(
-        'Invalid request method'
-      );
-    }
 
     /**
      * Columns select form
@@ -1119,6 +1641,8 @@ class UsersListController extends AbstractController
       'bulk_min_limit_form'     => $bulk_min_limit_form?->createView(),
       'bulk_max_limit_form'     => $bulk_max_limit_form?->createView(),
       'bulk_periodic_overview_en_form'     => $bulk_periodic_overview_en_form?->createView(),
+      'bulk_active_form'     => $bulk_active_form?->createView(),
+      'bulk_leaving_form'     => $bulk_leaving_form?->createView(),
       'cols_form'   => $cols_form->createView(),
     ]);
   }

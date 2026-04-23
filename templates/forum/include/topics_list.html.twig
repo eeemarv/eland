@@ -1,21 +1,20 @@
 {%- embed 'embed/table.html.twig' -%}
   {%- import 'macro/lbl.html.twig' as lbl -%}
-
   {%- block thead -%}
-    <th>
+    <th data-priority="1">
       {{- 'label.subject'|trans -}}
     </th>
-    <th>
+    <th data-type="num" data-priority="5">
       {{- 'label.replies'|trans -}}
     </th>
-    <th data-hide="phone, tablet">
+    <th data-priority="3">
       {{- 'label.user'|trans -}}
     </th>
-    <th data-hide="phone, tablet" data-type="numeric">
+    <th data-type="num" data-priority="4">
       {{- 'label.created'|trans -}}
     </th>
     {%- if show_access -%}
-      <th data-hide="phone">
+      <th data-priority="10">
         {{- 'access.visible_for'|trans -}}
       </th>
     {%- endif -%}
@@ -33,7 +32,7 @@
         <td>
           {{- account(t.user_id)|link('users_show', {'id': t.user_id})|raw -}}
         </td>
-        <td>
+        <td data-order="{{- t.created_at|date('U') -}}">
           {{- t.created_at|date_format('min') -}}
         </td>
         {%- if show_access -%}

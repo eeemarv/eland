@@ -271,4 +271,24 @@ class DocRepository
         'id'  => Types::INTEGER,
       ]) ? true : false;
 	}
+
+  public function get_doc_map_names(
+    Schema $schema,
+  ):array
+  {
+    $map_names = [];
+
+    $stmt = $this->db->prepare('select name
+      from ' . $schema->str() . '.doc_maps
+      order by name asc');
+
+    $res = $stmt->executeQuery();
+
+    while ($name = $res->fetchOne())
+    {
+      $map_names[] = $name;
+    }
+
+    return $map_names;
+  }
 }

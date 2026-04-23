@@ -13,15 +13,15 @@ use Symfony\Component\Routing\Annotation\Route;
 class PagesHomeController extends AbstractController
 {
   #[Route(
-    '/{schema}/p/',
+    '/{schema}/',
     name: 'home',
     methods: ['GET'],
     priority: 30,
     requirements: [
-        'schema'        => '%assert.schema%',
+      'schema'  => '%assert.schema%',
     ],
     defaults: [
-        'module'        => 'home',
+      'module'  => 'home',
     ],
   )]
 

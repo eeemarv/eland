@@ -1,0 +1,14 @@
+<label for="sel[{{- id -}}]" class="ps-5 pe-5">
+  <input
+    type="checkbox"
+    name="sel[{{- id -}}]"
+    id="sel[{{- id -}}]"
+    value="{{- id -}}"
+    data-bulkchecktable-target="checkbox"
+    {%- if sel[id] is defined %} checked{%- endif -%}
+    {%- if disabled is defined and disabled %} disabled{%- endif -%}
+  />
+  <span class="ps-1">
+    {{- label|default('&nbsp;')|raw -}}
+  </span>
+</label>

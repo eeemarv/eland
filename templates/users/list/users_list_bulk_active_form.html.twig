@@ -1,0 +1,43 @@
+{%- include 'component/bulkchecktable/form_start.html.twig' with {
+  'form': bulk_active_form,
+} -%}
+
+{{- form_row(bulk_active_form.is_active, {
+  'label': 'users_list.bulk.active.title',
+}) -}}
+
+{%- include 'form/log_comment.html.twig' with {
+  'form': bulk_active_form,
+  'inline': false,
+} -%}
+
+<div data-controller="checkbox-follow">
+{{- form_row(bulk_active_form.send_email, {
+  'label': 'users.list.bulk.send_email',
+  'attr': {
+    'data-checkbox-follow-target': 'trigger',
+    'data-action': 'change->checkbox-follow#toggle'
+  },
+}) -}}
+
+{{- form_row(bulk_active_form.send_email_cc, {
+  'label': 'users.list.bulk.send_email_cc',
+  'attr': {
+    'data-checkbox-follow-target': 'dependent',
+  },
+  'disabled': true,
+}) -}}
+</div>
+
+{{- form_row(bulk_active_form.verify, {
+  'label': 'check.verify',
+}) -}}
+
+{{- form_widget(bulk_active_form.submit, {
+  'label': 'btn.edit',
+  'attr': {
+    'class': 'btn btn-lg btn-primary',
+  },
+}) -}}
+
+{{- form_end(bulk_active_form) -}}

@@ -1,37 +1,43 @@
 {%- embed 'embed/table.html.twig' -%}
-    {%- import 'macro/lbl.html.twig' as lbl -%}
-    {%- block thead -%}
-        <th>
-            {{- 'label.title'|trans -}}
-        </th>
-        <th>
-            {{- 'label.event_date'|trans -}}
-        </th>
+  {%- import 'macro/lbl.html.twig' as lbl -%}
+  {%- block controllers -%}
+    datatable
+  {%- endblock controllers -%}
+  {%- block controllers_attr -%}
+    data-datatable-sortable-value="true"
+  {%- endblock controllers_attr -%}
+  {%- block thead -%}
+    <th data-priority="1">
+      {{- 'label.title'|trans -}}
+    </th>
+    <th data-priority="5" data-type="num">
+      {{- 'label.event_date'|trans -}}
+    </th>
+    {%- if show_access -%}
+      <th data-priority="10">
+        {{- 'access.visible_for'|trans -}}
+      </th>
+    {%- endif -%}
+  {%- endblock thead -%}
+  {%- block tbody -%}
+    {%- for n in news_items -%}
+      <tr>
+        <td>
+          {{- n.subject|link('news_show', {'id': n.id})|raw -}}
+        </td>
+        <td data-order="{{- n.event_at|date('U') -}}">
+          {%- if n.event_at is defined and n.event_at is not empty -%}
+            {{- n.event_at|date_format('day') -}}
+          {%- else -%}
+            &nbsp;
+          {%- endif -%}
+        </td>
         {%- if show_access -%}
-            <th data-hide="phone">
-                {{- 'access.visible_for'|trans -}}
-            </th>
+          <td>
+            {{- lbl.btn(n.access) -}}
+          </td>
         {%- endif -%}
-    {%- endblock thead -%}
-    {%- block tbody -%}
-        {%- for n in news_items -%}
-            <tr>
-                <td>
-                    {{- n.subject|link('news_show', {'id': n.id})|raw -}}
-                </td>
-                <td>
-                    {%- if n.event_at is defined and n.event_at is not empty -%}
-                        {{- n.event_at|date_format('day') -}}
-                    {%- else -%}
-                        &nbsp;
-                    {%- endif -%}
-                </td>
-                {%- if show_access -%}
-                    <td>
-                        {{- lbl.btn(n.access) -}}
-                    </td>
-                {%- endif -%}
-            </tr>
-        {%- endfor -%}
-    {%- endblock tbody -%}
+      </tr>
+    {%- endfor -%}
+  {%- endblock tbody -%}
 {%- endembed -%}

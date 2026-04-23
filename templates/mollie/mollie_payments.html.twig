@@ -1,5 +1,13 @@
 {%- extends 'mollie/base/mollie_base.html.twig' -%}
 
+{%- block content_controllers -%}
+datatable bulkchecktable csv
+{%- endblock content_controllers -%}
+
+{%- block content_controllers_attr -%}
+data-csv-filename-value="mollie"
+{%- endblock content_controllers_attr -%}
+
 {%- block btn_top_add -%}
   {%- include 'include/btn_top/add.html.twig' with {
     'btn_route': 'mollie_payments_add',
@@ -31,8 +39,7 @@
     'codemirror',
     'summernote',
     'summernote_email.js',
-    'datepicker',
-    'table_sel.js'
+    'datepicker'
   ]) -}}
 {%- endblock assets_add -%}
 

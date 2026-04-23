@@ -1,7 +1,7 @@
-{{- form_start(bulk_full_name_access_form, {'attr': {'novalidate': 'novalidate'}}) -}}
-{{- form_errors(bulk_full_name_access_form) -}}
 
-{{- form_widget(bulk_full_name_access_form.selected) -}}
+{%- include 'component/bulkchecktable/form_start.html.twig' with {
+  'form': bulk_full_name_access_form,
+} -%}
 
 {{- form_row(bulk_full_name_access_form.access, {
   'label': 'label.visibility',

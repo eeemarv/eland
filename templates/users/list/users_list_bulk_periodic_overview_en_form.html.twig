@@ -1,7 +1,7 @@
-{{- form_start(bulk_periodic_overview_en_form, {'attr': {'novalidate': 'novalidate'}}) -}}
-{{- form_errors(bulk_periodic_overview_en_form) -}}
 
-{{- form_widget(bulk_periodic_overview_en_form.selected) -}}
+{%- include 'component/bulkchecktable/form_start.html.twig' with {
+  'form': bulk_periodic_overview_en_form,
+} -%}
 
 {{- form_row(bulk_periodic_overview_en_form.periodic_overview_en, {
   'label': 'label.periodic_overview_en',

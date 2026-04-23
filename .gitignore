@@ -36,3 +36,6 @@
 # Compile sass from /style to /assets/build
 # Then Asset Mapper copies to /public/assets
 /assets/build/*
+
+# backup VS Code profiles
+*.code-profile

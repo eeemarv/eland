@@ -1,0 +1,21 @@
+/**
+ * Custom overrides for DataTables 2.x sort markers in Bootstrap 3.
+ * Forces both 'up' and 'down' triangles to show faintly on unsorted columns.
+ */
+table.dataTable thead th div.dt-column-header {
+    display: inline !important;
+}
+table.dataTable thead > tr > th.dt-orderable-asc .dt-column-order::before,
+table.dataTable thead > tr > th.dt-orderable-desc .dt-column-order::after {
+  opacity: 0.8;
+  color: darkorange;
+}
+table.dataTable thead > tr > th.dt-ordering-asc .dt-column-order::before,
+table.dataTable thead > tr > th.dt-ordering-desc .dt-column-order::after {
+  opacity: 1;
+  color: black;
+}
+table.dataTable thead > tr > th.dt-ordering-asc,
+table.dataTable thead > tr > th.dt-ordering-desc {
+  background-color: antiquewhite;
+}

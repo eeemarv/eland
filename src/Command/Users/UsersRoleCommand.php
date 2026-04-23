@@ -3,7 +3,7 @@
 namespace App\Command\Users;
 
 use App\Command\CommandInterface;
-use Symfony\Component\Validator\Constraints\Choice;
+use App\Validator\User\UserRole;
 use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\Constraints\Type;
 
@@ -11,6 +11,6 @@ class UsersRoleCommand Implements CommandInterface
 {
   #[Type(type: 'string')]
   #[NotNull()]
-  #[Choice(['admin', 'user'])]
+  #[UserRole()]
   public $role;
 }

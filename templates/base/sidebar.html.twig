@@ -9,11 +9,7 @@
 		'typeahead', 'typeahead.js'
 	]) -}}
 
-	{%- if block('csv_download_btn') -%}
-		{{- assets_add(['csv.js']) -}}
-	{%- endif -%}
-
-	{%- if pp_ary().edit.en is defined and su_role('admin') and su_is_system_self() -%}
+	{%- if {}|pp.edit.en is defined and su_role('admin') and su_is_system_self() -%}
 		{{- assets_add([
 			'codemirror',
 			'summernote',
@@ -44,7 +40,7 @@
 	{%- if config_str('system.website_url') -%}
 		{{- config_str('system.website_url') -}}
 	{%- else -%}
-		{{- path('home', pp_ary()) -}}
+		{{- path('home', {}|pp) -}}
 	{%- endif -%}
 {%- endblock -%}
 
@@ -260,6 +256,14 @@
 		{%- endembed -%}
 	{%- endblock pre_heading -%}
 
+  {%- if block('content_controllers') -%}
+    <div data-controller="{%- block content_controllers -%}{%- endblock %}"
+    {%- if block('content_controllers_attr') %} {% endif -%}
+    {%- block content_controllers_attr -%}
+    {%- endblock -%}
+    >
+  {%- endif -%}
+
 	{%- block btn_row -%}
 	<div class="row">
 		<div class="col-md-12 top-buttons mt-5p">
@@ -302,7 +306,7 @@
 	{%- endblock btn_row -%}
 
 	{%- block heading -%}
-		<h1>
+		<h1{%- if block('heading_class') %} class="{%- block heading_class -%}{%- endblock -%}"{%- endif -%}>
       {%- if admin_heading is defined -%}
         {%- include 'include/label/admin.html.twig' -%}
         &nbsp;
@@ -394,7 +398,7 @@
 				{%- block form_header -%}{%- endblock -%}
 				<div class="panel-heading">
 					{%- block form_disabled_cms_edit_notice -%}
-						{%- if form.vars is defined and form.vars.disabled and pp_ary().edit is defined -%}
+						{%- if form.vars is defined and form.vars.disabled and {}|pp.edit is defined -%}
 							<p class="text-danger">
 								{{- 'cms_edit.form_disabled'|trans -}}
 							</p>
@@ -436,6 +440,10 @@
 	{%- block footnote -%}{%- endblock -%}
 
 	{%- block bulk_actions -%}{%- endblock -%}
+
+  {%- if block('content_controllers') -%}
+    </div>
+  {%- endif -%}
 
 	{%- block content_bottom -%}
 		{%- embed 'embed/static_content.html.twig' with {

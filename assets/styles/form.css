@@ -1,0 +1,46 @@
+/* extra btn default */
+
+.btn-default-2 {
+  background-color: #888;
+  color: white;
+}
+.btn-default-2:hover {
+  background-color: #666;
+  color: white;
+}
+
+.label-sm {
+  font-size: 12px;
+}
+
+/***for inputs of horizontal form******/
+
+.margin-bottom
+{
+  margin-bottom: 10px;
+}
+
+/** bold labels on checkboxes */
+.checkbox label{
+  font-weight: bold;
+}
+.checkbox {
+  margin: 0;
+}
+
+/** summernote error */
+.form-group.has-error .note-editor {
+  border-color: #a94442;
+}
+.form-group.has-error .note-toolbar {
+  border-color: #a94442;
+  background-color: #f2dede;
+}
+.form-group.has-error .note-btn {
+  border-color: #a94442;
+  color: #a94442;
+}
+.form-group.has-error .note-resizebar {
+  border-color: #a94442;
+  background-color: #f2dede;
+}

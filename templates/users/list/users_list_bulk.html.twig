@@ -26,6 +26,14 @@
     and bulk_periodic_overview_en_form.vars.submitted
     and not bulk_periodic_overview_en_form.vars.valid
   ? 'periodic_overview_en'
+  : bulk_active_form is not null
+    and bulk_active_form.vars.submitted
+    and not bulk_active_form.vars.valid
+  ? 'active'
+  : bulk_leaving_form is not null
+    and bulk_leaving_form.vars.submitted
+    and not bulk_leaving_form.vars.valid
+  ? 'leaving'
   : 'email' -%}
 
 <h3>
@@ -36,11 +44,13 @@
 <div class="panel panel-info">
   <div class="panel-heading">
     <ul class="nav nav-tabs" role="tablist">
+
       <li{%- if active_tab == 'email' %} class="active"{%- endif -%}>
         <a href="#email_tab" data-toggle="tab">
           {{- 'label.email'|trans -}}
         </a>
       </li>
+
       <li class="dropdown{%- if active_tab != 'email' %} active{%- endif -%}">
         <a class="dropdown-toggle" data-toggle="dropdown" href="#">
           {{- 'users_list.bulk.field_nav'|trans -}}
@@ -105,8 +115,27 @@
           {%- endif -%}
         </ul>
       </li>
+
+      {%- if bulk_active_form is not null -%}
+      <li{%- if active_tab == 'active' %} class="active"{%- endif -%}>
+        <a href="#active_tab" data-toggle="tab">
+          {{- 'status.active'|trans -}}
+        </a>
+      </li>
+      {%- endif -%}
+
+      {%- if bulk_leaving_form is not null -%}
+      <li{%- if active_tab == 'leaving' %} class="active"{%- endif -%}>
+        <a href="#leaving_tab" data-toggle="tab">
+          {{- 'status.leaving'|trans -}}
+        </a>
+      </li>
+      {%- endif -%}
+
     </ul>
+
     <div class="tab-content">
+
       <div
         role="tabpanel"
         class="tab-pane{%- if active_tab == 'email' %}  active{%- endif -%}"
@@ -219,6 +248,32 @@
           {{- 'users_list.bulk.periodic_overview_en.title'|trans -}}
         </h4>
         {%- include 'users/list/users_list_bulk_periodic_overview_en_form.html.twig' -%}
+      </div>
+      {%- endif -%}
+
+      {%- if bulk_active_form is not null -%}
+      <div
+        role="tabpanel"
+        class="tab-pane{%- if active_tab == 'active' %}  active{%- endif -%}"
+        id="active_tab"
+      >
+        <h4>
+          {{- 'users_list.bulk.active.title'|trans -}}
+        </h4>
+        {%- include 'users/list/users_list_bulk_active_form.html.twig' -%}
+      </div>
+      {%- endif -%}
+
+      {%- if bulk_leaving_form is not null -%}
+      <div
+        role="tabpanel"
+        class="tab-pane{%- if active_tab == 'leaving' %}  active{%- endif -%}"
+        id="leaving_tab"
+      >
+        <h4>
+          {{- 'users_list.bulk.leaving.title'|trans -}}
+        </h4>
+        {%- include 'users/list/users_list_bulk_leaving_form.html.twig' -%}
       </div>
       {%- endif -%}
     </div>

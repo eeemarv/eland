@@ -1,13 +1,25 @@
 {%- extends 'users/base/users_overview.html.twig' -%}
 
+{%- block content_controllers -%}
+usercounttable datatable
+{%- if pp_has_role('admin') %} bulkchecktable csv{%- endif -%}
+{%- endblock content_controllers -%}
+
+{%- block content_controllers_attr -%}
+data-csv-filename-value="{{- 'label.users'|trans|lower|replace({' ': '_'}) -}}"
+data-datatable-sortable-value="true"
+{%- endblock content_controllers_attr -%}
+
 {%- block csv_download_btn -%}
+  {%- if pp_has_role('admin') -%}
   {%- include 'include/btn_top/csv_download.html.twig' -%}
+  {%- endif -%}
 {%- endblock csv_download_btn -%}
 
 {%- block assets_add -%}
   {{- parent() -}}
+  {#}
   {{- assets_add([
-    'calc_sum.js',
     'users_distance.js',
     'datepicker'
   ]) -}}
@@ -16,9 +28,9 @@
       'codemirror',
       'summernote',
       'summernote_email.js',
-      'table_sel.js',
     ]) -}}
   {%- endif -%}
+  {#}
 {%- endblock assets_add -%}
 
 {%- block btn_top_bulk -%}
@@ -46,6 +58,7 @@
 {%- block content -%}{%- endblock -%}
 
 {%- block data -%}
+  <div data-controller="hello">hello</div>
   {%- if row_count -%}
     {%- include 'users/list/users_list_table.html.twig' -%}
   {%- else -%}
@@ -58,7 +71,7 @@
     <div class="col-md-12">
       <p>
         <span class="pull-right">{{- 'label.balance_sum'|trans({
-          'balance_sum': '<span id="sum"></span> ' ~ config_str('transactions.currency.name')
+          'balance_sum': '<span data-usercounttable-target="totalBalance"></span> ' ~ config_str('transactions.currency.name')
         })|raw -}}
         </span>
       </p>
@@ -71,11 +84,3 @@
     {%- include 'users/list/users_list_bulk.html.twig' -%}
   {%- endif -%}
 {%- endblock bulk_actions -%}
-
-{%- block css -%}
-  {{- parent() -}}
-{%- endblock css -%}
-
-{%- block js -%}
-  {{- parent() -}}
-{%- endblock js -%}

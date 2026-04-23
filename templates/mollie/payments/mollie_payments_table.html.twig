@@ -5,9 +5,6 @@
 <div class="panel panel-primary">
   <table class="table table-bordered table-striped
     table-hover panel-body footable csv"
-    data-filter="#combined-filter"
-    data-filter-minimum="1"
-    data-sort="false"
   >
     <thead>
       <tr>
@@ -35,27 +32,21 @@
     <tbody>
     {%- for p in payments -%}
       {%- set u_class =
-        is_new(p.user_id) ? ' class="success"' :
-        is_leaving(p.user_id) ? ' class="danger"' :
-        is_active(p.user_id) ? '' :
-        is_inactive(p.user_id) ? ' class="inactive"' :
-        is_ip(p.user_id) ? ' class="warning"' :
-        is_im(p.user_id) ? ' class="info"' :
-        is_extern(p.user_id) ? ' class="extern"' : ''
+        is_new(p) ? ' class="success"' :
+        is_leaving(p) ? ' class="danger"' :
+        is_active(p) ? '' :
+        is_inactive(p) ? ' class="inactive"' :
+        is_ip(p) ? ' class="warning"' :
+        is_im(p) ? ' class="info"' :
+        is_extern(p) ? ' class="extern"' : ''
       -%}
       <tr>
         <td{%- if p.is_paid or p.is_canceled %} class="bg-inactive"{%- endif -%}>
-          <label for="sel[{{- p.id -}}]">
-            <input
-              type="checkbox"
-              name="sel[{{- p.id -}}]"
-              id="sel[{{- p.id -}}]"
-              value="{{- p.id -}}"
-              {%- if p.is_paid or p.is_canceled %} disabled{%- endif -%}
-              {%- if sel[p.id] is defined %} checked{%- endif -%}
-            />
-            &nbsp;&nbsp;{{- p.amount|replace({'.': ','}) -}}
-          </label>
+          {%- include 'component/bulkchecktable/checkbox.html.twig' with {
+            'id': p.id,
+            'label': p.amount|replace({'.': ','}),
+            'disabled': p.is_paid or p.is_canceled,
+          }-%}
         </td>
         <td>
           <a href="{{- path('mollie_payments', {'request_id': p.request_id, 'f': {'q': p.description }}|pp) -}}">
@@ -93,15 +84,15 @@
         <td class="danger">
           {{- p.emails_sent|length -}}
           &nbsp;
-          <span class="label label-danger"
+          <span class="label label-danger p-1"
           title="Er is geen E-mail adres ingesteld voor de gebruiker.">
-            <i class="fa fa-exclamation-triangle"></i>
+            <twig:ux:icon name="lucide:triangle-alert" width="16" />
           </span>
         </td>
         {%- endif -%}
       </tr>
     {%- endfor -%}
     </tbody>
-    {%- include 'include/tfoot_bulk_btns.html.twig' -%}
+    {%- include 'component/bulkchecktable/tfoot_buttons.html.twig' -%}
   </table>
 </div>

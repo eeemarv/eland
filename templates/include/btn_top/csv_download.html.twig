@@ -1,3 +1,9 @@
-<a href="#" data-csv class="csv btn btn-info btn-lg" title="{{- 'btn.download_csv'|trans -}}">
+<a href="#"
+  data-action="csv#download"
+  class="print-hide btn btn-info btn-lg"
+  title="{{- 'btn.download_csv'|trans -}}"
+  {%- if selector is defined and selector %} data-csv-selector-param="{{- selector -}}"{%- endif -%}
+>
   <twig:ux:icon name="lucide:file-down"/>
+  <span class="hidden-xs hidden-sm">CSV</span>
 </a>

@@ -1,9 +1,13 @@
 {%- extends 'contacts/base/contacts_base.html.twig' -%}
 
-{%- block assets_add -%}
-  {{- parent() -}}
-  {{- assets_add(['table_sel.js']) -}}
-{%- endblock assets_add -%}
+{%- block content_controllers -%}
+csv
+{%- endblock content_controllers -%}
+
+{%- block content_controllers_attr -%}
+data-csv-filename-value="{{- 'label.contacts'|trans|lower|replace({' ': '_'}) -}}"
+{%- endblock content_controllers_attr -%}
+
 
 {%- block btn_top_add -%}
   {%- include 'include/btn_top/add.html.twig' with {
@@ -57,11 +61,3 @@
     {{- bulk_actions_raw|raw -}}
   {%- endif -%}
 {%- endblock bulk_actions -%}
-
-{%- block css -%}
-  {{- parent() -}}
-{%- endblock css -%}
-
-{%- block js -%}
-  {{- parent() -}}
-{%- endblock js -%}

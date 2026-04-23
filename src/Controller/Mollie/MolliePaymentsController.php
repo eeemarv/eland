@@ -125,8 +125,6 @@ class MolliePaymentsController extends AbstractController
       ],
     ];
 
-    $sel = $request->request->all('sel');
-
     $bulk_email_command = new MollieBulkEmailCommand();
     $bulk_email_form = $this->createForm(MollieBulkEmailType::class, $bulk_email_command);
     $bulk_email_form->handleRequest($request);
@@ -289,6 +287,25 @@ class MolliePaymentsController extends AbstractController
       }
 
       return $this->redirectToRoute('mollie_payments', $pp->ary());
+    }
+
+    /**
+     * restore checkboxes after form error
+     */
+    $sel = [];
+
+    if ($request->isMethod('POST'))
+    {
+      $all_posted = $request->request->all();
+      foreach ($all_posted as $form_data)
+      {
+        if (is_array($form_data) && isset($form_data['selected']))
+        {
+          $sel_ids = array_filter(explode(',', $form_data['selected']));
+          $sel = array_fill_keys($sel_ids, true);
+          break;
+        }
+      }
     }
 
     $ret = $mollie_repository->get_filtered_payments(

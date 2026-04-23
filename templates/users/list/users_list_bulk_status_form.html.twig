@@ -1,7 +1,7 @@
-{{- form_start(bulk_status_form, {'attr': {'novalidate': 'novalidate'}}) -}}
-{{- form_errors(bulk_status_form) -}}
 
-{{- form_widget(bulk_status_form.selected) -}}
+{%- include 'component/bulkchecktable/form_start.html.twig' with {
+  'form': bulk_status_form,
+} -%}
 
 {{- form_row(bulk_status_form.status, {
   'label': false,

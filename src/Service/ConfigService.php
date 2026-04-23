@@ -113,6 +113,7 @@ class ConfigService
 	public function set_int(
     string $config_id,
     int|null $value,
+    string $route,
     int|null $user_id,
     Schema $schema,
   ):bool
@@ -129,7 +130,9 @@ class ConfigService
 
     $this->config_repository->set_value(
       config_id: $config_id,
-      value: $value,
+      new_data: $value,
+      old_data: $current_value,
+      route: $route,
       user_id: $user_id,
       schema: $schema,
     );
@@ -142,6 +145,7 @@ class ConfigService
 	public function set_bool(
     string $config_id,
     bool $value,
+    string $route,
     int|null $user_id,
     Schema $schema,
   ):bool
@@ -158,7 +162,9 @@ class ConfigService
 
 		$this->config_repository->set_value(
       config_id: $config_id,
-      value: $value,
+      new_data: $value,
+      old_data: $current_value,
+      route: $route,
       user_id: $user_id,
       schema: $schema,
     );
@@ -171,6 +177,7 @@ class ConfigService
 	public function set_str(
     string $config_id,
     string $value,
+    string $route,
     int|null $user_id,
     Schema $schema,
   ):bool
@@ -187,7 +194,9 @@ class ConfigService
 
 		$this->config_repository->set_value(
       config_id: $config_id,
-      value: $value,
+      new_data: $value,
+      old_data: $current_value,
+      route: $route,
       user_id: $user_id,
       schema: $schema,
     );
@@ -200,6 +209,7 @@ class ConfigService
 	public function set_ary(
     string $config_id,
     array $value,
+    string $route,
     int|null $user_id,
     Schema $schema,
   ):bool
@@ -221,7 +231,9 @@ class ConfigService
 
 		$this->config_repository->set_value(
       config_id: $config_id,
-      value: $value,
+      new_data: $value,
+      old_data: $current_value,
+      route: $route,
       user_id: $user_id,
       schema: $schema,
     );
@@ -251,6 +263,7 @@ class ConfigService
 	private function command_config_map_callback(
 		CommandInterface $command,
 		callable $callable,
+    string $route,
     int|null $user_id,
 		Schema $schema
 	):bool
@@ -266,7 +279,7 @@ class ConfigService
 			foreach ($attributes as $attribute)
 			{
 				$config_map = $attribute->newInstance();
-				$res = call_user_func($callable, $command, $property_name, $config_map, $user_id, $schema);
+				$res = call_user_func($callable, $command, $property_name, $config_map, $route, $user_id, $schema);
         if ($res)
         {
           $changed = true;
@@ -281,12 +294,14 @@ class ConfigService
     Schema $schema,
   ):void
 	{
+    $route = '_dummy_';
     $user_id = null;
 
 		$callable = function(
 			CommandInterface $command,
 			string $property_name,
 			ConfigMap $config_map,
+      string $route, // not used in load
       int|null $user_id, // not used in load
 			Schema $schema
 		):void {
@@ -294,7 +309,13 @@ class ConfigService
 			$command->$property_name = $this->$get($config_map->key, $schema);
 		};
 
-		$this->command_config_map_callback($command, $callable, $user_id, $schema);
+		$this->command_config_map_callback(
+      command: $command,
+      callable: $callable,
+      route: $route,
+      user_id: $user_id,
+      schema: $schema,
+    );
 	}
 
   /**
@@ -302,6 +323,7 @@ class ConfigService
 	 */
 	public function store_command(
     CommandInterface $command,
+    string $route,
     int|null $user_id,
     Schema $schema
   ):bool
@@ -310,6 +332,7 @@ class ConfigService
 			CommandInterface $command,
 			string $property_name,
 			ConfigMap $config_map,
+      string $route,
       int|null $user_id,
 			Schema $schema
 		):bool {
@@ -322,6 +345,7 @@ class ConfigService
 			return $this->$set(
         config_id: $config_map->key,
         value: $value,
+        route: $route,
         user_id: $user_id,
         schema: $schema,
       );
@@ -330,6 +354,7 @@ class ConfigService
 		return $this->command_config_map_callback(
       command: $command,
       callable: $callable,
+      route: $route,
       user_id: $user_id,
       schema: $schema,
     );

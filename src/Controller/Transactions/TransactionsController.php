@@ -122,8 +122,6 @@ class TransactionsController extends AbstractController
       ],
     ];
 
-    $sel = $request->request->all('sel');
-
     $bulk_service_stuff_form = null;
 
     if ($pp->is_admin()
@@ -171,6 +169,29 @@ class TransactionsController extends AbstractController
         parameters: $pp->ary(),
       );
     }
+
+    /**
+     * restore checkboxes after form error
+     */
+    $sel = [];
+
+    if ($request->isMethod('POST'))
+    {
+      $all_posted = $request->request->all();
+      foreach ($all_posted as $form_data)
+      {
+        if (is_array($form_data) && isset($form_data['selected']))
+        {
+          $sel_ids = array_filter(explode(',', $form_data['selected']));
+          $sel = array_fill_keys($sel_ids, true);
+          break;
+        }
+      }
+    }
+
+    /**
+     *
+     */
 
     $fetched_data = $transaction_repository->get_filtered_transactions(
       filter_command: $filter_command,

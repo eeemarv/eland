@@ -622,7 +622,7 @@ class UsersEditController extends AbstractController
 
                 if ($stored_min_limit !== $min_to_store)
                 {
-                  $account_repository->update_min_limit(
+                  $account_repository->set_min_limit(
                     account_id: $id,
                     min_limit: $min_to_store,
                     created_by: $su->id(),
@@ -635,7 +635,7 @@ class UsersEditController extends AbstractController
 
                 if ($stored_max_limit !== $max_to_store)
                 {
-                  $account_repository->update_max_limit(
+                  $account_repository->set_max_limit(
                     account_id: $id,
                     max_limit: $max_to_store,
                     created_by: $su->id(),

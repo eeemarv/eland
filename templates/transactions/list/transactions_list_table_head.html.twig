@@ -4,12 +4,12 @@
 
 {%- if pp_has_role('admin') and bulk_actions_enabled -%}
 {# selector column #}
-<th>
+<th data-priority="1">
   &nbsp;
 </th>
 {%- endif -%}
 
-<th>
+<th data-priority="1">
   <a href="{{- path('transactions', pag_params|merge({
     's': {
       'order_by': 'description',
@@ -29,7 +29,7 @@
   </a>
 </th>
 
-<th>
+<th data-priority="1">
   <a href="{{- path('transactions', pag_params|merge({
     's': {
       'order_by': 'amount',
@@ -49,7 +49,7 @@
   </a>
 </th>
 
-<th>
+<th data-priority="2">
   <a href="{{- path('transactions', pag_params|merge({
     's': {
       'order_by': 'created_at',
@@ -71,13 +71,13 @@
 
 {%- if uid -%}
 
-  <th data-hide="phone,tablet">
+  <th data-priority="3">
     {{- 'label.counterparty'|trans -}}
   </th>
 
 {%- else -%}
 
-  <th data-hide="phone,tablet">
+  <th data-priority="3">
     <a href="{{- path('transactions', pag_params|merge({
       's': {
         'order_by': 'from_code',
@@ -97,7 +97,7 @@
     </a>
   </th>
 
-  <th data-hide="phone,tablet">
+  <th data-priority="3">
     <a href="{{- path('transactions', pag_params|merge({
       's': {
         'order_by': 'to_code',

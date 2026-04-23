@@ -1,14 +1,22 @@
 {%- extends 'transactions/base/transactions_base.html.twig' -%}
 
+{%- block content_controllers -%}
+datatable
+{%- if pp_has_role('admin') %} bulkchecktable csv{%- endif -%}
+{%- endblock content_controllers -%}
+
+{%- block content_controllers_attr -%}
+  data-csv-filename-value="{{- 'label.transactions'|trans|lower|replace({' ': '_'}) -}}"
+{%- endblock content_controllers_attr -%}
+
 {%- block csv_download_btn -%}
+  {%- if pp_has_role('admin') -%}
   {%- include 'include/btn_top/csv_download.html.twig' -%}
+  {%- endif -%}
 {%- endblock csv_download_btn -%}
 
 {%- block assets_add -%}
   {{- parent() -}}
-  {%- if pp_has_role('admin') -%}
-    {{- assets_add(['table_sel.js']) -}}
-  {%- endif -%}
   {{- assets_add(['datepicker']) -}}
 {%- endblock assets_add -%}
 
@@ -87,14 +95,6 @@
 
 {%- block bulk_actions -%}
   {%- if pp_has_role('admin') and bulk_actions_enabled -%}
-    {%- include 'transactions/list/transactions_list_bulk.html.twig' -%}
+    {%- include 'transactions/list/transactions_list_bulk_service_stuff_form.html.twig' -%}
   {%- endif -%}
 {%- endblock bulk_actions -%}
-
-{%- block css -%}
-  {{- parent() -}}
-{%- endblock css -%}
-
-{%- block js -%}
-  {{- parent() -}}
-{%- endblock js -%}

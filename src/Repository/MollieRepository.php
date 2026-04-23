@@ -414,7 +414,10 @@ class MollieRepository
     $res = $this->db->executeQuery('select p.*,
       r.description,
       u.code, u.name,
-      u.status, u.adate,
+      u.status,
+      u.is_active,
+      u.activated_at, u.adate,
+      u.is_leaving,
       coalesce(jsonb_agg(c.value) filter(where c.value is not null), \'[]\') as email_addresses
       from ' . $schema->str() . '.mollie_payments p
       inner join ' . $schema->str() . '.mollie_payment_requests r
@@ -429,7 +432,8 @@ class MollieRepository
       where ' . $sql_where . '
       group by p.id, r.description,
         u.code, u.name,
-        u.status, u.adate
+        u.status, u.is_active, u.adate, u.activated_at,
+        u.is_leaving
       order by ' . $prefixed_order_by . '
       ' . ($asc ? 'asc' : 'desc') . '
       limit :limit offset :offset',

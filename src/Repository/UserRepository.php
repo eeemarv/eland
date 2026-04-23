@@ -775,6 +775,54 @@ class UserRepository
       ]);
   }
 
+  public function set_bulk_active(
+    bool $is_active,
+    array $user_ids,
+    Schema $schema,
+  ):int
+  {
+    $status = $is_active ? 1 : 0;
+    return (int) $this->db->executeStatement('update ' .
+      $schema->str() . '.users
+      set is_active = :is_active,
+      status = :status,
+      is_leaving = false
+      where id in (:user_ids)', [
+        'is_active'  => $is_active,
+        'status'  => $status,
+        'user_ids'  => $user_ids,
+      ], [
+        'is_active'  => Types::BOOLEAN,
+        'status'  => Types::INTEGER,
+        'user_ids'  => ArrayParameterType::INTEGER,
+      ]);
+  }
+
+  public function set_bulk_leaving(
+    bool $is_leaving,
+    array $user_ids,
+    Schema $schema,
+  ):int
+  {
+    $status = $is_leaving ? 2 : 1;
+    return (int) $this->db->executeStatement('update ' .
+      $schema->str() . '.users
+      set is_leaving = :is_leaving,
+      status = :status,
+      where id in (:user_ids)
+        and is_active
+        and remote_schema is null
+        and remote_email is null', [
+        'is_leaving'  => $is_leaving,
+        'status'  => $status,
+        'user_ids'  => $user_ids,
+      ], [
+        'is_active'  => Types::BOOLEAN,
+        'status'  => Types::INTEGER,
+        'user_ids'  => ArrayParameterType::INTEGER,
+      ]);
+  }
+
   public function set_bulk_periodic_overview_en(
     bool $periodic_overview_en,
     array $user_ids,
@@ -791,6 +839,96 @@ class UserRepository
         'periodic_overview_en'  => Types::BOOLEAN,
         'user_ids'  => ArrayParameterType::INTEGER,
       ]);
+  }
+
+  public function get_selected(
+    array $user_ids,
+    Schema $schema,
+  ):array
+  {
+    $users = [];
+
+    $res = $this->db->executeQuery('select u.*
+      from ' . $schema->str() . '.users u
+      where u.id in (:user_ids)
+      order by u.code asc', [
+        'user_ids'  => $user_ids,
+      ], [
+        'user_ids'  => ArrayParameterType::INTEGER,
+      ]);
+
+    while($row = $res->fetchAssociative())
+    {
+      $users[$row['id']] = $row;
+    }
+
+    return $users;
+  }
+
+  public function get_selected_min_limit(
+    array $account_ids,
+    Schema $schema,
+  ):array
+  {
+    $accounts = [];
+
+    $res = $this->db->executeQuery('select u.id,
+      u.code, u.name,
+      min_limit.min_limit
+			from ' . $schema->str() . '.users u
+      left join lateral (
+        select minl.min_limit
+        from ' . $schema->str() . '.min_limit minl
+        where minl.account_id = u.id
+        order by minl.created_at desc
+        limit 1
+      ) min_limit on true
+      where u.id in (:account_ids)', [
+        'account_ids' => $account_ids,
+      ], [
+        'account_ids' => ArrayParameterType::INTEGER,
+      ]
+    );
+
+    while ($row = $res->fetchAssociative())
+    {
+      $accounts[$row['id']] = $row;
+    }
+
+		return $accounts;
+  }
+
+  public function get_selected_max_limit(
+    array $account_ids,
+    Schema $schema,
+  ):array
+  {
+    $accounts = [];
+
+    $res = $this->db->executeQuery('select u.id,
+      u.code, u.name,
+      max_limit.max_limit
+			from ' . $schema->str() . '.users u
+      left join lateral (
+        select maxl.max_limit
+        from ' . $schema->str() . '.max_limit maxl
+        where maxl.account_id = u.id
+        order by maxl.created_at desc
+        limit 1
+      ) max_limit on true
+      where u.id in (:account_ids)', [
+        'account_ids' => $account_ids,
+      ], [
+        'account_ids' => ArrayParameterType::INTEGER,
+      ]
+    );
+
+    while ($row = $res->fetchAssociative())
+    {
+      $accounts[$row['id']] = $row;
+    }
+
+		return $accounts;
   }
 
   public function get_all_by_status(

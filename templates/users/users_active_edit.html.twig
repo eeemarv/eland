@@ -1,0 +1,35 @@
+{%- extends 'users/base/users_single_form.html.twig' -%}
+
+{%- block heading_title -%}
+  {{- 'users_active_edit.title'|trans({
+    'mode': user.is_active ? 'deactivate' : 'activate',
+    'user': user.name,
+  }) -}}
+{%- endblock heading_title -%}
+
+{%- block form_a -%}
+  {{- form_row(form.is_active, {
+    'label': 'label.account_code',
+  }) -}}
+
+  <div data-controller="checkbox-follow">
+    {{- form_row(form.send_email, {
+      'label': 'users_active_edit.send_email.label',
+      'label_translation_parameters': {
+        'user': user.name,
+      },
+      'attr': {
+        'data-checkbox-follow-target': 'trigger',
+        'data-action': 'change->checkbox-follow#toggle'
+      },
+    }) -}}
+
+    {{- form_row(form.send_email_cc, {
+      'label': 'users_active_edit.send_email_cc.label',
+      'attr': {
+        'data-checkbox-follow-target': 'dependent',
+      },
+      'disabled': true,
+    }) -}}
+  </div>
+{%- endblock form_a -%}

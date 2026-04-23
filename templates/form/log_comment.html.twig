@@ -1,6 +1,9 @@
 {%- if form.log_comment is defined -%}
 
+{%- if inline is not defined or inline -%}
 </div>
+{%- endif -%}
+
 <ul class="list-group">
   <li class="list-group-item list-group-item-warning">
   {{- form_row(form.log_comment, {
@@ -15,6 +18,9 @@
   }) -}}
   </li>
 </ul>
+
+{%- if inline is not defined or inline -%}
 <div class="panel-heading">
+{%-  endif -%}
 
 {%- endif -%}

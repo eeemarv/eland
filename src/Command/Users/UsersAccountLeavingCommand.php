@@ -11,4 +11,12 @@ class UsersAccountLeavingCommand Implements CommandInterface
   #[Type(type: 'bool')]
   #[NotNull()]
   public $is_leaving;
+
+  #[NotNull()]
+  #[Type(type: 'bool')]
+  public $send_email;
+
+  #[NotNull()]
+  #[Type(type: 'bool')]
+  public $send_email_cc;
 }

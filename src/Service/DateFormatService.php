@@ -220,6 +220,11 @@ class DateFormatService
 		string|null $schema
 	):string
 	{
+    if ($precision === 'U')
+    {
+      return (string) $unix;
+    }
+
 		$format = $this->get_format($precision, $schema);
 
 		return strftime($format, $unix);

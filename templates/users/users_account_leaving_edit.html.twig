@@ -4,7 +4,7 @@
   {{- 'users_account_leaving_edit.title'|trans({
     'self': is_self ? 'yes' : 'no',
     'leaving': user.is_leaving ? 'yes' : 'no',
-    'user': account(id),
+    'user': user.name,
     'code': user.code,
   }) -}}
 {%- endblock heading_title -%}
@@ -14,16 +14,39 @@
     'label': 'users_account_leaving_edit.leaving.label',
     'label_translation_parameters': {
       'self': is_self ? 'yes' : 'no',
-      'user': account(id),
+      'user': user.name,
       'code': user.code,
     },
     'help': 'users_account_leaving_edit.leaving.help',
     'help_translation_parameters': {
       'self': is_self ? 'yes' : 'no',
-      'user': account(id),
+      'user': user.name,
       'code': user.code,
       'balance': balance,
       'currency': config_str('transactions.currency.name'),
     }
   }) -}}
+
+  <div data-controller="checkbox-follow">
+    {{- form_row(form.send_email, {
+      'label': 'users_account_leaving_edit.send_email.label',
+      'label_translation_parameters': {
+        'self': is_self ? 'yes' : 'no',
+        'user': user.name,
+        'code': user.code,
+      },
+      'attr': {
+        'data-checkbox-follow-target': 'trigger',
+        'data-action': 'change->checkbox-follow#toggle'
+      },
+    }) -}}
+
+    {{- form_row(form.send_email_cc, {
+      'label': 'users_account_leaving_edit.send_email_cc.label',
+      'attr': {
+        'data-checkbox-follow-target': 'dependent',
+      },
+      'disabled': true,
+    }) -}}
+  </div>
 {%- endblock form_a -%}

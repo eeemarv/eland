@@ -55,6 +55,7 @@ class ConfigLogoDelController extends AbstractController
       $changed = $config_service->set_str(
         config_id: 'system.logo',
         value: '',
+        route: $pp->route(),
         user_id: $su->id() ?: null,
         schema: $pp->schema_o(),
       );

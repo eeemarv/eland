@@ -3,6 +3,7 @@
 namespace App\Form\Type\UsersBulk;
 
 use App\Command\UsersBulk\UsersBulkPeriodicOverviewEnCommand;
+use App\Form\Type\Field\BtnChoiceType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -23,7 +24,12 @@ class UsersBulkPeriodicOverviewEnType extends AbstractType
   ):void
   {
     $builder->add('selected', HiddenType::class);
-    $builder->add('periodic_overview_en', CheckboxType::class);
+    $builder->add('periodic_overview_en', BtnChoiceType::class, [
+      'choices'   => [
+        'enabled'   => true,
+        'disabled'  => false,
+      ],
+    ]);
     $builder->add('verify', CheckboxType::class);
     $builder->add('submit', SubmitType::class);
   }

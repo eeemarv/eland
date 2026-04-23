@@ -219,12 +219,14 @@ class UsersConfigPeriodicMailController extends AbstractController
       $changed_ary[] = $config_service->set_int(
         config_id: 'periodic_mail.days',
         value: $days,
+        route: $pp->route(),
         user_id: $user_id,
         schema: $pp->schema_o(),
       );
       $changed_ary[] = $config_service->set_bool(
         config_id: 'periodic_mail.user.new.default.enabled',
         value: $user_new_default_enabled,
+        route: $pp->route(),
         user_id: $user_id,
         schema: $pp->schema_o(),
       );
@@ -255,6 +257,7 @@ class UsersConfigPeriodicMailController extends AbstractController
         $changed_ary[] = $config_service->set_str(
           config_id: 'periodic_mail.user.render.' . $b . '.select',
           value: $select,
+          route: $pp->route(),
           user_id: $user_id,
           schema: $pp->schema_o(),
         );
@@ -262,6 +265,7 @@ class UsersConfigPeriodicMailController extends AbstractController
       $changed_ary[] = $config_service->set_ary(
         config_id: 'periodic_mail.user.layout',
         value: $block_layout,
+        route: $pp->route(),
         user_id: $user_id,
         schema: $pp->schema_o(),
       );

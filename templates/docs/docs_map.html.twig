@@ -1,5 +1,13 @@
 {%- extends 'docs/base/docs_base.html.twig' -%}
 
+{%- block content_controllers -%}
+{%- if pp_has_role('admin') %} csv{%- endif -%}
+{%- endblock content_controllers -%}
+
+{%- block content_controllers_attr -%}
+data-csv-filename-value="{{- 'label.docs'|trans|lower -}}"
+{%- endblock content_controllers_attr -%}
+
 {%- block btn_top_add -%}
   {%- if pp_has_role('admin') -%}
     {%- include 'include/btn_top/add.html.twig' with {
@@ -67,11 +75,3 @@
 {%- block data -%}
   {%- include 'docs/include/docs_list.html.twig' -%}
 {%- endblock data -%}
-
-{%- block css -%}
-  {{- parent() -}}
-{%- endblock css -%}
-
-{%- block js -%}
-  {{- parent() -}}
-{%- endblock js -%}

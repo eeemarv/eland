@@ -13,21 +13,21 @@
 
 {%- block assets_add -%}
 	{{- assets_add([
-		'jquery', 'bootstrap', 'fontawesome',
-		'footable', 'base.css', 'base.js',
+		'jquery',
+		'base.js',
 		'access_input_cache.js'
 	]) -}}
+  {#}footable{#}
 
-	{{- assets_add_print_css(['print.css']) -}}
 {%- endblock assets_add -%}
 
 <!DOCTYPE html>
 <html lang="nl">
 <head>
 	<title>{%- block title -%}{%- endblock -%}</title>
-
+{#}
   <link rel="stylesheet" href="{{- asset('styles/app.scss') -}}" media="screen">
-
+{#}
   {#}
 	{%- for c in assets_ary('css') -%}
 		<link type="text/css" rel="stylesheet" href="{{- c -}}" media="screen">
@@ -37,8 +37,6 @@
 		<link type="text/css" rel="stylesheet" href="{{- c -}}" media="print">
 	{%- endfor -%}
   {#}
-
-  <link rel="stylesheet" href="{{- asset('styles/print.css') -}}" media="print">
 
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -60,9 +58,16 @@
 	<meta name="msapplication-TileColor" content="#ffffff">
 	<meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
 	<meta name="theme-color" content="#ffffff">
+  {% block javascripts %}
+    {{ importmap(['app']|merge(imports|default([]))) }}
+  {% endblock %}
 
+
+  {#}
+  <link rel="stylesheet" href="{{- asset('styles/print.css') -}}" media="print">
+  {#}
 </head>
-<body{%- block body_attr -%}{%- endblock -%}>
+<body{%- block body_attr -%}{%- endblock %}  data-controller="scroll-to-error">
 
 {%- block navbar -%}
 	<div class="navbar navbar-default navbar-fixed-top{%- if pp_has_role('admin') %} bg-info{%- elseif pp_has_role('guest') %} bg-warning{%- endif -%}">

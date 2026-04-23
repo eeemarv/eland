@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\DTO\Schema;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
 
@@ -30,7 +31,7 @@ class AccountRepository
     return $res->fetchOne();
   }
 
-  public function update_min_limit(
+  public function set_min_limit(
     int $account_id,
     int|null $min_limit,
     int|null $created_by,
@@ -62,6 +63,41 @@ class AccountRepository
     }
     $stmt->executeStatement();
   }
+
+	public function set_bulk_min_limit(
+		array $account_ids,
+    int|null $min_limit,
+    int|null $created_by,
+		Schema $schema,
+	):int
+	{
+    $a_ids_str = '{';
+    $a_ids_str .= implode(',', $account_ids);
+    $a_ids_str .= '}';
+
+    $params = [
+      'min_limit' => $min_limit,
+      'created_by'  => $created_by,
+      'a_ids_str' => $a_ids_str,
+    ];
+
+    $types = [
+      'min_limit' => Types::INTEGER,
+      'created_by'  => Types::INTEGER,
+      'a_ids_str' => Types::STRING,
+    ];
+
+    $sql = 'insert into ' . $schema->str() . '.min_limit
+      (min_limit, created_by, account_id)
+      select :min_limit, :created_by,
+        unnest(:a_ids_str::int[])';
+
+    $affected_rows = (int) $this->db->executeStatement(
+      $sql, $params, $types
+    );
+
+    return $affected_rows;
+	}
 
   public function get_min_limit_ary(
     Schema $schema
@@ -98,7 +134,7 @@ class AccountRepository
     return $res->fetchOne();
   }
 
-  public function update_max_limit(
+  public function set_max_limit(
     int $account_id,
     int|null $max_limit,
     int|null $created_by,
@@ -130,6 +166,41 @@ class AccountRepository
     }
     $stmt->executeStatement();
   }
+
+	public function set_bulk_max_limit(
+		array $account_ids,
+    int|null $max_limit,
+    int|null $created_by,
+		Schema $schema,
+	):int
+	{
+    $a_ids_str = '{';
+    $a_ids_str .= implode(',', $account_ids);
+    $a_ids_str .= '}';
+
+    $params = [
+      'max_limit' => $max_limit,
+      'created_by'  => $created_by,
+      'a_ids_str' => $a_ids_str,
+    ];
+
+    $types = [
+      'max_limit' => Types::INTEGER,
+      'created_by'  => Types::INTEGER,
+      'a_ids_str' => Types::STRING,
+    ];
+
+    $sql = 'insert into ' . $schema->str() . '.max_limit
+      (max_limit, created_by, account_id)
+      select :max_limit, :created_by,
+        unnest(:a_ids_str::int[])';
+
+    $affected_rows = (int) $this->db->executeStatement(
+      $sql, $params, $types
+    );
+
+    return $affected_rows;
+	}
 
   public function get_max_limit_ary(
     Schema $schema,

@@ -1,12 +1,12 @@
 {%- for uid, u in users -%}
   {%- set u_class =
-    is_new(uid) ? ' class="success"' :
-    is_leaving(uid) ? ' class="danger"' :
-    is_active(uid) ? '' :
-    is_inactive(uid) ? ' class="inactive"' :
-    is_ip(uid) ? ' class="warning"' :
-    is_im(uid) ? ' class="info"' :
-    is_extern(uid) ? ' class="extern"' : ''
+    is_new(u) ? ' class="success"' :
+    is_leaving(u) ? ' class="danger"' :
+    is_active(u) ? '' :
+    is_inactive(u) ? ' class="inactive"' :
+    is_ip(u) ? ' class="warning"' :
+    is_im(u) ? ' class="info"' :
+    is_extern(u) ? ' class="extern"' : ''
   -%}
   {%- set can_link = is_active(uid) or pp_has_role('admin') -%}
   {%- set u_link = can_link ? path('users_show', {'id': uid, 'status': all_params.status}|pp) : null -%}
@@ -15,16 +15,9 @@
 
     {%- if pp_has_role('admin') -%}
     <td>
-      <label for="sel[{{- uid -}}]">
-        <input
-          type="checkbox"
-          name="sel[{{- uid -}}]"
-          id="sel[{{- uid -}}]"
-          value="{{- uid -}}"
-          {%- if sel[uid] is defined %} checked{%- endif -%}
-        />
-        &nbsp;&nbsp;
-      </label>
+      {%- include 'component/bulkchecktable/checkbox.html.twig' with {
+        'id': uid,
+      } -%}
     </td>
     {%- endif -%}
 
@@ -128,7 +121,7 @@
 
     {%- if cols.birthdate -%}
       {%- if u.birthdate -%}
-        <td data-value="{{- u.birthdate -}}">
+        <td data-order="{{- u.birthdate|date('U') -}}">
           {{- u.birthdate|date_format('day') -}}
         </td>
       {%- else -%}
@@ -157,20 +150,20 @@
     {%- endif -%}
 
     {%- if cols.created_at -%}
-      <td data-value="{{- u.created_at -}}">
+      <td data-order="{{- u.created_at|date('U') -}}">
         {{- u.created_at|date_format('day') -}}
       </td>
     {%- endif -%}
 
     {%- if cols.last_edit_at -%}
-      <td data-value="{{- u.last_edit_at -}}">
+      <td data-order="{{- u.last_edit_at|date('U') -}}">
         {{- u.last_edit_at|date_format('day') -}}
       </td>
     {%- endif -%}
 
     {%- if cols.activated_at -%}
       {%- if u.adate -%}
-        <td data-value="{{- u.adate -}}">
+        <td data-order="{{- u.adate|date('U') -}}">
           {{- u.adate|date_format('day') -}}
         </td>
       {%- else -%}
@@ -180,7 +173,7 @@
 
     {%- if cols.last_login_at -%}
       {%- if last_login_ary[uid] is defined -%}
-        <td data-value="{{- last_login_ary[uid] -}}">
+        <td data-order="{{- last_login_ary[uid]|date('U') -}}">
           {{- last_login_ary[uid]|date_format('day') -}}
         </td>
       {%- else -%}
@@ -213,13 +206,13 @@
 
     {%- if cols.distance -%}
       {%- if distance_ary[uid].is_hidden is defined and distance_ary[uid].is_hidden -%}
-        <td data-value="5000000">
+        <td data-order="5000000">
           <span class="btn btn-default">
             {{- 'label.hidden'|trans -}}
           </span>
         </td>
       {%- else -%}
-        <td data-value="5000000"{%- if distance_ary[uid].lat is defined %} data-lat="{{- distance_ary[uid].lat -}}" data-lng="{{- distance_ary[uid].lng -}}"
+        <td data-order="5000000"{%- if distance_ary[uid].lat is defined %} data-lat="{{- distance_ary[uid].lat -}}" data-lng="{{- distance_ary[uid].lng -}}"
         {%- if su_id() == uid %} data-distance-self{%- endif -%}
         {%- endif -%}>
           <twig:ux:icon name="lucide:x"/>
@@ -261,7 +254,7 @@
 
     {%- if cols.wants -%}
       {%- if messages_ary[uid] is defined -%}
-        <td data-value="{{- messages_ary[uid].wants -}}">
+        <td data-order="{{- messages_ary[uid].wants -}}">
           <a href="{{- path('messages'|var_route, {
             'uid': uid,
             'f':{
@@ -278,7 +271,7 @@
 
     {%- if cols.offers -%}
       {%- if messages_ary[uid] is defined -%}
-        <td data-value="{{- messages_ary[uid].offers -}}">
+        <td data-order="{{- messages_ary[uid].offers -}}">
           <a href="{{- path('messages'|var_route, {
             'uid': uid,
             'f':{
@@ -295,7 +288,7 @@
 
     {%- if cols.offers_and_wants -%}
       {%- if messages_ary[uid] is defined -%}
-        <td data-value="{{- messages_ary[uid].total -}}">
+        <td data-order="{{- messages_ary[uid].total -}}">
           <a href="{{- path('messages'|var_route, {
             'uid': uid,
             'f':{
@@ -312,7 +305,7 @@
 
     {%- if cols.transactions_in -%}
       {%- if trans_ary[uid] is defined -%}
-        <td data-value="{{- trans_ary[uid].trans_in -}}">
+        <td data-order="{{- trans_ary[uid].trans_in -}}">
           <a href="{{- path('transactions', {
             'uid': uid,
             'f':{
@@ -329,7 +322,7 @@
 
     {%- if cols.transactions_out -%}
       {%- if trans_ary[uid] is defined -%}
-        <td data-value="{{- trans_ary[uid].trans_out -}}">
+        <td data-order="{{- trans_ary[uid].trans_out -}}">
           <a href="{{- path('transactions', {
             'uid': uid,
             'f':{
@@ -346,7 +339,7 @@
 
     {%- if cols.transactions_total -%}
       {%- if trans_ary[uid] is defined -%}
-        <td data-value="{{- trans_ary[uid].trans_total -}}">
+        <td data-order="{{- trans_ary[uid].trans_total -}}">
           <a href="{{- path('transactions', {
             'uid': uid,
             'f':{
@@ -365,7 +358,7 @@
 
     {%- if cols.amount_in -%}
       {%- if trans_ary[uid] is defined -%}
-        <td data-value="{{- trans_ary[uid].amount_in -}}">
+        <td data-order="{{- trans_ary[uid].amount_in -}}">
           <a href="{{- path('transactions', {
             'uid': uid,
             'f':{
@@ -382,7 +375,7 @@
 
     {%- if cols.amount_out -%}
       {%- if trans_ary[uid] is defined -%}
-        <td data-value="{{- trans_ary[uid].amount_out -}}">
+        <td data-order="{{- trans_ary[uid].amount_out -}}">
           <a href="{{- path('transactions', {
             'uid': uid,
             'f':{
@@ -399,7 +392,7 @@
 
     {%- if cols.amount_total -%}
       {%- if trans_ary[uid] is defined -%}
-        <td data-value="{{- trans_ary[uid].amount_total -}}">
+        <td data-order="{{- trans_ary[uid].amount_total -}}">
           <a href="{{- path('transactions', {
             'uid': uid,
             'f':{

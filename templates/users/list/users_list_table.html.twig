@@ -1,16 +1,6 @@
 <div class="panel panel-primary printview">
   <div class="table-responsive">
-    <table class="table table-bordered table-striped table-hover footable csv"
-      data-filtering="true"
-      data-filter-delay="0"
-      data-filter="#q"
-      data-filter-min="1"
-      data-cascade="true"
-      data-empty="{{- 'users_list.filter.no_results'|trans -}}"
-      data-sorting="true"
-      data-filter-placeholder="{{- 'label.search'|trans -}}"
-      data-filter-position="left"
-    >
+    <table class="table table-bordered table-striped table-hover csv">
       <thead>
         <tr>
           {%- include 'users/list/users_list_table_head.html.twig' -%}
@@ -20,7 +10,7 @@
         {%- include 'users/list/users_list_table_body.html.twig' -%}
       </tbody>
       {%- if pp_has_role('admin') -%}
-        {%- include 'include/tfoot_bulk_btns.html.twig' -%}
+        {%- include 'component/bulkchecktable/tfoot_buttons.html.twig' -%}
       {%- endif -%}
     </table>
   </div>

@@ -15,7 +15,7 @@ images: php bin/console messenger:consume images -vv --time-limit=3622 --memory-
 # release is a special command that runs before the deploy
 # it is used to clear caches and calculate asset hashes
 # https://dokku.com/docs/advanced-usage/deployment-tasks/#procfile-release-command
-release: php bin/console cache:clear && php bin/console sass:build && php bin/console asset-map:compile && php bin/console cache:warmup
+release: php bin/console cache:clear && php bin/console sass:build && php bin/console asset-map:compile && php bin/console cache:warmup && php bin/console ux:icons:warm-cache
 
 # development
 dev: php -S 0.0.0.0:$PORT -t public/ -c public/.user.ini

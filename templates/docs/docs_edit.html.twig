@@ -3,15 +3,7 @@
 {%- set map_id = doc.map_id -%}
 
 {%- block heading_title -%}
-    {{- 'docs_edit.title'|trans({
-        'name': doc.name ?? doc.original_filename
-    }) -}}
+  {{- 'docs_edit.title'|trans({
+    'name': doc.name ?? doc.original_filename
+  }) -}}
 {%- endblock heading_title -%}
-
-{%- block css -%}
-  {{- parent() -}}
-{%- endblock css -%}
-
-{%- block js -%}
-  {{- parent() -}}
-{%- endblock js -%}

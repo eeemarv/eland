@@ -168,6 +168,15 @@ field:
 
 flash:
   email:
+    notification: >-
+      {sent, select,
+        yes {Een notificatie email werd verzonden naar {user}}
+        no {Er werd geen notificatie email verzonden naar {user}}
+        other {**ERR**}
+      }
+    not_sent_to_user: >-
+      Wegens ontbreken van email adres werd geen
+      email verzonden naar {user}
     open_confirm_link_message: >-
       Open je E-mailbox en klik de link aan
       die we je zonden om je bericht te bevestigen.
@@ -204,8 +213,8 @@ flash:
   no_change_for: >-
     {count, plural,
       =0  {*-ERR-0-*}
-      =1 {Geen wijziging voor gebruiker:}
-      other {Geen wijziging voor gebruikers:}
+      =1 {Geen wijziging voor 1 gebruiker}
+      other {Geen wijziging voor # gebruikers}
     }
   maintenance: >-
     De website is niet beschikbaar
@@ -290,6 +299,7 @@ label:
   date_of_birth: Geboortedatum
   disabled: Uit
   distance: Afstand
+  docs: Documenten
   download: Download
   email: E-mail
   email_tag: E-mail tag
@@ -305,6 +315,7 @@ label:
   filtered: Gefilterd
   filters: Filters
   first_name: Voornaam
+  forum_topics: Forum Onderwerpen
   for_user: Voor gebruiker
   from: Van
   from_account: Van
@@ -343,6 +354,7 @@ label:
   mobile: GSM
   name: Naam
   new_users: Instappers
+  news: Nieuws
   not_defined: Niet bepaald
   new_password: Nieuw paswoord
   off: Uit
@@ -373,6 +385,8 @@ label:
   role: Rol
   save_password: Bewaar Paswoord
   search: Zoeken
+  select: Selectie
+  send: Verzenden
   send_cc: Stuur een kopie van het bericht naar mezelf
   send_notification_email: Stuur een notificatie E-mail
   service_stuff: Diensten/Spullen
@@ -399,6 +413,7 @@ label:
   txt_color: Tekstkleur
   upload: Opladen
   user: Gebruiker
+  users: Gebruikers
   user_role: Lid
   username: Gebruikersnaam
   value: Waarde
@@ -1723,6 +1738,12 @@ users_account_leaving_edit:
       het account enkel {currency} ontvangen OF uitgeven.
       In het geval van dit account {user} met een saldo van
       {balance} {currency} betekent dit dat het account enkel
+  send_email:
+    label: >-
+      Verstuur een notificatie email naar {user}
+  send_email_cc:
+    label: >-
+      Verstuur een kopie van de notificatie email naar jezelf
   flash:
     success: >-
       {leaving, select,
@@ -1796,13 +1817,33 @@ users_account_limits_edit:
           other {**ERR**}
         }
 
-users_activate:
+users_active_edit:
+  title: >-
+    {mode, select,
+      activate {Activatie van gebruikersaccount {user}}
+      deactivate {Deactivatie van gebruikersaccount {user}}
+      other {**ERR**}
+    }
+  menu: De/activatie
+  btn: >-
+    {mode, select,
+      activate {Activeer}
+      deactivate {Deactiveer}
+      other {**ERR**}
+    }
+  send_email:
+    label: >-
+      Verstuur een notificatie email naar {user}
+  send_email_cc:
+    label: >-
+      Verstuur een kopie van de notificatie email naar jezelf
   flash:
-    success:
-      activated: >-
-        Het account "{user}" is geactiveerd
-      email_sent: >-
-        Een notificatie email werd verzonden naar {email}
+    success: >-
+      {is_active, select,
+        yes {Het gebruikersaccount van {user} is geactiveerd}
+        no {Het gebruikersaccount van {user} is gedesactiveerd}
+        other {**ERR**}
+      }
 
 users_add:
   title: Gebruiker toevoegen
@@ -2152,19 +2193,23 @@ users_list:
             van # gebruikers}
           }
     role:
-      menu: Rechten
-      title: Rechten Aanpassen
+      menu: Rechten/rol
+      title: Rechten/rol Aanpassen
       warning: >-
-        Let op, de rechten
+        Let op, de rechten/rol
         van de geselecteerde gebruikers
         wordt overschreven!
+      warning_intersystem: >-
+        InterSysteem accounts kunnen geen
+        rechten/rol krijgen. Deze accounts
+        kunnen niet inloggen.
       flash:
         success: >-
           {count, plural,
             =0 {}
-            =1 {Rechten aangepast
+            =1 {Rechten/rol aangepast
             van 1 gebruiker}
-            other {Rechten aangepast
+            other {Rechten/rol aangepast
             van # gebruikers}
           }
     status:
@@ -2226,9 +2271,11 @@ users_list:
         success: >-
           {count, plural,
             =0 {}
-            =1 {Minimum limiet aangepast
+            =1 {Minimum limiet aangepast naar
+            {min_limit} {currency}
             van 1 account}
             other {Minimum limiet aangepast
+            naar {min_limit} {currency}
             van # accounts}
           }
     max_limit:
@@ -2242,9 +2289,11 @@ users_list:
         success: >-
           {count, plural,
             =0 {}
-            =1 {Maximum limiet aangepast
+            =1 {Maximum limiet aangepast naar
+            {max_limit} {currency}
             van 1 account}
-            other {Maximum limiet aangepast
+            other {Maximum limiet aangepast naar
+            {max_limit} {currency}
             van # accounts}
           }
     periodic_overview_en:
@@ -2260,10 +2309,54 @@ users_list:
         success: >-
           {count, plural,
             =0 {}
-            =1 {Ontvangst periodieke overzichts email
-            aangepast voor 1 gebruiker}
-            other {Ontvangst periodieke overzichts email
-            aangepast voor # gebruikers}
+            =1 {{enabled, select,
+              yes {Ontvangst periodieke overzichts email
+              ingeschakeld voor 1 gebruiker}
+              no {Ontvangst periodieke overzichts email
+              uitgeschakeld voor 1 gebruiker}
+              other {**ERR**}
+            }}
+            other {{enabled, select,
+              yes {Ontvangst periodieke overzichts email
+              ingeschakeld voor # gebruikers}
+              no {Ontvangst periodieke overzichts email
+              uitgeschakeld voor # gebruikers}
+              other {**ERR**}
+            }}
+          }
+    active:
+      menu: Actief
+      title: Actief (aan/uit)
+      flash:
+        success: >-
+          {count, plural,
+            =0 {}
+            =1 {{enabled, select,
+              yes {1 gebruiker geactiveerd}
+              no {1 gebruiker gedeactiveerd}
+              other {**ERR**}}
+            other {{enabled, select,
+              yes { # gebruikers geactiveerd}
+              no { # gebruikers gedeactiveerd}
+              other {**ERR**}
+            }
+          }
+    leaving:
+      menu: Uitstappers
+      title: Uitstappers
+      flash:
+        success: >-
+          {count, plural,
+            =0 {}
+            =1 {{enabled, select,
+              yes {1 gebruikersaccount is uitstapper}
+              no {1 gebruikersaccount is geen uitstapper}
+              other {**ERR**}}
+            other {{enabled, select,
+              yes {# gebruikersaccounts zijn uitstappers}
+              no {# gebruikersaccounts zijn geen uitstappers}
+              other {**ERR**}
+            }
           }
   filter:
     no_results: >
