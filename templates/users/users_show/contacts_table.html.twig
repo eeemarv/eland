@@ -1,0 +1,129 @@
+{%- import 'macro/lbl.html.twig' as l -%}
+
+<h3>
+  {{- 'users_show.contact_info.title'|trans({
+    'self': su_is_owner(id) ? 'yes' : 'no',
+    'user': user.name,
+  }) -}}
+
+  {%- if pp_has_role('admin') -%}
+    <a href="{{- path('users_contacts_add', {'user_id': id}|pp) -}}" class="btn btn-success ms-2">
+      <twig:ux:icon name="lucide:plus"/>
+      &nbsp;
+      {{- 'btn.add'|trans -}}
+    </a>
+  {%- elseif su_is_owner(id) -%}
+    <a href="{{- path('users_contacts_add_self', {}|pp) -}}" class="btn btn-success ms-2">
+      <twig:ux:icon name="lucide:plus"/>
+      &nbsp;
+      {{- 'btn.add'|trans -}}
+    </a>
+  {%- endif -%}
+</h3>
+
+
+<div class="panel panel-danger">
+  <div class="table-responsive"
+    data-controller="datatable"
+  >
+    <table class="table table-hover
+      table-striped table-bordered"
+    >
+      <thead>
+        <tr>
+          <th data-priority="1">
+            {{- 'label.type'|trans -}}
+          </th>
+          <th data-priority="1">
+            {{- 'label.value'|trans -}}
+          </th>
+          <th data-priority="10">
+            {{- 'label.comment'|trans -}}
+          </th>
+          <th data-priority="10">
+            {{- 'label.visibility'|trans -}}
+          </th>
+          {%- if pp_has_role('admin') or su_is_owner(id) -%}
+          <th data-priority="5">
+          </th>
+          {%- endif -%}
+        </tr>
+      </thead>
+      <tbody>
+        {%- for c in contacts -%}
+          {%- set edit_path = pp_has_role('admin') ? path('users_contacts_edit', {'contact_id': c.id, 'user_id': id}|pp)
+            : su_is_owner(id) ? path('users_contacts_edit_self', {'contact_id': c.id}|pp)
+            : null -%}
+          {%- set del_route = pp_has_role('admin') ? 'users_contacts_del_admin'
+            : su_is_owner(id) ? 'users_contacts_del'
+            : null -%}
+          {%- set del_params = pp_has_role('admin') ? {'contact_id': c.id, 'user_id': id}
+            : su_is_owner(id) ? {'contact_id': c.id}
+            : null -%}
+        <tr>
+          <td>
+            {{- c.abbrev -}}
+          </td>
+          <td>
+            {%- if edit_path -%}
+              <a href="{{- edit_path -}}">
+                {{- c.value -}}
+              </a>
+              {%- if c.distance is defined and c.distance -%}
+                {{- c.distance > 1000 ? ' (' ~ (c.distance / 1000)|number_format(1, ',', '.') ~ ' km)' : ' (' ~ c.distance ~ ' m)' -}}
+              {%- endif -%}
+            {%- elseif c.access|is_visible -%}
+              {{- c.value -}}
+              {%- if c.distance is defined and c.distance -%}
+                {{- c.distance > 1000 ? ' (' ~ (c.distance / 1000)|number_format(1, ',', '.') ~ ' km)' : ' (' ~ c.distance ~ ' m)' -}}
+              {%- endif -%}
+            {%- else -%}
+              <span class="btn btn-default">
+                {{- 'label.hidden'|trans -}}
+              </span>
+            {%- endif -%}
+          </td>
+          <td>
+            {%- if edit_path -%}
+              <a href="{{- edit_path -}}">
+                {{- c.comments -}}
+              </a>
+            {%- elseif c.access|is_visible -%}
+              {{- c.comments -}}
+            {%- else -%}
+              <span class="btn btn-default">
+                {{- 'label.hidden'|trans -}}
+              </span>
+            {%- endif -%}
+          </td>
+          <td>
+            {{- l.btn(c.access) -}}
+          </td>
+          {%- if del_route -%}
+          <td>
+            <a href="{{- path(del_route, del_params|pp) -}}" class="btn btn-danger">
+              <twig:ux:icon name="lucide:trash"/>
+              &nbsp;
+              {{- 'btn.del'|trans -}}
+            </a>
+          </td>
+          {%- endif -%}
+        </tr>
+        {%- endfor -%}
+      </tbody>
+    </table>
+  </div>
+  {%- if map_markers|length -%}
+  <div class="panel-footer">
+    <div class="user-map"
+      data-controller="map"
+      data-map-token-value="{{- env_map_access_token -}}"
+      data-map-tiles-url-value="{{- env_map_tiles_url -}}"
+      data-map-markers-value="{{- map_markers|default([])|json_encode -}}"
+      data-map-icon-value="{{ ux_icon('lucide:map-pin', {class: 'w-100 h-100'})|e('html_attr') }}"
+      data-map-bg-icon-value="{{ ux_icon('heroicons:map-pin-20-solid', {class: 'w-100 h-100'})|e('html_attr') }}"
+    >
+    </div>
+  </div>
+  {%- endif -%}
+</div>

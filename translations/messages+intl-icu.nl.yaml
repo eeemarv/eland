@@ -321,6 +321,7 @@ label:
   from_account: Van
   from_date: Vanaf
   full_name: Volledige naam
+  full_name_access: Zichtbaarheid volledige naam
   hidden: Verborgen
   hobbies: Hobbies
   hobbies_interests: Hobbies/interesses
@@ -2455,6 +2456,13 @@ users_show:
       other {{user}}
     }
   my_profile: Mijn profiel
+  contact_info:
+    title: >-
+      {self, select,
+        yes {Mijn contactgegevens}
+        no {Contactgegevens voor {user}}
+        other {**ERR**}
+      }
   intersystem_missing: >-
     De interSysteem-verbinding ontbreekt
   coupled_intersystem: >-

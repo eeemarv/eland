@@ -1,5 +1,6 @@
 {%- extends 'users/base/users_single_base.html.twig' -%}
 
+{#}
 {%- block assets_add -%}
   {{- parent() -}}
   {{- assets_add(['leaflet', 'contacts_user_map.js']) -}}
@@ -11,6 +12,7 @@
     {{- assets_add(['tagsinput', 'tagsinput.js']) -}}
   {%- endif -%}
 {%- endblock assets_add -%}
+{#}
 
 {%- block btn_top_edit -%}
   {%- if pp_has_role('admin') -%}
@@ -106,7 +108,7 @@ bg-inactive
 {%- block heading_append -%}
   {%- if pp_has_role('admin')
     or (su_is_owner(id)
-    and config_bool('users.fields.name.self_edit', schema))
+    and config_bool('users.fields.name.self_edit'))
   -%}
   <div class="pull-right">
 
@@ -117,8 +119,7 @@ bg-inactive
         'self': is_self ? 'yes' : 'no',
       }) -}}">
       <twig:ux:icon name="lucide:pencil"/>
-      &nbsp;
-      <span class="hidden-sm">
+      <span class="hidden-sm ms-1">
         {{- 'btn.edit'|trans -}}
       </span>
     </a>
@@ -160,7 +161,7 @@ bg-inactive
     <h3>
       <span class="fa fa-envelope-o"></span>&nbsp;
       {{- 'users_show.mail_contact.title'|trans({
-        'user': account(id, schema),
+        'user': account(id),
       }) -}}
     </h3>
     {%- embed 'embed/mail_contact_form.html.twig' -%}
@@ -168,17 +169,17 @@ bg-inactive
   {%- endblock mail_contact_form_panel -%}
 
   {%- block user_contacts_table -%}
-    {{- user_contacts_table_raw|raw -}}
+    {%- include 'users/users_show/contacts_table.html.twig' -%}
   {%- endblock user_contacts_table -%}
 
-  {%- if config_bool('transactions.enabled', schema) -%}
+  {%- if config_bool('transactions.enabled') -%}
     {%- include 'users/users_show/transactions_graph.html.twig' -%}
   {%- endif -%}
 
   {%- if not is_self
     and not is_intersystem
-    and (config_bool('transactions.enabled', schema)
-      or config_bool('messages.enabled', schema))
+    and (config_bool('transactions.enabled')
+      or config_bool('messages.enabled'))
   -%}
     {%- include 'users/users_show/btns_transactions_messages.html.twig' -%}
   {%- endif -%}

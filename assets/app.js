@@ -36,6 +36,8 @@ import 'datatables.net-bs/css/dataTables.bootstrap.min.css';
 import 'datatables.net-responsive-bs/css/responsive.bootstrap.min.css';
 import "./styles/datatables-custom.css";
 
+import 'leaflet/dist/leaflet.min.css';
+
 //import "autocompleter/autocomplete.min.css";
 import "./styles/autocomplete-bs3.css";
 

@@ -14,6 +14,72 @@ class ContactRepository
 	{
 	}
 
+  /**
+   * this enforces the new column is_address
+   * use in geocoding
+   */
+  public function get_address(
+    int $contact_id,
+    Schema $schema,
+  ):array|false
+  {
+    $stmt = $this->db->prepare('select value,
+      comments, latitude, longitude, access,
+      geocoded_at, geocode_failed_at,
+      geocode_fail_count
+      from ' . $schema->str() . '.contact
+      where is_address
+        and contact_id = :contact_id');
+    $stmt->bindValue('contact_id', $contact_id, Types::INTEGER);
+    $res = $stmt->executeQuery();
+    return $res->fetchAssociative();
+  }
+
+  public function set_address_geocode_failed(
+    int $contact_id,
+    Schema $schema,
+  ):void
+  {
+    $this->db->executeStatement('update ' .
+      $schema->str() . '.contact
+      set geocode_fail_count = geocode_fail_count + 1,
+        geocode_failed_at = timezone(\'utc\', now()),
+        longitude = null,
+        latitude = null
+      where is_address
+        and contact_id = :contact_id', [
+        'contact_id' => $contact_id,
+      ], [
+        'contact_id' => Types::INTEGER,
+      ]);
+  }
+
+  public function set_address_geocoded(
+    int $contact_id,
+    string $latitude,
+    string $longitude,
+    Schema $schema,
+  ):void
+  {
+    $this->db->executeStatement('update ' .
+      $schema->str() . '.contact
+      set geocoded_at = timezone(\'utc\', now()),
+        longitude = :longitude,
+        latitude = :latitude,
+        geocode_fail_count = 0,
+        geocode_failed_at = null
+      where is_address
+        and contact_id = :contact_id', [
+        'contact_id' => $contact_id,
+        'latitude' => $latitude,
+        'longitude' => $longitude,
+      ], [
+        'contact_id' => Types::INTEGER,
+        'latitude' => Types::STRING,
+        'longitude' => Types::STRING,
+      ]);
+  }
+
 	public function insert_contact_type(
     string $abbrev,
     string $name,
@@ -132,7 +198,7 @@ class ContactRepository
 	public function get_mail_count_except_for_user(
 		string $email_address,
 		int $user_id,
-		Schema $schema
+		Schema $schema,
 	)
 	{
 		$email_lowercase = strtolower($email_address);

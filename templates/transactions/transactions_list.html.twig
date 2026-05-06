@@ -28,7 +28,7 @@ datatable
         'btn_route_params': {'tuid': uid},
         'btn_title': 'transactions_add.btn_add_to_user',
         'btn_title_trans_params': {
-          'user': account(uid, schema)
+          'user': account(uid)
         }
       } -%}
     {%- else -%}
@@ -63,10 +63,10 @@ datatable
   <h2>
     {{- 'label.current_balance'|trans -}}:
     <span class="label label-info">
-      {{- account_balance(uid, schema) -}}
+      {{- account_balance(uid) -}}
     </span>
     &nbsp;
-    {{- config_str('transactions.currency.name', schema) -}}
+    {{- config_str('transactions.currency.name') -}}
   </h2>
   {%- endif -%}
 {%- endblock heading_sub -%}

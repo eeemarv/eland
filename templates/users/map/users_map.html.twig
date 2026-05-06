@@ -1,12 +1,18 @@
-<div class="row">
-  <div class="col-md-12">
-    <div class="users_map" id="map" data-map="{{- data_map|json_encode -}}">
-    </div>
-  </div>
-</div>
+
 
 <div class="panel panel-default">
-  <div class="panel-heading">
+  <div class="panel-body">
+    <div class="users-map"
+      data-controller="map"
+      data-map-token-value="{{- env_map_access_token -}}"
+      data-map-tiles-url-value="{{- env_map_tiles_url -}}"
+      data-map-markers-value="{{- map_markers|default([])|json_encode -}}"
+      data-map-icon-value="{{ ux_icon('lucide:map-pin', {class: 'w-100 h-100'})|e('html_attr') }}"
+      data-map-bg-icon-value="{{ ux_icon('heroicons:map-pin-20-solid', {class: 'w-100 h-100'})|e('html_attr') }}"
+    >
+    </div>
+  </div>
+  <div class="panel-footer">
     {%- if hidden_ary -%}
       <h4>
         {{- 'users_map.hidden.title'|trans -}}
@@ -15,11 +21,15 @@
         {{- 'users_map.hidden.users'|trans -}}:
       </p>
       <ul>
-        {%- for uid, u_str in hidden_ary -%}
+        {%- for uid, count in hidden_ary -%}
           <li>
             <a href="{{- path('users_show', {'id':uid}|pp) -}}">
-              {{- u_str -}}
+              {{- users[uid].username -}}
             </a>
+            {%- if count > 1 -%}
+              &nbsp;
+              ({{- count -}})
+            {%- endif -%}
           </li>
         {%- endfor -%}
       </ul>
@@ -32,10 +42,10 @@
         {{- 'users_map.no_address.users'|trans -}}:
       </p>
       <ul>
-        {%- for uid, u_str in no_address_ary -%}
+        {%- for uid in no_address_ary -%}
           <li>
             <a href="{{- path('users_show', {'id':uid}|pp) -}}">
-              {{- u_str -}}
+              {{- users[uid].username -}}
             </a>
           </li>
         {%- endfor -%}
@@ -53,11 +63,15 @@
         {{- 'users_map.not_geocoded.users'|trans -}}:
       </p>
       <ul>
-        {%- for uid, u_str in not_geocoded_ary -%}
+        {%- for uid, count in not_geocoded_ary -%}
           <li>
             <a href="{{- path('users_show', {'id':uid}|pp) -}}">
-              {{- u_str -}}
+              {{- users[uid].username -}}
             </a>
+            {%- if count > 1 -%}
+              &nbsp;
+              ({{- count -}})
+            {%- endif -%}
           </li>
         {%- endfor -%}
       </ul>

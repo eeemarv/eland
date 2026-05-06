@@ -37,7 +37,7 @@
     }) -}}
   {%- endif -%}
 
-  {%- if config_bool('periodic_mail.enabled', schema) -%}
+  {%- if config_bool('periodic_mail.enabled') -%}
     <p>
       {{- 'users_config_new.periodic_mail.help'|trans({
           'ao': '<a href="' ~ path('users_config_periodic_mail', {}|pp) ~ '">',

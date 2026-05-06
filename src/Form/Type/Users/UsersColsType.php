@@ -73,6 +73,7 @@ class UsersColsType extends AbstractType
       schema: $this->pp->schema_o(),
     );
     $is_admin = $this->pp->is_admin();
+    $is_user = $this->pp->is_user();
 
     $builder->setMethod('GET');
 
@@ -88,6 +89,9 @@ class UsersColsType extends AbstractType
     if ($full_name_enabled)
     {
       $builder->add('full_name', CheckboxType::class, [
+        'required'  => false,
+      ]);
+      $builder->add('full_name_access', CheckboxType::class, [
         'required'  => false,
       ]);
     }
@@ -172,9 +176,12 @@ class UsersColsType extends AbstractType
     $builder->add('contacts', UsersColsContactsType::class, [
       'contact_types' => $options['contact_types'],
     ]);
-    $builder->add('distance', CheckboxType::class, [
-      'required'  => false,
-    ]);
+    if ($is_user || $is_admin )
+    {
+      $builder->add('distance', CheckboxType::class, [
+        'required'  => false,
+      ]);
+    }
     if ($is_admin && $mollie_enabled)
     {
       $builder->add('mollie', CheckboxType::class, [

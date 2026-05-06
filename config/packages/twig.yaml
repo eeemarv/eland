@@ -8,6 +8,8 @@ twig:
   form_themes: ['form_3.html.twig']
   globals:
     env_git_rev_short: '%env(substr8:GIT_REV)%'
+    env_map_access_token: '%env(MAP_ACCESS_TOKEN)%'
+    env_map_tiles_url: '%env(MAP_TILES_URL)%'
 
 when@test:
   twig:

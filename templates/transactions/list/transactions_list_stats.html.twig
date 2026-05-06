@@ -8,8 +8,8 @@
             'amount_sum': count_ary.amount_sum,
             'currency': config_str('transactions.currency.name')
           }) -}}
-          {%- if config_bool('transactions.currency.timebased_en', schema)
-            and config_int('transactions.currency.per_hour_ratio', schema) > 0
+          {%- if config_bool('transactions.currency.timebased_en')
+            and config_int('transactions.currency.per_hour_ratio') > 0
             -%}&nbsp;
             <span>(
               {{- 'transactions.per_hour_ratio'|trans({

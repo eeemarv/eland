@@ -3,7 +3,7 @@
 {%- block heading_title -%}
   {{- 'users_periodic_overview_edit.title'|trans({
     'self': is_self ? 'yes' : 'no',
-    'user': account(id, schema)
+    'user': account(id)
   }) -}}
 {%- endblock heading_title -%}
 

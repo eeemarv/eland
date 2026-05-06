@@ -977,24 +977,53 @@ class UserRepository
   }
 
   public function get_contacts_ary(
-    Schema $schema
+    int $current_user_id,
+    Schema $current_user_schema,
+    Schema $schema,
   ):array
   {
     $ary = [];
-    $query = 'select tc.abbrev,
-        c.user_id, c.value, c.access
-      from ' . $schema->str() . '.contact c, ' .
-        $schema->str() . '.type_contact tc, ' .
-        $schema->str() . '.users u
-      where tc.id = c.id_type_contact
-      and c.user_id = u.id';
-    $res = $this->db->executeQuery($query);
+    $query = '
+      with current_user_pos as (
+        select latitude, longitude
+        from ' . $current_user_schema->str() . '.contact
+        where user_id = :current_user_id
+          and latitude is not null
+          and longitude is not null
+        order by last_edit_at desc
+        limit 1
+      )
+      select
+        tc.abbrev,
+        c.user_id,
+        c.value,
+        c.access,
+        case
+          when tc.abbrev = \'adr\'
+            and pos.latitude is not null and pos.longitude is not null
+            and c.latitude is not null and c.longitude is not null
+          then
+            round (public.earth_distance(public.ll_to_earth(pos.latitude, pos.longitude), public.ll_to_earth(c.latitude, c.longitude))::numeric)
+          else null
+        end as distance_meter
+      from ' . $schema->str() . '.contact c
+      join ' . $schema->str() . '.type_contact tc on tc.id = c.id_type_contact
+      join ' . $schema->str() . '.users u on c.user_id = u.id
+      left join current_user_pos pos on true
+      order by c.last_edit_at asc';
+
+    $res = $this->db->executeQuery($query, [
+      'current_user_id' => $current_user_id,
+    ], [
+      'current_user_id' => Types::INTEGER,
+    ]);
 
     while ($row = $res->fetchAssociative())
     {
       $ary[$row['user_id']][$row['abbrev']][] = [
         'value'         => $row['value'],
         'access'        => $row['access'],
+        'distance'      => $row['distance_meter'],
       ];
     }
 
@@ -1020,21 +1049,43 @@ class UserRepository
   }
 
   public function get_all_active_with_addresses(
+    int $current_user_id,
+    Schema $current_user_schema,
     Schema $schema,
   ):array
   {
     $ary = [];
-    $stmt = $this->db->prepare('select
+    $stmt = $this->db->prepare('
+      with current_user_pos as (
+        select latitude, longitude
+        from ' . $current_user_schema->str() . '.contact
+        where user_id = :current_user_id
+          and latitude is not null
+          and longitude is not null
+        order by last_edit_at desc
+        limit 1
+      )
+      select
       u.id as user_id, u.name, u.code,
-      c.value, c.access
+      c.value as address, c.access,
+      c.latitude, c.longitude,
+      case
+        when pos.latitude is not null and pos.longitude is not null
+          and c.latitude is not null and c.longitude is not null
+        then
+          round (public.earth_distance(public.ll_to_earth(pos.latitude, pos.longitude), public.ll_to_earth(c.latitude, c.longitude))::numeric)
+        else null
+      end as distance
       from ' . $schema->str() . '.users u
       left join ' . $schema->str() . '.contact c
        on c.user_id = u.id
         and c.id_type_contact = (select tc.id
         from ' . $schema->str() . '.type_contact tc
         where tc.abbrev = \'adr\')
+      left join current_user_pos pos on true
       where status in (1, 2)
       order by u.code asc');
+    $stmt->bindValue('current_user_id', $current_user_id, Types::INTEGER);
     $res = $stmt->executeQuery();
     while ($row = $res->fetchAssociative())
     {
@@ -1046,6 +1097,8 @@ class UserRepository
   public function get_with_page_data(
     int $id,
     string|null $status,
+    int $current_user_id,
+    Schema $current_user_schema,
     Schema $schema,
   ):array|false
   {
@@ -1069,9 +1122,11 @@ class UserRepository
 
     $sql_params = [
       'id'  => $id,
+      'current_user_id' => $current_user_id,
     ];
     $sql_types = [
       'id'  => Types::INTEGER,
+      'current_user_id' => Types::INTEGER,
     ];
 
     if  ($status === 'new')
@@ -1113,17 +1168,40 @@ class UserRepository
           ) as next_id
       ) nav on true
       left join lateral (
+        with current_user_pos as (
+          select latitude, longitude
+          from ' . $current_user_schema->str() . '.contact
+          where user_id = :current_user_id
+            and latitude is not null
+            and longitude is not null
+          order by last_edit_at desc
+          limit 1
+        )
         select jsonb_agg(
           jsonb_build_object(
+            \'id\', c.id,
+            \'access\', c.access,
             \'value\', c.value,
             \'comments\', c.comments,
             \'abbrev\', tc.abbrev,
-            \'name\', tc.name
+            \'name\', tc.name,
+            \'latitude\', c.latitude,
+            \'longitude\', c.longitude,
+            \'distance\',
+              case
+                when tc.abbrev = \'adr\'
+                  and pos.latitude is not null and pos.longitude is not null
+                  and c.latitude is not null and c.longitude is not null
+                then
+                  round (public.earth_distance(public.ll_to_earth(pos.latitude, pos.longitude), public.ll_to_earth(c.latitude, c.longitude))::numeric)
+                else null
+              end
           )
         ) as contacts
         from ' . $schema->str() . '.contact c
         join ' . $schema->str() . '.type_contact tc
           on c.id_type_contact = tc.id
+        left join current_user_pos pos on true
         where c.user_id = u.id
       ) cd on true
       left join lateral (

@@ -7,18 +7,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Command\Tags\TagsUsersCommand;
 use App\Command\Users\UsersMailContactCommand;
-use App\Controller\Contacts\ContactsUserShowInlineController;
 use App\Email\UserPrivate\Copy\EmailUserPrivateCopyMessage;
 use App\Email\UserPrivate\Message\EmailUserPrivateMessageMessage;
 use App\Form\Type\MailContact\MailContactType;
 use App\Form\Type\Tags\TagsUsersType;
-use App\Render\AccountRender;
-use App\Render\LinkRender;
-use App\Repository\ContactRepository;
 use App\Repository\TagRepository;
 use App\Repository\UserRepository;
 use App\Service\ConfigService;
-use App\Service\DistanceService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -72,20 +67,13 @@ class UsersShowController extends AbstractController
     int $id,
     bool $is_self,
     Db $db,
-    ContactRepository $contact_repository,
     UserRepository $user_repository,
     TagRepository $tag_repository,
-    AccountRender $account_render,
-    ConfigService $config_service,
     ItemAccessService $item_access_service,
-    LinkRender $link_render,
-    DistanceService $distance_service,
+    ConfigService $config_service,
     MessageBusInterface $bus,
     PageParamsService $pp,
     SessionUserService $su,
-    ContactsUserShowInlineController $contacts_user_show_inline_controller,
-    string $env_map_access_token,
-    string $env_map_tiles_url
   ):Response
   {
     if (!$pp->is_admin()
@@ -101,46 +89,13 @@ class UsersShowController extends AbstractController
       $id = $su->id();
     }
 
-    $full_name_enabled = $config_service->get_bool(
-      config_id: 'users.fields.full_name.enabled',
-      schema: $pp->schema_o(),
-    );
-
-    $postcode_enabled = $config_service->get_bool(
-      config_id: 'users.fields.postcode.enabled',
-      schema: $pp->schema_o(),
-    );
-
-    $birthdate_enabled = $config_service->get_bool(
-      config_id: 'users.fields.birthdate.enabled',
-      schema: $pp->schema_o(),
-    );
-
-    $hobbies_enabled = $config_service->get_bool(
-      config_id: 'users.fields.hobbies.enabled',
-      schema: $pp->schema_o(),
-    );
-
-    $comments_enabled = $config_service->get_bool(
-      config_id: 'users.fields.comments.enabled',
-      schema: $pp->schema_o(),
-    );
-
-    $admin_comments_enabled = $config_service->get_bool(
-      config_id: 'users.fields.admin_comments.enabled',
-      schema: $pp->schema_o(),
-    );
-
-    $periodic_mail_enabled = $config_service->get_bool(
-      config_id: 'periodic_mail.enabled',
-      schema: $pp->schema_o(),
-    );
-
     $tdays = $request->query->get('tdays', '365');
 
     $user = $user_repository->get_with_page_data(
       id: $id,
       status: $status,
+      current_user_id: $su->id(),
+      current_user_schema: $su->schema_o(),
       schema: $pp->schema_o(),
     );
 
@@ -193,38 +148,7 @@ class UsersShowController extends AbstractController
       schema: $pp->schema_o(),
     );
 
-    $messages_enabled = $config_service->get_bool(
-      config_id: 'messages.enabled',
-      schema: $pp->schema_o(),
-    );
-
-    $transactions_enabled = $config_service->get_bool(
-      config_id: 'transactions.enabled',
-      schema: $pp->schema_o(),
-    );
-    $limits_enabled = $config_service->get_bool(
-      config_id: 'accounts.limits.enabled',
-      schema: $pp->schema_o(),
-    );
-    $min_limit = $user['min_limit'];
-    $max_limit = $user['max_limit'];
-    $balance = $user['balance'];
-
-    $system_min_limit = $config_service->get_int(
-      config_id: 'accounts.limits.global.min',
-      schema: $pp->schema_o(),
-    );
-    $system_max_limit = $config_service->get_int(
-      config_id: 'accounts.limits.global.max',
-      schema: $pp->schema_o(),
-    );
-    $currency = $config_service->get_str(
-      config_id: 'transactions.currency.name',
-      schema: $pp->schema_o(),
-    );
-
     /***
-     *
      *
      */
 
@@ -357,8 +281,6 @@ class UsersShowController extends AbstractController
 
     /***
      *
-     *
-     *
      */
 
     $count_messages = $user['message_count'];
@@ -373,10 +295,10 @@ class UsersShowController extends AbstractController
         && $config_service->get_intersystem_en(schema: $pp->schema_o()))
     {
         $intersystem_id = $db->fetchOne('select id
-            from ' . $pp->schema() . '.letsgroups
-            where localletscode = ?',
-            [$user['code']],
-            [Types::STRING]);
+          from ' . $pp->schema() . '.letsgroups
+          where localletscode = ?',
+          [$user['code']],
+          [Types::STRING]);
 
         if (!$intersystem_id)
         {
@@ -388,26 +310,37 @@ class UsersShowController extends AbstractController
         $intersystem_id = 0;
     }
 
-    $contacts_response = $contacts_user_show_inline_controller(
-      $user['id'],
-      $contact_repository,
-      $item_access_service,
-      $link_render,
-      $pp,
-      $su,
-      $distance_service,
-      $account_render,
-      $env_map_access_token,
-      $env_map_tiles_url,
-    );
+    $contacts = $user['contacts'];
 
-    $contacts_content = $contacts_response->getContent();
+    $map_markers = [];
 
-    error_log(json_encode($user));
+    foreach ($contacts as $c)
+    {
+      if ($c['abbrev'] !== 'adr')
+      {
+        continue;
+      }
+
+      if (!$item_access_service->is_visible($c['access']))
+      {
+        continue;
+      }
+
+      if (!isset($c['latitude']) || !isset($c['longitude']))
+      {
+        continue;
+      }
+
+      $map_markers[] = [
+        'lat' => $c['latitude'],
+        'lng' => $c['longitude'],
+        'distance'  => $c['distance'],
+        'address'  => $c['value'],
+      ];
+    }
 
     return $this->render('users/users_show.html.twig', [
       'user'      => $user,
-      'user_contacts_table_raw' => $contacts_content,
       'id'        => $id,
       'status'    => $status,
       'is_self'   => $is_self,
@@ -418,7 +351,8 @@ class UsersShowController extends AbstractController
       'min_limit'   => $user['min_limit'],
       'max_limit'   => $user['max_limit'],
       'balance'     => $user['balance'],
-      'contacts'    => $user['contacts'],
+      'contacts'    => $contacts,
+      'map_markers' => $map_markers,
       'transaction_count'   => $user['transaction_count'],
       'message_count'       => $user['message_count'],
       'count_transactions'    => $count_transactions,
@@ -432,13 +366,5 @@ class UsersShowController extends AbstractController
       'intersystem_missing'   => $intersystem_missing,
       'intersystem_id'        => $intersystem_id,
     ]);
-  }
-
-  private function get_dd(string $str):string
-  {
-    $out =  '<dd>';
-    $out .=  $str ? htmlspecialchars($str, ENT_QUOTES) : '<span class="fa fa-times"></span>';
-    $out .=  '</dd>';
-    return $out;
   }
 }

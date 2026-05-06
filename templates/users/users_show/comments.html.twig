@@ -1,4 +1,4 @@
-{%- if config_bool('users.fields.comments.enabled', schema) -%}
+{%- if config_bool('users.fields.comments.enabled') -%}
 {%- embed 'embed/list_item.html.twig' -%}
   {%- block dl -%}
     <dt>

@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "41fd40a128804b3735b04a1cda955e95",
+    "content-hash": "e11316fb6da8e9a46747cdaadec133c1",
     "packages": [
         {
             "name": "async-aws/core",
-            "version": "1.28.1",
+            "version": "1.29.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/async-aws/core.git",
-                "reference": "e8b02ac30b17afaf1352cbd352dceb789d792d39"
+                "reference": "70899695fcc7b23a9247926ff8b581668583b993"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/async-aws/core/zipball/e8b02ac30b17afaf1352cbd352dceb789d792d39",
-                "reference": "e8b02ac30b17afaf1352cbd352dceb789d792d39",
+                "url": "https://api.github.com/repos/async-aws/core/zipball/70899695fcc7b23a9247926ff8b581668583b993",
+                "reference": "70899695fcc7b23a9247926ff8b581668583b993",
                 "shasum": ""
             },
             "require": {
@@ -43,7 +43,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.28-dev"
+                    "dev-master": "1.29-dev"
                 }
             },
             "autoload": {
@@ -64,7 +64,7 @@
                 "sts"
             ],
             "support": {
-                "source": "https://github.com/async-aws/core/tree/1.28.1"
+                "source": "https://github.com/async-aws/core/tree/1.29.0"
             },
             "funding": [
                 {
@@ -76,20 +76,20 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-02-16T10:24:54+00:00"
+            "time": "2026-04-18T17:06:10+00:00"
         },
         {
             "name": "async-aws/ses",
-            "version": "1.14.1",
+            "version": "1.14.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/async-aws/ses.git",
-                "reference": "8ba4c7f5bbb4d1055f3ebedcf0ea1b8b79393e5b"
+                "reference": "ab3bceb3380e971a5619fbd27d921a5352e644f4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/async-aws/ses/zipball/8ba4c7f5bbb4d1055f3ebedcf0ea1b8b79393e5b",
-                "reference": "8ba4c7f5bbb4d1055f3ebedcf0ea1b8b79393e5b",
+                "url": "https://api.github.com/repos/async-aws/ses/zipball/ab3bceb3380e971a5619fbd27d921a5352e644f4",
+                "reference": "ab3bceb3380e971a5619fbd27d921a5352e644f4",
                 "shasum": ""
             },
             "require": {
@@ -125,7 +125,7 @@
                 "ses"
             ],
             "support": {
-                "source": "https://github.com/async-aws/ses/tree/1.14.1"
+                "source": "https://github.com/async-aws/ses/tree/1.14.2"
             },
             "funding": [
                 {
@@ -137,7 +137,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-02-16T10:24:54+00:00"
+            "time": "2026-04-18T17:06:10+00:00"
         },
         {
             "name": "aws/aws-crt-php",
@@ -195,16 +195,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.379.0",
+            "version": "3.380.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "a50c3cc2c59f5ebeb56cbe170e6f144034b252b6"
+                "reference": "01e0e05a5744715904cfb53ac7564d2e39996d4d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/a50c3cc2c59f5ebeb56cbe170e6f144034b252b6",
-                "reference": "a50c3cc2c59f5ebeb56cbe170e6f144034b252b6",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/01e0e05a5744715904cfb53ac7564d2e39996d4d",
+                "reference": "01e0e05a5744715904cfb53ac7564d2e39996d4d",
                 "shasum": ""
             },
             "require": {
@@ -286,9 +286,9 @@
             "support": {
                 "forum": "https://github.com/aws/aws-sdk-php/discussions",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.379.0"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.380.1"
             },
-            "time": "2026-04-13T18:11:10+00:00"
+            "time": "2026-05-05T18:06:08+00:00"
         },
         {
             "name": "bramus/ansi-php",
@@ -1717,16 +1717,16 @@
         },
         {
             "name": "doctrine/migrations",
-            "version": "3.9.6",
+            "version": "3.9.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/migrations.git",
-                "reference": "ffd8355cdd8505fc650d9604f058bf62aedd80a1"
+                "reference": "96cb2a89b56c9efb0bac38e606dc0b0f13e650ec"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/migrations/zipball/ffd8355cdd8505fc650d9604f058bf62aedd80a1",
-                "reference": "ffd8355cdd8505fc650d9604f058bf62aedd80a1",
+                "url": "https://api.github.com/repos/doctrine/migrations/zipball/96cb2a89b56c9efb0bac38e606dc0b0f13e650ec",
+                "reference": "96cb2a89b56c9efb0bac38e606dc0b0f13e650ec",
                 "shasum": ""
             },
             "require": {
@@ -1800,7 +1800,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/migrations/issues",
-                "source": "https://github.com/doctrine/migrations/tree/3.9.6"
+                "source": "https://github.com/doctrine/migrations/tree/3.9.7"
             },
             "funding": [
                 {
@@ -1816,7 +1816,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-02-11T06:46:11+00:00"
+            "time": "2026-04-23T19:33:20+00:00"
         },
         {
             "name": "doctrine/orm",
@@ -1921,16 +1921,16 @@
         },
         {
             "name": "doctrine/persistence",
-            "version": "3.4.3",
+            "version": "3.4.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/persistence.git",
-                "reference": "d59e6ef7caffe6a30f4b6f9e9079a75f52c64ae0"
+                "reference": "5785dc79a0553ba41b0dda8a7ee792053e6186c8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/persistence/zipball/d59e6ef7caffe6a30f4b6f9e9079a75f52c64ae0",
-                "reference": "d59e6ef7caffe6a30f4b6f9e9079a75f52c64ae0",
+                "url": "https://api.github.com/repos/doctrine/persistence/zipball/5785dc79a0553ba41b0dda8a7ee792053e6186c8",
+                "reference": "5785dc79a0553ba41b0dda8a7ee792053e6186c8",
                 "shasum": ""
             },
             "require": {
@@ -1953,7 +1953,7 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Doctrine\\Persistence\\": "src/Persistence"
+                    "Doctrine\\Persistence\\": "src"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -1997,7 +1997,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/persistence/issues",
-                "source": "https://github.com/doctrine/persistence/tree/3.4.3"
+                "source": "https://github.com/doctrine/persistence/tree/3.4.4"
             },
             "funding": [
                 {
@@ -2013,7 +2013,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-10-21T15:21:39+00:00"
+            "time": "2026-04-04T19:40:43+00:00"
         },
         {
             "name": "doctrine/sql-formatter",
@@ -7555,16 +7555,16 @@
         },
         {
             "name": "symfony/polyfill-intl-grapheme",
-            "version": "v1.35.0",
+            "version": "v1.37.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-intl-grapheme.git",
-                "reference": "ad1b7b9092976d6c948b8a187cec9faaea9ec1df"
+                "reference": "4864388bfbd3001ce88e234fab652acd91fdc57e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-intl-grapheme/zipball/ad1b7b9092976d6c948b8a187cec9faaea9ec1df",
-                "reference": "ad1b7b9092976d6c948b8a187cec9faaea9ec1df",
+                "url": "https://api.github.com/repos/symfony/polyfill-intl-grapheme/zipball/4864388bfbd3001ce88e234fab652acd91fdc57e",
+                "reference": "4864388bfbd3001ce88e234fab652acd91fdc57e",
                 "shasum": ""
             },
             "require": {
@@ -7613,7 +7613,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-intl-grapheme/tree/v1.35.0"
+                "source": "https://github.com/symfony/polyfill-intl-grapheme/tree/v1.37.0"
             },
             "funding": [
                 {
@@ -7633,11 +7633,11 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-04-10T16:19:22+00:00"
+            "time": "2026-04-26T13:13:48+00:00"
         },
         {
             "name": "symfony/polyfill-intl-icu",
-            "version": "v1.35.0",
+            "version": "v1.37.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-intl-icu.git",
@@ -7701,7 +7701,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-intl-icu/tree/v1.35.0"
+                "source": "https://github.com/symfony/polyfill-intl-icu/tree/v1.37.0"
             },
             "funding": [
                 {
@@ -7725,7 +7725,7 @@
         },
         {
             "name": "symfony/polyfill-intl-idn",
-            "version": "v1.35.0",
+            "version": "v1.37.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-intl-idn.git",
@@ -7788,7 +7788,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-intl-idn/tree/v1.35.0"
+                "source": "https://github.com/symfony/polyfill-intl-idn/tree/v1.37.0"
             },
             "funding": [
                 {
@@ -7812,7 +7812,7 @@
         },
         {
             "name": "symfony/polyfill-intl-normalizer",
-            "version": "v1.35.0",
+            "version": "v1.37.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-intl-normalizer.git",
@@ -7873,7 +7873,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-intl-normalizer/tree/v1.35.0"
+                "source": "https://github.com/symfony/polyfill-intl-normalizer/tree/v1.37.0"
             },
             "funding": [
                 {
@@ -7897,7 +7897,7 @@
         },
         {
             "name": "symfony/polyfill-mbstring",
-            "version": "v1.35.0",
+            "version": "v1.37.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-mbstring.git",
@@ -7958,7 +7958,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.35.0"
+                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.37.0"
             },
             "funding": [
                 {
@@ -8047,7 +8047,7 @@
         },
         {
             "name": "symfony/polyfill-php80",
-            "version": "v1.35.0",
+            "version": "v1.37.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-php80.git",
@@ -8107,7 +8107,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-php80/tree/v1.35.0"
+                "source": "https://github.com/symfony/polyfill-php80/tree/v1.37.0"
             },
             "funding": [
                 {
@@ -8131,7 +8131,7 @@
         },
         {
             "name": "symfony/polyfill-php83",
-            "version": "v1.35.0",
+            "version": "v1.37.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-php83.git",
@@ -8187,7 +8187,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-php83/tree/v1.35.0"
+                "source": "https://github.com/symfony/polyfill-php83/tree/v1.37.0"
             },
             "funding": [
                 {
@@ -8211,7 +8211,7 @@
         },
         {
             "name": "symfony/polyfill-php84",
-            "version": "v1.35.0",
+            "version": "v1.37.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-php84.git",
@@ -8267,7 +8267,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-php84/tree/v1.35.0"
+                "source": "https://github.com/symfony/polyfill-php84/tree/v1.37.0"
             },
             "funding": [
                 {
@@ -8291,7 +8291,7 @@
         },
         {
             "name": "symfony/polyfill-uuid",
-            "version": "v1.35.0",
+            "version": "v1.37.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-uuid.git",
@@ -8350,7 +8350,7 @@
                 "uuid"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-uuid/tree/v1.35.0"
+                "source": "https://github.com/symfony/polyfill-uuid/tree/v1.37.0"
             },
             "funding": [
                 {
@@ -10189,6 +10189,89 @@
                 }
             ],
             "time": "2025-06-27T19:53:16+00:00"
+        },
+        {
+            "name": "symfony/ux-dropzone",
+            "version": "v2.35.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/ux-dropzone.git",
+                "reference": "b4d60604ff14cebfd8e310a2c342ba9cc2cb5b92"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/ux-dropzone/zipball/b4d60604ff14cebfd8e310a2c342ba9cc2cb5b92",
+                "reference": "b4d60604ff14cebfd8e310a2c342ba9cc2cb5b92",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.1",
+                "symfony/config": "^5.4|^6.0|^7.0|^8.0",
+                "symfony/dependency-injection": "^5.4|^6.0|^7.0|^8.0",
+                "symfony/form": "^5.4|^6.0|^7.0|^8.0",
+                "symfony/http-kernel": "^5.4|^6.0|^7.0|^8.0",
+                "symfony/options-resolver": "^5.4|^6.0|^7.0|^8.0"
+            },
+            "require-dev": {
+                "symfony/framework-bundle": "^5.4|^6.0|^7.0|^8.0",
+                "symfony/phpunit-bridge": "^5.4|^6.0|^7.0|^8.0",
+                "symfony/twig-bundle": "^5.4|^6.0|^7.0|^8.0",
+                "symfony/var-dumper": "^5.4|^6.0|^7.0|^8.0",
+                "twig/twig": "^2.14.7|^3.0.4"
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "thanks": {
+                    "url": "https://github.com/symfony/ux",
+                    "name": "symfony/ux"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\UX\\Dropzone\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Titouan Galopin",
+                    "email": "galopintitouan@gmail.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "File input dropzones for Symfony Forms",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "symfony-ux"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/ux-dropzone/tree/v2.35.0"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2026-03-22T22:21:50+00:00"
         },
         {
             "name": "symfony/ux-icons",

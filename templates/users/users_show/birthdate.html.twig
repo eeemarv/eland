@@ -1,4 +1,4 @@
-{%- if not is_intersystem and config_bool('users.fields.birthdate.enabled', schema) -%}
+{%- if not is_intersystem and config_bool('users.fields.birthdate.enabled') -%}
 {%- embed 'embed/list_item.html.twig' -%}
   {%- import 'macro/lbl.html.twig' as l -%}
   {%- block dl -%}

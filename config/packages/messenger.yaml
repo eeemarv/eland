@@ -37,6 +37,11 @@ framework:
         dsn: '%env(REDIS_URL)%/10'
         options:
           stream: geo
+        retry_strategy:
+          max_retries: 5
+          delay: 60000            # Wait 60 seconds before retry
+          multiplier: 2           # 60s, 120s, 240s
+          max_delay: 3600000      # 1 hour
 
     # async routing is handled in wrapper \App\Email\Message\EmailDispatchMessage
     routing:

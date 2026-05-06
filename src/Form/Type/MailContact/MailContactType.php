@@ -13,6 +13,8 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Form;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormView;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -23,6 +25,7 @@ class MailContactType extends AbstractType
 {
   private readonly bool $has_to_adr;
   private readonly bool $has_from_adr;
+  private bool $no_scroll = false;
 
   public function __construct(
     private readonly TranslatorInterface $translator,
@@ -67,6 +70,10 @@ class MailContactType extends AbstractType
   private function add_error(Form $form, string $message):void
   {
     $form->addError(new FormError($this->translator->trans($message)));
+    /**
+     * prevent scrolling down on preset form errors
+     */
+    $this->no_scroll = true;
   }
 
   public function buildForm(
@@ -129,6 +136,16 @@ class MailContactType extends AbstractType
 
     $builder->addEventListener(FormEvents::POST_SET_DATA, $check_form_enabled);
     $builder->addEventListener(FormEvents::POST_SUBMIT, $check_form_enabled);
+  }
+
+  public function finishView(FormView $view, FormInterface $form, array $options): void
+  {
+    /**
+     * prevent scrolling down on preset form errors
+     */
+    if ($this->no_scroll) {
+      $view->vars['attr']['data-no-scroll'] = '';
+    }
   }
 
   public function configureOptions(OptionsResolver $resolver):void

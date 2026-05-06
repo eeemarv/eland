@@ -21,6 +21,9 @@ class UsersColsCommand implements CommandInterface
   public $full_name;
 
   #[Type(type: 'bool')]
+  public $full_name_access;
+
+  #[Type(type: 'bool')]
   public $postcode;
 
   #[Type(type: 'bool')]

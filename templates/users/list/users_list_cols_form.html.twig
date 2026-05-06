@@ -24,6 +24,12 @@
           }) -}}
         {%- endif -%}
 
+        {%- if cols_form.full_name_access is defined -%}
+          {{- form_row(cols_form.full_name_access, {
+            'label': 'label.full_name_access',
+          }) -}}
+        {%- endif -%}
+
         {%- if cols_form.postcode is defined -%}
           {{- form_row(cols_form.postcode, {
             'label': 'label.postcode',

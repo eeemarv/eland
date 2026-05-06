@@ -1,3 +1,5 @@
+{%- import 'macro/lbl.html.twig' as l -%}
+
 {%- for uid, u in users -%}
   {%- set u_class =
     is_new(u) ? ' class="success"' :
@@ -11,7 +13,7 @@
   {%- set can_link = is_active(uid) or pp_has_role('admin') -%}
   {%- set u_link = can_link ? path('users_show', {'id': uid, 'status': all_params.status}|pp) : null -%}
   {%- set u_code = (u.code ?? '') ~ ' ' ~ (u.name ?? '') -%}
-  <tr{{- u_class|raw }} data-balance="{{- balance_ary[uid] ?? '0' -}}">
+  <tr{{- u_class|raw }} data-balance="{{- balance_ary[uid] ?? '0' -}}" data-id="{{- uid }}">
 
     {%- if pp_has_role('admin') -%}
     <td>
@@ -47,13 +49,23 @@
 
     {%- if cols.full_name -%}
     <td>
-      {%- if can_link -%}
-      <a href="{{- u_link -}}">
-        {{- u.full_name ?? '***' -}}
-      </a>
+      {%- if u.full_name_access|is_visible -%}
+        {%- if can_link -%}
+        <a href="{{- u_link -}}">
+          {{- u.full_name ?? '***' -}}
+        </a>
+        {%- else -%}
+          {{- u.full_name ?? '***' -}}
+        {%- endif -%}
       {%- else -%}
-        {{- u.full_name ?? '***' -}}
+        {{- l.btn('hidden') -}}
       {%- endif -%}
+    </td>
+    {%- endif -%}
+
+    {%- if cols.full_name_access -%}
+    <td>
+      {{- l.btn(u.full_name_access) -}}
     </td>
     {%- endif -%}
 
@@ -205,16 +217,24 @@
     {%- endfor -%}
 
     {%- if cols.distance -%}
-      {%- if distance_ary[uid].is_hidden is defined and distance_ary[uid].is_hidden -%}
-        <td data-order="5000000">
-          <span class="btn btn-default">
-            {{- 'label.hidden'|trans -}}
-          </span>
-        </td>
+      {%- if distance_ary[uid] is defined -%}
+        {%- if distance_ary[uid] == 'hidden' -%}
+          <td data-order="50000000">
+            <span class="btn btn-default">
+              {{- 'label.hidden'|trans -}}
+            </span>
+          </td>
+        {%- else -%}
+          <td data-order="{{- distance_ary[uid] -}}">
+            {%- if distance_ary[uid] > 1000 -%}
+              {{- (distance_ary[uid] / 1000)|number_format(1, ',', '.') }} km
+            {%- else -%}
+              {{- distance_ary[uid] }} m
+            {%- endif -%}
+          </td>
+        {%- endif -%}
       {%- else -%}
-        <td data-order="5000000"{%- if distance_ary[uid].lat is defined %} data-lat="{{- distance_ary[uid].lat -}}" data-lng="{{- distance_ary[uid].lng -}}"
-        {%- if su_id() == uid %} data-distance-self{%- endif -%}
-        {%- endif -%}>
+        <td data-order="50000000">
           <twig:ux:icon name="lucide:x"/>
         </td>
       {%- endif -%}

@@ -4,7 +4,7 @@
   {{- 'users_full_name_edit.title'|trans({
     'self': is_self ? 'yes' : 'no',
     'edit': full_name_edit_en ? 'full_name' : 'access',
-    'user': account(id, schema)
+    'user': account(id)
   }) -}}
 {%- endblock heading_title -%}
 

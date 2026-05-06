@@ -22,6 +22,12 @@
 </th>
 {%- endif -%}
 
+{%- if cols.full_name_access -%}
+<th data-priority="4">
+  {{- 'label.full_name_access'|trans -}}
+</th>
+{%- endif -%}
+
 {%- if cols.postcode -%}
 <th data-priority="2">
   {{- 'label.postcode'|trans -}}

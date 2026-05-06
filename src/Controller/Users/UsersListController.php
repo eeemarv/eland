@@ -1380,11 +1380,12 @@ class UsersListController extends AbstractController
       }
     }
 
-    /* begin remove colums disabled by configuration */
+    /* begin remove columns disabled by configuration */
 
     if (!$full_name_enabled)
     {
       $cols_command->full_name = false;
+      $cols_command->full_name_access = false;
     }
 
     if (!$postcode_enabled)
@@ -1415,6 +1416,11 @@ class UsersListController extends AbstractController
     if (!$periodic_mail_enabled)
     {
       $cols_command->periodic_overview = false;
+    }
+
+    if ($pp->is_guest())
+    {
+      $cols_command->distance = false;
     }
 
     if (!$mollie_enabled)
@@ -1534,48 +1540,43 @@ class UsersListController extends AbstractController
     if ($cols_command->contacts || $cols_command->distance)
     {
       $contacts_ary = $user_repository->get_contacts_ary(
+        current_user_id: $su->id(),
+        current_user_schema: $su->schema_o(),
         schema: $pp->schema_o(),
       );
-    }
+      error_log('====CONTACTS_ARY++++');
+      error_log(json_encode($contacts_ary));
 
-    if ($cols_command->distance && !$su->is_master())
-    {
-      $distance_ary = [];
-      foreach($contacts_ary as $user_id => $abr_ary)
+      if ($cols_command->distance)
       {
-        foreach($abr_ary as $abbrev => $d_ary)
+        $distance_ary = [];
+        foreach ($contacts_ary as $uid => $c_ary)
         {
-          if ($abbrev !== 'adr')
+          foreach ($c_ary as $c_abbrev => $adr_ary)
           {
-            continue;
-          }
-          foreach ($d_ary as $d)
-          {
-            if (isset($distance_ary[$user_id]))
+            if ($c_abbrev !== 'adr')
             {
-              if (!isset($distance_ary[$user_id]['is_hidden'])
-                && isset($distance_ary[$user_id]['lat']))
+              continue;
+            }
+            foreach ($adr_ary as $adr)
+            {
+              if (!isset($adr['distance']))
               {
                 continue;
               }
-            }
-            error_log(json_encode($d));
-            $is_visible = $item_access_service->is_visible($d['access']);
-            $distance_ary[$user_id] = [
-              'is_hidden' => !$is_visible,
-            ];
-            $geo = $cache_service->get('geo_' . $d['value']);
-            if ($geo)
-            {
-              $distance_ary[$user_id]['lat'] = $geo['lat'];
-              $distance_ary[$user_id]['lng'] = $geo['lng'];
-              continue;
+              if (!$item_access_service->is_visible($adr['access']))
+              {
+                $distance_ary[$uid] = 'hidden';
+                continue;
+              }
+              // distance in meters to last edited address of each user
+              $distance_ary[$uid] = (int) $adr['distance'];
             }
           }
         }
+        error_log('====DISTANCE_ARY++++');
+        error_log(json_encode($distance_ary));
       }
-      error_log('====DISTANCE++++');
-      error_log(json_encode($distance_ary));
     }
 
     if ($cols_command->mollie && $pp->is_admin())
