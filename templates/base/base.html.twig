@@ -74,11 +74,9 @@
 <body{%- block body_attr -%}{%- endblock %}  data-controller="scroll-to-error">
 
 {%- block navbar -%}
-	<div class="navbar navbar-default navbar-fixed-top{%- if pp_has_role('admin') %} bg-info{%- elseif pp_has_role('guest') %} bg-warning{%- endif -%}">
+	<nav class="navbar navbar-default navbar-fixed-top{%- if pp_has_role('admin') %} bg-info{%- elseif pp_has_role('guest') %} bg-warning{%- endif -%}">
 		<div class="container-fluid">
 			<div class="navbar-header">
-
-			{%- block navbar_toggle_button -%}{%- endblock -%}
 
 			{%- block logo -%}{%- endblock -%}
 
@@ -87,10 +85,11 @@
 			</a>
 			</div>
 
-		{%- block navbar_collapse -%}{%- endblock -%}
+		  {%- block navbar_menu -%}
+      {%- endblock navbar_menu-%}
 
 		</div>
-	</div>
+	</nav>
 {%- endblock navbar -%}
 
 {%- block page_container -%}{%- endblock -%}

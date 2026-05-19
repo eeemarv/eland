@@ -9,6 +9,8 @@
     {%- if disabled is defined and disabled %} disabled{%- endif -%}
   />
   <span class="ps-1">
-    {{- label|default('&nbsp;')|raw -}}
+    {%- block label -%}
+      {{- label|default('&nbsp;')|raw -}}
+    {%- endblock label -%}
   </span>
 </label>

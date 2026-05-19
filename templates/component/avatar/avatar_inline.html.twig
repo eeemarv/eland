@@ -1,0 +1,6 @@
+<div class="avatar avatar-inline avc-{{ user.id % 20 }}"
+  title="{{ user.name }}"
+  {%- if avatar_size is defined %} style="--avatar-size: {{ avatar_size }};"{%- endif -%}
+>
+  {{ user.name|slice(0, 1)|upper }}
+</div>

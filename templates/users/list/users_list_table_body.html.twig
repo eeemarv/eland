@@ -15,13 +15,29 @@
   {%- set u_code = (u.code ?? '') ~ ' ' ~ (u.name ?? '') -%}
   <tr{{- u_class|raw }} data-balance="{{- balance_ary[uid] ?? '0' -}}" data-id="{{- uid }}">
 
-    {%- if pp_has_role('admin') -%}
     <td>
-      {%- include 'component/bulkchecktable/checkbox.html.twig' with {
-        'id': uid,
-      } -%}
+      {%- if pp_has_role('admin') -%}
+        {%- embed 'component/bulkchecktable/checkbox.html.twig' with {
+          'id': uid,
+        } -%}
+          {%- block label -%}
+            {%- include 'component/avatar/avatar_inline.html.twig' with {
+              'user': u,
+            } -%}
+          {%- endblock label -%}
+        {%- endembed -%}
+      {%- elseif can_link -%}
+        <a href="{{- u_link -}}">
+          {%- include 'component/avatar/avatar_inline.html.twig' with {
+            'user': u,
+          } -%}
+        </a>
+      {%- else -%}
+        {%- include 'component/avatar/avatar_inline.html.twig' with {
+          'user': u,
+        } -%}
+      {%- endif -%}
     </td>
-    {%- endif -%}
 
     {%- if cols.code -%}
     <td>

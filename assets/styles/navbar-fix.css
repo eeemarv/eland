@@ -1,0 +1,87 @@
+/* 1. Force the navbar container to use Flexbox instead of Floats */
+.navbar > .container,
+.navbar > .container-fluid {
+  display: flex !important;
+  flex-wrap: nowrap;      /* Prevent items from wrapping to a new line */
+  align-items: center;    /* Vertically center the logo and the menu */
+  justify-content: space-between;
+}
+
+/* 2. Remove Bootstrap 3's clearing behaviors */
+.navbar > .container::before,
+.navbar > .container::after,
+.navbar > .container-fluid::before,
+.navbar > .container-fluid::after {
+  display: none !important; /* Clearfix interferes with Flexbox */
+}
+
+/* 3. Ensure the Header (Logo) doesn't take up the full width at small sizes */
+.navbar-header {
+  float: none !important;
+  margin-right: 15px;
+  display: flex;
+  align-items: center;
+}
+
+/* 4. Fix custom class to behave like a flex-row */
+.navbar-nav.navbar-right-no-collapse {
+  float: none !important;
+  display: flex !important;
+  flex-direction: row;     /* Keep items side-by-side */
+  margin: 0 !important;    /* Reset BS3 mobile margins */
+}
+
+/* 5. Ensure the list items and their links don't stack */
+.navbar-nav.navbar-right-no-collapse > li {
+  float: none !important;
+  display: block;          /* Keep as block inside the flex row */
+}
+
+.navbar-nav.navbar-right-no-collapse > li > a {
+  padding-top: 15px;       /* Keep standard height */
+  padding-bottom: 15px;
+}
+
+/* 6. Fix Dropdowns on Mobile */
+@media (max-width: 767px) {
+  /* Ensure the parent LI is the anchor for absolute positioning */
+  .navbar-nav.navbar-right-no-collapse > li {
+    position: relative !important;
+  }
+
+  /* Restore the desktop-style floating menu appearance */
+  .navbar-nav.navbar-right-no-collapse .open .dropdown-menu {
+    position: absolute !important;
+    float: left !important;
+    background-color: #fff !important;
+    border: 1px solid rgba(0,0,0,.15) !important;
+    border-radius: 4px !important;
+    box-shadow: 0 6px 12px rgba(0,0,0,.175) !important;
+
+    /* Align to the right edge of the icon since the menu is on the right */
+    right: 0 !important;
+    left: auto !important;
+
+    min-width: 200px;
+    margin-top: 0;
+  }
+
+  /* 7. Restore Active State Colors on Mobile */
+  /* Top level active items */
+  .navbar-default .navbar-nav.navbar-right-no-collapse > .active > a,
+  .navbar-default .navbar-nav.navbar-right-no-collapse > .active > a:hover,
+  .navbar-default .navbar-nav.navbar-right-no-collapse > .active > a:focus {
+    color: #555 !important;
+    background-color: #e7e7e7 !important;
+  }
+
+  /* Active items inside the dropdown menus */
+  .navbar-nav.navbar-right-no-collapse .dropdown-menu > .active > a,
+  .navbar-nav.navbar-right-no-collapse .dropdown-menu > .active > a:hover,
+  .navbar-nav.navbar-right-no-collapse .dropdown-menu > .active > a:focus {
+    color: #fff !important;
+    text-decoration: none !important;
+    outline: 0 !important;
+    background-color: #337ab7 !important; /* Standard Bootstrap 3 Primary Blue */
+  }
+}

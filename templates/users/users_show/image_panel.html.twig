@@ -1,6 +1,6 @@
 {%- set show_img = user.image_file is not null and user.image_file != '' -%}
 <div class="panel panel-default">
-  <div class="panel-body text-center center-block img-upload" id="img_user">
+  <div class="panel-body avatar-wrap text-center center-block img-upload" id="img_user">
   <img id="img"
   {%- if not show_img %} style="display:none;"{%- endif %}
   class="img-rounded img-responsive center-block w-100"
@@ -8,7 +8,9 @@
   data-base-url="{{- s3() -}}">
   <div id="no_img"
   {%- if show_img %} style="display:none;"{%- endif -%}>
-    <twig:ux:icon name="lucide:square-user" class="text-muted h-75 w-75" />
+    {%- include 'component/avatar/avatar_hold.html.twig' with {
+      'user': user,
+    } -%}
     <br>
     {{- 'users_show.image.none'|trans -}}
   </div>

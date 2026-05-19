@@ -44,8 +44,10 @@
         {%- if u.image_file -%}
           <img src="{{- s3(u.image_file) -}}" class="img-rounded" alt="{{- u.name -}}">
         {%- else -%}
-          <div>
-            <i class="fa fa-user fa-5x text-muted"></i>
+          <div class="avatar-wrap">
+            {%- include 'component/avatar/avatar_hold.html.twig' with {
+              'user': u,
+            } -%}
           </div>
         {%- endif -%}
         {%- if can_link -%}

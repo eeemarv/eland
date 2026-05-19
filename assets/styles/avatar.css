@@ -1,0 +1,65 @@
+.avatar-xs {
+  width: 2em;
+}
+
+.avatar-wrap {
+  container-type: inline-size;
+}
+
+.avatar-hold {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  font-size: 60cqw;
+}
+
+.avatar-inline {
+  --avatar-size: 2.5rem;
+  width: var(--avatar-size);
+  height: var(--avatar-size);
+  font-size: calc(var(--avatar-size) * 0.60);
+  margin: -0.3rem 0;
+}
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: 700;
+  line-height: 1;
+
+  border-radius: 20%;
+
+  color: white;
+
+  vertical-align: middle;
+
+  user-select: none;
+  -webkit-user-select: none;
+
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+/* 20 Unique Colorvariations (Modulo 20) */
+.avc-0  { background-color: #e53935; }
+.avc-1  { background-color: #d81b60; }
+.avc-2  { background-color: #8e24aa; }
+.avc-3  { background-color: #5e35b1; }
+.avc-4  { background-color: #3949ab; }
+.avc-5  { background-color: #1e88e5; }
+.avc-6  { background-color: #039be5; }
+.avc-7  { background-color: #00897b; }
+.avc-8  { background-color: #43a047; }
+.avc-9  { background-color: #7cb342; }
+
+.avc-10 { background-color: #c0ca33; }
+.avc-11 { background-color: #f9a825; }
+.avc-12 { background-color: #fb8c00; }
+.avc-13 { background-color: #f4511e; }
+.avc-14 { background-color: #6d4c41; }
+.avc-15 { background-color: #757575; }
+.avc-16 { background-color: #546e7a; }
+.avc-17 { background-color: #00838f; }
+.avc-18 { background-color: #2e7d32; }
+.avc-19 { background-color: #ad1457; }

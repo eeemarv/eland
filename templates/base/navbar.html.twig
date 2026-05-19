@@ -1,28 +1,21 @@
 {%- extends 'base/sidebar.html.twig' -%}
 
-{%- block navbar_toggle_button -%}
-	<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-1" aria-expanded="false">
-		<span class="sr-only">Toggle navigation</span>
-		<span class="icon-bar"></span>
-		<span class="icon-bar"></span>
-		<span class="icon-bar"></span>
-	</button>
-{%- endblock navbar_toggle_button -%}
+{%- block navbar_menu -%}
+	<ul class="nav navbar-nav navbar-right navbar-right-no-collapse">
 
-{%- block navbar_collapse -%}
-	<div class="collapse navbar-collapse" id="navbar-collapse-1">
-	<ul class="nav navbar-nav navbar-right">
-
-	{%- block navbar_menu -%}
 		{%- set su_logins_role_short = su_logins_role_short() -%}
 		{%- set intersystem_schemas = intersystem_schemas(su_schema()) -%}
 
 		{%- if su_logins_role_short|length > 1 or (intersystem_schemas|length and su_logins_role_short|length) -%}
 			{%- embed 'embed/menu_dropdown.html.twig' -%}
-        {%- block icon -%}
-          <twig:ux:icon name="lucide:share-2"/>
-        {%- endblock icon -%}
-				{%- block label -%}{{- 'system_menu.system'|trans -}}{%- endblock label -%}
+        {%- block list_class %} hidden-xs
+        {%- endblock list_class -%}
+				{%- block label -%}
+          <twig:ux:icon name="lucide:share-2" />
+          <span class="hidden-sm hidden-xs ms-0">
+            {{- 'system_menu.system'|trans -}}
+          </span>
+        {%- endblock label -%}
 				{%- block menu_items -%}
 					<li class="dropdown-header">
 						{%- if su_logins_role_short|length == 1 -%}
@@ -72,10 +65,17 @@
 			{%- set su_role_short = su_role('admin') ? 'a' : 'u' -%}
 
 			{%- embed 'embed/menu_dropdown.html.twig' -%}
-        {%- block icon -%}
-          <twig:ux:icon name="lucide:user"/>
-        {%- endblock icon -%}
-				{%- block label -%}{{- account_name -}}{%- endblock label -%}
+				{%- block label -%}
+          {%- include 'component/avatar/avatar_inline.html.twig' with {
+            'user': {
+              'name': username(su_id(), su_schema()),
+              'id': su_id(),
+            },
+          } -%}
+          <span class="hidden-sm hidden-xs ms-1">
+            {{- account_name -}}
+          </span>
+        {%- endblock label -%}
 				{%- block menu_items -%}
 					{%- set pp_su_role_short = pp_ary().role_short is defined and pp_ary().role_short != 'g' ? pp_ary().role_short : su_role_short -%}
 					{%- if su_is_system_self() and not su_is_master() -%}
@@ -134,11 +134,11 @@
 		{%- if su_role('admin') and su_is_system_self() -%}
 			{%- embed 'embed/menu_dropdown.html.twig' -%}
 				{%- block menu_class %} bg-info{%- endblock menu_class -%}
-        {%- block icon -%}
-          <twig:ux:icon name="lucide:settings"/>
-        {%- endblock icon -%}
 				{%- block label -%}
+          <twig:ux:icon name="lucide:settings"/>
+          <span class="hidden-sm hidden-xs ms-1">
           {{- 'label.admin'|trans -}}
+          </span>
         {%- endblock label -%}
 				{%- block menu_items -%}
           <li{%- if pp_has_role('admin') %} class="active-group"{%- endif -%}>
@@ -211,8 +211,6 @@
 				{%- endblock menu_items -%}
 			{%- endembed -%}
 		{%- endif -%}
-	{%- endblock navbar_menu -%}
 
 	</ul>
-	</div>
-{%- endblock navbar_collapse -%}
+{%- endblock navbar_menu -%}

@@ -1,9 +1,7 @@
-<li class="dropdown">
+<li class="dropdown{%- block list_class -%}{%- endblock -%}">
 	<a href="#" class="dropdown-toggle{%- block menu_class -%}{%- endblock -%}" data-toggle="dropdown" role="button" aria-expanded="false">
-    {%- block icon -%}{%- endblock -%}
-    &nbsp;
     {%- block label -%}{%- endblock -%}
-    &nbsp;<span class="caret"></span>
+    <span class="caret ms-1"></span>
 	</a>
 	<ul class="dropdown-menu" role="menu">
     {%- block menu_items -%}

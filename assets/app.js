@@ -29,6 +29,8 @@ import "./styles/note.css";
 import "./styles/cms-edit.css";
 import "./styles/tags.css";
 import "./styles/tiptap.css";
+import "./styles/avatar.css";
+import "./styles/navbar-fix.css";
 
 import 'datatables.net-bs/css/dataTables.bootstrap.min.css';
 import 'datatables.net-responsive-bs/css/responsive.bootstrap.min.css';
