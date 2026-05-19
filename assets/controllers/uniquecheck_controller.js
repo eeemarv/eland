@@ -48,7 +48,7 @@ export default class extends Controller {
       displayTags += ', ...';
     }
 
-    // We show helpTextTarget; the translation string is already in the HTML
+    // Show helpTextTarget; the translation string is already in the HTML
     this.helpTextTarget.classList.remove('hidden');
     // We fill a span within the help-text with the results
     const listElement = this.helpTextTarget.querySelector('[data-list]');

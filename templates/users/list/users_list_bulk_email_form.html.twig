@@ -27,6 +27,7 @@
   'disabled': not email_enabled,
 }) -}}
 
+{#}
 {{- form_row(bulk_email_form.content, {
   'label': false,
   'attr': {
@@ -35,6 +36,12 @@
   },
   'disabled': not email_enabled,
 }) -}}
+{#}
+
+{%- include 'tiptap/edit.html.twig' with {
+  'json_content': bulk_email_form.json_content,
+  'disabled': not email_enabled,
+} -%}
 
 {{- form_row(bulk_email_form.copy, {
   'label': 'check.bulk_copy',

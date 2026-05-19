@@ -177,18 +177,13 @@
   {{- s._r_btnlbl('label', id, count) -}}
 {%- endmacro label -%}
 
-{%- macro label_lg(id, count) -%}
-  {%- import _self as s -%}
-  <span class="label-lg">
-  {{- s._r_btnlbl('label', id, count) -}}
-  </span>
-{%- endmacro label_lg -%}
-
+{# probably not used, use txt_label(txt, 'info') instead}
 {%- macro balance(balance) -%}
   <span class="label label-lg label-li label-info">
     {{- balance -}}
   </span>
 {%- endmacro balance -%}
+{#}
 
 {%- macro txt_label(txt, style) -%}
   <span class="label label-lg label-li label-{{- style|default('default') -}}">
@@ -196,8 +191,8 @@
   </span>
 {%- endmacro txt_label -%}
 
-{%- macro color_btn(label, color) -%}
+{%- macro color_btn(txt, color) -%}
   <span class="text-white btn btn-default"{% if color is defined %} style="background-color: {{- color -}};{% endif %}">
-    {{- label -}}
+    {{- txt -}}
   </span>
 {%- endmacro color_btn -%}

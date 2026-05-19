@@ -27,7 +27,7 @@ class UsersBulkEmailCommand implements CommandInterface
     new Type(type: 'string'),
     new PlainTextLength(min: 30, max: 10000),
   ])]
-  public $content;
+  public $json_content;
 
   #[Type(type: 'bool')]
   public $copy;

@@ -1,0 +1,170 @@
+<div data-controller="tiptap" class="tiptap">
+  {# toolbar #}
+  <div class="btn-toolbar tiptap-toolbar" style="margin-bottom: 3px;" role="toolbar" aria-label="Toolbar with button groups">
+    <div class="btn-group">
+      <button type="button"
+        data-tiptap-target="button"
+        data-action="tiptap#undo"
+        data-format="undo"
+        class="btn btn-default btn-sm"
+        title="{{- 'editor.undo'|trans -}}"
+      >
+        <twig:ux:icon name="lucide:undo-2" />
+      </button>
+      <button type="button"
+        data-tiptap-target="button"
+        data-action="tiptap#redo"
+        data-format="redo"
+        class="btn btn-default btn-sm"
+        title="{{- 'editor.redo'|trans -}}"
+      >
+        <twig:ux:icon name="lucide:redo-2" />
+      </button>
+    </div>
+
+
+    <div class="btn-group">
+      <button
+        type="button"
+        class="btn btn-default btn-sm"
+        data-action="tiptap#toggleBold"
+        data-tiptap-target="button"
+        data-format="bold"
+        title="{{- 'editor.bold'|trans -}}"
+      >
+        <twig:ux:icon name="lucide:bold" />
+      </button>
+      <button type="button"
+        class="btn btn-default btn-sm"
+        data-action="tiptap#toggleItalic"
+        data-tiptap-target="button"
+        data-format="italic"
+        title="{{- 'editor.italic'|trans -}}"
+      >
+        <twig:ux:icon name="lucide:italic" />
+      </button>
+
+      <button type="button"
+        class="btn btn-default btn-sm"
+        data-action="tiptap#toggleUnderline"
+        data-tiptap-target="button"
+        data-format="underline"
+        title="{{- 'editor.underline'|trans -}}"
+      >
+        <twig:ux:icon name="lucide:underline" />
+      </button>
+    </div>
+
+    <div class="btn-group">
+
+    {#}
+    <button type="button"
+      class="btn btn-default btn-sm"
+      data-action="tiptap#toggleStrike"
+      data-tiptap-target="button"
+      data-format="strike"
+      title="{{- 'editor.strike'|trans -}}"
+    >
+      <twig:ux:icon name="lucide:strikethrough" />
+    </button>
+    {#}
+    </div>
+
+    <div class="btn-group">
+      <button type="button"
+        class="btn btn-default btn-sm"
+        data-action="tiptap#toggleBulletList"
+        data-tiptap-target="button"
+        data-format="bulletList"
+        title="{{- 'editor.list_bullet'|trans -}}"
+      >
+        <twig:ux:icon name="lucide:list" />
+      </button>
+      <button type="button"
+        class="btn btn-default btn-sm"
+        data-action="tiptap#toggleOrderedList"
+        data-tiptap-target="button"
+        data-format="orderedList"
+        title="{{- 'editor.list_ordered'|trans -}}"
+      >
+        <twig:ux:icon name="lucide:list-ordered" />
+      </button>
+    </div>
+
+    {#}
+    <div class="btn-group">
+      <button type="button"
+        class="btn btn-default btn-sm"
+        data-action="tiptap#toggleCodeBlock"
+        data-tiptap-target="button"
+        data-format="codeBlock"
+        title="{{- 'editor.code'|trans -}}"
+      >
+        <twig:ux:icon name="lucide:code" />
+      </button>
+    </div>
+    {#}
+
+    <div class="btn-group">
+      <button type="button"
+        class="btn btn-default btn-sm"
+        data-action="tiptap#openLinkModal"
+        data-tiptap-target="button"
+        data-format="link"
+        title="{{- 'editor.link'|trans -}}"
+      >
+        <twig:ux:icon name="lucide:link" />
+      </button>
+    </div>
+
+  </div>
+
+  {# editor #}
+  <div data-tiptap-target="editor"
+    class="editor-container">
+  </div>
+
+  {{- form_widget(json_content, {
+    'attr': {
+      'data-tiptap-target': 'input',
+    },
+    'disabled': disabled|default(false),
+  }) -}}
+
+  {{- form_errors(json_content) -}}
+
+  {#} Link Modal {#}
+  <div class="modal fade" data-tiptap-target="modal" tabindex="-1" role="dialog" aria-labelledby="tiptapLinkModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="tiptapLinkModalLabel">Link invoegen</h4>
+        </div>
+
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="linkText">Tekst om te tonen</label>
+            {#} no name attribute to prevent form pollution {#}
+            <input type="text" data-tiptap-target="inputText" class="form-control" id="linkText">
+          </div>
+          <div class="form-group">
+            <label for="linkUrl">Naar welke URL moet deze link verwijzen?</label>
+            <input type="url" data-tiptap-target="inputUrl" class="form-control" id="linkUrl" placeholder="https://" />
+          </div>
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" data-tiptap-target="inputBlank" /> Openen in een nieuw venster
+            </label>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Annuleren</button>
+            <button type="button" class="btn btn-primary" data-action="click->tiptap#applyLink">Link invoegen</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -5,9 +5,11 @@
 {%- block assets_add -%}
 	{{- parent() -}}
 
+{#}
 	{{- assets_add([
 		'typeahead', 'typeahead.js'
 	]) -}}
+{#}
 
 	{%- if {}|pp.edit.en is defined and su_role('admin') and su_is_system_self() -%}
 		{{- assets_add([
@@ -45,175 +47,22 @@
 {%- endblock -%}
 
 {%- block page_container -%}
-	<div class="swiper-container">
-	<div class="row-offcanvas row-offcanvas-left">
-	<div id="sidebar" class="sidebar-offcanvas">
+	<div data-controller="offcanvas">
+	<div class="row-offcanvas"
+    data-offcanvas-target="container"
+  >
+    <div class="offcanvas-backdrop"
+      data-action="click->offcanvas#close">
+    </div>
 
-	<br>
-	<ul class="nav nav-pills nav-stacked">
+    <div class="offcanvas-sidebar">
+      {%- include 'include/sidebar_content.html.twig' -%}
+    </div>
 
-    {%- if config_bool('messages.enabled')
-      and item_visible('guest')
-    -%}
-    <li{%- if 'messages' == active_menu %} class="active"{%- endif -%}>
-      <a href="{{- path('messages'|var_route, {}|pp) -}}">
-        <twig:ux:icon name="lucide:newspaper"/>
-        &nbsp;
-        {{- ('messages.title')|trans({
-          'self': 'all_users',
-          'with_without_category': 'all_categories'
-        }) -}}
-      </a>
-    </li>
-    {%- endif -%}
-
-    {%- if item_visible('guest') -%}
-    <li{%- if 'users' == active_menu %} class="active"{%- endif -%}>
-      <a href="{{- path('users'|var_route, {}|pp) -}}">
-        <twig:ux:icon name="lucide:users"/>
-        &nbsp;
-        {{- ('users.title')|trans -}}
-      </a>
-    </li>
-    {%- endif -%}
-
-    {%- if config_bool('transactions.enabled')
-      and item_visible('guest')
-    -%}
-    <li{%- if 'transactions' == active_menu %} class="active"{%- endif -%}>
-      <a href="{{- path('transactions', {}|pp) -}}">
-        <twig:ux:icon name="lucide:arrow-left-right"/>
-        &nbsp;
-        {{- ('transactions.title')|trans({
-          'self': 'all_users',
-        }) -}}
-      </a>
-    </li>
-    {%- endif -%}
-
-    {%- if config_bool('news.enabled')
-      and item_visible('guest')
-    -%}
-    <li{%- if 'news' == active_menu %} class="active"{%- endif -%}>
-      <a href="{{- path('news'|var_route, {}|pp) -}}">
-        <twig:ux:icon name="lucide:calendar-range"/>
-        &nbsp;
-        {{- ('news.title')|trans -}}
-      </a>
-    </li>
-    {%- endif -%}
-
-    {%- if config_bool('docs.enabled')
-      and item_visible('guest')
-    -%}
-    <li{%- if 'docs' == active_menu %} class="active"{%- endif -%}>
-      <a href="{{- path('docs', {}|pp) -}}">
-        <twig:ux:icon name="lucide:files"/>
-        &nbsp;
-        {{- ('docs.title')|trans -}}
-      </a>
-    </li>
-    {%- endif -%}
-
-    {%- if config_bool('forum.enabled')
-      and item_visible('guest')
-    -%}
-    <li{%- if 'forum' == active_menu %} class="active"{%- endif -%}>
-      <a href="{{- path('forum', {}|pp) -}}">
-        <twig:ux:icon name="lucide:messages-square"/>
-        &nbsp;
-        {{- ('forum.title')|trans -}}
-      </a>
-    </li>
-    {%- endif -%}
-
-    {%- if config_bool('support_form.enabled')
-      and item_visible('user')
-    -%}
-    <li{%- if 'support_form' == active_menu %} class="active"{%- endif -%}>
-      <a href="{{- path('support_form', {}|pp) -}}">
-        <twig:ux:icon name="lucide:ambulance"/>
-        &nbsp;
-        {{- ('support_form.title')|trans -}}
-      </a>
-    </li>
-    {%- endif -%}
-
-    {%- if config_bool('home.menu.enabled')
-      and item_visible('anonymous')
-    -%}
-    <li{%- if 'home' == active_menu %} class="active"{%- endif -%}>
-      <a href="{{- path('home', {}|pp) -}}">
-        <twig:ux:icon name="lucide:home"/>
-        &nbsp;
-        {{- ('home.title')|trans -}}
-      </a>
-    </li>
-    {%- endif -%}
-
-    {%- if item_visible('anonymous') -%}
-    <li{%- if 'login' == active_menu %} class="active"{%- endif -%}>
-      <a href="{{- path('login', {}|pp) -}}">
-        <twig:ux:icon name="lucide:log-in"/>
-        &nbsp;
-        {{- ('login.title')|trans -}}
-      </a>
-    </li>
-    {%- endif -%}
-
-    {%- if config_bool('contact_form.enabled')
-      and item_visible('anonymous')
-    -%}
-    <li{%- if 'contact_form' == active_menu %} class="active"{%- endif -%}>
-      <a href="{{- path('contact_form', {}|pp) -}}">
-        <twig:ux:icon name="lucide:message-circle-question-mark"/>
-        &nbsp;
-        {{- ('contact_form.title')|trans -}}
-      </a>
-    </li>
-    {%- endif -%}
-
-    {%- if config_bool('register_form.enabled')
-      and item_visible('anonymous')
-    -%}
-    <li{%- if 'register_form' == active_menu %} class="active"{%- endif -%}>
-      <a href="{{- path('register_form', {}|pp) -}}">
-        <twig:ux:icon name="lucide:square-check"/>
-        &nbsp;
-        {{- ('register_form.title')|trans -}}
-      </a>
-    </li>
-    {%- endif -%}
-
-	</ul>
-
-	{%- block content_sidebar-%}
-		{%- embed 'embed/static_content.html.twig' with {
-			'with_role': true,
-			'with_route': true
-		} -%}
-			{%- block block_name -%}sidebar{%- endblock -%}
-		{%- endembed -%}
-
-		{%- embed 'embed/static_content.html.twig' with {
-			'with_role': false,
-			'with_route': true
-		} -%}
-			{%- block block_name -%}sidebar{%- endblock -%}
-		{%- endembed -%}
-
-		{%- embed 'embed/static_content.html.twig' with {
-			'with_role': true,
-			'with_route': false
-		} -%}
-			{%- block block_name -%}sidebar{%- endblock -%}
-		{%- endembed -%}
-	{%- endblock content_sidebar -%}
-
-	</div>
-
-	<div id="wrap">
-	<div id="main" class="container-fluid clear-top{%- if pp_has_role('admin') %} admin{%- endif -%}">
+	<div class="offcanvas-main-wrap">
+	<div class="offcanvas-main-content container-fluid clear-top{%- if pp_has_role('admin') %} admin{%- endif -%}"
+    data-action="touchstart->offcanvas#touchStart touchend->offcanvas#touchEnd touchmove->offcanvas#touchMove"
+  >
 
   {%- if pp_has_role('guest') and query_params.welcome is defined -%}
     {%- include 'include/welcome.html.twig' -%}
@@ -268,7 +117,9 @@
 	<div class="row">
 		<div class="col-md-12 top-buttons mt-5p">
 			<div class="visible-xs pull-left button-offcanvas menu-button">
-				<button type="button" class="btn btn-primary btn-lg" data-toggle="offcanvas" title="Menu">
+				<button type="button" class="btn btn-primary btn-lg" data-toggle="offcanvas" title="{{- 'label.menu'|trans -}}"
+          data-action="click->offcanvas#toggle"
+        >
           <twig:ux:icon name="lucide:chevron-left"/>
 				</button>
 			</div>
@@ -468,9 +319,11 @@
 		{%- block block_name -%}bottom{%- endblock -%}
 	{%- endembed -%}
 
-	</div>
-	</div>
-	</div>
+	</div> {#} main {#}
+	</div> {#} wrap {#}
+	</div> {#} row-offcanvas {#}
+  </div> {#} data-controller=offcanvas {#}
+
 {%- endblock page_container -%}
 
 {%- block footer_system -%}

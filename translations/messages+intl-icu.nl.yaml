@@ -132,6 +132,19 @@ datepicker:
     a: (wd)
     A: (weekdag)
 
+editor:
+  bold: Vet (Ctrl+B)
+  underline: Onderstrepen (Ctrl+U)
+  undo: Ongedaan maken (Ctrl+Z)
+  redo: Opnieuw doen (Ctrl+Y)
+  italic: Cursief (Ctrl+I)
+  strike: Doorstrepen (Ctrl+S)
+  link: Link
+  list_bullet: Ongeordende lijst
+  list_ordered: Geordende lijst
+
+
+
 error_fileupload:
   file_type: >-
     Bestandstype niet toegelaten.

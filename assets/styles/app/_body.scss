@@ -7,6 +7,7 @@ div.row-offcanvas
 body
 {
   background-color: #f9f9ff;
+  overflow-x: hidden;
 }
 
 body.body-navbar
@@ -53,28 +54,43 @@ body.guest
 {
   .row-offcanvas
   {
-    position: relative;
     -webkit-transition: all 0.25s ease-out;
     -moz-transition: all 0.25s ease-out;
     transition: all 0.25s ease-out;
-    width: calc(100% + 160px);
-  }
-
-  .row-offcanvas-left
-  {
-    left: -160px;
-  }
-
-  .row-offcanvas-left.active
-  {
-    left: 0;
   }
 
   .sidebar-offcanvas
   {
-    position: absolute;
+    position: fixed;
     top: 0;
+    bottom: 0;
+    left: -160px;
+    z-index: 1050;
+    background-color: #fff;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+    transition: left 0.25s ease-out;
+    float: none;
   }
+
+  .active .sidebar-offcanvas {
+    left: 0;
+  }
+
+  .offcanvas-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1040;
+    display: none;
+  }
+
+  .active .offcanvas-backdrop {
+    display: block;
+  }
+
 }
 
 div.navbar-header a.navbar-brand img

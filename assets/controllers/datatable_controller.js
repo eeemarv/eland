@@ -1,11 +1,13 @@
 import { Controller } from '@hotwired/stimulus';
-import $ from 'jquery';
 import DataTable from 'datatables.net-bs';
 import 'datatables.net-responsive-bs';
 
 export default class extends Controller {
   static values = {
-    sortable: { type: Boolean }
+    sortable: {
+      type: Boolean,
+      default: false,
+    }
   };
 
   connect() {

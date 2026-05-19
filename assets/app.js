@@ -1,15 +1,12 @@
-import './stimulus_bootstrap.js';
-/*
- * Welcome to your app's main JavaScript file!
- *
- * This file will be included onto the page via the importmap() Twig function,
- * which should already be in your base.html.twig.
- */
-
-import $ from 'jquery';
+// import $ from 'jquery';
 
 // Expose jQuery globally for Bootstrap 3 and legacy plugins
-window.jQuery = window.$ = $;
+// window.jQuery = window.$ = $;
+
+import './stimulus_bootstrap.js';
+
+
+//import "bootstrap-sass/assets/javascripts/bootstrap.js";
 
 import "./styles/bs3.scss";
 import "./styles/typeahead.css";
@@ -31,6 +28,7 @@ import "./styles/list-active.css";
 import "./styles/note.css";
 import "./styles/cms-edit.css";
 import "./styles/tags.css";
+import "./styles/tiptap.css";
 
 import 'datatables.net-bs/css/dataTables.bootstrap.min.css';
 import 'datatables.net-responsive-bs/css/responsive.bootstrap.min.css';

@@ -1,0 +1,22 @@
+.editor-container {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px;
+  min-height: 200px;
+  background-color: white;
+}
+
+/* Tiptap's internal editor class */
+.tiptap {
+  outline: none !important;
+}
+
+/* Styling the content inside the editor */
+.tiptap ul {
+  list-style-type: disc;
+  padding-left: 20px;
+}
+.tiptap ol {
+  list-style-type: decimal;
+  padding-left: 20px;
+}

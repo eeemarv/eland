@@ -3,7 +3,6 @@
 namespace App\Form\Type\UsersBulk;
 
 use App\Command\UsersBulk\UsersBulkEmailCommand;
-use App\Form\Type\Field\SummernoteType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -26,7 +25,7 @@ class UsersBulkEmailType extends AbstractType
   {
     $builder->add('selected', HiddenType::class);
     $builder->add('subject', TextType::class);
-    $builder->add('content', SummernoteType::class);
+    $builder->add('json_content', HiddenType::class);
     $builder->add('copy', CheckboxType::class);
     $builder->add('verify', CheckboxType::class);
     $builder->add('submit', SubmitType::class);

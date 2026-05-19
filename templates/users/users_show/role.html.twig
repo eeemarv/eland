@@ -14,7 +14,7 @@
       {%- if user.role is empty -%}
         <twig:ux:icon name="lucide:x" class="text-bold"/>
       {%- else -%}
-        {{- l.label_lg(user.role ~ '_role') -}}
+        {{- l.btn(user.role ~ '_role') -}}
       {%- endif -%}
     </dd>
   {%- endblock dl -%}

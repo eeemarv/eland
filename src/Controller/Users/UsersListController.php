@@ -203,7 +203,7 @@ class UsersListController extends AbstractController
       $bulk_email_command = $bulk_email_form->getData();
       $selected = $bulk_email_command->selected;
       $subject = $bulk_email_command->subject;
-      $content = $bulk_email_command->content;
+      $json_content = $bulk_email_command->json_content;
       $copy = $bulk_email_command->copy;
       $select_ary = explode(',', $selected);
       $s_user_ids = [];

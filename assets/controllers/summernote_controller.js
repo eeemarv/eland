@@ -1,5 +1,5 @@
 import { Controller } from '@hotwired/stimulus';
-import $ from 'jquery';
+// import $ from 'jquery';
 import 'bootstrap'; // Ensures BS3 JS is loaded for tooltips
 import 'summernote';
 

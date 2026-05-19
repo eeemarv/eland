@@ -1,0 +1,160 @@
+	<br>
+	<ul class="nav nav-pills nav-stacked">
+
+    {%- if config_bool('messages.enabled')
+      and item_visible('guest')
+    -%}
+    <li{%- if 'messages' == active_menu %} class="active"{%- endif -%}>
+      <a href="{{- path('messages'|var_route, {}|pp) -}}">
+        <twig:ux:icon name="lucide:newspaper"/>
+        &nbsp;
+        {{- ('messages.title')|trans({
+          'self': 'all_users',
+          'with_without_category': 'all_categories'
+        }) -}}
+      </a>
+    </li>
+    {%- endif -%}
+
+    {%- if item_visible('guest') -%}
+    <li{%- if 'users' == active_menu %} class="active"{%- endif -%}>
+      <a href="{{- path('users'|var_route, {}|pp) -}}">
+        <twig:ux:icon name="lucide:users"/>
+        &nbsp;
+        {{- ('users.title')|trans -}}
+      </a>
+    </li>
+    {%- endif -%}
+
+    {%- if config_bool('transactions.enabled')
+      and item_visible('guest')
+    -%}
+    <li{%- if 'transactions' == active_menu %} class="active"{%- endif -%}>
+      <a href="{{- path('transactions', {}|pp) -}}">
+        <twig:ux:icon name="lucide:arrow-left-right"/>
+        &nbsp;
+        {{- ('transactions.title')|trans({
+          'self': 'all_users',
+        }) -}}
+      </a>
+    </li>
+    {%- endif -%}
+
+    {%- if config_bool('news.enabled')
+      and item_visible('guest')
+    -%}
+    <li{%- if 'news' == active_menu %} class="active"{%- endif -%}>
+      <a href="{{- path('news'|var_route, {}|pp) -}}">
+        <twig:ux:icon name="lucide:calendar-range"/>
+        &nbsp;
+        {{- ('news.title')|trans -}}
+      </a>
+    </li>
+    {%- endif -%}
+
+    {%- if config_bool('docs.enabled')
+      and item_visible('guest')
+    -%}
+    <li{%- if 'docs' == active_menu %} class="active"{%- endif -%}>
+      <a href="{{- path('docs', {}|pp) -}}">
+        <twig:ux:icon name="lucide:files"/>
+        &nbsp;
+        {{- ('docs.title')|trans -}}
+      </a>
+    </li>
+    {%- endif -%}
+
+    {%- if config_bool('forum.enabled')
+      and item_visible('guest')
+    -%}
+    <li{%- if 'forum' == active_menu %} class="active"{%- endif -%}>
+      <a href="{{- path('forum', {}|pp) -}}">
+        <twig:ux:icon name="lucide:messages-square"/>
+        &nbsp;
+        {{- ('forum.title')|trans -}}
+      </a>
+    </li>
+    {%- endif -%}
+
+    {%- if config_bool('support_form.enabled')
+      and item_visible('user')
+    -%}
+    <li{%- if 'support_form' == active_menu %} class="active"{%- endif -%}>
+      <a href="{{- path('support_form', {}|pp) -}}">
+        <twig:ux:icon name="lucide:ambulance"/>
+        &nbsp;
+        {{- ('support_form.title')|trans -}}
+      </a>
+    </li>
+    {%- endif -%}
+
+    {%- if config_bool('home.menu.enabled')
+      and item_visible('anonymous')
+    -%}
+    <li{%- if 'home' == active_menu %} class="active"{%- endif -%}>
+      <a href="{{- path('home', {}|pp) -}}">
+        <twig:ux:icon name="lucide:home"/>
+        &nbsp;
+        {{- ('home.title')|trans -}}
+      </a>
+    </li>
+    {%- endif -%}
+
+    {%- if item_visible('anonymous') -%}
+    <li{%- if 'login' == active_menu %} class="active"{%- endif -%}>
+      <a href="{{- path('login', {}|pp) -}}">
+        <twig:ux:icon name="lucide:log-in"/>
+        &nbsp;
+        {{- ('login.title')|trans -}}
+      </a>
+    </li>
+    {%- endif -%}
+
+    {%- if config_bool('contact_form.enabled')
+      and item_visible('anonymous')
+    -%}
+    <li{%- if 'contact_form' == active_menu %} class="active"{%- endif -%}>
+      <a href="{{- path('contact_form', {}|pp) -}}">
+        <twig:ux:icon name="lucide:message-circle-question-mark"/>
+        &nbsp;
+        {{- ('contact_form.title')|trans -}}
+      </a>
+    </li>
+    {%- endif -%}
+
+    {%- if config_bool('register_form.enabled')
+      and item_visible('anonymous')
+    -%}
+    <li{%- if 'register_form' == active_menu %} class="active"{%- endif -%}>
+      <a href="{{- path('register_form', {}|pp) -}}">
+        <twig:ux:icon name="lucide:square-check"/>
+        &nbsp;
+        {{- ('register_form.title')|trans -}}
+      </a>
+    </li>
+    {%- endif -%}
+
+	</ul>
+
+	{%- block content_sidebar-%}
+		{%- embed 'embed/static_content.html.twig' with {
+			'with_role': true,
+			'with_route': true
+		} -%}
+			{%- block block_name -%}sidebar{%- endblock -%}
+		{%- endembed -%}
+
+		{%- embed 'embed/static_content.html.twig' with {
+			'with_role': false,
+			'with_route': true
+		} -%}
+			{%- block block_name -%}sidebar{%- endblock -%}
+		{%- endembed -%}
+
+		{%- embed 'embed/static_content.html.twig' with {
+			'with_role': true,
+			'with_route': false
+		} -%}
+			{%- block block_name -%}sidebar{%- endblock -%}
+		{%- endembed -%}
+	{%- endblock content_sidebar -%}
