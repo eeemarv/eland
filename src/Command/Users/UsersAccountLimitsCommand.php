@@ -8,8 +8,8 @@ use Symfony\Component\Validator\Constraints\Type;
 class UsersAccountLimitsCommand Implements CommandInterface
 {
   #[Type(type: 'int')]
-  public $min_limit;
+  public mixed $min_limit;
 
   #[Type(type: 'int')]
-  public $max_limit;
+  public mixed $max_limit;
 }

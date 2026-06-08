@@ -7,12 +7,12 @@ use Symfony\Component\Validator\Constraints\Type;
 
 class LogsFilterCommand implements CommandInterface
 {
-    #[Type(type: 'string')]
-    public $q;
+  #[Type(type: 'string')]
+  public mixed $q;
 
-    #[Type(type: 'string')]
-    public $type;
+  #[Type(type: 'string')]
+  public mixed $type;
 
-    #[Type(type: 'int')]
-    public $user;
+  #[Type(type: 'int')]
+  public mixed $user;
 }

@@ -13,14 +13,14 @@ use function Aws\constantly;
 
 class ConfigNameCommand implements CommandInterface
 {
-    #[Sequentially(constraints: [
-        new NotBlank(),
-        new Length(max: 60),
-    ])]
-    #[ConfigMap(type: 'str', key: 'system.name')]
-    public $system_name;
+  #[Sequentially(constraints: [
+    new NotBlank(),
+    new Length(max: 60),
+  ])]
+  #[ConfigMap(type: 'str', key: 'system.name')]
+  public mixed $system_name;
 
-    #[Type('bool')]
-    #[ConfigMap(type: 'bool', key: 'home.header.enabled')]
-    public $home_header_enabled;
+  #[Type('bool')]
+  #[ConfigMap(type: 'bool', key: 'home.header.enabled')]
+  public mixed $home_header_enabled;
 }

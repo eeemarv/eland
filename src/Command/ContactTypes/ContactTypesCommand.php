@@ -11,17 +11,17 @@ use Symfony\Component\Validator\Constraints\Sequentially;
 #[UniqueContactType(['properties' => ['name', 'abbrev']], groups: ['add', 'edit'])]
 class ContactTypesCommand implements CommandInterface
 {
-  public $id;
+  public mixed $id;
 
   #[Sequentially(constraints: [
     new NotBlank(groups: ['add', 'edit']),
     new Length(max: 20, groups: ['add', 'edit']),
   ])]
-  public $name;
+  public mixed $name;
 
   #[Sequentially(constraints: [
     new NotBlank(groups: ['add', 'edit']),
     new Length(max: 5, groups: ['add', 'edit', 'del']),
   ])]
-  public $abbrev;
+  public mixed $abbrev;
 }

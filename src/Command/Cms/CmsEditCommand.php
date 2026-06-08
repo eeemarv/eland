@@ -14,32 +14,32 @@ class CmsEditCommand
     new NotNull(),
     new Type(type: 'string'),
   ])]
-  public $route;
+  public mixed $route;
 
   #[ExpressionSyntax(
     allowedVariables: ['0', '1']
   )]
-  public $route_en;
+  public mixed $route_en;
 
   #[ExpressionSyntax(
     allowedVariables: ['admin', 'user', 'guest', 'anonymous']
   )]
-  public $role;
+  public mixed $role;
 
   #[ExpressionSyntax(
     allowedVariables: ['0', '1']
   )]
-  public $role_en;
+  public mixed $role_en;
 
   #[Sequentially(constraints: [
     new NotNull(),
     new Json(),
   ])]
-  public $all_params;
+  public mixed $all_params;
 
   #[Sequentially(constraints: [
     new NotNull(),
     new Json(),
   ])]
-  public $content;
+  public mixed $content;
 }

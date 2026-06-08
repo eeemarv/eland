@@ -14,25 +14,25 @@ use Symfony\Component\Validator\Constraints\Type;
 class UsersBulkEmailCommand implements CommandInterface
 {
   #[BulkSelectNotEmpty(message: 'bulk_select.not_empty.users')]
-  public $selected;
+  public mixed $selected;
 
   #[Sequentially(constraints: [
     new NotBlank(),
     new Type(type: 'string'),
     new Length(max: 200),
   ])]
-  public $subject;
+  public mixed $subject;
 
   #[Sequentially(constraints: [
     new Type(type: 'string'),
     new PlainTextLength(min: 30, max: 10000),
   ])]
-  public $json_content;
+  public mixed $json_content;
 
   #[Type(type: 'bool')]
-  public $copy;
+  public mixed $copy;
 
   #[Type(type: 'bool')]
   #[IsTrue()]
-  public $verify;
+  public mixed $verify;
 }

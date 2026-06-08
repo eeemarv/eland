@@ -13,19 +13,19 @@ use Symfony\Component\Validator\Constraints\Sequentially;
 #[GroupSequence(groups: ['LoginCommand', 'login'])]
 class LoginCommand implements CommandInterface
 {
-    #[Sequentially(constraints: [
-        new NotBlank(),
-        new Length(min: 2, max: 100),
-    ])]
-    public $login;
+  #[Sequentially(constraints: [
+    new NotBlank(),
+    new Length(min: 2, max: 100),
+  ])]
+  public mixed $login;
 
-    #[Sequentially(constraints: [
-        new NotBlank(),
-        new Length(min: 5, max: 100),
-    ])]
-    public $password;
+  #[Sequentially(constraints: [
+    new NotBlank(),
+    new Length(min: 5, max: 100),
+  ])]
+  public mixed $password;
 
-    public $is_master;
-    public $id;
-    public $password_hashing_updated;
+  public mixed $is_master;
+  public mixed $id;
+  public mixed $password_hashing_updated;
 }

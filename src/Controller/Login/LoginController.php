@@ -65,7 +65,7 @@ class LoginController extends AbstractController
     {
       $command = $form->getData();
 
-      if ($command->is_master)
+      if (isset($command->is_master) && $command->is_master)
       {
         $su->set_master_login($pp->schema());
 
@@ -78,8 +78,7 @@ class LoginController extends AbstractController
 
         if ($location)
         {
-          header('Location: ' . $location);
-          exit;
+          return $this->redirect($location);
         }
 
         $pp_ary = [

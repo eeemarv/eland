@@ -5,7 +5,8 @@ twig:
     '%kernel.project_dir%/public': public
   debug: '%kernel.debug%'
   strict_variables: '%kernel.debug%'
-  form_themes: ['form_3.html.twig']
+  form_themes:
+    - 'form_3.html.twig'
   globals:
     env_git_rev_short: '%env(substr8:GIT_REV)%'
     env_map_access_token: '%env(MAP_ACCESS_TOKEN)%'

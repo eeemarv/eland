@@ -14,23 +14,23 @@ class UsersConfigPeriodicMailCommand implements CommandInterface
     new NotNull(),
     new Type(type: 'int'),
   ])]
-  public $days;
+  public mixed $days;
 
   #[Sequentially(constraints: [
     new NotNull(),
     new Type(type: 'bool'),
   ])]
-  public $user_new_default_enabled;
+  public mixed $user_new_default_enabled;
 
   #[Sequentially(constraints: [
     new NotNull(),
     new Json(),
   ])]
-  public $block_layout;
+  public mixed $block_layout;
 
   #[Sequentially(constraints: [
     new NotNull(),
     new Json(),
   ])]
-  public $block_select_options;
+  public mixed $block_select_options;
 }

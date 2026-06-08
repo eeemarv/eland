@@ -293,6 +293,7 @@ label:
   canceled: Geannuleerd
   captcha: Anti-spam verificatiecode
   category: Categorie
+  change: Verandering
   code: Code
   columns: Kolommen
   comment: Commentaar
@@ -304,6 +305,7 @@ label:
   counterparty: Tegenpartij
   created: Aanmaak
   created_at: Aangemaakt
+  created_by: Aangemaakt door
   creation_time: Tijdstip Aanmaak
   current_balance: Huidig saldo
   days: Dagen
@@ -1279,26 +1281,161 @@ mollie_checkout:
       =1 {Je hebt een openstaand verzoek tot betaling.}
       other {Je hebt # openstaande verzoeken tot betaling.}
     }
+  flash:
+    test_modus: >-
+      TEST modus! Er zijn momenteel geen echte
+      betalingen mogelijk.
 
 mollie_config:
+  nav: Modus
   title: Mollie configuratie
   explain: >-
-    Om betalingen met {link_open}Mollie{link_close}
+    Om betalingen met Mollie
     te ontvangen moet je op de
     {ao}Mollie-website{ac} een account
     aanmaken voor je organisatie. Dit kan enkel
     voor organisaties met handelsregisternummer
     en zakelijk bankaccount.
-  apikey:
-    label: Mollie apikey
-    help: >-
-      Kopiëer de apikey die je bekomt van
-      de {ao}Mollie website{ac}.
-      Ze moet beginnen met live_ of test_.
-      (Met test_ kan je enkel testen en geen
-      betalingen ontvangen.)
+    Wanneer je account goedgekeurd is, kan je in het
+    dashboard van de {ao}Mollie-website{ac} op de
+    "developers" pagina sleutels
+    of keys aanmaken die nodig zijn om de betalingen te
+    integreren. Die sleutels zijn te kopiëren en hier
+    in de Mollie configuratie te bewaren. Voor enkel
+    te testen heb je een <code>test key</code> en
+    <code>webhook key</code> nodig.
+    Voor betalingen te kunnen ontvangen heb je een
+    <code>live key</code> en een <code>webhook key</code>
+    nodig.
+  mode:
+    keys_missing: >-
+      Keys moeten worden opgeladen om
+      dit formulier te deblokkeren
+    label: Mollie Integratie Modus
+    none:
+      label: Geen
+      title: >-
+        Interactie met Mollie is uitgeschakeld
+    test:
+      label: Test (Test Api Key & Webhook Key nodig)
+      title: >-
+        Testen van de Mollie API zonder daadwerkelijke
+        betalingen. Een Mollie Test Api Key en een Webhook
+        Key zijn nodig.
+    live:
+      label: Live (Live Api Key & Webhook Key nodig)
+      title: >-
+        Actieve modus om betalingen met Mollie te ontvangen.
+        Een Mollie Live Api Key en een Webhook Key zijn nodig.
   flash:
-    change: De Mollie Apikey is aangepast
+    change: De Mollie Integratie Modus is aangepast
+  log_comment:
+    help: >-
+      Deze commentaar wordt opgeslagen in de {ao}historiek
+      van de Mollie Configuratie{ac}
+
+mollie_config_test_api_key:
+  nav: Test key
+  title: >-
+    {operation_type, select,
+      update {Mollie Test Api Key Aanpassen}
+      add {Mollie Test Api Key Toevoegen}
+      other {** ERR **}
+    }
+  test_api_key:
+    label: >-
+      {operation_type, select,
+        update {Nieuwe Mollie Test Api Key}
+        add {Mollie Test Api Key}
+        other {** ERR **}
+      }
+    help: >-
+      Kopiëer de test api key die je bekomt van
+      de {ao}Mollie website{ac} onder menu "Developers".
+      De test api key moet beginnen met <code>test_</code>.
+      Met de Mollie Test Api Key kan je enkel testen en geen
+      betalingen ontvangen.
+  status:
+    current_key: >-
+      Huidige Test Key
+    no_key_yet: >-
+      Er is nog geen test key ingesteld
+  flash:
+    success: >-
+      {operation_type, select,
+        update {De Mollie Test Api Key is aangepast}
+        add {De Mollie Test Api Key is toegevoegd}
+        other {** ERR **}
+      }
+mollie_config_live_api_key:
+  nav: Live key
+  title: >-
+    {operation_type, select,
+      update {Mollie Live Api Key Aanpassen}
+      add {Mollie Live Api Key Toevoegen}
+      other {** ERR **}
+    }
+  live_api_key:
+    label: >-
+      {operation_type, select,
+        update {Nieuwe Mollie Live Api Key}
+        add {Mollie Live Api Key}
+        other {** ERR **}
+      }
+    help: >-
+      Kopiëer de live api key die je bekomt van
+      de {ao}Mollie website{ac} onder menu "Developers".
+      De live api key moet beginnen met <code>live_</code>.
+      De Mollie Live Api Key heb je nodig om
+      betalingen te kunnen ontvangen.
+  status:
+    current_key: >-
+      Huidige Live Key
+    no_key_yet: >-
+      Er is nog geen live key ingesteld
+  flash:
+    success: >-
+      {operation_type, select,
+        update {De live Mollie Api Key is aangepast}
+        add {De live Mollie Api Key is toegevoegd}
+        other {** ERR **}
+      }
+mollie_config_webhook_key:
+  nav: Webhook key
+  title: >-
+    {operation_type, select,
+      update {Mollie Webhook Key Aanpassen}
+      add {Mollie Webhook Key Toevoegen}
+      other {** ERR **}
+    }
+  webhook_key:
+    label: >-
+      {operation_type, select,
+        update {Nieuwe Mollie Webhook Key}
+        add {Mollie Webhook Key}
+        other {** ERR **}
+      }
+    help: >-
+      Kopiëer de Webhook Key die je bekomt van
+      de {ao}Mollie website{ac} onder menu "Developers".
+      De Mollie Webhook Key heb je nodig om nieuwe
+      data vanuit Mollie terug te koppelen naar het systeem.
+  status:
+    current_key: >-
+      Huidige Webhook Key
+    no_key_yet: >-
+      Er is nog geen Webhook Key ingesteld
+  flash:
+    success: >-
+      {operation_type, select,
+        update {De Mollie Webhook Key is aangepast}
+        add {De Mollie Webhook Key is toegevoegd}
+        other {** ERR **}
+      }
+mollie_config_history:
+  nav: Historiek
+  title: Historiek Mollie Configuratie
+
 
 mollie_payments:
   title: Mollie Betaalverzoeken

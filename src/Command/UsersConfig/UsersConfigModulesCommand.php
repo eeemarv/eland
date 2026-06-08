@@ -10,45 +10,45 @@ class UsersConfigModulesCommand implements CommandInterface
 {
   #[Type(type: 'bool')]
   #[ConfigMap(type: 'bool', key: 'users.fields.full_name.enabled')]
-  public $full_name_enabled;
+  public mixed $full_name_enabled;
 
   #[Type(type: 'bool')]
   #[ConfigMap(type: 'bool', key: 'users.fields.postcode.enabled')]
-  public $postcode_enabled;
+  public mixed $postcode_enabled;
 
   #[Type(type: 'bool')]
   #[ConfigMap(type: 'bool', key: 'users.fields.birthdate.enabled')]
-  public $birthdate_enabled;
+  public mixed $birthdate_enabled;
 
   #[Type(type: 'bool')]
   #[ConfigMap(type: 'bool', key: 'users.fields.hobbies.enabled')]
-  public $hobbies_enabled;
+  public mixed $hobbies_enabled;
 
   #[Type(type: 'bool')]
   #[ConfigMap(type: 'bool', key: 'users.fields.comments.enabled')]
-  public $comments_enabled;
+  public mixed $comments_enabled;
 
   #[Type(type: 'bool')]
   #[ConfigMap(type: 'bool', key: 'users.fields.admin_comments.enabled')]
-  public $admin_comments_enabled;
+  public mixed $admin_comments_enabled;
 
   #[Type(type: 'bool')]
   #[ConfigMap(type: 'bool', key: 'users.new.enabled')]
-  public $new_enabled;
+  public mixed $new_enabled;
 
   #[Type(type: 'bool')]
   #[ConfigMap(type: 'bool', key: 'users.leaving.enabled')]
-  public $leaving_enabled;
+  public mixed $leaving_enabled;
 
   #[Type(type: 'bool')]
   #[ConfigMap(type: 'bool', key: 'intersystem.enabled')]
-  public $intersystem_enabled;
+  public mixed $intersystem_enabled;
 
   #[Type(type: 'bool')]
   #[ConfigMap(type: 'bool', key: 'periodic_mail.enabled')]
-  public $periodic_mail_enabled;
+  public mixed $periodic_mail_enabled;
 
   #[Type(type: 'bool')]
   #[ConfigMap(type: 'bool', key: 'mollie.enabled')]
-  public $mollie_enabled;
+  public mixed $mollie_enabled;
 }

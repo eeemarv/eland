@@ -19,11 +19,11 @@ class TransactionsCurrencyCommand implements CommandInterface
     new Length(min: 1, max: 40),
   ])]
   #[ConfigMap(type: 'str', key: 'transactions.currency.name')]
-  public $currency;
+  public mixed $currency;
 
   #[Type(type: 'bool')]
   #[ConfigMap(type: 'bool', key: 'transactions.currency.timebased_en')]
-  public $timebased_en;
+  public mixed $timebased_en;
 
   #[Sequentially(constraints: [
     new NotBlank(),
@@ -31,5 +31,5 @@ class TransactionsCurrencyCommand implements CommandInterface
     new Range(min: 1, max: 3600),
   ])]
   #[ConfigMap(type: 'int', key: 'transactions.currency.per_hour_ratio')]
-  public $per_hour_ratio;
+  public mixed $per_hour_ratio;
 }

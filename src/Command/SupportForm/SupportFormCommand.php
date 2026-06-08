@@ -14,8 +14,8 @@ class SupportFormCommand implements CommandInterface
     new NotBlank(groups: ['send']),
     new Length(min: 10, max: 10000, groups: ['send']),
   ])]
-  public $message;
+  public mixed $message;
 
   #[Type(type: 'bool', groups: ['send'])]
-  public $cc;
+  public mixed $cc;
 }

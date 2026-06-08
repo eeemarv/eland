@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Constraints\Type;
 class UsersNameCommand Implements CommandInterface
 {
   #[Type(type: 'int')]
-  public $id;
+  public mixed $id;
 
   #[Sequentially(constraints: [
     new Type(type: 'string'),
@@ -24,5 +24,5 @@ class UsersNameCommand Implements CommandInterface
     new NotNull(),
     new NotBlank(),
   ])]
-  public $name;
+  public mixed $name;
 }

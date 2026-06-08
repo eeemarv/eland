@@ -11,13 +11,13 @@ use Symfony\Component\Validator\Constraints\Type;
 class UsersBulkMaxLimitCommand implements CommandInterface
 {
   #[BulkSelectNotEmpty(message: 'bulk_select.not_empty.users')]
-  public $selected;
+  public mixed $selected;
 
   #[Type(type: 'int')]
   #[PositiveOrZero()]
-  public $max_limit;
+  public mixed $max_limit;
 
   #[Type(type: 'bool')]
   #[IsTrue()]
-  public $verify;
+  public mixed $verify;
 }

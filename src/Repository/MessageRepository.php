@@ -101,7 +101,7 @@ class MessageRepository
   ):int
 	{
 		$this->db->insert($schema->str() . '.messages', $message);
-		return (int) $this->db->lastInsertId($schema . '.messages_id_seq');
+		return (int) $this->db->lastInsertId($schema->str() . '.messages_id_seq');
 	}
 
   // not used

@@ -10,10 +10,10 @@ use Symfony\Component\Validator\Constraints\Sequentially;
 
 class ConfigLandingPageCommand implements CommandInterface
 {
-    #[Sequentially(constraints: [
-        new NotNull(),
-        new NotBlank(),
-    ])]
-    #[ConfigMap(type: 'str', key: 'system.default_landing_page')]
-    public $landing_page;
+  #[Sequentially(constraints: [
+    new NotNull(),
+    new NotBlank(),
+  ])]
+  #[ConfigMap(type: 'str', key: 'system.default_landing_page')]
+  public mixed $landing_page;
 }

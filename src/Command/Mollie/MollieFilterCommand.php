@@ -9,17 +9,17 @@ use Symfony\Component\Validator\Constraints\Type;
 class MollieFilterCommand implements CommandInterface
 {
   #[Type(type: 'string')]
-  public $q;
+  public mixed $q;
 
   #[Type(type: 'int')]
-  public $user;
+  public mixed $user;
 
   #[Choice(choices: ['open', 'paid', 'canceled'], multiple: true)]
-  public $status;
+  public mixed $status;
 
   #[Type(type: 'string')]
-  public $from_date;
+  public mixed $from_date;
 
   #[Type(type: 'string')]
-  public $to_date;
+  public mixed $to_date;
 }

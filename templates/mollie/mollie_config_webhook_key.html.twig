@@ -1,0 +1,32 @@
+{%- extends 'mollie/config/mollie_config_key_form.html.twig' -%}
+
+{%- block form_header_title -%}
+  {{- 'mollie_config_webhook_key.title'|trans({
+    'operation_type': current ? 'update' : 'add',
+  }) -}}
+{%- endblock form_header_title -%}
+
+{%- block form_header_title_status_current_key -%}
+  {{- 'mollie_config_webhook_key.status.current_key'|trans -}}
+{%- endblock form_header_title_status_current_key -%}
+
+{%- block form_no_key_yet -%}
+  {{- 'mollie_config_webhook_key.status.no_key_yet'|trans -}}
+{%- endblock form_no_key_yet -%}
+
+{%- block form_a -%}
+
+  {{- form_row(form.webhook_key, {
+    'label': 'mollie_config_webhook_key.webhook_key.label',
+    'label_translation_parameters': {
+      'operation_type': current ? 'update' : 'add',
+    },
+    'addon': ux_icon('lucide:key-round'),
+    'help_html': true,
+    'help': 'mollie_config_webhook_key.webhook_key.help',
+    'help_translation_parameters': {
+      'ao': '<a href="https://www.mollie.com">',
+      'ac': '</a>',
+    }
+  }) -}}
+{%- endblock form_a -%}

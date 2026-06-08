@@ -11,7 +11,7 @@
 {%- if pp_has_role('admin')
   or user_new_pane_en
   or user_leaving_pane_en -%}
-<ul class="nav nav-tabs" id="nav-tabs">
+<ul class="nav nav-tabs">
   <li{%- if all_params.status == 'active' %} class="active"{%- endif -%}>
     <a  href="{{- path('users'|var_route, {'status': 'active'}|pp) -}}">
       {%- if pp_has_role('admin') -%}

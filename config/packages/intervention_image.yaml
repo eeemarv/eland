@@ -1,0 +1,4 @@
+intervention_image:
+  driver: Intervention\Image\Drivers\Imagick\Driver
+  options:
+    autoOrientation: true

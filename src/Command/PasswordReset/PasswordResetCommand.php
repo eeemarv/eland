@@ -15,5 +15,5 @@ class PasswordResetCommand implements CommandInterface
         new Email(groups: ['send']),
         new EmailUniqueToActiveUser(groups: ['send']),
     ])]
-    public $email;
+    public mixed $email;
 }

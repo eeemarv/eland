@@ -12,14 +12,14 @@ use Symfony\Component\Validator\Constraints\Type;
 class UsersBulkStatusCommand implements CommandInterface
 {
   #[BulkSelectNotEmpty(message: 'bulk_select.not_empty.users')]
-  public $selected;
+  public mixed $selected;
 
   #[NotNull()]
   #[Type(type: 'int')]
   #[UserStatus()]
-  public $status;
+  public mixed $status;
 
   #[Type(type: 'bool')]
   #[IsTrue()]
-  public $verify;
+  public mixed $verify;
 }

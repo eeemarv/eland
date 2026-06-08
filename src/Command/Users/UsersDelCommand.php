@@ -10,5 +10,5 @@ class UsersDelCommand implements CommandInterface
 {
   #[IsTrue()]
   #[Type(type: 'bool')]
-  public $verify;
+  public mixed $verify;
 }

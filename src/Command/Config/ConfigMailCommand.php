@@ -14,19 +14,19 @@ class ConfigMailCommand implements CommandInterface
 {
   #[Type(type: 'bool')]
   #[ConfigMap(type: 'bool', key: 'mail.enabled')]
-  public $enabled;
+  public mixed $enabled;
 
   #[Sequentially(constraints: [
       new NotBlank(),
       new Length(max: 20),
   ])]
   #[ConfigMap(type: 'str', key: 'mail.tag')]
-  public $tag;
+  public mixed $tag;
 
   #[Sequentially(constraints: [
     new NotNull(),
     new NotBlank(),
   ])]
   #[ConfigMap(type: 'str', key: 'mail.style.background')]
-  public $background;
+  public mixed $background;
 }

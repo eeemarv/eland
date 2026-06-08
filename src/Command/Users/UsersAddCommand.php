@@ -22,9 +22,9 @@ class UsersAddCommand Implements CommandInterface
     new NotNull(),
     new NotBlank(),
   ])]
-  public $name;
+  public mixed $name;
 
   #[Email()]
   #[NotNull()]
-  public $email;
+  public mixed $email;
 }

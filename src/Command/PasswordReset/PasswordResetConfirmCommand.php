@@ -15,5 +15,5 @@ class PasswordResetConfirmCommand implements CommandInterface
         new Length(min: 5, max: 100, groups: ['edit']),
         new PasswordStrength(groups: ['edit']),
     ])]
-    public $password;
+    public mixed$password;
 }

@@ -1,0 +1,57 @@
+{%- extends 'mollie/config/mollie_config_base.html.twig' -%}
+{%- import 'macro/lbl.html.twig' as l -%}
+
+{%- block data -%}
+<table class="table table-bordered table-striped table-hover">
+  <thead>
+    <tr>
+      <th>
+        {{- 'label.created_at'|trans -}}
+      </th>
+      <th>
+        {{- 'label.name'|trans -}}
+      </th>
+      <th>
+        {{- 'label.created_by'|trans -}}
+      </th>
+      <th>
+        {{- 'label.comment'|trans -}}
+      </th>
+      <th>
+        {{- 'label.change'|trans -}}
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+  {%- for h in history_ary -%}
+    <tr>
+      <td>
+        {{- h.created_at|date_format('min') -}}
+      </td>
+      <td>
+        {{- h.name -}}
+      </td>
+      <td>
+        <a href="{{- path('users_show', {'id': h.created_by}|pp) -}}">
+          {{- account(h.created_by) -}}
+        </a>
+      </td>
+      <td>
+        {{- h.comment -}}
+      </td>
+      <td>
+        {%- if h.new_data is not null -%}
+          {%- if h.new_data is same as true -%}
+            {{- l.txt_label('label.enabled'|trans, 'success') -}}
+          {%- elseif h.new_data is same as false -%}
+            {{- l.txt_label('label.disabled'|trans, 'danger') -}}
+          {%- else -%}
+            {{- h.old_data }} -> {{ h.new_data -}}
+          {%- endif -%}
+        {%- endif -%}
+      </td>
+    </tr>
+  {%- endfor -%}
+  </tbody>
+</table>
+{%- endblock data -%}

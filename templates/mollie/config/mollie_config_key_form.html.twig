@@ -1,0 +1,72 @@
+{%- extends 'mollie/config/mollie_config_form.html.twig' -%}
+
+{%- set cancel_route = 'mollie_config' -%}
+
+{%- block form_header -%}
+<div class="panel-heading">
+  <h2 class="panel-title mb-2">
+    <b>
+      {%- block form_header_title -%}
+      {%- endblock form_header_title -%}
+    </b>
+  </h2>
+  {%- if current -%}
+  <h3 class="panel-title">
+    {%- block form_header_title_status_current_key -%}
+    {%- endblock form_header_title_status_current_key -%}
+  </h3>
+  <table class="table table-bordered table-striped table-hover">
+    <thead>
+      <tr>
+        <th>
+          {{- 'label.created'|trans -}}
+        </th>
+        <th>
+          {{- 'label.created_by'|trans -}}
+        </th>
+        <th>
+          {{- 'label.comment'|trans -}}
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          {{- current.created_at|date_format('min') -}}
+        </td>
+        <td>
+          {%- if current.created_by -%}
+          <a href="{{- path('users_show', {'id': current.created_by}|pp) -}}">
+            {{- current.user_code ?? '***' }} {{ current.username -}}
+          </a>
+          {%- else -%}
+            ***
+          {%- endif -%}
+        </td>
+        <td>
+          {{- current.comment -}}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  {%- else -%}
+    <h3 class="panel-title">
+      {{- 'label.status'|trans -}}
+    </h3>
+    <p class="text-danger">
+      <b>
+        {%- block form_no_key_yet -%}
+        {%- endblock form_no_key_yet -%}
+      </b>
+    </p>
+  {%- endif -%}
+</div>
+{%- endblock form_header -%}
+
+{%- block form_submit_btn -%}
+  {%- if current -%}
+    {%- include 'form/submit_edit_btn.html.twig' -%}
+  {%- else -%}
+    {%- include 'form/submit_add_btn.html.twig' -%}
+  {%- endif -%}
+{%- endblock form_submit_btn -%}

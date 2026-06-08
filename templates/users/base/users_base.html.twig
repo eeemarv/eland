@@ -97,6 +97,7 @@
     </li>
     {%- endif -%}
 
+    {%- if config_bool('mollie.enabled') -%}
     <li{%- if active_local_admin_menu is defined and 'mollie_payments' == active_local_admin_menu %} class="active"{%- endif -%}>
       <a href="{{- path('mollie_payments', {}|pp) -}}">
         <twig:ux:icon name="lucide:euro"/>
@@ -104,6 +105,7 @@
         {{- ('mollie_payments.menu')|trans -}}
       </a>
     </li>
+    {%- endif -%}
   {%- endblock menu_items -%}
 {%- endembed -%}
 {%- endblock local_admin_menu -%}

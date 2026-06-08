@@ -17,5 +17,5 @@ class UsersPasswordEditCommand Implements CommandInterface
     new Length(min: 5, max: 100, groups: ['user', 'admin']),
     new PasswordStrength(groups: ['user']),
   ])]
-  public $password;
+  public mixed $password;
 }

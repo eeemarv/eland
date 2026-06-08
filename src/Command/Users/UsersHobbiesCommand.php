@@ -10,5 +10,5 @@ class UsersHobbiesCommand Implements CommandInterface
 {
   #[Type(type: 'string')]
   #[Length(max: 50000)]
-  public $hobbies;
+  public mixed $hobbies;
 }

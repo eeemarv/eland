@@ -17,24 +17,24 @@ class RegisterFormCommand implements CommandInterface
     new Email(groups: ['send']),
     new EmailNotRegisteredYet(groups: ['send']),
   ])]
-  public $email;
+  public mixed $email;
 
   #[NotBlank(groups: ['send'])]
-  public $first_name;
+  public mixed $first_name;
 
   #[NotBlank(groups: ['send'])]
-  public $last_name;
+  public mixed $last_name;
 
   #[Sequentially(constraints: [
     new NotBlank(groups: ['send']),
     new Length(min: 4, max: 10, groups: ['send'])
   ])]
-  public $postcode;
+  public mixed $postcode;
 
-  public $mobile;
+  public mixed $mobile;
 
-  public $phone;
+  public mixed $phone;
 
   #[Captcha(groups: ['send'])]
-  public $captcha;
+  public mixed $captcha;
 }

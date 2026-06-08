@@ -13,11 +13,11 @@
 }
 
 .avatar-inline {
-  --avatar-size: 2.5rem;
+  --avatar-size: 3.5rem;
   width: var(--avatar-size);
   height: var(--avatar-size);
-  font-size: calc(var(--avatar-size) * 0.60);
-  margin: -0.3rem 0;
+  font-size: calc(var(--avatar-size) * 0.6);
+  margin: calc(var(--avatar-size) * -.6) 0;
 }
 
 .avatar {

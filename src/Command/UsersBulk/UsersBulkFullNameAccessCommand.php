@@ -12,13 +12,13 @@ use Symfony\Component\Validator\Constraints\Type;
 class UsersBulkFullNameAccessCommand implements CommandInterface
 {
   #[BulkSelectNotEmpty(message: 'bulk_select.not_empty.users')]
-  public $selected;
+  public mixed $selected;
 
   #[NotNull()]
   #[Access()]
-  public $access;
+  public mixed $access;
 
   #[Type(type: 'bool')]
   #[IsTrue()]
-  public $verify;
+  public mixed $verify;
 }

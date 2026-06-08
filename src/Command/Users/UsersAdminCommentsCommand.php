@@ -10,5 +10,5 @@ class UsersAdminCommentsCommand Implements CommandInterface
 {
   #[Type(type: 'string')]
   #[Length(max: 50000)]
-  public $admin_comments;
+  public mixed $admin_comments;
 }

@@ -9,8 +9,8 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 #[DocMapUniqueName(groups: ['edit'])]
 class DocsMapCommand implements CommandInterface
 {
-    #[NotBlank(groups: ['edit'])]
-    public $name;
+  #[NotBlank(groups: ['edit'])]
+  public mixed $name;
 
-    public $id;
+  public mixed $id;
 }

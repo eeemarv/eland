@@ -3,49 +3,52 @@
   &nbsp;
 </th>
 
-{%- if cols.code -%}
+{%- if cols.code is defined and cols.code -%}
 <th data-priority="1" data-dt-order="asc">
   {{- 'label.code'|trans -}}
 </th>
 {%- endif -%}
 
-{%- if cols.name -%}
+{%- if cols.name is defined and cols.name -%}
 <th data-priority="1">
   {{- 'label.name'|trans -}}
 </th>
 {%- endif -%}
 
-{%- if cols.full_name -%}
+{%- if cols.full_name is defined and cols.full_name -%}
 <th data-priority="4">
   {{- 'label.full_name'|trans -}}
 </th>
 {%- endif -%}
 
-{%- if cols.full_name_access -%}
+{%- if cols.full_name_access is defined and cols.full_name_access -%}
 <th data-priority="4">
   {{- 'label.full_name_access'|trans -}}
 </th>
 {%- endif -%}
 
-{%- if cols.postcode -%}
+{%- if cols.postcode is defined and cols.postcode -%}
 <th data-priority="2">
   {{- 'label.postcode'|trans -}}
 </th>
 {%- endif -%}
 
-{%- if cols.role -%}
+{%- if cols.role is defined and cols.role -%}
 <th data-priority="3">
   {{- 'label.role'|trans -}}
 </th>
 {%- endif -%}
 
-{%- if cols.balance -%}
+{%- if cols.balance is defined and cols.balance -%}
 <th data-type="num" data-priority="5">
   {{- 'label.balance'|trans -}}
 </th>
 {%- endif -%}
 
-{%- if cols.balance_on_date and cols.balance_date -%}
+{%- if cols.balance_on_date is defined
+  and cols.balance_on_date
+  and cols.balance_date is defined
+  and cols.balance_date -%}
 <th data-type="num" data-priority="6">
   {{- 'label.balance_on_date_var'|trans({
     'date': cols.balance_date|date_format('day')
@@ -53,129 +56,131 @@
 </th>
 {%- endif -%}
 
-{%- if cols.min_limit -%}
+{%- if cols.min_limit is defined and cols.min_limit -%}
 <th data-type="num" data-priority="7">
   {{- 'label.min'|trans -}}
 </th>
 {%- endif -%}
 
-{%- if cols.max_limit -%}
+{%- if cols.max_limit is defined and cols.max_limit -%}
 <th data-type="num" data-priority="7">
   {{- 'label.max'|trans -}}
 </th>
 {%- endif -%}
 
-{%- if cols.comments -%}
+{%- if cols.comments is defined and cols.comments -%}
 <th data-priority="10">
   {{- 'label.comments'|trans -}}
 </th>
 {%- endif -%}
 
-{%- if cols.hobbies -%}
+{%- if cols.hobbies is defined and cols.hobbies -%}
 <th data-priority="12">
   {{- 'label.hobbies'|trans -}}
 </th>
 {%- endif -%}
 
-{%- if cols.birthdate -%}
+{%- if cols.birthdate is defined and cols.birthdate -%}
 <th data-type="num" data-priority="9">
   {{- 'label.birthdate'|trans -}}
 </th>
 {%- endif -%}
 
-{%- if cols.admin_comments -%}
+{%- if cols.admin_comments is defined and cols.admin_comments -%}
 <th data-priority="10">
   {{- 'label.admin_comments'|trans -}}
 </th>
 {%- endif -%}
 
-{%- if cols.periodic_overview -%}
+{%- if cols.periodic_overview is defined and cols.periodic_overview -%}
 <th data-priority="8">
   {{- 'label.periodic_overview_short'|trans -}}
 </th>
 {%- endif -%}
 
-{%- if cols.created_at -%}
+{%- if cols.created_at is defined and cols.created_at -%}
 <th data-type="num" data-priority="12">
   {{- 'label.created'|trans -}}
 </th>
 {%- endif -%}
 
-{%- if cols.last_edit_at -%}
+{%- if cols.last_edit_at is defined and cols.last_edit_at -%}
 <th data-type="num" data-priority="13">
   {{- 'label.modified'|trans -}}
 </th>
 {%- endif -%}
 
-{%- if cols.activated_at -%}
+{%- if cols.activated_at is defined and cols.activated_at -%}
 <th data-type="num" data-priority="13">
   {{- 'label.activated'|trans -}}
 </th>
 {%- endif -%}
 
-{%- if cols.last_login_at -%}
+{%- if cols.last_login_at is defined and cols.last_login_at -%}
 <th data-type="num" data-priority="14">
   {{- 'label.last_login'|trans -}}
 </th>
 {%- endif -%}
 
-{%- for abbrev, b in cols.contacts -%}
-{%- if b -%}
-<th data-priority="6">
-  {{- abbrev -}}
-</th>
+{%- if cols.contacts is defined -%}
+  {%- for abbrev, b in cols.contacts -%}
+  {%- if b -%}
+  <th data-priority="6">
+    {{- abbrev -}}
+  </th>
+  {%- endif -%}
+  {%- endfor -%}
 {%- endif -%}
-{%- endfor -%}
 
-{%- if cols.distance -%}
+{%- if cols.distance is defined and cols.distance -%}
 <th data-type="num" data-priority="8">
   {{- 'label.distance'|trans -}}
 </th>
 {%- endif -%}
 
-{%- if cols.mollie -%}
+{%- if cols.mollie is defined and cols.mollie -%}
 <th data-priority="8">
   {{- 'users_list.cols.mollie.label'|trans -}}
 </th>
 {%- endif -%}
 
-{%- if cols.wants -%}
+{%- if cols.wants is defined and cols.wants -%}
 <th data-type="num" data-priority="10">
   {{- 'label.wants'|trans -}}
 </th>
 {%- endif -%}
 
-{%- if cols.offers -%}
+{%- if cols.offers is defined and cols.offers -%}
 <th data-type="num" data-priority="10">
   {{- 'label.offers'|trans -}}
 </th>
 {%- endif -%}
 
-{%- if cols.offers_and_wants -%}
+{%- if cols.offers_and_wants is defined and cols.offers_and_wants -%}
 <th data-type="num" data-priority="9">
   {{- 'label.offers_and_wants'|trans -}}
 </th>
 {%- endif -%}
 
-{%- if cols.transactions_in -%}
+{%- if cols.transactions_in is defined and cols.transactions_in -%}
 <th data-type="num" data-priority="10">
   {{- 'users_list.cols.transactions_in.label'|trans -}} {# No priority set, will be hidden early #}
 </th>
 {%- endif -%}
 
-{%- if cols.transactions_out -%}
+{%- if cols.transactions_out is defined and cols.transactions_out -%}
 <th data-type="num" data-priority="10">
   {{- 'users_list.cols.transactions_out.label'|trans -}} {# No priority set, will be hidden early #}
 </th>
 {%- endif -%}
 
-{%- if cols.transactions_total -%}
+{%- if cols.transactions_total is defined and cols.transactions_total -%}
 <th data-type="num" data-priority="9">
   {{- 'users_list.cols.transactions_total.label'|trans -}}
 </th>
 {%- endif -%}
 
-{%- if cols.amount_in -%}
+{%- if cols.amount_in is defined and cols.amount_in -%}
 <th data-type="num" data-priority="10">
   {{- 'users_list.cols.amount_in.label'|trans({
     'currency': config_str('transactions.currency.name')
@@ -183,7 +188,7 @@
 </th>
 {%- endif -%}
 
-{%- if cols.amount_out -%}
+{%- if cols.amount_out is defined and cols.amount_out -%}
 <th data-type="num" data-priority="10">
   {{- 'users_list.cols.amount_out.label'|trans({
     'currency': config_str('transactions.currency.name')
@@ -191,7 +196,7 @@
 </th>
 {%- endif -%}
 
-{%- if cols.amount_total -%}
+{%- if cols.amount_total is defined and cols.amount_total -%}
 <th data-type="num" data-priority="9"> {# Amounts can be hidden #}
   {{- 'users_list.cols.amount_total.label'|trans({
     'currency': config_str('transactions.currency.name')

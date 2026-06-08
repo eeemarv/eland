@@ -7,12 +7,12 @@
 <ul class="list-group">
   <li class="list-group-item list-group-item-warning">
   {{- form_row(form.log_comment, {
-    'label': 'users.log_comment.label',
-    'help': 'users.log_comment.help',
-    'help_translation_parameters': {
+    'label': label|default('users.log_comment.label'),
+    'help': help|default('users.log_comment.help'),
+    'help_translation_parameters': help_translation_parameters|default({
       'ao': id is defined ? '<a href="' ~ path('users_log', {'id': id}|pp) ~ '">' : '',
       'ac': id is defined ? '</a>' : '',
-    },
+    }),
     'help_html': true,
     'addon': ux_icon('lucide:info'),
   }) -}}

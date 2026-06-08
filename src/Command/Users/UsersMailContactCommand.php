@@ -14,8 +14,8 @@ class UsersMailContactCommand implements CommandInterface
     new NotBlank(),
     new Length(min: 10, max: 10000),
   ])]
-  public $message;
+  public mixed $message;
 
   #[Type(type: 'bool')]
-  public $cc;
+  public mixed $cc;
 }

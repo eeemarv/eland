@@ -116,6 +116,7 @@ class ConfigService
     string $route,
     int|null $user_id,
     Schema $schema,
+    string|null $comment = null,
   ):bool
 	{
 		$current_value = $this->get_int(
@@ -135,6 +136,7 @@ class ConfigService
       route: $route,
       user_id: $user_id,
       schema: $schema,
+      comment: $comment,
     );
 
     $this->clear_cache($schema);
@@ -148,6 +150,7 @@ class ConfigService
     string $route,
     int|null $user_id,
     Schema $schema,
+    string|null $comment = null,
   ):bool
 	{
 		$current_value = $this->get_bool(
@@ -167,6 +170,7 @@ class ConfigService
       route: $route,
       user_id: $user_id,
       schema: $schema,
+      comment: $comment,
     );
 
     $this->clear_cache($schema);
@@ -180,6 +184,7 @@ class ConfigService
     string $route,
     int|null $user_id,
     Schema $schema,
+    string|null $comment = null,
   ):bool
 	{
 		$current_value = $this->get_str(
@@ -199,6 +204,7 @@ class ConfigService
       route: $route,
       user_id: $user_id,
       schema: $schema,
+      comment: $comment,
     );
 
     $this->clear_cache($schema);
@@ -212,6 +218,7 @@ class ConfigService
     string $route,
     int|null $user_id,
     Schema $schema,
+    string|null $comment = null,
   ):bool
 	{
 		if (count(array_filter(array_keys($value), 'is_string')) > 0)
@@ -236,6 +243,7 @@ class ConfigService
       route: $route,
       user_id: $user_id,
       schema: $schema,
+      comment: $comment,
     );
 
     $this->clear_cache($schema);
@@ -325,7 +333,8 @@ class ConfigService
     CommandInterface $command,
     string $route,
     int|null $user_id,
-    Schema $schema
+    Schema $schema,
+    string|null $comment = null,
   ):bool
 	{
 		$callable = function(
@@ -334,8 +343,8 @@ class ConfigService
 			ConfigMap $config_map,
       string $route,
       int|null $user_id,
-			Schema $schema
-		):bool {
+			Schema $schema,
+		) use ($comment):bool {
 			$type = $config_map->type;
 			$set = 'set_' . $type;
 			$value = $command->$property_name;
@@ -348,6 +357,7 @@ class ConfigService
         route: $route,
         user_id: $user_id,
         schema: $schema,
+        comment: $comment,
       );
 		};
 

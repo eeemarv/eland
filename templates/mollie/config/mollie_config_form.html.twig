@@ -1,0 +1,11 @@
+{%- extends 'mollie/config/mollie_config_base.html.twig' -%}
+
+{%- block form_log_comment -%}
+  {%- include 'form/log_comment.html.twig' with {
+    help: 'mollie_config.log_comment.help',
+    help_translation_parameters: {
+      'ao': '<a href="' ~ path('mollie_config_history', {}|pp) ~ '">',
+      'ac': '</a>',
+    }
+  } -%}
+{%- endblock form_log_comment -%}

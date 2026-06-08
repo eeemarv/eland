@@ -12,13 +12,13 @@ use Symfony\Component\Validator\Constraints\Type;
 class TransactionsBulkServiceStuffCommand implements CommandInterface
 {
   #[BulkSelectNotEmpty(message: 'bulk_select.not_empty.transactions')]
-  public $selected;
+  public mixed $selected;
 
   #[NotNull()]
   #[Choice(options: ['service', 'stuff', 'null_service_stuff'])]
-  public $service_stuff;
+  public mixed $service_stuff;
 
   #[Type(type: 'bool')]
   #[IsTrue()]
-  public $verify;
+  public mixed $verify;
 }

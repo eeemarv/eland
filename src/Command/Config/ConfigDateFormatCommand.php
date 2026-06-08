@@ -10,10 +10,10 @@ use Symfony\Component\Validator\Constraints\Sequentially;
 
 class ConfigDateFormatCommand implements CommandInterface
 {
-    #[Sequentially(constraints: [
-        new NotNull(),
-        new NotBlank(),
-    ])]
-    #[ConfigMap(type: 'str', key: 'system.date_format')]
-    public $date_format;
+  #[Sequentially(constraints: [
+    new NotNull(),
+    new NotBlank(),
+  ])]
+  #[ConfigMap(type: 'str', key: 'system.date_format')]
+  public mixed $date_format;
 }

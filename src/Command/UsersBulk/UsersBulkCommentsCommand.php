@@ -11,13 +11,13 @@ use Symfony\Component\Validator\Constraints\Type;
 class UsersBulkCommentsCommand implements CommandInterface
 {
   #[BulkSelectNotEmpty(message: 'bulk_select.not_empty.users')]
-  public $selected;
+  public mixed $selected;
 
   #[Type(type: 'string')]
   #[Length(max: 100)]
-  public $comments;
+  public mixed $comments;
 
   #[Type(type: 'bool')]
   #[IsTrue()]
-  public $verify;
+  public mixed $verify;
 }

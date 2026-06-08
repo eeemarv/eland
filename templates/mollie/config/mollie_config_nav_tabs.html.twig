@@ -1,0 +1,33 @@
+
+
+<ul class="nav nav-tabs">
+  <li{%- if route == 'mollie_config' %} class="active"{%- endif -%}>
+    <a  href="{{- path('mollie_config', {}|pp) -}}">
+      {{- 'mollie_config.nav'|trans -}}
+    </a>
+  </li>
+
+  <li{%- if route == 'mollie_config_test_api_key' %} class="active"{%- endif -%}>
+    <a href="{{- path('mollie_config_test_api_key', {}|pp) -}}">
+      {{- 'mollie_config_test_api_key.nav'|trans -}}
+    </a>
+  </li>
+
+  <li{%- if route == 'mollie_config_live_api_key' %} class="active"{%- endif -%}>
+    <a  href="{{- path('mollie_config_live_api_key', {}|pp) -}}">
+      {{- 'mollie_config_live_api_key.nav'|trans -}}
+    </a>
+  </li>
+
+  <li{%- if route == 'mollie_config_webhook_key' %} class="active"{%- endif -%}>
+    <a  href="{{- path('mollie_config_webhook_key', {}|pp) -}}">
+      {{- 'mollie_config_webhook_key.nav'|trans -}}
+    </a>
+  </li>
+
+  <li{%- if route == 'mollie_config_history' %} class="active"{%- endif -%}>
+    <a  href="{{- path('mollie_config_history', {}|pp) -}}">
+      {{- 'mollie_config_history.nav'|trans -}}
+    </a>
+  </li>
+</ul>

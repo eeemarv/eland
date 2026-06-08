@@ -10,5 +10,5 @@ class UsersPeriodicOverviewCommand Implements CommandInterface
 {
   #[Type(type: 'bool')]
   #[NotNull()]
-  public $enabled;
+  public mixed $enabled;
 }

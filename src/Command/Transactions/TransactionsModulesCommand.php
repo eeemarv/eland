@@ -10,17 +10,17 @@ class TransactionsModulesCommand implements CommandInterface
 {
   #[Type(type: 'bool')]
   #[ConfigMap(type: 'bool', key: 'transactions.fields.service_stuff.enabled')]
-  public $service_stuff_enabled;
+  public mixed $service_stuff_enabled;
 
   #[Type(type: 'bool')]
   #[ConfigMap(type: 'bool', key: 'accounts.limits.enabled')]
-  public $limits_enabled;
+  public mixed $limits_enabled;
 
   #[Type(type: 'bool')]
   #[ConfigMap(type: 'bool', key: 'accounts.limits.auto_min.enabled')]
-  public $autominlimit_enabled;
+  public mixed $autominlimit_enabled;
 
   #[Type(type: 'bool')]
   #[ConfigMap(type: 'bool', key: 'transactions.mass.enabled')]
-  public $mass_enabled;
+  public mixed $mass_enabled;
 }

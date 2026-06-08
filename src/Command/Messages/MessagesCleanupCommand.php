@@ -12,34 +12,34 @@ use Symfony\Component\Validator\Constraints\Type;
 
 class MessagesCleanupCommand implements CommandInterface
 {
-    #[Sequentially(constraints:  [
-        new Positive(),
-        new Range(min: 1, max: 1460),
-    ])]
-    #[ConfigMap(type: 'int', key: 'messages.fields.expires_at.days_default')]
-    public $expires_at_days_default;
+  #[Sequentially(constraints:  [
+    new Positive(),
+    new Range(min: 1, max: 1460),
+  ])]
+  #[ConfigMap(type: 'int', key: 'messages.fields.expires_at.days_default')]
+  public mixed $expires_at_days_default;
 
-    #[Type(type: 'bool')]
-    #[ConfigMap(type: 'bool', key: 'messages.fields.expires_at.required')]
-    public $expires_at_required;
+  #[Type(type: 'bool')]
+  #[ConfigMap(type: 'bool', key: 'messages.fields.expires_at.required')]
+  public mixed $expires_at_required;
 
-    #[Type(type: 'bool')]
-    #[ConfigMap(type: 'bool', key: 'messages.fields.expires_at.switch_enabled')]
-    public $expires_at_switch_enabled;
+  #[Type(type: 'bool')]
+  #[ConfigMap(type: 'bool', key: 'messages.fields.expires_at.switch_enabled')]
+  public mixed $expires_at_switch_enabled;
 
-    #[Type(type: 'bool')]
-    #[ConfigMap(type: 'bool', key: 'messages.cleanup.enabled')]
-    public $cleanup_enabled;
+  #[Type(type: 'bool')]
+  #[ConfigMap(type: 'bool', key: 'messages.cleanup.enabled')]
+  public mixed $cleanup_enabled;
 
-    #[Sequentially(constraints: [
-        new NotBlank(),
-        new Positive(),
-        new Range(min: 1, max: 365),
-    ])]
-    #[ConfigMap(type: 'int', key: 'messages.cleanup.after_days')]
-    public $cleanup_after_days;
+  #[Sequentially(constraints: [
+    new NotBlank(),
+    new Positive(),
+    new Range(min: 1, max: 365),
+  ])]
+  #[ConfigMap(type: 'int', key: 'messages.cleanup.after_days')]
+  public mixed $cleanup_after_days;
 
-    #[Type(type: 'bool')]
-    #[ConfigMap(type: 'bool', key: 'messages.expire.notify')]
-    public $expire_notify;
+  #[Type(type: 'bool')]
+  #[ConfigMap(type: 'bool', key: 'messages.expire.notify')]
+  public mixed $expire_notify;
 }

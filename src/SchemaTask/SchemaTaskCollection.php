@@ -2,14 +2,14 @@
 
 namespace App\SchemaTask;
 
-use Symfony\Component\DependencyInjection\Attribute\TaggedIterator;
+use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
 class SchemaTaskCollection
 {
-	protected $schema_tasks = [];
+	private $schema_tasks = [];
 
 	public function __construct(
-		#[TaggedIterator('app.schema_task')] iterable $schema_tasks
+    #[AutowireIterator('app.schema_task')] iterable $schema_tasks
 	)
 	{
 		// The keys aren't set as expected so we retrieve it from the static method

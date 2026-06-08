@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\PageParamsService;
 use Mollie\Api\MollieApiClient;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -24,11 +25,11 @@ class MollieWebhookController extends AbstractController
     methods: ['POST'],
     priority: 30,
     requirements: [
-      'schema'        => '%assert.schema%',
+      'schema'  => '%assert.schema%',
     ],
     defaults: [
-      'module'        => 'users',
-      'sub_module'    => 'mollie',
+      'module'  => 'users',
+      'sub_module'  => 'mollie',
     ],
   )]
 
@@ -37,7 +38,8 @@ class MollieWebhookController extends AbstractController
     ConfigService $config_service,
     MessageBusInterface $bus,
     PageParamsService $pp,
-    MollieRepository $mollie_repository
+    MollieRepository $mollie_repository,
+    LoggerInterface $logger,
   ):Response
   {
     if (!$config_service->get_bool(
@@ -45,18 +47,25 @@ class MollieWebhookController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw $this->createNotFoundException(
-        'Mollie submodule (users) not enabled.'
-      );
+      $logger->info('(webhook) Mollie submodule (users) not enabled.', [
+        'schema' => $pp->schema(),
+        'post_params' => $request->request->all(),
+      ]);
+      return new Response();
     }
+
+    $signatures = $request->headers->all('X-Mollie-Signature');
+
 
     $id = $request->request->get('id');
 
     if (!isset($id))
     {
-      throw $this->createNotFoundException(
-        'Mollie payment id missing'
-      );
+      $logger->error('(webhook) Mollie payment id missing.', [
+        'schema' => $pp->schema(),
+        'post_params' => $request->request->all(),
+      ]);
+      return new Response();
     }
 
     $mollie_apikey = $config_service->get_str(
@@ -67,9 +76,11 @@ class MollieWebhookController extends AbstractController
     if (!(str_starts_with($mollie_apikey, 'live_')
       || str_starts_with($mollie_apikey, 'test_')))
     {
-      throw $this->createNotFoundException(
-        'Mollie apikey not configured with live_ or test_'
-      );
+      $logger->error('(webhook) Mollie apikey not configured with live_ or test_', [
+        'schema' => $pp->schema(),
+        'post_params' => $request->request->all(),
+      ]);
+      return new Response();
     }
 
     $mollie = new MollieApiClient();
@@ -77,13 +88,16 @@ class MollieWebhookController extends AbstractController
 
     $payment = $mollie->payments->get($id);
 
+
     $checkout_token = $payment->metadata->checkout_token;
 
     if (!$checkout_token)
     {
-      throw $this->createNotFoundException(
-        'checkout_token not found'
-      );
+      $logger->error('(webhook) Mollie payment checkout_token not found.', [
+        'schema'  => $pp->schema(),
+        'post_params' => $request->request->all(),
+      ]);
+      return new Response();
     }
 
     $uuid_checkout_token = Uuid::fromBase58($checkout_token);
@@ -95,9 +109,11 @@ class MollieWebhookController extends AbstractController
 
     if (!$mollie_payment)
     {
-      throw $this->createNotFoundException(
-        'Mollie payment request not found'
-      );
+      $logger->error('(webhook) Mollie payment with id ' . $id . ' not found.', [
+        'schema'  => $pp->schema(),
+        'post_params' => $request->request->all(),
+      ]);
+      return new Response();
     }
 
     if ($payment->isPaid())
@@ -115,6 +131,6 @@ class MollieWebhookController extends AbstractController
       $bus->dispatch($m_confirm);
     }
 
-    return new Response('');
+    return new Response();
   }
 }

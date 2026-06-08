@@ -12,14 +12,14 @@ use Symfony\Component\Validator\Constraints\Type;
 class UsersBulkRoleCommand implements CommandInterface
 {
   #[BulkSelectNotEmpty(message: 'bulk_select.not_empty.users')]
-  public $selected;
+  public mixed $selected;
 
   #[NotNull()]
   #[Type(type: 'string')]
   #[UserRole()]
-  public $role;
+  public mixed $role;
 
   #[Type(type: 'bool')]
   #[IsTrue()]
-  public $verify;
+  public mixed $verify;
 }

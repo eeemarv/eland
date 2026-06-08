@@ -21,7 +21,7 @@ class MollieBulkEmailCommand implements CommandInterface
     new Type(type: 'string'),
     new Length(max: 200),
   ])]
-  public $subject;
+  public mixed $subject;
 
   #[Sequentially(constraints: [
     new Type(type: 'string'),

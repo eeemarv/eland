@@ -15,34 +15,34 @@ use Symfony\Component\Validator\Constraints\Type;
 #[UrlContact(groups: ['add', 'edit'])]
 class ContactsCommand implements CommandInterface
 {
-  public $id;
+  public mixed $id;
 
   #[NotBlank(groups: ['add', 'edit'])]
-  public $user_id;
+  public mixed $user_id;
 
   #[Sequentially(constraints: [
     new NotBlank(groups: ['add', 'edit']),
     new Type(type: 'int', groups: ['add', 'edit']),
   ])]
-  public $contact_type_id;
+  public mixed $contact_type_id;
 
   #[Sequentially(constraints:[
     new NotBlank(groups: ['add', 'edit']),
     new Type(type: 'string', groups: ['add', 'edit']),
     new Length(max: 120, groups: ['add', 'edit']),
   ])]
-  public $value;
+  public mixed $value;
 
   #[Sequentially(constraints:[
     new Type(type: 'string', groups: ['add', 'edit']),
     new Length(max: 60, groups: ['add', 'edit']),
   ])]
-  public $comments;
+  public mixed $comments;
 
   #[Sequentially(constraints:[
     new NotBlank(groups: ['add', 'edit']),
     new Type(type: 'string', groups: ['add', 'edit']),
     new Choice(choices: ['admin', 'user', 'guest'], groups: ['add', 'edit', 'del']),
   ])]
-  public $access;
+  public mixed $access;
 }

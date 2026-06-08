@@ -13,26 +13,26 @@ class UsersConfigNewCommand implements CommandInterface
 {
   #[Type(type: 'int')]
   #[ConfigMap(type: 'int', key: 'users.new.days')]
-  public $days;
+  public mixed $days;
 
   #[Sequentially(constraints: [
     new NotNull(),
     new Choice(['admin', 'user', 'guest']),
   ])]
   #[ConfigMap(type: 'str', key: 'users.new.access')]
-  public $access;
+  public mixed $access;
 
   #[Sequentially(constraints: [
     new NotNull(),
     new Choice(['admin', 'user', 'guest']),
   ])]
   #[ConfigMap(type: 'str', key: 'users.new.access_list')]
-  public $access_list;
+  public mixed $access_list;
 
   #[Sequentially(constraints: [
     new NotNull(),
     new Choice(['admin', 'user', 'guest']),
   ])]
   #[ConfigMap(type: 'str', key: 'users.new.access_pane')]
-  public $access_pane;
+  public mixed $access_pane;
 }

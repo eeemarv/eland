@@ -5,7 +5,6 @@
 
 import './stimulus_bootstrap.js';
 
-
 //import "bootstrap-sass/assets/javascripts/bootstrap.js";
 
 import "./styles/bs3.scss";
@@ -20,6 +19,7 @@ import "./styles/jssor.css";
 import "./styles/map.css";
 import "./styles/jqplot.css";
 import "./styles/img-upload.css";
+import "./styles/image-upload.css";
 import "./styles/pan-sub.css";
 import "./styles/num.css";
 import "./styles/eland-index.css";

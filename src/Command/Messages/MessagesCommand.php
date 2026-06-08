@@ -20,68 +20,68 @@ class MessagesCommand implements CommandInterface
     new NotBlank(),
     new ActiveUser(),
   ], groups: ['user_id'])]
-  public $user_id;
+  public mixed $user_id;
 
   #[Sequentially(constraints: [
     new NotNull(),
     new Choice(choices: ['offer', 'want']),
   ], groups: ['common'])]
-  public $offer_want;
+  public mixed $offer_want;
 
   #[Sequentially(constraints: [
     new NotNull(),
     new Choice(choices: ['service', 'stuff']),
   ], groups: ['service_stuff'])]
-  public $service_stuff;
+  public mixed $service_stuff;
 
   #[Sequentially([
     new NotBlank(),
     new Length(max: 200),
   ], groups: ['common'])]
-  public $subject;
+  public mixed $subject;
 
   #[Sequentially([
     new NotBlank(),
     new Length(min: 10, max: 5000),
   ], groups: ['common'])]
-  public $content;
+  public mixed $content;
 
   #[Sequentially([
     new NotBlank(),
     new CategoryIsLeaf(),
   ], groups: ['category_id'])]
-  public $category_id;
+  public mixed $category_id;
 
   #[Sequentially([
     new NotBlank(),
   ], groups: ['expires_at_required'])]
-  public $expires_at;
+  public mixed $expires_at;
 
   #[Sequentially([
     new NotBlank(),
     new Choice(['temporal', 'permanent']),
   ], groups: ['expires_at_switch'])]
-  public $expires_at_switch;
+  public mixed $expires_at_switch;
 
   #[Sequentially([
     new Positive(),
   ], groups: ['units'])]
-  public $amount;
+  public mixed $amount;
 
   #[Sequentially([
     new Length(max: 15),
   ], groups: ['units'])]
-  public $units;
+  public mixed $units;
 
   #[Sequentially([
     new NotBlank(),
     new Json(),
   ], groups: ['common'])]
-  public $image_files;
+  public mixed $image_files;
 
   #[Sequentially([
     new NotBlank(),
     new Choice(['admin', 'user', 'guest']),
   ], groups: ['common'])]
-  public $access;
+  public mixed $access;
 }

@@ -1,5 +1,4 @@
 parameters:
-  store_dir: '%kernel.project_dir%/public/store'
   router.request_context.host: '%env(APP_HOST)%'
   router.request_context.scheme: '%env(APP_SCHEME)%'
   app.default_locale: nl
@@ -50,3 +49,12 @@ services:
       - {ttl: 864000}
 
   Bramus\Monolog\Formatter\ColoredLineFormatter: ~
+
+  Aws\S3\S3Client:
+    arguments:
+      -
+        version: 'latest'
+        region: '%env(AWS_S3_REGION)%'
+        credentials:
+          key: '%env(AWS_ACCESS_KEY_ID)%'
+          secret: '%env(AWS_SECRET_ACCESS_KEY)%'

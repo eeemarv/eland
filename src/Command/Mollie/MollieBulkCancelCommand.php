@@ -14,5 +14,5 @@ class MollieBulkCancelCommand implements CommandInterface
 
   #[Type(type: 'bool')]
   #[IsTrue()]
-  public $verify;
+  public mixed $verify;
 }

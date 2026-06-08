@@ -13,5 +13,5 @@ class TagsListCommand implements CommandInterface
     new NotBlank(groups: ['edit']),
     new Json(groups: ['edit']),
   ])]
-  public $tags;
+  public mixed $tags;
 }

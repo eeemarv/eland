@@ -10,5 +10,5 @@ class NewsSortCommand implements CommandInterface
 {
   #[Type(type: 'bool')]
   #[ConfigMap(type: 'bool', key: 'news.sort.asc')]
-  public $sort_asc;
+  public mixed $sort_asc;
 }

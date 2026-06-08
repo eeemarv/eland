@@ -2,8 +2,9 @@
 
 namespace App\Controller\Mollie;
 
-use App\Command\Mollie\MollieConfigCommand;
-use App\Form\Type\Mollie\MollieConfigType;
+use App\Command\Mollie\MollieConfigModeCommand;
+use App\Form\Type\Mollie\MollieConfigModeType;
+use App\Repository\SecretRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,6 +34,7 @@ class MollieConfigController extends AbstractController
   public function __invoke(
     Request $request,
     ConfigService $config_service,
+    SecretRepository $secret_repository,
     PageParamsService $pp,
     SessionUserService $su,
   ):Response
@@ -47,15 +49,37 @@ class MollieConfigController extends AbstractController
       );
     }
 
-    $command = new MollieConfigCommand();
+    $has = $secret_repository->have_values(
+      name_ary: [
+        'mollie_test_api_key',
+        'mollie_live_api_key',
+        'mollie_webhook_key',
+      ],
+      schema: $pp->schema_o(),
+    );
+
+    $has_test_api_key = $has['mollie_test_api_key'] ?? false;
+    $has_live_api_key = $has['mollie_live_api_key'] ?? false;
+    $has_webhook_key = $has['mollie_webhook_key'] ?? false;
+
+    $form_options = [
+      'has_test_api_key' => $has_test_api_key,
+      'has_live_api_key' => $has_live_api_key,
+      'has_webhook_key'  => $has_webhook_key,
+      'log_comment_enabled' => true,
+    ];
+
+    $command = new MollieConfigModeCommand();
+
     $config_service->load_command(
       command: $command,
       schema: $pp->schema_o(),
     );
 
     $form = $this->createForm(
-      type: MollieConfigType::class,
+      type: MollieConfigModeType::class,
       data: $command,
+      options: $form_options,
     );
     $form->handleRequest($request);
 
@@ -63,11 +87,14 @@ class MollieConfigController extends AbstractController
       && $form->isValid())
     {
       $command = $form->getData();
+      $log_comment = $form->get('log_comment')->getData();
+
       $changed = $config_service->store_command(
         command: $command,
         route: $pp->route(),
         user_id: $su->id() ?: null,
         schema: $pp->schema_o(),
+        comment: $log_comment,
       );
 
       if ($changed)
@@ -89,11 +116,11 @@ class MollieConfigController extends AbstractController
         );
       }
 
-      return $this->redirectToRoute('mollie_payments', $pp->ary());
+      return $this->redirectToRoute('mollie_config', $pp->ary());
     }
 
     return $this->render('mollie/mollie_config.html.twig', [
-      'form'      => $form->createView(),
+      'form'  => $form->createView(),
     ]);
   }
 }

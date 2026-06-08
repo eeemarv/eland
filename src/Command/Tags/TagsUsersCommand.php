@@ -15,5 +15,5 @@ class TagsUsersCommand implements CommandInterface
     new Unique(),
     new TagsUsersActive(),
   ])]
-  public $tags;
+  public mixed $tags;
 }

@@ -1411,7 +1411,9 @@ class MessagesListController extends AbstractController
             $row_count += $no_cat_count;
         }
 
-        $filter_panel_open = ($filter_command->user && !isset($uid))
+        $filter_panel_open = (isset($filter_command->user)
+            && $filter_command->user
+            && !isset($uid))
             || $filter_offer_want
             || $filter_valid_expired
             || $filter_service_stuff

@@ -14,29 +14,29 @@ use Symfony\Component\Validator\Constraints\Type;
 #[GroupSequence(['NewsCommand', 'add', 'edit', 'del'])]
 class NewsCommand implements CommandInterface
 {
-  public $id;
+  public mixed $id;
 
   #[Sequentially(constraints: [
     new NotBlank(groups: ['add', 'edit']),
     new Length(max: 200, groups: ['add', 'edit']),
   ])]
-  public $subject;
+  public mixed $subject;
 
-  public $event_at;
+  public mixed $event_at;
 
   #[Length(max: 128, groups: ['add', 'edit'])]
-  public $location;
+  public mixed $location;
 
   #[Sequentially(constraints: [
     new NotBlank(groups: ['add', 'edit']),
     new Length(min: 10, max: 10000, groups: ['add', 'edit']),
   ])]
-  public $content;
+  public mixed $content;
 
   #[Sequentially(constraints: [
     new NotNull(groups: ['add', 'edit']),
     new Type('string', groups: ['add', 'edit']),
     new Choice(['admin', 'user', 'guest'], groups: ['add', 'edit', 'del']),
   ])]
-  public $access;
+  public mixed $access;
 }

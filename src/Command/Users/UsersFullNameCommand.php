@@ -13,12 +13,12 @@ class UsersFullNameCommand Implements CommandInterface
 {
   #[Type(type: 'string')]
   #[Length(max: 128)]
-  public $full_name;
+  public mixed $full_name;
 
   #[Sequentially(constraints: [
     new NotNull(),
     new Type('string'),
     new Choice(['admin', 'user', 'guest']),
   ])]
-  public $full_name_access;
+  public mixed $full_name_access;
 }

@@ -9,15 +9,15 @@ use Symfony\Component\Validator\Constraints\Email;
 
 class ConfigMailAddrCommand implements CommandInterface
 {
-    #[All(constraints: [
-        new Email(),
-    ])]
-    #[ConfigMap(type: 'ary', key: 'mail.addresses.admin')]
-    public $admin;
+  #[All(constraints: [
+    new Email(),
+  ])]
+  #[ConfigMap(type: 'ary', key: 'mail.addresses.admin')]
+  public mixed $admin;
 
-    #[All(constraints: [
-        new Email(),
-    ])]
-    #[ConfigMap(type: 'ary', key: 'mail.addresses.support')]
-    public $support;
+  #[All(constraints: [
+    new Email(),
+  ])]
+  #[ConfigMap(type: 'ary', key: 'mail.addresses.support')]
+  public mixed $support;
 }

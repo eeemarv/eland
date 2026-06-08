@@ -59,18 +59,21 @@ trait ArrayCleanConvertTrait
         continue;
       }
 
-      $current = $this->$key;
-
-      if (is_object($current) && method_exists($current, 'populate_from_array') && is_array($value))
+      if (isset($this->$key))
       {
-        $current->populate_from_array($value);
-        continue;
-      }
+        $current = $this->$key;
 
-      if (is_array($current) && is_array($value))
-      {
-        $this->$key = $value;
-        continue;
+        if (is_object($current) && method_exists($current, 'populate_from_array') && is_array($value))
+        {
+          $current->populate_from_array($value);
+          continue;
+        }
+
+        if (is_array($current) && is_array($value))
+        {
+          $this->$key = $value;
+          continue;
+        }
       }
 
       $this->$key = $value;

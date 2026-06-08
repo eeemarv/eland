@@ -12,5 +12,5 @@ class UsersRoleCommand Implements CommandInterface
   #[Type(type: 'string')]
   #[NotNull()]
   #[UserRole()]
-  public $role;
+  public mixed $role;
 }

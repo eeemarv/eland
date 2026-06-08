@@ -12,107 +12,107 @@ class UsersColsCommand implements CommandInterface
   use ArrayCleanConvertTrait;
 
   #[Type(type: 'bool')]
-  public $code;
+  public mixed $code;
 
   #[Type(type: 'bool')]
-  public $name;
+  public mixed $name;
 
   #[Type(type: 'bool')]
-  public $full_name;
+  public mixed $full_name;
 
   #[Type(type: 'bool')]
-  public $full_name_access;
+  public mixed $full_name_access;
 
   #[Type(type: 'bool')]
-  public $postcode;
+  public mixed $postcode;
 
   #[Type(type: 'bool')]
-  public $role;
+  public mixed $role;
 
   #[Type(type: 'bool')]
-  public $balance;
+  public mixed $balance;
 
   #[Type(type: 'bool')]
-  public $balance_on_date;
+  public mixed $balance_on_date;
 
   #[Type(type: 'string')]
-  public $balance_date;
+  public mixed $balance_date;
 
   #[Type(type: 'bool')]
-  public $min_limit;
+  public mixed $min_limit;
 
   #[Type(type: 'bool')]
-  public $max_limit;
+  public mixed $max_limit;
 
   #[Type(type: 'bool')]
-  public $comments;
+  public mixed $comments;
 
   #[Type(type: 'bool')]
-  public $hobbies;
+  public mixed $hobbies;
 
   #[Type(type: 'bool')]
-  public $birthdate;
+  public mixed $birthdate;
 
   #[Type(type: 'bool')]
-  public $admin_comments;
+  public mixed $admin_comments;
 
   #[Type(type: 'bool')]
-  public $periodic_overview;
+  public mixed $periodic_overview;
 
   #[Type(type: 'bool')]
-  public $created_at;
+  public mixed $created_at;
 
   #[Type(type: 'bool')]
-  public $last_edit_at;
+  public mixed $last_edit_at;
 
   #[Type(type: 'bool')]
-  public $activated_at;
+  public mixed $activated_at;
 
   #[Type(type: 'bool')]
-  public $last_login_at;
+  public mixed $last_login_at;
 
   #[Type(type: 'array')]
   #[All([
     new Type(type: 'bool'),
   ])]
-  public $contacts;
+  public mixed $contacts;
 
   #[Type(type: 'bool')]
-  public $distance;
+  public mixed $distance;
 
   #[Type(type: 'bool')]
-  public $mollie;
+  public mixed $mollie;
 
   #[Type(type: 'bool')]
-  public $wants;
+  public mixed $wants;
 
   #[Type(type: 'bool')]
-  public $offers;
+  public mixed $offers;
 
   #[Type(type: 'bool')]
-  public $offers_and_wants;
+  public mixed $offers_and_wants;
 
   #[Type(type: 'int')]
-  public $transactions_days;
+  public mixed $transactions_days;
 
   #[Type(type: 'int')]
-  public $transactions_exclude_code;
+  public mixed $transactions_exclude_code;
 
   #[Type(type: 'bool')]
-  public $transactions_in;
+  public mixed $transactions_in;
 
   #[Type(type: 'bool')]
-  public $transactions_out;
+  public mixed $transactions_out;
 
   #[Type(type: 'bool')]
-  public $transactions_total;
+  public mixed $transactions_total;
 
   #[Type(type: 'bool')]
-  public $amount_in;
+  public mixed $amount_in;
 
   #[Type(type: 'bool')]
-  public $amount_out;
+  public mixed $amount_out;
 
   #[Type(type: 'bool')]
-  public $amount_total;
+  public mixed $amount_total;
 }

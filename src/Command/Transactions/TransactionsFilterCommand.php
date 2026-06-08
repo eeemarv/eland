@@ -9,23 +9,23 @@ use Symfony\Component\Validator\Constraints\Type;
 class TransactionsFilterCommand implements CommandInterface
 {
   #[Type(type: 'string')]
-  public $q;
+  public mixed $q;
 
   #[Type(type: 'int')]
-  public $from_account;
+  public mixed $from_account;
 
   #[Choice(choices: ['and', 'or', 'nor'])]
-  public $account_logic;
+  public mixed $account_logic;
 
   #[Type(type: 'int')]
-  public $to_account;
+  public mixed $to_account;
 
   #[Type(type: 'string')]
-  public $from_date;
+  public mixed $from_date;
 
   #[Type(type: 'string')]
-  public $to_date;
+  public mixed $to_date;
 
   #[Choice(choices:['srvc', 'stff', 'null'], multiple: true)]
-  public $srvc;
+  public mixed $srvc;
 }

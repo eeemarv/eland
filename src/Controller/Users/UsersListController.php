@@ -1494,7 +1494,8 @@ class UsersListController extends AbstractController
     );
 
     /** @var UsersColsCommand $cols_command */
-    if ($cols_command->balance_on_date)
+    if (isset($cols_command->balance_on_date)
+      && $cols_command->balance_on_date)
     {
       if (isset($cols_command->balance_date)
         && $cols_command->balance_date !== '')
@@ -1516,28 +1517,34 @@ class UsersListController extends AbstractController
       schema: $pp->schema_o(),
     );
 
-    if ($cols_command->min_limit)
+    if (isset($cols_command->min_limit)
+      && $cols_command->min_limit)
     {
       $min_limit_ary = $account_repository->get_min_limit_ary(
         schema: $pp->schema_o(),
       );
     }
 
-    if ($cols_command->max_limit)
+    if (isset($cols_command->max_limit)
+      && $cols_command->max_limit)
     {
       $max_limit_ary = $account_repository->get_max_limit_ary(
         schema: $pp->schema_o(),
       );
     }
 
-    if ($cols_command->last_login_at)
+    if (isset($cols_command->last_login_at)
+      && $cols_command->last_login_at)
     {
       $last_login_ary = $login_repository->get_last_login_ary(
         schema: $pp->schema_o(),
       );
     }
 
-    if ($cols_command->contacts || $cols_command->distance)
+    if ((isset($cols_command->contacts)
+      && $cols_command->contacts)
+      || (isset($cols_command->distance)
+      && $cols_command->distance))
     {
       $contacts_ary = $user_repository->get_contacts_ary(
         current_user_id: $su->id(),
@@ -1579,16 +1586,18 @@ class UsersListController extends AbstractController
       }
     }
 
-    if ($cols_command->mollie && $pp->is_admin())
+    if (isset($cols_command->mollie)
+      && $cols_command->mollie
+      && $pp->is_admin())
     {
       $mollie_ary = $mollie_repository->get_last_status_ary(
         schema: $pp->schema_o(),
       );
     }
 
-    if ($cols_command->offers
-      || $cols_command->wants
-      || $cols_command->offers_and_wants
+    if ((isset($cols_command->offers) && $cols_command->offers)
+      || (isset($cols_command->wants) && $cols_command->wants)
+      || (isset($cols_command->offers_and_wants) && $cols_command->offers_and_wants)
     )
     {
       $messages_ary = $message_repository->get_counts_for_each_user(
@@ -1596,14 +1605,15 @@ class UsersListController extends AbstractController
       );
     }
 
-    if ($cols_command->transactions_days
-      && ($cols_command->transactions_in
-        || $cols_command->transactions_out
-        || $cols_command->transactions_total
-        || $cols_command->amount_in
-        || $cols_command->amount_out
-        || $cols_command->amount_total
-    ))
+    if ((isset($cols_command->transactions_days) && $cols_command->transactions_days)
+      && ((isset($cols_command->transactions_in) && $cols_command->transactions_in)
+        || (isset($cols_command->transactions_out) && $cols_command->transactions_out)
+        || (isset($cols_command->transactions_total) && $cols_command->transactions_total)
+        || (isset($cols_command->amount_in) && $cols_command->amount_in)
+        || (isset($cols_command->amount_out) && $cols_command->amount_out)
+        || (isset($cols_command->amount_total) && $cols_command->amount_total)
+      )
+    )
     {
       $since_unix = time() - ($cols_command->transactions_days * 86400);
       $since = \DateTimeImmutable::createFromFormat('U', (string) $since_unix);

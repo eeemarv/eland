@@ -91,11 +91,6 @@ email_not_registered_yet:
     Er bestaat reeds een inschrijving met
     dit E-mail adres.
 
-mollie:
-  not_live_nor_test: >-
-    De Mollie apikey moet beginnen met
-    live_ of test_
-
 not_empty: Deze waarde mag niet leeg zijn
 
 password_strength:
@@ -108,6 +103,9 @@ plain_text_length:
   max: >-
     De tekst bestaat uit {len} tekens;
     ze mag maximaal {max} tekens bevatten.
+
+starts_with: >-
+  De waarde moet met {prefix} beginnen.
 
 tag:
   txt_not_unique: Deze tag-tekst is niet uniek.

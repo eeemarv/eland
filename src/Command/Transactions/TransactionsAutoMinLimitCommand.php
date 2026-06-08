@@ -15,5 +15,5 @@ class TransactionsAutoMinLimitCommand implements CommandInterface
     new Type(type: 'int'),
   ])]
   #[ConfigMap(type: 'int', key: 'accounts.limits.auto_min.percentage')]
-  public $percentage;
+  public mixed $percentage;
 }

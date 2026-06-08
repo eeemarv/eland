@@ -16,30 +16,30 @@ use Symfony\Component\Validator\Constraints\Type;
 class TagsDefCommand implements CommandInterface
 {
   #[Type(type: 'int')]
-  public $id;
+  public mixed $id;
 
   #[Type(type: 'string')]
-  public $tag_type;
+  public mixed $tag_type;
 
   #[Sequentially(constraints:[
     new NotBlank(),
     new Type(type: 'string'),
     new Length(max: 12),
   ])]
-  public $txt;
+  public mixed $txt;
 
   #[Type(type: 'string')]
-  public $description;
+  public mixed $description;
 
   #[Sequentially(constraints:[
     new NotBlank(),
     new CssColor(formats: CssColor::HEX_LONG),
   ])]
-  public $txt_color;
+  public mixed $txt_color;
 
   #[Sequentially(constraints:[
     new NotBlank(),
     new CssColor(formats: CssColor::HEX_LONG),
   ])]
-  public $bg_color;
+  public mixed $bg_color;
 }

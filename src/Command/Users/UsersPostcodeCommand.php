@@ -12,5 +12,5 @@ class UsersPostcodeCommand Implements CommandInterface
   #[Type(type: 'string')]
   #[NotNull()]
   #[Length(max: 10)]
-  public $postcode;
+  public mixed $postcode;
 }

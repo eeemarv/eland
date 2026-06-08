@@ -11,13 +11,13 @@ use Symfony\Component\Validator\Constraints\Type;
 class UsersBulkPeriodicOverviewEnCommand implements CommandInterface
 {
   #[BulkSelectNotEmpty(message: 'bulk_select.not_empty.users')]
-  public $selected;
+  public mixed $selected;
 
   #[Type(type: 'bool')]
   #[NotNull()]
-  public $periodic_overview_en;
+  public mixed $periodic_overview_en;
 
   #[Type(type: 'bool')]
   #[IsTrue()]
-  public $verify;
+  public mixed $verify;
 }

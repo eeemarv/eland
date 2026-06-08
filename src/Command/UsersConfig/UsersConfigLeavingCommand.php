@@ -13,30 +13,30 @@ class UsersConfigLeavingCommand implements CommandInterface
 {
   #[Type(type: 'int')]
   #[ConfigMap(type: 'int', key: 'accounts.equilibrium')]
-  public $equilibrium;
+  public mixed $equilibrium;
 
   #[Type(type: 'bool')]
   #[ConfigMap(type: 'bool', key: 'users.leaving.auto_deactivate')]
-  public $auto_deactivate;
+  public mixed $auto_deactivate;
 
   #[Sequentially(constraints: [
     new NotNull(),
     new Choice(['admin', 'user', 'guest']),
   ])]
   #[ConfigMap(type: 'str', key: 'users.leaving.access')]
-  public $access;
+  public mixed $access;
 
   #[Sequentially(constraints: [
     new NotNull(),
     new Choice(['admin', 'user', 'guest']),
   ])]
   #[ConfigMap(type: 'str', key: 'users.leaving.access_pane')]
-  public $access_list;
+  public mixed $access_list;
 
   #[Sequentially(constraints: [
     new NotNull(),
     new Choice(['admin', 'user', 'guest']),
   ])]
   #[ConfigMap(type: 'str', key: 'users.leaving.access_list')]
-  public $access_pane;
+  public mixed $access_pane;
 }

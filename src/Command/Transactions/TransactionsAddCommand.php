@@ -14,37 +14,37 @@ class TransactionsAddCommand implements CommandInterface
     #[Type('int')]
     #[Positive()]
     #[NotBlank()]
-    public $from_id;
+    public mixed $from_id;
 
     #[Type('string')]
-    public $from_remote_account;
+    public mixed $from_remote_account;
 
     #[Type('int')]
     #[Positive()]
     #[NotBlank()]
-    public $to_id;
+    public mixed $to_id;
 
     #[Type('int')]
     #[Positive()]
-    public $to_remote_id;
+    public mixed $to_remote_id;
 
     #[Type('string')]
-    public $to_remote_account;
+    public mixed $to_remote_account;
 
     #[Type('int')]
     #[Positive()]
     #[NotBlank()]
-    public $amount;
+    public mixed $amount;
 
     #[Type('int')]
     #[Positive()]
-    public $remote_amount;
+    public mixed $remote_amount;
 
     #[Type('string')]
     #[Length(min: 3, max: 60)]
     #[NotBlank()]
-    public $description;
+    public mixed $description;
 
     #[Choice(['service', 'stuff'])]
-    public $service_stuff;
+    public mixed $service_stuff;
 }

@@ -218,7 +218,7 @@ class MessagesExtendedController extends AbstractController
             'row_count'             => $row_count,
             'is_self'               => $is_self,
             'uid'                   => $uid,
-            'cat_id'                => $filter_command->cat ?: null,
+            'cat_id'                => $filter_command->cat ?? null,
             'filter_form'           => $filter_form,
             'filtered'              => $filtered,
             'msgs_filter_collapse'  => $filter_collapse,

@@ -10,5 +10,5 @@ class UsersConfigFullNameCommand implements CommandInterface
 {
   #[Type(type: 'bool')]
   #[ConfigMap(type: 'bool', key: 'users.fields.full_name.self_edit')]
-  public $self_edit;
+  public mixed $self_edit;
 }

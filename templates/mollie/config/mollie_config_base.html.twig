@@ -1,0 +1,27 @@
+{%- extends 'mollie/base/mollie_base.html.twig' -%}
+
+{%- set admin_heading = true -%}
+
+{%- block heading_title -%}
+  {{- 'mollie_config.title'|trans -}}
+{%- endblock heading_title -%}
+
+{%- block heading_sub -%}
+  <div class="panel panel-info">
+    <div class="panel-heading">
+      <p>
+        {{- 'mollie_config.explain'|trans({
+          'ao': '<a href="https://www.mollie.com" target="_blank" rel="noopener noreferrer">',
+          'ac': '</a>',
+        })|raw -}}
+      </p>
+    </div>
+  </div>
+{%- endblock heading_sub -%}
+
+{%- block pane_select -%}
+  {%- include 'mollie/config/mollie_config_nav_tabs.html.twig' -%}
+{%- endblock pane_select -%}
+
+{%- block content -%}
+{%- endblock content -%}

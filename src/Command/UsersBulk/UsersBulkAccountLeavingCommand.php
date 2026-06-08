@@ -11,21 +11,21 @@ use Symfony\Component\Validator\Constraints\Type;
 class UsersBulkAccountLeavingCommand implements CommandInterface
 {
   #[BulkSelectNotEmpty(message: 'bulk_select.not_empty.users')]
-  public $selected;
+  public mixed $selected;
 
   #[NotNull()]
   #[Type(type: 'bool')]
-  public $is_leaving;
+  public mixed $is_leaving;
 
   #[NotNull()]
   #[Type(type: 'bool')]
-  public $send_email;
+  public mixed $send_email;
 
   #[NotNull()]
   #[Type(type: 'bool')]
-  public $send_email_cc;
+  public mixed $send_email_cc;
 
   #[Type(type: 'bool')]
   #[IsTrue()]
-  public $verify;
+  public mixed $verify;
 }

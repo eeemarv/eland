@@ -6,6 +6,8 @@ use App\Form\Type\Mollie\MollieCheckoutType;
 use App\Repository\MollieRepository;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
+use Mollie\Api\Http\Data\Money;
+use Mollie\Api\Http\Requests\CreatePaymentRequest;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -81,7 +83,12 @@ class MollieCheckoutController extends AbstractController
       {
         if ($request->isMethod('GET'))
         {
-          $this->addFlash('warning', 'TEST modus! Er zijn momenteel geen echte betalingen mogelijk.', false);
+          $this->addFlash(
+            type: 'warning',
+            message: [
+              'key' => 'mollie_checkout.flash.test_modus',
+            ],
+          );
         }
       }
     }
@@ -100,26 +107,32 @@ class MollieCheckoutController extends AbstractController
 
       $redirect_url = $url_generator->generate('mollie_checkout', [
         ...$pp->ary(),
-        ['checkout_token' => $checkout_token],
+        'checkout_token' => $checkout_token,
+      ], UrlGeneratorInterface::ABSOLUTE_URL);
+
+      $cancel_url = $url_generator->generate('mollie_checkout', [
+        ...$pp->ary(),
+        'checkout_token' => $checkout_token,
+        'cancel'  => true,
       ], UrlGeneratorInterface::ABSOLUTE_URL);
 
       $webhook_url = $url_generator->generate('mollie_webhook', [
         'schema'  => $pp->schema(),
       ], UrlGeneratorInterface::ABSOLUTE_URL);
 
-      $payment = $mollie->payments->create([
-        'amount' => [
-          'currency'  => 'EUR',
-          'value'     => $mollie_payment['amount'],
-        ],
-        'locale'        => 'nl_BE',
-        'description' => $description,
-        'redirectUrl' => $redirect_url,
-        'webhookUrl'  => $webhook_url,
-        'metadata' => [
+      $payment_request = new CreatePaymentRequest(
+        description: $description,
+        amount: Money::euro($mollie_payment['amount']),
+        redirectUrl: $redirect_url,
+        cancelUrl: $cancel_url,
+        webhookUrl: $webhook_url,
+        metadata: [
           'checkout_token'  => $checkout_token,
         ],
-      ]);
+        locale: 'nl_BE',
+      );
+
+      $payment = $mollie->send($payment_request);
 
       $mollie_repository->update_mollie_payment_id(
         checkout_token: $uuid_checkout_token,

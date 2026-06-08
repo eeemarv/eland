@@ -8,5 +8,5 @@ use Symfony\Component\Validator\Constraints\Date;
 class UsersBirthdateCommand Implements CommandInterface
 {
   #[Date()]
-  public $birthdate;
+  public mixed $birthdate;
 }

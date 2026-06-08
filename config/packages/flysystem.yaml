@@ -1,0 +1,13 @@
+# Read the documentation at https://github.com/thephpleague/flysystem-bundle/blob/master/docs/1-getting-started.md
+flysystem:
+  storages:
+    local.storage:
+      adapter: 'local'
+      options:
+        directory: '%kernel.project_dir%/public/store'
+    s3.storage:
+      aws:
+        client: Aws\S3\S3Client # The service ID of the Aws\S3\S3Client instance
+        bucket: '%env(AWS_S3_BUCKET)%'
+        prefix: ''
+        streamReads: true

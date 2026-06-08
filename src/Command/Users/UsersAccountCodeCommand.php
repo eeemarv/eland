@@ -17,7 +17,7 @@ use Symfony\Component\Validator\Constraints\Type;
 class UsersAccountCodeCommand Implements CommandInterface
 {
   #[Type(type: 'int')]
-  public $user_id;
+  public mixed $user_id;
 
   #[Sequentially(constraints: [
     new Type(type: 'string'),
@@ -26,5 +26,5 @@ class UsersAccountCodeCommand Implements CommandInterface
     new NotBlank(),
     new AccountCodeChars(),
   ])]
-  public $code;
+  public mixed $code;
 }

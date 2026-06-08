@@ -181,7 +181,8 @@ class TransactionRepository
       $sql['types']['q'] = Types::STRING;
     }
 
-    $accounts_eq = $filter_command->account_logic === 'nor' ? '<>' : '=';
+    $accounts_eq = isset($filter_command->account_logic)
+      && $filter_command->account_logic === 'nor' ? '<>' : '=';
 
     if (isset($filter_command->from_account))
     {
@@ -197,7 +198,8 @@ class TransactionRepository
       $sql['types']['to_account'] = Types::INTEGER;
     }
 
-    if ($filter_command->account_logic === 'or'
+    if (isset($filter_command->account_logic)
+      && $filter_command->account_logic === 'or'
       && isset($filter_command->from_account)
       && isset($filter_command->to_account)
     )

@@ -9,27 +9,27 @@ use Symfony\Component\Validator\Constraints\Type;
 class MessagesFilterCommand implements CommandInterface
 {
   #[Type(type: 'string')]
-  public $q;
+  public mixed $q;
 
-  public $cat;
+  public mixed $cat;
 
   #[Choice(choices: ['offer', 'want'], multiple: true)]
-  public $ow;
+  public mixed $ow;
 
   #[Choice(choices: ['srvc', 'stff', 'null'], multiple: true)]
-  public $srvc;
+  public mixed $srvc;
 
   #[Choice(choices: ['valid', 'expired'], multiple: true)]
-  public $ve;
+  public mixed $ve;
 
   #[Choice(choices: ['admin', 'user', 'guest'], multiple: true)]
-  public $access;
+  public mixed $access;
 
   #[Choice(choices: ['active', 'new', 'leaving'], multiple: true)]
-  public $us;
+  public mixed $us;
 
   #[Type(type: 'int')]
-  public $user;
+  public mixed $user;
 
-  public $uid;
+  public mixed $uid;
 }

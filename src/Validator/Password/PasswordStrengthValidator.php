@@ -8,7 +8,10 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 class PasswordStrengthValidator extends ConstraintValidator
 {
-  public function validate($password, Constraint $constraint):void
+  public function validate(
+    mixed $password,
+    Constraint $constraint
+  ):void
   {
     if (!$constraint instanceof PasswordStrength)
     {

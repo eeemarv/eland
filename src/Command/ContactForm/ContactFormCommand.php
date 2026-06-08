@@ -11,18 +11,18 @@ use Symfony\Component\Validator\Constraints\Sequentially;
 
 class ContactFormCommand implements CommandInterface
 {
-    #[Sequentially(constraints: [
-        new NotBlank(groups: ['send']),
-        new Email(groups: ['send']),
-    ])]
-    public $email;
+  #[Sequentially(constraints: [
+    new NotBlank(groups: ['send']),
+    new Email(groups: ['send']),
+  ])]
+  public mixed $email;
 
-    #[Sequentially(constraints: [
-        new NotBlank(groups: ['send']),
-        new Length(max: 10000, groups: ['send']),
-    ])]
-    public $message;
+  #[Sequentially(constraints: [
+    new NotBlank(groups: ['send']),
+    new Length(max: 10000, groups: ['send']),
+  ])]
+  public mixed $message;
 
-    #[Captcha(groups: ['send'])]
-    public $captcha;
+  #[Captcha(groups: ['send'])]
+  public mixed $captcha;
 }

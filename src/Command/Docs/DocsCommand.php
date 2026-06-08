@@ -12,25 +12,25 @@ use Symfony\Component\Validator\Constraints\Sequentially;
 
 class DocsCommand implements CommandInterface
 {
-  public $file_location;
+  public mixed $file_location;
 
-  public $original_filename;
+  public mixed $original_filename;
 
   #[Sequentially(constraints: [
     new NotBlank(groups: ['add']),
     new File(maxSize: '10M', groups: ['add']),
   ])]
-  public $file;
+  public mixed $file;
 
   #[Length(max: 60, groups: ['add', 'edit'])]
-  public $name;
+  public mixed $name;
 
   #[Length(max: 60, groups: ['add', 'edit'])]
-  public $map_name;
+  public mixed $map_name;
 
   #[Sequentially(constraints: [
     new NotNull(groups: ['add', 'edit']),
     new Choice(choices: ['admin', 'user', 'guest'], groups: ['add', 'edit']),
   ])]
-  public $access;
+  public mixed $access;
 }

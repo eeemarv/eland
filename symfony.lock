@@ -17,12 +17,6 @@
     "composer/ca-bundle": {
         "version": "1.2.8"
     },
-    "composer/package-versions-deprecated": {
-        "version": "1.11.99.1"
-    },
-    "doctrine/cache": {
-        "version": "1.10.2"
-    },
     "doctrine/collections": {
         "version": "1.6.7"
     },
@@ -106,14 +100,33 @@
     "guzzlehttp/psr7": {
         "version": "1.7.0"
     },
-    "imagine/imagine": {
-        "version": "v0.6.3"
-    },
-    "intervention/image": {
-        "version": "2.5.1"
+    "intervention/image-symfony": {
+        "version": "4.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "1.0",
+            "ref": "110ca861597ba48dca940221bf37dcc6ad9641ae"
+        },
+        "files": [
+            "config/packages/intervention_image.yaml"
+        ]
     },
     "laminas/laminas-code": {
         "version": "3.5.0"
+    },
+    "league/flysystem-bundle": {
+        "version": "3.7",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "1.0",
+            "ref": "913dc3d7a5a1af0d2b044c5ac3a16e2f851d7380"
+        },
+        "files": [
+            "config/packages/flysystem.yaml",
+            "var/storage/.gitignore"
+        ]
     },
     "league/html-to-markdown": {
         "version": "4.10.0"
@@ -402,9 +415,6 @@
         "version": "v1.20.0"
     },
     "symfony/polyfill-mbstring": {
-        "version": "v1.20.0"
-    },
-    "symfony/polyfill-php72": {
         "version": "v1.20.0"
     },
     "symfony/polyfill-php80": {

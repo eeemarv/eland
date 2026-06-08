@@ -38,16 +38,16 @@ class ImageUploadService
     const SVGO_PRECISION = 3;
     const SVG_CROP_ALLOWED_PADDING_PERCENTAGE = 10;
     const UNIT_CONV = [
-        'px'    => 1,
-        'in'    => 96,
-        'cm'    => 37.795,
-        'mm'    => 3.7795,
-        'pt'    => 1.3333,
-        'pc'    => 16,
-        'em'    => 16,
-        'ex'    => 10,
-        'rem'   => 16,
-        'ch'    => 10,
+      'px'    => 1,
+      'in'    => 96,
+      'cm'    => 37.795,
+      'mm'    => 3.7795,
+      'pt'    => 1.3333,
+      'pc'    => 16,
+      'em'    => 16,
+      'ex'    => 10,
+      'rem'   => 16,
+      'ch'    => 10,
     ];
 
 	public function __construct(
