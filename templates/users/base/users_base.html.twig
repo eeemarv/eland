@@ -23,11 +23,21 @@
       </a>
     </li>
 
+    {%- if config_bool('users.tags.enabled') -%}
+    <li{%- if active_local_admin_menu is defined and 'tags' == active_local_admin_menu %} class="active"{%- endif -%}>
+      <a href="{{- path('tags', {'tag_type': 'users'}|pp) -}}">
+        <twig:ux:icon name="lucide:tags"/>
+        &nbsp;
+        {{- 'label.tags'|trans -}}
+      </a>
+    </li>
+    {%- endif -%}
+
     <li{%- if route == 'users_config_username' %} class="active"{%- endif -%}>
       <a href="{{- path('users_config_username', {}|pp) -}}">
         <twig:ux:icon name="lucide:user-pen"/>
         &nbsp;
-        {{- ('users_config_username.menu')|trans -}}
+        {{- 'users_config_username.menu'|trans -}}
       </a>
     </li>
 
@@ -36,7 +46,7 @@
       <a href="{{- path('users_config_full_name', {}|pp) -}}">
         <twig:ux:icon name="lucide:user-pen"/>
         &nbsp;
-        {{- ('users_config_full_name.menu')|trans -}}
+        {{- 'users_config_full_name.menu'|trans -}}
       </a>
     </li>
     {%- endif -%}
@@ -45,7 +55,7 @@
       <a href="{{- path('contacts', {}|pp) -}}">
         <twig:ux:icon name="lucide:map-pin"/>
         &nbsp;
-        {{- ('contacts.menu')|trans -}}
+        {{- 'contacts.menu'|trans -}}
       </a>
     </li>
 
@@ -53,7 +63,7 @@
       <a href="{{- path('contact_types', {}|pp) -}}">
         <twig:ux:icon name="lucide:rectangle-circle"/>
         &nbsp;
-        {{- ('contact_types.menu')|trans -}}
+        {{- 'contact_types.menu'|trans -}}
       </a>
     </li>
 
@@ -62,7 +72,7 @@
       <a href="{{- path('users_config_new', {}|pp) -}}">
         <twig:ux:icon name="lucide:user-plus"/>
         &nbsp;
-        {{- ('users_config_new.menu')|trans -}}
+        {{- 'users_config_new.menu'|trans -}}
       </a>
     </li>
     {%- endif -%}
@@ -72,7 +82,7 @@
       <a href="{{- path('users_config_leaving', {}|pp) -}}">
         <twig:ux:icon name="lucide:user-minus"/>
         &nbsp;
-        {{- ('users_config_leaving.menu')|trans -}}
+        {{- 'users_config_leaving.menu'|trans -}}
       </a>
     </li>
     {%- endif -%}
@@ -82,7 +92,7 @@
       <a href="{{- path('users_config_periodic_mail', {}|pp) -}}">
         <twig:ux:icon name="lucide:mails"/>
         &nbsp;
-        {{- ('users_config_periodic_mail.menu')|trans -}}
+        {{- 'users_config_periodic_mail.menu'|trans -}}
       </a>
     </li>
     {%- endif -%}
@@ -92,7 +102,7 @@
       <a href="{{- path('intersystems', {}|pp) -}}">
         <twig:ux:icon name="lucide:share-2"/>
         &nbsp;
-        {{- ('intersystems.menu')|trans -}}
+        {{- 'intersystems.menu'|trans -}}
       </a>
     </li>
     {%- endif -%}
@@ -102,7 +112,7 @@
       <a href="{{- path('mollie_payments', {}|pp) -}}">
         <twig:ux:icon name="lucide:euro"/>
         &nbsp;
-        {{- ('mollie_payments.menu')|trans -}}
+        {{- 'mollie_payments.menu'|trans -}}
       </a>
     </li>
     {%- endif -%}

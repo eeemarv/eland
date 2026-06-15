@@ -3,9 +3,11 @@
 namespace App\Repository;
 
 use App\DTO\Schema;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
 use Exception;
+use Symfony\Component\Uid\Uuid;
 
 class TagRepository
 {
@@ -291,7 +293,8 @@ class TagRepository
 		$tags = [];
 
     $stmt = $this->db->prepare('select id,
-      txt, txt_color, bg_color, pos, is_active
+      txt, txt_color, bg_color,
+      description, pos, is_active
       from ' . $schema->str() . '.tags
       where tag_type = :tag_type
       and (:non_active_included or is_active)
@@ -339,58 +342,74 @@ class TagRepository
 	}
 
 	public function update_for_user(
-		TagsUsersCommand $command,
+    array $new_tag_id_ary,
 		int $user_id,
-		int $created_by,
+    string|null $comment,
+    string|null $route,
+		int|null $created_by,
 		Schema $schema
 	):int
 	{
-		$this->db->beginTransaction();
-		$count_changes = 0;
-		$all_users_tags = $this->get_all(
-      tag_type: 'users',
-      schema: $schema,
-      active_only:false,
-    );
+    $bulk_id = Uuid::v4()->toRfc4122();
 
-		$all_id_keys = [];
+    $all_users_tags = [];
 		$all_active_id_keys = [];
 		$all_non_active_id_keys = [];
 		$insert_id_keys = [];
-		$current_id_keys = [];
+		$current_tag_id_keys = [];
 		$keep_id_keys = [];
+		$count_changes = 0;
 
-		foreach ($all_users_tags as $tag)
-		{
-			$all_id_keys[$tag['id']] = true;
+		$this->db->beginTransaction();
 
-			if ($tag['is_active'])
-			{
-				$all_active_id_keys[$tag['id']] = true;
-				continue;
-			}
+    $stmt_all = $this->db->prepare('select
+      t.id as tag_id,
+      t.txt, t.txt_color, t.bg_color,
+      t.pos, t.description, t.is_active,
+      case
+        when ut.user_id is not null then true
+        else false
+      end as user_has_tag
+      from ' . $schema->str() . '.tags t
+      left join ' . $schema->str() . '.users_tags ut
+        on ut.tag_id = t.id
+        and ut.user_id = :user_id
+      where t.tag_type = \'users\'
+      order by t.pos asc');
+    $stmt_all->bindValue('user_id', $user_id, Types::INTEGER);
+    $res = $stmt_all->executeQuery();
 
-			$all_non_active_id_keys[$tag['id']] = true;
-		}
+    while ($row = $res->fetchAssociative())
+    {
+      $all_users_tags[$row['tag_id']] = $row;
 
-		$tag_id_ary_for_user = $this->get_id_ary_for_user(
-      user_id: $user_id,
-      schema: $schema,
-      active_only: false,
-    );
+      if ($row['user_has_tag'])
+      {
+        $current_tag_id_keys[$row['tag_id']] = $row['tag_id'];
+      }
 
-		foreach ($tag_id_ary_for_user as $tag_id)
-		{
-			$current_id_keys[$tag_id] = true;
-		}
+      if (!$row['is_active'])
+      {
+        $all_non_active_id_keys[$row['tag_id']] = true;
+        continue;
+      }
 
-		$stmt = $this->db->prepare('insert into ' .
+      $all_active_id_keys[$row['tag_id']] = true;
+    }
+
+		$stmt_ins = $this->db->prepare('insert into ' .
 			$schema->str() . '.users_tags(tag_id, user_id, created_by)
 			values(:tag_id, :user_id, :created_by)');
 
-		foreach ($command->tags as $tag_id)
+    $stmt_log = $this->db->prepare('insert into ' .
+      $schema->str() . '.users_tags_logs(tag_id, user_id, created_by,
+        comment, action, route, bulk_id, meta_data)
+      values(:tag_id, :user_id, :created_by,
+        :comment, :action, :route, :bulk_id, :meta_data)');
+
+		foreach ($new_tag_id_ary as $tag_id)
 		{
-			if (!isset($all_id_keys[$tag_id]))
+			if (!isset($all_users_tags[$tag_id]))
 			{
 				throw new Exception(
           'Trying to store non-existing tag id error ' . $tag_id
@@ -402,26 +421,37 @@ class TagRepository
           'Trying to store non-active tag id error ' . $tag_id
         );
 			}
-			if (isset($current_id_keys[$tag_id]))
+			if (isset($current_tag_id_keys[$tag_id]))
 			{
 				$keep_id_keys[$tag_id] = true;
 				continue;
 			}
 			$insert_id_keys[$tag_id] = true;
 
-			$stmt->bindValue('tag_id', $tag_id, Types::INTEGER);
-			$stmt->bindValue('user_id', $user_id, Types::INTEGER);
-			$stmt->bindValue('created_by', $created_by, Types::INTEGER);
-			$stmt->executeStatement();
+			$stmt_ins->bindValue('tag_id', $tag_id, Types::INTEGER);
+			$stmt_ins->bindValue('user_id', $user_id, Types::INTEGER);
+			$stmt_ins->bindValue('created_by', $created_by, Types::INTEGER);
+			$stmt_ins->executeStatement();
+
+      $stmt_log->bindValue('tag_id', $tag_id, Types::INTEGER);
+      $stmt_log->bindValue('user_id', $user_id, Types::INTEGER);
+      $stmt_log->bindValue('created_by', $created_by, Types::INTEGER);
+      $stmt_log->bindValue('comment', $comment, Types::STRING);
+      $stmt_log->bindValue('action', 'insert', Types::STRING);
+      $stmt_log->bindValue('route', $route, Types::STRING);
+      $stmt_log->bindValue('bulk_id', $bulk_id, Types::STRING);
+      $stmt_log->bindValue('meta_data', $all_users_tags[$tag_id], Types::JSON);
+      $stmt_log->executeStatement();
+
 			$count_changes++;
 		}
 
-		$stmt = $this->db->prepare('delete from ' .
+		$stmt_del = $this->db->prepare('delete from ' .
 			$schema->str() . '.users_tags
 			where tag_id = :tag_id
 			and user_id = :user_id');
 
-		foreach ($tag_id_ary_for_user as $tag_id)
+		foreach ($current_tag_id_keys as $tag_id)
 		{
 			if (isset($all_non_active_id_keys[$tag_id]))
 			{
@@ -436,9 +466,20 @@ class TagRepository
 				continue;
 			}
 
-			$stmt->bindValue('tag_id', $tag_id, Types::INTEGER);
-			$stmt->bindValue('user_id', $user_id, Types::INTEGER);
-			$stmt->executeStatement();
+			$stmt_del->bindValue('tag_id', $tag_id, Types::INTEGER);
+			$stmt_del->bindValue('user_id', $user_id, Types::INTEGER);
+			$stmt_del->executeStatement();
+
+      $stmt_log->bindValue('tag_id', $tag_id, Types::INTEGER);
+      $stmt_log->bindValue('user_id', $user_id, Types::INTEGER);
+      $stmt_log->bindValue('created_by', $created_by, Types::INTEGER);
+      $stmt_log->bindValue('comment', $comment, Types::STRING);
+      $stmt_log->bindValue('action', 'delete', Types::STRING);
+      $stmt_log->bindValue('route', $route, Types::STRING);
+      $stmt_log->bindValue('bulk_id', $bulk_id, Types::GUID);
+      $stmt_log->bindValue('meta_data', $all_users_tags[$tag_id], Types::JSON);
+      $stmt_log->executeStatement();
+
 			$count_changes++;
 		}
 
@@ -446,6 +487,165 @@ class TagRepository
 
 		return $count_changes;
 	}
+
+  /**
+   * @return array user ids where a tag was added
+   */
+  public function add_tag_for_users(
+    array $user_ids,
+    int $tag_id,
+    string|null $comment,
+    string|null $route,
+    int|null $created_by,
+    Schema $schema
+  ):array
+  {
+    $bulk_id = Uuid::v4()->toRfc4122();
+
+    $this->db->beginTransaction();
+
+    $stmt_tag = $this->db->prepare('select
+      t.id, t.txt, t.txt_color, t.bg_color,
+      t.pos, t.description, t.is_active,
+      t.tag_type
+      from ' . $schema->str() . '.tags t
+      where t.id = :tag_id
+        and t.tag_type = \'users\'
+        and t.is_active');
+    $stmt_tag->bindValue('tag_id', $tag_id, Types::INTEGER);
+    $res = $stmt_tag->executeQuery();
+    $tag_meta =$res->fetchAssociative();
+    if ($tag_meta === false)
+    {
+      throw new \Exception(
+       'Trying to store non-existing or inactive tag id error ' . $tag_id
+      );
+    }
+
+    $sql = 'insert into ' . $schema->str() . '.users_tags (
+      user_id, tag_id, created_by)
+      select u.id, :tag_id, :created_by
+      from ' . $schema->str() . '.users u
+      where u.id in (:user_ids)
+        and not exists (
+          select 1 from ' . $schema->str() . '.users_tags ut
+          where ut.user_id = u.id and ut.tag_id = :tag_id
+        )
+      returning user_id';
+
+    $res = $this->db->executeQuery($sql, [
+      'tag_id' => $tag_id,
+      'created_by' => $created_by,
+      'user_ids' => $user_ids,
+    ], [
+      'tag_id' => Types::INTEGER,
+      'created_by' => Types::INTEGER,
+      'user_ids' => ArrayParameterType::INTEGER,
+    ]);
+
+    $user_ids_add_tag = $res->fetchFirstColumn();
+
+    if (!empty($user_ids_add_tag)) {
+      $stmt_log = $this->db->prepare('insert into ' . $schema->str() . '.users_tags_logs(
+        tag_id, user_id, created_by,
+        comment, action, route, bulk_id, meta_data)
+      values(:tag_id, :user_id, :created_by,
+        :comment, :action, :route, :bulk_id, :meta_data)');
+
+      foreach ($user_ids_add_tag as $uid) {
+        $stmt_log->bindValue('tag_id', $tag_id, Types::INTEGER);
+        $stmt_log->bindValue('user_id', $uid, Types::INTEGER);
+        $stmt_log->bindValue('created_by', $created_by, Types::INTEGER);
+        $stmt_log->bindValue('comment', $comment, Types::STRING);
+        $stmt_log->bindValue('action', 'insert', Types::STRING);
+        $stmt_log->bindValue('route', $route, Types::STRING);
+        $stmt_log->bindValue('bulk_id', $bulk_id, Types::GUID);
+        $stmt_log->bindValue('meta_data', $tag_meta, Types::JSON);
+        $stmt_log->executeStatement();
+      }
+    }
+
+    $this->db->commit();
+
+    return $user_ids_add_tag;
+  }
+
+  /**
+   * @return array user ids where a tag was deleted
+   */
+  public function del_tag_for_users(
+    array $user_ids,
+    int $tag_id,
+    string|null $comment,
+    string|null $route,
+    int|null $created_by,
+    Schema $schema
+  ):array
+  {
+    $bulk_id = Uuid::v4()->toRfc4122();
+
+    $this->db->beginTransaction();
+
+    $stmt_tag = $this->db->prepare('select
+      t.id, t.txt, t.txt_color, t.bg_color,
+      t.pos, t.description, t.is_active,
+      t.tag_type
+      from ' . $schema->str() . '.tags t
+      where t.id = :tag_id
+        and t.tag_type = \'users\'
+        and t.is_active');
+    $stmt_tag->bindValue('tag_id', $tag_id, Types::INTEGER);
+    $res = $stmt_tag->executeQuery();
+    $tag_meta =$res->fetchAssociative();
+
+    if ($tag_meta === false)
+    {
+      throw new Exception(
+        'Trying to delete non-existing or inactive tag id error ' . $tag_id
+      );
+    }
+
+    $sql = 'delete from ' . $schema->str() . '.users_tags
+      where user_id in (:user_ids)
+        and tag_id = :tag_id
+      returning user_id';
+
+    $res = $this->db->executeQuery($sql, [
+      'tag_id' => $tag_id,
+      'user_ids' => $user_ids,
+    ], [
+      'tag_id' => Types::INTEGER,
+      'user_ids' => ArrayParameterType::INTEGER,
+    ]);
+
+    $user_ids_del_tag = $res->fetchFirstColumn();
+
+    if (!empty($user_ids_del_tag))
+    {
+      $stmt_log = $this->db->prepare('insert into ' . $schema->str() . '.users_tags_logs(
+        tag_id, user_id, created_by,
+        comment, action, route, bulk_id, meta_data)
+      values(:tag_id, :user_id, :created_by,
+        :comment, :action, :route, :bulk_id, :meta_data)');
+
+      foreach ($user_ids_del_tag as $uid)
+      {
+        $stmt_log->bindValue('tag_id', $tag_id, Types::INTEGER);
+        $stmt_log->bindValue('user_id', $uid, Types::INTEGER);
+        $stmt_log->bindValue('created_by', $created_by, Types::INTEGER);
+        $stmt_log->bindValue('comment', $comment, Types::STRING);
+        $stmt_log->bindValue('action', 'insert', Types::STRING);
+        $stmt_log->bindValue('route', $route, Types::STRING);
+        $stmt_log->bindValue('bulk_id', $bulk_id, Types::GUID);
+        $stmt_log->bindValue('meta_data', $tag_meta, Types::JSON);
+        $stmt_log->executeStatement();
+      }
+    }
+
+    $this->db->commit();
+
+    return $user_ids_del_tag;
+  }
 
 	public function get_id_ary_for_user(
 		int $user_id,
@@ -473,7 +673,7 @@ class TagRepository
 
     while ($row = $res->fetchAssociative())
     {
-        $tag_ids[] = $row['id'];
+      $tag_ids[] = $row['id'];
     }
 
 		return $tag_ids;
@@ -535,4 +735,38 @@ class TagRepository
 
 		return $tags;
 	}
+
+  public function get_all_active_for_users(
+    array $user_ids,
+    Schema $schema,
+  ):array
+  {
+    $tags_ary = [];
+
+    $res = $this->db->executeQuery('select ut.user_id,
+      t.txt, t.txt_color, t.bg_color,
+      t.pos, t.description, t.id
+      from ' . $schema->str() . '.users_tags ut
+      inner join ' . $schema->str() . '.tags t
+        on ut.tag_id = t.id
+      where t.is_active
+        and t.tag_type = \'users\'
+        and ut.user_id in (:user_ids)
+      order by ut.user_id asc, t.pos asc', [
+        'user_ids' => $user_ids,
+      ], [
+        'user_ids'=> ArrayParameterType::INTEGER,
+      ]);
+
+    while (($row = $res->fetchAssociative()) !== false)
+    {
+      if (!isset($tags_ary[$row['user_id']]))
+      {
+        $tags_ary[$row['user_id']] = [];
+      }
+      $tags_ary[$row['user_id']][] = $row;
+    }
+
+    return $tags_ary;
+  }
 }

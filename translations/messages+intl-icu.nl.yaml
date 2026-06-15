@@ -338,6 +338,7 @@ label:
   full_name: Volledige naam
   full_name_access: Zichtbaarheid volledige naam
   hidden: Verborgen
+  history: Historiek
   hobbies: Hobbies
   hobbies_interests: Hobbies/interesses
   image: Afbeelding
@@ -413,6 +414,8 @@ label:
   subject: Onderwerp
   suggested_price: Richtprijs
   system_name: Naam van het Systeem
+  tag: Tag
+  tags: Tags
   temporal: Tijdelijk
   text: Tekst
   time: Tijdstip
@@ -1593,6 +1596,9 @@ tags:
         users {Tag voor leden toevoegen}
         other {---}
       }
+    flash:
+      success: >-
+        Tag {tag} toegevoegd
   del:
     title: >-
       {tag_type, select,
@@ -1607,6 +1613,9 @@ tags:
         users {Tag "{txt}" voor leden verwijderen}
         other {---}
       }
+    flash:
+      success: >-
+        Tag {tag} verwijderd
   edit:
     title: >-
       {tag_type, select,
@@ -1621,6 +1630,9 @@ tags:
         users {Tag "{txt}" voor leden aanpassen}
         other {---}
       }
+    flash:
+      success: >-
+        Tag {tag} aangepast
   list:
     explain: >-
       Versleep om de standaard volgorde te veranderen.
@@ -1637,6 +1649,9 @@ tags:
         users {Tags voor leden}
         other {---}
       }
+    flash:
+      success: >-
+        Volgorde van tags aangepast
 
 transactions:
   admin_config: >-
@@ -2509,6 +2524,60 @@ users_list:
               other {**ERR**}
             }
           }
+    tags_add:
+      menu: Tag toevoegen
+      title: Tag toevoegen
+      tags:
+        help: >-
+          Maximaal één tag kan toegevoegd worden. Gebruikers
+          die de tag al hebben worden overgeslagen.
+      log_comment:
+        help: >-
+          Deze commentaar wordt opgeslagen in de historiek
+          van de tags van de gebruiker.
+      flash:
+        success: >-
+          {count, plural,
+            =0 {** ERR **}
+            =1 {Bij 1 gebruiker is tag {tag} toegevoegd}
+            other {Bij # gebruikers is tag {tag} toegevoegd}
+          }
+        warning: >-
+          {count, plural,
+            =0 {** ERR **}
+            =1 {Bij 1 gebruiker kon tag {tag} niet toegevoegd
+            worden}
+            other {Bij # gebruikers kon tag {tag} niet toegevoegd
+            worden}
+          }
+    tags_del:
+      menu: Tag verwijderen
+      title: Tag verwijderen
+      tags:
+        help: >-
+          Maximaal één te verwijderen tag kan geselecteerd
+          worden. Heeft enkel effect op gebruikers die de
+          tag hebben.
+      log_comment:
+        help: >-
+          Deze commentaar wordt opgeslagen in de historiek
+          van de tags van de gebruiker.
+      flash:
+        success: >-
+          {count, plural,
+            =0 {** ERR **}
+            =1 {Van 1 gebruiker is tag {tag} verwijderd}
+            other {Van # gebruikers is tag {tag} verwijderd}
+          }
+        warning: >-
+          {count, plural,
+            =0 {** ERR **}
+            =1 {Bij 1 gebruiker kon tag {tag} niet verwijderd
+            worden}
+            other {Bij # gebruikers kon tag {tag} niet verwijderd
+            worden}
+          }
+
   filter:
     no_results: >
       Er zijn geen gebruikers volgens
@@ -2636,6 +2705,37 @@ users_show:
     flash:
       success: >-
         Wijzigingen van tags opgeslagen ({count})
+
+users_tags_edit:
+  title: >-
+    {self, select,
+      yes {Tags voor je profiel aanpassen}
+      no {Tags voor {user} aanpassen}
+      other {**ERR**}
+    }
+  log_comment:
+    help: >-
+      Deze commentaar wordt opgeslagen in De
+      {ao}historiek van de tags van de gebruiker{ac}
+  only_visible_for_admins: >-
+    De tags zijn alleen zichtbaar voor admins
+  tags:
+    help: >-
+      Typ om autosuggesties te krijgen.
+      Tags kunnen niet dubbel toegevoegd worden.
+  flash:
+    success: >-
+      {self, select,
+        yes {Tags voor je profiel aangepast}
+        no {Tags voor {user} aangepast}
+        other {**ERR**}
+      }
+
+users_tags_logs:
+  title: >-
+    Tag Historiek van gebruiker {user}
+  current_tags: Huidige tags
+
 
 welcome:
   title: Welkom bij {system_name}

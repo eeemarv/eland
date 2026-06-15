@@ -71,6 +71,9 @@ class UsersColsCommand implements CommandInterface
   #[Type(type: 'bool')]
   public mixed $last_login_at;
 
+  #[Type(type: 'bool')]
+  public mixed $tags;
+
   #[Type(type: 'array')]
   #[All([
     new Type(type: 'bool'),

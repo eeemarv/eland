@@ -56,6 +56,10 @@ class UsersColsType extends AbstractType
       config_id: 'periodic_mail.enabled',
       schema: $this->pp->schema_o(),
     );
+    $tags_enabled = $this->config_service->get_bool(
+      config_id: 'users.tags.enabled',
+      schema: $this->pp->schema_o(),
+    );
     $mollie_enabled = $this->config_service->get_bool(
       config_id: 'mollie.enabled',
       schema: $this->pp->schema_o(),
@@ -170,6 +174,12 @@ class UsersColsType extends AbstractType
         'required'  => false,
       ]);
       $builder->add('last_login_at', CheckboxType::class, [
+        'required'  => false,
+      ]);
+    }
+    if ($is_admin && $tags_enabled)
+    {
+      $builder->add('tags', CheckboxType::class, [
         'required'  => false,
       ]);
     }

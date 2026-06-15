@@ -122,6 +122,12 @@
 </th>
 {%- endif -%}
 
+{%- if cols.tags is defined and cols.tags -%}
+<th data-priority="5">
+  {{- 'label.tags'|trans -}}
+</th>
+{%- endif -%}
+
 {%- if cols.contacts is defined -%}
   {%- for abbrev, b in cols.contacts -%}
   {%- if b -%}

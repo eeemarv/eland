@@ -1,0 +1,36 @@
+{%- extends 'users/base/users_single_form.html.twig' -%}
+
+{%- block heading_icon -%}
+<twig:ux:icon name="lucide:tags"/>
+{%- endblock heading_icon -%}
+
+{%- block heading_title -%}
+  {{- 'users_tags_edit.title'|trans({
+    'self': is_self ? 'yes' : 'no',
+    'user': account(id)
+  }) -}}
+{%- endblock heading_title -%}
+
+{%- block heading_sub -%}
+  <p>
+    {{- 'users_tags_edit.only_visible_for_admins'|trans -}}
+  </p>
+{%- endblock heading_sub -%}
+
+{%- block form_a -%}
+  {{- form_row(form.tags, {
+    'label': 'label.tags',
+    'addon': ux_icon('lucide:tags'),
+    'help': 'users_tags_edit.tags.help',
+  }) -}}
+{%- endblock form_a -%}
+
+{%- block form_log_comment -%}
+  {%- include 'form/log_comment.html.twig' with {
+    'help': 'users_tags_edit.log_comment.help',
+    'help_translation_parameters': {
+      'ao': '<a href="' ~ path('users_tags_logs', {'id': id}|pp) ~ '">',
+      'ac': '</a>',
+    }
+  } -%}
+{%- endblock form_log_comment -%}

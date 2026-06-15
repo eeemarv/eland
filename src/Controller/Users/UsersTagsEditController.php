@@ -2,9 +2,9 @@
 
 namespace App\Controller\Users;
 
-use App\Command\Users\UsersAdminCommentsCommand;
-use App\Form\Type\Users\UsersAdminCommentsType;
-use App\Repository\UserLogRepository;
+use App\Command\Users\UsersTagsCommand;
+use App\Form\Type\Users\UsersTagsType;
+use App\Repository\TagRepository;
 use App\Repository\UserRepository;
 use App\Service\ConfigService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,17 +12,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\TypeaheadService;
-use App\Service\UserCacheService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
-class UsersAdminCommentsEditController extends AbstractController
+class UsersTagsEditController extends AbstractController
 {
   #[Route(
-    '/{schema}/{role_short}/users/{id}/admin-comments/edit',
-    name: 'users_admin_comments_edit',
+    '/{schema}/{role_short}/users/{id}/tags/edit',
+    name: 'users_tags_edit',
     methods: ['GET', 'POST'],
     requirements: [
       'schema'        => '%assert.schema%',
@@ -30,23 +28,23 @@ class UsersAdminCommentsEditController extends AbstractController
       'id'            => '%assert.id%',
     ],
     defaults: [
-      'is_self'       => false,
       'module'        => 'users',
+      'is_self'       => false,
     ],
   )]
 
   #[Route(
-    '/{schema}/{role_short}/users/self/admin-comments/edit',
-    name: 'users_admin_comments_edit_self',
+    '/{schema}/{role_short}/users/self/tags/edit',
+    name: 'users_tags_edit_self',
     methods: ['GET', 'POST'],
     requirements: [
       'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [
+      'module'        => 'users',
       'is_self'       => true,
       'id'            => 0,
-      'module'        => 'users',
     ],
   )]
 
@@ -54,22 +52,20 @@ class UsersAdminCommentsEditController extends AbstractController
     Request $request,
     int $id,
     bool $is_self,
-    UserCacheService $user_cache_service,
-    TypeaheadService $typeahead_service,
     UserRepository $user_repository,
-    UserLogRepository $user_log_repository,
+    TagRepository $tag_repository,
     ConfigService $config_service,
     PageParamsService $pp,
     SessionUserService $su,
   ):Response
   {
     if (!$config_service->get_bool(
-      config_id: 'users.fields.admin_comments.enabled',
+      config_id: 'users.tags.enabled',
       schema: $pp->schema_o(),
     ))
     {
       throw $this->createAccessDeniedException(
-        'Admin comments submodule not enabled.'
+        'Tags submodule not enabled.'
       );
     }
 
@@ -77,7 +73,7 @@ class UsersAdminCommentsEditController extends AbstractController
       && $su->is_owner($id))
     {
       return $this->redirectToRoute(
-        route: 'users_admin_comments_edit_self',
+        route: 'users_tags_edit_self',
         parameters: $pp->ary(),
       );
     }
@@ -101,13 +97,18 @@ class UsersAdminCommentsEditController extends AbstractController
 
     $is_intersystem = isset($user['remote_schema']) || isset($user['remote_email']);
 
-    $command = new UsersAdminCommentsCommand();
+    $tags = $tag_repository->get_id_ary_for_user(
+      user_id: $id,
+      schema: $pp->schema_o(),
+      active_only: true,
+    );
 
-    $command->admin_comments = $user['admin_comments'];
-    $old_data = (array) $command;
+    $command = new UsersTagsCommand();
+
+    $command->tags = $tags;
 
     $form = $this->createForm(
-      type: UsersAdminCommentsType::class,
+      type: UsersTagsType::class,
       data: $command,
       options: [
         'log_comment_enabled' => true,
@@ -121,7 +122,16 @@ class UsersAdminCommentsEditController extends AbstractController
       $command = $form->getData();
       $log_comment = $form->get('log_comment')->getData();
 
-      if ($command->admin_comments === $user['admin_comments'])
+      $count_changes = $tag_repository->update_for_user(
+        new_tag_id_ary: $command->tags,
+        user_id: $id,
+        comment: $log_comment,
+        route: $pp->route(),
+        created_by: $su->id() ?: null,
+        schema: $pp->schema_o(),
+      );
+
+      if ($count_changes === 0)
       {
         $this->addFlash(
           type: 'warning',
@@ -132,47 +142,16 @@ class UsersAdminCommentsEditController extends AbstractController
       }
       else
       {
-        $user_repository->set_admin_comments(
-          id: $id,
-          admin_comments: $command->admin_comments,
-          schema: $pp->schema_o(),
-        );
-
-        $user_cache_service->clear(
-          id: $id,
-          schema: $pp->schema(),
-        );
-        $typeahead_service->clear_cache(
-          schema: $pp->schema(),
-        );
-
-        $user_log_repository->insert(
-          user_id: $id,
-          old_data: $old_data,
-          new_data: (array) $command,
-          comment: $log_comment,
-          created_by: $su->id() ?: null,
-          route: $pp->route(),
-          schema: $pp->schema_o(),
-        );
-
         $this->addFlash(
           type: 'success',
           message: [
-            'key' => 'users_admin_comments_edit.flash.success',
+            'key' => 'users_tags_edit.flash.success',
             'params'  => [
-              'self'  => $is_self ? 'yes' : 'no',
+              'is_self' => $is_self,
+              'count_changes' => $count_changes,
               'user'  => $user['name'],
             ],
           ]
-        );
-      }
-
-      if ($is_self)
-      {
-        return $this->redirectToRoute(
-          route: 'users_show_self',
-          parameters: $pp->ary(),
         );
       }
 
@@ -185,10 +164,10 @@ class UsersAdminCommentsEditController extends AbstractController
       );
     }
 
-    return $this->render('users/users_admin_comments_edit.html.twig', [
+    return $this->render('users/users_tags_edit.html.twig', [
       'form'              => $form->createView(),
-      'is_self'           => $is_self,
       'user'              => $user,
+      'is_self'           => $is_self,
       'id'                => $id,
       'is_intersystem'    => $is_intersystem,
     ]);

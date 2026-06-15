@@ -1,0 +1,47 @@
+{%- if config_bool('users.tags.enabled') and pp_has_role('admin') -%}
+{%- embed 'embed/list_item.html.twig' -%}
+  {%- import 'macro/lbl.html.twig' as l -%}
+  {% block class -%}
+    list-group-item-info
+  {% endblock class %}
+  {%- block dl -%}
+    <dt>
+      {{- 'label.tags'|trans -}}
+    </dt>
+    <dd>
+      {%- for tag in tags -%}
+        {%- include 'component/tag.html.twig' -%}
+      {%- endfor -%}
+      {%- if tags is empty -%}
+        <twig:ux:icon name="lucide:x" class="text-bold"/>
+      {%- endif -%}
+    </dd>
+  {%- endblock dl -%}
+  {%- block div_right -%}
+    <a href="{{- path('users_tags_logs', {'id': id}|pp) -}}"
+      class="btn btn-default"
+      title="{{- 'users_tags_logs.title'|trans({
+        'user': user.name,
+      }) -}}">
+      <twig:ux:icon name="lucide:history"/>
+      &nbsp;
+      <span class="hidden-sm">
+        {{- 'label.history'|trans -}}
+      </span>
+    </a>
+
+    <a href="{{- path('users_tags_edit' ~ (is_self ? '_self' : ''), (is_self ? {} : {'id': id})|pp) -}}"
+      class="btn btn-primary"
+      title="{{- 'users_tags_edit.title'|trans({
+        'self': is_self ? 'yes' : 'no',
+        'user': user.name,
+      }) -}}">
+      <twig:ux:icon name="lucide:pencil"/>
+      &nbsp;
+      <span class="hidden-sm">
+        {{- 'btn.edit'|trans -}}
+      </span>
+    </a>
+  {%- endblock div_right -%}
+{%- endembed -%}
+{%- endif -%}

@@ -1,4 +1,4 @@
-<li class="list-group-item{% block class %}{% endblock %}">
+<li class="list-group-item{%- if block('class') %} {% block class %}{% endblock %}{%- endif %}">
     {%- block item -%}
     <div class="d-flex justify-content-between">
         <div>

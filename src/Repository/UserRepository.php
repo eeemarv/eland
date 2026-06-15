@@ -1244,16 +1244,17 @@ class UserRepository
         select jsonb_agg(
           jsonb_build_object(
             \'txt\', tg.txt,
+            \'txt_color\', tg.txt_color,
+            \'bg_color\', tg.bg_color,
             \'description\', tg.description,
             \'id\', tg.id
-          )
+          ) order by tg.pos asc
         ) as tags
         from ' . $schema->str() . '.tags tg
         join ' . $schema->str() . '.users_tags ut
           on ut.tag_id = tg.id
         where ut.user_id = u.id
-        group by tg.id
-        order by tg.pos asc
+          and tg.is_active
       ) tags on true
       where u.id = :id',
       $sql_params,

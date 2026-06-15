@@ -16,6 +16,7 @@ class UsersConfigModulesType extends AbstractType
     array $options,
   ):void
   {
+    $builder->add('tags_enabled', CheckboxType::class);
     $builder->add('full_name_enabled', CheckboxType::class);
     $builder->add('postcode_enabled', CheckboxType::class);
     $builder->add('birthdate_enabled', CheckboxType::class);

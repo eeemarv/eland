@@ -9,21 +9,16 @@
 <twig:ux:icon name="lucide:tag"/>
 {%- endblock heading_icon -%}
 
-{%- block assets_add -%}
-  {{- parent() -}}
-	{{- assets_add([
-		'tags_def.js'
-	]) -}}
-{%- endblock assets_add -%}
-
 {%- block form_a -%}
+<div data-controller="tag-preview">
   <div class="row">
     <div class="col-sm-6">
       {{- form_row(form.txt, {
         'label': 'label.text',
         'addon': ux_icon('lucide:pencil'),
         'attr': {
-          'data-tag-txt': ''
+          'data-tag-preview-target': 'text',
+          'data-action': 'input->tag-preview#update'
         }
       }) -}}
     </div>
@@ -33,7 +28,11 @@
             {{- 'label.example'|trans -}}
           </label>
           <div class="input-group">
-            <span class="tag-eland label" data-tag-exp title="{{- form.children.description.vars.value -}}">
+            <span class="tag-eland label"
+                  data-tag-preview-target="preview"
+                  title="{{- form.children.description.vars.value -}}"
+                  style="border: 1px solid;"
+            >
               {{- form.children.txt.vars.value -}}
             </span>
           </div>
@@ -46,7 +45,8 @@
           'label': 'label.bg_color',
           'addon': ux_icon('lucide:palette'),
           'attr': {
-            'data-tag-bg-color': ''
+            'data-tag-preview-target': 'bgColor',
+            'data-action': 'input->tag-preview#update'
           }
         }) -}}
       </div>
@@ -55,7 +55,8 @@
           'label': 'label.txt_color',
           'addon': ux_icon('lucide:palette'),
           'attr': {
-            'data-tag-txt-color': ''
+            'data-tag-preview-target': 'textColor',
+            'data-action': 'input->tag-preview#update'
           }
         }) -}}
       </div>
@@ -64,15 +65,9 @@
     'label': 'label.description',
     'addon': ux_icon('lucide:pencil'),
     'attr': {
-      'data-tag-description': ''
+      'data-tag-preview-target': 'description',
+      'data-action': 'input->tag-preview#update'
     }
   }) -}}
+</div>
 {%- endblock form_a -%}
-
-{%- block css -%}
-  {{- parent() -}}
-{%- endblock css -%}
-
-{%- block js -%}
-  {{- parent() -}}
-{%- endblock js -%}

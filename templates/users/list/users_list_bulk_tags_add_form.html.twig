@@ -1,0 +1,29 @@
+
+{%- include 'component/bulkchecktable/form_start.html.twig' with {
+  'form': bulk_tags_add_form,
+} -%}
+
+{{- form_row(bulk_tags_add_form.tags, {
+  'label': 'label.tag',
+  'help': 'users_list.bulk.tags_add.tags.help',
+  'addon': ux_icon('lucide:tag'),
+}) -}}
+
+{%- include 'form/log_comment.html.twig' with {
+  'form': bulk_tags_add_form,
+  'inline': false,
+  'help': 'users_list.bulk.tags_add.log_comment.help',
+} -%}
+
+{{- form_row(bulk_tags_add_form.verify, {
+  'label': 'check.verify',
+}) -}}
+
+{{- form_widget(bulk_tags_add_form.submit, {
+  'label': 'btn.add',
+  'attr': {
+    'class': 'btn btn-lg btn-success',
+  },
+}) -}}
+
+{{- form_end(bulk_tags_add_form) -}}

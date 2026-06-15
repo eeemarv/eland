@@ -1,12 +1,17 @@
 {%- extends 'bootstrap_3_layout.html.twig' -%}
 
 {% block form_widget_simple -%}
-  {%- if addon is defined -%}
+  {%- if addon is defined or post_addon is defined-%}
     <div class="input-group{{ group_class|default('') }}">
+      {%- if addon is defined -%}
       <span class="input-group-addon">
         {{- addon|raw -}}
       </span>
+      {%- endif -%}
       {{- parent() -}}
+      {%- if post_addon is defined -%}
+        {{- post_addon|raw -}}
+      {%- endif -%}
     </div>
   {%- else -%}
     {{- parent() -}}

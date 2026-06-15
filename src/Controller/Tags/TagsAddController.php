@@ -67,6 +67,8 @@ class TagsAddController extends AbstractController
     $command->tag_type = $tag_type;
     $command->bg_color = '#eeeeee';
     $command->txt_color = '#555555';
+    $command->txt = null;
+    $command->description = null;
 
     $form = $this->createForm(
       type: TagsDefType::class,
@@ -98,9 +100,20 @@ class TagsAddController extends AbstractController
         schema: $pp->schema_o(),
       );
 
-      $typeahead_service->clear_cache($pp->schema());
+      $tag = $this->renderView('component/tag.html.twig', [
+        'tag' => $command,
+      ]);
 
-      $this->addFlash('success', 'Tag "' . $command->txt . '" opgeslagen.');
+      $this->addFlash(
+        type:'success',
+        message: [
+          'key' => 'tags.add.flash.success',
+          'params'  => [
+            'tag' => $tag,
+          ],
+          'is_raw' => true,
+        ],
+      );
 
       return $this->redirectToRoute('tags', [
         ...$pp->ary(),

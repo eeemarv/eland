@@ -129,9 +129,6 @@ bg-inactive
 {%- endblock heading_append -%}
 
 {%- block tags -%}
-  {%- include 'form/tags.html.twig' with {
-    'help': 'tags_users.help.only_for_admins'
-  } -%}
 {%- endblock tags -%}
 
 {%- block content -%}
@@ -142,6 +139,7 @@ bg-inactive
     <div class="col-sm-8">
       <div class="panel panel-default">
         <ul class="list-group">
+          {%- include 'users/users_show/tags.html.twig' -%}
           {%- include 'users/users_show/full_name.html.twig' -%}
           {%- include 'users/users_show/role.html.twig' -%}
           {%- include 'users/users_show/accounts.html.twig' -%}

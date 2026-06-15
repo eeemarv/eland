@@ -105,7 +105,20 @@ class TagsDelController extends AbstractController
         schema: $pp->schema_o(),
       );
 
-      $this->addFlash('success', 'Tag "' . $command->txt . '" verwijderd.');
+      $tag = $this->renderView('component/tag.html.twig', [
+        'tag' => $command,
+      ]);
+
+      $this->addFlash(
+        type:'success',
+        message: [
+          'key' => 'tags.del.flash.success',
+          'params'  => [
+            'tag' => $tag,
+          ],
+          'is_raw' => true,
+        ],
+      );
 
       return $this->redirectToRoute('tags', [
         ...$pp->ary(),

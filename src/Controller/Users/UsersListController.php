@@ -18,6 +18,8 @@ use App\Command\UsersBulk\UsersBulkStatusCommand;
 use App\Command\Users\UsersColsCommand;
 use App\Command\UsersBulk\UsersBulkAccountLeavingCommand;
 use App\Command\UsersBulk\UsersBulkActiveCommand;
+use App\Command\UsersBulk\UsersBulkTagsAddCommand;
+use App\Command\UsersBulk\UsersBulkTagsDelCommand;
 use App\Email\UserBulk\Copy\EmailUserBulkCopyMessage;
 use App\Email\UserBulk\Message\EmailUserBulkMessageMessage;
 use App\Form\Type\Filter\QTextSearchFilterType;
@@ -33,12 +35,15 @@ use App\Form\Type\UsersBulk\UsersBulkStatusType;
 use App\Form\Type\Users\UsersColsType;
 use App\Form\Type\UsersBulk\UsersBulkAccountLeavingType;
 use App\Form\Type\UsersBulk\UsersBulkActiveType;
+use App\Form\Type\UsersBulk\UsersBulkTagsAddType;
+use App\Form\Type\UsersBulk\UsersBulkTagsDelType;
 use App\Render\AccountRender;
 use App\Repository\AccountRepository;
 use App\Repository\ContactRepository;
 use App\Repository\LoginRepository;
 use App\Repository\MessageRepository;
 use App\Repository\MollieRepository;
+use App\Repository\TagRepository;
 use App\Repository\TransactionRepository;
 use App\Repository\UserLogRepository;
 use App\Repository\UserRepository;
@@ -90,6 +95,7 @@ class UsersListController extends AbstractController
     UserLogRepository $user_log_repository,
     ContactRepository $contact_repository,
     MollieRepository $mollie_repository,
+    TagRepository $tag_repository,
     MessageRepository $message_repository,
     TransactionRepository $transaction_repository,
     LoginRepository $login_repository,
@@ -143,6 +149,10 @@ class UsersListController extends AbstractController
       config_id: 'periodic_mail.enabled',
       schema: $pp->schema_o(),
     );
+    $tags_enabled = $config_service->get_bool(
+      config_id: 'users.tags.enabled',
+      schema: $pp->schema_o(),
+    );
 
     $mollie_enabled = $config_service->get_bool(
       config_id: 'mollie.enabled',
@@ -179,6 +189,8 @@ class UsersListController extends AbstractController
     $bulk_periodic_overview_en_form = null;
     $bulk_active_form = null;
     $bulk_leaving_form = null;
+    $bulk_tags_add_form = null;
+    $bulk_tags_del_form = null;
 
     if ($pp->is_admin())
     {
@@ -1283,6 +1295,238 @@ class UsersListController extends AbstractController
       );
     }
 
+    if ($tags_enabled && $pp->is_admin())
+    {
+      $bulk_tags_add_command = new UsersBulkTagsAddCommand();
+      $bulk_tags_add_form = $this->createForm(
+        type: UsersBulkTagsAddType::class,
+        data: $bulk_tags_add_command,
+        options: [
+          'log_comment_enabled' => true,
+        ],
+      );
+      $bulk_tags_add_form->handleRequest($request);
+    }
+
+    if ($bulk_tags_add_form
+      && $bulk_tags_add_form->isSubmitted()
+      && $bulk_tags_add_form->isValid())
+    {
+      $bulk_tags_add_command = $bulk_tags_add_form->getData();
+      $log_comment = $bulk_tags_add_form->get('log_comment')->getData();
+      $selected = $bulk_tags_add_command->selected;
+      [$tag_id] = $bulk_tags_add_command->tags;
+      $select_ary = explode(',', $selected);
+      $s_user_ids = [];
+      foreach ($select_ary as $sel_id)
+      {
+        $s_user_ids[] = (int) trim($sel_id);
+      }
+
+      $s_user_ary = $user_repository->get_selected(
+        user_ids: $s_user_ids,
+        schema: $pp->schema_o(),
+      );
+
+      $tag_ary = $tag_repository->get(
+        id: $tag_id,
+        tag_type: 'users',
+        schema: $pp->schema_o(),
+      );
+
+      if ($tag_ary === false)
+      {
+        throw new \Exception(
+          'Tag with id ' . $tag_id . ' not found'
+        );
+      }
+
+      $user_ids_added_tag = $tag_repository->add_tag_for_users(
+        user_ids: $s_user_ids,
+        tag_id: $tag_id,
+        comment: $log_comment,
+        route: $pp->route(),
+        created_by: $su->id() ?: null,
+        schema: $pp->schema_o(),
+      );
+
+      $tag = $this->renderView('component/tag.html.twig', [
+        'tag' => $tag_ary,
+      ]);
+
+      $user_ids_not_added_tag = array_diff($s_user_ids, $user_ids_added_tag);
+
+      if (count($user_ids_added_tag))
+      {
+        $this->addFlash(
+          type: 'success',
+          message: [
+            'key' => 'users_list.bulk.tags_add.flash.success',
+            'params'  => [
+              'count' => count($user_ids_added_tag),
+              'tag'   => $tag,
+            ],
+            'is_raw' => true,
+          ],
+        );
+        foreach ($user_ids_added_tag as $uid)
+        {
+          $this->addFlash(
+            type: 'success',
+            message: [
+              'user'  => $s_user_ary[$uid],
+            ],
+          );
+        }
+      }
+
+      if (count($user_ids_not_added_tag))
+      {
+        $this->addFlash(
+          type: 'warning',
+          message: [
+            'key' => 'users_list.bulk.tags_add.flash.warning',
+            'params'  => [
+              'count' => count($user_ids_not_added_tag),
+              'tag' => $tag,
+            ],
+            'is_raw' => true,
+          ],
+        );
+
+        foreach ($user_ids_not_added_tag as $uid)
+        {
+          $this->addFlash(
+            type: 'warning',
+            message: [
+              'user'  => $s_user_ary[$uid],
+            ],
+          );
+        }
+      }
+
+      return $this->redirectToRoute(
+        route: $vr->get('users'),
+        parameters: $pp->ary(),
+      );
+    }
+
+    if ($tags_enabled && $pp->is_admin())
+    {
+      $bulk_tags_del_command = new UsersBulkTagsDelCommand();
+      $bulk_tags_del_form = $this->createForm(
+        type: UsersBulkTagsDelType::class,
+        data: $bulk_tags_del_command,
+        options: [
+          'log_comment_enabled' => true,
+        ],
+      );
+      $bulk_tags_del_form->handleRequest($request);
+    }
+
+    if ($bulk_tags_del_form
+      && $bulk_tags_del_form->isSubmitted()
+      && $bulk_tags_del_form->isValid())
+    {
+      $bulk_tags_del_command = $bulk_tags_del_form->getData();
+      $log_comment = $bulk_tags_del_form->get('log_comment')->getData();
+      $selected = $bulk_tags_del_command->selected;
+      [$tag_id] = $bulk_tags_del_command->tags;
+      $select_ary = explode(',', $selected);
+      $s_user_ids = [];
+      foreach ($select_ary as $sel_id)
+      {
+        $s_user_ids[] = (int) trim($sel_id);
+      }
+
+      $s_user_ary = $user_repository->get_selected(
+        user_ids: $s_user_ids,
+        schema: $pp->schema_o(),
+      );
+
+      $tag_ary = $tag_repository->get(
+        id: $tag_id,
+        tag_type: 'users',
+        schema: $pp->schema_o(),
+      );
+
+      if ($tag_ary === false)
+      {
+        throw new \Exception(
+          'Tag with id ' . $tag_id . ' not found'
+        );
+      }
+
+      $user_ids_del_tag = $tag_repository->del_tag_for_users(
+        user_ids: $s_user_ids,
+        tag_id: $tag_id,
+        comment: $log_comment,
+        route: $pp->route(),
+        created_by: $su->id() ?: null,
+        schema: $pp->schema_o(),
+      );
+
+      $tag = $this->renderView('component/tag.html.twig', [
+        'tag' => $tag_ary,
+      ]);
+
+      $user_ids_not_del_tag = array_diff($s_user_ids, $user_ids_del_tag);
+
+      if (count($user_ids_del_tag))
+      {
+        $this->addFlash(
+          type: 'success',
+          message: [
+            'key' => 'users_list.bulk.tags_del.flash.success',
+            'params'  => [
+              'count' => count($user_ids_del_tag),
+              'tag'   => $tag,
+            ],
+            'is_raw' => true,
+          ],
+        );
+        foreach ($user_ids_del_tag as $uid)
+        {
+          $this->addFlash(
+            type: 'success',
+            message: [
+              'user'  => $s_user_ary[$uid],
+            ],
+          );
+        }
+      }
+
+      if (count($user_ids_not_del_tag))
+      {
+        $this->addFlash(
+          type: 'warning',
+          message: [
+            'key' => 'users_list.bulk.tags_del.flash.warning',
+            'params'  => [
+              'count' => count($user_ids_not_del_tag),
+              'tag' => $tag,
+            ],
+            'is_raw' => true,
+          ],
+        );
+
+        foreach ($user_ids_not_del_tag as $uid)
+        {
+          $this->addFlash(
+            type: 'warning',
+            message: [
+              'user'  => $s_user_ary[$uid],
+            ],
+          );
+        }
+      }
+
+      return $this->redirectToRoute(
+        route: $vr->get('users'),
+        parameters: $pp->ary(),
+      );
+    }
+
     /**
      * restore checkboxes after form error
      */
@@ -1423,6 +1667,11 @@ class UsersListController extends AbstractController
       $cols_command->distance = false;
     }
 
+    if (!$tags_enabled || !$pp->is_admin())
+    {
+      $cols_command->tags = false;
+    }
+
     if (!$mollie_enabled)
     {
       $cols_command->mollie = false;
@@ -1493,6 +1742,8 @@ class UsersListController extends AbstractController
       schema: $pp->schema_o(),
     );
 
+    $user_ids = array_keys($users);
+
     /** @var UsersColsCommand $cols_command */
     if (isset($cols_command->balance_on_date)
       && $cols_command->balance_on_date)
@@ -1537,6 +1788,14 @@ class UsersListController extends AbstractController
       && $cols_command->last_login_at)
     {
       $last_login_ary = $login_repository->get_last_login_ary(
+        schema: $pp->schema_o(),
+      );
+    }
+
+    if (isset($cols_command->tags) && $pp->is_admin())
+    {
+      $tags_ary = $tag_repository->get_all_active_for_users(
+        user_ids: $user_ids,
         schema: $pp->schema_o(),
       );
     }
@@ -1618,7 +1877,7 @@ class UsersListController extends AbstractController
       $since_unix = time() - ($cols_command->transactions_days * 86400);
       $since = \DateTimeImmutable::createFromFormat('U', (string) $since_unix);
       $transactions_from_date = $since->format('Y-m-d H:i:s');
-      $trans_ary = $transaction_repository->get_activity_for_each_user(
+      $transactions_ary = $transaction_repository->get_activity_for_each_user(
         since: $since,
         exclude_account_id: $cols_command->transactions_exclude_code,
         schema: $pp->schema_o(),
@@ -1638,8 +1897,9 @@ class UsersListController extends AbstractController
       'distance_ary'      => $distance_ary ?? [],
       'ref_geo'           => $ref_geo ?? null,
       'mollie_ary'        => $mollie_ary ?? [],
+      'tags_ary'          => $tags_ary ?? [],
       'messages_ary'      => $messages_ary ?? [],
-      'trans_ary'         => $trans_ary ?? [],
+      'transactions_ary'         => $transactions_ary ?? [],
       'transactions_from_date'  => $transactions_from_date ?? null,
       'filter_form'       => $filter_form->createView(),
       'row_count'         => count($users),
@@ -1654,6 +1914,8 @@ class UsersListController extends AbstractController
       'bulk_periodic_overview_en_form'     => $bulk_periodic_overview_en_form?->createView(),
       'bulk_active_form'     => $bulk_active_form?->createView(),
       'bulk_leaving_form'     => $bulk_leaving_form?->createView(),
+      'bulk_tags_add_form'     => $bulk_tags_add_form?->createView(),
+      'bulk_tags_del_form'     => $bulk_tags_del_form?->createView(),
       'cols_form'   => $cols_form->createView(),
     ]);
   }

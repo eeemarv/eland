@@ -127,6 +127,15 @@
         {%- endif -%}
       </div>
       <div class="col-md-4">
+        {%- if cols_form.tags is defined -%}
+          <h3>
+            {{- 'label.tags'|trans -}}
+          </h3>
+          {{- form_row(cols_form.tags, {
+            'label': 'label.tags',
+          }) -}}
+        {%- endif -%}
+
         {%- if cols_form.contacts is defined -%}
           <h3>
             {{- 'label.contacts'|trans -}}

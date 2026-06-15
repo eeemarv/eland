@@ -152,6 +152,8 @@ class UsersShowController extends AbstractController
      *
      */
 
+    /*
+
     $tags_form = null;
     $render_tags = false;
 
@@ -176,15 +178,14 @@ class UsersShowController extends AbstractController
         $tags_form->isValid())
       {
         $tags_command = $tags_form->getData();
+        $new_tag_id_ary = $tags_command->tags;
 
         $count_changes = $tag_repository->update_for_user(
-          command: $tags_command,
+          new_tag_id_ary: $new_tag_id_ary,
           user_id: $id,
           created_by: $su->id(),
           schema: $pp->schema_o(),
         );
-
-        //$response_cache->clear_cache($pp->schema());
 
         if ($count_changes)
         {
@@ -219,6 +220,7 @@ class UsersShowController extends AbstractController
 
       $render_tags = true;
     }
+    */
 
     /**
      * Mail form
@@ -355,12 +357,11 @@ class UsersShowController extends AbstractController
       'map_markers' => $map_markers,
       'transaction_count'   => $user['transaction_count'],
       'message_count'       => $user['message_count'],
+      'tags'                => $user['tags'],
       'count_transactions'    => $count_transactions,
       'count_messages'        => $count_messages,
       'is_intersystem'        => $is_intersystem,
       'is_new'                => $is_new,
-      'tags_form'             => $tags_form,
-      'render_tags'           => $render_tags,
       'tdays'                 => $tdays,
       'mail_form'             => $mail_form,
       'intersystem_missing'   => $intersystem_missing,

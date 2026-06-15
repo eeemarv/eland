@@ -2,7 +2,6 @@
 
 namespace App\Controller\Tags;
 
-use App\Cache\ConfigCache;
 use App\Cache\ResponseCache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;

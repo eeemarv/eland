@@ -6,7 +6,6 @@ use App\DTO\Schema;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CategoryRepository
 {

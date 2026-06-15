@@ -239,4 +239,11 @@ return [
     'bootstrap-sass/assets/javascripts/bootstrap.js' => [
         'version' => '3.4.3',
     ],
+    '@yaireo/tagify' => [
+        'version' => '4.37.1',
+    ],
+    '@yaireo/tagify/dist/tagify.css' => [
+        'version' => '4.37.1',
+        'type' => 'css',
+    ],
 ];

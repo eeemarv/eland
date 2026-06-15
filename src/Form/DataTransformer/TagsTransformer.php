@@ -14,6 +14,11 @@ class TagsTransformer implements DataTransformerInterface
 
   public function transform($id_ary): mixed
   {
+    if (empty($id_ary))
+    {
+      return '';
+    }
+
     return implode(',', $id_ary);
   }
 

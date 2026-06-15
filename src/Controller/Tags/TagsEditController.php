@@ -107,7 +107,20 @@ class TagsEditController extends AbstractController
         schema: $pp->schema_o(),
       );
 
-      $this->addFlash('success', 'Tag "' . $command->txt . '" aangepast.');
+      $tag = $this->renderView('component/tag.html.twig', [
+        'tag' => $command,
+      ]);
+
+      $this->addFlash(
+        type:'success',
+        message: [
+          'key' => 'tags.edit.flash.success',
+          'params'  => [
+            'tag' => $tag,
+          ],
+          'is_raw' => true,
+        ],
+      );
 
       return $this->redirectToRoute('tags', [
         ...$pp->ary(),

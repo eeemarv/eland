@@ -16,16 +16,16 @@ use Symfony\Component\Routing\Annotation\Route;
 #[AsController]
 class TagsListController extends AbstractController
 {
-  #[Route(
+    #[Route(
     '/{schema}/{role_short}/tags/{tag_type}',
     name: 'tags',
     methods: ['GET', 'POST'],
     requirements: [
       'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
-      'tag_type'      => '%assert.tag_type%',
     ],
     defaults: [
+      'module'        => 'users',
       'sub_module'    => 'tags',
     ],
   )]
@@ -65,43 +65,62 @@ class TagsListController extends AbstractController
       schema: $pp->schema_o(),
     );
 
-    $tag_ary = [];
+    $tag_id_ary = [];
 
-    foreach ($tags as $tag)
+    foreach ($tag_id_ary as $tag)
     {
-      $tag_ary[] = $tag['id'];
+      $tag_id_ary[] = $tag['id'];
     }
 
-    $command->tags = json_encode($tag_ary);
+    $command->tags = implode(',', $tag_id_ary);
 
-    $form = $this->createForm(TagsListType::class, $command)
-      ->handleRequest($request);
+    $form = $this->createForm(
+      type:TagsListType::class,
+      data: $command,
+    );
+
+    $form->handleRequest($request);
 
     if ($form->isSubmitted()
       && $form->isValid())
     {
       $command = $form->getData();
-      $tags_json = $command->tags;
-      $posted_tags = json_decode($tags_json, true);
+      $posted_tag_id_ary = explode(',', $command->tags);
+      $tags_list = [];
+
+      foreach ($posted_tag_id_ary as $tag_id)
+      {
+        $tags_list[] = (int) $tag_id;
+      }
 
       $update_count = $tag_repository->update_list(
-        tags_list: $posted_tags,
+        tags_list: $tags_list,
         tag_type: $tag_type,
         schema: $pp->schema_o(),
       );
 
       if ($update_count)
       {
-        $this->addFlash('success', 'Plaatsing tags aangepast.');
+        $this->addFlash(
+          type: 'success',
+          message: [
+            'key' => 'tags.list.flash.success',
+          ],
+        );
       }
       else
       {
-        $this->addFlash('warning', 'Geen aangepaste plaatsing van tags');
+        $this->addFlash(
+          type: 'warning',
+          message: [
+            'key' => 'flash.no_change',
+          ],
+        );
       }
 
       return $this->redirectToRoute('tags', [
-        ...$pp->ary(),
         'tag_type'  => $tag_type,
+        ...$pp->ary(),
       ]);
     }
 

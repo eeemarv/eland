@@ -1,0 +1,6 @@
+<span{%- if tag.description %} title="{{ tag.description }}"
+  {%- endif %} class="label tag-eland tag-{{- tag.id }} me-1"
+  style="background-color: {{ tag.bg_color }}; border-color: {{ tag.txt_color }}; color: {{ tag.txt_color }};"
+  >
+  {{- tag.txt -}}
+</span>

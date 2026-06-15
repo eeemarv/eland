@@ -212,6 +212,16 @@
       {%- endif -%}
     {%- endif -%}
 
+    {%- if cols.tags is defined and cols.tags -%}
+    <td>
+      {%- if tags_ary[uid] is defined -%}
+        {%- for tag in tags_ary[uid] -%}
+          {%- include 'component/tag.html.twig' -%}
+        {%- endfor -%}
+      {%- endif -%}
+    </td>
+    {%- endif -%}
+
     {%- if cols.contacts is defined -%}
       {%- for abbrev, b in cols.contacts -%}
       {%- if b -%}
@@ -345,15 +355,15 @@
     {%- endif -%}
 
     {%- if cols.transactions_in is defined and cols.transactions_in -%}
-      {%- if trans_ary[uid] is defined -%}
-        <td data-order="{{- trans_ary[uid].trans_in -}}">
+      {%- if transactions_ary[uid] is defined -%}
+        <td data-order="{{- transactions_ary[uid].trans_in -}}">
           <a href="{{- path('transactions', {
             'uid': uid,
             'f':{
               'to_account': u_code,
               'from_date': transactions_from_date|date_format('day'),
             }}|pp) -}}">
-            {{- trans_ary[uid].trans_in -}}
+            {{- transactions_ary[uid].trans_in -}}
           </a>
         </td>
       {%- else -%}
@@ -362,15 +372,15 @@
     {%- endif -%}
 
     {%- if cols.transactions_out is defined and cols.transactions_out-%}
-      {%- if trans_ary[uid] is defined -%}
-        <td data-order="{{- trans_ary[uid].trans_out -}}">
+      {%- if transactions_ary[uid] is defined -%}
+        <td data-order="{{- transactions_ary[uid].trans_out -}}">
           <a href="{{- path('transactions', {
             'uid': uid,
             'f':{
               'from_account': u_code,
               'from_date': transactions_from_date|date_format('day'),
             }}|pp) -}}">
-            {{- trans_ary[uid].trans_out -}}
+            {{- transactions_ary[uid].trans_out -}}
           </a>
         </td>
       {%- else -%}
@@ -379,8 +389,8 @@
     {%- endif -%}
 
     {%- if cols.transactions_total is defined and cols.transactions_total -%}
-      {%- if trans_ary[uid] is defined -%}
-        <td data-order="{{- trans_ary[uid].trans_total -}}">
+      {%- if transactions_ary[uid] is defined -%}
+        <td data-order="{{- transactions_ary[uid].trans_total -}}">
           <a href="{{- path('transactions', {
             'uid': uid,
             'f':{
@@ -389,7 +399,7 @@
               'from_account': u_code,
               'from_date': transactions_from_date|date_format('day'),
             }}|pp) -}}">
-            {{- trans_ary[uid].trans_total -}}
+            {{- transactions_ary[uid].trans_total -}}
           </a>
         </td>
       {%- else -%}
@@ -398,15 +408,15 @@
     {%- endif -%}
 
     {%- if cols.amount_in is defined and cols.amount_in -%}
-      {%- if trans_ary[uid] is defined -%}
-        <td data-order="{{- trans_ary[uid].amount_in -}}">
+      {%- if transactions_ary[uid] is defined -%}
+        <td data-order="{{- transactions_ary[uid].amount_in -}}">
           <a href="{{- path('transactions', {
             'uid': uid,
             'f':{
               'to_account': u_code,
               'from_date': transactions_from_date|date_format('day'),
             }}|pp) -}}">
-            {{- trans_ary[uid].amount_in -}}
+            {{- transactions_ary[uid].amount_in -}}
           </a>
         </td>
       {%- else -%}
@@ -415,15 +425,15 @@
     {%- endif -%}
 
     {%- if cols.amount_out is defined and cols.amount_out -%}
-      {%- if trans_ary[uid] is defined -%}
-        <td data-order="{{- trans_ary[uid].amount_out -}}">
+      {%- if transactions_ary[uid] is defined -%}
+        <td data-order="{{- transactions_ary[uid].amount_out -}}">
           <a href="{{- path('transactions', {
             'uid': uid,
             'f':{
               'from_account': u_code,
               'from_date': transactions_from_date|date_format('day'),
             }}|pp) -}}">
-            {{- trans_ary[uid].amount_out -}}
+            {{- transactions_ary[uid].amount_out -}}
           </a>
         </td>
       {%- else -%}
@@ -432,8 +442,8 @@
     {%- endif -%}
 
     {%- if cols.amount_total is defined and cols.amount_total -%}
-      {%- if trans_ary[uid] is defined -%}
-        <td data-order="{{- trans_ary[uid].amount_total -}}">
+      {%- if transactions_ary[uid] is defined -%}
+        <td data-order="{{- transactions_ary[uid].amount_total -}}">
           <a href="{{- path('transactions', {
             'uid': uid,
             'f':{
@@ -442,7 +452,7 @@
               'from_account': u_code,
               'from_date': transactions_from_date|date_format('day'),
             }}|pp) -}}">
-            {{- trans_ary[uid].amount_total -}}
+            {{- transactions_ary[uid].amount_total -}}
           </a>
         </td>
       {%- else -%}
