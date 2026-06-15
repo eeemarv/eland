@@ -16,12 +16,4 @@ class TransactionsAutoMinLimitCommand implements CommandInterface
     ])]
     #[ConfigMap(type: 'int', key: 'accounts.limits.auto_min.percentage')]
     public $percentage;
-
-    #[Type(type: 'string')]
-    #[ConfigMap(type: 'str', key: 'accounts.limits.auto_min.exclude.to')]
-    public $exclude_to;
-
-    #[Type(type: 'string')]
-    #[ConfigMap(type: 'str', key: 'accounts.limits.auto_min.exclude.from')]
-    public $exclude_from;
 }

@@ -730,6 +730,13 @@ class TransactionsAddController extends AbstractController
                         $pp->schema()
                     );
 
+                    $autominlimit_service->process(
+                        $from_remote_id,
+                        $to_remote_id,
+                        $remote_amount,
+                        $remote_schema
+                    );
+
                     $auto_deactivate_service->process($to_id, $pp->schema());
                     $auto_deactivate_service->process($from_id, $pp->schema());
                     $auto_deactivate_service->process($to_remote_id, $remote_schema);

@@ -19,8 +19,6 @@ class TransactionsAutoMinLimitType extends AbstractType
     {
         $builder
             ->add('percentage', IntegerType::class)
-            ->add('exclude_to', TextType::class)
-            ->add('exclude_from', TextType::class)
             ->add('submit', SubmitType::class);
     }
 

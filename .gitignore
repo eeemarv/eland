@@ -6,6 +6,9 @@
 /.env*
 
 /public/build/
+/public/dist/
+/public/assets/
+/assets/vendor/
 
 ## uploaded files ##
 
