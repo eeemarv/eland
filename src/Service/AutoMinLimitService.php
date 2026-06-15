@@ -53,38 +53,8 @@ class AutoMinLimitService
 			return;
 		}
 
-		$global_min_limit = $this->config_service->get_int(
-      config_id: 'accounts.limits.global.min',
-      schema: $schema_o,
-    );
-		$percentage = $this->config_service->get_int(
-      config_id: 'accounts.limits.auto_min.percentage',
-      schema: $schema_o,
-    );
-		$exclude_to_str = $this->config_service->get_str(
-      config_id: 'accounts.limits.auto_min.exclude.to',
-      schema: $schema_o,
-    );
-		$exclude_from_str = $this->config_service->get_str(
-      config_id: 'accounts.limits.auto_min.exclude.from',
-      schema: $schema_o,
-    );
-
-		$exclude_to_ary = explode(',', $exclude_to_str);
-		$exclude_from_ary = explode(',', $exclude_from_str);
-
-		$exclude_to = [];
-		$exclude_from = [];
-
-		foreach($exclude_to_ary as $ex_to)
-		{
-			$exclude_to[trim(strtolower($ex_to))] = true;
-		}
-
-		foreach($exclude_from_ary as $ex_from)
-		{
-			$exclude_from[trim(strtolower($ex_from))] = true;
-		}
+		$global_min_limit = $this->config_service->get_int('accounts.limits.global.min', $schema);
+		$percentage = $this->config_service->get_int('accounts.limits.auto_min.percentage', $schema);
 
 		if (!isset($percentage))
 		{
@@ -124,18 +94,7 @@ class AutoMinLimitService
 			return;
 		}
 
-		if (isset($exclude_to[strtolower($to_user['code'])]))
-		{
-			$this->logger->debug('autominlimit: to user is excluded ' .
-				$this->account_render->str_id($to_id, $schema),
-				['schema' => $schema]);
-			return;
-		}
-
-		$min_limit = $this->account_repository->get_min_limit(
-      account_id: $to_id,
-      schema: new Schema($schema),
-    );
+		$min_limit = $this->account_repository->get_min_limit($to_id, $schema);
 
 		if (!isset($min_limit))
 		{
@@ -166,14 +125,6 @@ class AutoMinLimitService
 		if (!$from_user['code'])
 		{
 			$this->logger->debug('autominlimit: from user has no code.',
-				['schema' => $schema]);
-			return;
-		}
-
-		if (isset($exclude_from[strtolower($from_user['code'])]))
-		{
-			$this->logger->debug('autominlimit: from user is excluded ' .
-				$this->account_render->str_id($from_id, $schema),
 				['schema' => $schema]);
 			return;
 		}

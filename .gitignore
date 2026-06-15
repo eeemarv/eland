@@ -5,6 +5,14 @@
 /cache/
 /.env*
 
+<<<<<<< HEAD
+=======
+/public/build/
+/public/dist/
+/public/assets/
+/assets/vendor/
+
+>>>>>>> autominlimit
 ## uploaded files ##
 
 /public/store/*

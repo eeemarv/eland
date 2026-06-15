@@ -34,30 +34,12 @@
 {%- endblock form_header -%}
 
 {%- block form_a -%}
-  <p>
-    <b>
-      {{- 'transactions_autominlimit.for_accounts.title'|trans -}}
-    </b>:
-    {{- 'transactions_autominlimit.for_accounts.explain'|trans -}}
-  </p>
-
-  <p>
-    <b>
-    {{- 'transactions_autominlimit.trigger.title'|trans -}}
-    </b>:
-    {{- 'transactions_autominlimit.trigger.explain'|trans -}}
-  </p>
 
   {{- form_row(form.percentage, {
     'label': 'transactions_autominlimit.percentage.label',
-    'addon': ux_icon('lucide:percent'),
+    'pre_addon': {
+        'fa': 'percent'
+    }
   }) -}}
+
 {%- endblock form_a -%}
-
-{%- block css -%}
-  {{- parent() -}}
-{%- endblock css -%}
-
-{%- block js -%}
-  {{- parent() -}}
-{%- endblock js -%}
