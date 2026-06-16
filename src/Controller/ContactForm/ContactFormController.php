@@ -72,8 +72,6 @@ class ContactFormController extends AbstractController
       && $mail_enabled
     )
     {
-      $command = $form->getData();
-
       $email = strtolower($command->email);
       $message = $command->message;
 

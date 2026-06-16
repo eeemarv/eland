@@ -77,7 +77,6 @@ class CategoriesEditController extends AbstractController
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $command = $form->getData();
       $name= $command->name;
 
       $category_repository->update_name(

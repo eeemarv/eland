@@ -69,15 +69,16 @@ class DocsMapEditController extends AbstractController
       'validation_groups' => ['edit'],
     ];
 
-    $form = $this->createForm(DocsMapType::class,
-      $command, $form_options);
+    $form = $this->createForm(
+      type: DocsMapType::class,
+      data: $command,
+      options: $form_options,
+    );
     $form->handleRequest($request);
 
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $command = $form->getData();
-
       $doc_repository->update_map_name(
         name: $command->name,
         map_id: $id,

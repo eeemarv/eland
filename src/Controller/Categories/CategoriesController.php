@@ -73,7 +73,6 @@ class CategoriesController extends AbstractController
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $command = $form->getData();
       $categories_json = $command->categories;
       $posted_categories = json_decode($categories_json, true);
 

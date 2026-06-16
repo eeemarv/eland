@@ -105,13 +105,7 @@ class DocsDelController extends AbstractController
         schema: $pp->schema_o(),
       );
 
-      $err = $s3_service->del($doc['filename']);
-
-      if ($err)
-      {
-        $logger->error('doc delete file fail: ' . $err,
-          ['schema' => $pp->schema()]);
-      }
+      $s3_service->del($doc['filename']);
 
       $name = $doc['name'] ?? $doc['original_filename'];
       $alert_success_msg[] = 'Document "' . $name . '" is verwijderd.';

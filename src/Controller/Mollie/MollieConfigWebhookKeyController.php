@@ -71,7 +71,6 @@ class MollieConfigWebhookKeyController extends AbstractController
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $command = $form->getData();
       $webhook_key = $command->webhook_key;
       $log_comment = $form->get('log_comment')->getData();
 

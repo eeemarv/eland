@@ -46,7 +46,10 @@ class ForumListController extends AbstractController
       throw $this->createNotFoundException('Forum module not enabled.');
     }
 
-    $filter_form = $this->createForm(QTextSearchFilterType::class);
+    $filter_form = $this->createForm(
+      type: QTextSearchFilterType::class,
+    );
+
     $filter_form->handleRequest($request);
 
     $visible_ary = $item_access_service->get_visible_ary_for_page($pp->schema());

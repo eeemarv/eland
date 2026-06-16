@@ -86,7 +86,6 @@ class MollieConfigController extends AbstractController
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $command = $form->getData();
       $log_comment = $form->get('log_comment')->getData();
 
       $changed = $config_service->store_command(

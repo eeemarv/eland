@@ -111,8 +111,6 @@ class UsersPeriodicOverviewEditController extends AbstractController
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $command = $form->getData();
-
       if ($command->enabled === $enabled)
       {
         $this->addFlash(

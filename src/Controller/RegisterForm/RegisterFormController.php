@@ -59,14 +59,17 @@ class RegisterFormController extends AbstractController
       'validation_groups' => ['send'],
     ];
 
-    $form = $this->createForm(RegisterFormType::class, $command, $form_options);
+    $form = $this->createForm(
+      type: RegisterFormType::class,
+      data: $command,
+      options: $form_options,
+    );
+
     $form->handleRequest($request);
 
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $command = $form->getData();
-
       $email = strtolower($command->email);
       $first_name = $command->first_name;
       $last_name = $command->last_name;

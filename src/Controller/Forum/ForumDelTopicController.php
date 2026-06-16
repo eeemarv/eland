@@ -94,7 +94,11 @@ class ForumDelTopicController extends AbstractController
       'validation_groups'     => 'del',
     ];
 
-    $form = $this->createForm(ForumTopicDelType::class, $command, $form_options);
+    $form = $this->createForm(
+      type: ForumTopicDelType::class,
+      data: $command,
+      options: $form_options,
+    );
 
     $form->handleRequest($request);
 

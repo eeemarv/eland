@@ -112,8 +112,6 @@ class UsersHobbiesEditController extends AbstractController
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $command = $form->getData();
-
       if ($command->hobbies === $user['hobbies'])
       {
         $this->addFlash(

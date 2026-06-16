@@ -210,9 +210,9 @@ class UsersListController extends AbstractController
         schema: $pp->schema_o(),
       )
       && !$su->is_master()
+      && isset($bulk_email_command)
     )
     {
-      $bulk_email_command = $bulk_email_form->getData();
       $selected = $bulk_email_command->selected;
       $subject = $bulk_email_command->subject;
       $json_content = $bulk_email_command->json_content;
@@ -335,9 +335,9 @@ class UsersListController extends AbstractController
     if (isset($bulk_full_name_access_form)
       && $bulk_full_name_access_form->isSubmitted()
       && $bulk_full_name_access_form->isValid()
+      && isset($bulk_full_name_access_command)
     )
     {
-      $bulk_full_name_access_command = $bulk_full_name_access_form->getData();
       $selected = $bulk_full_name_access_command->selected;
       $access = $bulk_full_name_access_command->access;
       $select_ary = explode(',', $selected);
@@ -450,9 +450,10 @@ class UsersListController extends AbstractController
 
     if ($bulk_comments_form
       && $bulk_comments_form->isSubmitted()
-      && $bulk_comments_form->isValid())
+      && $bulk_comments_form->isValid()
+      && isset($bulk_comments_command)
+    )
     {
-      $bulk_comments_command = $bulk_comments_form->getData();
       $selected = $bulk_comments_command->selected;
       $comments = $bulk_comments_command->comments;
       $select_ary = explode(',', $selected);
@@ -528,9 +529,10 @@ class UsersListController extends AbstractController
 
     if ($bulk_admin_comments_form
       && $bulk_admin_comments_form->isSubmitted()
-      && $bulk_admin_comments_form->isValid())
+      && $bulk_admin_comments_form->isValid()
+      && isset($bulk_admin_comments_command)
+    )
     {
-      $bulk_admin_comments_command = $bulk_admin_comments_form->getData();
       $selected = $bulk_admin_comments_command->selected;
       $admin_comments = $bulk_admin_comments_command->admin_comments;
       $select_ary = explode(',', $selected);
@@ -607,9 +609,10 @@ class UsersListController extends AbstractController
 
     if ($bulk_status_form
       && $bulk_status_form->isSubmitted()
-      && $bulk_status_form->isValid())
+      && $bulk_status_form->isValid()
+      && isset($bulk_status_command)
+    )
     {
-      $bulk_status_command = $bulk_status_form->getData();
       $selected = $bulk_status_command->selected;
       $status = $bulk_status_command->status;
       $select_ary = explode(',', $selected);
@@ -691,9 +694,10 @@ class UsersListController extends AbstractController
 
     if ($bulk_role_form
       && $bulk_role_form->isSubmitted()
-      && $bulk_role_form->isValid())
+      && $bulk_role_form->isValid()
+      && isset($bulk_role_command)
+    )
     {
-      $bulk_role_command = $bulk_role_form->getData();
       $selected = $bulk_role_command->selected;
       $role = $bulk_role_command->role;
       $log_comment = $bulk_role_command->get('log_comment')->getData();
@@ -772,9 +776,10 @@ class UsersListController extends AbstractController
 
     if ($bulk_periodic_overview_en_form
       && $bulk_periodic_overview_en_form->isSubmitted()
-      && $bulk_periodic_overview_en_form->isValid())
+      && $bulk_periodic_overview_en_form->isValid()
+      && isset($bulk_periodic_overview_en_command)
+    )
     {
-      $bulk_periodic_overview_en_command = $bulk_periodic_overview_en_form->getData();
       $selected = $bulk_periodic_overview_en_command->selected;
       $periodic_overview_en = $bulk_periodic_overview_en_command->periodic_overview_en;
       $select_ary = explode(',', $selected);
@@ -852,9 +857,10 @@ class UsersListController extends AbstractController
 
     if ($bulk_min_limit_form
       && $bulk_min_limit_form->isSubmitted()
-      && $bulk_min_limit_form->isValid())
+      && $bulk_min_limit_form->isValid()
+      && isset($bulk_min_limit_command)
+    )
     {
-      $bulk_min_limit_command = $bulk_min_limit_form->getData();
       $selected = $bulk_min_limit_command->selected;
       $min_limit = $bulk_min_limit_command->min_limit;
       $select_ary = explode(',', $selected);
@@ -955,9 +961,10 @@ class UsersListController extends AbstractController
 
     if ($bulk_max_limit_form
       && $bulk_max_limit_form->isSubmitted()
-      && $bulk_max_limit_form->isValid())
+      && $bulk_max_limit_form->isValid()
+      && isset($bulk_max_limit_command)
+    )
     {
-      $bulk_max_limit_command = $bulk_max_limit_form->getData();
       $selected = $bulk_max_limit_command->selected;
       $max_limit = $bulk_max_limit_command->max_limit;
       $select_ary = explode(',', $selected);
@@ -1059,9 +1066,10 @@ class UsersListController extends AbstractController
 
     if ($bulk_active_form
       && $bulk_active_form->isSubmitted()
-      && $bulk_active_form->isValid())
+      && $bulk_active_form->isValid()
+      && isset($bulk_active_command)
+    )
     {
-      $bulk_active_command = $bulk_active_form->getData();
       $selected = $bulk_active_command->selected;
       $is_active = $bulk_active_command->is_active;
       $send_email = $bulk_active_command->send_email;
@@ -1178,9 +1186,10 @@ class UsersListController extends AbstractController
 
     if ($bulk_leaving_form
       && $bulk_leaving_form->isSubmitted()
-      && $bulk_leaving_form->isValid())
+      && $bulk_leaving_form->isValid()
+      && isset($bulk_leaving_command)
+    )
     {
-      $bulk_leaving_command = $bulk_leaving_form->getData();
       $selected = $bulk_leaving_command->selected;
       $is_leaving = $bulk_leaving_command->is_leaving;
       $send_email = $bulk_active_command->send_email;
@@ -1310,9 +1319,10 @@ class UsersListController extends AbstractController
 
     if ($bulk_tags_add_form
       && $bulk_tags_add_form->isSubmitted()
-      && $bulk_tags_add_form->isValid())
+      && $bulk_tags_add_form->isValid()
+      && isset($bulk_tags_add_command)
+    )
     {
-      $bulk_tags_add_command = $bulk_tags_add_form->getData();
       $log_comment = $bulk_tags_add_form->get('log_comment')->getData();
       $selected = $bulk_tags_add_command->selected;
       [$tag_id] = $bulk_tags_add_command->tags;
@@ -1426,9 +1436,10 @@ class UsersListController extends AbstractController
 
     if ($bulk_tags_del_form
       && $bulk_tags_del_form->isSubmitted()
-      && $bulk_tags_del_form->isValid())
+      && $bulk_tags_del_form->isValid()
+      && isset($bulk_tags_del_command)
+    )
     {
-      $bulk_tags_del_command = $bulk_tags_del_form->getData();
       $log_comment = $bulk_tags_del_form->get('log_comment')->getData();
       $selected = $bulk_tags_del_command->selected;
       [$tag_id] = $bulk_tags_del_command->tags;

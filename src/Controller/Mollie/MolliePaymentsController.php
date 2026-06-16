@@ -104,9 +104,12 @@ class MolliePaymentsController extends AbstractController
 
     $filter_command = new MollieFilterCommand();
 
-    $filter_form = $this->createForm(MollieFilterType::class, $filter_command);
+    $filter_form = $this->createForm(
+      type: MollieFilterType::class,
+      data: $filter_command,
+    );
+
     $filter_form->handleRequest($request);
-    $filter_command = $filter_form->getData();
 
     $f_params = $request->query->all('f');
     $filter_form_error = isset($f_params['user']) && !isset($filter_command->user);
@@ -126,7 +129,12 @@ class MolliePaymentsController extends AbstractController
     ];
 
     $bulk_email_command = new MollieBulkEmailCommand();
-    $bulk_email_form = $this->createForm(MollieBulkEmailType::class, $bulk_email_command);
+
+    $bulk_email_form = $this->createForm(
+      type: MollieBulkEmailType::class,
+      data: $bulk_email_command,
+    );
+
     $bulk_email_form->handleRequest($request);
 
     if ($bulk_email_form->isSubmitted()
@@ -138,7 +146,6 @@ class MolliePaymentsController extends AbstractController
       && !$su->is_master()
     )
     {
-      $bulk_email_command = $bulk_email_form->getData();
       $selected = $bulk_email_command->selected;
       $subject = $bulk_email_command->subject;
       $content = $bulk_email_command->content;
@@ -245,13 +252,16 @@ class MolliePaymentsController extends AbstractController
     }
 
     $bulk_cancel_command = new MollieBulkCancelCommand();
-    $bulk_cancel_form = $this->createForm(MollieBulkCancelType::class, $bulk_cancel_command);
+    $bulk_cancel_form = $this->createForm(
+      type: MollieBulkCancelType::class,
+      data: $bulk_cancel_command,
+    );
+
     $bulk_cancel_form->handleRequest($request);
 
     if ($bulk_cancel_form->isSubmitted()
       && $bulk_cancel_form->isValid())
     {
-      $bulk_cancel_command = $bulk_cancel_form->getData();
       $selected = $bulk_cancel_command->selected;
       $select_ary = explode(',', $selected);
       $cancel_payment_ids = [];

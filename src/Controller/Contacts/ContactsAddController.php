@@ -103,7 +103,6 @@ class ContactsAddController extends AbstractController
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $command = $form->getData();
       $user_id = $command->user_id;
       $value = $command->value;
 

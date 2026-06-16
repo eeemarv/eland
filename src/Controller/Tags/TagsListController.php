@@ -84,7 +84,6 @@ class TagsListController extends AbstractController
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $command = $form->getData();
       $posted_tag_id_ary = explode(',', $command->tags);
       $tags_list = [];
 

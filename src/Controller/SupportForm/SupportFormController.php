@@ -72,7 +72,11 @@ class SupportFormController extends AbstractController
       'disabled'  => $form_disabled,
     ];
 
-    $form = $this->createForm(SupportFormType::class, $command, $form_options);
+    $form = $this->createForm(
+      type: SupportFormType::class,
+      data: $command,
+      options: $form_options,
+    );
 
     $form->handleRequest($request);
 
@@ -80,8 +84,6 @@ class SupportFormController extends AbstractController
       && $form->isValid()
       && !$form_disabled)
     {
-      $command = $form->getData();
-
       if ($command->cc && $can_reply)
       {
         $m_copy = new EmailSupportFormCopyMessage(

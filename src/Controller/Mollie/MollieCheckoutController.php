@@ -95,7 +95,9 @@ class MollieCheckoutController extends AbstractController
 
     $description = $mollie_payment['code'] . ' ' . $mollie_payment['description'];
 
-    $form = $form_factory->create(MollieCheckoutType::class);
+    $form = $form_factory->create(
+      type: MollieCheckoutType::class,
+    );
 
     $form->handleRequest($request);
 

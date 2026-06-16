@@ -47,14 +47,17 @@ class PasswordResetController extends AbstractController
       'validation_groups' => ['send'],
     ];
 
-    $form = $this->createForm(PasswordResetType::class, $command, $form_options);
+    $form = $this->createForm(
+      type: PasswordResetType::class,
+      data: $command,
+      options: $form_options,
+    );
 
     $form->handleRequest($request);
 
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $command = $form->getData();
       $email = strtolower($command->email);
 
       $user_id = $user_repository->get_active_id_by_email(

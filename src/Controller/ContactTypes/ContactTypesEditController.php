@@ -64,7 +64,6 @@ class ContactTypesEditController extends AbstractController
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $command = $form->getData();
       $contact_repository->update_contact_type(
         id: $id,
         abbrev: $command->abbrev,

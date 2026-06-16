@@ -81,17 +81,19 @@ class TagsEditController extends AbstractController
     $command->bg_color = $tag['bg_color'];
     $command->description = $tag['description'];
 
-    $form = $this->createForm(TagsDefType::class, $command, [
-      'tag_type'  => $tag_type,
-      'txt_omit'  => $tag['txt'],
-    ]);
+    $form = $this->createForm(
+      type: TagsDefType::class,
+      data: $command,
+      options: [
+        'tag_type'  => $tag_type,
+        'txt_omit'  => $tag['txt'],
+      ],
+    );
     $form->handleRequest($request);
 
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $command = $form->getData();
-
       $txt = $command->txt;
       $txt_color = $command->txt_color;
       $bg_color = $command->bg_color;

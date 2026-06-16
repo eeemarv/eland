@@ -132,8 +132,6 @@ class UsersLogController extends AbstractController
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $command = $form->getData();
-
       $changed = false;
 
       if ($command->min_limit !== $min_limit

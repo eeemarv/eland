@@ -107,7 +107,7 @@ class MolliePaymentsAddController extends AbstractController
       {
         $this->addFlash('warning', 'Er is geen <code>live_</code> Mollie apikey ingsteld in de ' .
           $link_render->link('mollie_config', $pp->ary(), [], 'configuratie', []) .
-          '. Betalingen kunnen niet uitgevoerd worden!', false);
+          '. Betalingen kunnen niet uitgevoerd worden!');
       }
     }
 

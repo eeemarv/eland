@@ -81,8 +81,6 @@ class NewsEditController extends AbstractController
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $command = $form->getData();
-
       $subject = $command->subject;
       $content = $command->content;
       $access = $command->access;

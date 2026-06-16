@@ -11,7 +11,6 @@ use App\Repository\TagRepository;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\TypeaheadService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -36,7 +35,6 @@ class TagsAddController extends AbstractController
     string $tag_type,
     Request $request,
     TagRepository $tag_repository,
-    TypeaheadService $typeahead_service,
     ConfigService $config_service,
     PageParamsService $pp,
     SessionUserService $su,
@@ -83,8 +81,6 @@ class TagsAddController extends AbstractController
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $command = $form->getData();
-
       $txt = $command->txt;
       $description = $command->description;
       $txt_color = $command->txt_color;
@@ -92,7 +88,7 @@ class TagsAddController extends AbstractController
 
       $tag_repository->insert(
         tag_type: $tag_type,
-        txt: $txt,
+        txt: (string) $txt,
         txt_color: $txt_color,
         bg_color: $bg_color,
         description: $description,

@@ -11,7 +11,6 @@ use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
@@ -48,6 +47,7 @@ class NewsSortController extends AbstractController
     }
 
     $command = new NewsSortCommand();
+
     $config_service->load_command(
       command: $command,
       schema: $pp->schema_o(),
@@ -62,7 +62,6 @@ class NewsSortController extends AbstractController
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $command = $form->getData();
       $changed = $config_service->store_command(
         command: $command,
         route: $pp->route(),

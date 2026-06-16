@@ -103,13 +103,12 @@ class UsersCommentsEditController extends AbstractController
       type: UsersCommentsType::class,
       data: $command,
     );
+
     $form->handleRequest($request);
 
     if ($form->isSubmitted()
         && $form->isValid())
     {
-      $command = $form->getData();
-
       if ($command->comments === $user['comments'])
       {
         $this->addFlash(

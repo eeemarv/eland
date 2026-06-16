@@ -119,7 +119,6 @@ class UsersTagsEditController extends AbstractController
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $command = $form->getData();
       $log_comment = $form->get('log_comment')->getData();
 
       $count_changes = $tag_repository->update_for_user(

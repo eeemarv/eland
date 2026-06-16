@@ -137,7 +137,6 @@ class UsersFullNameEditController extends AbstractController
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $command = $form->getData();
       $log_comment = $pp->is_admin() ? $form->get('log_comment')->getData() : null;
       $changed_full_name = false;
       $changed_access = false;

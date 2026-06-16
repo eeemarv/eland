@@ -72,7 +72,12 @@ class NewsDelController extends AbstractController
       'validation_groups' => ['del'],
     ];
 
-    $form = $this->createForm(NewsDelType::class, $command, $form_options);
+    $form = $this->createForm(
+      type: NewsDelType::class,
+      data: $command,
+      options: $form_options,
+    );
+
     $form->handleRequest($request);
 
     if ($form->isSubmitted()

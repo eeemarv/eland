@@ -5,13 +5,10 @@ namespace App\Controller\Users;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Command\Tags\TagsUsersCommand;
 use App\Command\Users\UsersMailContactCommand;
 use App\Email\UserPrivate\Copy\EmailUserPrivateCopyMessage;
 use App\Email\UserPrivate\Message\EmailUserPrivateMessageMessage;
 use App\Form\Type\MailContact\MailContactType;
-use App\Form\Type\Tags\TagsUsersType;
-use App\Repository\TagRepository;
 use App\Repository\UserRepository;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
@@ -68,7 +65,6 @@ class UsersShowController extends AbstractController
     bool $is_self,
     Db $db,
     UserRepository $user_repository,
-    TagRepository $tag_repository,
     ItemAccessService $item_access_service,
     ConfigService $config_service,
     MessageBusInterface $bus,
@@ -143,85 +139,6 @@ class UsersShowController extends AbstractController
       $full_name_edit_en = true;
     }
 
-    $tags_enabled = $config_service->get_bool(
-      config_id: 'users.tags.enabled',
-      schema: $pp->schema_o(),
-    );
-
-    /***
-     *
-     */
-
-    /*
-
-    $tags_form = null;
-    $render_tags = false;
-
-    if ($pp->is_admin() && $tags_enabled)
-    {
-      $tags_command = new TagsUsersCommand();
-
-      $tags_command->tags = $tag_repository->get_id_ary_for_user(
-        user_id: $id,
-        schema: $pp->schema_o(),
-        active_only: true,
-      );
-
-      $tags_form = $this->createForm(
-        type: TagsUsersType::class,
-        data: $tags_command,
-      );
-
-      $tags_form->handleRequest($request);
-
-      if ($tags_form->isSubmitted() &&
-        $tags_form->isValid())
-      {
-        $tags_command = $tags_form->getData();
-        $new_tag_id_ary = $tags_command->tags;
-
-        $count_changes = $tag_repository->update_for_user(
-          new_tag_id_ary: $new_tag_id_ary,
-          user_id: $id,
-          created_by: $su->id(),
-          schema: $pp->schema_o(),
-        );
-
-        if ($count_changes)
-        {
-          $this->addFlash(
-            type: 'success',
-            message: [
-              'key' => 'users_show.tags.flash.success',
-              'params'  => [
-                'count' => $count_changes,
-              ]
-            ]
-          );
-        }
-        else
-        {
-          $this->addFlash(
-            type: 'warning',
-            message: [
-              'key' => 'flash.no_change',
-            ]);
-        }
-
-        if ($is_self)
-        {
-          return $this->redirectToRoute('users_show_self', $pp->ary());
-        }
-
-        return $this->redirectToRoute('users_show', [...$pp->ary(),
-          'id'    => $id,
-        ]);
-      }
-
-      $render_tags = true;
-    }
-    */
-
     /**
      * Mail form
     */
@@ -241,8 +158,6 @@ class UsersShowController extends AbstractController
     if ($mail_form->isSubmitted()
       && $mail_form->isValid())
     {
-      $mail_command = $mail_form->getData();
-
       $m_message = new EmailUserPrivateMessageMessage(
         sender_id: $su->id(),
         sender_schema: $su->schema_o(),

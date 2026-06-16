@@ -81,7 +81,6 @@ class UsersRoleEditController extends AbstractController
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $command = $form->getData();
       $log_comment = $form->get('log_comment')->getData();
 
       if ($command->role === $user['role'])

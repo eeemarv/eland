@@ -56,15 +56,16 @@ class LoginController extends AbstractController
     $command = new LoginCommand();
     $command->login = $request->query->get('login');
 
-    $form = $this->createForm(LoginType::class, $command);
+    $form = $this->createForm(
+      type: LoginType::class,
+      data: $command,
+    );
 
     $form->handleRequest($request);
 
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $command = $form->getData();
-
       if (isset($command->is_master) && $command->is_master)
       {
         $su->set_master_login($pp->schema());

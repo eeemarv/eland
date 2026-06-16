@@ -172,8 +172,6 @@ class UsersPostcodeEditController extends AbstractController
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $command = $form->getData();
-
       if ($command->postcode === $user['postcode'])
       {
         $this->addFlash(

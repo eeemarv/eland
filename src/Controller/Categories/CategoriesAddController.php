@@ -64,7 +64,6 @@ class CategoriesAddController extends AbstractController
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $command = $form->getData();
       $name= $command->name;
 
 		  $created_by = $su->is_master() ? null : $su->id();

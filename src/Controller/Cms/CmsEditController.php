@@ -58,7 +58,6 @@ class CmsEditController extends AbstractController
       throw new BadRequestHttpException('Invalid form');
     }
 
-    $command = $form->getData();
     $content_ary = json_decode($command->content, true);
     $all_params = json_decode($command->all_params, true);
     $route = $command->route;

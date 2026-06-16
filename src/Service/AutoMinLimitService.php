@@ -13,13 +13,13 @@ use App\Repository\AccountRepository;
 class AutoMinLimitService
 {
 	public function __construct(
-		protected Db $db,
-		protected LoggerInterface $logger,
-		protected UserCacheService $user_cache_service,
-		protected AccountRepository $account_repository,
-		protected ConfigService $config_service,
-		protected SessionUserService $su,
-		protected AccountRender $account_render
+		private Db $db,
+		private LoggerInterface $logger,
+		private UserCacheService $user_cache_service,
+		private AccountRepository $account_repository,
+		private ConfigService $config_service,
+		private SessionUserService $su,
+		private AccountRender $account_render
 	)
 	{
 	}
@@ -53,8 +53,15 @@ class AutoMinLimitService
 			return;
 		}
 
-		$global_min_limit = $this->config_service->get_int('accounts.limits.global.min', $schema);
-		$percentage = $this->config_service->get_int('accounts.limits.auto_min.percentage', $schema);
+		$global_min_limit = $this->config_service->get_int(
+      config_id: 'accounts.limits.global.min',
+      schema: $schema_o,
+    );
+
+		$percentage = $this->config_service->get_int(
+      config_id: 'accounts.limits.auto_min.percentage',
+      schema: $schema_o,
+    );
 
 		if (!isset($percentage))
 		{
@@ -77,7 +84,10 @@ class AutoMinLimitService
 			return;
 		}
 
-		$to_user = $this->user_cache_service->get($to_id, $schema);
+		$to_user = $this->user_cache_service->get(
+      id: $to_id,
+      schema: $schema,
+    );
 
 		if (!$to_user)
 		{
@@ -94,7 +104,10 @@ class AutoMinLimitService
 			return;
 		}
 
-		$min_limit = $this->account_repository->get_min_limit($to_id, $schema);
+		$min_limit = $this->account_repository->get_min_limit(
+      account_id: $to_id,
+      schema: $schema_o,
+    );
 
 		if (!isset($min_limit))
 		{

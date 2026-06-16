@@ -94,13 +94,16 @@ class ForumEditTopicController extends AbstractController
       'validation_groups' => ['edit'],
     ];
 
-    $form = $this->createForm(ForumTopicType::class, $command, $form_options);
+    $form = $this->createForm(
+      type: ForumTopicType::class,
+      data: $command,
+      options: $form_options,
+    );
     $form->handleRequest($request);
 
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $command = $form->getData();
       $subject = $command->subject;
       $content = $command->content;
       $access = $command->access;

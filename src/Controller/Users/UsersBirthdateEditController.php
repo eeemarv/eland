@@ -105,8 +105,6 @@ class UsersBirthdateEditController extends AbstractController
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $command = $form->getData();
-
       if ($command->birthdate === $user['birthdate'])
       {
         $this->addFlash(

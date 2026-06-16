@@ -85,7 +85,6 @@ class DocsAddController extends AbstractController
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $command = $form->getData();
       $file = $command->file;
       $name = $command->name;
       $map_name = $command->map_name;

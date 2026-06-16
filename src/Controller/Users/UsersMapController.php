@@ -118,9 +118,6 @@ class UsersMapController extends AbstractController
       }
     }
 
-    error_log(' **** $map_markers **** ');
-    error_log(json_encode($map_markers));
-
     return $this->render('users/users_map.html.twig', [
       'no_address_ary'  => $no_address_ary,
       'hidden_ary'      => $hidden_ary,

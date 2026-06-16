@@ -107,18 +107,20 @@ class PasswordResetConfirmController extends AbstractController
       'disabled' => $form_disabled,
     ];
 
-    $form = $this->createForm(PasswordResetConfirmType::class,
-      $command, $form_options);
+    $form = $this->createForm(
+      type: PasswordResetConfirmType::class,
+      data: $command,
+      options: $form_options,
+    );
 
     $form->handleRequest($request);
 
     if ($form->isSubmitted()
-      && $form->isValid())
+      && $form->isValid()
+      && isset($record))
     {
       $confirm_data = $record['confirm_data'];
       $user_id = $confirm_data['user_id'];
-
-      $command = $form->getData();
 
       $password_hasher = $password_hasher_factory->getPasswordHasher(new User());
       $hashed_password = $password_hasher->hash($command->password);

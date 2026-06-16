@@ -48,7 +48,6 @@ class ConfigMailAddrController extends AbstractController
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $command = $form->getData();
       $changed = $config_service->store_command(
         command: $command,
         route: $pp->route(),

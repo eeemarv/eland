@@ -96,7 +96,6 @@ class DocsEditController extends AbstractController
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $command = $form->getData();
       $name = $command->name;
       $map_name = $command->map_name;
       $access = $command->access;

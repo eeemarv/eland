@@ -34,15 +34,18 @@ class IndexContactController extends AbstractController
       'validation_groups' => ['send']
     ];
 
-    $form = $this->createForm(IndexContactFormType::class, $command, $form_options);
+    $form = $this->createForm(
+      type: IndexContactFormType::class,
+      data: $command,
+      options: $form_options,
+    );
+
     $form->handleRequest($request);
 
     if ($form->isSubmitted()
       && $form->isValid()
     )
     {
-      $command = $form->getData();
-
       $email_address = strtolower($command->email_address);
 
       $m_confirm = new EmailIndexContactConfirmMessage(

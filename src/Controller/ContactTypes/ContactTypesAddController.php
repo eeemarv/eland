@@ -52,7 +52,6 @@ class ContactTypesAddController extends AbstractController
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $command = $form->getData();
       $contact_repository->insert_contact_type(
         abbrev: $command->abbrev,
         name: $command->name,

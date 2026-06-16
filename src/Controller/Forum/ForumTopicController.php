@@ -72,14 +72,17 @@ class ForumTopicController extends AbstractController
       'validation_groups' => ['add'],
     ];
 
-    $form = $this->createForm(ForumPostType::class, $command, $form_options);
+    $form = $this->createForm(
+      type: ForumPostType::class,
+      data: $command,
+      options: $form_options,
+    );
 
     $form->handleRequest($request);
 
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $command = $form->getData();
       $content = $command->content;
 
       $forum_repository->insert_post(

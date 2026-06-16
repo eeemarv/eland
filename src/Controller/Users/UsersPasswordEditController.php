@@ -92,7 +92,6 @@ class UsersPasswordEditController extends AbstractController
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $command = $form->getData();
       $password_hasher = $password_hasher_factory->getPasswordHasher(new User());
       $hashed_password = $password_hasher->hash($command->password);
       $user_repository->set_password(

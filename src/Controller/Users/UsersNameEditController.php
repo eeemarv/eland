@@ -131,7 +131,6 @@ class UsersNameEditController extends AbstractController
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $command = $form->getData();
       $log_comment = $pp->is_admin() ? $form->get('log_comment')->getData() : null;
 
       if ($command->name === $user['name'])

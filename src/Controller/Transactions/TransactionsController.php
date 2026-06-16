@@ -101,7 +101,6 @@ class TransactionsController extends AbstractController
       data: $filter_command,
     );
     $filter_form->handleRequest($request);
-    $filter_command = $filter_form->getData();
 
     $pag = $request->query->all('p');
     $sort = $request->query->all('s');

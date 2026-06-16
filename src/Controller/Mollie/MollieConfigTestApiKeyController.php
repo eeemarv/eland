@@ -71,7 +71,6 @@ class MollieConfigTestApiKeyController extends AbstractController
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $command = $form->getData();
       $test_api_key = $command->test_api_key;
       $log_comment = $form->get('log_comment')->getData();
 

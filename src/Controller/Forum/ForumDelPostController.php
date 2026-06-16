@@ -99,7 +99,10 @@ class ForumDelPostController extends AbstractController
     $command = new ForumPostCommand();
     $command->content = $forum_post['content'];
 
-    $form = $this->createForm(ForumPostDelType::class, $command);
+    $form = $this->createForm(
+      type:ForumPostDelType::class,
+      data: $command,
+    );
     $form->handleRequest($request);
 
     if ($form->isSubmitted()

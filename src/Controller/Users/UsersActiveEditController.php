@@ -78,7 +78,6 @@ class UsersActiveEditController extends AbstractController
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $command = $form->getData();
       $is_active = $command->is_active;
       $send_email = $command->send_email;
       $send_email_cc = $command->send_email_cc;

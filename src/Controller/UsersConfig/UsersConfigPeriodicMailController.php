@@ -207,8 +207,6 @@ class UsersConfigPeriodicMailController extends AbstractController
     if ($form->isSubmitted()
       && $form->isValid())
     {
-      $users_periodic_mail_command = $form->getData();
-
       $days = $users_periodic_mail_command->days;
       $user_new_default_enabled = $users_periodic_mail_command->user_new_default_enabled;
       $posted_block_layout = json_decode($users_periodic_mail_command->block_layout, true);
