@@ -1081,7 +1081,7 @@ class MessagesListController extends AbstractController
 
             if (in_array('new', $filter_command->us))
             {
-                $sql_user_status_where[] = '(u.adate > ? and u.status = 1)';
+                $sql_user_status_where[] = '(u.activated_at > ? and u.status = 1)';
                 $sql['user_status']['params'][] = $new_user_treshold;
                 $sql['user_status']['types'][] = Types::DATETIME_IMMUTABLE;
             }
@@ -1093,7 +1093,7 @@ class MessagesListController extends AbstractController
 
             if (in_array('active', $filter_command->us))
             {
-                $sql_user_status_where[] = '(u.adate <= ? and u.status = 1)';
+                $sql_user_status_where[] = '(u.activated_at <= ? and u.status = 1)';
                 $sql['user_status']['params'][] = $new_user_treshold;
                 $sql['user_status']['types'][] = Types::DATETIME_IMMUTABLE;
             }
@@ -1318,7 +1318,7 @@ class MessagesListController extends AbstractController
         $count_user_status_query = 'select count(m.*),
                 (case
                     when u.status = 2 then \'leaving\'
-                    when u.status = 1 and u.adate > ? then \'new\'
+                    when u.status = 1 and u.activated_at > ? then \'new\'
                     when u.status = 1 then \'active\'
                     else \'inactive\'
                 end) as u_status

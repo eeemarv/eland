@@ -95,7 +95,7 @@ class AccountRuntime implements RuntimeExtensionInterface
 
 		$status_id = $user['status'];
 
-    if (isset($user['adate'])
+    if (isset($user['activated_at'])
       && $status_id === 1
 		)
     {
@@ -110,7 +110,7 @@ class AccountRuntime implements RuntimeExtensionInterface
           schema: $schema_o,
         );
 
-        if ($new_user_treshold->getTimestamp() < strtotime($user['adate'] . ' UTC'))
+        if ($new_user_treshold->getTimestamp() < strtotime($user['activated_at'] . ' UTC'))
         {
           $status_id = 3;
         }
@@ -161,7 +161,7 @@ class AccountRuntime implements RuntimeExtensionInterface
     {
       return false;
     }
-    if (!isset($user['adate']))
+    if (!isset($user['activated_at']))
     {
       return false;
     }
@@ -176,7 +176,7 @@ class AccountRuntime implements RuntimeExtensionInterface
       schema: $schema_o,
     );
 
-    if ($new_user_treshold->getTimestamp() < strtotime($user['adate'] . ' UTC'))
+    if ($new_user_treshold->getTimestamp() < strtotime($user['activated_at'] . ' UTC'))
     {
       return true;
     }

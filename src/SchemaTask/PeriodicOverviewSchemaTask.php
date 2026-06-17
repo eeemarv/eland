@@ -403,7 +403,7 @@ class PeriodicOverviewSchemaTask implements SchemaTaskInterface
 			$stmt = $this->db->prepare('select u.id
 				from ' . $schema . '.users u
 				where u.status = 1
-					and u.adate > ?');
+					and u.activated_at > ?');
 
 			$time = ($block_options['new_users'] === 'recent') ? $treshold_time : $new_user_treshold;
 

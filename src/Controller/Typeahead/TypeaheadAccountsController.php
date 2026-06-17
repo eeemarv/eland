@@ -94,7 +94,7 @@ class TypeaheadAccountsController extends AbstractController
       'select code as c,
         remote_schema,
         name as n,
-        extract(epoch from adate) as a,
+        extract(epoch from activated_at) as a,
         status as s
       from ' . $pp->schema() . '.users
       where ' . $where_sql . '

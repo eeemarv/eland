@@ -2,42 +2,42 @@
 
 namespace App\Controller\Autocomplete;
 
-use App\Repository\DocRepository;
+use App\Repository\LogRepository;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[AsController]
-class AutocompleteDocMapNamesController extends AbstractController
+class AutocompleteLogTypesController extends AbstractController
 {
   use EtagJsonResponseTrait;
 
   #[Route(
-    '/{schema}/{role_short}/autocomplete/doc-map-names',
-    name: 'autocomplete_doc_map_names',
+    '/{schema}/{role_short}/autocomplete/log-types',
+    name: 'autocomplete_log_types',
     methods: ['GET'],
     requirements: [
       'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [
-      'module'        => 'docs',
+      'module'        => 'logs',
     ],
   )]
 
   public function __invoke(
-    DocRepository $doc_repository,
     Request $request,
+    LogRepository $log_repository,
     PageParamsService $pp,
   ):Response
   {
-    $map_names = $doc_repository->get_doc_map_names(
+    $log_types = $log_repository->get_types(
       schema: $pp->schema_o(),
     );
 
-    return $this->etagJsonResponse($request, $map_names);
+    return $this->etagJsonResponse($request, $log_types);
   }
 }

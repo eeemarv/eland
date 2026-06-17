@@ -1771,30 +1771,6 @@ class UsersListController extends AbstractController
       }
     }
 
-    /**
-     * always: injected as data-attr to
-     * calculate the total
-     */
-    $balance_ary = $account_repository->get_balance_ary(
-      schema: $pp->schema_o(),
-    );
-
-    if (isset($cols_command->min_limit)
-      && $cols_command->min_limit)
-    {
-      $min_limit_ary = $account_repository->get_min_limit_ary(
-        schema: $pp->schema_o(),
-      );
-    }
-
-    if (isset($cols_command->max_limit)
-      && $cols_command->max_limit)
-    {
-      $max_limit_ary = $account_repository->get_max_limit_ary(
-        schema: $pp->schema_o(),
-      );
-    }
-
     if (isset($cols_command->last_login_at)
       && $cols_command->last_login_at)
     {
@@ -1803,7 +1779,10 @@ class UsersListController extends AbstractController
       );
     }
 
-    if (isset($cols_command->tags) && $pp->is_admin())
+    if (isset($cols_command->tags)
+      && $cols_command->tags
+      && $pp->is_admin()
+    )
     {
       $tags_ary = $tag_repository->get_all_active_for_users(
         user_ids: $user_ids,
@@ -1821,8 +1800,6 @@ class UsersListController extends AbstractController
         current_user_schema: $su->schema_o(),
         schema: $pp->schema_o(),
       );
-      error_log('====CONTACTS_ARY++++');
-      error_log(json_encode($contacts_ary));
 
       if ($cols_command->distance)
       {
@@ -1899,10 +1876,7 @@ class UsersListController extends AbstractController
       'sel'               => $sel,
       'users'             => $users,
       'cols'              => $cols_command,
-      'balance_ary'       => $balance_ary ?? [],
       'balance_on_date_ary' => $balance_on_date_ary ?? [],
-      'min_limit_ary'     => $min_limit_ary ?? [],
-      'max_limit_ary'     => $max_limit_ary ?? [],
       'last_login_ary'    => $last_login_ary ?? [],
       'contacts_ary'      => $contacts_ary ?? [],
       'distance_ary'      => $distance_ary ?? [],
@@ -1966,7 +1940,7 @@ class UsersListController extends AbstractController
         $status_def_ary['new'] = [
           'lbl'	=> 'Instappers',
           'sql'	=> [
-            'where'     => ['u.status = 1 and u.adate > ?'],
+            'where'     => ['u.status = 1 and u.activated_at > ?'],
             'params'    => [$new_user_treshold],
             'types'     => [Types::DATETIME_IMMUTABLE],
           ],

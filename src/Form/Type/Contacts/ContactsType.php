@@ -4,7 +4,7 @@ namespace App\Form\Type\Contacts;
 
 use App\Command\Contacts\ContactsCommand;
 use App\Form\EventSubscriber\AccessFieldSubscriber;
-use App\Form\Type\Field\TypeaheadType;
+use App\Form\Type\Field\AutocompleteAccountType;
 use App\Repository\ContactRepository;
 use App\Service\PageParamsService;
 use Symfony\Component\Form\AbstractType;
@@ -94,15 +94,8 @@ class ContactsType extends AbstractType
 
     if ($user_id_enabled)
     {
-      $builder->add('user_id', TypeaheadType::class, [
-        'add'   => [
-          ['accounts', ['status' => 'active']],
-          ['accounts', ['status' => 'inactive']],
-          ['accounts', ['status' => 'ip']],
-          ['accounts', ['status' => 'im']],
-          ['accounts', ['status' => 'extern']],
-        ],
-        'filter'    => 'accounts',
+      $builder->add('user_id', AutocompleteAccountType::class, [
+        'account_group' => 'all',
       ]);
     }
 

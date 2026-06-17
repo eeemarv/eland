@@ -13,7 +13,7 @@
   {%- set can_link = is_active(uid) or pp_has_role('admin') -%}
   {%- set u_link = can_link ? path('users_show', {'id': uid, 'status': all_params.status}|pp) : null -%}
   {%- set u_code = (u.code ?? '') ~ ' ' ~ (u.name ?? '') -%}
-  <tr{{- u_class|raw }} data-balance="{{- balance_ary[uid] ?? '0' -}}" data-id="{{- uid }}">
+  <tr{{- u_class|raw }} data-balance="{{- u.balance ?? '0' -}}" data-id="{{- uid }}">
 
     <td>
       {%- if pp_has_role('admin') -%}
@@ -113,7 +113,7 @@
 
     {%- if cols.balance is defined and cols.balance -%}
     <td>
-      {{- balance_ary[uid] ?? '0' -}}
+      {{- u.balance ?? '0' -}}
     </td>
     {%- endif -%}
 
@@ -128,13 +128,13 @@
 
     {%- if cols.min_limit is defined and cols.min_limit -%}
     <td>
-      {{- min_limit_ary[uid] ?? '' -}}
+      {{- u.min_limit ?? '' -}}
     </td>
     {%- endif -%}
 
     {%- if cols.max_limit is defined and cols.max_limit -%}
     <td>
-      {{- max_limit_ary[uid] ?? '' -}}
+      {{- u.max_limit ?? '' -}}
     </td>
     {%- endif -%}
 
@@ -193,9 +193,9 @@
     {%- endif -%}
 
     {%- if cols.activated_at is defined and cols.activated_at -%}
-      {%- if u.adate -%}
-        <td data-order="{{- u.adate|date('U') -}}">
-          {{- u.adate|date_format('day') -}}
+      {%- if u.activated_at -%}
+        <td data-order="{{- u.activated_at|date('U') -}}">
+          {{- u.activated_at|date_format('day') -}}
         </td>
       {%- else -%}
         <td>/</td>

@@ -3,12 +3,12 @@
 namespace App\Form\Type\Messages;
 
 use App\Form\EventSubscriber\AccessFieldSubscriber;
+use App\Form\Type\Field\AutocompleteAccountType;
 use App\Form\Type\Field\BtnChoiceType;
 use App\Form\Type\Field\CategorySelectType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use App\Form\Type\Filter\FilterType;
-use App\Form\Type\Field\TypeaheadType;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
@@ -93,22 +93,6 @@ class MessagesFilterType extends AbstractType
       $user_status_choices['leaving'] = 'leaving';
     }
 
-    $typeahead_add = [];
-
-    $typeahead_add[] = ['accounts', ['status' => 'active']];
-
-    if ($this->pp->is_user() || $this->pp->is_admin())
-    {
-      $typeahead_add[] = ['accounts', ['status' => 'extern']];
-    }
-
-    if ($this->pp->is_admin())
-    {
-      $typeahead_add[] = ['accounts', ['status' => 'inactive']];
-      $typeahead_add[] = ['accounts', ['status' => 'im']];
-      $typeahead_add[] = ['accounts', ['status' => 'ip']];
-    }
-
     $builder->add('q', TextType::class, [
       'required' => false,
     ]);
@@ -138,13 +122,13 @@ class MessagesFilterType extends AbstractType
     if ($service_stuff_enabled)
     {
       $builder->add('srvc', BtnChoiceType::class, [
-          'choices'       => [
-            'service'               => 'srvc',
-            'stuff'                 => 'stff',
-            'null_service_stuff'    => 'null',
-          ],
-          'multiple'      => true,
-          'required'      => false,
+        'choices'       => [
+          'service'               => 'srvc',
+          'stuff'                 => 'stff',
+          'null_service_stuff'    => 'null',
+        ],
+        'multiple'      => true,
+        'required'      => false,
       ]);
     }
 
@@ -169,10 +153,9 @@ class MessagesFilterType extends AbstractType
       ]);
     }
 
-    $builder->add('user', TypeaheadType::class, [
-      'add'       => $typeahead_add,
-      'filter'    => 'accounts',
-      'required'  => false,
+    $builder->add('user', AutocompleteAccountType::class, [
+      'account_group' => $this->pp->is_admin() ? 'users' : 'active-users',
+      'required'      => false,
     ]);
 
     $builder->add('uid', HiddenType::class);

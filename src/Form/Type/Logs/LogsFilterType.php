@@ -3,11 +3,12 @@
 namespace App\Form\Type\Logs;
 
 use App\Command\Logs\LogsFilterCommand;
+use App\Form\Type\Field\AutocompleteAccountType;
+use App\Form\Type\Field\AutocompleteType;
 use App\Form\Type\Filter\FilterType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use App\Form\Type\Field\TypeaheadType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class LogsFilterType extends AbstractType
@@ -25,20 +26,13 @@ class LogsFilterType extends AbstractType
       'required' => false,
     ]);
 
-    $builder->add('user', TypeaheadType::class, [
-      'add'   => [
-        ['accounts', ['status' => 'active']],
-        ['accounts', ['status' => 'inactive']],
-        ['accounts', ['status' => 'ip']],
-        ['accounts', ['status' => 'im']],
-        ['accounts', ['status' => 'extern']],
-      ],
-      'filter'    => 'accounts',
-      'required'  => false,
+    $builder->add('user', AutocompleteAccountType::class, [
+      'account_group' => 'all',
+      'required'      => false,
     ]);
 
-    $builder->add('type', TypeaheadType::class, [
-      'add'       => 'log_types',
+    $builder->add('type', AutocompleteType::class, [
+      'route'     => 'autocomplete_log_types',
       'required'  => false,
     ]);
   }

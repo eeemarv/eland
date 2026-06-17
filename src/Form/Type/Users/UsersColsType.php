@@ -3,6 +3,7 @@
 namespace App\Form\Type\Users;
 
 use App\Command\Users\UsersColsCommand;
+use App\Form\Type\Field\AutocompleteAccountType;
 use App\Form\Type\Field\DatepickerType;
 use App\Form\Type\Field\TypeaheadType;
 use App\Service\ConfigService;
@@ -212,22 +213,12 @@ class UsersColsType extends AbstractType
     }
     if ($transactions_enabled)
     {
-      $typeahead_accounts_add = [];
-      $typeahead_accounts_add[] = ['accounts', ['status' => 'active']];
-      if ($this->pp->is_admin())
-      {
-        $typeahead_accounts_add[] = ['accounts', ['status' => 'extern']];
-        $typeahead_accounts_add[] = ['accounts', ['status' => 'inactive']];
-        $typeahead_accounts_add[] = ['accounts', ['status' => 'im']];
-        $typeahead_accounts_add[] = ['accounts', ['status' => 'ip']];
-      }
-
       $builder->add('transactions_days', IntegerType::class, [
         'required'  => true,
       ]);
-      $builder->add('transactions_exclude_code', TypeaheadType::class, [
-        'add'   => $typeahead_accounts_add,
-        'filter'  => 'accounts',
+
+      $builder->add('transactions_exclude_code', AutocompleteAccountType::class,[
+        'account_group' => $is_admin ? 'all' : 'active',
         'required'  => false,
       ]);
       $builder->add('transactions_in', CheckboxType::class, [

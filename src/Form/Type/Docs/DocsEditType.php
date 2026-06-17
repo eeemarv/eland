@@ -3,7 +3,9 @@
 namespace App\Form\Type\Docs;
 
 use App\Command\Docs\DocsCommand;
+use App\Controller\Autocomplete\AutocompleteAccountsController;
 use App\Form\EventSubscriber\AccessFieldSubscriber;
+use App\Form\Type\Field\AutocompleteType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -33,7 +35,9 @@ class DocsEditType extends AbstractType
     ]);
 
     $builder->add('name', TextType::class);
-    $builder->add('map_name', TextType::class);
+    $builder->add('map_name', AutocompleteType::class, [
+      'route' => 'autocomplete_doc_map_names',
+    ]);
     $builder->add('submit', SubmitType::class);
 
     $this->access_field_subscriber->add();

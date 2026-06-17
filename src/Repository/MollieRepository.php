@@ -416,7 +416,7 @@ class MollieRepository
       u.code, u.name,
       u.status,
       u.is_active,
-      u.activated_at, u.adate,
+      u.activated_at,
       u.is_leaving,
       coalesce(jsonb_agg(c.value) filter(where c.value is not null), \'[]\') as email_addresses
       from ' . $schema->str() . '.mollie_payments p
@@ -432,7 +432,7 @@ class MollieRepository
       where ' . $sql_where . '
       group by p.id, r.description,
         u.code, u.name,
-        u.status, u.is_active, u.adate, u.activated_at,
+        u.status, u.is_active, u.activated_at,
         u.is_leaving
       order by ' . $prefixed_order_by . '
       ' . ($asc ? 'asc' : 'desc') . '

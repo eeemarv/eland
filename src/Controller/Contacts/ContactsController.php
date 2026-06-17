@@ -258,7 +258,7 @@ class ContactsController extends AbstractController
       switch ($filter_command->ustatus)
       {
         case 'new':
-          $sql['ustatus']['where'][]= 'u.adate > ? and u.status = 1';
+          $sql['ustatus']['where'][]= 'u.activated_at > ? and u.status = 1';
           $sql['ustatus']['params'][]= $config_service->get_new_user_treshold(
             schema: $pp->schema_o(),
           );

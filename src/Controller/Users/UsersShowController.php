@@ -116,8 +116,8 @@ class UsersShowController extends AbstractController
 
     $is_new = false;
 
-    if (isset($user['adate'])
-      && $new_user_treshold->getTimestamp() < strtotime($user['adate'] . ' UTC'))
+    if (isset($user['activated_at'])
+      && $new_user_treshold->getTimestamp() < strtotime($user['activated_at'] . ' UTC'))
     {
       $is_new = true;
     }

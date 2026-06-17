@@ -3,29 +3,28 @@
 namespace App\Command\Transactions;
 
 use App\Command\CommandInterface;
-use App\Validator\BulkSelect\BulkSelectNotEmpty;
+use Symfony\Component\Validator\Constraints\All;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotNull;
+use Symfony\Component\Validator\Constraints\PositiveOrZero;
 use Symfony\Component\Validator\Constraints\Type;
 
-class TransactionsManyToOneCommand implements CommandInterface
+class TransactionsMassManyToOneCommand implements CommandInterface
 {
-  #[BulkSelectNotEmpty(message: 'bulk_select.not_empty.users')]
-  public mixed $from_accounts_amounts;
+  #[All([
+    new PositiveOrZero(),
+  ])]
+  public array $amounts = [];
 
   #[NotNull()]
-  #[Type(type: 'bool')]
-  public mixed $is_leaving;
+  #[Type(type: 'int')]
+  public mixed $to_account_id;
 
   #[NotNull()]
   #[Type(type: 'string')]
   #[Length(min: 1, max: 60)]
   public mixed $description;
-
-  #[NotNull()]
-  #[Type(type: 'int')]
-  public mixed $to_account;
 
   #[Type(type: 'bool')]
   #[IsTrue()]

@@ -3,13 +3,14 @@
 namespace App\Form\Type\Mollie;
 
 use App\Command\Mollie\MollieFilterCommand;
+use App\Form\Type\Field\AutocompleteAccountType;
 use App\Form\Type\Field\BtnChoiceType;
 use App\Form\Type\Field\DatepickerType;
 use App\Form\Type\Filter\FilterType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use App\Form\Type\Field\TypeaheadType;
+
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -27,21 +28,13 @@ class MollieFilterType extends AbstractType
     array $options,
   ):void
   {
-    $typeahead_add = [];
-    $typeahead_add[] = ['accounts', ['status' => 'active']];
-    $typeahead_add[] = ['accounts', ['status' => 'extern']];
-    $typeahead_add[] = ['accounts', ['status' => 'inactive']];
-    $typeahead_add[] = ['accounts', ['status' => 'im']];
-    $typeahead_add[] = ['accounts', ['status' => 'ip']];
-
     $builder->add('q', TextType::class, [
       'required' => false,
     ]);
 
-    $builder->add('user', TypeaheadType::class, [
-      'add'         => $typeahead_add,
-      'filter'      => 'accounts',
-      'required' 		=> false,
+    $builder->add('user', AutocompleteAccountType::class, [
+      'account_group' => 'users',
+      'required'      => false,
     ]);
 
     $builder->add('from_date', DatepickerType::class, [

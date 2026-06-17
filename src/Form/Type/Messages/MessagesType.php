@@ -8,7 +8,6 @@ use App\Form\EventSubscriber\AccessFieldSubscriber;
 use App\Form\EventSubscriber\CategoryFieldSubscriber;
 use App\Form\Input\LblChoiceType;
 use App\Form\Type\Field\SummernoteType;
-use App\Form\Type\Field\TypeaheadType;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\Form\AbstractType;
@@ -64,17 +63,8 @@ class MessagesType extends AbstractType
 
     if ($this->pp->is_admin())
     {
-      $typeahead_add = [];
-      $typeahead_add[] = ['accounts', ['status' => 'active']];
-      $typeahead_add[] = ['accounts', ['status' => 'extern']];
-      $typeahead_add[] = ['accounts', ['status' => 'inactive']];
-      $typeahead_add[] = ['accounts', ['status' => 'im']];
-      $typeahead_add[] = ['accounts', ['status' => 'ip']];
-
-      $builder->add('user_id', TypeaheadType::class, [
-        'add'       => $typeahead_add,
-        'filter'    => 'accounts',
-        'required'  => false,
+      $builder->add('user_id', AutocompleteAccountType::class, [
+        'account_group' => 'users',
       ]);
     }
 

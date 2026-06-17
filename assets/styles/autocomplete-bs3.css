@@ -12,7 +12,6 @@
   color: #333;
   font-size: 16px;
   padding: 3px 0;
-  margin: 3px 0 0 0;
 }
 
 .autocomplete div {
@@ -22,15 +21,5 @@
   font-weight: normal;
   line-height: 1.5;
   white-space: nowrap;
-  text-decoration: none;
-}
-
-.autocomplete div:hover{
-  background-color: #ddd;
-}
-
-.autocomplete div.selected {
-  color: #fff;
-  background-color: #337ab7;
   text-decoration: none;
 }

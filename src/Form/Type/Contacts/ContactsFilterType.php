@@ -4,12 +4,12 @@ namespace App\Form\Type\Contacts;
 
 use App\Command\Contacts\ContactsFilterCommand;
 use App\Form\EventSubscriber\AccessFieldSubscriber;
+use App\Form\Type\Field\AutocompleteAccountType;
 use App\Form\Type\Filter\FilterType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use App\Form\Type\Field\TypeaheadType;
 use App\Repository\ContactRepository;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
@@ -81,21 +81,13 @@ class ContactsFilterType extends AbstractType
       $type_choice_attr[$row['name']] = ['data-abbrev' => $row['abbrev']];
     }
 
-    $typeahead_accounts_add = [];
-    $typeahead_accounts_add[] = ['accounts', ['status' => 'active']];
-    $typeahead_accounts_add[] = ['accounts', ['status' => 'extern']];
-    $typeahead_accounts_add[] = ['accounts', ['status' => 'inactive']];
-    $typeahead_accounts_add[] = ['accounts', ['status' => 'im']];
-    $typeahead_accounts_add[] = ['accounts', ['status' => 'ip']];
-
     $builder->add('q', TextType::class, [
       'required' => false,
     ]);
 
-    $builder->add('user', TypeaheadType::class, [
-        'add'           => $typeahead_accounts_add,
-        'filter'        => 'accounts',
-        'required' 		=> false,
+    $builder->add('user', AutocompleteAccountType::class, [
+      'account_group' => 'all',
+      'required' => false,
     ]);
 
     $builder->add('type', ChoiceType::class, [

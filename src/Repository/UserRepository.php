@@ -234,6 +234,24 @@ class UserRepository
 		return $id;
 	}
 
+	public function get_id_by_code(
+    string $code,
+    Schema $schema,
+  ):int|false
+	{
+		$code_lowercase = strtolower($code);
+
+		$id = $this->db->fetchOne('select u.id
+			from ' . $schema->str() . '.users u
+			where lower(u.code) = :code_lowercase', [
+      'code_lowercase'  => $code_lowercase,
+    ], [
+      'code_lowercase'  => Types::STRING,
+    ]);
+
+		return $id;
+	}
+
 	public function get_active_id_by_code(
     string $code,
     Schema $schema,
@@ -940,7 +958,7 @@ class UserRepository
       'all' => '1 = 1',
       'active' => 'status in (1, 2)',
       'leaving' => 'status = 2',
-      'new' => 'status = 1 and u.adate > :activated_at',
+      'new' => 'status = 1 and u.activated_at > :activated_at',
       'inactive'  => 'status = 0',
       'ip'  => 'status = 5',
       'im'  => 'status = 6',
@@ -961,8 +979,32 @@ class UserRepository
 
     $users = [];
 
-    $query = 'select u.*
+    $query = 'select u.*,
+      min_limit.min_limit,
+      max_limit.max_limit,
+      balance.balance
       from ' . $schema->str() . '.users u
+      left join lateral (
+        select minl.min_limit
+        from ' . $schema->str() . '.min_limit minl
+        where minl.account_id = u.id
+        order by minl.created_at desc
+        limit 1
+      ) min_limit on true
+      left join lateral (
+        select maxl.max_limit
+        from ' . $schema->str() . '.max_limit maxl
+        where maxl.account_id = u.id
+        order by maxl.created_at desc
+        limit 1
+      ) max_limit on true
+      left join lateral (
+        select bal.balance
+        from ' . $schema->str() . '.balance bal
+        where bal.account_id = u.id
+        order by bal.created_at desc
+        limit 1
+      ) balance on true
       where ' . $sql_where . '
       order by u.code asc';
 
@@ -971,6 +1013,105 @@ class UserRepository
     while($row = $res->fetchAssociative())
     {
       $users[$row['id']] = $row;
+    }
+
+    return $users;
+  }
+
+  public function get_for_autocomplete(
+    bool $active_users_included,
+    bool $active_eland_intersystems_included,
+    bool $active_email_intersystems_included,
+    bool $inactive_users_included,
+    bool $inactive_intersystems_included,
+    Schema $schema,
+  ):array
+  {
+    if (!$active_users_included
+      && !$active_eland_intersystems_included
+      && !$active_email_intersystems_included
+      && !$inactive_users_included
+      && !$inactive_intersystems_included
+    )
+    {
+      return [];
+    }
+
+    $or_ary = [];
+
+    if ($active_users_included)
+    {
+      $or_ary[] = '(u.is_active
+        and u.remote_schema is null
+        and u.remote_email is null)';
+    }
+
+    if ($active_eland_intersystems_included)
+    {
+      $or_ary[] = '(u.remote_schema is not null and u.is_active)';
+    }
+
+    if ($active_email_intersystems_included)
+    {
+      $or_ary[] = '(u.remote_email is not null and u.is_active)';
+    }
+
+    if ($inactive_users_included)
+    {
+      $or_ary[] = '(not u.is_active
+        and u.remote_schema is null
+        and u.remote_email is null)';
+    }
+
+    if ($inactive_intersystems_included)
+    {
+      $or_ary[] = '(not u.is_active
+        and (u.remote_schema is not null
+          or u.remote_email is not null))';
+    }
+
+    $sql_where = implode(' or ', $or_ary);
+
+    $users = [];
+
+    $query = 'select u.id, u.code,
+      u.name, u.is_leaving,
+      u.is_active,
+      activated_at,
+      u.remote_schema, u.remote_email,
+      min_limit.min_limit,
+      max_limit.max_limit,
+      balance.balance
+      from ' . $schema->str() . '.users u
+      left join lateral (
+        select minl.min_limit
+        from ' . $schema->str() . '.min_limit minl
+        where minl.account_id = u.id
+        order by minl.created_at desc
+        limit 1
+      ) min_limit on true
+      left join lateral (
+        select maxl.max_limit
+        from ' . $schema->str() . '.max_limit maxl
+        where maxl.account_id = u.id
+        order by maxl.created_at desc
+        limit 1
+      ) max_limit on true
+      left join lateral (
+        select bal.balance
+        from ' . $schema->str() . '.balance bal
+        where bal.account_id = u.id
+        order by bal.created_at desc
+        limit 1
+      ) balance on true
+      where ' . $sql_where . '
+      order by u.code asc';
+
+    $res = $this->db->executeQuery($query);
+
+    while($row = $res->fetchAssociative())
+    {
+      $users[] = array_filter($row, fn ($v) => !is_null($v));;
     }
 
     return $users;
@@ -1106,7 +1247,7 @@ class UserRepository
       'all' => '1 = 1',
       'active' => '%table%.status in (1, 2)',
       'leaving' => '%table%.status = 2',
-      'new' => '%table%.status = 1 and %table%.adate > :activated_at',
+      'new' => '%table%.status = 1 and %table%.activated_at > :activated_at',
       'inactive'  => '%table%.status = 0',
       'ip'  => '%table%.status = 5',
       'im'  => '%table%.status = 6',

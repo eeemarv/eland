@@ -16,6 +16,14 @@ export default class extends Controller {
 
     if (!tableElement || DataTable.isDataTable(tableElement)) return;
 
+    // Ensure the table has a header row with at least one column definition.
+    // DataTables needs this to correctly determine columns.
+    const headerCells = tableElement.querySelectorAll('thead th');
+    if (headerCells.length === 0) {
+      console.warn('DataTables Controller: Table element found but no header cells (<th>) in <thead>. Skipping initialization to prevent "Incorrect column count" warning.', tableElement);
+      return;
+    }
+
     this.table = new DataTable(tableElement, {
       responsive: true,
       paging: false,  // Disable pagination as requested

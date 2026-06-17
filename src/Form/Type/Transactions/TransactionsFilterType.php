@@ -3,6 +3,7 @@
 namespace App\Form\Type\Transactions;
 
 use App\Command\Transactions\TransactionsFilterCommand;
+use App\Form\Type\Field\AutocompleteAccountType;
 use App\Form\Type\Field\BtnChoiceType;
 use App\Form\Type\Field\DatepickerType;
 use App\Form\Type\Filter\FilterType;
@@ -10,7 +11,6 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use App\Form\Type\Field\TypeaheadType;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -36,36 +36,20 @@ class TransactionsFilterType extends AbstractType
       schema: $this->pp->schema_o(),
     );
 
-    $typeahead_add = [];
-
-    $typeahead_add[] = ['accounts', ['status' => 'active']];
-
-    if (!$this->pp->is_guest())
-    {
-      $typeahead_add[] = ['accounts', ['status' => 'extern']];
-    }
-
-    if ($this->pp->is_admin())
-    {
-      $typeahead_add[] = ['accounts', ['status' => 'inactive']];
-      $typeahead_add[] = ['accounts', ['status' => 'im']];
-      $typeahead_add[] = ['accounts', ['status' => 'ip']];
-    }
-
     $builder->add('q', TextType::class, [
       'required' => false,
     ]);
 
-    $builder->add('from_account', TypeaheadType::class, [
-      'add'           => $typeahead_add,
-      'filter'		=> 'accounts',
+    $account_group = $this->pp->is_admin() ? 'all' : 'active';
+
+    $builder->add('from_account', AutocompleteAccountType::class, [
+      'account_group' => $account_group,
       'required'      => false,
     ]);
 
-    $builder->add('to_account', TypeaheadType::class, [
-      'add'           => $typeahead_add,
-      'filter'        => 'accounts',
-      'required' 		=> false,
+    $builder->add('to_account', AutocompleteAccountType::class, [
+      'account_group' => $account_group,
+      'required'      => false,
     ]);
 
     $builder->add('account_logic', ChoiceType::class, [
