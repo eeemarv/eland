@@ -14,7 +14,6 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -27,12 +26,12 @@ class UsersActiveEditController extends AbstractController
     name: 'users_active_edit',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
-      'role_short'    => '%assert.role_short.admin%',
-      'id'            => '%assert.id%',
+      'schema' => '%assert.schema%',
+      'role_short' => '%assert.role_short.admin%',
+      'id' => '%assert.id%',
     ],
     defaults: [
-      'module'        => 'users',
+      'module' => 'users',
     ],
   )]
 
@@ -40,21 +39,18 @@ class UsersActiveEditController extends AbstractController
     Request $request,
     int $id,
     UserCacheService $user_cache_service,
-    TypeaheadService $typeahead_service,
     UserRepository $user_repository,
     UserLogRepository $user_log_repository,
     ConfigService $config_service,
     PageParamsService $pp,
     SessionUserService $su,
-  ):Response
-  {
+  ): Response {
     $user = $user_repository->get(
       id: $id,
       schema: $pp->schema_o(),
     );
 
-    if ($user === false)
-    {
+    if ($user === false) {
       throw $this->createNotFoundException(
         'User with id ' . $id . ' not found'
       );
@@ -75,25 +71,23 @@ class UsersActiveEditController extends AbstractController
     );
     $form->handleRequest($request);
 
-    if ($form->isSubmitted()
-      && $form->isValid())
-    {
+    if (
+      $form->isSubmitted()
+      && $form->isValid()
+    ) {
       $is_active = $command->is_active;
       $send_email = $command->send_email;
       $send_email_cc = $command->send_email_cc;
       $log_comment = $form->get('log_comment')->getData();
 
-      if ($is_active === $user['is_active'])
-      {
+      if ($is_active === $user['is_active']) {
         $this->addFlash(
           type: 'warning',
           message: [
             'key' => 'flash.no_change',
           ]
         );
-      }
-      else
-      {
+      } else {
         $user_repository->set_is_active(
           id: $id,
           is_active: $is_active,
@@ -103,20 +97,15 @@ class UsersActiveEditController extends AbstractController
           id: $id,
           schema: $pp->schema(),
         );
-        $typeahead_service->clear_cache(
-          schema: $pp->schema(),
-        );
 
-        if ($send_email)
-        {
+        if ($send_email) {
           $email_addresses = $user_repository->get_email_addresses(
             user_id: $id,
             schema: $pp->schema_o(),
             active_only: false,
           );
 
-          if ($email_addresses->count())
-          {
+          if ($email_addresses->count()) {
 
 
 
@@ -140,7 +129,7 @@ class UsersActiveEditController extends AbstractController
           route: $pp->route(),
           schema: $pp->schema_o(),
           meta_data: [
-            'send_email'  => $send_email,
+            'send_email' => $send_email,
             'send_email_cc' => $send_email_cc,
           ],
         );
@@ -150,8 +139,8 @@ class UsersActiveEditController extends AbstractController
         type: 'success',
         message: [
           'key' => 'users_active_edit.flash.success',
-          'params'  => [
-            'user'  => $user['name'],
+          'params' => [
+            'user' => $user['name'],
             'is_active' => $is_active ? 'yes' : 'no',
           ],
         ]
@@ -161,8 +150,8 @@ class UsersActiveEditController extends AbstractController
         type: 'success',
         message: [
           'key' => 'flash.email.notification',
-          'params'  => [
-            'user'  => $user['name'],
+          'params' => [
+            'user' => $user['name'],
             'sent' => $send_email ? 'yes' : 'no',
           ],
         ]
@@ -171,18 +160,18 @@ class UsersActiveEditController extends AbstractController
       return $this->redirectToRoute(
         route: 'users_show',
         parameters: [
-          ... $pp->ary(),
+          ...$pp->ary(),
           'id' => $id,
         ],
       );
     }
 
     return $this->render('users/users_active_edit.html.twig', [
-      'form'              => $form->createView(),
-      'user'              => $user,
-      'id'                => $id,
-      'is_intersystem'    => $is_intersystem,
-      'is_self'           => false,
+      'form' => $form->createView(),
+      'user' => $user,
+      'id' => $id,
+      'is_intersystem' => $is_intersystem,
+      'is_self' => false,
     ]);
   }
 }

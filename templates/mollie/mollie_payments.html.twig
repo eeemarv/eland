@@ -1,7 +1,7 @@
 {%- extends 'mollie/base/mollie_base.html.twig' -%}
 
 {%- block content_controllers -%}
-datatable bulkchecktable csv
+datatable bulk-check-table csv
 {%- endblock content_controllers -%}
 
 {%- block content_controllers_attr -%}
@@ -61,8 +61,6 @@ data-csv-filename-value="mollie"
 {%- block pagination -%}
   {%- include 'include/pagination/pagination.html.twig' -%}
 {%- endblock pagination -%}
-
-{%- block content -%}{%- endblock -%}
 
 {%- block data -%}
   {%- if row_count -%}

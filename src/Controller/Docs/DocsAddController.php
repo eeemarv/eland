@@ -12,7 +12,6 @@ use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\S3Service;
 use App\Service\SessionUserService;
-use App\Service\TypeaheadService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -39,7 +38,6 @@ class DocsAddController extends AbstractController
     ConfigService $config_service,
     LoggerInterface $logger,
     S3Service $s3_service,
-    TypeaheadService $typeahead_service,
     PageParamsService $pp,
     SessionUserService $su,
   ):Response
@@ -137,7 +135,6 @@ class DocsAddController extends AbstractController
             schema: $pp->schema_o(),
           );
           $alert_success_msg[] = 'Nieuwe map "' . $map_name . '" gecreëerd.';
-          $typeahead_service->clear_cache($pp->schema());
         }
 
         $doc['map_id'] = $map_id;

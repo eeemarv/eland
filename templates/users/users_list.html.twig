@@ -1,8 +1,8 @@
 {%- extends 'users/base/users_overview.html.twig' -%}
 
 {%- block content_controllers -%}
-usercounttable datatable
-{%- if pp_has_role('admin') %} bulkchecktable csv{%- endif -%}
+user-count-table datatable
+{%- if pp_has_role('admin') %} bulk-check-table csv{%- endif -%}
 {%- endblock content_controllers -%}
 
 {%- block content_controllers_attr -%}
@@ -70,7 +70,7 @@ data-datatable-sortable-value="true"
     <div class="col-md-12">
       <p>
         <span class="pull-right">{{- 'label.balance_sum'|trans({
-          'balance_sum': '<span data-usercounttable-target="totalBalance"></span> ' ~ config_str('transactions.currency.name')
+          'balance_sum': '<span data-user-count-table-target="totalBalance"></span> ' ~ config_str('transactions.currency.name')
         })|raw -}}
         </span>
       </p>

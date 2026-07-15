@@ -12,7 +12,6 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -25,14 +24,14 @@ class UsersNameEditController extends AbstractController
     name: 'users_name_edit',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
-      'role_short'    => '%assert.role_short.admin%',
-      'id'            => '%assert.id%',
+      'schema' => '%assert.schema%',
+      'role_short' => '%assert.role_short.admin%',
+      'id' => '%assert.id%',
     ],
     defaults: [
-      'is_self'       => false,
-      'mode'          => 'edit',
-      'module'        => 'users',
+      'is_self' => false,
+      'mode' => 'edit',
+      'module' => 'users',
     ],
   )]
 
@@ -41,15 +40,15 @@ class UsersNameEditController extends AbstractController
     name: 'users_name_edit_self',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
-      'role_short'    => '%assert.role_short.user%',
-      'id'            => '%assert.id%',
+      'schema' => '%assert.schema%',
+      'role_short' => '%assert.role_short.user%',
+      'id' => '%assert.id%',
     ],
     defaults: [
-      'id'            => 0,
-      'is_self'       => true,
-      'mode'          => 'edit',
-      'module'        => 'users',
+      'id' => 0,
+      'is_self' => true,
+      'mode' => 'edit',
+      'module' => 'users',
     ],
   )]
 
@@ -60,33 +59,31 @@ class UsersNameEditController extends AbstractController
     UserRepository $user_repository,
     UserLogRepository $user_log_repository,
     UserCacheService $user_cache_service,
-    TypeaheadService $typeahead_service,
     ConfigService $config_service,
     PageParamsService $pp,
     SessionUserService $su,
-  ):Response
-  {
-    if (!$is_self
-      && $su->is_owner($id))
-    {
+  ): Response {
+    if (
+      !$is_self
+      && $su->is_owner($id)
+    ) {
       return $this->redirectToRoute(
         route: 'users_account_edit_self',
         parameters: $pp->ary(),
       );
     }
 
-    if ($is_self)
-    {
+    if ($is_self) {
       $id = $su->id();
     }
 
-    if (!$pp->is_admin()
+    if (
+      !$pp->is_admin()
       && !$config_service->get_bool(
         config_id: 'users.fields.name.self_edit',
         schema: $pp->schema_o(),
       )
-    )
-    {
+    ) {
       throw $this->createAccessDeniedException(
         'Changing own username not accepted by configuration.'
       );
@@ -97,8 +94,7 @@ class UsersNameEditController extends AbstractController
       schema: $pp->schema_o(),
     );
 
-    if ($user === false)
-    {
+    if ($user === false) {
       throw $this->createNotFoundException(
         'User with id ' . $id . ' not found'
       );
@@ -113,10 +109,7 @@ class UsersNameEditController extends AbstractController
     $command->name = $user['name'];
     $old_data = (array) $command;
 
-    $form_options['render_omit'] = $command->name;
-
-    if ($pp->is_admin())
-    {
+    if ($pp->is_admin()) {
       $form_options['log_comment_enabled'] = true;
     }
 
@@ -128,22 +121,20 @@ class UsersNameEditController extends AbstractController
 
     $form->handleRequest($request);
 
-    if ($form->isSubmitted()
-      && $form->isValid())
-    {
+    if (
+      $form->isSubmitted()
+      && $form->isValid()
+    ) {
       $log_comment = $pp->is_admin() ? $form->get('log_comment')->getData() : null;
 
-      if ($command->name === $user['name'])
-      {
+      if ($command->name === $user['name']) {
         $this->addFlash(
           type: 'warning',
           message: [
             'key' => 'flash.no_change',
           ]
         );
-      }
-      else
-      {
+      } else {
         $user_repository->set_name(
           id: $id,
           name: $command->name,
@@ -152,9 +143,6 @@ class UsersNameEditController extends AbstractController
 
         $user_cache_service->clear(
           id: $id,
-          schema: $pp->schema(),
-        );
-        $typeahead_service->clear_cache(
           schema: $pp->schema(),
         );
 
@@ -173,16 +161,15 @@ class UsersNameEditController extends AbstractController
           message: [
             'key' => 'users_name_edit.flash.success',
             'params' => [
-              'self'   => $is_self ? 'yes' : 'no',
-              'old_name'  => $user['name'],
-              'new_name'  => $command->name,
+              'self' => $is_self ? 'yes' : 'no',
+              'old_name' => $user['name'],
+              'new_name' => $command->name,
             ]
           ],
         );
       }
 
-      if ($is_self)
-      {
+      if ($is_self) {
         return $this->redirectToRoute(
           route: 'users_show_self',
           parameters: $pp->ary(),
@@ -192,18 +179,18 @@ class UsersNameEditController extends AbstractController
       return $this->redirectToRoute(
         route: 'users_show',
         parameters: [
-          ... $pp->ary(),
+          ...$pp->ary(),
           'id' => $id,
         ],
       );
     }
 
     return $this->render('users/users_name_edit.html.twig', [
-      'form'              => $form->createView(),
-      'user'              => $user,
-      'id'                => $id,
-      'is_self'           => $is_self,
-      'is_intersystem'    => $is_intersystem,
+      'form' => $form->createView(),
+      'user' => $user,
+      'id' => $id,
+      'is_self' => $is_self,
+      'is_intersystem' => $is_intersystem,
     ]);
   }
 }

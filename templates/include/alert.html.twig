@@ -23,6 +23,10 @@
                 {%- else -%}
                   {{- message.user.code ?? '***' }} {{ message.user.name -}}
                 {%- endif -%}
+                {%- if message.user_info is defined -%}
+                  &nbsp;
+                  {{- message.user_info -}}
+                {%- endif -%}
               {%- else -%}
                 {{- message.key|trans(params) -}}
               {%- endif -%}

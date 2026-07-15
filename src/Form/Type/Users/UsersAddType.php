@@ -3,7 +3,7 @@
 namespace App\Form\Type\Users;
 
 use App\Command\Users\UsersAddCommand;
-use App\Form\Type\Field\TypeaheadType;
+use App\Form\Type\Field\UniqueCheckType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -17,9 +17,8 @@ class UsersAddType extends AbstractType
     array $options,
   ):void
   {
-    $builder->add('name', TypeaheadType::class, [
-      'add'           => 'usernames',
-      'render_omit'   => $options['render_omit'],
+    $builder->add('name', UniqueCheckType::class, [
+      'route' => 'unique_check_usernames',
     ]);
 
     $builder->add('email', EmailType::class);
@@ -30,7 +29,5 @@ class UsersAddType extends AbstractType
   public function configureOptions(OptionsResolver $resolver):void
   {
     $resolver->setDefault('data_class', UsersAddCommand::class);
-    $resolver->setDefault('render_omit', '');
-    $resolver->setAllowedTypes('render_omit', 'string');
   }
 }

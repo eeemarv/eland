@@ -70,8 +70,12 @@
 bg-danger
 {%- elseif is_new(user) -%}
 bg-success
-{%- elseif is_inactive(user) -%}
+{%- elseif is_intersystem(user) -%}
+bg-warning
+{%- elseif is_pre_active(user) -%}
 bg-inactive
+{%- elseif is_post_active(user) -%}
+bg-info
 {%- endif -%}
 {%- endblock -%}
 
@@ -80,7 +84,28 @@ bg-inactive
       'self': is_self ? 'self' : 'other',
       'user': account(id),
   }) -}}
-  {{- account_status(id)|raw -}}
+  {%- if is_leaving(user) -%}
+    <small class="ms-1 text-danger">
+      {{- 'status.leaving'|trans -}}
+    </small>
+  {%- elseif is_new(user) -%}
+    <small class="ms-1 text-success">
+      {{- 'status.new'|trans -}}
+    </small>
+  {%- elseif is_intersystem(user) -%}
+    <small class="ms-1 text-warning">
+      {{- 'status.intersystem'|trans -}}
+    </small>
+  {%- elseif is_pre_active(user) -%}
+    <small class="ms-1 text-inactive">
+      {{- 'status.pre_active'|trans -}}
+    </small>
+  {%- elseif is_post_active(user) -%}
+    <small class="ms-1 text-info">
+      {{- 'status.post_active'|trans -}}
+    </small>
+  {%- endif -%}
+  {#}
   {# intersystem link here #}
   {#
   {%- if pp_has_role('admin') -%}

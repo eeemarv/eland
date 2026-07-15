@@ -3,7 +3,6 @@
 namespace App\Controller\Users;
 
 use App\Repository\UserRepository;
-use App\Service\CacheService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -22,7 +21,7 @@ class UsersMapController extends AbstractController
     methods: ['GET'],
     priority: 20,
     requirements: [
-      'status'        => '%assert.account_status%',
+      'status'        => '%assert.account.status2%',
       'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.guest%',
     ],

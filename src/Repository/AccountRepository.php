@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\DTO\Schema;
-use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
 

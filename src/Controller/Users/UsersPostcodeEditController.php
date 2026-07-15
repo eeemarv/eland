@@ -19,7 +19,7 @@ class UsersPostcodeEditController extends AbstractController
 {
   #[Route(
     '/{schema}/{role_short}/users/{id}/postcode/add',
-    name: 'users_postcode_edit',
+    name: 'users_postcode_add',
     methods: ['GET', 'POST'],
     requirements: [
       'schema'        => '%assert.schema%',
@@ -35,7 +35,7 @@ class UsersPostcodeEditController extends AbstractController
 
   #[Route(
     '/{schema}/{role_short}/users/self/postcode/add',
-    name: 'users_postcode_edit_self',
+    name: 'users_postcode_add_self',
     methods: ['GET', 'POST'],
     requirements: [
       'schema'        => '%assert.schema%',

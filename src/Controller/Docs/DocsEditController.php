@@ -11,7 +11,6 @@ use App\Repository\DocRepository;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\TypeaheadService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -37,7 +36,6 @@ class DocsEditController extends AbstractController
     int $id,
     DocRepository $doc_repository,
     ConfigService $config_service,
-    TypeaheadService $typeahead_service,
     PageParamsService $pp,
     SessionUserService $su,
     string $env_s3_url,
@@ -134,7 +132,6 @@ class DocsEditController extends AbstractController
             schema: $pp->schema_o(),
           );
           $alert_success_msg[] = 'Nieuwe map "' . $map_name . '" gecreëerd.';
-          $delete_thumbprint = true;
         }
 
         if ($map_doc_count === 1 && $map_id !== $doc['map_id'])
@@ -155,19 +152,16 @@ class DocsEditController extends AbstractController
         schema: $pp->schema_o(),
       );
 
-      if (isset($delete_map) && $delete_map)
+      if (isset($delete_map)
+        && $delete_map
+        && isset($doc_map['name'])
+      )
       {
         $alert_success_msg[] = 'Map "' . $doc_map['name'] . '" bevatte geen items meer en werd automatisch gewist.';
         $doc_repository->del_map(
           map_id: $doc['map_id'],
           schema: $pp->schema_o(),
         );
-        $delete_thumbprint = true;
-      }
-
-      if (isset($delete_thumbprint) && $delete_thumbprint)
-      {
-        $typeahead_service->clear_cache($pp->schema());
       }
 
       $alert_success_msg[] = 'Document aangepast.';

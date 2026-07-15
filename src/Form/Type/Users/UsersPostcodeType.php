@@ -3,7 +3,7 @@
 namespace App\Form\Type\Users;
 
 use App\Command\Users\UsersPostcodeCommand;
-use App\Form\Type\Field\TypeaheadType;
+use App\Form\Type\Field\AutocompleteType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -16,8 +16,8 @@ class UsersPostcodeType extends AbstractType
     array $options,
   ):void
   {
-    $builder->add('postcode', TypeaheadType::class, [
-      'add'   => 'postcodes',
+    $builder->add('postcode', AutocompleteType::class, [
+      'route'   => 'autocomplete_users_postcodes',
     ]);
     $builder->add('submit', SubmitType::class);
   }

@@ -27,7 +27,11 @@ export default class extends Controller {
 
   calculate() {
     const table = this.getTable();
-    if (!table) return;
+    if (!table) {
+      this.rowCountTarget.textContent = 0;
+      this.totalBalanceTarget.textContent = 0;
+      return;
+    }
 
     let rows;
     // If DataTable is initialized, get only filtered/visible rows

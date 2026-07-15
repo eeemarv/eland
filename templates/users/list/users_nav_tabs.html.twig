@@ -1,6 +1,6 @@
 
 <div class="pull-right hidden-xs hidden-sm print-hide">
-  {{- 'label.total'|trans -}}: <span data-usercounttable-target="rowCount"></span>
+  {{- 'label.total'|trans -}}: <span data-user-count-table-target="rowCount"></span>
 </div>
 
 {%- set user_new_pane_en = config_bool('users.new.enabled')
@@ -38,28 +38,24 @@
   </li>
   {%- endif -%}
 
+  {%- if config_bool('intersystem.enabled') -%}
+  <li{%- if all_params.status == 'intersystem' %} class="active"{%- endif -%}>
+    <a href="{{- path('users'|var_route, {'status': 'intersystem'}|pp) -}}" class="bg-warning">
+      {{- 'status.intersystem'|trans -}}
+    </a>
+  </li>
+  {%- endif -%}
+
   {%- if pp_has_role('admin') -%}
-    <li{%- if all_params.status == 'inactive' %} class="active"{%- endif -%}>
-      <a  href="{{- path('users'|var_route, {'status': 'inactive'}|pp) -}}" class="bg-inactive">
-        {{- 'status.inactive'|trans -}}
+    <li{%- if all_params.status == 'pre-active' %} class="active"{%- endif -%}>
+      <a  href="{{- path('users'|var_route, {'status': 'pre-active'}|pp) -}}" class="bg-inactive">
+        {{- 'status.pre_active'|trans -}}
       </a>
     </li>
 
-    <li{%- if all_params.status == 'ip' %} class="active"{%- endif -%}>
-      <a  href="{{- path('users'|var_route, {'status': 'ip'}|pp) -}}" class="bg-warning">
-        {{- 'status.ip'|trans -}}
-      </a>
-    </li>
-
-    <li{%- if all_params.status == 'im' %} class="active"{%- endif -%}>
-      <a  href="{{- path('users'|var_route, {'status': 'im'}|pp) -}}" class="bg-info">
-        {{- 'status.im'|trans -}}
-      </a>
-    </li>
-
-    <li{%- if all_params.status == 'extern' %} class="active"{%- endif -%}>
-      <a  href="{{- path('users'|var_route, {'status': 'extern'}|pp) -}}" class="bg-extern">
-        {{- 'status.extern'|trans -}}
+    <li{%- if all_params.status == 'post-active' %} class="active"{%- endif -%}>
+      <a  href="{{- path('users'|var_route, {'status': 'post-active'}|pp) -}}" class="bg-info">
+        {{- 'status.post_active'|trans -}}
       </a>
     </li>
 

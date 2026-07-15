@@ -15,98 +15,95 @@ use Symfony\Component\HttpFoundation\Session\FlashBagAwareSessionInterface;
 
 class AutoDeactivateService
 {
-	public function __construct(
-		protected Db $db,
-		protected LoggerInterface $logger,
-		protected UserCacheService $user_cache_service,
-		protected AccountRepository $account_repository,
-		protected MailQueue $mail_queue,
-		protected MailAddrSystemService $mail_addr_system_service,
-		protected MailAddrUserService $mail_addr_user_service,
-		protected ConfigService $config_service,
-		protected SessionUserService $su,
-		protected TypeaheadService $typeahead_service,
+  public function __construct(
+    protected Db $db,
+    protected LoggerInterface $logger,
+    protected UserCacheService $user_cache_service,
+    protected AccountRepository $account_repository,
+    protected MailQueue $mail_queue,
+    protected MailAddrSystemService $mail_addr_system_service,
+    protected MailAddrUserService $mail_addr_user_service,
+    protected ConfigService $config_service,
+    protected SessionUserService $su,
     protected RequestStack $request_stack,
-		protected AccountRender $account_render
-	)
-	{
-	}
+    protected AccountRender $account_render
+  ) {
+  }
 
-	public function process(
-		int $user_id,
-		string $schema
-	):void
-	{
+  public function process(
+    int $user_id,
+    string $schema
+  ): void {
     $schema_o = new Schema($schema);
 
-		if (!$this->config_service->get_bool(
-      config_id: 'users.leaving.enabled',
-      schema: $schema_o,
-    ))
-		{
-			return;
-		}
+    if (
+      !$this->config_service->get_bool(
+        config_id: 'users.leaving.enabled',
+        schema: $schema_o,
+      )
+    ) {
+      return;
+    }
 
-		if (!$this->config_service->get_bool(
-      config_id: 'users.leaving.auto_deactivate',
-      schema: $schema_o,
-    ))
-		{
-			return;
-		}
+    if (
+      !$this->config_service->get_bool(
+        config_id: 'users.leaving.auto_deactivate',
+        schema: $schema_o,
+      )
+    ) {
+      return;
+    }
 
-		$user = $this->user_cache_service->get($user_id, $schema);
+    $user = $this->user_cache_service->get($user_id, $schema);
 
-		if ($user['status'] !== 2)
-		{
-			return;
-		}
+    if ($user['status'] !== 2) {
+      return;
+    }
 
     $balance_equilibrium = $this->config_service->get_int(
       config_id: 'accounts.equilibrium',
       schema: $schema_o,
     ) ?? 0;
-		$balance = $this->account_repository->get_balance(
+    $balance = $this->account_repository->get_balance(
       account_id: $user_id,
       schema: $schema_o,
     );
 
-		if ($balance !== $balance_equilibrium)
-		{
-			return;
-		}
+    if ($balance !== $balance_equilibrium) {
+      return;
+    }
 
-		$this->db->update($schema . '.users', ['status'	=> 0], ['id' => $user_id]);
-		$this->user_cache_service->clear($user_id, $schema);
-		$this->typeahead_service->clear_cache($schema);
+    $this->db->update($schema . '.users', ['status' => 0], ['id' => $user_id]);
+    $this->user_cache_service->clear($user_id, $schema);
 
-		$this->logger->info('Auto-deactivated: user ' .
-			$this->account_render->str($user_id, $schema),
-			['schema' => $schema]);
+    $this->logger->info(
+      'Auto-deactivated: user ' .
+      $this->account_render->str($user_id, $schema),
+      ['schema' => $schema]
+    );
 
-		$to = $this->mail_addr_user_service->get($user_id, $schema);
+    $to = $this->mail_addr_user_service->get($user_id, $schema);
 
-		$vars = [
-			'user_id'			=> $user_id,
-			'user_has_email'	=> count($to) > 0,
-		];
+    $vars = [
+      'user_id' => $user_id,
+      'user_has_email' => count($to) > 0,
+    ];
 
-		$this->mail_queue->queue([
-			'schema'	=> $schema,
-			'to' 		=> $to,
-			'template'	=> 'auto_deactivate/user',
-			'vars'		=> $vars,
-		], 4000);
+    $this->mail_queue->queue([
+      'schema' => $schema,
+      'to' => $to,
+      'template' => 'auto_deactivate/user',
+      'vars' => $vars,
+    ], 4000);
 
-		$this->mail_queue->queue([
-			'schema'	=> $schema,
-			'to' 		=> $this->mail_addr_system_service->get_admin($schema),
-			'template'	=> 'auto_deactivate/admin',
-			'vars'		=> $vars,
-		], 4000);
+    $this->mail_queue->queue([
+      'schema' => $schema,
+      'to' => $this->mail_addr_system_service->get_admin($schema),
+      'template' => 'auto_deactivate/admin',
+      'vars' => $vars,
+    ], 4000);
 
-		if ($this->su->schema() === $schema)
-		{
+    if ($this->su->schema() === $schema) {
       $session = $this->request_stack->getSession();
 
       if (!$session instanceof FlashBagAwareSessionInterface) {
@@ -115,19 +112,16 @@ class AutoDeactivateService
 
       $flashBag = $session->getFlashBag();
 
-			if ($this->su->id() === $user_id)
-			{
-				$flashBag->add('warning', 'Je account heeft het
+      if ($this->su->id() === $user_id) {
+        $flashBag->add('warning', 'Je account heeft het
 					uitstappers-saldo bereikt en werd
 					automatisch gedeactiveerd.');
-			}
-			else
-			{
-				$flashBag->add('warning', 'Het account ' .
-					$this->account_render->str($user_id, $schema) .
-					' heeft het uitstappers-saldo bereikt en werd
+      } else {
+        $flashBag->add('warning', 'Het account ' .
+          $this->account_render->str($user_id, $schema) .
+          ' heeft het uitstappers-saldo bereikt en werd
 					automatisch gedesactiveerd.');
-			}
-		}
-	}
+      }
+    }
+  }
 }

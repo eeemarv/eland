@@ -51,7 +51,9 @@ class MollieCheckoutController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw $this->createNotFoundException('Mollie submodule (users) not enabled.');
+      throw $this->createNotFoundException(
+        'Mollie submodule (users) not enabled.'
+      );
     }
 
     $uuid_checkout_token = Uuid::fromBase58($checkout_token);
@@ -63,7 +65,9 @@ class MollieCheckoutController extends AbstractController
 
     if (!$mollie_payment)
     {
-      throw $this->createNotFoundException('Payment request not found.');
+      throw $this->createNotFoundException(
+        'Payment request not found.'
+      );
     }
 
     $mollie_apikey = $config_service->get_str(
@@ -142,7 +146,10 @@ class MollieCheckoutController extends AbstractController
         schema: $pp->schema_o(),
       );
 
-      return $this->redirect($payment->getCheckoutUrl(), 303);
+      return $this->redirect(
+        url: $payment->getCheckoutUrl(),
+        status: 303,
+      );
     }
 
     return $this->render('mollie/mollie_checkout.html.twig', [

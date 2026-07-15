@@ -30,7 +30,7 @@ class UsersShowController extends AbstractController
     priority: 10,
     requirements: [
       'id'            => '%assert.id%',
-      'status'        => '%assert.account_status%',
+      'status'        => '%assert.account.status2%',
       'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.guest%',
     ],

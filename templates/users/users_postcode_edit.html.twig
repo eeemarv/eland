@@ -14,3 +14,11 @@
     'addon': ux_icon('lucide:map-pin-house'),
   }) -}}
 {%- endblock form_a -%}
+
+{%- block form_submit_btn -%}
+  {%- if mode == 'add' -%}
+    {%- include 'form/submit_add_btn.html.twig' -%}
+  {%- else -%}
+    {%- include 'form/submit_edit_btn.html.twig' -%}
+  {%- endif -%}
+{%- endblock form_submit_btn -%}

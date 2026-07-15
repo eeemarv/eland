@@ -12,7 +12,6 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -25,12 +24,12 @@ class UsersAddController extends AbstractController
     name: 'users_add',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
-      'role_short'    => '%assert.role_short.admin%',
-      'id'            => '%assert.id%',
+      'schema' => '%assert.schema%',
+      'role_short' => '%assert.role_short.admin%',
+      'id' => '%assert.id%',
     ],
     defaults: [
-      'module'        => 'users',
+      'module' => 'users',
     ],
   )]
 
@@ -40,14 +39,12 @@ class UsersAddController extends AbstractController
     bool $is_self,
     string $mode,
     UserCacheService $user_cache_service,
-    TypeaheadService $typeahead_service,
     UserRepository $user_repository,
     UserLogRepository $user_log_repository,
     ConfigService $config_service,
     PageParamsService $pp,
     SessionUserService $su,
-  ):Response
-  {
+  ): Response {
     $command = new UsersAddCommand();
     $old_data = (array) $command;
     $form_options = [
@@ -62,9 +59,10 @@ class UsersAddController extends AbstractController
 
     $form->handleRequest($request);
 
-    if ($form->isSubmitted()
-      && $form->isValid())
-    {
+    if (
+      $form->isSubmitted()
+      && $form->isValid()
+    ) {
       $command = $form->getData();
       $log_comment = $form->get('log_comment')->getData();
 
@@ -85,17 +83,13 @@ class UsersAddController extends AbstractController
         schema: $pp->schema_o(),
       );
 
-      $typeahead_service->clear_cache(
-        schema: $pp->schema(),
-      );
-
       $this->addFlash(
         type: 'success',
         message: [
           'key' => 'users_add.flash.success',
           'params' => [
-            'user'  => $command->name,
-            'email'  => $command->email,
+            'user' => $command->name,
+            'email' => $command->email,
           ]
         ],
       );
@@ -103,14 +97,14 @@ class UsersAddController extends AbstractController
       return $this->redirectToRoute(
         route: 'users_show',
         parameters: [
-          ... $pp->ary(),
+          ...$pp->ary(),
           'id' => $user_id,
         ],
       );
     }
 
     return $this->render('users/users_add.html.twig', [
-      'form'  => $form->createView(),
+      'form' => $form->createView(),
     ]);
   }
 }

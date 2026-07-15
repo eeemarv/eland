@@ -99,23 +99,8 @@ class TypeaheadType extends AbstractType
 
     $process_ary = [];
 
-    if (isset($options['render_omit']))
-    {
-      $process_ary = [
-        'render'    => [
-          'check'     => 10,
-          'omit'      => $options['render_omit'],
-        ],
-      ];
-    }
-
     if (isset($options['filter']) && $options['filter'] === 'accounts')
     {
-      if (count($process_ary))
-      {
-        throw new InvalidConfigurationException('Either filter or render_omit can be configured, not both options.');
-      }
-
       $schema = $remote_schema ?? $this->pp->schema_o();
 
       $new_users_days = $this->config_service->get_int(
@@ -168,22 +153,15 @@ class TypeaheadType extends AbstractType
       'data-typeahead'    => $data_typeahead,
       'autocomplete'      => 'off',
     ];
-
-    if (isset($process_ary['render']))
-    {
-      $view->vars['render_omit'] = true;
-    }
   }
 
   public function configureOptions(OptionsResolver $resolver):void
   {
     $resolver->setDefault('add', null);
     $resolver->setDefault('filter', null);
-    $resolver->setDefault('render_omit', null);
     $resolver->setRequired('add');
     $resolver->setAllowedTypes('add', ['string', 'array']);
     $resolver->setAllowedTypes('filter', ['null', 'string']);
-    $resolver->setAllowedTypes('render_omit', ['null', 'string']);
     $resolver->setAllowedValues('filter', [null, 'accounts']);
 
     $resolver->setDefault('invalid_message', function (Options $options) {

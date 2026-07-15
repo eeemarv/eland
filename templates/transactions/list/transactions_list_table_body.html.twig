@@ -9,7 +9,7 @@
 	<tr{{-t_class|raw-}}>
 		{%- if bulk_actions_enabled and pp_has_role('admin') -%}
 			<td>
-        {%- include 'component/bulkchecktable/checkbox.html.twig' with {
+        {%- include 'component/bulk_check_table/checkbox.html.twig' with {
           'id': tid,
         } -%}
 			</td>

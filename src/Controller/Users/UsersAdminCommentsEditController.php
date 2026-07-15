@@ -12,7 +12,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -25,13 +24,13 @@ class UsersAdminCommentsEditController extends AbstractController
     name: 'users_admin_comments_edit',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
-      'role_short'    => '%assert.role_short.admin%',
-      'id'            => '%assert.id%',
+      'schema' => '%assert.schema%',
+      'role_short' => '%assert.role_short.admin%',
+      'id' => '%assert.id%',
     ],
     defaults: [
-      'is_self'       => false,
-      'module'        => 'users',
+      'is_self' => false,
+      'module' => 'users',
     ],
   )]
 
@@ -40,13 +39,13 @@ class UsersAdminCommentsEditController extends AbstractController
     name: 'users_admin_comments_edit_self',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
-      'role_short'    => '%assert.role_short.admin%',
+      'schema' => '%assert.schema%',
+      'role_short' => '%assert.role_short.admin%',
     ],
     defaults: [
-      'is_self'       => true,
-      'id'            => 0,
-      'module'        => 'users',
+      'is_self' => true,
+      'id' => 0,
+      'module' => 'users',
     ],
   )]
 
@@ -55,35 +54,34 @@ class UsersAdminCommentsEditController extends AbstractController
     int $id,
     bool $is_self,
     UserCacheService $user_cache_service,
-    TypeaheadService $typeahead_service,
     UserRepository $user_repository,
     UserLogRepository $user_log_repository,
     ConfigService $config_service,
     PageParamsService $pp,
     SessionUserService $su,
-  ):Response
-  {
-    if (!$config_service->get_bool(
-      config_id: 'users.fields.admin_comments.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
+  ): Response {
+    if (
+      !$config_service->get_bool(
+        config_id: 'users.fields.admin_comments.enabled',
+        schema: $pp->schema_o(),
+      )
+    ) {
       throw $this->createAccessDeniedException(
         'Admin comments submodule not enabled.'
       );
     }
 
-    if (!$is_self
-      && $su->is_owner($id))
-    {
+    if (
+      !$is_self
+      && $su->is_owner($id)
+    ) {
       return $this->redirectToRoute(
         route: 'users_admin_comments_edit_self',
         parameters: $pp->ary(),
       );
     }
 
-    if ($is_self)
-    {
+    if ($is_self) {
       $id = $su->id();
     }
 
@@ -92,8 +90,7 @@ class UsersAdminCommentsEditController extends AbstractController
       schema: $pp->schema_o(),
     );
 
-    if ($user === false)
-    {
+    if ($user === false) {
       throw $this->createNotFoundException(
         'User with id ' . $id . ' not found'
       );
@@ -115,22 +112,20 @@ class UsersAdminCommentsEditController extends AbstractController
     );
     $form->handleRequest($request);
 
-    if ($form->isSubmitted()
-      && $form->isValid())
-    {
+    if (
+      $form->isSubmitted()
+      && $form->isValid()
+    ) {
       $log_comment = $form->get('log_comment')->getData();
 
-      if ($command->admin_comments === $user['admin_comments'])
-      {
+      if ($command->admin_comments === $user['admin_comments']) {
         $this->addFlash(
           type: 'warning',
           message: [
             'key' => 'flash.no_change',
           ]
         );
-      }
-      else
-      {
+      } else {
         $user_repository->set_admin_comments(
           id: $id,
           admin_comments: $command->admin_comments,
@@ -139,9 +134,6 @@ class UsersAdminCommentsEditController extends AbstractController
 
         $user_cache_service->clear(
           id: $id,
-          schema: $pp->schema(),
-        );
-        $typeahead_service->clear_cache(
           schema: $pp->schema(),
         );
 
@@ -159,16 +151,15 @@ class UsersAdminCommentsEditController extends AbstractController
           type: 'success',
           message: [
             'key' => 'users_admin_comments_edit.flash.success',
-            'params'  => [
-              'self'  => $is_self ? 'yes' : 'no',
-              'user'  => $user['name'],
+            'params' => [
+              'self' => $is_self ? 'yes' : 'no',
+              'user' => $user['name'],
             ],
           ]
         );
       }
 
-      if ($is_self)
-      {
+      if ($is_self) {
         return $this->redirectToRoute(
           route: 'users_show_self',
           parameters: $pp->ary(),
@@ -178,18 +169,18 @@ class UsersAdminCommentsEditController extends AbstractController
       return $this->redirectToRoute(
         route: 'users_show',
         parameters: [
-          ... $pp->ary(),
+          ...$pp->ary(),
           'id' => $id,
         ],
       );
     }
 
     return $this->render('users/users_admin_comments_edit.html.twig', [
-      'form'              => $form->createView(),
-      'is_self'           => $is_self,
-      'user'              => $user,
-      'id'                => $id,
-      'is_intersystem'    => $is_intersystem,
+      'form' => $form->createView(),
+      'is_self' => $is_self,
+      'user' => $user,
+      'id' => $id,
+      'is_intersystem' => $is_intersystem,
     ]);
   }
 }

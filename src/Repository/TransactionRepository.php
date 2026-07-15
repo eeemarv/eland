@@ -8,6 +8,7 @@ use App\Service\SystemsService;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
+use Symfony\Component\Uid\Uuid;
 
 class TransactionRepository
 {
@@ -499,4 +500,342 @@ class TransactionRepository
       ]);
       return;
   }
+
+  public function insert(
+    int $from_account_id,
+    int $to_account_id,
+    int $amount,
+    string $description,
+    string|null $service_stuff,
+    int|null $created_by,
+    int|null $autominlimit_percentage,
+    int|null $global_min_limit,
+    Schema $schema,
+  ): void
+  {
+    $this->db->beginTransaction();
+
+    try {
+      $stmt_ins = $this->db->prepare('
+        insert into ' . $schema->str() . '.transactions
+        (id_from, id_to, amount, description,
+          service_stuff, created_by)
+        values (:id_from, :id_to, :amount, :description,
+          :service_stuff, :created_by)');
+
+      $stmt_ins->bindValue('id_from', $from_account_id, Types::INTEGER);
+      $stmt_ins->bindValue('id_to', $to_account_id, Types::INTEGER);
+      $stmt_ins->bindValue('amount', $amount, Types::INTEGER);
+      $stmt_ins->bindValue('description', $description, Types::STRING);
+      $stmt_ins->bindValue('service_stuff', $service_stuff, Types::STRING);
+      $stmt_ins->bindValue('created_by', $created_by, Types::INTEGER);
+
+      $stmt_ins->executeStatement();
+
+      $transaction_id = (int) $this->db->lastInsertId();
+
+      $stmt_bal = $this->db->prepare('
+        insert into ' . $schema->str() . '.balance
+        (account_id, amount,
+        transaction_id, created_by,
+        balance)
+        values (:account_id, :amount,
+          :transaction_id, :created_by,
+          (select coalesce(b.balance, 0) + :amount
+        from (values(0)) as d
+          left join ' . $schema->str() . '.balance as b
+            on b.account_id = :account_id
+            order by b.id desc limit 1))');
+
+      $stmt_bal->bindValue('account_id', $from_account_id, Types::INTEGER);
+      $stmt_bal->bindValue('amount', -$amount, Types::INTEGER); // Negative because it is leaving the account
+      $stmt_bal->bindValue('transaction_id', $transaction_id, Types::INTEGER);
+      $stmt_bal->bindValue('created_by', $created_by, Types::INTEGER);
+      $stmt_bal->executeStatement();
+
+      $stmt_bal->bindValue('account_id', $to_account_id, Types::INTEGER);
+      $stmt_bal->bindValue('amount', $amount, Types::INTEGER); // Negative because it is leaving the account
+      $stmt_bal->bindValue('transaction_id', $transaction_id, Types::INTEGER);
+      $stmt_bal->bindValue('created_by', $created_by, Types::INTEGER);
+      $stmt_bal->executeStatement();
+
+      if (isset($autominlimit_percentage))
+      {
+        $autominlimit_amount = (int) round($amount * ($autominlimit_percentage / 100));
+
+        if ($autominlimit_amount)
+        {
+          $stmt_min = $this->db->prepare('select m.min_limit
+            from (values(0)) as d
+            left join ' . $schema->str() . '.min_limit as m
+            on m.account_id = :account_id
+            order by m.id desc
+            limit 1');
+          $stmt_min->bindValue('account_id', $to_account_id, Types::INTEGER);
+          $res_min = $stmt_min->executeQuery();
+          $min_limit = $res_min->fetchOne();
+          if (isset($min_limit))
+          {
+            $new_min_limit = $min_limit - $autominlimit_amount;
+            if (isset($global_min_limit)
+              && ($new_min_limit <= $global_min_limit))
+            {
+              $new_min_limit = null;
+            }
+            $stmt_min_in = $this->db->prepare('insert into ' . $schema->str() . '.min_limit
+              (account_id, min_limit,
+              created_by, auto_transaction_id,
+              is_auto)
+              values(:account_id, :min_limit,
+              :created_by, :auto_transaction_id, true)');
+            $stmt_min_in->bindValue('account_id', $to_account_id, Types::STRING);
+            $stmt_min_in->bindValue('min_limit', $new_min_limit, Types::STRING);
+            $stmt_min_in->bindValue('created_by', $created_by, Types::INTEGER);
+            $stmt_min_in->bindValue('auto_transaction_id', $transaction_id ?? null, Types::INTEGER);
+            $stmt_min_in->executeStatement();
+          }
+        }
+      }
+
+      $this->db->commit();
+    }
+    catch (\Exception $e)
+    {
+      $this->db->rollBack();
+      throw $e;
+    }
+  }
+
+  public function insert_mass_many_to_one(
+    array $from_account_ids_amounts,
+    int $to_account_id,
+    string $description,
+    string|null $service_stuff,
+    int|null $created_by,
+    int|null $autominlimit_percentage,
+    int|null $global_min_limit,
+    Schema $schema,
+  ): void
+  {
+    $bulk_id = Uuid::v4()->toRfc4122();
+
+    $this->db->beginTransaction();
+
+    try {
+      $stmt_ins = $this->db->prepare('
+        insert into ' . $schema->str() . '.transactions
+        (id_from, id_to, amount, description,
+          service_stuff, created_by, bulk_id)
+        values (:id_from, :id_to, :amount, :description,
+          :service_stuff, :created_by, :bulk_id)');
+
+      $stmt_bal = $this->db->prepare('
+          insert into ' . $schema->str() . '.balance
+          (account_id, amount,
+          transaction_id, created_by,
+          balance)
+          values (:account_id, :amount,
+            :transaction_id, :created_by,
+            (select coalesce(b.balance, 0) + :amount
+          from (values(0)) as d
+            left join ' . $schema->str() . '.balance as b
+              on b.account_id = :account_id
+              order by b.id desc limit 1))');
+
+      foreach ($from_account_ids_amounts as $from_id => $amount)
+      {
+        $stmt_ins->bindValue('id_from', $from_id, Types::INTEGER);
+        $stmt_ins->bindValue('id_to', $to_account_id, Types::INTEGER);
+        $stmt_ins->bindValue('amount', $amount, Types::INTEGER);
+        $stmt_ins->bindValue('description', $description, Types::STRING);
+        $stmt_ins->bindValue('service_stuff', $service_stuff, Types::STRING);
+        $stmt_ins->bindValue('created_by', $created_by, Types::INTEGER);
+        $stmt_ins->bindValue('bulk_id', $bulk_id, Types::GUID);
+
+        $stmt_ins->executeStatement();
+
+        $transaction_id = (int) $this->db->lastInsertId();
+
+        $stmt_bal->bindValue('account_id', $from_id, Types::INTEGER);
+        $stmt_bal->bindValue('amount', -$amount, Types::INTEGER); // Negative because it is leaving the account
+        $stmt_bal->bindValue('transaction_id', $transaction_id, Types::INTEGER);
+        $stmt_bal->bindValue('created_by', $created_by, Types::INTEGER);
+        $stmt_bal->executeStatement();
+      }
+
+      $amount_sum = array_sum($from_account_ids_amounts);
+
+      $stmt_bal->bindValue('account_id', $to_account_id, Types::INTEGER);
+      $stmt_bal->bindValue('amount', $amount_sum, Types::INTEGER);
+      $stmt_bal->bindValue('transaction_id', $transaction_id ?? null, Types::INTEGER); // record just the last transaction_id
+      $stmt_bal->bindValue('created_by', $created_by, Types::INTEGER);
+      $stmt_bal->executeStatement();
+
+      if (isset($autominlimit_percentage))
+      {
+        $autominlimit_amount = (int) round($amount_sum * ($autominlimit_percentage / 100));
+
+        if ($autominlimit_amount)
+        {
+          $stmt_min = $this->db->prepare('select m.min_limit
+            from (values(0)) as d
+            left join ' . $schema->str() . '.min_limit as m
+            on m.account_id = :account_id
+            order by m.id desc
+            limit 1');
+          $stmt_min->bindValue('account_id', $to_account_id, Types::INTEGER);
+          $res_min = $stmt_min->executeQuery();
+          $min_limit = $res_min->fetchOne();
+          if (isset($min_limit))
+          {
+            $new_min_limit = $min_limit - $autominlimit_amount;
+            if (isset($global_min_limit)
+              && ($new_min_limit <= $global_min_limit))
+            {
+              $new_min_limit = null;
+            }
+            $stmt_min_in = $this->db->prepare('insert into ' . $schema->str() . '.min_limit
+              (account_id, min_limit,
+              created_by, auto_transaction_id,
+              is_auto)
+              values(:account_id, :min_limit,
+              :created_by, :auto_transaction_id, true)');
+            $stmt_min_in->bindValue('account_id', $to_account_id, Types::STRING);
+            $stmt_min_in->bindValue('min_limit', $new_min_limit, Types::STRING);
+            $stmt_min_in->bindValue('created_by', $created_by, Types::INTEGER);
+            $stmt_min_in->bindValue('auto_transaction_id', $transaction_id ?? null, Types::INTEGER);
+            $stmt_min_in->executeStatement();
+          }
+        }
+      }
+
+      $this->db->commit();
+    }
+    catch (\Exception $e)
+    {
+      $this->db->rollBack();
+      throw $e;
+    }
+  }
+
+  public function insert_mass_one_to_many(
+    int $from_account_id,
+    array $to_account_ids_amounts,
+    string $description,
+    string|null $service_stuff,
+    int|null $created_by,
+    int|null $autominlimit_percentage,
+    int|null $global_min_limit,
+    Schema $schema,
+  ): void
+  {
+    $bulk_id = Uuid::v4()->toRfc4122();
+
+    $this->db->beginTransaction();
+
+    try {
+      $stmt_ins = $this->db->prepare('
+        insert into ' . $schema->str() . '.transactions
+        (id_from, id_to, amount, description,
+          service_stuff, created_by, bulk_id)
+        values (:id_from, :id_to, :amount, :description,
+          :service_stuff, :created_by, :bulk_id)');
+
+      $stmt_bal = $this->db->prepare('
+          insert into ' . $schema->str() . '.balance
+          (account_id, amount,
+          transaction_id, created_by,
+          balance)
+          values (:account_id, :amount,
+            :transaction_id, :created_by,
+            (select coalesce(b.balance, 0) + :amount
+          from (values(0)) as d
+            left join ' . $schema->str() . '.balance as b
+              on b.account_id = :account_id
+              order by b.id desc limit 1))');
+
+      $stmt_min = $this->db->prepare('select m.min_limit
+        from (values(0)) as d
+        left join ' . $schema->str() . '.min_limit as m
+        on m.account_id = :account_id
+        order by m.id desc
+        limit 1');
+
+      $stmt_min_in = $this->db->prepare('insert into ' . $schema->str() . '.min_limit
+        (account_id, min_limit,
+        created_by, auto_transaction_id,
+        is_auto)
+        values(:account_id, :min_limit,
+        :created_by, :auto_transaction_id, true)');
+
+      foreach ($to_account_ids_amounts as $to_id => $amount)
+      {
+        $stmt_ins->bindValue('id_from', $from_account_id, Types::INTEGER);
+        $stmt_ins->bindValue('id_to', $to_id, Types::INTEGER);
+        $stmt_ins->bindValue('amount', $amount, Types::INTEGER);
+        $stmt_ins->bindValue('description', $description, Types::STRING);
+        $stmt_ins->bindValue('service_stuff', $service_stuff, Types::STRING);
+        $stmt_ins->bindValue('created_by', $created_by, Types::INTEGER);
+        $stmt_ins->bindValue('bulk_id', $bulk_id, Types::GUID);
+
+        $stmt_ins->executeStatement();
+
+        $transaction_id = (int) $this->db->lastInsertId();
+
+        $stmt_bal->bindValue('account_id', $to_id, Types::INTEGER);
+        $stmt_bal->bindValue('amount', $amount, Types::INTEGER);
+        $stmt_bal->bindValue('transaction_id', $transaction_id, Types::INTEGER);
+        $stmt_bal->bindValue('created_by', $created_by, Types::INTEGER);
+        $stmt_bal->executeStatement();
+
+        if (isset($autominlimit_percentage))
+        {
+          $autominlimit_amount = (int) round($amount * ($autominlimit_percentage / 100));
+
+          if ($autominlimit_amount)
+          {
+            $stmt_min->bindValue('account_id', $to_id, Types::INTEGER);
+            $res_min = $stmt_min->executeQuery();
+            $min_limit = $res_min->fetchOne();
+            if (isset($min_limit))
+            {
+              $new_min_limit = $min_limit - $autominlimit_amount;
+              if (isset($global_min_limit)
+                && ($new_min_limit <= $global_min_limit))
+              {
+                $new_min_limit = null;
+              }
+              $stmt_min_in->bindValue('account_id', $to_id, Types::INTEGER);
+              $stmt_min_in->bindValue('min_limit', $new_min_limit, Types::INTEGER);
+              $stmt_min_in->bindValue('created_by', $created_by, Types::INTEGER);
+              $stmt_min_in->bindValue('auto_transaction_id', $transaction_id ?? null, Types::INTEGER);
+              $stmt_min_in->executeStatement();
+            }
+          }
+        }
+      }
+
+      $amount_sum = array_sum($to_account_ids_amounts);
+
+      $stmt_bal->bindValue('account_id', $from_account_id, Types::INTEGER);
+      $stmt_bal->bindValue('amount', -$amount_sum, Types::INTEGER);
+      $stmt_bal->bindValue('transaction_id', $transaction_id ?? null, Types::INTEGER); // record just the last transaction_id
+      $stmt_bal->bindValue('created_by', $created_by, Types::INTEGER);
+      $stmt_bal->executeStatement();
+
+      $this->db->commit();
+    }
+    catch (\Exception $e)
+    {
+      $this->db->rollBack();
+      throw $e;
+    }
+  }
+
+  public function insert_invitation()
+  {
+
+  }
+
+
 }

@@ -296,7 +296,10 @@ class MolliePaymentsController extends AbstractController
         $this->addFlash('success', $str);
       }
 
-      return $this->redirectToRoute('mollie_payments', $pp->ary());
+      return $this->redirectToRoute(
+        route: 'mollie_payments',
+        parameters: $pp->ary(),
+      );
     }
 
     /**

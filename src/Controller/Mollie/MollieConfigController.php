@@ -29,7 +29,7 @@ class MollieConfigController extends AbstractController
       'module'        => 'users',
       'sub_module'    => 'mollie',
     ],
-)]
+  )]
 
   public function __invoke(
     Request $request,
@@ -115,7 +115,10 @@ class MollieConfigController extends AbstractController
         );
       }
 
-      return $this->redirectToRoute('mollie_config', $pp->ary());
+      return $this->redirectToRoute(
+        route: 'mollie_config',
+        parameters: $pp->ary(),
+      );
     }
 
     return $this->render('mollie/mollie_config.html.twig', [

@@ -7,17 +7,16 @@ use Symfony\Component\Validator\Constraint;
 #[\Attribute]
 class BulkSelectNotEmpty extends Constraint
 {
-  public string $message = 'bulk_select.not_empty.generic';
-
   public function __construct(
-    string|null $message = null,
+    public readonly string $message = 'bulk_select.not_empty.generic',
     array|null $groups = null,
     mixed $payload = null,
   )
   {
-    parent::__construct([], $groups, $payload);
-    if (isset($message)){
-      $this->message = $message;
-    }
+    parent::__construct(
+      options: [],
+      groups: $groups,
+      payload: $payload,
+    );
   }
 }

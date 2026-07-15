@@ -22,10 +22,10 @@ export default class extends Controller {
   prepareSubmit(event) {
     const form = event.currentTarget;
 
-    const hiddenInput = form.querySelector('input[type="hidden"][data-bulkchecktable-selected]');
+    const hiddenInput = form.querySelector('input[type="hidden"][data-bulk-check-table-selected]');
 
     if (!hiddenInput) {
-      console.warn('No hidden input with data-bulkchecktable-selected attribute found in form');
+      console.warn('No hidden input with data-bulk-check-table-selected attribute found in form');
       return;
     }
 

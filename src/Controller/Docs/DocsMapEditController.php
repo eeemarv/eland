@@ -10,7 +10,6 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Repository\DocRepository;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
-use App\Service\TypeaheadService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -36,7 +35,6 @@ class DocsMapEditController extends AbstractController
     int $id,
     DocRepository $doc_repository,
     ConfigService $config_service,
-    TypeaheadService $typeahead_service,
     PageParamsService $pp,
   ):Response
   {
@@ -65,7 +63,6 @@ class DocsMapEditController extends AbstractController
     $command->name = $doc_map['name'];
 
     $form_options = [
-      'render_omit' => $doc_map['name'],
       'validation_groups' => ['edit'],
     ];
 
@@ -84,8 +81,6 @@ class DocsMapEditController extends AbstractController
         map_id: $id,
         schema: $pp->schema_o(),
       );
-
-      $typeahead_service->clear_cache($pp->schema());
 
       $this->addFlash('success', 'Map naam aangepast.');
 

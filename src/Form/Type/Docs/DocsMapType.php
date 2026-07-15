@@ -3,7 +3,7 @@
 namespace App\Form\Type\Docs;
 
 use App\Command\Docs\DocsMapCommand;
-use App\Form\Type\Field\TypeaheadType;
+use App\Form\Type\Field\UniqueCheckType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -21,9 +21,8 @@ class DocsMapType extends AbstractType
     array $options,
   ):void
   {
-    $builder->add('name',TypeaheadType::class, [
-      'add'           => 'doc_map_names',
-      'render_omit'   => $options['render_omit'],
+    $builder->add('name', UniqueCheckType::class, [
+      'route' => 'unique_check_doc_map_names',
     ]);
 
     $builder->add('submit', SubmitType::class);
@@ -31,7 +30,6 @@ class DocsMapType extends AbstractType
 
   public function configureOptions(OptionsResolver $resolver):void
   {
-    $resolver->setDefault('render_omit', '');
     $resolver->setDefault('data_class', DocsMapCommand::class);
   }
 }

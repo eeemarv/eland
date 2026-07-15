@@ -5,7 +5,6 @@ namespace App\Form\Type\Users;
 use App\Command\Users\UsersColsCommand;
 use App\Form\Type\Field\AutocompleteAccountType;
 use App\Form\Type\Field\DatepickerType;
-use App\Form\Type\Field\TypeaheadType;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\Form\AbstractType;

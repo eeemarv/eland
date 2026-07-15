@@ -104,7 +104,10 @@ class MollieConfigLiveApiKeyController extends AbstractController
         );
       }
 
-      return $this->redirectToRoute('mollie_config_live_api_key', $pp->ary());
+      return $this->redirectToRoute(
+        route: 'mollie_config_live_api_key',
+        parameters: $pp->ary(),
+      );
     }
 
     return $this->render('mollie/mollie_config_live_api_key.html.twig', [

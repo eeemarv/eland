@@ -8,66 +8,59 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
-#[Autoconfigure(tags: ['monolog.processor'])]
+#[Autoconfigure(tags: ["monolog.processor"])]
 class ElandProcessor implements EventSubscriberInterface
 {
-  private $extra = [];
+    private $extra = [];
 
-  public function __invoke(LogRecord $record):LogRecord
-  {
-    if (isset($this->extra))
+    public function __invoke(LogRecord $record): LogRecord
     {
-      $record->extra = [
-        ...$record->extra,
-        ...$this->extra,
-      ];
+        if (isset($this->extra)) {
+            $record->extra = [...$record->extra, ...$this->extra];
+        }
+
+        return $record;
     }
 
-    return $record;
-  }
-
-  public function onKernelController(ControllerEvent $event):void
-  {
-    if (!$event->isMainRequest())
+    public function onKernelController(ControllerEvent $event): void
     {
-      return;
+        if (!$event->isMainRequest()) {
+            return;
+        }
+
+        $request = $event->getRequest();
+
+        $this->extra = [
+            "ip" => $request->getClientIp(),
+        ];
+
+        if (!$request->attributes->has("schema")) {
+            return;
+        }
+
+        $this->extra["schema"] = $request->attributes->get("schema");
+
+        $logins = $request->getSession()->get("logins");
+
+        if ($logins) {
+            $this->extra["logins"] = $logins;
+        }
+
+        if ($request->query->has("os")) {
+            $this->extra["os"] = $request->query->get("os");
+        }
+
+        if ($request->attributes->has("role_short")) {
+            $this->extra["role_short"] = $request->attributes->get(
+                "role_short",
+            );
+        }
     }
 
-    $request = $event->getRequest();
-
-    $this->extra = [
-      'ip'    => $request->getClientIp(),
-    ];
-
-    if (!$request->attributes->has('schema'))
+    public static function getSubscribedEvents(): array
     {
-      return;
+        return [
+            KernelEvents::CONTROLLER => ["onKernelController", 500],
+        ];
     }
-
-    $this->extra['schema'] = $request->attributes->get('schema');
-
-    $logins = $request->getSession()->get('logins');
-
-    if ($logins)
-    {
-      $this->extra['logins'] = $logins;
-    }
-
-    if ($request->query->has('os'))
-    {
-      $this->extra['os'] = $request->query->get('os');
-    }
-
-    if ($request->attributes->has('role_short'))
-    {
-      $this->extra['role_short'] = $request->attributes->get('role_short');
-    }
-  }
-
-  public static function getSubscribedEvents():array
-  {
-    return [
-      KernelEvents::CONTROLLER => ['onKernelController', 500],
-    ];
-  }
 }

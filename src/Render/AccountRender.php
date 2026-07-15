@@ -9,101 +9,92 @@ use App\Service\UserCacheService;
 
 class AccountRender
 {
-	public function __construct(
-		private readonly LinkRender $link_render,
-		private readonly SystemsService $systems_service,
-		private readonly UserCacheService $user_cache_service
-	)
-	{
-	}
+    public function __construct(
+        private readonly LinkRender $link_render,
+        private readonly SystemsService $systems_service,
+        private readonly UserCacheService $user_cache_service,
+    ) {}
 
-	public function get_str(?int $id, string $schema):string
-	{
-		if (!isset($id) || !$id)
-		{
-			return '*** (leeg) ***';
-		}
+    public function get_str(?int $id, string $schema): string
+    {
+        if (!isset($id) || !$id) {
+            return "*** (leeg) ***";
+        }
 
-		$user = $this->user_cache_service->get($id, $schema);
+        $user = $this->user_cache_service->get($id, $schema);
 
-		$code = $user['code'] ?? '';
-		$name = $user['name'] ?? '';
+        $code = $user["code"] ?? "";
+        $name = $user["name"] ?? "";
 
-		$str = trim($code . ' ' . $name);
+        $str = trim($code . " " . $name);
 
-		return $str === '' ? '** (leeg) ***' : $str;
-	}
+        return $str === "" ? "** (leeg) ***" : $str;
+    }
 
-	public function str(
-		?int $id,
-		string $schema
-	):string
-	{
-		if (!isset($id) || !$id)
-		{
-			return '** (leeg) **';
-		}
+    public function str(?int $id, string $schema): string
+    {
+        if (!isset($id) || !$id) {
+            return "** (leeg) **";
+        }
 
-		return $this->get_str($id, $schema);
-	}
+        return $this->get_str($id, $schema);
+    }
 
-	public function str_id(
-		?int $id,
-		string $schema
-	):string
-	{
-		if (!isset($id) || !$id)
-		{
-			return '** (leeg) **';
-		}
+    public function str_id(?int $id, string $schema): string
+    {
+        if (!isset($id) || !$id) {
+            return "** (leeg) **";
+        }
 
-		return $this->str($id, $schema) . ' (' . $id . ')';
-	}
+        return $this->str($id, $schema) . " (" . $id . ")";
+    }
 
-	public function link(
-		?int $id,
-		array $pp_ary
-	):string
-	{
-		if (!isset($id) || !$id)
-		{
-			return '*** leeg ***';
-		}
+    public function link(?int $id, array $pp_ary): string
+    {
+        if (!isset($id) || !$id) {
+            return "*** leeg ***";
+        }
 
-		return $this->link_render->link_no_attr('users_show', $pp_ary,
-			['id' => $id], $this->get_str($id, $pp_ary['schema']));
-	}
+        return $this->link_render->link_no_attr(
+            "users_show",
+            $pp_ary,
+            ["id" => $id],
+            $this->get_str($id, $pp_ary["schema"]),
+        );
+    }
 
-	public function link_url(
-		int $id,
-		array $pp_ary
-	):string
-	{
-		return $this->link_render->link_url('users_show', $pp_ary,
-			['id' => $id], $this->get_str($id, $pp_ary['schema']), []);
-	}
+    public function link_url(int $id, array $pp_ary): string
+    {
+        return $this->link_render->link_url(
+            "users_show",
+            $pp_ary,
+            ["id" => $id],
+            $this->get_str($id, $pp_ary["schema"]),
+            [],
+        );
+    }
 
-	public function inter_link(
-		int $id,
-		string $schema,
-		SessionUserService $su
-	):string
-	{
-		$pp_ary = [
-			'schema'	=> $schema,
-		];
+    public function inter_link(
+        int $id,
+        string $schema,
+        SessionUserService $su,
+    ): string {
+        $pp_ary = [
+            "schema" => $schema,
+        ];
 
-		if ($su->schema() === $schema)
-		{
-			$pp_ary['role_short'] = $su->role_short();
-		}
-		else
-		{
-			$pp_ary['role_short'] = 'g';
-			$pp_ary['os'] = $su->schema();
-		}
+        if ($su->schema() === $schema) {
+            $pp_ary["role_short"] = $su->role_short();
+        } else {
+            $pp_ary["role_short"] = "g";
+            $pp_ary["os"] = $su->schema();
+        }
 
-		return $this->link_render->link_no_attr('users_show', $pp_ary,
-			['id' => $id], $this->get_str($id, $schema));
-	}
+        return $this->link_render->link_no_attr(
+            "users_show",
+            $pp_ary,
+            ["id" => $id],
+            $this->get_str($id, $schema),
+        );
+    }
 }

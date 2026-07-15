@@ -58,6 +58,7 @@ btn:
   download: Download
   download_csv: Download CSV
   edit: Aanpassen
+  fill: Vul in
   filter: Filter
   leaving: Uitstap
   login: Inloggen
@@ -142,8 +143,6 @@ editor:
   link: Link
   list_bullet: Ongeordende lijst
   list_ordered: Geordende lijst
-
-
 
 error_fileupload:
   file_type: >-
@@ -237,6 +236,8 @@ flash:
 help:
   address: >-
     Voorbeeldstraat 23, 4520 Voorbeeldgemeente
+  unique_check:
+    already_exists: Reeds bestaand
   mail_tag: >-
     Deze prefix wordt tussen haken [tag] toegevoegd
     aan het onderwerp van alle E-mail-berichten die
@@ -266,6 +267,7 @@ label:
   accept: Akkoord
   access: Toegang
   access_explain: Wie kan dit zien?
+  account: Account
   account_code: Account Code
   action: Actie
   actions: Acties
@@ -282,6 +284,7 @@ label:
   address: Adres
   already_exists: Bestaat reeds
   amount: Bedrag
+  amount_euro: Bedrag (EUR)
   approved: Goedgekeurd
   balance: Saldo
   balance_on_date: Saldo op Datum
@@ -372,6 +375,7 @@ label:
   name: Naam
   new_users: Instappers
   news: Nieuws
+  next: Volgende
   not_defined: Niet bepaald
   new_password: Nieuw paswoord
   off: Uit
@@ -397,6 +401,7 @@ label:
   permanent: Permanent
   phone: Telefoon
   postcode: Postcode
+  previous: Vorige
   prolong: Verlengen
   replies: Reacties
   role: Rol
@@ -495,12 +500,6 @@ post:
       0 {{user} @ {created_at}}
       other {{user} @ {created_at}, Aangepast: {edit_count}}
     }
-
-unique_filter:
-  item_not_unique: >-
-    Dit item bestaat reeds!
-  existing_items: >-
-    Reeds bestaand:
 
 upload:
   error:
@@ -1439,7 +1438,6 @@ mollie_config_history:
   nav: Historiek
   title: Historiek Mollie Configuratie
 
-
 mollie_payments:
   title: Mollie Betaalverzoeken
   menu: Mollie Betaalverzoeken
@@ -1474,6 +1472,38 @@ mollie_payments:
 
 mollie_payments_add:
   title: Mollie betaalverzoeken aanmaken
+  number_requests: Aantal betaalverzoeken
+  description:
+    help: >-
+      Zorg voor een unieke, bondige en duidelijke
+      omschrijving zodat ze gemakkelijk terug te
+      vinden is. Op het rekeningafschrift wordt
+      aan deze omschrijving automatisch de
+      gebruikers Account Code als prefix toegevoegd.
+      Let op dat bij Bancontact de totale lengte
+      van de omschrijving niet langer kan
+      zijn dan 35 tekens.
+      Meer tekens worden afgekapt.
+  link_info: >-
+    Wanneer ingelogd ziet de gebruiker met een
+    openstaand betaalverzoek bovenaan elke pagina
+    een link om de betaling via de Mollie website
+    uit te voeren.
+  flash:
+    success: >-
+      {count, plural,
+        =0 {** ERR **}
+        =1 {1 betalingsverzoek met omschrijving
+        "{description}" aangemaakt voor}
+        other {# betalingsverzoeken met omschrijving
+        "{description}" aangemaakt voor}
+      }
+  fill:
+    title: Invul Hulp
+    skip:
+      new: Sla "instappers" over
+      leaving: Sla "uitstappers" over
+      intersystem: Sla "InterSysteem" over
 
 news:
   admin_config: >-
@@ -1777,6 +1807,12 @@ transactions_edit:
 transactions_mass:
   title: Massa Transactie
   menu: Massa Transactie
+  many_to_one:
+    title: Veel naar Eén
+    menu: Veel naar Eén
+  one_to_many:
+    title: Eén naar Veel
+    menu: Eén naar Veel
 
 transactions_modules:
   title: >-
@@ -2721,7 +2757,7 @@ users_tags_edit:
     De tags zijn alleen zichtbaar voor admins
   tags:
     help: >-
-      Typ om autosuggesties te krijgen.
+      Klik op input veld om suggesties te krijgen.
       Tags kunnen niet dubbel toegevoegd worden.
   flash:
     success: >-
@@ -2735,7 +2771,6 @@ users_tags_logs:
   title: >-
     Tag Historiek van gebruiker {user}
   current_tags: Huidige tags
-
 
 welcome:
   title: Welkom bij {system_name}

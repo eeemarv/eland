@@ -35,6 +35,8 @@ use Symfony\Component\Routing\Annotation\Route;
 #[AsController]
 class UsersShow2Controller extends AbstractController
 {
+
+/*
     #[Route(
         '/{schema}/{role_short}/users2/{id}/{status}',
         name: 'users_show_2',
@@ -69,6 +71,7 @@ class UsersShow2Controller extends AbstractController
             'module'        => 'users',
         ],
     )]
+*/
 
     public function __invoke(
         Request $request,

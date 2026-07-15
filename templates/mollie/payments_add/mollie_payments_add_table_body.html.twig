@@ -1,0 +1,70 @@
+{%- for u in users -%}
+  {%- set u_class =
+    is_new(u) ? ' class="success"' :
+    is_leaving(u) ? ' class="danger"' :
+    is_intersystem(u) ? ' class="warning"' :
+    is_pre_active(u) ? ' class="inactive"' :
+    is_post_active(u) ? ' class="info"' : ''
+  -%}
+  {%- set u_status =
+    is_new(u) ? 'new' :
+    is_leaving(u) ? 'leaving' :
+    is_intersystem(u) ? 'intersystem' :
+    is_pre_active(u) ? 'pre_active' :
+    is_post_active(u) ? 'post_active' : 'active'
+  -%}
+  {%- set u_link = path('users_show', {'id': u.id, 'status': all_params.status}|pp) -%}
+  {%- set u_code = (u.code ?? '') ~ ' ' ~ (u.name ?? '') -%}
+  <tr{{- u_class|raw -}}>
+    <td>
+      <a href="{{- u_link -}}">
+        {%- include 'component/avatar/avatar_inline.html.twig' with {
+          'user': u,
+        } -%}
+      </a>
+    </td>
+    <td>
+      <a href="{{- u_link -}}">
+        {{- u_code -}}
+      </a>
+    </td>
+    <td>
+      {{- form_row(form.amounts[u.id], {
+        'label': false,
+        'addon': ux_icon('lucide:euro'),
+        'attr': {
+          'data-mollie-payments-add-count-target': 'input',
+          'data-action': 'input->mollie-payments-add-count#calculate',
+          'data-mollie-payments-add-fill-target': 'input',
+          'data-user-status': u_status,
+        },
+      }) -}}
+    </td>
+      <td>
+        {%- if u.amount is defined -%}
+          {%- set title = u.description
+            ~ '\n'
+            ~ 'EUR '
+            ~ u.amount|replace({'.': ','})
+            ~ '\n'
+            ~ u.last_created_at|date_format('min')
+          -%}
+          {%- if u.is_paid -%}
+          <span class="label label-success" title="{{- title -}}">
+            {{- 'mollie.status.paid'|trans -}}
+          </span>
+          {%- elseif u.is_canceled -%}
+          <span class="label label-default" title="{{- title -}}">
+            {{- 'mollie.status.canceled'|trans -}}
+          </span>
+          {%- else -%}
+          <span class="label label-warning" title="{{- title -}}">
+            {{- 'mollie.status.open'|trans -}}
+          </span>
+          {%- endif -%}
+        {%- else -%}
+          <twig:ux:icon name="lucide:x" />
+        {%- endif -%}
+      </td>
+  </tr>
+{%- endfor -%}

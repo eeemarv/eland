@@ -13,7 +13,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -26,13 +25,13 @@ class UsersAccountLeavingEditController extends AbstractController
     name: 'users_account_leaving_edit',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
-      'role_short'    => '%assert.role_short.admin%',
-      'id'            => '%assert.id%',
+      'schema' => '%assert.schema%',
+      'role_short' => '%assert.role_short.admin%',
+      'id' => '%assert.id%',
     ],
     defaults: [
-      'is_self'       => false,
-      'module'        => 'users',
+      'is_self' => false,
+      'module' => 'users',
     ],
   )]
 
@@ -41,14 +40,14 @@ class UsersAccountLeavingEditController extends AbstractController
     name: 'users_account_leaving_edit_self',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
-      'role_short'    => '%assert.role_short.admin%',
-      'id'            => '%assert.id%',
+      'schema' => '%assert.schema%',
+      'role_short' => '%assert.role_short.admin%',
+      'id' => '%assert.id%',
     ],
     defaults: [
-      'id'            => 0,
-      'is_self'       => true,
-      'module'        => 'users',
+      'id' => 0,
+      'is_self' => true,
+      'module' => 'users',
     ],
   )]
 
@@ -60,43 +59,43 @@ class UsersAccountLeavingEditController extends AbstractController
     AccountRepository $account_repository,
     UserCacheService $user_cache_service,
     UserLogRepository $user_log_repository,
-    TypeaheadService $typeahead_service,
     ConfigService $config_service,
     PageParamsService $pp,
     SessionUserService $su,
-  ):Response
-  {
-    if (!$config_service->get_bool(
-      config_id: 'transactions.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
+  ): Response {
+    if (
+      !$config_service->get_bool(
+        config_id: 'transactions.enabled',
+        schema: $pp->schema_o(),
+      )
+    ) {
       throw $this->createNotFoundException(
         'Users account edit not possible: transactions module not enabled.'
       );
     }
 
-    if (!$config_service->get_bool(
-      config_id: 'users.leaving.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
+    if (
+      !$config_service->get_bool(
+        config_id: 'users.leaving.enabled',
+        schema: $pp->schema_o(),
+      )
+    ) {
       throw $this->createNotFoundException(
         '"Leaving" functionality not enabled in the configuration.'
       );
     }
 
-    if (!$is_self
-      && $su->is_owner($id))
-    {
+    if (
+      !$is_self
+      && $su->is_owner($id)
+    ) {
       return $this->redirectToRoute(
         route: 'users_account_leaving_edit_self',
         parameters: $pp->ary()
       );
     }
 
-    if ($is_self)
-    {
+    if ($is_self) {
       $id = $su->id();
     }
 
@@ -105,15 +104,13 @@ class UsersAccountLeavingEditController extends AbstractController
       schema: $pp->schema_o(),
     );
 
-    if ($user === false)
-    {
+    if ($user === false) {
       throw $this->createNotFoundException(
         'User with id ' . $id . ' not found'
       );
     }
 
-    if (!isset($user['code']) || $user['code'] === '')
-    {
+    if (!isset($user['code']) || $user['code'] === '') {
       throw $this->createAccessDeniedException(
         'No account code set for this user, leaving status can not be edited.'
       );
@@ -145,22 +142,20 @@ class UsersAccountLeavingEditController extends AbstractController
 
     $form->handleRequest($request);
 
-    if ($form->isSubmitted()
-      && $form->isValid())
-    {
+    if (
+      $form->isSubmitted()
+      && $form->isValid()
+    ) {
       $log_comment = $form->get('log_comment')->getData();
 
-      if ($command->is_leaving === $is_leaving)
-      {
+      if ($command->is_leaving === $is_leaving) {
         $this->addFlash(
           type: 'warning',
           message: [
             'key' => 'flash.no_change',
           ]
         );
-      }
-      else
-      {
+      } else {
         $user_repository->set_is_leaving(
           id: $id,
           is_leaving: $command->is_leaving,
@@ -169,9 +164,6 @@ class UsersAccountLeavingEditController extends AbstractController
 
         $user_cache_service->clear(
           id: $id,
-          schema: $pp->schema(),
-        );
-        $typeahead_service->clear_cache(
           schema: $pp->schema(),
         );
 
@@ -189,32 +181,31 @@ class UsersAccountLeavingEditController extends AbstractController
           type: 'success',
           message: [
             'key' => 'users_account_leaving_edit.flash.success',
-            'params'  => [
-              'code'  => $code,
+            'params' => [
+              'code' => $code,
               'leaving' => $command->is_leaving ? 'yes' : 'no',
             ]
           ]
         );
       }
 
-      if ($is_self)
-      {
+      if ($is_self) {
         return $this->redirectToRoute('users_show_self', $pp->ary());
       }
 
       return $this->redirectToRoute('users_show', [
-        ... $pp->ary(),
+        ...$pp->ary(),
         'id' => $id,
       ]);
     }
 
     return $this->render('users/users_account_leaving_edit.html.twig', [
-      'form'              => $form->createView(),
-      'user'              => $user,
-      'id'                => $id,
-      'is_self'           => $is_self,
-      'is_intersystem'    => $is_intersystem,
-      'balance'           => $balance,
+      'form' => $form->createView(),
+      'user' => $user,
+      'id' => $id,
+      'is_self' => $is_self,
+      'is_intersystem' => $is_intersystem,
+      'balance' => $balance,
     ]);
   }
 }

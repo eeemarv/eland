@@ -9,39 +9,45 @@ use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Types\Types;
 use LogicException;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Mime\Address;
 
 class UserRepository
 {
-	public function __construct(
-		private readonly Db $db,
+  public function __construct(
+    private readonly Db $db,
     private readonly ConfigService $config_service,
-	)
-	{
-	}
+    #[Autowire('%assert.account.group%')]
+    private readonly string $assert_account_group,
+    #[Autowire('%assert.account.status2%')]
+    private readonly string $assert_account_status,
+  )
+  {
+  }
 
   public function get_email_addresses(
     int $user_id,
     Schema $schema,
     bool $active_only = true,
-  ):AddressAry
-  {
+  ): AddressAry {
     $sql_active = $active_only ? ' and u.status in (1, 2)' : '';
 
-    $stmt = $this->db->prepare('select c.value, u.name
+    $stmt = $this->db->prepare(
+      'select c.value, u.name
       from ' . $schema->str() . '.contact c, ' .
         $schema->str() . '.type_contact tc, ' .
         $schema->str() . '.users u
       where c.id_type_contact = tc.id
         and tc.abbrev = \'mail\'
         and c.user_id = :user_id
-        and c.user_id = u.id' . $sql_active);
+        and c.user_id = u.id' .
+        $sql_active,
+    );
     $stmt->bindValue('user_id', $user_id, Types::INTEGER);
     $res = $stmt->executeQuery();
     $ary = [];
 
-    while ($row = $res->fetchAssociative())
-    {
+    while ($row = $res->fetchAssociative()) {
       $ary[] = new Address($row['value'], $row['name']);
     }
 
@@ -50,12 +56,12 @@ class UserRepository
 
   public function get_users_with_email_addresses(
     array $user_ids,
-    Schema $schema
-  ):array
-  {
+    Schema $schema,
+  ): array {
     $users = [];
 
-    $res = $this->db->executeQuery('select u.*,
+    $res = $this->db->executeQuery(
+      'select u.*,
       coalesce(jsonb_agg(c.value) filter(where c.value is not null), \'[]\') as email_addresses
       from ' . $schema->str() . '.users u
       left join ' . $schema->str() . '.contact c
@@ -69,10 +75,10 @@ class UserRepository
         'user_ids' => $user_ids,
       ], [
         'user_ids' => ArrayParameterType::INTEGER,
-      ]);
+      ],
+    );
 
-    while (($row = $res->fetchAssociative()))
-    {
+    while ($row = $res->fetchAssociative()) {
       $users[$row['id']] = [
         ...$row,
         'email_addresses' => json_decode($row['email_addresses']),
@@ -82,801 +88,932 @@ class UserRepository
     return $users;
   }
 
-	public function get_account_str(
+  public function get_account_str(
     int $id,
     Schema $schema,
-  ):string|false
-	{
-    $account_str = $this->db->fetchOne('select trim(concat(coalesce(code,\'\'), \' \', coalesce(name, \'\')))
+  ): string|false
+  {
+    $account_str = $this->db->fetchOne(
+      'select trim(concat(coalesce(code,\'\'), \' \', coalesce(name, \'\')))
       from ' . $schema->str() . '.users
 			where id = :id', [
-        'id'  => $id,
+        'id' => $id,
       ], [
-        'id'  => Types::INTEGER,
-      ]);
+        'id' => Types::INTEGER,
+      ],
+    );
 
-		return $account_str;
-	}
+    return $account_str;
+  }
 
-	public function count_email(
-		string $email,
-		Schema $schema
-	):int
-	{
-		$email_lowercase = strtolower($email);
+  public function count_email(
+    string $email,
+    Schema $schema,
+  ): int
+  {
+    $email_lowercase = strtolower($email);
 
-		return $this->db->fetchOne('select count(c.*)
+    return $this->db->fetchOne(
+      'select count(c.*)
 			from ' . $schema->str() . '.contact c, ' .
-				$schema->str() . '.type_contact tc
+        $schema->str() . '.type_contact tc
 			where c.id_type_contact = tc.id
 				and tc.abbrev = \'mail\'
 				and lower(c.value) = :email_lowercase', [
-      'email_lowercase' => $email_lowercase,
-    ], [
-      'email_lowercase' => Types::STRING,
-    ]);
-	}
+        'email_lowercase' => $email_lowercase,
+      ], [
+        'email_lowercase' => Types::STRING,
+      ],
+    );
+  }
 
-	public function count_active_by_email(
-		string $email,
-		Schema $schema
-	):int
-	{
-		$email_lowercase = strtolower($email);
+  public function count_active_by_email(
+    string $email,
+    Schema $schema,
+  ): int
+  {
+    $email_lowercase = strtolower($email);
 
-		return $this->db->fetchOne('select count(c.*)
+    return $this->db->fetchOne(
+      'select count(c.*)
 			from ' . $schema->str() . '.contact c, ' .
-				$schema->str() . '.type_contact tc, ' .
-				$schema->str() . '.users u
-			where c.id_type_contact = tc.id
-				and tc.abbrev = \'mail\'
-				and c.user_id = u.id
-				and u.status in (1, 2)
-				and lower(c.value) = :email_lowercase', [
-      'email_lowercase' => $email_lowercase,
-    ], [
-      'email_lowercase' => Types::STRING,
-    ]);
-	}
-
-	public function get_active_id_by_email(
-		string $email,
-		Schema $schema
-	):int|false
-	{
-		$email_lowercase = strtolower($email);
-
-		$id = $this->db->fetchOne('select u.id
-			from ' . $schema->str() . '.contact c, ' .
-				$schema->str() . '.type_contact tc, ' .
-				$schema->str() . '.users u
+        $schema->str() . '.type_contact tc, ' .
+        $schema->str() . '.users u
 			where c.id_type_contact = tc.id
 				and tc.abbrev = \'mail\'
 				and c.user_id = u.id
 				and u.status in (1, 2)
 				and lower(c.value) = :email_lowercase', [
-      'email_lowercase' => $email_lowercase,
-    ], [
-      'email_lowercase' => Types::STRING,
-    ]);
+        'email_lowercase' => $email_lowercase,
+      ], [
+        'email_lowercase' => Types::STRING,
+      ],
+    );
+  }
 
-		return $id;
-	}
+  public function get_active_id_by_email(
+    string $email,
+    Schema $schema,
+  ): int|false {
+    $email_lowercase = strtolower($email);
 
-	public function count_active_by_name(
+    $id = $this->db->fetchOne(
+      'select u.id
+			from ' . $schema->str() . '.contact c, ' .
+        $schema->str() . '.type_contact tc, ' .
+        $schema->str() . '.users u
+			where c.id_type_contact = tc.id
+				and tc.abbrev = \'mail\'
+				and c.user_id = u.id
+				and u.status in (1, 2)
+				and lower(c.value) = :email_lowercase', [
+        'email_lowercase' => $email_lowercase,
+      ], [
+        'email_lowercase' => Types::STRING,
+      ],
+    );
+
+    return $id;
+  }
+
+  public function count_active_by_name(
     string $name,
     Schema $schema,
-  ):int
-	{
-		$name_lowercase = strtolower($name);
+  ): int
+  {
+    $name_lowercase = strtolower($name);
 
-		return $this->db->fetchOne('select count(u.*)
+    return $this->db->fetchOne(
+      'select count(u.*)
+			from ' .
+        $schema->str() .
+        '.users u
+			where u.status in (1, 2)
+				and lower(u.name) = :name_lowercase', [
+        'name_lowercase' => $name_lowercase,
+      ], [
+        'name_lowercase' => Types::STRING,
+      ],
+    );
+  }
+
+  public function get_active_id_by_name(
+    string $name,
+    Schema $schema,
+  ): int|false
+  {
+    $name_lowercase = strtolower($name);
+
+    $id = $this->db->fetchOne(
+      'select u.id
 			from ' . $schema->str() . '.users u
 			where u.status in (1, 2)
 				and lower(u.name) = :name_lowercase', [
-      'name_lowercase'  => $name_lowercase,
-    ], [
-      'name_lowercase'  => Types::STRING,
-    ]);
-	}
+        'name_lowercase' => $name_lowercase,
+      ], [
+        'name_lowercase' => Types::STRING,
+      ],
+    );
 
-	public function get_active_id_by_name(
-    string $name,
+    return $id;
+  }
+
+  public function get_all_account_codes(
     Schema $schema,
-  ):int|false
-	{
-		$name_lowercase = strtolower($name);
+  ):array
+  {
+    $account_codes = [];
 
-		$id = $this->db->fetchOne('select u.id
-			from ' . $schema->str() . '.users u
-			where u.status in (1, 2)
-				and lower(u.name) = :name_lowercase', [
-      'name_lowercase'  => $name_lowercase,
-    ], [
-      'name_lowercase'  => Types::STRING,
-    ]);
+    $stmt = $this->db->prepare('select code
+      from ' . $schema->str() . '.users
+      where code is not null
+      order by code asc');
 
-		return $id;
-	}
+    $res = $stmt->executeQuery();
 
-	public function count_active_by_code(
+    while ($row = $res->fetchAssociative())
+    {
+      if (empty($row['code']))
+      {
+        continue;
+      }
+
+      $account_codes[] = $row['code'];
+    }
+
+    return $account_codes;
+  }
+
+  public function get_all_names(
+    Schema $schema,
+  ):array
+  {
+    $name_ary = [];
+
+    $stmt = $this->db->prepare('select name
+      from ' . $schema->str() . '.users
+      where code is not null
+      order by code asc');
+
+    $res = $stmt->executeQuery();
+
+    while ($row = $res->fetchAssociative())
+    {
+      if (empty($row['name']))
+      {
+        continue;
+      }
+
+      $name_ary[] = $row['name'];
+    }
+
+    return $name_ary;
+  }
+
+  public function count_active_by_code(
     string $code,
     Schema $schema,
-  ):int
-	{
-		$code_lowercase = strtolower($code);
+  ): int
+  {
+    $code_lowercase = strtolower($code);
 
-		return $this->db->fetchOne('select count(u.*)
-			from ' . $schema->str() . '.users u
-			where u.status in (1, 2)
-				and lower(u.code) = :code_lowercase', [
-      'code_lowercase'  => $code_lowercase,
-    ], [
-      'code_lowercase' => Types::STRING,
-    ]);
-	}
-
-	public function get_by_typeahead_code(
-    string $code,
-    Schema $schema,
-  ):int|false
-	{
-		$code_lowercase = strtolower($code);
-
-		$id = $this->db->fetchOne('select u.id
-			from ' . $schema->str() . '.users u
-			where lower(u.code) = :code_lowercase', [
-      'code_lowercase'  => $code_lowercase,
-    ], [
-      'code_lowercase'  => Types::STRING,
-    ]);
-
-		return $id;
-	}
-
-	public function get_id_by_code(
-    string $code,
-    Schema $schema,
-  ):int|false
-	{
-		$code_lowercase = strtolower($code);
-
-		$id = $this->db->fetchOne('select u.id
-			from ' . $schema->str() . '.users u
-			where lower(u.code) = :code_lowercase', [
-      'code_lowercase'  => $code_lowercase,
-    ], [
-      'code_lowercase'  => Types::STRING,
-    ]);
-
-		return $id;
-	}
-
-	public function get_active_id_by_code(
-    string $code,
-    Schema $schema,
-  ):int|false
-	{
-		$code_lowercase = strtolower($code);
-
-		$id = $this->db->fetchOne('select u.id
+    return $this->db->fetchOne(
+      'select count(u.*)
 			from ' . $schema->str() . '.users u
 			where u.status in (1, 2)
 				and lower(u.code) = :code_lowercase', [
-      'code_lowercase'  => $code_lowercase,
-    ], [
-      'code_lowercase'  => Types::STRING,
-    ]);
+        'code_lowercase' => $code_lowercase,
+      ], [
+        'code_lowercase' => Types::STRING,
+      ],
+    );
+  }
 
-		return $id;
-	}
+  public function get_by_typeahead_code(
+    string $code,
+    Schema $schema,
+  ): int|false
+  {
+    $code_lowercase = strtolower($code);
 
-	public function get(
+    $id = $this->db->fetchOne(
+      'select u.id
+			from ' . $schema->str() . '.users u
+			where lower(u.code) = :code_lowercase', [
+        'code_lowercase' => $code_lowercase,
+      ], [
+        'code_lowercase' => Types::STRING,
+      ],
+    );
+
+    return $id;
+  }
+
+  public function get_id_by_code(
+    string $code,
+    Schema $schema,
+  ): int|false
+  {
+    $code_lowercase = strtolower($code);
+
+    $id = $this->db->fetchOne(
+      'select u.id
+			from ' . $schema->str() . '.users u
+			where lower(u.code) = :code_lowercase', [
+        'code_lowercase' => $code_lowercase,
+      ], [
+        'code_lowercase' => Types::STRING,
+      ],
+    );
+
+    return $id;
+  }
+
+  public function get_active_id_by_code(
+    string $code,
+    Schema $schema,
+  ): int|false
+  {
+    $code_lowercase = strtolower($code);
+
+    $id = $this->db->fetchOne(
+      'select u.id
+			from ' . $schema->str() .
+        '.users u
+			where u.status in (1, 2)
+				and lower(u.code) = :code_lowercase', [
+        'code_lowercase' => $code_lowercase,
+      ], [
+        'code_lowercase' => Types::STRING,
+      ],
+    );
+
+    return $id;
+  }
+
+  public function get_used_postcodes(
+    Schema $schema,
+  ):array
+  {
+    $postcodes = [];
+
+    $stmt = $this->db->prepare('select distinct postcode
+      from ' . $schema->str() . '.users
+      where postcode is not null
+      and is_active
+      order by postcode asc');
+
+    $res = $stmt->executeQuery();
+
+    while ($row = $res->fetchAssociative())
+    {
+      if (empty($row['postcode']))
+      {
+        continue;
+      }
+
+      $postcodes[] = $row['postcode'];
+    }
+
+    return $postcodes;
+  }
+
+  public function get(
     int $id,
     Schema $schema,
-  ):array|false
-	{
-		$user = $this->db->fetchAssociative('select u.*
+  ): array|false
+  {
+    $user = $this->db->fetchAssociative(
+      'select u.*
 			from ' . $schema->str() . '.users u
 			where u.id = :id', [
-      'id'  => $id,
-    ], [
-      'id'  => Types::INTEGER,
-    ]);
+        'id' => $id,
+      ], [
+        'id' => Types::INTEGER,
+      ],
+    );
 
-		return $user;
-	}
+    return $user;
+  }
 
-	public function add(
-		string $name,
-		string $email,
+  public function add(
+    string $name,
+    string $email,
     int $created_by,
-		Schema $schema,
-	):int
-	{
+    Schema $schema,
+  ): int {
     $this->db->beginTransaction();
     $this->db->insert($schema->str() . '.users', [
-      'name'  => $name,
-      'created_by', $created_by,
-    ], [
-      'name'  => Types::STRING,
-      'created_by'  => Types::INTEGER,
-    ]);
+        'name' => $name,
+        'created_by',
+        $created_by,
+      ], [
+        'name' => Types::STRING,
+        'created_by' => Types::INTEGER,
+      ],
+    );
 
-    $user_id = (int) $this->db->lastInsertId($schema->str() . '.users_id_seq');
+    $user_id = (int) $this->db->lastInsertId();
 
-		$stmt = $this->db->prepare('insert into ' . $schema->str() . '.contact c
+    $stmt = $this->db->prepare(
+      'insert into ' . $schema->str() . '.contact c
 			(user_id, value, created_by, is_email, id_type_contact)
 			values(:user_id, :email, :created_by, true, (
 				select id from ' . $schema->str() . '.type_contact
 				where abbrev = \'mail\'
-			))');
+			))',
+    );
 
-		$stmt->bindValue('user_id', $user_id, Types::INTEGER);
-		$stmt->bindValue('email', $email, Types::STRING);
-		$stmt->bindValue('created_by', $created_by, Types::INTEGER);
-		$stmt->executeStatement();
+    $stmt->bindValue('user_id', $user_id, Types::INTEGER);
+    $stmt->bindValue('email', $email, Types::STRING);
+    $stmt->bindValue('created_by', $created_by, Types::INTEGER);
+    $stmt->executeStatement();
 
     $this->db->commit();
 
     return $user_id;
-	}
+  }
 
-	public function set_password(
-		int $id,
-		string $password,
-		Schema $schema,
-	):int
-	{
-		$affected_rows = (int) $this->db->update($schema->str() . '.users', [
-      'password' => $password,
-    ], [
-      'id' => $id,
-    ], [
-      'password' => Types::STRING,
-      'id' => Types::INTEGER,
-    ]);
+  public function set_password(
+    int $id,
+    string $password,
+    Schema $schema,
+  ): int
+  {
+    $affected_rows = (int) $this->db->update(
+      $schema->str() . '.users', [
+        'password' => $password,
+      ], [
+        'id' => $id,
+      ], [
+        'password' => Types::STRING,
+        'id' => Types::INTEGER,
+      ],
+    );
     return $affected_rows;
-	}
+  }
 
-	public function set_postcode(
-		int $id,
-		string $postcode,
-		Schema $schema,
-	):int
-	{
-		$affected_rows = (int) $this->db->update($schema->str() . '.users', [
-      'postcode' => $postcode,
-    ], [
-      'id' => $id,
-    ], [
-      'postcode' => Types::STRING,
-      'id' => Types::INTEGER,
-    ]);
+  public function set_postcode(
+    int $id,
+    string $postcode,
+    Schema $schema,
+  ): int
+  {
+    $affected_rows = (int) $this->db->update(
+      $schema->str() . '.users', [
+        'postcode' => $postcode,
+      ], [
+        'id' => $id,
+      ], [
+        'postcode' => Types::STRING,
+        'id' => Types::INTEGER,
+      ],
+    );
     return $affected_rows;
-	}
+  }
 
-	public function del_postcode(
-		int $id,
-		Schema $schema,
-	):int
-	{
-		$affected_rows = (int) $this->db->update($schema->str() . '.users', [
-      'postcode' => null,
-    ], [
-      'id' => $id,
-    ], [
-      'postcode' => Types::STRING,
-      'id' => Types::INTEGER,
-    ]);
+  public function del_postcode(
+    int $id,
+    Schema $schema,
+  ): int
+  {
+    $affected_rows = (int) $this->db->update(
+      $schema->str() . '.users', [
+        'postcode' => null,
+      ], [
+        'id' => $id,
+      ], [
+        'postcode' => Types::STRING,
+        'id' => Types::INTEGER,
+      ],
+    );
     return $affected_rows;
-	}
+  }
 
-	public function del_image_file(
-		int $id,
-		Schema $schema,
-	):int
-	{
-		$affected_rows = (int) $this->db->update($schema->str() . '.users', [
-      'image_file' => null,
-    ], [
-      'id' => $id,
-    ], [
-      'image_file' => Types::STRING,
-      'id' => Types::INTEGER,
-    ]);
+  public function del_image_file(
+    int $id,
+    Schema $schema,
+  ): int
+  {
+    $affected_rows = (int) $this->db->update(
+      $schema->str() . '.users', [
+        'image_file' => null,
+      ], [
+        'id' => $id,
+      ], [
+        'image_file' => Types::STRING,
+        'id' => Types::INTEGER,
+      ],
+    );
     return $affected_rows;
-	}
+  }
 
-	public function set_code(
-		int $id,
-		string|null $code,
-		Schema $schema,
-	):int
-	{
-		$affected_rows = (int) $this->db->update($schema->str() . '.users', [
-      'code' => $code,
-    ], [
-      'id' => $id,
-    ], [
-      'code' => Types::STRING,
-      'id' => Types::INTEGER,
-    ]);
+  public function set_code(
+    int $id,
+    string|null $code,
+    Schema $schema,
+  ): int
+  {
+    $affected_rows = (int) $this->db->update(
+      $schema->str() . '.users', [
+        'code' => $code,
+      ], [
+        'id' => $id,
+      ], [
+        'code' => Types::STRING,
+        'id' => Types::INTEGER,
+      ],
+    );
     return $affected_rows;
-	}
+  }
 
-	public function set_name(
-		int $id,
-		string $name,
-		Schema $schema,
-	):int
-	{
-		$affected_rows = (int) $this->db->update($schema->str() . '.users', [
-      'name' => $name,
-    ], [
-      'id' => $id,
-    ], [
-      'name' => Types::STRING,
-      'id' => Types::INTEGER,
-    ]);
+  public function set_name(
+    int $id,
+    string $name,
+    Schema $schema,
+  ): int
+  {
+    $affected_rows = (int) $this->db->update(
+      $schema->str() . '.users', [
+        'name' => $name,
+      ], [
+        'id' => $id,
+      ], [
+        'name' => Types::STRING,
+        'id' => Types::INTEGER,
+      ],
+    );
     return $affected_rows;
-	}
+  }
 
-	public function set_full_name(
-		int $id,
-		string $full_name,
+  public function set_full_name(
+    int $id,
+    string $full_name,
     string $full_name_access,
-		Schema $schema,
-	):int
-	{
-		$affected_rows = (int) $this->db->update($schema->str() . '.users', [
-      'full_name' => $full_name,
-      'full_name_access' => $full_name_access,
-    ], [
-      'id' => $id,
-    ], [
-      'full_name' => Types::STRING,
-      'full_name_access' => Types::STRING,
-      'id' => Types::INTEGER,
-    ]);
+    Schema $schema,
+  ): int {
+    $affected_rows = (int) $this->db->update(
+      $schema->str() . '.users', [
+        'full_name' => $full_name,
+        'full_name_access' => $full_name_access,
+      ], [
+        'id' => $id,
+      ], [
+        'full_name' => Types::STRING,
+        'full_name_access' => Types::STRING,
+        'id' => Types::INTEGER,
+      ],
+    );
     return $affected_rows;
-	}
+  }
 
-	public function set_comments(
-		int $id,
-		string|null $comments,
-		Schema $schema,
-	):int
-	{
-		$affected_rows = (int) $this->db->update($schema->str() . '.users', [
-      'comments' => $comments,
-    ], [
-      'id' => $id,
-    ], [
-      'comments' => Types::STRING,
-      'id' => Types::INTEGER,
-    ]);
+  public function set_comments(
+    int $id,
+    string|null $comments,
+    Schema $schema,
+  ): int {
+    $affected_rows = (int) $this->db->update(
+      $schema->str() . '.users', [
+        'comments' => $comments,
+      ], [
+        'id' => $id,
+      ], [
+        'comments' => Types::STRING,
+        'id' => Types::INTEGER,
+      ],
+    );
     return $affected_rows;
-	}
+  }
 
-	public function set_hobbies(
-		int $id,
-		string|null $hobbies,
-		Schema $schema,
-	):int
-	{
-		$affected_rows = (int) $this->db->update($schema->str() . '.users', [
-      'hobbies' => $hobbies,
-    ], [
-      'id' => $id,
-    ], [
-      'hobbies' => Types::STRING,
-      'id' => Types::INTEGER,
-    ]);
+  public function set_hobbies(
+    int $id,
+    string|null $hobbies,
+    Schema $schema,
+  ): int {
+    $affected_rows = (int) $this->db->update(
+      $schema->str() . '.users', [
+        'hobbies' => $hobbies,
+      ], [
+        'id' => $id,
+      ], [
+        'hobbies' => Types::STRING,
+        'id' => Types::INTEGER,
+      ],
+    );
     return $affected_rows;
-	}
+  }
 
-	public function set_admin_comments(
-		int $id,
-		string|null $admin_comments,
-		Schema $schema,
-	):int
-	{
-		$affected_rows = (int) $this->db->update($schema->str() . '.users', [
-      'admin_comments' => $admin_comments,
-    ], [
-      'id' => $id,
-    ], [
-      'admin_comments' => Types::STRING,
-      'id' => Types::INTEGER,
-    ]);
+  public function set_admin_comments(
+    int $id,
+    string|null $admin_comments,
+    Schema $schema,
+  ): int {
+    $affected_rows = (int) $this->db->update(
+      $schema->str() . '.users', [
+        'admin_comments' => $admin_comments,
+      ], [
+        'id' => $id,
+      ], [
+        'admin_comments' => Types::STRING,
+        'id' => Types::INTEGER,
+      ],
+    );
     return $affected_rows;
-	}
+  }
 
-	public function set_role(
-		int $id,
-		string $role,
-		Schema $schema,
-	):int
-	{
-    if (isset($role))
-    {
-      if (!in_array($role, ['admin', 'user']))
-      {
+  public function set_role(
+    int $id,
+    string $role,
+    Schema $schema,
+  ): int
+  {
+    if (isset($role)) {
+      if (!in_array($role, ['admin', 'user'])) {
         throw new LogicException('wrong role: ' . $role);
       }
     }
 
-		$affected_rows = (int) $this->db->update($schema->str() . '.users', [
-      'role' => $role,
-    ], [
-      'id' => $id,
-    ], [
-      'role' => Types::STRING,
-      'id' => Types::INTEGER,
-    ]);
+    $affected_rows = (int) $this->db->update(
+      $schema->str() . '.users', [
+        'role' => $role,
+      ], [
+        'id' => $id,
+      ], [
+        'role' => Types::STRING,
+        'id' => Types::INTEGER,
+      ],
+    );
     return $affected_rows;
-	}
+  }
 
-	public function set_is_leaving(
-		int $id,
-		bool $is_leaving,
-		Schema $schema,
-	):int
-	{
-    $status = match($is_leaving){
+  public function set_is_leaving(
+    int $id,
+    bool $is_leaving,
+    Schema $schema,
+  ): int
+  {
+    $status = match ($is_leaving) {
       true => 2,
       false => 1,
     };
-    $affected_rows = (int) $this->db->executeStatement('update ' . $schema->str() . '.users
+    $affected_rows = (int) $this->db->executeStatement(
+      'update ' . $schema->str() . '.users
       set is_leaving = :is_leaving, status = :status
       where id = :id', [
-        'is_leaving'  => $is_leaving,
-        'status'  => $status,
-        'id'  => $id,
+        'is_leaving' => $is_leaving,
+        'status' => $status,
+        'id' => $id,
       ], [
-        'is_leaving'  => Types::BOOLEAN,
-        'status'  => Types::INTEGER,
-        'id'  => Types::INTEGER,
-      ]);
+        'is_leaving' => Types::BOOLEAN,
+        'status' => Types::INTEGER,
+        'id' => Types::INTEGER,
+      ],
+    );
     return $affected_rows;
-	}
+  }
 
-	public function set_is_active(
-		int $id,
-		bool $is_active,
-		Schema $schema,
-	):int
-	{
-    $status = match($is_active){
+  public function set_is_active(
+    int $id,
+    bool $is_active,
+    Schema $schema,
+  ): int
+  {
+    $status = match ($is_active) {
       true => 1,
       false => 0,
     };
-    $affected_rows = (int) $this->db->executeStatement('update ' . $schema->str() . '.users
+    $affected_rows = (int) $this->db->executeStatement(
+      'update ' . $schema->str() . '.users
       set is_leaving = :is_active, status = :status
       where id = :id', [
-        'is_active'  => $is_active,
-        'status'  => $status,
-        'id'  => $id,
+        'is_active' => $is_active,
+        'status' => $status,
+        'id' => $id,
       ], [
-        'is_active'  => Types::BOOLEAN,
-        'status'  => Types::INTEGER,
-        'id'  => Types::INTEGER,
-      ]);
+        'is_active' => Types::BOOLEAN,
+        'status' => Types::INTEGER,
+        'id' => Types::INTEGER,
+      ],
+    );
     return $affected_rows;
-	}
+  }
 
-	public function set_periodic_overview_en(
-		int $id,
-		bool $periodic_overview_en,
-		Schema $schema,
-	):int
-	{
-		$affected_rows = (int) $this->db->update($schema->str() . '.users', [
-      'periodic_overview_en' => $periodic_overview_en,
-    ], [
-      'id' => $id,
-    ], [
-      'periodic_overview_en' => Types::BOOLEAN,
-      'id' => Types::INTEGER,
-    ]);
+  public function set_periodic_overview_en(
+    int $id,
+    bool $periodic_overview_en,
+    Schema $schema,
+  ): int {
+    $affected_rows = (int) $this->db->update(
+      $schema->str() . '.users', [
+        'periodic_overview_en' => $periodic_overview_en,
+      ], [
+        'id' => $id,
+      ], [
+        'periodic_overview_en' => Types::BOOLEAN,
+        'id' => Types::INTEGER,
+      ],
+    );
     return $affected_rows;
-	}
+  }
 
   /**
    * not used yet
    */
-	public function register(
+  public function register(
     array $user,
-    Schema $schema
-  ):int
-	{
-		$this->db->beginTransaction();
+    Schema $schema,
+  ): int
+  {
+    $this->db->beginTransaction();
 
-		$mobile = $user['mobile'];
-		$phone = $user['phone'];
-		$email = $user['email'];
+    $mobile = $user['mobile'];
+    $phone = $user['phone'];
+    $email = $user['email'];
 
-		unset($user['mobile'], $user['phone'], $user['email']);
+    unset($user['mobile'], $user['phone'], $user['email']);
 
     $this->db->insert($schema->str() . '.users', $user);
-    $user_id = (int) $this->db->lastInsertId($schema->str() . '.users_id_seq');
+    $user_id = (int) $this->db->lastInsertId();
 
     $tc = [];
-		$stmt = $this->db->prepare('select abbrev, id
-      from ' . $schema->str() . '.type_contact');
-		$res = $stmt->executeQuery();
-		while($row = $res->fetchAssociative())
-		{
-			$tc[$row['abbrev']] = $row['id'];
-		}
+    $stmt = $this->db->prepare(
+      'select abbrev, id
+      from ' . $schema->str() . '.type_contact',
+    );
+    $res = $stmt->executeQuery();
+    while ($row = $res->fetchAssociative()) {
+      $tc[$row['abbrev']] = $row['id'];
+    }
 
-		$mail = [
-			'user_id'			=> $user_id,
-			'access'      => 'admin',
-			'value'				=> strtolower($email),
-			'id_type_contact'	=> $tc['mail'],
-		];
+    $mail = [
+      'user_id' => $user_id,
+      'access' => 'admin',
+      'value' => strtolower($email),
+      'id_type_contact' => $tc['mail'],
+    ];
 
     $this->db->insert($schema->str() . '.contact', $mail);
 
-    if (isset($mobile) && $mobile)
-		{
-			$gsm = [
-				'user_id'			=> $user_id,
-				'access'            => 'admin',
-				'value'				=> $mobile,
-				'id_type_contact'	=> $tc['gsm'],
-			];
+    if (isset($mobile) && $mobile) {
+      $gsm = [
+        'user_id' => $user_id,
+        'access' => 'admin',
+        'value' => $mobile,
+        'id_type_contact' => $tc['gsm'],
+      ];
 
-			$this->db->insert($schema->str() . '.contact', $gsm);
-		}
+      $this->db->insert($schema->str() . '.contact', $gsm);
+    }
 
-		if (isset($phone) && $phone)
-		{
-			$tel = [
-				'user_id'			=> $user_id,
-				'access'            => 'admin',
-				'value'				=> $phone,
-				'id_type_contact'	=> $tc['tel'],
-			];
+    if (isset($phone) && $phone) {
+      $tel = [
+        'user_id' => $user_id,
+        'access' => 'admin',
+        'value' => $phone,
+        'id_type_contact' => $tc['tel'],
+      ];
 
-			$this->db->insert($schema->str() . '.contact', $tel);
-		}
+      $this->db->insert($schema->str() . '.contact', $tel);
+    }
 
-		$this->db->commit();
+    $this->db->commit();
 
-		return $user_id;
-	}
+    return $user_id;
+  }
 
   /**
    * not used yet
    */
-	public function del(
+  public function del(
     int $id,
     Schema $schema,
-  ):int
-	{
-    $affected_rows = (int) $this->db->delete($schema->str() . '.users', [
-      'id' => $id,
-    ], [
-      'id'  => Types::INTEGER,
-    ]);
+  ): int
+  {
+    $affected_rows = (int) $this->db->delete(
+      $schema->str() . '.users', [
+        'id' => $id,
+      ], [
+        'id' => Types::INTEGER,
+      ],
+    );
 
-		return $affected_rows;
-	}
+    return $affected_rows;
+  }
 
-	public function is_active(
+  public function is_active(
     int $id,
-    Schema $schema
-  ):bool
-	{
-		return $this->db->fetchOne('select id
+    Schema $schema,
+  ): bool
+  {
+    return $this->db->fetchOne(
+      'select id
 			from ' . $schema->str() . '.users
 			where status in (1, 2)
 				and id = :id', [
-      'id'  => $id,
-    ], [
-      'id'  => Types::INTEGER,
-    ]) ? true : false;
-	}
+        'id' => $id,
+      ], [
+        'id' => Types::INTEGER,
+      ],
+    ) ? true : false;
+  }
 
   public function set_bulk_full_name_access(
     string $full_name_access,
     array $user_ids,
     Schema $schema,
-  ):int
-  {
-    return (int) $this->db->executeStatement('update ' .
-      $schema->str() . '.users
+  ): int {
+    return (int) $this->db->executeStatement(
+      'update ' . $schema->str() . '.users
       set full_name_access = :full_name_access
       where id in (:user_ids)', [
-        'full_name_access'  => $full_name_access,
-        'user_ids'  => $user_ids,
+        'full_name_access' => $full_name_access,
+        'user_ids' => $user_ids,
       ], [
-        'full_name_access'  => Types::STRING,
-        'user_ids'  => ArrayParameterType::INTEGER,
-      ]);
+        'full_name_access' => Types::STRING,
+        'user_ids' => ArrayParameterType::INTEGER,
+      ],
+    );
   }
 
   public function set_bulk_comments(
     string|null $comments,
     array $user_ids,
     Schema $schema,
-  ):int
-  {
-    if (isset($comments))
-    {
-      return (int) $this->db->executeStatement('update ' .
-        $schema->str() . '.users
+  ): int {
+    if (isset($comments)) {
+      return (int) $this->db->executeStatement(
+        'update ' . $schema->str() . '.users
         set comments = :comments
         where id in (:user_ids)', [
-          'comments'  => $comments,
-          'user_ids'  => $user_ids,
+          'comments' => $comments,
+          'user_ids' => $user_ids,
         ], [
-          'comments'  => Types::STRING,
-          'user_ids'  => ArrayParameterType::INTEGER,
-        ]);
+          'comments' => Types::STRING,
+          'user_ids' => ArrayParameterType::INTEGER,
+        ],
+      );
     }
-    return (int) $this->db->executeStatement('update ' .
-      $schema->str() . '.users
+    return (int) $this->db->executeStatement(
+      'update ' . $schema->str() . '.users
       set comments = null
       where id in (:user_ids)', [
-        'user_ids'  => $user_ids,
+        'user_ids' => $user_ids,
       ], [
-        'user_ids'  => ArrayParameterType::INTEGER,
-      ]);
+        'user_ids' => ArrayParameterType::INTEGER,
+      ],
+    );
   }
 
   public function set_bulk_admin_comments(
     string|null $admin_comments,
     array $user_ids,
     Schema $schema,
-  ):int
-  {
-    if (isset($admin_comments))
-    {
-      return (int) $this->db->executeStatement('update ' .
-        $schema->str() . '.users
+  ): int {
+    if (isset($admin_comments)) {
+      return (int) $this->db->executeStatement(
+        'update ' . $schema->str() . '.users
         set admin_comments = :admin_comments
         where id in (:user_ids)', [
-          'admin_comments'  => $admin_comments,
-          'user_ids'  => $user_ids,
+          'admin_comments' => $admin_comments,
+          'user_ids' => $user_ids,
         ], [
-          'admin_comments'  => Types::STRING,
-          'user_ids'  => ArrayParameterType::INTEGER,
-        ]);
+          'admin_comments' => Types::STRING,
+          'user_ids' => ArrayParameterType::INTEGER,
+        ],
+      );
     }
-    return (int) $this->db->executeStatement('update ' .
-      $schema->str() . '.users
+    return (int) $this->db->executeStatement(
+      'update ' . $schema->str() . '.users
       set admin_comments = null
       where id in (:user_ids)', [
-        'user_ids'  => $user_ids,
+        'user_ids' => $user_ids,
       ], [
-        'user_ids'  => ArrayParameterType::INTEGER,
-      ]);
+        'user_ids' => ArrayParameterType::INTEGER,
+      ],
+    );
   }
 
   public function set_bulk_role(
     string $role,
     array $user_ids,
     Schema $schema,
-  ):int
-  {
-    return (int) $this->db->executeStatement('update ' .
-      $schema->str() . '.users
+  ): int {
+    return (int) $this->db->executeStatement(
+      'update ' . $schema->str() . '.users
       set role = :role
       where id in (:user_ids)', [
-        'role'  => $role,
-        'user_ids'  => $user_ids,
+        'role' => $role,
+        'user_ids' => $user_ids,
       ], [
-        'role'  => Types::STRING,
-        'user_ids'  => ArrayParameterType::INTEGER,
-      ]);
+        'role' => Types::STRING,
+        'user_ids' => ArrayParameterType::INTEGER,
+      ],
+    );
   }
 
   public function set_bulk_status(
     int $status,
     array $user_ids,
     Schema $schema,
-  ):int
-  {
-    return (int) $this->db->executeStatement('update ' .
-      $schema->str() . '.users
+  ): int {
+    return (int) $this->db->executeStatement(
+      'update ' . $schema->str() . '.users
       set status = :status
       where id in (:user_ids)', [
-        'status'  => $status,
-        'user_ids'  => $user_ids,
+        'status' => $status,
+        'user_ids' => $user_ids,
       ], [
-        'status'  => Types::INTEGER,
-        'user_ids'  => ArrayParameterType::INTEGER,
-      ]);
+        'status' => Types::INTEGER,
+        'user_ids' => ArrayParameterType::INTEGER,
+      ],
+    );
   }
 
   public function set_bulk_active(
     bool $is_active,
     array $user_ids,
     Schema $schema,
-  ):int
-  {
+  ): int {
     $status = $is_active ? 1 : 0;
-    return (int) $this->db->executeStatement('update ' .
-      $schema->str() . '.users
+    return (int) $this->db->executeStatement(
+      'update ' . $schema->str() . '.users
       set is_active = :is_active,
       status = :status,
       is_leaving = false
       where id in (:user_ids)', [
-        'is_active'  => $is_active,
-        'status'  => $status,
-        'user_ids'  => $user_ids,
+        'is_active' => $is_active,
+        'status' => $status,
+        'user_ids' => $user_ids,
       ], [
-        'is_active'  => Types::BOOLEAN,
-        'status'  => Types::INTEGER,
-        'user_ids'  => ArrayParameterType::INTEGER,
-      ]);
+        'is_active' => Types::BOOLEAN,
+        'status' => Types::INTEGER,
+        'user_ids' => ArrayParameterType::INTEGER,
+      ],
+    );
   }
 
   public function set_bulk_leaving(
     bool $is_leaving,
     array $user_ids,
     Schema $schema,
-  ):int
-  {
+  ): int {
     $status = $is_leaving ? 2 : 1;
-    return (int) $this->db->executeStatement('update ' .
-      $schema->str() . '.users
+    return (int) $this->db->executeStatement(
+      'update ' . $schema->str() . '.users
       set is_leaving = :is_leaving,
       status = :status,
       where id in (:user_ids)
         and is_active
         and remote_schema is null
         and remote_email is null', [
-        'is_leaving'  => $is_leaving,
-        'status'  => $status,
-        'user_ids'  => $user_ids,
+        'is_leaving' => $is_leaving,
+        'status' => $status,
+        'user_ids' => $user_ids,
       ], [
-        'is_active'  => Types::BOOLEAN,
-        'status'  => Types::INTEGER,
-        'user_ids'  => ArrayParameterType::INTEGER,
-      ]);
+        'is_active' => Types::BOOLEAN,
+        'status' => Types::INTEGER,
+        'user_ids' => ArrayParameterType::INTEGER,
+      ],
+    );
   }
 
   public function set_bulk_periodic_overview_en(
     bool $periodic_overview_en,
     array $user_ids,
     Schema $schema,
-  ):int
-  {
-    return (int) $this->db->executeStatement('update ' .
-      $schema->str() . '.users
+  ): int {
+    return (int) $this->db->executeStatement(
+      'update ' . $schema->str() . '.users
       set periodic_overview_en = :periodic_overview_en
       where id in (:user_ids)', [
-        'periodic_overview_en'  => $periodic_overview_en,
-        'user_ids'  => $user_ids,
+        'periodic_overview_en' => $periodic_overview_en,
+        'user_ids' => $user_ids,
       ], [
-        'periodic_overview_en'  => Types::BOOLEAN,
-        'user_ids'  => ArrayParameterType::INTEGER,
-      ]);
+        'periodic_overview_en' => Types::BOOLEAN,
+        'user_ids' => ArrayParameterType::INTEGER,
+      ],
+    );
   }
 
   public function get_selected(
     array $user_ids,
     Schema $schema,
-  ):array
+  ): array
   {
     $users = [];
 
-    $res = $this->db->executeQuery('select u.*
+    $res = $this->db->executeQuery(
+      'select u.*
       from ' . $schema->str() . '.users u
       where u.id in (:user_ids)
       order by u.code asc', [
-        'user_ids'  => $user_ids,
+        'user_ids' => $user_ids,
       ], [
-        'user_ids'  => ArrayParameterType::INTEGER,
-      ]);
+        'user_ids' => ArrayParameterType::INTEGER,
+      ],
+    );
 
-    while($row = $res->fetchAssociative())
-    {
+    while ($row = $res->fetchAssociative()) {
       $users[$row['id']] = $row;
     }
 
@@ -886,17 +1023,20 @@ class UserRepository
   public function get_selected_min_limit(
     array $account_ids,
     Schema $schema,
-  ):array
+  ): array
   {
     $accounts = [];
 
-    $res = $this->db->executeQuery('select u.id,
+    $res = $this->db->executeQuery(
+      'select u.id,
       u.code, u.name,
       min_limit.min_limit
 			from ' . $schema->str() . '.users u
       left join lateral (
         select minl.min_limit
-        from ' . $schema->str() . '.min_limit minl
+        from ' .
+        $schema->str() .
+        '.min_limit minl
         where minl.account_id = u.id
         order by minl.created_at desc
         limit 1
@@ -905,25 +1045,25 @@ class UserRepository
         'account_ids' => $account_ids,
       ], [
         'account_ids' => ArrayParameterType::INTEGER,
-      ]
+      ],
     );
 
-    while ($row = $res->fetchAssociative())
-    {
+    while ($row = $res->fetchAssociative()) {
       $accounts[$row['id']] = $row;
     }
 
-		return $accounts;
+    return $accounts;
   }
 
   public function get_selected_max_limit(
     array $account_ids,
     Schema $schema,
-  ):array
+  ): array
   {
     $accounts = [];
 
-    $res = $this->db->executeQuery('select u.id,
+    $res = $this->db->executeQuery(
+      'select u.id,
       u.code, u.name,
       max_limit.max_limit
 			from ' . $schema->str() . '.users u
@@ -938,48 +1078,69 @@ class UserRepository
         'account_ids' => $account_ids,
       ], [
         'account_ids' => ArrayParameterType::INTEGER,
-      ]
+      ],
     );
 
-    while ($row = $res->fetchAssociative())
-    {
+    while ($row = $res->fetchAssociative()) {
       $accounts[$row['id']] = $row;
     }
 
-		return $accounts;
+    return $accounts;
+  }
+
+  private function get_sql_ary_on_status(
+    string $status,
+    Schema $schema,
+  ):array
+  {
+    $sql = [
+      'params'  => [],
+      'types'   => [],
+    ];
+
+    $sql['where'] = match ($status) {
+      'all' => '1 = 1',
+      'active' => 'u.is_active',
+      'leaving' => 'u.is_leaving
+        and u.remote_schema is null
+        and u.remote_email is null',
+      'new' => 'u.is_active
+        and u.activated_at > :activated_at
+        and u.remote_schema is null
+        and u.remote_email is null',
+      'intersystem' => 'u.remote_schema is not null
+        or u.remote_email is not null',
+      'pre-active' => 'not u.is_active
+        and u.activated_at is null',
+      'post-active' => 'not u.is_active
+        and u.activated_at is not null',
+    };
+
+    if ($status === 'new') {
+      $new_user_treshold = $this->config_service->get_new_user_treshold(
+        schema: $schema,
+      );
+      $sql['params']['activated_at'] = $new_user_treshold;
+      $sql['types']['activated_at'] = Types::DATETIME_IMMUTABLE;
+    }
+
+    return $sql;
   }
 
   public function get_all_by_status(
     string $status,
     Schema $schema,
-  ):array
+  ): array
   {
-		$sql_where = match($status){
-      'all' => '1 = 1',
-      'active' => 'status in (1, 2)',
-      'leaving' => 'status = 2',
-      'new' => 'status = 1 and u.activated_at > :activated_at',
-      'inactive'  => 'status = 0',
-      'ip'  => 'status = 5',
-      'im'  => 'status = 6',
-      'extern'  => 'status = 7',
-    };
-
-    $sql_params = [];
-    $sql_types = [];
-
-    if  ($status === 'new')
-    {
-      $new_user_treshold = $this->config_service->get_new_user_treshold(
-        schema: $schema
-      );
-      $sql_params['activated_at'] = $new_user_treshold;
-      $sql_types['activated_at'] = Types::DATETIME_IMMUTABLE;
-    }
+    $sql = $this->get_sql_ary_on_status(
+      status: $status,
+      schema: $schema,
+    );
 
     $users = [];
 
-    $query = 'select u.*,
+    $query =
+      'select u.*,
       min_limit.min_limit,
       max_limit.max_limit,
       balance.balance
@@ -1005,10 +1166,47 @@ class UserRepository
         order by bal.created_at desc
         limit 1
       ) balance on true
-      where ' . $sql_where . '
+      where ' . $sql['where'] . '
       order by u.code asc';
 
-    $res = $this->db->executeQuery($query, $sql_params, $sql_types);
+    $res = $this->db->executeQuery($query, $sql['params'], $sql['types']);
+
+    while ($row = $res->fetchAssociative()) {
+      $users[$row['id']] = $row;
+    }
+
+    return $users;
+  }
+
+  public function get_all_by_status_incl_last_mollie(
+    string $status,
+    Schema $schema,
+  ):array
+  {
+    $sql = $this->get_sql_ary_on_status(
+      status: $status,
+      schema: $schema,
+    );
+
+    $users = [];
+
+    $query = 'select u.*,
+        p1.is_paid, p1.is_canceled,
+        p1.created_at as last_created_at,
+        p1.amount, p1.description
+      from ' . $schema->str() . '.users u
+      left join lateral (select p.*, r.description
+        from ' . $schema->str() . '.mollie_payments p,
+          ' . $schema->str() . '.mollie_payment_requests r
+        where p.user_id = u.id
+          and r.id = p.request_id
+        order by p.created_at desc
+        limit 1) p1
+      on true
+      where ' . $sql['where'] . '
+      order by u.code asc';
+
+    $res = $this->db->executeQuery($query, $sql['params'], $sql['types']);
 
     while($row = $res->fetchAssociative())
     {
@@ -1019,62 +1217,40 @@ class UserRepository
   }
 
   public function get_for_autocomplete(
-    bool $active_users_included,
-    bool $active_eland_intersystems_included,
-    bool $active_email_intersystems_included,
-    bool $inactive_users_included,
-    bool $inactive_intersystems_included,
+    string $account_group,
     Schema $schema,
-  ):array
+  ): array
   {
-    if (!$active_users_included
-      && !$active_eland_intersystems_included
-      && !$active_email_intersystems_included
-      && !$inactive_users_included
-      && !$inactive_intersystems_included
-    )
+    // all|active|active-users|users|intersystems|email-intersystems|inactive
+    $account_groups = explode('|', $this->assert_account_group);
+
+    if (!in_array($account_group, $account_groups))
     {
-      return [];
+      throw new \InvalidArgumentException(
+        'Invalid account group: ' . $account_group
+      );
     }
 
-    $or_ary = [];
-
-    if ($active_users_included)
-    {
-      $or_ary[] = '(u.is_active
-        and u.remote_schema is null
-        and u.remote_email is null)';
-    }
-
-    if ($active_eland_intersystems_included)
-    {
-      $or_ary[] = '(u.remote_schema is not null and u.is_active)';
-    }
-
-    if ($active_email_intersystems_included)
-    {
-      $or_ary[] = '(u.remote_email is not null and u.is_active)';
-    }
-
-    if ($inactive_users_included)
-    {
-      $or_ary[] = '(not u.is_active
-        and u.remote_schema is null
-        and u.remote_email is null)';
-    }
-
-    if ($inactive_intersystems_included)
-    {
-      $or_ary[] = '(not u.is_active
-        and (u.remote_schema is not null
-          or u.remote_email is not null))';
-    }
-
-    $sql_where = implode(' or ', $or_ary);
+    $sql_where = match ($account_group) {
+      'all' => '1 = 1',
+      'active' => 'u.is_active',
+      'active-users' => 'u.remote_schema is null
+        and u.remote_email is null
+        and u.is_active',
+      'users' => 'u.remote_schema is null
+        and u.remote_email is null',
+      'intersystems' => '(u.remote schema is not null
+        or u.remote_email is not null)
+        and u.is_active',
+      'email-intersystems' => 'u.remote_email is not null
+        and u.is_active',
+      'inactive' => 'u.not is_active',
+    };
 
     $users = [];
 
-    $query = 'select u.id, u.code,
+    $query =
+      'select u.id, u.code,
       u.name, u.is_leaving,
       u.is_active,
       activated_at,
@@ -1109,9 +1285,8 @@ class UserRepository
 
     $res = $this->db->executeQuery($query);
 
-    while($row = $res->fetchAssociative())
-    {
-      $users[] = array_filter($row, fn ($v) => !is_null($v));;
+    while ($row = $res->fetchAssociative()) {
+      $users[] = array_filter($row, fn($v) => !is_null($v));
     }
 
     return $users;
@@ -1121,10 +1296,10 @@ class UserRepository
     int $current_user_id,
     Schema $current_user_schema,
     Schema $schema,
-  ):array
-  {
+  ): array {
     $ary = [];
-    $query = '
+    $query =
+      '
       with current_user_pos as (
         select latitude, longitude
         from ' . $current_user_schema->str() . '.contact
@@ -1148,23 +1323,26 @@ class UserRepository
           else null
         end as distance_meter
       from ' . $schema->str() . '.contact c
-      join ' . $schema->str() . '.type_contact tc on tc.id = c.id_type_contact
-      join ' . $schema->str() . '.users u on c.user_id = u.id
+      join ' . $schema->str() . '.type_contact tc
+        on tc.id = c.id_type_contact
+      join ' . $schema->str() . '.users u
+        on c.user_id = u.id
       left join current_user_pos pos on true
       order by c.last_edit_at asc';
 
-    $res = $this->db->executeQuery($query, [
-      'current_user_id' => $current_user_id,
-    ], [
-      'current_user_id' => Types::INTEGER,
-    ]);
+    $res = $this->db->executeQuery(
+      $query, [
+        'current_user_id' => $current_user_id,
+      ], [
+        'current_user_id' => Types::INTEGER,
+      ],
+    );
 
-    while ($row = $res->fetchAssociative())
-    {
+    while ($row = $res->fetchAssociative()) {
       $ary[$row['user_id']][$row['abbrev']][] = [
-        'value'         => $row['value'],
-        'access'        => $row['access'],
-        'distance'      => $row['distance_meter'],
+        'value' => $row['value'],
+        'access' => $row['access'],
+        'distance' => $row['distance_meter'],
       ];
     }
 
@@ -1174,9 +1352,10 @@ class UserRepository
   public function get_address(
     int $user_id,
     Schema $schema,
-  ):string|false
+  ): string|false
   {
-    return $this->db->fetchOne('select c.value
+    return $this->db->fetchOne(
+      'select c.value
       from ' . $schema->str() . '.contact c, ' .
         $schema->str() . '.type_contact tc
       where c.user_id = :user_id
@@ -1186,18 +1365,18 @@ class UserRepository
         'user_id' => $user_id,
       ], [
         'user_id' => Types::INTEGER,
-      ]);
+      ],
+    );
   }
 
   public function get_all_active_with_addresses(
     int $current_user_id,
     Schema $current_user_schema,
     Schema $schema,
-  ):array
-  {
+  ): array {
     $ary = [];
-    $stmt = $this->db->prepare('
-      with current_user_pos as (
+    $stmt = $this->db->prepare(
+      'with current_user_pos as (
         select latitude, longitude
         from ' . $current_user_schema->str() . '.contact
         where user_id = :current_user_id
@@ -1225,11 +1404,11 @@ class UserRepository
         where tc.abbrev = \'adr\')
       left join current_user_pos pos on true
       where status in (1, 2)
-      order by u.code asc');
+      order by u.code asc',
+    );
     $stmt->bindValue('current_user_id', $current_user_id, Types::INTEGER);
     $res = $stmt->executeQuery();
-    while ($row = $res->fetchAssociative())
-    {
+    while ($row = $res->fetchAssociative()) {
       $ary[$row['user_id']][] = $row;
     }
     return $ary;
@@ -1241,45 +1420,52 @@ class UserRepository
     int $current_user_id,
     Schema $current_user_schema,
     Schema $schema,
-  ):array|false
+  ): array|false
   {
-		$sql_where = match($status){
+    $sql_where = match ($status) {
       'all' => '1 = 1',
-      'active' => '%table%.status in (1, 2)',
-      'leaving' => '%table%.status = 2',
-      'new' => '%table%.status = 1 and %table%.activated_at > :activated_at',
-      'inactive'  => '%table%.status = 0',
-      'ip'  => '%table%.status = 5',
-      'im'  => '%table%.status = 6',
-      'extern'  => '%table%.status = 7',
+      'active' => '%table%.is_active',
+      'leaving' => '%table%.is_leaving
+        and %table%.remote_schema is null
+        and %table%.remote_email is null',
+      'new' => '%table%.is_active
+        and %table%.activated_at > :activated_at
+        and %table%.remote_schema is null
+        and %table%.remote_email is null',
+      'intersystem' => '%table%.remote_schema is not null
+        or %table%.remote_email is not null',
+      'pre-active' => 'not %table%.is_active
+        and %table%.activated_at is null',
+      'post-active' => 'not %table%.is_active
+        and %table%.activated_at is not null',
     };
 
     $sql_where_pu = strtr($sql_where, [
-      '%table%' => 'pu'
+      '%table%' => 'pu',
     ]);
     $sql_where_nu = strtr($sql_where, [
-      '%table%' => 'nu'
+      '%table%' => 'nu',
     ]);
 
     $sql_params = [
-      'id'  => $id,
+      'id' => $id,
       'current_user_id' => $current_user_id,
     ];
     $sql_types = [
-      'id'  => Types::INTEGER,
+      'id' => Types::INTEGER,
       'current_user_id' => Types::INTEGER,
     ];
 
-    if  ($status === 'new')
-    {
+    if ($status === 'new') {
       $new_user_treshold = $this->config_service->get_new_user_treshold(
-        schema: $schema
+        schema: $schema,
       );
       $sql_params['activated_at'] = $new_user_treshold;
       $sql_types['activated_at'] = Types::DATETIME_IMMUTABLE;
     }
 
-    $data = $this->db->fetchAssociative('select u.*,
+    $data = $this->db->fetchAssociative(
+      'select u.*,
       coalesce(cd.contacts, \'[]\'::jsonb) as contacts,
       coalesce(msg.count, 0) as message_count,
       coalesce(trns.count, 0) as transaction_count,
@@ -1399,101 +1585,98 @@ class UserRepository
       ) tags on true
       where u.id = :id',
       $sql_params,
-      $sql_types
+      $sql_types,
     );
 
-    if ($data !== false)
-    {
+    if ($data !== false) {
       $data['contacts'] = json_decode($data['contacts'], true);
       $data['tags'] = json_decode($data['tags'], true);
     }
 
-		return $data;
+    return $data;
   }
 
-	public function is_unique_code(
-		string $code,
-		null|int $except_id,
-		Schema $schema
-	):bool
-	{
-		if ($code === '')
-		{
-			throw new LogicException('Code can not be empty string.');
-		}
+  public function is_unique_code(
+    string $code,
+    null|int $except_id,
+    Schema $schema,
+  ): bool
+  {
+    if ($code === '') {
+      throw new LogicException('Code can not be empty string.');
+    }
 
-		$lower_code = strtolower($code);
+    $lower_code = strtolower($code);
 
-		$query = 'select id
+    $query =
+      'select id
 			from ' . $schema->str() . '.users
 			where code is not null
 				and lower(code) = :lower_code';
 
-		if (isset($except_id))
-		{
-			$query .= ' and id <> :except_id';
-		}
+    if (isset($except_id))
+    {
+      $query .= ' and id <> :except_id';
+    }
 
-		$stmt = $this->db->prepare($query);
+    $stmt = $this->db->prepare($query);
 
-		$stmt->bindValue('lower_code', $lower_code, Types::STRING);
+    $stmt->bindValue('lower_code', $lower_code, Types::STRING);
 
-		if (isset($except_id))
-		{
-			$stmt->bindValue('except_id', $except_id, Types::INTEGER);
-		}
+    if (isset($except_id))
+    {
+      $stmt->bindValue('except_id', $except_id, Types::INTEGER);
+    }
 
-		$res = $stmt->executeQuery();
-		$id = $res->fetchOne();
+    $res = $stmt->executeQuery();
+    $id = $res->fetchOne();
 
-		if ($id === false)
-		{
-			return true;
-		}
+    if ($id === false)
+    {
+      return true;
+    }
 
-		return false;
-	}
+    return false;
+  }
 
-	public function is_unique_name(
-		string $name,
-		null|int $except_id,
-		Schema $schema
-	):bool
-	{
-		if ($name === '')
-		{
-			throw new LogicException('Name can not be empty string.');
-		}
+  public function is_unique_name(
+    string $name,
+    null|int $except_id,
+    Schema $schema,
+  ): bool
+  {
+    if (empty($name))
+    {
+      throw new LogicException('Name can not be empty string.');
+    }
 
-		$lower_name = strtolower($name);
+    $lower_name = strtolower($name);
 
-		$query = 'select id
+    $query =
+      'select id
 			from ' . $schema->str() . '.users
 			where name is not null
 				and lower(name) = :lower_name';
 
-		if (isset($except_id))
-		{
-			$query .= ' and id <> :except_id';
-		}
+    if (isset($except_id)) {
+      $query .= ' and id <> :except_id';
+    }
 
-		$stmt = $this->db->prepare($query);
+    $stmt = $this->db->prepare($query);
 
-		$stmt->bindValue('lower_name', $lower_name, \PDO::PARAM_STR);
+    $stmt->bindValue('lower_name', $lower_name, Types::STRING);
 
-		if (isset($except_id))
-		{
-			$stmt->bindValue('except_id', $except_id, \PDO::PARAM_INT);
-		}
+    if (isset($except_id)) {
+      $stmt->bindValue('except_id', $except_id, Types::INTEGER);
+    }
 
-		$res = $stmt->executeQuery();
-		$id = $res->fetchOne();
+    $res = $stmt->executeQuery();
+    $id = $res->fetchOne();
 
-		if ($id === false)
-		{
-			return true;
-		}
+    if ($id === false) {
+      return true;
+    }
 
-		return false;
-	}
+    return false;
+  }
 }

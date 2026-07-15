@@ -39,64 +39,20 @@ class AutocompleteAccountsController extends AbstractController
   {
     //assert.account.group: 'all|active|active-users|users|intersystems|email-intersystems|inactive'
 
-    $active_users_included = false;
-    $active_eland_intersystems_included = false;
-    $active_email_intersystems_included = false;
-    $inactive_users_included = false;
-    $inactive_intersystems_included = false;
+    $allow_groups_for_users = [
+      'active',
+      'active-users',
+      'intersystems',
+      'email-intersystems',
+    ];
 
-    switch ($group)
-    {
-      case 'all':
-        $active_users_included = true;
-        $active_eland_intersystems_included = true;
-        $active_email_intersystems_included = true;
-        $inactive_users_included = true;
-        $inactive_intersystems_included = true;
-        break;
-      case 'active':
-        $active_users_included = true;
-        $active_eland_intersystems_included = true;
-        $active_email_intersystems_included = true;
-        break;
-      case 'active-users':
-        $active_users_included = true;
-        break;
-      case 'users':
-        $active_users_included = true;
-        $inactive_users_included = true;
-        break;
-      case 'intersystems':
-        $active_eland_intersystems_included = true;
-        $active_email_intersystems_included = true;
-        break;
-      case 'email-intersystems':
-        $active_email_intersystems_included = true;
-        break;
-      case 'inactive':
-        $inactive_users_included = true;
-        $inactive_intersystems_included = true;
-        break;
-      default:
-        throw $this->createNotFoundException('Invalid group: ' . $group);
-        break;
-    }
-
-    if (!$pp->is_admin() && $inactive_users_included)
-    {
-      throw $this->createAccessDeniedException('No access.');
-    }
-    if (!$pp->is_admin() && $inactive_intersystems_included)
+    if (!$pp->is_admin() && !in_array($group, $allow_groups_for_users))
     {
       throw $this->createAccessDeniedException('No access.');
     }
 
     $accounts = $user_repository->get_for_autocomplete(
-      active_users_included: $active_users_included,
-      active_eland_intersystems_included: $active_eland_intersystems_included,
-      active_email_intersystems_included: $active_email_intersystems_included,
-      inactive_users_included: $inactive_users_included,
-      inactive_intersystems_included: $inactive_intersystems_included,
+      account_group: $group,
       schema: $pp->schema_o(),
     );
 

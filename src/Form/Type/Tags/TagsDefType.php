@@ -5,7 +5,7 @@ namespace App\Form\Type\Tags;
 use App\Command\Tags\TagsDefCommand;
 use App\Enum\TagTypeEnum;
 use App\Form\DataTransformer\ColorTransformer;
-use App\Form\Type\Field\TypeaheadType;
+use App\Form\Type\Field\UniqueCheckType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ColorType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -34,13 +34,13 @@ class TagsDefType extends AbstractType
     }
 
     $tag_type = $options['tag_type'];
-    $add = [];
-    $add[] = ['tags_check', ['tag_type' => $tag_type]];
 
-    $builder->add('txt', TypeaheadType::class, [
+    $builder->add('txt', UniqueCheckType::class, [
+      'route' => 'unique_check_tags_txt',
+      'route_params' => [
+        'tag_type'  => $tag_type,
+      ],
       ...$opt_ary,
-      'render_omit'   => $options['txt_omit'],
-      'add'           => $add,
     ]);
 
     $builder->add('bg_color', ColorType::class, $opt_ary);

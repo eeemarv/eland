@@ -1,12 +1,42 @@
 {%- extends 'mollie/base/mollie_base.html.twig' -%}
 
-{%- block assets_add -%}
-  {{- parent() -}}
-  {{- assets_add(['mollie_payments_add.js']) -}}
-{%- endblock assets_add -%}
-
 {%- set admin_heading = true -%}
+{%- set cancel_route = 'mollie_payments' -%}
+
+{%- block content_controllers -%}
+datatable
+user-count-table
+mollie-payments-add-fill
+{%- endblock content_controllers -%}
+
+{%- block content_controllers_attr -%}
+data-datatable-sortable-value="true"
+{%- endblock content_controllers_attr -%}
 
 {%- block heading_title -%}
   {{- 'mollie_payments_add.title'|trans -}}
 {%- endblock heading_title -%}
+
+{%- block help_form -%}
+  {%- include 'mollie/payments_add/mollie_payments_add_fill.html.twig' -%}
+{%- endblock help_form -%}
+
+{%- block filter_form_a -%}
+  {%- include 'form/q_filter.html.twig' -%}
+{%- endblock filter_form_a -%}
+
+{%- block pane_select -%}
+  {%- include 'mollie/payments_add/mollie_payments_add_nav_tabs.html.twig' -%}
+{%- endblock pane_select -%}
+
+{%- block form_b -%}
+  {%- include 'mollie/payments_add/mollie_payments_add_table.html.twig' -%}
+{%- endblock form_b -%}
+
+{%- block form_c -%}
+  {%- include 'mollie/payments_add/mollie_payments_add_c.html.twig' -%}
+{%- endblock form_c -%}
+
+{%- block form_submit_btn -%}
+  {%- include 'form/submit_add_btn.html.twig' -%}
+{%- endblock form_submit_btn -%}

@@ -46,7 +46,7 @@ class NewsRepository
       lead(id) over (order by ' . $order . 'created_at asc) as next_id
         from ' . $schema->str() . '.news
       where access in (:visible_ary)) n
-          where n.id = :id', [
+        where n.id = :id', [
       'visible_ary' => $visible_ary,
       'id'  => $id,
     ], [
@@ -99,22 +99,35 @@ class NewsRepository
 		Schema $schema,
 	):int
 	{
-		$this->db->insert($schema->str() . '.news', [
-      'user_id'     => $user_id,
-			'content'	    => $content,
-			'subject'	    => $subject,
-			'access'      => $access,
-			'location'		=> $location,
-			'event_at'		=> $event_at,
-    ], [
-			'user_id'     => Types::INTEGER,
-			'content'	    => Types::STRING,
-			'subject'	    => Types::STRING,
-			'access'      => Types::STRING,
-			'location'		=> Types::STRING,
-			'event_at'		=> Types::DATE_IMMUTABLE,
-    ]);
-		return (int) $this->db->lastInsertId($schema->str() . '.news_id_seq');
+    try
+    {
+      $this->db->beginTransaction();
+      $this->db->insert($schema->str() . '.news', [
+          'user_id'     => $user_id,
+          'content'	    => $content,
+          'subject'	    => $subject,
+          'access'      => $access,
+          'location'		=> $location,
+          'event_at'		=> $event_at,
+        ], [
+          'user_id'     => Types::INTEGER,
+          'content'	    => Types::STRING,
+          'subject'	    => Types::STRING,
+          'access'      => Types::STRING,
+          'location'		=> Types::STRING,
+          'event_at'		=> Types::DATE_IMMUTABLE,
+        ]);
+
+      $news_id = (int) $this->db->lastInsertId();
+      $this->db->commit();
+    }
+    catch (\Exception $e)
+    {
+      $this->db->rollBack();
+      throw $e;
+    }
+
+		return $news_id;
 	}
 
 	public function update(

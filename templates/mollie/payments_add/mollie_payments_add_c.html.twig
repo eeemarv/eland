@@ -1,0 +1,15 @@
+{{- form_row(form. description, {
+  'label': 'label.description',
+  'addon': ux_icon('lucide:chevron-right'),
+  'help': 'mollie_payments_add.description.help',
+}) -}}
+
+<div class="panel panel-warning">
+  <div class="panel-heading">
+    {{- 'mollie_payments_add.link_info'|trans -}}
+  </div>
+</div>
+
+{{- form_row(form.verify, {
+  'label': 'check.verify',
+}) -}}

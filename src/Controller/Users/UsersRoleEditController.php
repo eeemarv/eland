@@ -11,7 +11,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -24,12 +23,12 @@ class UsersRoleEditController extends AbstractController
     name: 'users_role_edit',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
-      'role_short'    => '%assert.role_short.admin%',
-      'id'            => '%assert.id%',
+      'schema' => '%assert.schema%',
+      'role_short' => '%assert.role_short.admin%',
+      'id' => '%assert.id%',
     ],
     defaults: [
-      'module'        => 'users',
+      'module' => 'users',
     ],
   )]
 
@@ -39,13 +38,10 @@ class UsersRoleEditController extends AbstractController
     UserRepository $user_repository,
     UserLogRepository $user_log_repository,
     UserCacheService $user_cache_service,
-    TypeaheadService $typeahead_service,
     PageParamsService $pp,
     SessionUserService $su,
-  ):Response
-  {
-    if ($su->is_owner($id))
-    {
+  ): Response {
+    if ($su->is_owner($id)) {
       throw $this->createAccessDeniedException(
         'You can\'t edit your own role'
       );
@@ -58,8 +54,7 @@ class UsersRoleEditController extends AbstractController
       schema: $pp->schema_o(),
     );
 
-    if ($user === false)
-    {
+    if ($user === false) {
       throw $this->createNotFoundException(
         'User with id ' . $id . ' not found'
       );
@@ -78,22 +73,20 @@ class UsersRoleEditController extends AbstractController
     );
     $form->handleRequest($request);
 
-    if ($form->isSubmitted()
-      && $form->isValid())
-    {
+    if (
+      $form->isSubmitted()
+      && $form->isValid()
+    ) {
       $log_comment = $form->get('log_comment')->getData();
 
-      if ($command->role === $user['role'])
-      {
+      if ($command->role === $user['role']) {
         $this->addFlash(
           type: 'warning',
           message: [
             'key' => 'flash.no_change',
           ]
         );
-      }
-      else
-      {
+      } else {
         $user_repository->set_role(
           id: $id,
           role: $command->role,
@@ -102,9 +95,6 @@ class UsersRoleEditController extends AbstractController
 
         $user_cache_service->clear(
           id: $id,
-          schema: $pp->schema(),
-        );
-        $typeahead_service->clear_cache(
           schema: $pp->schema(),
         );
 
@@ -123,9 +113,9 @@ class UsersRoleEditController extends AbstractController
           message: [
             'key' => 'users_role_edit.flash.success',
             'params' => [
-              'user'  => $user['name'],
-              'old_role'  => $user['role'],
-              'new_role'  => $command->role,
+              'user' => $user['name'],
+              'old_role' => $user['role'],
+              'new_role' => $command->role,
             ]
           ],
         );
@@ -134,18 +124,18 @@ class UsersRoleEditController extends AbstractController
       return $this->redirectToRoute(
         route: 'users_show',
         parameters: [
-          ... $pp->ary(),
+          ...$pp->ary(),
           'id' => $id,
         ],
       );
     }
 
     return $this->render('users/users_role_edit.html.twig', [
-      'form'              => $form->createView(),
-      'user'              => $user,
-      'id'                => $id,
-      'is_self'           => false,
-      'is_intersystem'    => $is_intersystem,
+      'form' => $form->createView(),
+      'user' => $user,
+      'id' => $id,
+      'is_self' => false,
+      'is_intersystem' => $is_intersystem,
     ]);
   }
 }

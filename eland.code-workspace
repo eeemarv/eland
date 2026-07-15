@@ -9,6 +9,17 @@
     "emmet.includeLanguages": {
       "html": "html",
       "twig": "html"
-    }
+    },
+    "yaml.schemas": {
+      "file:///home/martti/.vscode/extensions/continue.continue-1.2.16-linux-x64/config-yaml-schema.json": [
+        ".continue/**/*.yaml"
+      ],
+      "file:///home/martti/.vscode/extensions/continue.continue-2.0.0-linux-x64/config-yaml-schema.json": [
+        ".continue/**/*.yaml",
+        "file:///home/martti/.continue/config.yaml"
+      ]
+    },
+    "ollama-autopilot.model.modelName": "ornith",
+    "ollama-autopilot.general.autopilotEnabled": true
   }
 }

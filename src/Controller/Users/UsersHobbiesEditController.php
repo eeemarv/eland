@@ -11,7 +11,6 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -24,13 +23,13 @@ class UsersHobbiesEditController extends AbstractController
     name: 'users_hobbies_edit',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
-      'role_short'    => '%assert.role_short.admin%',
-      'id'            => '%assert.id%',
+      'schema' => '%assert.schema%',
+      'role_short' => '%assert.role_short.admin%',
+      'id' => '%assert.id%',
     ],
     defaults: [
-      'is_self'       => false,
-      'module'        => 'users',
+      'is_self' => false,
+      'module' => 'users',
     ],
   )]
 
@@ -39,13 +38,13 @@ class UsersHobbiesEditController extends AbstractController
     name: 'users_hobbies_edit_self',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
-      'role_short'    => '%assert.role_short.user%',
+      'schema' => '%assert.schema%',
+      'role_short' => '%assert.role_short.user%',
     ],
     defaults: [
-      'id'            => 0,
-      'is_self'       => true,
-      'module'        => 'users',
+      'id' => 0,
+      'is_self' => true,
+      'module' => 'users',
     ],
   )]
 
@@ -55,33 +54,32 @@ class UsersHobbiesEditController extends AbstractController
     bool $is_self,
     UserRepository $user_repository,
     UserCacheService $user_cache_service,
-    TypeaheadService $typeahead_service,
     ConfigService $config_service,
     PageParamsService $pp,
     SessionUserService $su,
-  ):Response
-  {
-    if (!$config_service->get_bool(
-      config_id: 'users.fields.hobbies.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
+  ): Response {
+    if (
+      !$config_service->get_bool(
+        config_id: 'users.fields.hobbies.enabled',
+        schema: $pp->schema_o(),
+      )
+    ) {
       throw $this->createAccessDeniedException(
         'Users hobbies submodule not enabled.'
       );
     }
 
-    if (!$is_self
-      && $su->is_owner($id))
-    {
+    if (
+      !$is_self
+      && $su->is_owner($id)
+    ) {
       return $this->redirectToRoute(
         route: 'users_hobbies_edit_self',
         parameters: $pp->ary(),
       );
     }
 
-    if ($is_self)
-    {
+    if ($is_self) {
       $id = $su->id();
     }
 
@@ -92,8 +90,7 @@ class UsersHobbiesEditController extends AbstractController
       schema: $pp->schema_o(),
     );
 
-    if ($user === false)
-    {
+    if ($user === false) {
       throw $this->createNotFoundException(
         'User with id ' . $id . ' not found'
       );
@@ -109,20 +106,18 @@ class UsersHobbiesEditController extends AbstractController
 
     $form->handleRequest($request);
 
-    if ($form->isSubmitted()
-      && $form->isValid())
-    {
-      if ($command->hobbies === $user['hobbies'])
-      {
+    if (
+      $form->isSubmitted()
+      && $form->isValid()
+    ) {
+      if ($command->hobbies === $user['hobbies']) {
         $this->addFlash(
           type: 'warning',
           message: [
             'key' => 'flash.no_change',
           ]
         );
-      }
-      else
-      {
+      } else {
         $user_repository->set_hobbies(
           id: $id,
           hobbies: $command->hobbies,
@@ -133,24 +128,20 @@ class UsersHobbiesEditController extends AbstractController
           id: $id,
           schema: $pp->schema(),
         );
-        $typeahead_service->clear_cache(
-          schema: $pp->schema(),
-        );
 
         $this->addFlash(
           type: 'success',
           message: [
             'key' => 'users_hobbies_edit.flash.success',
-            'params'  => [
-              'self'  => $is_self ? 'yes' : 'no',
-              'user'  => $user['name'],
+            'params' => [
+              'self' => $is_self ? 'yes' : 'no',
+              'user' => $user['name'],
             ]
           ]
         );
       }
 
-      if ($is_self)
-      {
+      if ($is_self) {
         return $this->redirectToRoute(
           route: 'users_show_self',
           parameters: $pp->ary(),
@@ -160,18 +151,18 @@ class UsersHobbiesEditController extends AbstractController
       return $this->redirectToRoute(
         route: 'users_show',
         parameters: [
-          ... $pp->ary(),
+          ...$pp->ary(),
           'id' => $id,
         ],
       );
     }
 
     return $this->render('users/users_hobbies_edit.html.twig', [
-      'form'              => $form->createView(),
-      'user'              => $user,
-      'id'                => $id,
-      'is_self'           => $is_self,
-      'is_intersystem'    => $is_intersystem,
+      'form' => $form->createView(),
+      'user' => $user,
+      'id' => $id,
+      'is_self' => $is_self,
+      'is_intersystem' => $is_intersystem,
     ]);
   }
 }

@@ -104,7 +104,10 @@ class MollieConfigWebhookKeyController extends AbstractController
         );
       }
 
-      return $this->redirectToRoute('mollie_config_webhook_key', $pp->ary());
+      return $this->redirectToRoute(
+        route: 'mollie_config_webhook_key',
+        parameters: $pp->ary(),
+      );
     }
 
     return $this->render('mollie/mollie_config_webhook_key.html.twig', [

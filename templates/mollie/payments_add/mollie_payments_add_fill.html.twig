@@ -1,0 +1,47 @@
+<div class="panel panel-warning">
+  <div class="panel-heading">
+    <h4>
+    {{- 'mollie_payments_add.fill.title'|trans -}}
+    </h4>
+
+    <div class="form-group">
+      <label for="helper_amount" class="form-label">
+        {{- 'label.amount_euro'|trans -}}
+      </label>
+      <div class="input-group">
+        <div class="input-group-addon">
+          <twig:ux:icon name="lucide:euro" />
+        </div>
+        <input type="number" step="0.01" id="helper_amount" data-mollie-payments-add-fill-target="amount" class="form-control" placeholder="0,00">
+      </div>
+    </div>
+
+    <div>
+      <label class="control-label bg-success" for="skip_new">
+        <input type="checkbox" id="skip_new" data-mollie-payments-add-fill-target="skipCheck" value="new" checked>
+        {{ 'mollie_payments_add.fill.skip.new'|trans -}}
+      </label>
+    </div>
+
+    <div>
+      <label class="control-label bg-danger" for="skip_leaving">
+        <input type="checkbox" id="skip_leaving" data-mollie-payments-add-fill-target="skipCheck" value="leaving" checked>
+        {{ 'mollie_payments_add.fill.skip.leaving'|trans -}}
+      </label>
+    </div>
+
+    <div>
+      <label class="control-label bg-warning" for="skip_intersystem">
+        <input type="checkbox" id="skip_intersystem" data-mollie-payments-add-fill-target="skipCheck" value="intersystem" checked>
+        {{ 'mollie_payments_add.fill.skip.intersystem'|trans -}}
+      </label>
+    </div>
+
+    <div>
+      <button type="button" class="btn btn-info" data-action="click->mollie-payments-add-fill#fillAll">
+        {{- 'btn.fill'|trans -}}
+      </button>
+    </div>
+
+  </div>
+</div>

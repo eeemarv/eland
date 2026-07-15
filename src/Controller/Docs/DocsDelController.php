@@ -8,7 +8,6 @@ use App\Repository\DocRepository;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\S3Service;
-use App\Service\TypeaheadService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,12 +23,12 @@ class DocsDelController extends AbstractController
     name: 'docs_del',
     methods: ['GET', 'POST'],
     requirements: [
-      'id'            => '%assert.id%',
-      'schema'        => '%assert.schema%',
-      'role_short'    => '%assert.role_short.admin%',
+      'id' => '%assert.id%',
+      'schema' => '%assert.schema%',
+      'role_short' => '%assert.role_short.admin%',
     ],
     defaults: [
-      'module'        => 'docs',
+      'module' => 'docs',
     ],
   )]
 
@@ -40,16 +39,15 @@ class DocsDelController extends AbstractController
     ConfigService $config_service,
     LoggerInterface $logger,
     S3Service $s3_service,
-    TypeaheadService $typeahead_service,
     PageParamsService $pp,
     string $env_s3_url,
-  ):Response
-  {
-    if (!$config_service->get_bool(
-      config_id: 'docs.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
+  ): Response {
+    if (
+      !$config_service->get_bool(
+        config_id: 'docs.enabled',
+        schema: $pp->schema_o(),
+      )
+    ) {
       throw $this->createNotFoundException('Documents module not enabled.');
     }
 
@@ -60,8 +58,7 @@ class DocsDelController extends AbstractController
       schema: $pp->schema_o(),
     );
 
-    if ($doc === false)
-    {
+    if ($doc === false) {
       throw $this->createNotFoundException(
         'Document with id ' . $id . ' not found'
       );
@@ -72,15 +69,13 @@ class DocsDelController extends AbstractController
     $command->name = $doc['name'];
     $command->access = $doc['access'];
 
-    if (isset($doc['map_id']))
-    {
+    if (isset($doc['map_id'])) {
       $doc_map = $doc_repository->get_map(
         map_id: $doc['map_id'],
         schema: $pp->schema_o(),
       );
 
-      if ($doc_map === false)
-      {
+      if ($doc_map === false) {
         throw $this->createNotFoundException(
           'Document with id ' . $doc['map_id'] . ' not found'
         );
@@ -95,9 +90,10 @@ class DocsDelController extends AbstractController
     );
     $form->handleRequest($request);
 
-    if ($form->isSubmitted()
-      && $form->isValid())
-    {
+    if (
+      $form->isSubmitted()
+      && $form->isValid()
+    ) {
       $alert_success_msg = [];
 
       $doc_repository->del(
@@ -110,32 +106,27 @@ class DocsDelController extends AbstractController
       $name = $doc['name'] ?? $doc['original_filename'];
       $alert_success_msg[] = 'Document "' . $name . '" is verwijderd.';
 
-      if (isset($doc['map_id']))
-      {
+      if (isset($doc['map_id'])) {
         $map_doc_count = $doc_repository->get_count_for_map_id(
           map_id: $doc['map_id'],
           schema: $pp->schema_o(),
         );
 
-        if ($map_doc_count === 0)
-        {
+        if ($map_doc_count === 0) {
           $alert_success_msg[] = 'Map "' . $doc_map['name'] . '" bevatte geen items meer en werd automatisch gewist.';
           $doc_repository->del_map(
             map_id: $doc['map_id'],
             schema: $pp->schema_o(),
           );
-          $typeahead_service->clear_cache($pp->schema());
           unset($doc['map_id']);
         }
       }
 
-      foreach ($alert_success_msg as $success)
-      {
+      foreach ($alert_success_msg as $success) {
         $this->addFlash('success', $success);
       }
 
-      if (!isset($doc['map_id']))
-      {
+      if (!isset($doc['map_id'])) {
         return $this->redirectToRoute('docs', $pp->ary());
       }
 
@@ -146,8 +137,8 @@ class DocsDelController extends AbstractController
     }
 
     return $this->render('docs/docs_del.html.twig', [
-      'form'  => $form->createView(),
-      'doc'   => $doc,
+      'form' => $form->createView(),
+      'doc' => $doc,
     ]);
   }
 }

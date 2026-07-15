@@ -1,11 +1,11 @@
 {%- extends 'transactions/base/transactions_base.html.twig' -%}
 
 {%- block assets_add -%}
-    {{- parent() -}}
-    {{- assets_add([
-        'mass_transaction.js',
-        'combined_filter.js'
-    ]) -}}
+  {{- parent() -}}
+  {{- assets_add([
+    'mass_transaction.js',
+    'combined_filter.js'
+  ]) -}}
 {%- endblock assets_add -%}
 
 {%- set admin_heading = true -%}
@@ -21,11 +21,3 @@
 {%- block filter_form_a -%}
     {%- include 'form/q_filter.html.twig' -%}
 {%- endblock filter_form_a -%}
-
-{%- block css -%}
-    {{- parent() -}}
-{%- endblock css -%}
-
-{%- block js -%}
-    {{- parent() -}}
-{%- endblock js -%}

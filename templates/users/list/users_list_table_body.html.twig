@@ -4,11 +4,9 @@
   {%- set u_class =
     is_new(u) ? ' class="success"' :
     is_leaving(u) ? ' class="danger"' :
-    is_active(u) ? '' :
-    is_inactive(u) ? ' class="inactive"' :
-    is_ip(u) ? ' class="warning"' :
-    is_im(u) ? ' class="info"' :
-    is_extern(u) ? ' class="extern"' : ''
+    is_intersystem(u) ? ' class="warning"' :
+    is_pre_active(u) ? ' class="inactive"' :
+    is_post_active(u) ? ' class="info"' : ''
   -%}
   {%- set can_link = is_active(uid) or pp_has_role('admin') -%}
   {%- set u_link = can_link ? path('users_show', {'id': uid, 'status': all_params.status}|pp) : null -%}
@@ -17,7 +15,7 @@
 
     <td>
       {%- if pp_has_role('admin') -%}
-        {%- embed 'component/bulkchecktable/checkbox.html.twig' with {
+        {%- embed 'component/bulk_check_table/checkbox.html.twig' with {
           'id': uid,
         } -%}
           {%- block label -%}

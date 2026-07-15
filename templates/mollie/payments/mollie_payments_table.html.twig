@@ -34,15 +34,13 @@
       {%- set u_class =
         is_new(p) ? ' class="success"' :
         is_leaving(p) ? ' class="danger"' :
-        is_active(p) ? '' :
-        is_inactive(p) ? ' class="inactive"' :
-        is_ip(p) ? ' class="warning"' :
-        is_im(p) ? ' class="info"' :
-        is_extern(p) ? ' class="extern"' : ''
+        is_intersystem(p) ? ' class="warning"' :
+        is_pre_active(p) ? ' class="inactive"' :
+        is_post_active(p) ? ' class="info"' : ''
       -%}
       <tr>
         <td{%- if p.is_paid or p.is_canceled %} class="bg-inactive"{%- endif -%}>
-          {%- include 'component/bulkchecktable/checkbox.html.twig' with {
+          {%- include 'component/bulk_check_table/checkbox.html.twig' with {
             'id': p.id,
             'label': p.amount|replace({'.': ','}),
             'disabled': p.is_paid or p.is_canceled,
@@ -93,6 +91,6 @@
       </tr>
     {%- endfor -%}
     </tbody>
-    {%- include 'component/bulkchecktable/tfoot_buttons.html.twig' -%}
+    {%- include 'component/bulk_check_table/tfoot_buttons.html.twig' -%}
   </table>
 </div>

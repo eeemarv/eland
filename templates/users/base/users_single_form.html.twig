@@ -1,7 +1,7 @@
 {%- extends 'users/base/users_single_base.html.twig' -%}
 
 {%- set cancel_route = 'users_show' ~ (is_self ? '_self' : '') -%}
-{%- set admin_heading = not is_self -%}
+{%- set admin_heading = not is_self and pp_has_role('admin') -%}
 
 {%- block content -%}
 {%- endblock content -%}

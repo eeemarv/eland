@@ -5,7 +5,6 @@ namespace App\Controller\Users;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Render\LinkRender;
 use App\Command\UsersBulk\UsersBulkAdminCommentsCommand;
 use App\Command\UsersBulk\UsersBulkCommentsCommand;
 use App\Command\UsersBulk\UsersBulkEmailCommand;
@@ -47,14 +46,12 @@ use App\Repository\TagRepository;
 use App\Repository\TransactionRepository;
 use App\Repository\UserLogRepository;
 use App\Repository\UserRepository;
-use App\Service\CacheService;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\UserCacheService;
 use App\Service\VarRouteService;
-use Doctrine\DBAL\Types\Types;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
@@ -65,19 +62,13 @@ use Symfony\Component\Routing\Annotation\Route;
 #[AsController]
 class UsersListController extends AbstractController
 {
-  const USER_AKEYS = [
-    'id'  => true,
-    'name'  => true,
-    'code'  => true,
-  ];
-
   #[Route(
     '/{schema}/{role_short}/users/{status}',
     name: 'users_list',
     methods: ['GET', 'POST'],
     priority: 20,
     requirements: [
-      'status'        => '%assert.account_status%',
+      'status'        => '%assert.account.status2%',
       'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.guest%',
     ],
@@ -100,7 +91,6 @@ class UsersListController extends AbstractController
     TransactionRepository $transaction_repository,
     LoginRepository $login_repository,
     AccountRender $account_render,
-    CacheService $cache_service,
     ConfigService $config_service,
     ItemAccessService $item_access_service,
     UserCacheService $user_cache_service,
@@ -111,7 +101,7 @@ class UsersListController extends AbstractController
     VarRouteService $vr,
   ):Response
   {
-    if (!$pp->is_admin() && !in_array($status, ['active', 'new', 'leaving']))
+    if (!$pp->is_admin() && !in_array($status, ['active', 'new', 'leaving', 'intersystem']))
     {
       throw $this->createAccessDeniedException('No access for status: ' . $status);
     }
@@ -236,16 +226,15 @@ class UsersListController extends AbstractController
 
       foreach ($m_users as $u)
       {
-        $u_sect = array_intersect_key($u, self::USER_AKEYS);
         if (count($u['email_addresses']))
         {
           $user_ids_sent[] = $u['id'];
-          $flash_sent_ary[] = $u_sect;
+          $flash_sent_ary[] = $u;
         }
         else
         {
           $user_ids_not_sent[] = $u['id'];
-          $flash_not_sent_ary[] = $u_sect;
+          $flash_not_sent_ary[] = $u;
         }
       }
 
@@ -281,12 +270,12 @@ class UsersListController extends AbstractController
             'count' => count($flash_sent_ary),
           ],
       ]);
-      foreach($flash_sent_ary as $u_sect)
+      foreach($flash_sent_ary as $u)
       {
         $this->addFlash(
           type: 'success',
           message: [
-            'user'  => $u_sect,
+            'user'  => $u,
           ],
         );
       }
@@ -301,12 +290,12 @@ class UsersListController extends AbstractController
           ],
         ]);
       }
-      foreach($flash_not_sent_ary as $u_sect)
+      foreach($flash_not_sent_ary as $u)
       {
         $this->addFlash(
           type: 'warning',
           message: [
-            'user'  => $u_sect,
+            'user'  => $u,
           ],
         );
       }
@@ -397,10 +386,7 @@ class UsersListController extends AbstractController
           $this->addFlash(
             type: 'success',
             message: [
-              'user'  => array_intersect_key(
-                $s_user_ary[$uid],
-                self::USER_AKEYS,
-              ),
+              'user'  => $s_user_ary[$uid],
             ],
           );
         }
@@ -422,10 +408,7 @@ class UsersListController extends AbstractController
           $this->addFlash(
             type: 'warning',
             message: [
-              'user'  => array_intersect_key(
-                $s_user_ary[$uid],
-                self::USER_AKEYS
-              ),
+              'user'  => $s_user_ary[$uid],
             ],
           );
         }
@@ -1903,170 +1886,5 @@ class UsersListController extends AbstractController
       'bulk_tags_del_form'     => $bulk_tags_del_form?->createView(),
       'cols_form'   => $cols_form->createView(),
     ]);
-  }
-
-  static public function get_status_def_ary(
-    ConfigService $config_service,
-    ItemAccessService $item_access_service,
-    PageParamsService $pp
-  ):array
-  {
-    $new_user_treshold = $config_service->get_new_user_treshold(
-      schema: $pp->schema_o(),
-    );
-
-    $status_def_ary = [];
-
-    $status_def_ary['active'] = [
-      'lbl'	=> $pp->is_admin() ? 'Actief' : 'Alle',
-      'sql'	=> [
-        'where'     => ['u.status in (1, 2)'],
-      ],
-      'st'	=> [1, 2],
-    ];
-
-    if ($config_service->get_bool(
-      config_id: 'users.new.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      $new_users_access_pane = $config_service->get_str(
-        config_id: 'users.new.access_pane',
-        schema: $pp->schema_o(),
-      );
-
-      if ($item_access_service->is_visible($new_users_access_pane))
-      {
-        $status_def_ary['new'] = [
-          'lbl'	=> 'Instappers',
-          'sql'	=> [
-            'where'     => ['u.status = 1 and u.activated_at > ?'],
-            'params'    => [$new_user_treshold],
-            'types'     => [Types::DATETIME_IMMUTABLE],
-          ],
-          'cl'	=> 'success',
-          'st'	=> 3,
-        ];
-      }
-    }
-
-    if ($config_service->get_bool(
-      config_id: 'users.leaving.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      $leaving_users_access_pane = $config_service->get_str(
-        config_id: 'users.leaving.access_pane',
-        schema: $pp->schema_o(),
-      );
-
-      if ($item_access_service->is_visible($leaving_users_access_pane))
-      {
-        $status_def_ary['leaving'] = [
-          'lbl'	=> 'Uitstappers',
-          'sql'	=> [
-            'where'     => ['u.status = 2'],
-          ],
-          'cl'	=> 'danger',
-          'st'	=> 2,
-        ];
-      }
-    }
-
-    if ($pp->is_admin())
-    {
-      $status_def_ary['inactive'] = [
-        'lbl'	=> 'Inactief',
-        'sql'	=> [
-          'where'     => ['u.status = 0'],
-        ],
-        'cl'	=> 'inactive',
-        'st'	=> 0,
-      ];
-
-      $status_def_ary['ip'] = [
-        'lbl'	=> 'Info-pakket',
-        'sql'	=> [
-          'where'     => ['u.status = 5'],
-        ],
-        'cl'	=> 'warning',
-        'st'	=> 5,
-      ];
-
-      $status_def_ary['im'] = [
-        'lbl'	=> 'Info-moment',
-        'sql'	=> [
-          'where'     => ['u.status = 6'],
-        ],
-        'cl'	=> 'info',
-        'st'	=> 6
-      ];
-
-      $status_def_ary['extern'] = [
-        'lbl'	=> 'Extern',
-        'sql'	=> [
-          'where'     => ['u.status = 7'],
-        ],
-        'cl'	=> 'extern',
-        'st'	=> 7,
-      ];
-
-      $status_def_ary['all'] = [
-        'lbl'	=> 'Alle',
-        'sql'	=> [],
-      ];
-    }
-
-    return $status_def_ary;
-  }
-
-  static public function get_tab_selector(
-    array $params,
-    LinkRender $link_render,
-    ItemAccessService $item_access_service,
-    ConfigService $config_service,
-    PageParamsService $pp,
-    VarRouteService $vr,
-  ):string
-  {
-    $status_def_ary = self::get_status_def_ary($config_service, $item_access_service, $pp);
-
-    $out = '<div class="pull-right hidden-xs hidden-sm print-hide">';
-    $out .= 'Totaal: <span id="total"></span>';
-    $out .= '</div>';
-
-    if (count($status_def_ary) < 2)
-    {
-      return $out;
-    }
-
-    $out .= '<ul class="nav nav-tabs" id="nav-tabs">';
-
-    $nav_params = $params;
-
-    foreach ($status_def_ary as $k => $tab)
-    {
-      $nav_params['status'] = $k;
-
-      $out .= '<li';
-      $out .= $params['status'] === $k ? ' class="active"' : '';
-      $out .= '>';
-
-      $class_ary = isset($tab['cl']) ? ['class' => 'bg-' . $tab['cl']] : [];
-
-      $out .= $link_render->link(
-        $vr->get('users'),
-        $pp->ary(),
-        $nav_params,
-        $tab['lbl'],
-        $class_ary
-      );
-
-      $out .= '</li>';
-    }
-
-    $out .= '</ul>';
-
-    return $out;
   }
 }

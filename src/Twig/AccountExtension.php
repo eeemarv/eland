@@ -15,14 +15,12 @@ class AccountExtension extends AbstractExtension
 			new TwigFunction('username', [AccountRuntime::class, 'get_name'], ['needs_context' => true]),
 			new TwigFunction('account_code', [AccountRuntime::class, 'get_code'], ['needs_context' => true]),
 			new TwigFunction('account_balance', [AccountRuntime::class, 'get_balance'], ['needs_context' => true]),
-			new TwigFunction('account_status', [AccountRuntime::class, 'get_status'], ['needs_context' => true]),
 			new TwigFunction('is_new', [AccountRuntime::class, 'is_new'], ['needs_context' => true]),
 			new TwigFunction('is_leaving', [AccountRuntime::class, 'is_leaving'], ['needs_context' => true]),
-			new TwigFunction('is_inactive', [AccountRuntime::class, 'is_inactive'], ['needs_context' => true]),
+			new TwigFunction('is_intersystem', [AccountRuntime::class, 'is_intersystem'], ['needs_context' => true]),
 			new TwigFunction('is_active', [AccountRuntime::class, 'is_active'], ['needs_context' => true]),
-			new TwigFunction('is_ip', [AccountRuntime::class, 'is_ip'], ['needs_context' => true]),
-			new TwigFunction('is_im', [AccountRuntime::class, 'is_im'], ['needs_context' => true]),
-			new TwigFunction('is_extern', [AccountRuntime::class, 'is_extern'], ['needs_context' => true]),
+			new TwigFunction('is_pre_active', [AccountRuntime::class, 'is_pre_active'], ['needs_context' => true]),
+			new TwigFunction('is_post_active', [AccountRuntime::class, 'is_post_active'], ['needs_context' => true]),
 		];
 	}
 }

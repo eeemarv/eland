@@ -21,12 +21,16 @@ class AccountRuntime implements RuntimeExtensionInterface
 
 	public function get(
     array $context,
-    int $user_id,
+    int|array $user,
     string|null $schema = null,
   ):string
 	{
-    $sch_str = $schema ?? $context['schema'] ?? null;
-		$user = $this->user_cache_service->get($user_id, $sch_str);
+    if (!is_array($user))
+    {
+      $sch_str = $schema ?? $context['schema'] ?? null;
+      $user = $this->user_cache_service->get($user, $sch_str);
+    }
+
 		$code = $user['code'] ?? '***';
 		$name = $user['name'] ?? '***';
 		return $code . ' ' . $name;
@@ -45,103 +49,47 @@ class AccountRuntime implements RuntimeExtensionInterface
 
 	public function get_name(
     array $context,
-    int $user_id,
+    int|array $user,
     string|null $schema = null,
   ):string
 	{
+    if (is_array($user))
+    {
+		  return $user['name'];
+    }
+
     $sch_str = $schema ?? $context['schema'] ?? null;
-		$user = $this->user_cache_service->get($user_id, $sch_str);
-		return $user['name'];
+		return $this->user_cache_service->get($user, $sch_str)['name'];
 	}
 
 	public function get_code(
     array $context,
-    int $user_id,
+    int|array $user,
     string|null $schema = null,
   ):string
 	{
+    if (is_array($user))
+    {
+      return $user['code'];
+    }
+
     $sch_str = $schema ?? $context['schema'] ?? null;
-		$user = $this->user_cache_service->get($user_id, $sch_str);
-		return $user['code'];
+    return $this->user_cache_service->get($user, $sch_str)['code'];
 	}
 
 	public function get_balance(
     array $context,
-    int $user_id,
+    int|array $user,
     string|null $schema = null
   ):int
 	{
     $sch_str = $schema ?? $context['schema'] ?? null;
     $schema_o = new Schema($sch_str);
+    $user_id = is_array($user) ? $user['id'] : $user;
 		return $this->account_repository->get_balance(
       account_id: $user_id,
       schema: $schema_o,
     );
-	}
-
-	public function get_status(
-    array $context,
-    int|array $user,
-    string|null $schema = null
-  ):string
-	{
-    $sch_str = $schema ?? $context['schema'] ?? null;
-    $schema_o = new Schema($sch_str);
-
-    if (is_int($user))
-    {
-		  $user = $this->user_cache_service->get($user, $sch_str);
-    }
-
-		$status_id = $user['status'];
-
-    if (isset($user['activated_at'])
-      && $status_id === 1
-		)
-    {
-      $new_users_enabled = $this->config_service->get_bool(
-        config_id: 'users.new.enabled',
-        schema: $schema_o,
-      );
-
-      if ($new_users_enabled)
-      {
-        $new_user_treshold = $this->config_service->get_new_user_treshold(
-          schema: $schema_o,
-        );
-
-        if ($new_user_treshold->getTimestamp() < strtotime($user['activated_at'] . ' UTC'))
-        {
-          $status_id = 3;
-        }
-      }
-    }
-
-		if ($status_id === 1)
-		{
-			return '';
-		}
-
-		if ($status_id === 2)
-		{
-			$leaving_users_enabled = $this->config_service->get_bool(
-        config_id: 'users.leaving.enabled',
-        schema: $schema_o,
-      );
-
-			if (!$leaving_users_enabled)
-			{
-				return '';
-			}
-		}
-
-		$out = '&nbsp;<small><span class="text-';
-		$out .= StatusCnst::CLASS_ARY[$status_id];
-		$out .= '">';
-		$out .= StatusCnst::RENDER_ARY[$status_id];
-		$out .= '</span></small>';
-
-		return $out;
 	}
 
 	public function is_new(
@@ -157,14 +105,26 @@ class AccountRuntime implements RuntimeExtensionInterface
 		  $user = $this->user_cache_service->get($user, $sch_str);
     }
 
-    if ($user['status'] !== 1)
+    if (!$user['is_active'])
     {
       return false;
     }
+
     if (!isset($user['activated_at']))
     {
       return false;
     }
+
+    if (isset($user['remote_schema']))
+    {
+      return false;
+    }
+
+    if (isset($user['remote_email']))
+    {
+      return false;
+    }
+
     if (!$this->config_service->get_bool(
       config_id: 'users.new.enabled',
       schema: $schema_o,
@@ -172,6 +132,7 @@ class AccountRuntime implements RuntimeExtensionInterface
     {
       return false;
     }
+
     $new_user_treshold = $this->config_service->get_new_user_treshold(
       schema: $schema_o,
     );
@@ -180,6 +141,7 @@ class AccountRuntime implements RuntimeExtensionInterface
     {
       return true;
     }
+
     return false;
 	}
 
@@ -191,15 +153,32 @@ class AccountRuntime implements RuntimeExtensionInterface
 	{
     $sch_str = $schema ?? $context['schema'] ?? null;
     $schema_o = new Schema($sch_str);
+
     if (is_int($user))
     {
 		  $user = $this->user_cache_service->get($user, $sch_str);
     }
 
-		if ($user['status'] !== 2)
+    if (!$user['is_active'])
+    {
+      return false;
+    }
+
+		if (!$user['is_leaving'])
 		{
 			return false;
 		}
+
+    if (isset($user['remote_schema']))
+    {
+      return false;
+    }
+
+    if (isset($user['remote_email']))
+    {
+      return false;
+    }
+
     if (!$this->config_service->get_bool(
       config_id: 'users.leaving.enabled',
       schema: $schema_o,
@@ -207,48 +186,11 @@ class AccountRuntime implements RuntimeExtensionInterface
     {
       return false;
     }
+
     return true;
 	}
 
-	public function is_inactive(
-    array $context,
-    int|array $user,
-    string|null $schema = null
-  ):bool
-	{
-    $sch_str = $schema ?? $context['schema'] ?? null;
-    if (is_int($user))
-    {
-		  $user = $this->user_cache_service->get($user, $sch_str);
-    }
-
-		if ($user['status'] === 0)
-		{
-			return true;
-		}
-    return false;
-	}
-
-	public function is_ip(
-    array $context,
-    int|array $user,
-    string|null $schema = null
-  ):bool
-	{
-    $sch_str = $schema ?? $context['schema'] ?? null;
-    if (is_int($user))
-    {
-		  $user = $this->user_cache_service->get($user, $sch_str);
-    }
-
-		if ($user['status'] === 5)
-		{
-			return true;
-		}
-    return false;
-	}
-
-	public function is_im(
+	public function is_intersystem(
     array $context,
     int|array $user,
     string|null $schema = null
@@ -260,29 +202,21 @@ class AccountRuntime implements RuntimeExtensionInterface
       $user = $this->user_cache_service->get($user, $sch_str);
     }
 
-		if ($user['status'] === 6)
-		{
-			return true;
-		}
-    return false;
-	}
-
-	public function is_extern(
-    array $context,
-    int|array $user,
-    string|null $schema = null
-  ):bool
-	{
-    $sch_str = $schema ?? $context['schema'] ?? null;
-    if (is_int($user))
+    if (!$user['is_active'])
     {
-      $user = $this->user_cache_service->get($user, $sch_str);
+      return false;
     }
 
-		if ($user['status'] === 7)
+		if (isset($user['remote_schema']))
 		{
 			return true;
 		}
+
+    if (isset($user['remote_email']))
+    {
+      return true;
+    }
+
     return false;
 	}
 
@@ -298,14 +232,61 @@ class AccountRuntime implements RuntimeExtensionInterface
       $user = $this->user_cache_service->get($user, $sch_str);
     }
 
-		if ($user['status'] === 1)
-		{
-			return true;
-		}
-		if ($user['status'] === 2)
-		{
-			return true;
-		}
+    if (!$user['is_active'])
+    {
+      return false;
+    }
+
+    return true;
+	}
+
+	public function is_pre_active(
+    array $context,
+    int|array $user,
+    string|null $schema = null
+  ):bool
+	{
+    $sch_str = $schema ?? $context['schema'] ?? null;
+    if (is_int($user))
+    {
+      $user = $this->user_cache_service->get($user, $sch_str);
+    }
+
+    if ($user['is_active'])
+    {
+      return false;
+    }
+
+    if (isset($user['activated_at']))
+    {
+      return false;
+    }
+
+    return true;
+	}
+
+	public function is_post_active(
+    array $context,
+    int|array $user,
+    string|null $schema = null
+  ):bool
+	{
+    $sch_str = $schema ?? $context['schema'] ?? null;
+    if (is_int($user))
+    {
+      $user = $this->user_cache_service->get($user, $sch_str);
+    }
+
+    if ($user['is_active'])
+    {
+      return false;
+    }
+
+    if (isset($user['activated_at']))
+    {
+      return true;
+    }
+
     return false;
 	}
 }

@@ -10,16 +10,21 @@
 {%- endblock heading_icon -%}
 
 {%- block form_a -%}
+
 <div data-controller="tag-preview">
   <div class="row">
     <div class="col-sm-6">
+      {# allow data-action of unique-check controller #}
+      {%- set txt_attr = form.txt.vars.attr|merge({
+        'data-tag-preview-target': 'text',
+        'data-action': 'input->tag-preview#update '
+        ~ form.txt.vars.attr['data-action'] ?? '',
+      }) -%}
+
       {{- form_row(form.txt, {
         'label': 'label.text',
         'addon': ux_icon('lucide:pencil'),
-        'attr': {
-          'data-tag-preview-target': 'text',
-          'data-action': 'input->tag-preview#update'
-        }
+        'attr': txt_attr,
       }) -}}
     </div>
     <div class="col-sm-6">

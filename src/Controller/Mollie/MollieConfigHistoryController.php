@@ -16,7 +16,7 @@ class MollieConfigHistoryController extends AbstractController
   #[Route(
     '/{schema}/{role_short}/mollie/config/history',
     name: 'mollie_config_history',
-    methods: ['GET', 'POST'],
+    methods: ['GET'],
     requirements: [
       'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',

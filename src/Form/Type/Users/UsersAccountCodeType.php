@@ -3,7 +3,7 @@
 namespace App\Form\Type\Users;
 
 use App\Command\Users\UsersAccountCodeCommand;
-use App\Form\Type\Field\TypeaheadType;
+use App\Form\Type\Field\UniqueCheckType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -16,9 +16,8 @@ class UsersAccountCodeType extends AbstractType
     array $options,
   ):void
   {
-    $builder->add('code', TypeaheadType::class, [
-      'add'           => 'account_codes',
-      'render_omit'   => $options['render_omit'],
+    $builder->add('code', UniqueCheckType::class, [
+      'route' => 'unique_check_account_codes',
     ]);
 
     $builder->add('submit', SubmitType::class);
@@ -27,7 +26,5 @@ class UsersAccountCodeType extends AbstractType
   public function configureOptions(OptionsResolver $resolver):void
   {
     $resolver->setDefault('data_class', UsersAccountCodeCommand::class);
-    $resolver->setDefault('render_omit', '');
-    $resolver->setAllowedTypes('render_omit', 'string');
   }
 }

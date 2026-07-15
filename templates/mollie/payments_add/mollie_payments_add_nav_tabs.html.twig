@@ -1,0 +1,61 @@
+
+<div class="pull-right hidden-xs hidden-sm print-hide">
+  {{- 'label.total'|trans -}}: <span data-user-count-table-target="rowCount"></span>
+</div>
+
+{%- set user_new_pane_en = config_bool('users.new.enabled')
+  and config_str('users.new.access_pane')|is_visible -%}
+{%- set user_leaving_pane_en = config_bool('users.leaving.enabled')
+  and config_str('users.leaving.access_pane')|is_visible -%}
+
+
+<ul class="nav nav-tabs">
+  <li{%- if all_params.status == 'active' %} class="active"{%- endif -%}>
+    <a  href="{{- path('mollie_payments_add', {'status': 'active'}|pp) -}}">
+     {{- 'status.active'|trans -}}
+    </a>
+  </li>
+
+  {%- if user_new_pane_en -%}
+    <li{%- if all_params.status == 'new' %} class="active"{%- endif -%}>
+      <a  href="{{- path('mollie_payments_add', {'status': 'new'}|pp) -}}" class="bg-success">
+        {{- 'status.new'|trans -}}
+      </a>
+    </li>
+  {%- endif -%}
+
+  {%- if user_leaving_pane_en -%}
+  <li{%- if all_params.status == 'leaving' %} class="active"{%- endif -%}>
+    <a href="{{- path('mollie_payments_add', {'status': 'leaving'}|pp) -}}" class="bg-danger">
+      {{- 'status.leaving'|trans -}}
+    </a>
+  </li>
+  {%- endif -%}
+
+  {%- if config_bool('intersystem.enabled') -%}
+  <li{%- if all_params.status == 'intersystem' %} class="active"{%- endif -%}>
+    <a href="{{- path('mollie_payments_add', {'status': 'intersystem'}|pp) -}}" class="bg-warning">
+      {{- 'status.intersystem'|trans -}}
+    </a>
+  </li>
+  {%- endif -%}
+
+
+  <li{%- if all_params.status == 'pre-active' %} class="active"{%- endif -%}>
+    <a  href="{{- path('mollie_payments_add', {'status': 'pre-active'}|pp) -}}" class="bg-inactive">
+      {{- 'status.pre_active'|trans -}}
+    </a>
+  </li>
+
+  <li{%- if all_params.status == 'post-active' %} class="active"{%- endif -%}>
+    <a  href="{{- path('mollie_payments_add', {'status': 'post-active'}|pp) -}}" class="bg-info">
+      {{- 'status.post_active'|trans -}}
+    </a>
+  </li>
+
+  <li{%- if all_params.status == 'all' %} class="active"{%- endif -%}>
+    <a href="{{- path('mollie_payments_add', {'status': 'all'}|pp) -}}">
+      {{- 'status.all'|trans -}}
+    </a>
+  </li>
+</ul>

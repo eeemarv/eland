@@ -19,7 +19,7 @@ class MollieRepository
 
   public function insert_payment_requests(
     string $description,
-    int $created_by,
+    int|null $created_by,
     array $user_amount_ary,
     Schema $schema
   ):void
@@ -37,7 +37,7 @@ class MollieRepository
 
     $stmt_2 = $this->db->prepare('insert into ' .
       $schema->str() . '.mollie_payments
-      (reques_id, amount, user_id, currency, created_by)
+      (request_id, amount, user_id, currency, created_by)
       values
       (:request_id, :amount, :user_id, :currency, :created_by)');
     $stmt_2->bindValue('request_id', $request_id, Types::INTEGER);

@@ -20,7 +20,7 @@ class UsersTilesController extends AbstractController
     methods: ['GET'],
     priority: 20,
     requirements: [
-      'status'        => '%assert.account_status%',
+      'status'        => '%assert.account.status2%',
       'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.guest%',
     ],

@@ -7,13 +7,13 @@ use Symfony\Component\Validator\Constraints\All;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotNull;
-use Symfony\Component\Validator\Constraints\PositiveOrZero;
+use Symfony\Component\Validator\Constraints\Positive;
 use Symfony\Component\Validator\Constraints\Type;
 
 class TransactionsMassManyToOneCommand implements CommandInterface
 {
   #[All([
-    new PositiveOrZero(),
+    new Positive(),
   ])]
   public array $amounts = [];
 
@@ -25,6 +25,9 @@ class TransactionsMassManyToOneCommand implements CommandInterface
   #[Type(type: 'string')]
   #[Length(min: 1, max: 60)]
   public mixed $description;
+
+  #[Choice(['service', 'stuff'])]
+  public mixed $service_stuff;
 
   #[Type(type: 'bool')]
   #[IsTrue()]

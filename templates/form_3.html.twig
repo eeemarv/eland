@@ -97,16 +97,6 @@
   <input type="hidden" name="captcha_token" value="{{- captcha_token -}}">
 {%- endblock captcha_row -%}
 
-{%- block typeahead_help -%}
-  {%- if render_omit is defined -%}
-    <span class="help-block hidden exists_query_results">
-      {{- 'label.already_exists'|trans -}}:
-      <span class="query_results"></span>
-    </span>
-  {%- endif -%}
-  {{- block('form_help') -}}
-{%- endblock typeahead_help -%}
-
 {%- block datepicker_widget -%}
   {%- set attr = attr|merge({
     'data-provide': 'datepicker',
@@ -178,3 +168,10 @@
     {{- parent() -}}
   {%- endif -%}
 {%- endblock button_row -%}
+
+{%- block unique_check_help -%}
+  <p class="help-text hidden" data-unique-check-target="helpText">
+    {{- 'help.unique_check.already_exists'|trans -}}:&nbsp;
+    <span data-list></span>
+  </p>
+{%- endblock -%}
