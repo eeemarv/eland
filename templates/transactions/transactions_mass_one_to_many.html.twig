@@ -1,0 +1,8 @@
+{%- extends 'transactions/mass/transactions_mass_base.html.twig' -%}
+
+{%- block form_a -%}
+  {{- form_row(form.from_account_id, {
+    'label': 'label.from_account',
+    'addon': ux_icon('lucide:user'),
+  }) -}}
+{%- endblock form_a -%}

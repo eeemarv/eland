@@ -1,0 +1,11 @@
+
+<ul class="nav nav-pills mb-2">
+  {%- for tr_mass_type in ['many_to_one', 'one_to_many'] -%}
+    {%- set rt = 'transactions_mass_' ~ tr_mass_type -%}
+    <li role="presentation"{%- if route == rt %} class="active"{%- endif -%}>
+      <a href="{{- path(rt, pp_ary()) -}}">
+        {{- (rt ~ '.title')|trans -}}
+      </a>
+    </li>
+  {%- endfor -%}
+</ul>

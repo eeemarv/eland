@@ -6,11 +6,16 @@
 {%- block content_controllers -%}
 datatable
 user-count-table
-mollie-payments-add-fill
+mass-fill
+mass-count
 {%- endblock content_controllers -%}
 
 {%- block content_controllers_attr -%}
 data-datatable-sortable-value="true"
+data-action="datatable:draw->mass-count#calculate
+datatable:draw->user-count-table#calculate"
+data-mass-fill-money-en-value="true"
+data-mass-count-money-en-value="true"
 {%- endblock content_controllers_attr -%}
 
 {%- block heading_title -%}

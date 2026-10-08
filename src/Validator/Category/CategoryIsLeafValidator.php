@@ -18,7 +18,10 @@ class CategoryIsLeafValidator extends ConstraintValidator
   {
   }
 
-  public function validate($category_id, Constraint $constraint):void
+  public function validate(
+    mixed $category_id,
+    Constraint $constraint,
+  ):void
   {
     if (!$constraint instanceof CategoryIsLeaf)
     {
@@ -31,7 +34,7 @@ class CategoryIsLeafValidator extends ConstraintValidator
     }
 
     $filter_options = [
-        'options' => ['min_range' => 1],
+      'options' => ['min_range' => 1],
     ];
 
     if (!filter_var($category_id, FILTER_VALIDATE_INT, $filter_options))

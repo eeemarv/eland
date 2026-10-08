@@ -13,8 +13,6 @@ export default class extends Controller {
       .filter(checkbox => checkbox.checked)
       .map(checkbox => checkbox.value)
 
-    const inputs = document.querySelectorAll('[data-bulk-payment-target="input"]');
-
     this.inputTargets.forEach(input => {
       const currentStatus = input.dataset.userStatus;
 

@@ -1,0 +1,24 @@
+.info-table {
+  width: 100%;
+  color: #222222;
+  border-collapse: collapse;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #222222;
+
+  th {
+    background-color: #eeeeee;
+    font-weight: normal;
+    text-align: left;
+    padding: 10px;
+    border: 1px solid #222222;
+  }
+
+  td {
+    background-color: #ffffff;
+    font-weight: bold;
+    padding: 10px;
+    border: 1px solid #222222;
+    vertical-align: middle;
+  }
+}

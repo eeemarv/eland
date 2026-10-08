@@ -8,7 +8,10 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 class PlainTextLengthValidator extends ConstraintValidator
 {
-  public function validate($content, Constraint $constraint):void
+  public function validate(
+    mixed $content,
+    Constraint $constraint,
+  ):void
   {
     if (!$constraint instanceof PlainTextLength)
     {

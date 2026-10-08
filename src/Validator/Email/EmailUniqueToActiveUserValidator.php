@@ -10,44 +10,47 @@ use App\Service\PageParamsService;
 
 class EmailUniqueToActiveUserValidator extends ConstraintValidator
 {
-    public function __construct(
-        protected UserRepository $user_repository,
-        protected PageParamsService $pp
-    )
+  public function __construct(
+    private readonly UserRepository $user_repository,
+    private readonly PageParamsService $pp,
+  )
+  {
+  }
+
+  public function validate(
+    mixed $email,
+    Constraint $constraint,
+  ):void
+  {
+    if (!$constraint instanceof EmailUniqueToActiveUser)
     {
+      throw new UnexpectedTypeException($constraint, EmailUniqueToActiveUser::class);
     }
 
-    public function validate($email, Constraint $constraint):void
+    if (!is_string($email))
     {
-        if (!$constraint instanceof EmailUniqueToActiveUser)
-        {
-            throw new UnexpectedTypeException($constraint, EmailUniqueToActiveUser::class);
-        }
-
-        if (!is_string($email))
-        {
-            throw new UnexpectedTypeException($email, 'string');
-        }
-
-        $email_lowercase = strtolower($email);
-
-        $count_by_email = $this->user_repository->count_active_by_email(
-          email: $email_lowercase,
-          schema: $this->pp->schema_o(),
-        );
-
-        if ($count_by_email > 1)
-        {
-            $this->context->buildViolation('email_unique_to_active_user.not_unique')
-                ->addViolation();
-            return;
-        }
-
-        if ($count_by_email === 0)
-        {
-            $this->context->buildViolation('email_unique_to_active_user.not_known')
-                ->addViolation();
-            return;
-        }
+      throw new UnexpectedTypeException($email, 'string');
     }
+
+    $email_lowercase = strtolower($email);
+
+    $count_by_email = $this->user_repository->count_active_by_email(
+      email: $email_lowercase,
+      schema: $this->pp->schema_o(),
+    );
+
+    if ($count_by_email > 1)
+    {
+      $this->context->buildViolation('email_unique_to_active_user.not_unique')
+        ->addViolation();
+      return;
+    }
+
+    if ($count_by_email === 0)
+    {
+      $this->context->buildViolation('email_unique_to_active_user.not_known')
+        ->addViolation();
+      return;
+    }
+  }
 }

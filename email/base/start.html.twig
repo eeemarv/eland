@@ -55,6 +55,9 @@
     {%- endblock -%}
 
     {%- block account_info_footer -%}
+      {%- if account_info is defined -%}
+        {%- include '@email/include/account_info.html.twig' -%}
+      {%- endif -%}
     {%- endblock -%}
 
     {%- if block('subscribed') is not empty -%}

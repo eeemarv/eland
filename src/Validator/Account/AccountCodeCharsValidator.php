@@ -13,7 +13,7 @@ class AccountCodeCharsValidator extends ConstraintValidator
   {
   }
 
-  public function validate($code, Constraint $constraint):void
+  public function validate(mixed $code, Constraint $constraint):void
   {
     if (!$constraint instanceof AccountCodeChars)
     {

@@ -10,19 +10,6 @@ export default class extends Controller {
 
   connect() {
     this.calculate();
-
-    // Listen for DataTables 'draw' event to update when filtering happens
-    const table = this.getTable();
-    if (table) {
-      $(table).on('draw.dt', () => this.calculate());
-    }
-  }
-
-  disconnect() {
-    const table = this.getTable();
-    if (table) {
-      $(table).off('draw.dt');
-    }
   }
 
   getTable() {

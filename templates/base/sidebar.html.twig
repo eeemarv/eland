@@ -5,12 +5,6 @@
 {%- block assets_add -%}
 	{{- parent() -}}
 
-{#}
-	{{- assets_add([
-		'typeahead', 'typeahead.js'
-	]) -}}
-{#}
-
 	{%- if {}|pp.edit.en is defined and su_role('admin') and su_is_system_self() -%}
 		{{- assets_add([
 			'codemirror',
@@ -263,6 +257,7 @@
 						{%- block form_a -%}{{- form_a|default('') -}}{%- endblock -%}
 						{%- block form_b -%}{{- form_b|default('') -}}{%- endblock -%}
 						{%- block form_c -%}{{- form_c|default('') -}}{%- endblock -%}
+						{%- block form_d -%}{{- form_d|default('') -}}{%- endblock -%}
             {%- block form_log_comment -%}
 							{%- include 'form/log_comment.html.twig' -%}
             {%- endblock form_log_comment -%}

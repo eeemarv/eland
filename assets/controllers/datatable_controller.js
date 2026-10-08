@@ -43,7 +43,10 @@ export default class extends Controller {
       },
       columnDefs: [
         { targets: '_all', className: 'dt-left' }
-      ]
+      ],
+      drawCallback: () => {
+        this.dispatch('draw', { bubbles: true });
+      },
     });
   }
 

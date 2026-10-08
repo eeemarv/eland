@@ -2,22 +2,21 @@
 
 namespace App\Validator\User;
 
-use App\Service\ConfigService;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
-use App\Service\PageParamsService;
 
 class UserRoleValidator extends ConstraintValidator
 {
   public function __construct(
-    private readonly ConfigService $config_service,
-    private readonly PageParamsService $pp,
   )
   {
   }
 
-  public function validate($role, Constraint $constraint):void
+  public function validate(
+    mixed $role,
+    Constraint $constraint,
+  ):void
   {
     if (!$constraint instanceof UserRole)
     {

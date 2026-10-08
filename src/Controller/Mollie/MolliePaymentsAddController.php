@@ -2,30 +2,20 @@
 
 namespace App\Controller\Mollie;
 
-use App\Cnst\BulkCnst;
-use App\Cnst\StatusCnst;
 use App\Command\Mollie\MolliePaymentsAddCommand;
-use App\Controller\Users\UsersListController;
 use App\Form\Type\Filter\QTextSearchFilterType;
 use App\Form\Type\Mollie\MolliePaymentsAddType;
-use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Repository\MollieRepository;
 use App\Repository\UserRepository;
 use App\Service\ConfigService;
-use App\Service\DateFormatService;
-use App\Service\FormTokenService;
-use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\UserCacheService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 #[AsController]
 class MolliePaymentsAddController extends AbstractController
@@ -49,17 +39,10 @@ class MolliePaymentsAddController extends AbstractController
   public function __invoke(
     Request $request,
     string $status,
-    Db $db,
     MollieRepository $mollie_repository,
     UserRepository $user_repository,
-    UserCacheService $user_cache_service,
-    FormTokenService $form_token_service,
     ConfigService $config_service,
-    ItemAccessService $item_access_service,
-    UrlGeneratorInterface $url_generator,
     LinkRender $link_render,
-    AccountRender $account_render,
-    DateFormatService $date_format_service,
     PageParamsService $pp,
     SessionUserService $su
   ):Response
@@ -74,23 +57,8 @@ class MolliePaymentsAddController extends AbstractController
       );
     }
 
-    $errors = [];
-
-    $q = $request->get('q', '');
-    $amount = $request->request->all('amount');
-    $description = trim($request->request->get('description', ''));
-    $verify = $request->request->get('verify');
-
     $mollie_apikey = $config_service->get_str(
       config_id: 'mollie.apikey',
-      schema: $pp->schema_o(),
-    );
-    $new_users_enabled = $config_service->get_bool(
-      config_id: 'users.new.enabled',
-      schema: $pp->schema_o(),
-    );
-    $leaving_users_enabled = $config_service->get_bool(
-      config_id: 'users.leaving.enabled',
       schema: $pp->schema_o(),
     );
 
@@ -147,8 +115,6 @@ class MolliePaymentsAddController extends AbstractController
           continue;
         }
         $amount_formatted = number_format($amount, 2, '.', '');
-
-        error_log('am.user_id: ' . $uid . ' amount: ' . $amount . ' type: ' . gettype($amount) . ' formatted: ' . $amount_formatted);
         $user_amount_ary[$uid] = $amount_formatted;
       }
 

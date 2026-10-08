@@ -18,7 +18,10 @@ class UniqueUserNameValidator extends ConstraintValidator
   {
   }
 
-  public function validate($command, Constraint $constraint):void
+  public function validate(
+    mixed $command,
+    Constraint $constraint,
+  ):void
   {
     if (!$constraint instanceof UniqueUserName)
     {

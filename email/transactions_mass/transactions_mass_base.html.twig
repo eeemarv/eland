@@ -1,0 +1,27 @@
+{%- extends '@email/base/base.html.twig' -%}
+{%- trans_default_domain 'mail' -%}
+
+{%- block subject -%}
+  {{- 'transactions.new.subject'|trans -}}
+{%- endblock subject -%}
+
+{% block content_1row -%}
+  <spacer size="8"></spacer>
+  <h4>
+    {%- block explain -%}
+    {%- endblock -%}
+  </h4>
+  <p>
+    {{- 'label.amount'|trans -}}: <b>{{- amount -}}</b> {{ config_str('transactions.currency.name') -}}
+    <br/>
+    {{- 'label.description'|trans -}}: <b>{{- description -}}</b>
+    <br/>
+    {{- 'label.from'|trans -}}: <b>{{- from_code }} {{ from_name }}</b>
+    <br/>
+    {{- 'label.to'|trans -}}: <b>{{- to_code }} {{ to_name }}</b>
+    <br>
+    {{- a_open('transactions_show', {}|mpp(id: id, d_role:true))|raw -}}
+    {{- 'transactions.link'|trans -}}
+    </a>
+  </p>
+{%- endblock content_1row -%}

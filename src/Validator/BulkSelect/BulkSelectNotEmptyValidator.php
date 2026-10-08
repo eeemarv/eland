@@ -8,7 +8,10 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 class BulkSelectNotEmptyValidator extends ConstraintValidator
 {
-  public function validate($selected, Constraint $constraint):void
+  public function validate(
+    mixed $selected,
+    Constraint $constraint,
+  ):void
   {
     if (!$constraint instanceof BulkSelectNotEmpty)
     {

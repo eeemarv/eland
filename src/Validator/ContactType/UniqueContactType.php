@@ -4,7 +4,7 @@ namespace App\Validator\ContactType;
 
 use Symfony\Component\Validator\Constraint;
 
-#[\Attribute]
+#[\Attribute(flags: \Attribute::TARGET_CLASS)]
 class UniqueContactType extends Constraint
 {
   public array $properties = [];

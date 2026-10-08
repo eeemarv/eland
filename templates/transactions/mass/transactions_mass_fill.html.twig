@@ -1,0 +1,64 @@
+<div class="panel panel-warning">
+  <div class="panel-heading">
+    <h4>
+    {{- 'fill.title'|trans -}}
+    </h4>
+
+    <div class="form-group">
+      <label for="helper_amount" class="form-label">
+        {{- 'label.amount'|trans -}}
+      </label>
+      <div class="input-group">
+        <div class="input-group-addon">
+          {{- config_str('transactions.currency.name') -}}
+        </div>
+        <input type="number" min="1" step="1" id="helper_amount" data-mass-fill-target="amount" class="form-control">
+      </div>
+    </div>
+
+    <div>
+      <label class="control-label bg-success" for="skip_new">
+        <input type="checkbox" id="skip_new" data-mass-fill-target="skipCheck" value="new" checked>
+        {{ 'fill.skip.new'|trans -}}
+      </label>
+    </div>
+
+    <div>
+      <label class="control-label bg-danger" for="skip_leaving">
+        <input type="checkbox" id="skip_leaving" data-mass-fill-target="skipCheck" value="leaving" checked>
+        {{ 'fill.skip.leaving'|trans -}}
+      </label>
+    </div>
+
+    <div>
+      <label class="control-label bg-warning" for="skip_intersystem">
+        <input type="checkbox" id="skip_intersystem" data-mass-fill-target="skipCheck" value="intersystem" checked>
+        {{ 'fill.skip.intersystem'|trans -}}
+      </label>
+    </div>
+
+    {%- if route == 'transactions_mass_many_to_one' -%}
+    <div>
+      <label class="control-label bg-warning" for="skip_under_limits">
+        <input type="checkbox" id="skip_under_limits" data-mass-fill-target="skipCheck" value="under_limits" checked>
+        {{ 'fill.skip.under_limits'|trans -}}
+      </label>
+    </div>
+    {%- endif -%}
+
+    {%- if route == 'transactions_mass_one_to_many' -%}
+    <div>
+      <label class="control-label bg-warning" for="skip_over_limits">
+        <input type="checkbox" id="skip_over_limits" data-mass-fill-target="skipCheck" value="over_limits" checked>
+        {{ 'fill.skip.over_limits'|trans -}}
+      </label>
+    </div>
+    {%- endif -%}
+
+    <div>
+      <button type="button" class="btn btn-info" data-action="click->mass-fill#fillAll">
+        {{- 'btn.fill'|trans -}}
+      </button>
+    </div>
+  </div>
+</div>

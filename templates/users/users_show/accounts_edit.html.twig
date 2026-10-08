@@ -43,7 +43,7 @@
           <td title="{{- 'balance.title'|trans({
             'currency': config_str('transactions.currency.name')
           }) -}}">
-            {{- l.txt_label(balance, 'info') -}}
+            {{- l.txt_label(balance, 'primary') -}}
           </td>
 
           {%- if config_bool('accounts.limits.enabled') -%}

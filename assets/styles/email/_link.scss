@@ -1,0 +1,15 @@
+a {
+  color: #1a4a75; // Jouw gewenste donkerblauwe kleur (Hex-code)
+  text-decoration: underline; // Houd het herkenbaar als link
+}
+
+a:visited,
+a:hover,
+a:active {
+  color: #1a4a75 !important;
+}
+
+.apple-links a {
+  color: #1a4a75 !important;
+  text-decoration: none !important;
+}

@@ -1,5 +1,8 @@
 {%- import 'macro/lbl.html.twig' as l -%}
 
+{%- set system_min_limit = config_int('accounts.limits.global.min') -%}
+{%- set system_max_limit = config_int('accounts.limits.global.max') -%}
+
 {%- for uid, u in users -%}
   {%- set u_class =
     is_new(u) ? ' class="success"' :
@@ -41,10 +44,14 @@
     <td>
       {%- if can_link -%}
       <a href="{{- u_link -}}">
-        {{- u.code ?? '***' -}}
+        <b>
+          {{- u.code ?? '***' -}}
+        </b>
       </a>
       {%- else -%}
-        {{- u.code ?? '***' -}}
+        <b>
+          {{- u.code ?? '***' -}}
+        </b>
       {%- endif -%}
     </td>
     {%- endif -%}
@@ -111,7 +118,7 @@
 
     {%- if cols.balance is defined and cols.balance -%}
     <td>
-      {{- u.balance ?? '0' -}}
+      {{- l.txt_label(u.balance ?? '0', 'primary') -}}
     </td>
     {%- endif -%}
 
@@ -120,19 +127,31 @@
       and cols.balance_date is defined
       and cols.balance_date -%}
     <td>
-      {{- balance_on_date_ary[uid] ?? '0' -}}
+      {{- l.txt_label(balance_on_date_ary[uid] ?? '0', 'info') -}}
     </td>
     {%- endif -%}
 
     {%- if cols.min_limit is defined and cols.min_limit -%}
     <td>
-      {{- u.min_limit ?? '' -}}
+      {%- if u.min_limit is not null -%}
+        {{- l.txt_label(u.min_limit, 'danger') -}}
+      {%- elseif system_min_limit is not null -%}
+        {{- l.txt_label(system_min_limit, 'default') -}}
+      {%- else -%}
+        {{- ux_icon('lucide:x') -}}
+      {%- endif -%}
     </td>
     {%- endif -%}
 
     {%- if cols.max_limit is defined and cols.max_limit -%}
     <td>
-      {{- u.max_limit ?? '' -}}
+      {%- if u.max_limit is not null -%}
+        {{- l.txt_label(u.max_limit, 'danger') -}}
+      {%- elseif system_max_limit is not null -%}
+        {{- l.txt_label(system_max_limit, 'default') -}}
+      {%- else -%}
+        {{- ux_icon('lucide:x') -}}
+      {%- endif -%}
     </td>
     {%- endif -%}
 

@@ -9,7 +9,8 @@ use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -34,24 +35,15 @@ class TransactionsMassManyToOneType extends AbstractType
       schema: $this->pp->schema_o(),
     );
 
-    $amounts_group = $builder->add('amounts', FormType::class, [
-      'by_reference' => false,
-    ]);
-
-    foreach ($options['accounts'] as $account)
-    {
-      $account_id = $account['id'];
-
-      $amounts_group->add((string) $account_id, NumberType::class, [
-        'required' => false,
-        'property_path' => '[' . $account_id . ']',
-        'attr' => [
-          'min' => 1,
-          'step' => '1',
-          'data-bulk-transaction-target' => 'amountInput',
+    $builder->add('amounts', CollectionType::class, [
+      'entry_type'  => IntegerType::class,
+      'entry_options'  => [
+        'required'  => false,
+        'attr'  => [
+          'min' => '1',
         ],
-      ]);
-    }
+      ],
+    ]);
 
     $builder->add('to_account_id', AutocompleteAccountType::class, [
       'account_group' => 'users',
@@ -68,6 +60,10 @@ class TransactionsMassManyToOneType extends AbstractType
         ],
       ]);
     }
+
+    $builder->add('email_notify_en', CheckboxType::class);
+
+    $builder->add('email_copy_en', CheckboxType::class);
 
     $builder->add('verify', CheckboxType::class);
 

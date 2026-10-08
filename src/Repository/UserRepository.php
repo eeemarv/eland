@@ -1143,7 +1143,7 @@ class UserRepository
       'select u.*,
       min_limit.min_limit,
       max_limit.max_limit,
-      balance.balance
+      coalesce(balance.balance, 0) as balance
       from ' . $schema->str() . '.users u
       left join lateral (
         select minl.min_limit

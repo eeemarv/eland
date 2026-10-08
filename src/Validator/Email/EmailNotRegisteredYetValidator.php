@@ -10,37 +10,40 @@ use App\Service\PageParamsService;
 
 class EmailNotRegisteredYetValidator extends ConstraintValidator
 {
-    public function __construct(
-        protected UserRepository $user_repository,
-        protected PageParamsService $pp
-    )
+  public function __construct(
+    private readonly UserRepository $user_repository,
+    private readonly PageParamsService $pp,
+  )
+  {
+  }
+
+  public function validate(
+    mixed $email,
+    Constraint $constraint,
+  ):void
+  {
+    if (!$constraint instanceof EmailNotRegisteredYet)
     {
+      throw new UnexpectedTypeException($constraint, EmailNotRegisteredYet::class);
     }
 
-    public function validate($email, Constraint $constraint):void
+    if (!is_string($email))
     {
-        if (!$constraint instanceof EmailNotRegisteredYet)
-        {
-            throw new UnexpectedTypeException($constraint, EmailNotRegisteredYet::class);
-        }
-
-        if (!is_string($email))
-        {
-            throw new UnexpectedTypeException($email, 'string');
-        }
-
-        $email_lowercase = strtolower($email);
-
-        $email_count = $this->user_repository->count_email(
-          email: $email_lowercase,
-          schema: $this->pp->schema_o(),
-        );
-
-        if ($email_count > 0)
-        {
-            $this->context->buildViolation('email_not_registered_yet.already_registered')
-                ->addViolation();
-            return;
-        }
+      throw new UnexpectedTypeException($email, 'string');
     }
+
+    $email_lowercase = strtolower($email);
+
+    $email_count = $this->user_repository->count_email(
+      email: $email_lowercase,
+      schema: $this->pp->schema_o(),
+    );
+
+    if ($email_count > 0)
+    {
+      $this->context->buildViolation('email_not_registered_yet.already_registered')
+        ->addViolation();
+      return;
+    }
+  }
 }

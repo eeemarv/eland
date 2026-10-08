@@ -144,6 +144,10 @@ editor:
   list_bullet: Ongeordende lijst
   list_ordered: Geordende lijst
 
+email:
+  send_notifications: Verstuur notificatie emails
+  send_copy_overview: Verstuur een overzicht per email naar mezelf
+
 error_fileupload:
   file_type: >-
     Bestandstype niet toegelaten.
@@ -233,6 +237,15 @@ flash:
     wegens onderhoudswerken. Enkel admins
     kunnen inloggen.
 
+fill:
+  title: Invul Hulp
+  skip:
+    new: Sla "instappers" over
+    leaving: Sla "uitstappers" over
+    intersystem: Sla "InterSysteem" over
+    under_limits: Respecteer minimum limieten
+    over_limits: Respecteer maximam limieten
+
 help:
   address: >-
     Voorbeeldstraat 23, 4520 Voorbeeldgemeente
@@ -283,7 +296,7 @@ label:
   admin_role: Admin
   address: Adres
   already_exists: Bestaat reeds
-  amount: Bedrag
+  amount: Aantal
   amount_euro: Bedrag (EUR)
   approved: Goedgekeurd
   balance: Saldo
@@ -1498,12 +1511,6 @@ mollie_payments_add:
         other {# betalingsverzoeken met omschrijving
         "{description}" aangemaakt voor}
       }
-  fill:
-    title: Invul Hulp
-    skip:
-      new: Sla "instappers" over
-      leaving: Sla "uitstappers" over
-      intersystem: Sla "InterSysteem" over
 
 news:
   admin_config: >-
@@ -1807,12 +1814,32 @@ transactions_edit:
 transactions_mass:
   title: Massa Transactie
   menu: Massa Transactie
-  many_to_one:
-    title: Veel naar Eén
-    menu: Veel naar Eén
-  one_to_many:
-    title: Eén naar Veel
-    menu: Eén naar Veel
+  number_transactions: Aantal transacties
+
+transactions_mass_many_to_one:
+  title: Veel naar Eén
+  flash:
+    success: >-
+      {count, plural,
+        0 {** ERR **}
+        1 {1 transactie}
+        other {# transacties}
+      } met omschrijving "{description}"
+      voor in totaal {total_amount} {currency}
+      naar account {oa}{to_account}{ca} van accounts
+
+transactions_mass_one_to_many:
+  title: Eén naar Veel
+  flash:
+    success: >-
+      {count, plural,
+        0 {** ERR **}
+        1 {1 transactie}
+        other {# transacties}
+      } met omschrijving "{description}"
+      voor in totaal {total_amount} {currency}
+      van account
+      {oa}{from_account}{ca} naar accounts
 
 transactions_modules:
   title: >-

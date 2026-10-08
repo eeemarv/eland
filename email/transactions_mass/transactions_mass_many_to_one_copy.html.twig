@@ -1,0 +1,33 @@
+{%- extends '@email/base/base.html.twig' -%}
+{%- trans_default_domain 'mail' -%}
+
+{%- block subject -%}
+  {{- 'transactions_mass_many_to_one_copy.subject'|trans -}}
+{%- endblock subject -%}
+
+{% block content_1row -%}
+  <spacer size="8"></spacer>
+  <p>
+    {{- 'transactions_mass_many_to_one_copy.from_accounts'|trans({
+      'to_code': to_code,
+      'to_name': to_name,
+      'ao': a_open('users_show', {}|mpp(id: to_id, role_user_id: created_by)),
+      'ac': '</a>',
+      'count': transactions|length,
+      'total_amount': total_amount,
+      'currency': config_str('transactions.currency.name'),
+      'description': description
+    })|raw -}}
+  </p>
+  <p>
+    {%- for t in transactions -%}
+      {{- a_open('users_show', {}|mpp(id: t.from_id, role_user_id: created_by))|raw -}}
+        {{- t.from_code ?? '***' }} {{ t.from_name ?? '***' -}}
+      </a>:
+      {{ a_open('transactions_show', {}|mpp(id: t.id, role_user_id: created_by))|raw -}}
+      {{ t.amount }} {{ config_str('transactions.currency.name') }}
+      </a>
+      <br/>
+    {%- endfor -%}
+  </p>
+{%- endblock content_1row -%}

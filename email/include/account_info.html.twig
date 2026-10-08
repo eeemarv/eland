@@ -1,0 +1,43 @@
+{%- trans_default_domain 'mail' -%}
+
+<row class="l-{{- email_background -}}-4 b-{{- email_background -}}-7">
+<columns>
+  <spacer size="8"></spacer>
+  <h5>
+    {{- 'account_info.subject'|trans -}}
+  </h5>
+  <table class="info-table">
+    <tbody>
+      <tr>
+        <th>
+          {{- 'label.account_code'|trans -}}
+        </th>
+        <td>
+          {{- account_info.code -}}
+        </td>
+      </tr>
+      <tr>
+        <th>
+          {{- 'label.username'|trans -}}
+        </th>
+        <td>
+          {{- account_info.name -}}
+        </td>
+      </tr>
+      <tr>
+        <th>
+          {{- 'label.balance'|trans -}}
+        </th>
+        <td>
+          {{- account_info.balance }} {{ config_str('transactions.currency.name') -}}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  {{- a_open('users_show', {}|mpp(id: account_info.id, d_role: true))|raw -}}
+  {{- 'account_info.link'|trans -}}
+  </a>
+  <spacer size="8"></spacer>
+</columns>
+</row>
+<spacer size="16"></spacer>

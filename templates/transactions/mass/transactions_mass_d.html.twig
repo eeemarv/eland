@@ -1,0 +1,22 @@
+{{- form_row(form.description, {
+  'label': 'label.description',
+  'addon': ux_icon('lucide:chevron-right'),
+}) -}}
+
+{%- if form.service_stuff is defined -%}
+  {{- form_row(form.service_stuff, {
+    'label': false,
+  }) -}}
+{%- endif -%}
+
+{{- form_row(form.email_notify_en, {
+  'label': 'email.send_notifications',
+}) -}}
+
+{{- form_row(form.email_copy_en, {
+  'label': 'email.send_copy_overview',
+}) -}}
+
+{{- form_row(form.verify, {
+  'label': 'check.verify',
+}) -}}

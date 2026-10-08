@@ -1,0 +1,84 @@
+{%- import 'macro/lbl.html.twig' as l -%}
+
+{%- set system_min_limit = config_int('accounts.limits.global.min') -%}
+{%- set system_max_limit = config_int('accounts.limits.global.max') -%}
+
+{%- for u in users -%}
+  {%- set u_class =
+    is_new(u) ? ' class="success"' :
+    is_leaving(u) ? ' class="danger"' :
+    is_intersystem(u) ? ' class="warning"' :
+    is_pre_active(u) ? ' class="inactive"' :
+    is_post_active(u) ? ' class="info"' : ''
+  -%}
+  {%- set u_status =
+    is_new(u) ? 'new' :
+    is_leaving(u) ? 'leaving' :
+    is_intersystem(u) ? 'intersystem' :
+    is_pre_active(u) ? 'pre_active' :
+    is_post_active(u) ? 'post_active' : 'active'
+  -%}
+  {%- set u_link = path('users_show', {'id': u.id, 'status': all_params.status}|pp) -%}
+  {%- set u_code = (u.code ?? '') ~ ' ' ~ (u.name ?? '') -%}
+  <tr{{- u_class|raw -}}>
+
+    <td>
+      <a href="{{- u_link -}}">
+        {%- include 'component/avatar/avatar_inline.html.twig' with {
+          'user': u,
+        } -%}
+      </a>
+    </td>
+
+    <td>
+      <a href="{{- u_link -}}">
+        {{- u_code -}}
+      </a>
+    </td>
+
+    <td>
+      {{- form_row(form.amounts[u.id], {
+        'label': false,
+        'addon': config_str('transactions.currency.name'),
+        'attr': {
+          'data-mass-count-target': 'input',
+          'data-action': 'input->mass-count#calculate',
+          'data-mass-fill-target': 'input',
+          'data-user-status': u_status,
+          'data-balance': u.balance,
+          'data-min-limit': u.min_limit ?? system_min_limit ?? '',
+          'data-max-limit': u.max_limit ?? system_max_limit ?? '',
+        },
+      }) -}}
+    </td>
+
+    <td>
+      {{- l.txt_label(u.balance, 'primary') -}}
+    </td>
+
+    {%- if route == 'transactions_mass_many_to_one' -%}
+    <td>
+      {%- if u.min_limit is not null -%}
+        {{- l.txt_label(u.min_limit, 'danger') -}}
+      {%- elseif system_min_limit is not null -%}
+        {{- l.txt_label(system_min_limit, 'default') -}}
+      {%- else -%}
+        {{- ux_icon('lucide:x') -}}
+      {%- endif -%}
+    </td>
+    {%- endif -%}
+
+    {%- if route == 'transactions_mass_one_to_many' -%}
+    <td>
+      {%- if u.max_limit is not null -%}
+        {{- l.txt_label(u.max_limit, 'success') -}}
+      {%- elseif system_max_limit is not null -%}
+        {{- l.txt_label(system_max_limit, 'default') -}}
+      {%- else -%}
+        {{- ux_icon('lucide:x') -}}
+      {%- endif -%}
+    </td>
+    {%- endif -%}
+
+  </tr>
+{%- endfor -%}

@@ -17,7 +17,10 @@ class AccessValidator extends ConstraintValidator
   {
   }
 
-  public function validate($access, Constraint $constraint):void
+  public function validate(
+    mixed $access,
+    Constraint $constraint,
+  ):void
   {
     if (!$constraint instanceof Access)
     {

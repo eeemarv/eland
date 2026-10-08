@@ -1,0 +1,52 @@
+{%- extends 'transactions/base/transactions_base.html.twig' -%}
+
+{%- block content -%}{%- endblock content -%}
+
+{%- set admin_heading = true -%}
+{%- set active_local_admin_menu = 'mass_transaction' -%}
+{%- set cancel_route = 'transactions' -%}
+
+{%- block content_controllers -%}
+datatable
+user-count-table
+mass-fill
+mass-count
+{%- endblock content_controllers -%}
+
+{%- block content_controllers_attr -%}
+data-datatable-sortable-value="true"
+data-action="datatable:draw->mass-count#calculate
+datatable:draw->user-count-table#calculate"
+{%- endblock content_controllers_attr -%}
+
+{%- block heading_title -%}
+  {{- 'transactions_mass.title'|trans -}}
+{%- endblock heading_title -%}
+
+{%- block heading_sub -%}
+  {%- include 'transactions/mass/transactions_mass_menu.html.twig' -%}
+{%- endblock heading_sub -%}
+
+{%- block help_form -%}
+  {%- include 'transactions/mass/transactions_mass_fill.html.twig' -%}
+{%- endblock help_form -%}
+
+{%- block filter_form_a -%}
+  {%- include 'form/q_filter.html.twig' -%}
+{%- endblock filter_form_a -%}
+
+{%- block pane_select -%}
+  {%- include 'transactions/mass/transactions_mass_nav_tabs.html.twig' -%}
+{%- endblock pane_select -%}
+
+{%- block form_b -%}
+  {%- include 'transactions/mass/transactions_mass_table.html.twig' -%}
+{%- endblock form_b -%}
+
+{%- block form_d -%}
+  {%- include 'transactions/mass/transactions_mass_d.html.twig' -%}
+{%- endblock form_d -%}
+
+{%- block form_submit_btn -%}
+  {%- include 'form/submit_add_btn.html.twig' -%}
+{%- endblock form_submit_btn -%}

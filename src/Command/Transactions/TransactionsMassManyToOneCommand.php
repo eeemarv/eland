@@ -3,16 +3,20 @@
 namespace App\Command\Transactions;
 
 use App\Command\CommandInterface;
+use App\Validator\TransactionMass\TransactionMassDifferentSourceAndDestination;
 use Symfony\Component\Validator\Constraints\All;
+use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\Constraints\Positive;
 use Symfony\Component\Validator\Constraints\Type;
 
+#[TransactionMassDifferentSourceAndDestination()]
 class TransactionsMassManyToOneCommand implements CommandInterface
 {
   #[All([
+    new Type(type: 'int'),
     new Positive(),
   ])]
   public array $amounts = [];
@@ -28,6 +32,12 @@ class TransactionsMassManyToOneCommand implements CommandInterface
 
   #[Choice(['service', 'stuff'])]
   public mixed $service_stuff;
+
+  #[Type(type: 'bool')]
+  public mixed $email_notify_en;
+
+  #[Type(type: 'bool')]
+  public mixed $email_copy_en;
 
   #[Type(type: 'bool')]
   #[IsTrue()]

@@ -1,6 +1,6 @@
 access:
   not_allowed: >-
-    Geen toegelaten waarde voor toegang.
+    Geen toegelaten waarde voor toegang
 
 bulk_select:
   not_empty:
@@ -113,6 +113,10 @@ tag:
 tags_users:
   not_active: >-
     Bevat een niet-actieve tag
+
+transaction:
+  source_and_destination_same: >-
+    Bron- en bestemmingsaccount moeten verschillen
 
 type:
   not_an_integer: >-

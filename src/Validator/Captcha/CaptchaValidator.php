@@ -22,7 +22,10 @@ class CaptchaValidator extends ConstraintValidator
   {
   }
 
-  public function validate($captcha, Constraint $constraint):void
+  public function validate(
+    mixed $captcha,
+    Constraint $constraint,
+  ):void
   {
     if (!$constraint instanceof Captcha)
     {

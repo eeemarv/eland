@@ -18,7 +18,10 @@ class CategoryUniqueNameValidator extends ConstraintValidator
   {
   }
 
-  public function validate($categories_name_command, Constraint $constraint):void
+  public function validate(
+    mixed $categories_name_command,
+    Constraint $constraint,
+  ):void
   {
     if (!$constraint instanceof CategoryUniqueName)
     {

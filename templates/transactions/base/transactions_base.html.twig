@@ -52,8 +52,11 @@
     {%- endif -%}
 
     {%- if config_bool('transactions.mass.enabled') -%}
-      <li{%- if route == 'transactions_mass' %} class="active"{%- endif -%}>
-        <a href="{{- path('transactions_mass', {}|pp) -}}">
+      <li{%- if active_local_admin_menu is defined
+        and active_local_admin_menu == 'transactions_mass' %} class="active"
+        {%- endif -%}
+      >
+        <a href="{{- path('transactions_mass_many_to_one', {}|pp) -}}">
           <twig:ux:icon name="lucide:arrow-left-right"/>
           &nbsp;
           {{- ('transactions_mass.menu')|trans -}}

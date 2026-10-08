@@ -60,6 +60,14 @@ class MppAryRuntime implements RuntimeExtensionInterface
 		return $this->get_ary('', $context['et'] ?? '', $schema);
 	}
 
+  /**
+   * intersystem links: use either rem_schema or org_schema with d_role
+   * rem_schema possible referring other schema than context of email
+   * org_schema possible user from other schema (to get valid login page)
+   * d_role to add role when role not known
+   * or use role_user_id in own schema
+   */
+
 	public function mpp(
 		array $context,
     array $params,
@@ -80,7 +88,7 @@ class MppAryRuntime implements RuntimeExtensionInterface
 			  $params['schema'] = $rem_schema;
 			  $org_schema = $schema;
 			  $params['os'] = $org_schema;
-			  $params['ets'] = $org_schema; // email token system
+			  $params['ets'] = $org_schema; // email token schema
 
         if ($d_role)
         {

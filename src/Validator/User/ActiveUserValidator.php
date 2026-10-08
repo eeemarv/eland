@@ -18,7 +18,10 @@ class ActiveUserValidator extends ConstraintValidator
   {
   }
 
-  public function validate($user_id, Constraint $constraint):void
+  public function validate(
+    mixed $user_id,
+    Constraint $constraint,
+  ):void
   {
     if (!$constraint instanceof ActiveUser)
     {

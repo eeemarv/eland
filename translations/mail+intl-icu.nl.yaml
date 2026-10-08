@@ -1,7 +1,7 @@
 label:
   account_code: Account Code
   agent: Agent
-  amount: Bedrag
+  amount: Aantal
   balance: Saldo
   date: Datum
   dear_username: Beste {username},
@@ -37,6 +37,10 @@ label:
   want: Vraag
   your_account: Je Account
   your_message: Je Bericht
+
+account_info:
+  subject: Je Account
+  link: Link naar je account
 
 b:
   no_reply: >-
@@ -115,6 +119,7 @@ account_activation:
   change_profile: >-
     Je gebruikersgegevens, je vraag en aanbod kan je
     zelf online bewerken.
+
 account_activation_admin:
   subject: >-
     Activatie Account {account}
@@ -314,6 +319,7 @@ support_form_copy:
     Het bericht hieronder heb je verzonden
     aan {system_name} via het help/supportformulier
 
+## rep
 transaction:
   subject: >-
     Transactie van {from_account} naar {to_account}
@@ -329,6 +335,8 @@ transaction_intersystem_fail: #not implemented
     {trans_id} is niet gelukt.
     Dit betekent dat er een onbalans is
     met het externe systeem {remote_system_name}
+
+## rep
 transaction_intersystem:
   subject: >-
     Intersysteem Transactie van {from_account} naar {to_account}
@@ -349,6 +357,8 @@ transact'dec_hours'ion_to_intersystem_mail_type:
     vanuit een interSysteem rekening in je Systeem.
   amount_dec_explain: >-
     {dec_hours} decimale uren stemt overeen met
+
+## rep
 transaction_to_intersystem_mail_type_admin:
   subject: >-
     Kopie van bericht, interSysteem transactie van {system_name} naar {remote_system_name}
@@ -359,6 +369,38 @@ transaction_to_intersystem_mail_type_admin:
   amount_time_explain: >-
     {amount} {currency} stemt overeen met {dec_hours} decimale uren, wat
     overeenstemt met
+
+transactions:
+  link: Link naar de transactie
+  new:
+    subject: >-
+      Nieuwe Transactie
+    from_your_account: >-
+      Een transactie werd uitgevoerd vanuit je account.
+    to_your_account: >-
+      Een transactie werd uitgevoerd naar je account.
+
+transactions_mass_many_to_one_copy:
+  subject: >-
+    Veel naar Eén Massa Transactie Info
+  from_accounts: >-
+    Je voerde een "veel naar één" massa transactie uit
+    naar account {ao}{to_code} {to_name}{ac}
+    met als omschrijving "{description}"
+    bestaande uit {count} individuele transacties
+    voor in totaal {total_amount} {currency} vanuit
+    accounts
+
+transactions_mass_one_to_many_copy:
+  subject: >-
+    Eén naar Veel Massa Transactie Info
+  to_accounts: >-
+    Je voerde een "éém naar veel" massa transactie uit
+    van account {ao}{to_code} {to_name}{ac}
+    met als omschrijving "{description}"
+    bestaande uit {count} individuele transacties
+    voor in totaal {total_amount} {currency} naar
+    accounts
 
 user_bulk_copy:
   subject: "Kopie: {subject}"

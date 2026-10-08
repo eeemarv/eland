@@ -8,6 +8,7 @@ use App\Service\SystemsService;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
+use Symfony\Component\Mime\Address;
 use Symfony\Component\Uid\Uuid;
 
 class TransactionRepository
@@ -614,11 +615,10 @@ class TransactionRepository
     int|null $created_by,
     int|null $autominlimit_percentage,
     int|null $global_min_limit,
+    Uuid $bulk_id,
     Schema $schema,
   ): void
   {
-    $bulk_id = Uuid::v4()->toRfc4122();
-
     $this->db->beginTransaction();
 
     try {
@@ -650,7 +650,7 @@ class TransactionRepository
         $stmt_ins->bindValue('description', $description, Types::STRING);
         $stmt_ins->bindValue('service_stuff', $service_stuff, Types::STRING);
         $stmt_ins->bindValue('created_by', $created_by, Types::INTEGER);
-        $stmt_ins->bindValue('bulk_id', $bulk_id, Types::GUID);
+        $stmt_ins->bindValue('bulk_id', $bulk_id->toRfc4122(), Types::GUID);
 
         $stmt_ins->executeStatement();
 
@@ -726,11 +726,10 @@ class TransactionRepository
     int|null $created_by,
     int|null $autominlimit_percentage,
     int|null $global_min_limit,
+    Uuid $bulk_id,
     Schema $schema,
   ): void
   {
-    $bulk_id = Uuid::v4()->toRfc4122();
-
     $this->db->beginTransaction();
 
     try {
@@ -776,7 +775,7 @@ class TransactionRepository
         $stmt_ins->bindValue('description', $description, Types::STRING);
         $stmt_ins->bindValue('service_stuff', $service_stuff, Types::STRING);
         $stmt_ins->bindValue('created_by', $created_by, Types::INTEGER);
-        $stmt_ins->bindValue('bulk_id', $bulk_id, Types::GUID);
+        $stmt_ins->bindValue('bulk_id', $bulk_id->toRfc4122(), Types::GUID);
 
         $stmt_ins->executeStatement();
 
@@ -830,6 +829,80 @@ class TransactionRepository
       $this->db->rollBack();
       throw $e;
     }
+  }
+
+  public function get_all_by_bulk_id(
+    Uuid $bulk_id,
+    Schema $schema,
+  ):array
+  {
+    $transactions = [];
+
+    $stmt = $this->db->prepare('select t.*,
+      fu.code as from_code, fu.name as from_name, fu.id as from_id,
+      tu.code as to_code, tu.name as to_name, tu.id as to_id,
+      coalesce(from_bal.balance, 0) as from_balance,
+      coalesce(to_bal.balance, 0) as to_balance,
+      coalesce(jsonb_agg(fc.value) filter(where fc.value is not null), \'[]\') as from_email,
+      coalesce(jsonb_agg(tc.value) filter(where tc.value is not null), \'[]\') as to_email
+      from ' . $schema->str() . '.transactions t
+      left join ' . $schema->str() . '.users fu
+        on fu.id = t.id_from
+      left join ' . $schema->str() . '.contact fc
+        on fc.user_id = fu.id
+          and fc.id_type_contact = (select ft.id
+            from ' . $schema->str() . '.type_contact ft
+            where ft.abbrev = \'mail\')
+      left join lateral (
+        select fbal.balance
+        from ' . $schema->str() . '.balance fbal
+        where fbal.account_id = fu.id
+        order by fbal.created_at desc
+        limit 1
+      ) from_bal on true
+      left join ' . $schema->str() . '.users tu
+        on tu.id = t.id_to
+      left join ' . $schema->str() . '.contact tc
+        on tc.user_id = tu.id
+          and tc.id_type_contact = (select tt.id
+            from ' . $schema->str() . '.type_contact tt
+            where tt.abbrev = \'mail\')
+      left join lateral (
+        select tbal.balance
+        from ' . $schema->str() . '.balance tbal
+        where tbal.account_id = tu.id
+        order by tbal.created_at desc
+        limit 1
+      ) to_bal on true
+      where bulk_id = :bulk_id
+      group by t.id, fu.id, tu.id, from_bal.balance, to_bal.balance
+      order by id asc');
+    $stmt->bindValue('bulk_id', $bulk_id->toRfc4122(), Types::GUID);
+    $res = $stmt->executeQuery();
+
+    while ($row = $res->fetchAssociative())
+    {
+      $from_email = [];
+      $to_email = [];
+
+      foreach (json_decode($row['from_email']) as $fe)
+      {
+        $from_email[] = new Address($fe);
+      }
+
+      foreach (json_decode($row['to_email']) as $te)
+      {
+        $to_email[] = new Address($te);
+      }
+
+      $transactions[$row['id']] = [
+        ...$row,
+        'from_email'  => $from_email,
+        'to_email'  => $to_email,
+      ];
+    }
+
+    return $transactions;
   }
 
   public function insert_invitation()

@@ -40,7 +40,7 @@
 {%- endif -%}
 
 {%- if cols.balance is defined and cols.balance -%}
-<th data-type="num" data-priority="5">
+<th data-type="num" data-priority="5" title="{{- config_str('transactions.currency.name') -}}">
   {{- 'label.balance'|trans -}}
 </th>
 {%- endif -%}

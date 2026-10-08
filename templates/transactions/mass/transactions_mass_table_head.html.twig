@@ -1,0 +1,26 @@
+<th data-priority="4" data-orderable="false">
+</th>
+
+<th data-priority="1" data-dt-order="asc">
+  {{- 'label.account'|trans -}}
+</th>
+
+<th data-priority="1" data-orderable="false">
+  {{- 'label.amount'|trans -}}
+</th>
+
+<th data-priority="2">
+  {{- 'label.balance'|trans -}}
+</th>
+
+{%- if route == 'transactions_mass_many_to_one' -%}
+<th data-priority="4">
+  {{- 'label.min_limit'|trans -}}
+</th>
+{%- endif -%}
+
+{%- if route == 'transactions_mass_one_to_many' -%}
+<th data-priority="4">
+  {{- 'label.max_limit'|trans -}}
+</th>
+{%- endif -%}

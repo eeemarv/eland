@@ -17,7 +17,10 @@ class TagsUsersActiveValidator extends ConstraintValidator
   {
   }
 
-  public function validate($tags, Constraint $constraint):void
+  public function validate(
+    mixed $tags,
+    Constraint $constraint,
+  ):void
   {
     if (!$constraint instanceof TagsUsersActive)
     {
