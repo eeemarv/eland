@@ -24,9 +24,9 @@
     <input type="file" name="image"
     data-url="
     {%- if is_self -%}
-      {{- path('users_image_upload_self', pp_ary()) -}}
+      {{- path('users_image_upload_self', {}|pp) -}}
     {%- else -%}
-      {{- path('users_image_upload', pp_ary()|merge({'id': id})) -}}
+      {{- path('users_image_upload', {}|pp(id: id)) -}}
     {%- endif -%}"
     data-image-crop
     data-fileupload

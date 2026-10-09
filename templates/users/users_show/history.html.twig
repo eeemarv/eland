@@ -37,7 +37,7 @@
   {%- endblock dl -%}
   {%- block div_right -%}
 
-    <a href="{{- path('users_active_edit', {'id': id}|pp) -}}"
+    <a href="{{- path('users_active_edit', {}|pp(id: id)) -}}"
       class="btn btn-{{- user.is_active ? 'danger' : 'success' -}}"
       title="{{- 'users_active_edit.title'|trans({
         'mode': user.is_active ? 'deactivate' : 'activate',

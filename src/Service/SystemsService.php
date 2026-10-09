@@ -5,7 +5,6 @@ namespace App\Service;
 use App\DTO\Schema;
 use App\Repository\SystemRepository;
 use Deprecated;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 

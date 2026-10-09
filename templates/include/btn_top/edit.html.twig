@@ -1,4 +1,4 @@
-<a href="{{- path(btn_route, {'id': id}|pp|merge(btn_route_params|default({}))) -}}" class="btn btn-primary btn-lg" title="{{- (btn_title|default('btn.edit'))|trans(btn_title_trans_params|default({})) -}}">
+<a href="{{- path(btn_route, {}|pp(id: id)|merge(btn_route_params|default({}))) -}}" class="btn btn-primary btn-lg" title="{{- (btn_title|default('btn.edit'))|trans(btn_title_trans_params|default({})) -}}">
   <twig:ux:icon name="lucide:pencil"/>
   <span class="hidden-xs hidden-sm">
     &nbsp;

@@ -77,11 +77,11 @@
           </span>
         {%- endblock label -%}
 				{%- block menu_items -%}
-					{%- set pp_su_role_short = pp_ary().role_short is defined and pp_ary().role_short != 'g' ? pp_ary().role_short : su_role_short -%}
+					{%- set pp_su_role_short = {}|pp.role_short is defined and {}|pp.role_short != 'g' ? {}|pp.role_short : su_role_short -%}
 					{%- if su_is_system_self() and not su_is_master() -%}
 
             <li{%- if 'users_show_self' == route %} class="active"{%- endif -%}>
-              <a href="{{- path('users_show_self', {}|pp|merge({'role_short': pp_su_role_short})) -}}">
+              <a href="{{- path('users_show_self', {}|pp(role_short: pp_su_role_short)) -}}">
                 <twig:ux:icon name="lucide:user"/>
                 &nbsp;
                 {{- ('users_show.title')|trans({
@@ -93,7 +93,7 @@
 
             {%- if config_bool('messages.enabled') -%}
               <li{%- if 'messages_self'|var_route == route %} class="active"{%- endif -%}>
-                <a href="{{- path('messages_self'|var_route, {}|pp|merge({'role_short': pp_su_role_short})) -}}">
+                <a href="{{- path('messages_self'|var_route, {}|pp(role_short: pp_su_role_short)) -}}">
                   <twig:ux:icon name="lucide:newspaper"/>
                   &nbsp;
                   {{- 'messages.title'|trans({
@@ -106,7 +106,7 @@
 
             {%- if config_bool('transactions.enabled') -%}
               <li{%- if 'transactions_self' == route %} class="active"{%- endif -%}>
-                <a href="{{- path('transactions_self', {}|pp|merge({'role_short': pp_su_role_short})) -}}">
+                <a href="{{- path('transactions_self', {}|pp(role_short: pp_su_role_short)) -}}">
                   <twig:ux:icon name="lucide:arrow-left-right"/>
                   &nbsp;
                   {{- 'transactions.title'|trans({
@@ -185,7 +185,7 @@
 					<li class="divider"></li>
 
           <li{%- if active_menu == 'config' %} class="active"{%- endif -%}>
-            <a href="{{- path('config_name', {}|pp|merge({'role_short':'a'})) -}}">
+            <a href="{{- path('config_name', {}|pp(role_short: 'a')) -}}">
               <twig:ux:icon name="lucide:wrench"/>
               &nbsp;
               {{- ('config.title')|trans -}}
@@ -193,7 +193,7 @@
           </li>
 
           <li{%- if active_menu == 'export' %} class="active"{%- endif -%}>
-            <a href="{{- path('export', {}|pp|merge({'role_short':'a'})) -}}">
+            <a href="{{- path('export', {}|pp(role_short: 'a')) -}}">
               <twig:ux:icon name="lucide:download"/>
               &nbsp;
               {{- ('export.title')|trans -}}
@@ -201,7 +201,7 @@
           </li>
 
           <li{%- if active_menu == 'logs' %} class="active"{%- endif -%}>
-            <a href="{{- path('logs', {}|pp|merge({'role_short':'a'})) -}}">
+            <a href="{{- path('logs', {}|pp(role_short: 'a')) -}}">
               <twig:ux:icon name="lucide:history"/>
               &nbsp;
               {{- ('logs.title')|trans -}}

@@ -29,7 +29,7 @@
   {%- include 'form/log_comment.html.twig' with {
     'help': 'users_tags_edit.log_comment.help',
     'help_translation_parameters': {
-      'ao': '<a href="' ~ path('users_tags_logs', {'id': id}|pp) ~ '">',
+      'ao': '<a href="' ~ path('users_tags_logs', {}|pp(id: id)) ~ '">',
       'ac': '</a>',
     }
   } -%}

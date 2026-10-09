@@ -25,21 +25,13 @@
 } -%}
 
 {%- block pane_select -%}
-    <ul class="nav nav-pills">
-        {%- for rt, lbl in config_menu -%}
-            <li role="presentation"{%- if route == rt %} class="active"{%- endif -%}>
-                <a href="{{- path(rt, pp_ary()) -}}">
-                    {{- lbl|trans -}}
-                </a>
-            </li>
-        {%- endfor -%}
-    </ul>
+  <ul class="nav nav-pills">
+    {%- for rt, lbl in config_menu -%}
+      <li role="presentation"{%- if route == rt %} class="active"{%- endif -%}>
+        <a href="{{- path(rt, {}|pp) -}}">
+          {{- lbl|trans -}}
+        </a>
+      </li>
+    {%- endfor -%}
+  </ul>
 {%- endblock pane_select -%}
-
-{%- block css -%}
-    {{- parent() -}}
-{%- endblock css -%}
-
-{%- block js -%}
-    {{- parent() -}}
-{%- endblock js -%}

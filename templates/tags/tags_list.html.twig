@@ -48,7 +48,7 @@
           {{- tag.txt -}}
         </span>
         {%- if tag.count > 0 %} (
-          <a href="{{- path(module|var_route, pp_ary()|merge({'f': {'tag[]': tag.id}})) -}}">
+          <a href="{{- path(module|var_route, {'f': {'tag[]': tag.id}}|pp) -}}">
             {{- tag.count -}}
           </a> )
         {%- endif -%}

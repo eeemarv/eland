@@ -16,7 +16,7 @@
 		{%- endif -%}
 
 		<td>
-			<a href="{{- path('transactions_show', {'id': tid}|pp) -}}">
+			<a href="{{- path('transactions_show', {}|pp(id: tid)) -}}">
 				<b>
 					{{- t.description -}}
 				</b>
@@ -66,7 +66,7 @@
               : t.from_code ~ ' ' ~ t.from_name
             -%}
             {%- if t.from_is_active or pp_has_role('admin') -%}
-              <a href="{{- path('users_show', {'id':t.id_from}|pp) -}}">
+              <a href="{{- path('users_show', {}|pp(id: t.id_from)) -}}">
                 {{- t.from_code }} {{ from_system_name -}}
               </a>
             {%- else -%}
@@ -98,7 +98,7 @@
 					</div>
 				</div>
 			{%- elseif t.from_is_active or pp_has_role('admin') -%}
-				<a href="{{- path('users_show', {'id': t.id_from}|pp) -}}">
+				<a href="{{- path('users_show', {}|pp(id: t.id_from)) -}}">
 					{{- t.from_code }}
 					{{ t.from_name -}}
 				</a>
@@ -130,7 +130,7 @@
               : t.to_code ~ ' ' ~ t.to_name
             -%}
             {%- if t.to_is_active or pp_has_role('admin') -%}
-              <a href="{{- path('users_show', {'id':t.id_to}|pp) -}}">
+              <a href="{{- path('users_show', {}|pp(id: t.id_to)) -}}">
                 {{- t.to_code }} {{ to_system_name -}}
               </a>
             {%- else -%}
@@ -162,7 +162,7 @@
 					</div>
 				</div>
 			{%- elseif t.to_is_active or pp_has_role('admin') -%}
-				<a href="{{- path('users_show', {'id': t.id_to}|pp) -}}">
+				<a href="{{- path('users_show', {}|pp(id: t.id_to)) -}}">
 					{{- t.to_code }}
 					{{ t.to_name -}}
 				</a>

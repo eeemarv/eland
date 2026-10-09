@@ -34,7 +34,7 @@
     is_extern(u) ? ' class="bg-extern"' : ''
   -%}
   {%- set can_link = is_active(uid) or pp_has_role('admin') -%}
-  {%- set u_link = can_link ? path('users_show', {'id': uid, 'status': all_params.status}|pp) : null -%}
+  {%- set u_link = can_link ? path('users_show', {}|pp(id: uid, status: all_params.status)) : null -%}
   <div class="col-xs-4 col-md-3 col-lg-2 tile">
     <div{{- u_class|raw -}}>
       <div class="thumbnail text-center">

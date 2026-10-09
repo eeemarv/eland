@@ -52,7 +52,7 @@
           </a>
         </td>
         <td{{ u_class|raw }}>
-          <a href="{{- path('users_show', {'id': p.user_id}|pp) -}}">
+          <a href="{{- path('users_show', {}|pp(id: p.user_id)) -}}">
             {{- account(p.user_id) -}}
           </a>
         </td>

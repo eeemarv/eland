@@ -20,6 +20,7 @@ use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Uid\Uuid;
 
 #[AsController]
 class TransactionsShowController extends AbstractController
@@ -66,18 +67,19 @@ class TransactionsShowController extends AbstractController
       config_id: 'transactions.currency.name',
       schema: $pp->schema_o(),
     );
+
     $service_stuff_enabled = $config_service->get_bool(
       config_id: 'transactions.fields.service_stuff.enabled',
       schema: $pp->schema_o(),
     );
 
-    $intersystem_account_schemas = $intersystems_service->get_eland_accounts_schemas($pp->schema());
-    $eland_intersystem_ary = $intersystems_service->get_eland($pp->schema());
+    //$intersystem_account_schemas = $intersystems_service->get_eland_accounts_schemas($pp->schema());
+    //$eland_intersystem_ary = $intersystems_service->get_eland($pp->schema());
 
-    $su_intersystem_ary = $intersystems_service->get_eland($su->schema());
-    $su_intersystem_ary[$su->schema()] = true;
+    //$su_intersystem_ary = $intersystems_service->get_eland($su->schema());
+    //$su_intersystem_ary[$su->schema()] = true;
 
-    $transaction = $transaction_repository->get(
+    $transaction = $transaction_repository->get_with_prev_next(
       id: $id,
       schema: $pp->schema_o(),
     );
@@ -88,6 +90,27 @@ class TransactionsShowController extends AbstractController
         'Transaction ' . $id . ' not found'
       );
 		}
+
+    $remote_schema = $transaction['from_remote_schema'] ?? $transaction['to_remote_schema'];
+    $remote_transaction = null;
+    $remote_is_active = false;
+
+    if (isset($transaction['remote_ref'])
+      && isset($remote_schema)
+    )
+    {
+      $remote_transaction = $transaction_repository->get_by_remote_ref(
+        remote_ref: new Uuid($transaction['remote_ref']),
+        schema: new Schema($remote_schema),
+      );
+
+      if (isset($systems_service->get_inter_ary($pp->schema())[$remote_schema]))
+      {
+        $remote_is_active = true;
+      }
+    }
+
+    /*
 
     $inter_schema = false;
 
@@ -135,6 +158,7 @@ class TransactionsShowController extends AbstractController
       && $config_service->get_intersystem_en(
       schema: $pp->schema_o(),
     );
+
 
     $out = '<div class="panel panel-';
     $out .= $intersystem_trans ? 'warning' : 'default';
@@ -559,16 +583,22 @@ class TransactionsShowController extends AbstractController
     }
 
     $out .= '</div></div>';
+    */
+
+    error_log(json_encode($transaction));
 
     return $this->render('transactions/transactions_show.html.twig', [
-      'content'           => $out,
+      'content'           => '',
       'transaction'       => $transaction,
-      'is_inter'          => $intersystem_trans,
-      'inter_transaction' => $inter_transaction,
-      'inter_schema'      => $inter_schema,
+      'remote_schema'     => $remote_schema,
+      'remote_transaction'  => $remote_transaction,
+      'remote_is_active'  => $remote_is_active,
+   //   'is_inter'          => $intersystem_trans,
+  //    'inter_transaction' => $inter_transaction,
+ //     'inter_schema'      => $inter_schema,
       'id'                => $id,
-      'prev_id'           => $prev_id,
-      'next_id'           => $next_id,
+      'prev_id'           => $transaction['prev_id'],
+      'next_id'           => $transaction['next_id'],
     ]);
   }
 }

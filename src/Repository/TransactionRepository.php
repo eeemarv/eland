@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Command\Transactions\TransactionsFilterCommand;
 use App\DTO\Schema;
 use App\Service\SystemsService;
+use Deprecated;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
@@ -20,7 +21,8 @@ class TransactionRepository
 	{
 	}
 
-  // not used yet(?)
+  // not used(?)
+  #[Deprecated()]
 	public function get_count_for_user_id(
     int $user_id,
     Schema $schema,
@@ -34,6 +36,7 @@ class TransactionRepository
 		return $res->fetchOne();
 	}
 
+  #[Deprecated()]
 	public function get(
     int $id,
     Schema $schema,
@@ -49,6 +52,81 @@ class TransactionRepository
 		return $data;
 	}
 
+	public function get_with_prev_next(
+    int $id,
+    Schema $schema,
+  ):array|false
+	{
+		$stmt = $this->db->prepare('with o_transactions as (
+        select *,
+          lag(id) over (order by id asc) as prev_id,
+          lead(id) over (order by id asc) as next_id
+        from ' . $schema->str() . '.transactions)
+      select ot.*, ot.prev_id, ot.next_id,
+        fu.code as from_code,
+        fu.name as from_name,
+        fu.remote_schema as from_remote_schema,
+        fu.remote_email as from_remote_email,
+        tu.code as to_code,
+        tu.name as to_name,
+        tu.remote_schema as to_remote_schema,
+        tu.remote_email as to_remote_email,
+        case
+          when fu.status in (1,2) or fu.is_active
+          then true
+          else false
+          end as from_is_active,
+        case
+          when tu.status in (1,2) or tu.is_active
+          then true
+          else false
+          end as to_is_active
+      from o_transactions ot
+      left join ' . $schema->str() . '.users fu
+        on fu.id = ot.id_from
+      left join ' . $schema->str() . '.users tu
+        on tu.id = ot.id_to
+			where ot.id = :id');
+		$stmt->bindValue('id', $id, Types::INTEGER);
+		$res = $stmt->executeQuery();
+		return $res->fetchAssociative();
+	}
+
+  public function get_by_remote_ref(
+    Uuid $remote_ref,
+    Schema $schema,
+  ):array|false
+  {
+    $query = 'select t.*,
+      fu.name as from_name,
+      fu.code as from_code,
+      fu.remote_schema as from_remote_schema,
+      case
+        when fu.status in (1,2) or fu.is_active
+        then true
+        else false
+        end as from_is_active,
+      case
+        when tu.status in (1,2) or tu.is_active
+        then true
+        else false
+        end as to_is_active,
+      tu.name as to_name,
+      tu.code as to_code,
+      tu.remote_schema as to_remote_schema
+      from ' . $schema->str() . '.transactions t
+        inner join ' . $schema->str() . '.users fu
+          on fu.id = t.id_from
+        inner join ' . $schema->str() . '.users tu
+          on tu.id = t.id_to
+      where t.remote_ref = :remote_ref';
+    $stmt = $this->db->prepare($query);
+    $stmt->bindValue('remote_ref', $remote_ref->toRfc4122(), Types::GUID);
+    $res = $stmt->executeQuery();
+    return $res->fetchAssociative();
+  }
+
+  #[Deprecated()]
 	public function get_next_id(
     int $id,
     Schema $schema,
@@ -64,6 +142,7 @@ class TransactionRepository
 		return $res->fetchOne();
 	}
 
+  #[Deprecated()]
 	public function get_prev_id(
     int $id,
     Schema $schema,
@@ -831,6 +910,9 @@ class TransactionRepository
     }
   }
 
+  /**
+   * To send emails after mass transaction
+   */
   public function get_all_by_bulk_id(
     Uuid $bulk_id,
     Schema $schema,

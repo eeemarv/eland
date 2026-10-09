@@ -56,7 +56,7 @@
 <div class="btn-group ml-5p" role="group">
   <a href="
   {%- if prev_id -%}
-    {{- path('messages_show', {}|pp|merge({'id': prev_id})) -}}"
+    {{- path('messages_show', {}|pp(id: prev_id)) -}}"
   {%- else -%}
   #" disabled
   {%- endif %} class="btn btn-default btn-lg" title="{{- 'nav.prev'|trans -}}">
@@ -65,7 +65,7 @@
 
   <a href="
   {%- if next_id -%}
-    {{- path('messages_show', {}|pp|merge({'id': next_id})) -}}"
+    {{- path('messages_show', {}|pp(id: next_id)) -}}"
   {%- else -%}
   #" disabled
   {%- endif %} class="btn btn-default btn-lg" title="{{- 'nav.next'|trans -}}">

@@ -23,7 +23,7 @@
       <ul>
         {%- for uid, count in hidden_ary -%}
           <li>
-            <a href="{{- path('users_show', {'id':uid}|pp) -}}">
+            <a href="{{- path('users_show', {}|pp(id: uid)) -}}">
               {{- users[uid].username -}}
             </a>
             {%- if count > 1 -%}
@@ -44,7 +44,7 @@
       <ul>
         {%- for uid in no_address_ary -%}
           <li>
-            <a href="{{- path('users_show', {'id':uid}|pp) -}}">
+            <a href="{{- path('users_show', {}|pp(id: uid)) -}}">
               {{- users[uid].username -}}
             </a>
           </li>
@@ -65,7 +65,7 @@
       <ul>
         {%- for uid, count in not_geocoded_ary -%}
           <li>
-            <a href="{{- path('users_show', {'id':uid}|pp) -}}">
+            <a href="{{- path('users_show', {}|pp(id: uid)) -}}">
               {{- users[uid].username -}}
             </a>
             {%- if count > 1 -%}

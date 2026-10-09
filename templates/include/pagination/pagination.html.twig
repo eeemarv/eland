@@ -37,7 +37,7 @@
 				}) -}}
 			</div>
 			<div>
-				<form action="{{- path(route, pp_ary()) -}}">
+				<form action="{{- path(route, {}|pp) -}}">
 					{{- 'pagination.per_page'|trans -}}:
 					<select name="p[limit]" onchange="this.form.submit();">
 						{%- for l in limit_options -%}

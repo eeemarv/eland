@@ -32,7 +32,7 @@
   <div class="btn-group ml-5p" role="group">
   <a href="
   {%- if pprev_id -%}
-    {{- path('news_show', {}|pp|merge({'id': pprev_id})) -}}"
+    {{- path('news_show', {}|pp(id: pprev_id)) -}}"
   {%- else -%}
   #" disabled
   {%- endif %} class="btn btn-default btn-lg" title="{{- 'nav.prev'|trans -}}">
@@ -41,7 +41,7 @@
 
   <a href="
   {%- if nnext_id -%}
-    {{- path('news_show', {}|pp|merge({'id': nnext_id})) -}}"
+    {{- path('news_show', {}|pp(id: nnext_id)) -}}"
   {%- else -%}
   #" disabled
   {%- endif %} class="btn btn-default btn-lg" title="{{- 'nav.next'|trans -}}">

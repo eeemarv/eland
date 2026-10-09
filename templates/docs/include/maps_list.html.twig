@@ -19,7 +19,7 @@
     {%- for m in maps -%}
       <tr class="info">
         <td>
-          <a href="{{- path('docs_map', {'id': m.id}|pp) -}}">
+          <a href="{{- path('docs_map', {}|pp(id: m.id)) -}}">
             {{- m.name }} ({{- m.doc_count -}})
           </a>
         </td>

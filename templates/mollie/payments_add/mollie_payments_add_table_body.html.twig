@@ -13,7 +13,7 @@
     is_pre_active(u) ? 'pre_active' :
     is_post_active(u) ? 'post_active' : 'active'
   -%}
-  {%- set u_link = path('users_show', {'id': u.id, 'status': all_params.status}|pp) -%}
+  {%- set u_link = path('users_show', {}|pp(id: u.id, status: all_params.status)) -%}
   {%- set u_code = (u.code ?? '') ~ ' ' ~ (u.name ?? '') -%}
   <tr{{- u_class|raw -}}>
     <td>

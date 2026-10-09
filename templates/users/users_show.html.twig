@@ -43,7 +43,7 @@
 <div class="btn-group ml-5p" role="group">
   <a href="
   {%- if prev_id -%}
-    {{- path('users_show', {}|pp|merge({'id': prev_id, 'status': status})) -}}"
+    {{- path('users_show', {}|pp(id: prev_id, status: status)) -}}"
   {%- else -%}
   #" disabled
   {%- endif %} class="btn btn-default btn-lg" title="{{- 'nav.prev'|trans -}}">
@@ -52,14 +52,14 @@
 
   <a href="
   {%- if next_id -%}
-    {{- path('users_show', {}|pp|merge({'id': next_id, 'status': status})) -}}"
+    {{- path('users_show', {}|pp(id: next_id, status: status)) -}}"
   {%- else -%}
   #" disabled
   {%- endif %} class="btn btn-default btn-lg" title="{{- 'nav.next'|trans -}}">
     <twig:ux:icon name="lucide:chevron-down"/>
   </a>
 
-  <a href="{{- path('users'|var_route, {}|pp|merge({'status': status})) -}}" class="btn btn-default btn-lg" title="{{- 'nav.list'|trans -}}">
+  <a href="{{- path('users'|var_route, {}|pp(status: status)) -}}" class="btn btn-default btn-lg" title="{{- 'nav.list'|trans -}}">
     <twig:ux:icon name="lucide:users"/>
   </a>
 </div>

@@ -36,7 +36,7 @@ data-csv-filename-value="{{- 'label.docs'|trans|lower -}}"
 <div class="btn-group ml-5p" role="group">
   <a href="
   {%- if prev_id -%}
-    {{- path('docs_map', {}|pp|merge({'id': prev_id})) -}}"
+    {{- path('docs_map', {}|pp(id: prev_id)) -}}"
   {%- else -%}
   #" disabled
   {%- endif %} class="btn btn-default btn-lg" title="{{- 'nav.prev'|trans -}}">
@@ -45,7 +45,7 @@ data-csv-filename-value="{{- 'label.docs'|trans|lower -}}"
 
   <a href="
   {%- if next_id -%}
-    {{- path('docs_map', {}|pp|merge({'id': next_id})) -}}"
+    {{- path('docs_map', {}|pp(id: next_id)) -}}"
   {%- else -%}
   #" disabled
   {%- endif %} class="btn btn-default btn-lg" title="{{- 'nav.next'|trans -}}">

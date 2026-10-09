@@ -40,7 +40,7 @@
         <strong>
             {{- cat.name -}}
             {%- if cat.count > 0 %} (
-                <a href="{{- path('messages'|var_route, pp_ary()|merge({'f': {'cid': cat.id}})) -}}">
+                <a href="{{- path('messages'|var_route, {'f': {'cid': cat.id}}|pp) -}}">
                     {{- cat.count -}}
                 </a> )
             {%- endif -%}

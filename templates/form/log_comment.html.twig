@@ -10,7 +10,7 @@
     'label': label|default('users.log_comment.label'),
     'help': help|default('users.log_comment.help'),
     'help_translation_parameters': help_translation_parameters|default({
-      'ao': id is defined ? '<a href="' ~ path('users_log', {'id': id}|pp) ~ '">' : '',
+      'ao': id is defined ? '<a href="' ~ path('users_log', {}|pp(id: id)) ~ '">' : '',
       'ac': id is defined ? '</a>' : '',
     }),
     'help_html': true,

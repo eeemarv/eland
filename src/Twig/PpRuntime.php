@@ -15,11 +15,6 @@ class PpRuntime implements RuntimeExtensionInterface
 	{
 	}
 
-	public function get_ary():array
-	{
-		return $this->pp->ary();
-	}
-
 	public function get_schema():string
 	{
 		return $this->pp->schema();
@@ -57,8 +52,19 @@ class PpRuntime implements RuntimeExtensionInterface
 		return false;
 	}
 
-  public function pp(array $params):array
+  public function pp(
+    array $params,
+    int|null $id = null,
+    string|null $role_short = null,
+    string|null $status = null,
+  ):array
   {
-    return [...$params, ...$this->pp->ary()];
+    return [
+      ...$params,
+      ...$this->pp->ary(),
+      ...(isset($id) ? ['id' => $id] : []),
+      ...(isset($role_short) ? ['role_short' => $role_short] : []),
+      ...(isset($status) ? ['status' => $status] : []),
+    ];
   }
 }

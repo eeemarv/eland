@@ -13,7 +13,7 @@
   or user_leaving_pane_en -%}
 <ul class="nav nav-tabs">
   <li{%- if all_params.status == 'active' %} class="active"{%- endif -%}>
-    <a  href="{{- path('users'|var_route, {'status': 'active'}|pp) -}}">
+    <a  href="{{- path('users'|var_route, {}|pp(status: 'active')) -}}">
       {%- if pp_has_role('admin') -%}
         {{- 'status.active'|trans -}}
       {%- else -%}
@@ -24,7 +24,7 @@
 
   {%- if user_new_pane_en -%}
     <li{%- if all_params.status == 'new' %} class="active"{%- endif -%}>
-      <a  href="{{- path('users'|var_route, {'status': 'new'}|pp) -}}" class="bg-success">
+      <a  href="{{- path('users'|var_route, {}|pp(status: 'new')) -}}" class="bg-success">
         {{- 'status.new'|trans -}}
       </a>
     </li>
@@ -32,7 +32,7 @@
 
   {%- if user_leaving_pane_en -%}
   <li{%- if all_params.status == 'leaving' %} class="active"{%- endif -%}>
-    <a href="{{- path('users'|var_route, {'status': 'leaving'}|pp) -}}" class="bg-danger">
+    <a href="{{- path('users'|var_route, {}|pp(status: 'leaving')) -}}" class="bg-danger">
       {{- 'status.leaving'|trans -}}
     </a>
   </li>
@@ -40,7 +40,7 @@
 
   {%- if config_bool('intersystem.enabled') -%}
   <li{%- if all_params.status == 'intersystem' %} class="active"{%- endif -%}>
-    <a href="{{- path('users'|var_route, {'status': 'intersystem'}|pp) -}}" class="bg-warning">
+    <a href="{{- path('users'|var_route, {}|pp(status: 'intersystem')) -}}" class="bg-warning">
       {{- 'status.intersystem'|trans -}}
     </a>
   </li>
@@ -48,19 +48,19 @@
 
   {%- if pp_has_role('admin') -%}
     <li{%- if all_params.status == 'pre-active' %} class="active"{%- endif -%}>
-      <a  href="{{- path('users'|var_route, {'status': 'pre-active'}|pp) -}}" class="bg-inactive">
+      <a  href="{{- path('users'|var_route, {}|pp(status: 'pre-active')) -}}" class="bg-inactive">
         {{- 'status.pre_active'|trans -}}
       </a>
     </li>
 
     <li{%- if all_params.status == 'post-active' %} class="active"{%- endif -%}>
-      <a  href="{{- path('users'|var_route, {'status': 'post-active'}|pp) -}}" class="bg-info">
+      <a  href="{{- path('users'|var_route, {}|pp(status: 'post-active')) -}}" class="bg-info">
         {{- 'status.post_active'|trans -}}
       </a>
     </li>
 
     <li{%- if all_params.status == 'all' %} class="active"{%- endif -%}>
-      <a href="{{- path('users'|var_route, {'status': 'all'}|pp) -}}">
+      <a href="{{- path('users'|var_route, {}|pp(status: 'all')) -}}">
         {{- 'status.all'|trans -}}
       </a>
     </li>

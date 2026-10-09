@@ -32,7 +32,7 @@
         {{- h.name -}}
       </td>
       <td>
-        <a href="{{- path('users_show', {'id': h.created_by}|pp) -}}">
+        <a href="{{- path('users_show', {}|pp(id: h.created_by)) -}}">
           {{- account(h.created_by) -}}
         </a>
       </td>

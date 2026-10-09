@@ -36,7 +36,7 @@
         </td>
         <td>
           {%- if current.created_by -%}
-          <a href="{{- path('users_show', {'id': current.created_by}|pp) -}}">
+          <a href="{{- path('users_show', {}|pp(id: current.created_by)) -}}">
             {{- current.user_code ?? '***' }} {{ current.username -}}
           </a>
           {%- else -%}
