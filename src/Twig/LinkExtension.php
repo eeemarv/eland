@@ -2,23 +2,64 @@
 
 namespace App\Twig;
 
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFunction;
-use Twig\TwigFilter;
+use App\Service\PageParamsService;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Twig\Attribute\AsTwigFilter;
+use Twig\Attribute\AsTwigFunction;
 
-class LinkExtension extends AbstractExtension
+class LinkExtension
 {
-	public function getFunctions():array
+	public function __construct(
+		private readonly UrlGeneratorInterface $url_generator,
+		private readonly PageParamsService $pp
+	)
 	{
-		return [
-			new TwigFunction('link', [LinkRuntime::class, 'link']),
-		];
 	}
 
-	public function getFilters():array
+  #[AsTwigFunction(name: 'link')]
+  public function link(
+		string $route,
+		array $params
+	):string
+  {
+    return $this->url_generator->generate(
+			$route, [
+        ...$this->pp->ary(),
+        ...$params,
+      ], UrlGeneratorInterface::ABSOLUTE_PATH,
+    );
+	}
+
+  #[AsTwigFilter(name: 'link')]
+	public function link_filter(
+		string $label,
+		string $route,
+		array $params = [],
+		array $attr = []
+	)
 	{
-		return [
-			new TwigFilter('link', [LinkRuntime::class, 'link_filter']),
-		];
+    $out = '<a href="';
+		$out .= $this->url_generator->generate(
+			$route, [
+        ...$this->pp->ary(),
+        ...$params,
+      ], UrlGeneratorInterface::ABSOLUTE_PATH,
+    );
+		$out .= '"';
+
+		foreach ($attr as $name => $value)
+		{
+			$out .= ' ';
+			$out .= $name;
+			$out .= '="';
+			$out .= $value;
+			$out .= '"';
+		}
+
+		$out .= '>';
+		$out .= htmlspecialchars($label, ENT_QUOTES);
+		$out .= '</a>';
+
+		return $out;
 	}
 }

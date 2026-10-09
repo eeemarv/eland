@@ -2,16 +2,25 @@
 
 namespace App\Twig;
 
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFilter;
+use App\Service\VarRouteService;
+use Twig\Attribute\AsTwigFilter;
 
-class VarRouteExtension extends AbstractExtension
+class VarRouteExtension
 {
-	public function getFilters():array
+	public function __construct(
+		private readonly VarRouteService $vr
+	)
 	{
-		return [
-			new TwigFilter('var_route', [VarRouteRuntime::class, 'get']),
-			new TwigFilter('fallback_route', [VarRouteRuntime::class, 'get_fallback']),
-		];
+	}
+  #[AsTwigFilter(name: 'var_route')]
+	public function get(string $menu_route):string
+	{
+		return $this->vr->get($menu_route);
+	}
+
+  #[AsTwigFilter(name: 'fallback_route')]
+	public function get_fallback(string $active_menu, string $schema):string
+	{
+		return $this->vr->get_fallback_route($active_menu, $schema);
 	}
 }

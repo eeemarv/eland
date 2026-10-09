@@ -2,22 +2,80 @@
 
 namespace App\Twig;
 
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFunction;
+use App\Cnst\RoleCnst;
+use App\Service\SessionUserService;
+use App\Service\UserCacheService;
+use Twig\Attribute\AsTwigFunction;
 
-class SuExtension extends AbstractExtension
+class SuExtension
 {
-	public function getFunctions():array
+	public function __construct(
+		private readonly SessionUserService $su,
+		private readonly UserCacheService $user_cache_service
+	)
 	{
-		return [
-			new TwigFunction('su_role', [SuRuntime::class, 'su_role']),
-			new TwigFunction('su_ary', [SuRuntime::class, 'su_ary']),
-			new TwigFunction('su_id', [SuRuntime::class, 'su_id']),
-			new TwigFunction('su_schema', [SuRuntime::class, 'su_schema']),
-			new TwigFunction('su_is_master', [SuRuntime::class, 'su_is_master']),
-			new TwigFunction('su_is_owner', [SuRuntime::class, 'su_is_owner']),
-			new TwigFunction('su_is_system_self', [SuRuntime::class, 'su_is_system_self']),
-			new TwigFunction('su_logins_role_short', [SuRuntime::class, 'su_logins_role_short']),
-		];
+	}
+
+  #[AsTwigFunction(name: 'su_role')]
+	public function su_role(string $role):bool
+	{
+		return $role === $this->su->role();
+	}
+
+  #[AsTwigFunction(name: 'su_ary')]
+	public function su_ary():array
+	{
+		return $this->su->ary();
+	}
+
+  #[AsTwigFunction(name: 'su_is_master')]
+	public function su_is_master():bool
+	{
+		return $this->su->is_master();
+	}
+
+  #[AsTwigFunction(name: 'su_is_owner')]
+	public function su_is_owner(int $object_author_id):bool
+	{
+		return $this->su->is_owner($object_author_id);
+	}
+
+  #[AsTwigFunction(name: 'su_id')]
+	public function su_id():int
+	{
+		return $this->su->id();
+	}
+
+  #[AsTwigFunction(name: 'su_schema')]
+	public function su_schema():string
+	{
+		return $this->su->schema();
+	}
+
+  #[AsTwigFunction(name: 'su_is_system_self')]
+	public function su_is_system_self():bool
+	{
+		return $this->su->is_system_self();
+	}
+
+  #[AsTwigFunction(name: 'su_logins_role_short')]
+	public function su_logins_role_short():array
+	{
+		$out_ary = [];
+
+		foreach($this->su->logins() as $schema => $id)
+		{
+			if ($id === 'master')
+			{
+				$out_ary[$schema] = 'a';
+				continue;
+			}
+
+			$role = $this->user_cache_service->get($id, $schema)['role'];
+
+			$out_ary[$schema] = RoleCnst::SHORT[$role];
+		}
+
+		return $out_ary;
 	}
 }

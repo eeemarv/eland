@@ -2,25 +2,18 @@
 
 namespace App\Twig;
 
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFilter;
+use Twig\Attribute\AsTwigFilter;
 
-class SimpleTextExtension extends AbstractExtension
+class SimpleTextExtension
 {
-	public function getFilters():array
-	{
-		return [
-			new TwigFilter('underline', [$this, 'underline']),
-			new TwigFilter('replace_when_zero', [$this, 'replace_when_zero']),
-		];
-	}
-
+  #[AsTwigFilter(name: 'underline')]
 	public function underline(string $input, string $char = '-'):string
 	{
 		$len = strlen($input);
 		return $input . "\r\n" . str_repeat($char, $len);
 	}
 
+  #[AsTwigFilter(name: 'replace_when_zero')]
 	public function replace_when_zero(int $input, $replace = null):string
 	{
 		return $input === 0 ? $replace : $input;

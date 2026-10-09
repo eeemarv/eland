@@ -2,15 +2,37 @@
 
 namespace App\Twig;
 
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFilter;
+use Twig\Attribute\AsTwigFilter;
 
-class FlattenExtension extends AbstractExtension
+class FlattenExtension
 {
-	public function getFilters():array
+  #[AsTwigFilter(name: 'flatten')]
+	public function get_flatten(
+    array $params,
+  ):array
 	{
-		return [
-			new TwigFilter('flatten', [FlattenRuntime::class, 'get_flatten']),
-		];
+    if (!$params)
+    {
+      return [];
+    }
+
+		$out_ary = [];
+
+    $params = http_build_query($params, 'prefix', '&');
+    $params = explode('&', $params);
+
+    foreach ($params as $param)
+    {
+      [$name, $value] = explode('=', $param);
+
+      if (!isset($value) || $value === '')
+      {
+          continue;
+      }
+
+      $out_ary[urldecode($name)] = urldecode($value);
+    }
+
+		return $out_ary;
 	}
 }

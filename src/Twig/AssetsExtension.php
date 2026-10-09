@@ -2,18 +2,40 @@
 
 namespace App\Twig;
 
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFunction;
+use App\Service\AssetsService;
+use Twig\Attribute\AsTwigFunction;
 
-class AssetsExtension extends AbstractExtension
+class AssetsExtension
 {
-	public function getFunctions():array
+	public function __construct(
+		private readonly AssetsService $assets_service
+	)
 	{
-		return [
-			new TwigFunction('assets', [AssetsRuntime::class, 'get']),
-			new TwigFunction('assets_add', [AssetsRuntime::class, 'add']),
-			new TwigFunction('assets_add_print_css', [AssetsRuntime::class, 'add_print_css']),
-			new TwigFunction('assets_ary', [AssetsRuntime::class, 'get_ary']),
-		];
+	}
+
+  #[AsTwigFunction(name: 'assets')]
+	public function get(string $name):string
+	{
+		return $this->assets_service->get($name);
+	}
+
+  #[AsTwigFunction(name: 'assets_add')]
+	public function add(array $asset_ary):string
+	{
+		$this->assets_service->add($asset_ary);
+		return '';
+	}
+
+  #[AsTwigFunction(name: 'assets_add_print_css')]
+	public function add_print_css(array $asset_ary):string
+	{
+		$this->assets_service->add_print_css($asset_ary);
+		return '';
+	}
+
+  #[AsTwigFunction(name: 'assets_ary')]
+	public function get_ary(string $type):array
+	{
+		return $this->assets_service->get_ary($type);
 	}
 }

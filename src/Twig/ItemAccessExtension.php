@@ -2,15 +2,20 @@
 
 namespace App\Twig;
 
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFunction;
+use App\Service\ItemAccessService;
+use Twig\Attribute\AsTwigFunction;
 
-class ItemAccessExtension extends AbstractExtension
+class ItemAccessExtension
 {
-	public function getFunctions():array
+	public function __construct(
+		private readonly ItemAccessService $item_access_service
+	)
 	{
-		return [
-			new TwigFunction('item_visible', [ItemAccessRuntime::class, 'item_visible']),
-		];
+	}
+
+  #[AsTwigFunction(name: 'item_visible')]
+	public function item_visible(string $access):bool
+	{
+		return $this->item_access_service->is_visible($access);
 	}
 }

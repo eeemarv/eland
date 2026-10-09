@@ -2,15 +2,22 @@
 
 namespace App\Twig;
 
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFilter;
+use App\Service\ItemAccessService;
+use Twig\Attribute\AsTwigFilter;
 
-class AccessExtension extends AbstractExtension
+class AccessExtension
 {
-	public function getFilters():array
+	public function __construct(
+		private readonly ItemAccessService $item_access_service,
+	)
 	{
-		return [
-			new TwigFilter('is_visible', [AccessRuntime::class, 'is_visible']),
-		];
+	}
+
+  #[AsTwigFilter(name: 'is_visible')]
+	public function is_visible(
+    string $item_access,
+  ):bool
+	{
+    return $this->item_access_service->is_visible($item_access);
 	}
 }

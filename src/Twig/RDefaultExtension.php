@@ -2,15 +2,20 @@
 
 namespace App\Twig;
 
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFunction;
+use App\Service\VarRouteService;
+use Twig\Attribute\AsTwigFunction;
 
-class RDefaultExtension extends AbstractExtension
+class RDefaultExtension
 {
-	public function getFunctions():array
+	public function __construct(
+		private readonly VarRouteService $vr
+	)
 	{
-		return [
-			new TwigFunction('r_default', [RDefaultRuntime::class, 'get']),
-		];
+	}
+
+  #[AsTwigFunction(name: 'r_default')]
+	public function get():string
+	{
+		return $this->vr->get('default');
 	}
 }

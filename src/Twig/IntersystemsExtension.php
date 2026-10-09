@@ -2,15 +2,20 @@
 
 namespace App\Twig;
 
-use Twig\Extension\AbstractExtension;
-use Twig\TwigFunction;
+use App\Service\SystemsService;
+use Twig\Attribute\AsTwigFunction;
 
-class IntersystemsExtension extends AbstractExtension
+class IntersystemsExtension
 {
-	public function getFunctions():array
+	public function __construct(
+    private readonly SystemsService $systems_service,
+	)
 	{
-		return [
-			new TwigFunction('intersystem_schemas', [IntersystemsRuntime::class, 'get_schemas']),
-		];
+	}
+
+  #[AsTwigFunction(name: 'intersystem_schemas')]
+	public function get_schemas(string $schema):array
+	{
+		return $this->systems_service->get_inter_ary($schema);
 	}
 }

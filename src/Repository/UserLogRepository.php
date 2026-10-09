@@ -79,6 +79,7 @@ class UserLogRepository
     return $affected_rows;
 	}
 
+  /*
 	public function bulk_insert2(
 		array $users_old_data_ary,
     array $new_data,
@@ -152,6 +153,7 @@ class UserLogRepository
 
     return $affected_rows;
 	}
+  */
 
   public function bulk_insert(
 		array $users_old_data_ary,

@@ -64,7 +64,9 @@ class TransactionsController extends AbstractController
       schema: $pp->schema_o(),
     ))
     {
-      throw $this->createNotFoundException('Transactions module not enabled.');
+      throw $this->createNotFoundException(
+        'Transactions module not enabled.'
+      );
     }
 
     if (!$request->isMethod('GET') && !$pp->is_admin())
