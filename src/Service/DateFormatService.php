@@ -4,10 +4,18 @@ namespace App\Service;
 
 use App\DTO\Schema;
 use App\Service\ConfigService;
+use DateTimeImmutable;
+use DateTimeZone;
+use IntlDateFormatter;
+use RuntimeException;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 
 class DateFormatService
 {
+  private IntlDateFormatter $date_formatter;
+  private IntlDateFormatter $datetime_formatter;
+  private DateTimeZone $utc;
+
 	const FORMATS = [
 		'%Y-%m-%d %H:%M:%S' => [
 			'day'	=> '%Y-%m-%d',
@@ -52,12 +60,32 @@ class DateFormatService
 	];
 
 	public function __construct(
-		protected ConfigService $config_service
+		private readonly ConfigService $config_service
 	)
 	{
+      $this->utc = new DateTimeZone('UTC');
+      $local_timezone = new DateTimeZone('Europe/Brussels');
+
+      $this->date_formatter = new IntlDateFormatter(
+        'nl_BE',
+        IntlDateFormatter::NONE,
+        IntlDateFormatter::NONE,
+        $local_timezone,
+        IntlDateFormatter::GREGORIAN,
+        'EEE d MMM yyyy',
+      );
+
+      $this->datetime_formatter = new IntlDateFormatter(
+        'nl_BE',
+        IntlDateFormatter::NONE,
+        IntlDateFormatter::NONE,
+        $local_timezone,
+        IntlDateFormatter::GREGORIAN,
+        'EEE d MMM yyyy HH:mm',
+      );
 	}
 
-	protected function get_format(
+	private function get_format(
 		string $precision,
 		string|null $schema
 	):string
@@ -257,4 +285,38 @@ class DateFormatService
 
 		return $out;
 	}
+
+  public function date_format(
+    string $timestamp,
+  ):string
+  {
+    $date = new DateTimeImmutable($timestamp, $this->utc);
+
+    $result = $this->date_formatter->format($date);
+
+    if ($result === false) {
+      throw new RuntimeException(
+        sprintf('Date "%s" could not be formatted.', $timestamp)
+      );
+    }
+
+    return $result;
+  }
+
+  public function datetime_format(
+    string $timestamp,
+  ):string
+  {
+    $date = new DateTimeImmutable($timestamp, $this->utc);
+
+    $result = $this->datetime_formatter->format($date);
+
+    if ($result === false) {
+      throw new RuntimeException(
+        sprintf('Date-time "%s" could not be formatted.', $timestamp)
+      );
+    }
+
+    return $result;
+  }
 }

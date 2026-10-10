@@ -26,6 +26,7 @@ class DateFormatExtension
 		return $this->date_format_service->datepicker_placeholder($schema);
 	}
 
+  /*
   #[AsTwigFilter(name: 'date_format', needsContext: true)]
 	public function get(
     array $context,
@@ -41,4 +42,29 @@ class DateFormatExtension
     $sch = $schema ?? $context['schema'] ?? null;
 		return $this->date_format_service->get($ts, $precision, $sch);
 	}
+  */
+
+  #[AsTwigFilter(name: 'date_format')]
+  public function date_format(
+    string $timestamp,
+  ):string|null
+  {
+    if (!isset($timestamp))
+    {
+      return null;
+    }
+    return $this->date_format_service->date_format($timestamp);
+  }
+
+  #[AsTwigFilter(name: 'datetime_format')]
+  public function datetime_format(
+    string $timestamp,
+  ):string|null
+  {
+    if (!isset($timestamp))
+    {
+      return null;
+    }
+    return $this->date_format_service->datetime_format($timestamp);
+  }
 }

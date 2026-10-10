@@ -14,7 +14,7 @@
                     {{- 'label.event_date'|trans -}}
                 </dt>
                 <dd>
-                    {{- post.event_at|date_format('day') -}}
+                    {{- post.event_at|date_format -}}
                 </dd>
             {%- endif -%}
             {%- if post.location is defined and post.location is not empty -%}

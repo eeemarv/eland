@@ -33,7 +33,7 @@
           {{- account(t.user_id)|link('users_show', {'id': t.user_id})|raw -}}
         </td>
         <td data-order="{{- t.created_at|date('U') -}}">
-          {{- t.created_at|date_format('min') -}}
+          {{- t.created_at|datetime_format -}}
         </td>
         {%- if show_access -%}
           <td>

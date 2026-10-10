@@ -34,7 +34,7 @@
           {{- d.name|s3(d.filename)|raw -}}
         </td>
         <td data-order="{{- d.created_at|date('U') -}}">
-          {{- d.created_at|date_format('min') -}}
+          {{- d.created_at|datetime_format -}}
         </td>
         {%- if show_access -%}
           <td>

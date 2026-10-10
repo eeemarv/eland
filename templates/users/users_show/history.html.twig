@@ -11,7 +11,7 @@
       {%- if user.created_at is empty -%}
         <twig:ux:icon name="lucide:x" class="text-bold"/>
       {%- else -%}
-        {{- user.created_at|date_format('min') -}}
+        {{- user.created_at|datetime_format -}}
       {%- endif -%}
     </dd>
     <dt>
@@ -21,7 +21,7 @@
       {%- if user.activated_at is empty -%}
         <twig:ux:icon name="lucide:x" class="text-bold"/>
       {%- else -%}
-        {{- user.activated_at|date_format('min') -}}
+        {{- user.activated_at|datetime_format -}}
       {%- endif -%}
     </dd>
     <dt>
@@ -31,7 +31,7 @@
       {%- if user.last_login is empty -%}
         <twig:ux:icon name="lucide:x" class="text-bold"/>
       {%- else -%}
-        {{- last_login|date_format('min') -}}
+        {{- last_login|datetime_format -}}
       {%- endif -%}
     </dd>
   {%- endblock dl -%}
@@ -49,7 +49,7 @@
         <twig:ux:icon name="lucide:heart-pulse"/>
       {%- endif -%}
       &nbsp;
-      <span class="hidden-sm">
+      <span class="hidden-xs hidden-sm">
         {{- 'users_active_edit.btn'|trans({
           'mode': user.is_active ? 'deactivate' : 'activate',
         }) -}}

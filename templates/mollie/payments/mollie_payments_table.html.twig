@@ -72,7 +72,7 @@
           {%- endif -%}
         </td>
         <td>
-          {{- p.created_at|date_format('day') -}}
+          {{- p.created_at|date_format -}}
         </td>
         {%- if p.email_addresses|length -%}
         <td>

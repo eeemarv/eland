@@ -26,7 +26,7 @@
   {%- for h in history_ary -%}
     <tr>
       <td>
-        {{- h.created_at|date_format('min') -}}
+        {{- h.created_at|datetime_format -}}
       </td>
       <td>
         {{- h.name -}}

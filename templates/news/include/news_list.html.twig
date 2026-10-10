@@ -27,7 +27,7 @@
         </td>
         <td data-order="{{- n.event_at|date('U') -}}">
           {%- if n.event_at is defined and n.event_at is not empty -%}
-            {{- n.event_at|date_format('day') -}}
+            {{- n.event_at|date_format -}}
           {%- else -%}
             &nbsp;
           {%- endif -%}

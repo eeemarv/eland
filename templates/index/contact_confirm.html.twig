@@ -9,7 +9,7 @@
 				  {{- 'index_contact_confirm.success'|trans -}}
         {%- elseif is_already_confirmed -%}
 				  {{- 'index_contact_confirm.already_confirmed'|trans({
-            'confirmed_at': confirmed_at|date_format('min')
+            'confirmed_at': confirmed_at|datetime_format
           }) -}}
         {%- elseif is_expired -%}
 				  {{- 'index_contact_confirm.expired'|trans -}}

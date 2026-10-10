@@ -170,7 +170,7 @@
     {%- if cols.birthdate is defined and cols.birthdate -%}
       {%- if u.birthdate -%}
         <td data-order="{{- u.birthdate|date('U') -}}">
-          {{- u.birthdate|date_format('day') -}}
+          {{- u.birthdate|date_format -}}
         </td>
       {%- else -%}
         <td>/</td>
@@ -199,20 +199,20 @@
 
     {%- if cols.created_at is defined and cols.created_at -%}
       <td data-order="{{- u.created_at|date('U') -}}">
-        {{- u.created_at|date_format('day') -}}
+        {{- u.created_at|date_format -}}
       </td>
     {%- endif -%}
 
     {%- if cols.last_edit_at is defined and cols.last_edit_at -%}
       <td data-order="{{- u.last_edit_at|date('U') -}}">
-        {{- u.last_edit_at|date_format('day') -}}
+        {{- u.last_edit_at|date_format -}}
       </td>
     {%- endif -%}
 
     {%- if cols.activated_at is defined and cols.activated_at -%}
       {%- if u.activated_at -%}
         <td data-order="{{- u.activated_at|date('U') -}}">
-          {{- u.activated_at|date_format('day') -}}
+          {{- u.activated_at|date_format -}}
         </td>
       {%- else -%}
         <td>/</td>
@@ -222,7 +222,7 @@
     {%- if cols.last_login_at is defined and cols.last_login_at -%}
       {%- if last_login_ary[uid] is defined -%}
         <td data-order="{{- last_login_ary[uid]|date('U') -}}">
-          {{- last_login_ary[uid]|date_format('day') -}}
+          {{- last_login_ary[uid]|date_format -}}
         </td>
       {%- else -%}
         <td>/</td>
@@ -296,7 +296,7 @@
       <span class="label label-success"
         title="{{- mollie_ary[uid].description -}}&#10;
         {{- mollie_ary[uid].amount|replace({'.': ','}) }} EUR&#10;
-        @ {{ mollie_ary[uid].paid_at|date_format('day') -}}"
+        @ {{ mollie_ary[uid].paid_at|date_format -}}"
       >
         {{- 'mollie.status.paid'|trans -}}
       </span>
@@ -304,7 +304,7 @@
       <span class="label label-default"
         title="{{- mollie_ary[uid].description -}}&#10;
         {{- mollie_ary[uid].amount|replace({'.': ','}) }} EUR&#10;
-        @ {{ mollie_ary[uid].canceled_at|date_format('day') -}}"
+        @ {{ mollie_ary[uid].canceled_at|date_format -}}"
       >
         {{- 'mollie.status.canceled'|trans -}}
       </span>
@@ -312,7 +312,7 @@
       <span class="label label-warning"
         title="{{- mollie_ary[uid].description -}}&#10;
         {{- mollie_ary[uid].amount|replace({'.': ','}) }} EUR&#10;
-        @ {{ mollie_ary[uid].created_at|date_format('day') -}}"
+        @ {{ mollie_ary[uid].created_at|date_format -}}"
       >
         {{- 'mollie.status.open'|trans -}}
       </span>
@@ -378,7 +378,7 @@
             'uid': uid,
             'f':{
               'to_account': u_code,
-              'from_date': transactions_from_date|date_format('day'),
+              'from_date': transactions_from_date|date_format,
             }}|pp) -}}">
             {{- transactions_ary[uid].trans_in -}}
           </a>
@@ -395,7 +395,7 @@
             'uid': uid,
             'f':{
               'from_account': u_code,
-              'from_date': transactions_from_date|date_format('day'),
+              'from_date': transactions_from_date|date_format,
             }}|pp) -}}">
             {{- transactions_ary[uid].trans_out -}}
           </a>
@@ -414,7 +414,7 @@
               'account_logic': 'or',
               'to_account': u_code,
               'from_account': u_code,
-              'from_date': transactions_from_date|date_format('day'),
+              'from_date': transactions_from_date|date_format,
             }}|pp) -}}">
             {{- transactions_ary[uid].trans_total -}}
           </a>
@@ -431,7 +431,7 @@
             'uid': uid,
             'f':{
               'to_account': u_code,
-              'from_date': transactions_from_date|date_format('day'),
+              'from_date': transactions_from_date|date_format,
             }}|pp) -}}">
             {{- transactions_ary[uid].amount_in -}}
           </a>
@@ -448,7 +448,7 @@
             'uid': uid,
             'f':{
               'from_account': u_code,
-              'from_date': transactions_from_date|date_format('day'),
+              'from_date': transactions_from_date|date_format,
             }}|pp) -}}">
             {{- transactions_ary[uid].amount_out -}}
           </a>
@@ -467,7 +467,7 @@
               'account_logic': 'or',
               'to_account': u_code,
               'from_account': u_code,
-              'from_date': transactions_from_date|date_format('day'),
+              'from_date': transactions_from_date|date_format,
             }}|pp) -}}">
             {{- transactions_ary[uid].amount_total -}}
           </a>

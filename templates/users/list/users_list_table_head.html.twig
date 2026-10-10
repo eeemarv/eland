@@ -41,7 +41,7 @@
 
 {%- if cols.balance is defined and cols.balance -%}
 <th data-type="num" data-priority="5" title="{{- config_str('transactions.currency.name') -}}">
-  {{- 'label.balance'|trans -}}
+  {{- 'label.balance'|trans }} ({{- config_str('transactions.currency.name') -}})
 </th>
 {%- endif -%}
 
@@ -51,7 +51,7 @@
   and cols.balance_date -%}
 <th data-type="num" data-priority="6">
   {{- 'label.balance_on_date_var'|trans({
-    'date': cols.balance_date|date_format('day')
+    'date': cols.balance_date|date_format
   }) -}}
 </th>
 {%- endif -%}

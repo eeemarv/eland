@@ -32,7 +32,7 @@
     <tbody>
       <tr>
         <td>
-          {{- current.created_at|date_format('min') -}}
+          {{- current.created_at|datetime_format -}}
         </td>
         <td>
           {%- if current.created_by -%}

@@ -7,7 +7,7 @@
     </dt>
     <dd>
       {%- if user.birthdate -%}
-        {{- user.birthdate|date_format('day') -}}
+        {{- user.birthdate|date_format -}}
       {%- else -%}
         <twig:ux:icon name="lucide:x"/>
       {%- endif -%}
@@ -34,7 +34,7 @@
       }) -}}">
       <twig:ux:icon name="lucide:pencil"/>
       &nbsp;
-      <span class="hidden-sm">
+      <span class="hidden-xs hidden-sm">
         {{- 'btn.edit'|trans -}}
       </span>
     </a>

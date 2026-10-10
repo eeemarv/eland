@@ -11,7 +11,7 @@
             {{- 'label.account_code'|trans -}}
           </th>
           <th>
-            {{- 'label.balance'|trans -}}
+            {{- 'label.balance'|trans }} ({{- config_str('transactions.currency.name') -}})
           </th>
 
           {%- if config_bool('accounts.limits.enabled') -%}
@@ -90,7 +90,7 @@
                     }) -}}">
                 <twig:ux:icon name="lucide:arrow-left-right"/>
                 &nbsp;
-                <span class="hidden-sm">
+                <span class="hidden-xs hidden-sm">
                   {{- 'btn.transaction'|trans -}}
                 </span>
               </a>
@@ -113,7 +113,7 @@
               }) -}}">
               <twig:ux:icon name="lucide:pencil"/>
               &nbsp;
-              <span class="hidden-sm">
+              <span class="hidden-xs hidden-sm">
                 {{- 'btn.edit'|trans -}}
               </span>
             </a>
@@ -132,7 +132,7 @@
               }) -}}">
               <twig:ux:icon name="lucide:user-minus"/>
               &nbsp;
-              <span class="hidden-sm">
+              <span class="hidden-xs hidden-sm">
                 {{- 'btn.leaving'|trans -}}
               </span>
             </a>
@@ -152,7 +152,7 @@
               }) -}}">
               <twig:ux:icon name="lucide:pencil"/>
               &nbsp;
-              <span class="hidden-sm">
+              <span class="hidden-xs hidden-sm">
                 {{- 'btn.edit'|trans -}}
               </span>
             </a>

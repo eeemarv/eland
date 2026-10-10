@@ -16,6 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #[AsController]
 class ConfigDateFormatController extends AbstractController
 {
+  /*
   #[Route(
     '/{schema}/{role_short}/config/date-format',
     name: 'config_date_format',
@@ -28,6 +29,7 @@ class ConfigDateFormatController extends AbstractController
       'module'        => 'config',
     ],
   )]
+  */
 
   public function __invoke(
     Request $request,
