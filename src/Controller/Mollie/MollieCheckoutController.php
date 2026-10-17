@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Mollie\Api\MollieApiClient;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Uid\Uuid;
 

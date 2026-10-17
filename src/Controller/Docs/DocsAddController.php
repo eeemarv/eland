@@ -14,7 +14,7 @@ use App\Service\S3Service;
 use App\Service\SessionUserService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class DocsAddController extends AbstractController

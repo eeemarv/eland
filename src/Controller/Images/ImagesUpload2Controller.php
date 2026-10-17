@@ -11,7 +11,7 @@ use App\Service\ImageUploadService;
 use App\Service\PageParamsService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class ImagesUpload2Controller extends AbstractController

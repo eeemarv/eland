@@ -9,7 +9,7 @@ use App\Form\Type\Filter\QTextSearchFilterType;
 use App\Repository\UserRepository;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class UsersTilesController extends AbstractController
