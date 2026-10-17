@@ -1,0 +1,104 @@
+{%- extends 'chat/base/chat_base.html.twig' -%}
+
+{%- block main_content -%}
+
+<div
+  class="chat-layout"
+  data-controller="chat"
+  data-chat-view-value="list"
+>
+  {# Left column: conversaionlist #}
+  <aside class="chat-sidebar">
+    <header class="chat-sidebar__header">
+        <h1>Berichten</h1>
+
+        <input
+            type="search"
+            class="form-control"
+            placeholder="Zoek conversaties..."
+            aria-label="Zoek conversaties"
+        >
+    </header>
+
+    <nav
+        class="chat-conversations"
+        aria-label="Conversaties"
+    >
+        {% for cr in chat_rooms %}
+          <button
+            type="button"
+            class="chat-conversation"
+            data-action="click->chat#open"
+            data-chat-conversation-id-param="{{ cr.id }}"
+            data-chat-conversation-name-param="{{ cr.name }}"
+            data-chat-target="conversation"
+          >
+              <span class="chat-conversation__avatar">
+                  {{ cr.name|slice(0, 1)|upper }}
+              </span>
+
+              <span class="chat-conversation__body">
+                  <span class="chat-conversation__name">
+                      {{ cr.name }}
+                  </span>
+
+                  <span class="chat-conversation__preview">
+                      {{ cr.lastMessage }}
+                  </span>
+              </span>
+          </button>
+      {% endfor %}
+    </nav>
+  </aside>
+
+  {# right column: active conversation #}
+  <main class="chat-main">
+      <header class="chat-main__header">
+          <button
+              type="button"
+              class="chat-back"
+              data-action="click->chat#back"
+          >
+              ‹ Terug
+          </button>
+
+          <h2 data-chat-target="title">
+              Selecteer een conversatie
+          </h2>
+      </header>
+
+      <div
+          class="chat-main__messages"
+          data-chat-target="messages"
+          aria-live="polite"
+          aria-relevant="additions"
+      >
+          <p class="chat-empty">
+              Selecteer een conversatie om de berichten te bekijken.
+          </p>
+      </div>
+
+      <form
+          class="chat-composer"
+          data-chat-target="composer"
+          data-action="submit->chat#send"
+      >
+          <textarea
+              class="form-control chat-composer__input"
+              data-chat-target="input"
+              placeholder="Typ een bericht..."
+              aria-label="Bericht"
+              rows="1"
+          ></textarea>
+
+          <button
+              type="submit"
+              class="btn btn-primary"
+          >
+              Verstuur
+          </button>
+      </form>
+  </main>
+</div>
+
+{%- endblock main_content -%}

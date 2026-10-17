@@ -627,6 +627,9 @@ categories_del:
   title: >-
     Categorie "{name}" verwijderen?
 
+chat:
+  title: Chat
+
 cms_edit:
   title: CMS edit modus
   explain: Editing van content blokken.
@@ -745,6 +748,8 @@ config_maintenance:
 config_modules:
   title: Modules
   public_modules: Publieke modules
+  chat_enabled:
+    label: Chat
   messages_enabled:
     label: Vraag en aanbod
   transactions_enabled:

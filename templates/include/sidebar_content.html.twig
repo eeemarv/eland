@@ -1,6 +1,18 @@
 	<br>
 	<ul class="nav nav-pills nav-stacked">
 
+    {%- if config_bool('chat.enabled')
+      and item_visible('guest')
+    -%}
+    <li{%- if 'chat' == active_menu %} class="active"{%- endif -%}>
+      <a href="{{- path('chat', {}|pp) -}}">
+        <twig:ux:icon name="lucide:messages-circle"/>
+        &nbsp;
+        {{- 'chat.title'|trans -}}
+      </a>
+    </li>
+    {%- endif -%}
+
     {%- if config_bool('messages.enabled')
       and item_visible('guest')
     -%}
@@ -8,7 +20,7 @@
       <a href="{{- path('messages'|var_route, {}|pp) -}}">
         <twig:ux:icon name="lucide:newspaper"/>
         &nbsp;
-        {{- ('messages.title')|trans({
+        {{- 'messages.title'|trans({
           'self': 'all_users',
           'with_without_category': 'all_categories'
         }) -}}
@@ -21,7 +33,7 @@
       <a href="{{- path('users'|var_route, {}|pp) -}}">
         <twig:ux:icon name="lucide:users"/>
         &nbsp;
-        {{- ('users.title')|trans -}}
+        {{- 'users.title'|trans -}}
       </a>
     </li>
     {%- endif -%}
@@ -33,7 +45,7 @@
       <a href="{{- path('transactions', {}|pp) -}}">
         <twig:ux:icon name="lucide:arrow-left-right"/>
         &nbsp;
-        {{- ('transactions.title')|trans({
+        {{- 'transactions.title'|trans({
           'self': 'all_users',
         }) -}}
       </a>
@@ -59,7 +71,7 @@
       <a href="{{- path('docs', {}|pp) -}}">
         <twig:ux:icon name="lucide:files"/>
         &nbsp;
-        {{- ('docs.title')|trans -}}
+        {{- 'docs.title'|trans -}}
       </a>
     </li>
     {%- endif -%}
@@ -71,7 +83,7 @@
       <a href="{{- path('forum', {}|pp) -}}">
         <twig:ux:icon name="lucide:messages-square"/>
         &nbsp;
-        {{- ('forum.title')|trans -}}
+        {{- 'forum.title'|trans -}}
       </a>
     </li>
     {%- endif -%}
@@ -83,7 +95,7 @@
       <a href="{{- path('support_form', {}|pp) -}}">
         <twig:ux:icon name="lucide:ambulance"/>
         &nbsp;
-        {{- ('support_form.title')|trans -}}
+        {{- 'support_form.title'|trans -}}
       </a>
     </li>
     {%- endif -%}
@@ -95,7 +107,7 @@
       <a href="{{- path('home', {}|pp) -}}">
         <twig:ux:icon name="lucide:home"/>
         &nbsp;
-        {{- ('home.title')|trans -}}
+        {{- 'home.title'|trans -}}
       </a>
     </li>
     {%- endif -%}
@@ -105,7 +117,7 @@
       <a href="{{- path('login', {}|pp) -}}">
         <twig:ux:icon name="lucide:log-in"/>
         &nbsp;
-        {{- ('login.title')|trans -}}
+        {{- 'login.title'|trans -}}
       </a>
     </li>
     {%- endif -%}
@@ -117,7 +129,7 @@
       <a href="{{- path('contact_form', {}|pp) -}}">
         <twig:ux:icon name="lucide:message-circle-question-mark"/>
         &nbsp;
-        {{- ('contact_form.title')|trans -}}
+        {{- 'contact_form.title'|trans -}}
       </a>
     </li>
     {%- endif -%}
@@ -129,7 +141,7 @@
       <a href="{{- path('register_form', {}|pp) -}}">
         <twig:ux:icon name="lucide:square-check"/>
         &nbsp;
-        {{- ('register_form.title')|trans -}}
+        {{- 'register_form.title'|trans -}}
       </a>
     </li>
     {%- endif -%}

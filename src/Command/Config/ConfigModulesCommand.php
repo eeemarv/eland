@@ -9,6 +9,10 @@ use Symfony\Component\Validator\Constraints\Type;
 class ConfigModulesCommand implements CommandInterface
 {
   #[Type(type: 'bool')]
+  #[ConfigMap(type: 'bool', key: 'chat.enabled')]
+  public mixed $chat_enabled;
+
+  #[Type(type: 'bool')]
   #[ConfigMap(type: 'bool', key: 'messages.enabled')]
   public mixed $messages_enabled;
 

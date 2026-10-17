@@ -1,0 +1,13 @@
+mercure:
+    hubs:
+        default:
+            url: '%env(default::MERCURE_URL)%'
+            public_url: '%env(default::MERCURE_PUBLIC_URL)%'
+            jwt:
+                secret: '%env(MERCURE_JWT_SECRET)%'
+                publish: '*'
+                # RFC 9068:
+                claims:
+                    iss: '%env(APP_SCHENE)%://%env(APP_HOST)%'     # The issuer of the token (the app url)
+                    sub: 'eland'              # subject (app-identificatiion)
+                    client_id: 'eland'       # unique client ID for the hub

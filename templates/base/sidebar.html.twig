@@ -58,6 +58,8 @@
     data-action="touchstart->offcanvas#touchStart touchend->offcanvas#touchEnd touchmove->offcanvas#touchMove"
   >
 
+  {%- block main_content -%}
+
   {%- if pp_has_role('guest') and query_params.welcome is defined -%}
     {%- include 'include/welcome.html.twig' -%}
   {%- endif -%}
@@ -313,6 +315,10 @@
 	} -%}
 		{%- block block_name -%}bottom{%- endblock -%}
 	{%- endembed -%}
+
+  <div class="offcanvas-main-content-bottom"></div>
+
+  {%- endblock main_content -%}
 
 	</div> {#} main {#}
 	</div> {#} wrap {#}

@@ -43,6 +43,7 @@ import "./styles/autocomplete-bs3.css";
 
 import "@yaireo/tagify/dist/tagify.css";
 import "./styles/tagify.css";
+import "./styles/chat.css";
 
 import "./styles/print.css";
 

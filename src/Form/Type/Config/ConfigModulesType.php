@@ -16,6 +16,7 @@ class ConfigModulesType extends AbstractType
     array $options,
   ):void
   {
+    $builder->add('chat_enabled', CheckboxType::class);
     $builder->add('messages_enabled', CheckboxType::class);
     $builder->add('transactions_enabled', CheckboxType::class);
     $builder->add('news_enabled', CheckboxType::class);

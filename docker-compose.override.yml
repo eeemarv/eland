@@ -3,6 +3,15 @@ version: '3'
 services:
 ###> doctrine/doctrine-bundle ###
   database:
-    ports:
-      - "5432"
+    # Prevents Docker starts a Postgres container that takes port 5432
+    entrypoint: ["echo", "Local Postgres container disabled. Use native Postgres."]
 ###< doctrine/doctrine-bundle ###
+
+###> symfony/mercure-bundle ###
+  mercure:
+    ports:
+      # We map port 80 of the container to port 3000 on localhost
+      - "3000:80"
+      # In case Mercure requires HTTPS, map port 443 to 4430
+      - "4430:443"
+###< symfony/mercure-bundle ###

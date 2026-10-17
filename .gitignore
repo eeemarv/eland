@@ -39,3 +39,6 @@
 
 # backup VS Code profiles
 *.code-profile
+
+# Docker / Compose configuration
+docker-compose.override.yml

@@ -57,6 +57,7 @@
 		"symfony/http-client": "*",
 		"symfony/lock": "*",
 		"symfony/mailer": "*",
+		"symfony/mercure-bundle": "*",
 		"symfony/messenger": "*",
 		"symfony/mime": "*",
 		"symfony/monolog-bridge": "*",
