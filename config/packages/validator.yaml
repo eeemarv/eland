@@ -2,7 +2,6 @@ framework:
     validation:
         enabled: true
         enable_attributes: true
-        cache: validator.mapping.cache.doctrine.apc
         email_validation_mode: html5
 
         # Enables validator auto-mapping support.

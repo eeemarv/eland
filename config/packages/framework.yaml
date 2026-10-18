@@ -19,6 +19,12 @@ framework:
     cookie_lifetime: 2592000 # 30 days
     gc_maxlifetime: 864000 # 10 days
 
+  profiler:
+    collect_serializer_data: true
+
+  property_info:
+    with_constructor_extractor: true
+
   #esi: true
   #fragments: true
   php_errors:

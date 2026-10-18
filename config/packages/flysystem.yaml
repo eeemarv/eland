@@ -2,8 +2,7 @@
 flysystem:
   storages:
     local.storage:
-      adapter: 'local'
-      options:
+      local:
         directory: '%kernel.project_dir%/public/store'
     s3.storage:
       aws:

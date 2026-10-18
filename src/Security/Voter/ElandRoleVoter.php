@@ -9,6 +9,7 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\SystemsService;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class ElandRoleVoter extends Voter
@@ -22,7 +23,10 @@ class ElandRoleVoter extends Voter
   {
   }
 
-  protected function supports($attribute, $subject):bool
+  protected function supports(
+    mixed $attribute,
+    mixed $subject,
+  ):bool
   {
     if (!$this->pp->schema())
     {
@@ -32,7 +36,12 @@ class ElandRoleVoter extends Voter
     return isset(RoleCnst::SHORT[$attribute]);
   }
 
-  protected function voteOnAttribute($attribute, $subject, TokenInterface $token): bool
+  protected function voteOnAttribute(
+    mixed $attribute,
+    mixed $subject,
+    TokenInterface $token,
+    Vote|null $vote = null,
+  ): bool
   {
     if ($attribute === 'guest' || $attribute === 'user')
     {

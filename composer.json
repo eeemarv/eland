@@ -61,7 +61,7 @@
 		"symfony/messenger": "*",
 		"symfony/mime": "*",
 		"symfony/monolog-bridge": "*",
-		"symfony/monolog-bundle": "^3",
+		"symfony/monolog-bundle": "^4.0",
 		"symfony/process": "*",
 		"symfony/redis-messenger": "*",
 		"symfony/runtime": "*",
@@ -92,8 +92,8 @@
 
   "require-dev": {
 		"symfony/maker-bundle": "^1.62",
-		"symfony/phpunit-bridge": "^7.0",
-		"symfony/web-profiler-bundle": "7.2.*"
+		"symfony/phpunit-bridge": "*",
+		"symfony/web-profiler-bundle": "*"
 	},
 
   "config": {
@@ -151,8 +151,8 @@
 
   "extra": {
     "symfony": {
-      "allow-contrib": false,
-      "require": "7.4.*"
-    }
+			"allow-contrib": false,
+			"require": "8.1.*"
+		}
   }
 }
