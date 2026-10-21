@@ -1,0 +1,5 @@
+/* label bootstrap 3 as colored badges */
+
+.label-as-badge {
+ border-radius: .6em;
+}

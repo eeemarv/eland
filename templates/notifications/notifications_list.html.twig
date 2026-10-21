@@ -1,0 +1,17 @@
+{%- extends 'notifications/base/notifications_base.html.twig' -%}
+
+{%- block content_controllers -%}
+{%- endblock content_controllers -%}
+
+{%- block content_controllers_attr -%}
+{%- endblock content_controllers_attr -%}
+
+{%- block data -%}
+  {%- if notifications -%}
+    {%- include 'notifications/include/notifications_list.html.twig' -%}
+  {%- else -%}
+    {%- include 'include/no_results.html.twig' with {
+      'message': 'notifications.no_items'
+    } -%}
+  {%- endif -%}
+{%- endblock data -%}

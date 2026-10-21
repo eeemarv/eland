@@ -1,0 +1,53 @@
+{%- extends 'base/schema_3.html.twig' -%}
+
+{%- block content_ctr %}
+  {%- if block('content_controllers') -%}
+    <div data-controller="{%- block content_controllers -%}{%- endblock %}"
+    {%- if block('content_controllers_attr') %} {% endif -%}
+    {%- block content_controllers_attr -%}
+    {%- endblock -%}
+    >
+  {%- endif -%}
+
+	{%- block btn_row -%}{%- endblock -%}
+
+	{%- block heading -%}{%- endblock -%}
+
+	{%- block heading_sub -%}{%- endblock -%}
+
+	{%- block content_top -%}{%- endblock content_top -%}
+
+	{%- block columns_form -%}{%- endblock -%}
+
+	{%- block help_form -%}{%- endblock -%}
+
+	{%- block filter_form -%}{%- endblock -%}
+
+	{%- block pane_select -%}{%- endblock -%}
+
+	{%- block pagination -%}{%- endblock -%}
+
+	{%- block content -%}
+		{{- content|raw -}}
+	{%- endblock content -%}
+
+	{%- block data -%}{%- endblock -%}
+
+	{%- block pre_form -%}{%- endblock -%}
+
+	{%- block form -%}{%- endblock -%}
+
+	{%- block post_form -%}{%- endblock -%}
+
+	{%- block pagination_bottom -%}
+		{{- block('pagination') -}}
+	{%- endblock pagination_bottom -%}
+
+	{%- block footnote -%}{%- endblock -%}
+
+	{%- block bulk_actions -%}{%- endblock -%}
+
+  {%- if block('content_controllers') -%}
+    </div>
+  {%- endif -%}
+{%- endblock content_ctr -%}

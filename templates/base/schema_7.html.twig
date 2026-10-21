@@ -1,0 +1,28 @@
+{%- extends 'base/schema_6.html.twig' -%}
+
+{%- block filter_form -%}
+  {%- if filter_form is defined -%}
+    <div class="panel panel-info{%- if filter_collapse is defined and filter_collapse %} collapse{%- endif -%}" id="filter">
+      {%- block filter_form_header -%}{%- endblock -%}
+      <div class="panel-heading">
+        {%- block filter_form_start -%}
+          {{- form_start(filter_form, {'attr': {'novalidate': 'novalidate'}}) -}}
+          {{- form_errors(filter_form) -}}
+        {%- endblock filter_form_start -%}
+        {%- block filter_form_content -%}
+          {%- block filter_form_a -%}{{- filter_form_a|default('') -}}{%- endblock -%}
+        {%- endblock filter_form_content -%}
+        {%- block filter_form_context -%}
+          {%- set hidden_ary = query_params|filter((v, k) => k != 'f' and k != 'uid')|flatten|filter((v, k) => k != 'p[start]') -%}
+          {%- for n, v in hidden_ary -%}
+            <input name="{{- n -}}" value="{{- v -}}" type="hidden">
+          {%- endfor -%}
+        {%- endblock filter_form_context -%}
+        {%- block filter_form_end -%}
+          {{- form_end(filter_form) -}}
+        {%- endblock filter_form_end -%}
+      </div>
+      {%- block filter_form_footer -%}{%- endblock -%}
+    </div>
+  {%- endif -%}
+{%- endblock filter_form -%}

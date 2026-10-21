@@ -1,19 +1,11 @@
 {%- extends 'contact_types/base/contact_types_form.html.twig' -%}
 
 {%- block heading_title -%}
-    {{- 'contact_types_del.title'|trans({
-        'name': contact_type.name
-    }) -}}
+  {{- 'contact_types_del.title'|trans({
+    'name': contact_type.name
+  }) -}}
 {%- endblock heading_title -%}
 
 {%- block form_submit_btn -%}
-    {%- include 'form/submit_del_btn.html.twig' -%}
+  {%- include 'form/submit_del_btn.html.twig' -%}
 {%- endblock form_submit_btn -%}
-
-{%- block css -%}
-    {{- parent() -}}
-{%- endblock css -%}
-
-{%- block js -%}
-    {{- parent() -}}
-{%- endblock js -%}

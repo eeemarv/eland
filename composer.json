@@ -30,6 +30,7 @@
 		"league/flysystem-aws-s3-v3": "*",
 		"league/flysystem-bundle": "^3.7",
 		"league/html-to-markdown": "^5.1",
+		"minishlink/web-push": "^11.0",
 		"mollie/mollie-api-php": "^3",
 		"monolog/monolog": "^3",
 		"nyholm/psr7": "^1.5",

@@ -47,6 +47,7 @@ balance:
 btn:
   add: Toevoegen
   approve: Goedkeuren
+  back_to_system: Terug naar {system}
   back_to_home: Terug naar de homepagina
   back_to_index: Terug naar het overzicht
   back_to_login: Terug naar login
@@ -560,10 +561,18 @@ status:
   pre_active: Pre-Actief
 
 system_menu:
-  linked_intersystem: Gekoppeld interSysteem
-  linked_intersystems: Gekoppelde interSystemen
-  own_system: Eigen systeem
-  own_systems: Eigen systemen
+  linked_intersystems: >-
+    {count, plural,
+      =0 {** ERR **}
+      =1 {Gekoppeld InterSysteem}
+      other {Gekoppelde InterSystemen}
+    }
+  own_systems: >-
+    {count, plural,
+      =0 {** ERR **}
+      =1 {Eigen Systeem}
+      other {Eigen Systemen}
+    }
   system: Systeem
 
 #### Route related ####
@@ -1545,6 +1554,9 @@ news_sort:
   flash:
     change: >-
       Sortering nieuws configuratie aangepast
+
+notifications:
+  title: Meldingen
 
 password_reset:
   title: Paswoord vergeten
@@ -2811,5 +2823,4 @@ welcome:
     {per_hour_ratio} {currency} stemt overeen met 1 uur.
   back: >-
     Je kan steeds terug naar je eigen Systeem via
-    het menu "Systeem" boven
-    in de navigatiebalk.
+    de knop in het linkermenu bovenaan.

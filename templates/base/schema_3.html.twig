@@ -1,0 +1,73 @@
+{%- extends 'base/schema_2.html.twig' -%}
+
+{%- block welcome -%}
+  {%- if pp_has_role('guest') and query_params.welcome is defined -%}
+    {%- include 'include/welcome.html.twig' -%}
+  {%- endif -%}
+{%- endblock welcome -%}
+
+{%- block mollie_checkout %}
+	{%- if mollie_checkout_ary is defined -%}
+		{%- include 'mollie/checkout/mollie_checkout_ary.html.twig' -%}
+	{%- endif -%}
+{%- endblock mollie_checkout -%}
+
+{%- block alert -%}
+  {%- include 'include/alert.html.twig' -%}
+{%- endblock alert -%}
+
+{%- block cms_edit_form -%}
+  {%- include 'include/cms_edit_form.html.twig' -%}
+{%- endblock cms_edit_form -%}
+
+{%- block pre_heading -%}
+  {%- embed 'embed/static_content.html.twig' with {
+    'with_role': true,
+    'with_route': true
+  } -%}
+    {%- block block_name -%}pre_heading{%- endblock -%}
+  {%- endembed -%}
+
+  {%- embed 'embed/static_content.html.twig' with {
+    'with_role': false,
+    'with_route': true
+  } -%}
+    {%- block block_name -%}pre_heading{%- endblock -%}
+  {%- endembed -%}
+
+  {%- embed 'embed/static_content.html.twig' with {
+    'with_role': true,
+    'with_route': false
+  } -%}
+    {%- block block_name -%}pre_heading{%- endblock -%}
+  {%- endembed -%}
+{%- endblock pre_heading -%}
+
+{%- block content_bottom -%}
+  {%- embed 'embed/static_content.html.twig' with {
+    'with_role': true,
+    'with_route': true
+  } -%}
+    {%- block block_name -%}bottom{%- endblock -%}
+  {%- endembed -%}
+
+  {%- embed 'embed/static_content.html.twig' with {
+    'with_role': false,
+    'with_route': true
+  } -%}
+    {%- block block_name -%}bottom{%- endblock -%}
+  {%- endembed -%}
+{%- endblock content_bottom -%}
+
+{%- block content_bottom_overall -%}
+	{%- embed 'embed/static_content.html.twig' with {
+		'with_role': true,
+		'with_route': false
+	} -%}
+		{%- block block_name -%}bottom{%- endblock -%}
+	{%- endembed -%}
+{%- endblock content_bottom_overall -%}
+
+{%- block content_bottom_space -%}
+  <div class="offcanvas-main-content-bottom"></div>
+{%- endblock content_bottom_space -%}

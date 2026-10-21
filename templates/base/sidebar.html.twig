@@ -1,63 +1,6 @@
-{%- extends 'base/base.html.twig' -%}
+{%- extends 'base/schema_8.html.twig' -%}
 
-{%- set schema = pp_schema() -%}
-
-{%- block assets_add -%}
-	{{- parent() -}}
-
-	{%- if {}|pp.edit.en is defined and su_role('admin') and su_is_system_self() -%}
-		{{- assets_add([
-			'codemirror',
-			'summernote',
-			'summernote_cms_edit.js'
-		]) -}}
-	{%- endif -%}
-{%- endblock assets_add -%}
-
-{%- block title -%}
-	{{- config_str('system.name') -}}
-{%- endblock -%}
-
-{%- block body_attr %} class="body-navbar
-	{%- if pp_has_role('admin') %} admin
-	{%- elseif pp_has_role('guest') %} guest
-	{%- endif -%}"
-{%- endblock body_attr -%}
-
-{%- block logo -%}
-	{%- if config_str('system.logo') -%}
-		<a href="{{- block('system_link') -}}" class="navbar-left hidden-xs logo">
-			<img src="{{- s3(config_str('system.logo')) -}}" height="50">
-		</a>
-	{%- endif -%}
-{%- endblock logo -%}
-
-{%- block system_link -%}
-	{%- if config_str('system.website_url') -%}
-		{{- config_str('system.website_url') -}}
-	{%- else -%}
-		{{- path('home', {}|pp) -}}
-	{%- endif -%}
-{%- endblock -%}
-
-{%- block page_container -%}
-	<div data-controller="offcanvas">
-	<div class="row-offcanvas"
-    data-offcanvas-target="container"
-  >
-    <div class="offcanvas-backdrop"
-      data-action="click->offcanvas#close">
-    </div>
-
-    <div class="offcanvas-sidebar">
-      {%- include 'include/sidebar_content.html.twig' -%}
-    </div>
-
-	<div class="offcanvas-main-wrap">
-	<div class="offcanvas-main-content container-fluid clear-top{%- if pp_has_role('admin') %} admin{%- endif -%}"
-    data-action="touchstart->offcanvas#touchStart touchend->offcanvas#touchEnd touchmove->offcanvas#touchMove"
-  >
-
+{#}
   {%- block main_content -%}
 
   {%- if pp_has_role('guest') and query_params.welcome is defined -%}
@@ -320,33 +263,4 @@
 
   {%- endblock main_content -%}
 
-	</div> {#} main {#}
-	</div> {#} wrap {#}
-	</div> {#} row-offcanvas {#}
-  </div> {#} data-controller=offcanvas {#}
-
-{%- endblock page_container -%}
-
-{%- block footer_system -%}
-	{%- embed 'embed/static_content.html.twig' with {
-		'with_role': true,
-		'with_route': false
-	} -%}
-		{%- block block_name -%}footer{%- endblock -%}
-	{%- endembed -%}
-
-	{%- if static_content_has(false, false, 'footer') -%}
-	<footer class="alert-info">
-		<br>
-		<div class="container">
-			{%- embed 'embed/static_content.html.twig' with {
-				'with_role': false,
-				'with_route': false
-			} -%}
-				{%- block block_name -%}footer{%- endblock -%}
-			{%- endembed -%}
-		</div>
-		<br>
-	</footer>
-	{%- endif -%}
-{%- endblock footer_system -%}
+{#}

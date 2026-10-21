@@ -1,0 +1,78 @@
+{%- embed 'embed/menu_dropdown.html.twig' -%}
+  {%- block menu_class %} bg-info{%- endblock menu_class -%}
+  {%- block label -%}
+    <twig:ux:icon name="lucide:settings"/>
+    <span class="hidden-sm hidden-xs ms-1">
+    {{- 'label.admin'|trans -}}
+    </span>
+  {%- endblock label -%}
+  {%- block menu_items -%}
+    <li{%- if pp_has_role('admin') %} class="active-group"{%- endif -%}>
+      <a href="{{- path(route, all_params|merge({'role_short': 'a'})) -}}">
+        <twig:ux:icon name="lucide:settings"/>
+        &nbsp;
+        {{- 'modus.admin'|trans -}}
+      </a>
+    </li>
+
+    <li{%- if pp_has_role('user') %} class="active-group"{%- endif -%}>
+      <a href="{{- path(route|fallback_route(schema), all_params|merge({'role_short': 'u'})) -}}">
+        <twig:ux:icon name="lucide:user"/>
+        &nbsp;
+        {{- 'modus.user'|trans -}}
+      </a>
+    </li>
+
+    {%- if config_bool('intersystem.enabled') -%}
+      <li{%- if pp_has_role('guest') %} class="active-group"{%- endif -%}>
+        <a href="{{- path(route|fallback_route(schema), all_params|merge({'role_short': 'g'})) -}}">
+          <twig:ux:icon name="lucide:share-2"/>
+          &nbsp;
+          {{- 'modus.guest'|trans -}}
+        </a>
+      </li>
+    {%- endif -%}
+
+    <li class="divider"></li>
+
+    {%- if {}|pp.edit.en is defined -%}
+      <li class="active-group">
+        <a href="{{- path(route, all_params|merge({'edit': {'en': '0'}})) -}}">
+    {%- else -%}
+      <li>
+        <a href="{{- path(route, all_params|merge({'edit': {'en': '1', 'route': '1', 'inline': '1'}})) -}}">
+    {%- endif -%}
+          <twig:ux:icon name="lucide:pencil"/>
+          &nbsp;
+          {{- 'cms_edit.title'|trans -}}
+        </a>
+      </li>
+
+    <li class="divider"></li>
+
+    <li{%- if active_menu == 'config' %} class="active"{%- endif -%}>
+      <a href="{{- path('config_name', {}|pp(role_short: 'a')) -}}">
+        <twig:ux:icon name="lucide:wrench"/>
+        &nbsp;
+        {{- ('config.title')|trans -}}
+      </a>
+    </li>
+
+    <li{%- if active_menu == 'export' %} class="active"{%- endif -%}>
+      <a href="{{- path('export', {}|pp(role_short: 'a')) -}}">
+        <twig:ux:icon name="lucide:download"/>
+        &nbsp;
+        {{- ('export.title')|trans -}}
+      </a>
+    </li>
+
+    <li{%- if active_menu == 'logs' %} class="active"{%- endif -%}>
+      <a href="{{- path('logs', {}|pp(role_short: 'a')) -}}">
+        <twig:ux:icon name="lucide:history"/>
+        &nbsp;
+        {{- ('logs.title')|trans -}}
+      </a>
+    </li>
+
+  {%- endblock menu_items -%}
+{%- endembed -%}

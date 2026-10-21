@@ -1,0 +1,40 @@
+{%- extends 'base/schema_5.html.twig' -%}
+
+{%- block heading -%}
+  <h1{%- if block('heading_class') %} class="{%- block heading_class -%}{%- endblock -%}"{%- endif -%}>
+    {%- if admin_heading is defined -%}
+      {%- include 'include/label/admin.html.twig' -%}
+      &nbsp;
+    {%- endif -%}
+    {%- block heading_icon -%}
+    {%- endblock heading_icon -%}
+    &nbsp;
+    {%- block heading_title -%}
+      {{- (active_menu ~ '.title')|trans -}}
+    {%- endblock heading_title -%}
+    {%- block heading_append -%}{%- endblock heading_append -%}
+  </h1>
+{%- endblock heading -%}
+
+{%- block content_top -%}
+  {%- embed 'embed/static_content.html.twig' with {
+    'with_role': true,
+    'with_route': true
+  } -%}
+    {%- block block_name -%}top{%- endblock -%}
+  {%- endembed -%}
+
+  {%- embed 'embed/static_content.html.twig' with {
+    'with_role': false,
+    'with_route': true
+  } -%}
+    {%- block block_name -%}top{%- endblock -%}
+  {%- endembed -%}
+
+  {%- embed 'embed/static_content.html.twig' with {
+    'with_role': true,
+    'with_route': false
+  } -%}
+    {%- block block_name -%}top{%- endblock -%}
+  {%- endembed -%}
+{%- endblock content_top -%}

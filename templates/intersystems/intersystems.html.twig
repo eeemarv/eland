@@ -1,20 +1,12 @@
 {%- extends 'intersystems/base/intersystems_base.html.twig' -%}
 
 {%- block btn_top_add -%}
-    {%- include 'include/btn_top/add.html.twig' with {
-        'btn_route': 'intersystems_add',
-        'btn_title': 'intersystems_add.title'
-    } -%}
+  {%- include 'include/btn_top/add.html.twig' with {
+    'btn_route': 'intersystems_add',
+    'btn_title': 'intersystems_add.title'
+  } -%}
 {%- endblock btn_top_add -%}
 
 {%- block heading_title -%}
-    {{- 'intersystems.title'|trans -}}
+  {{- 'intersystems.title'|trans -}}
 {%- endblock heading_title -%}
-
-{%- block css -%}
-    {{- parent() -}}
-{%- endblock css -%}
-
-{%- block js -%}
-    {{- parent() -}}
-{%- endblock js -%}

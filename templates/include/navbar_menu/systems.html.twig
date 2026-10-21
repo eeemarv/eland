@@ -1,0 +1,50 @@
+{%- set su_logins_role_short = su_logins_role_short() -%}
+{%- set intersystem_schemas = intersystem_schemas(su_schema()) -%}
+
+{%- if su_logins_role_short|length > 1 or (intersystem_schemas|length and su_logins_role_short|length) -%}
+  {%- embed 'embed/menu_dropdown.html.twig' -%}
+    {%- block list_class %} hidden-xs
+    {%- endblock list_class -%}
+    {%- block label -%}
+      <twig:ux:icon name="lucide:share-2" />
+      <span class="hidden-sm hidden-xs ms-0">
+        {{- 'system_menu.system'|trans -}}
+      </span>
+    {%- endblock label -%}
+    {%- block menu_items -%}
+      <li class="dropdown-header">
+          {{- 'system_menu.own_systems'|trans({
+            'count': su_logins_role_short|length
+          }) -}}
+      </li>
+      {%- for sch, rlshrt in su_logins_role_short -%}
+        <li{%- if sch == su_schema() %} class="active{%- if sch != schema -%}-group{%- endif -%}"{%- endif -%}>
+          {%- set back = app.session.get('last:' ~ sch) -%}
+          {%- set back_link = back.link ??
+            path(route|fallback_route(sch), {
+            'schema': sch,
+            'role_short': 'u'})
+          -%}
+
+          <a href="{{- back_link -}}">
+            {{- config_str('system.name', sch) -}}
+          </a>
+        </li>
+      {%- endfor -%}
+      {%- if intersystem_schemas|length -%}
+        <li class="dropdown-header">
+          {{- 'system_menu.linked_intersystems'|trans({
+            'count': intersystem_schemas|length
+          }) -}}
+        </li>
+      {%- endif -%}
+      {%- for sch in intersystem_schemas -%}
+        <li{%- if sch == schema %} class="active"{%- endif -%}>
+          <a href="{{- path(route|fallback_route(sch), {'schema': sch, 'os': su_schema(), 'role_short': 'g', 'welcome': '1'}) -}}">
+            {{- config_str('system.name', sch) -}}
+          </a>
+        </li>
+      {%- endfor -%}
+    {%- endblock menu_items -%}
+  {%- endembed -%}
+{%- endif -%}

@@ -15,11 +15,3 @@
     'user': user_id ? account(user_id)|link('users_show', {'id': user_id}) : ''
   })|raw -}}
 {%- endblock heading_title -%}
-
-{%- block css -%}
-  {{- parent() -}}
-{%- endblock css -%}
-
-{%- block js -%}
-  {{- parent() -}}
-{%- endblock js -%}

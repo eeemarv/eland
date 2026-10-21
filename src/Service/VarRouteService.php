@@ -77,7 +77,7 @@ class VarRouteService
 
 	public function get_fallback_route(
     string $active_menu,
-    string $schema
+    string $schema,
   ):string
 	{
     $schema_o = new Schema($schema);
@@ -108,40 +108,5 @@ class VarRouteService
 		}
 
 		return $this->var_route_ary[$active_menu] ?? $active_menu;
-	}
-
-	public function get_inter(
-    string $menu_route,
-    string $remote_schema,
-  ):string
-	{
-    $remote_schema_o = new Schema($remote_schema);
-
-		if (isset(PagesCnst::LANDING[$menu_route]))
-		{
-			$route_enabled = $this->config_service->get_bool(
-        config_id: $menu_route . '.enabled',
-        schema: $remote_schema_o,
-      );
-		}
-		else
-		{
-			$route_enabled = false;
-		}
-
-		if (!$route_enabled)
-		{
-			$default_route = $this->config_service->get_str(
-        config_id: 'system.default_landing_page',
-        schema: $remote_schema_o,
-      );
-			$default_enabled = $this->config_service->get_bool(
-        config_id: $default_route . '.enabled',
-        schema: $remote_schema_o,
-      );
-			$menu_route = $default_enabled ? $default_route : 'users';
-		}
-
-		return $this->var_route_ary[$menu_route] ?? $menu_route;
 	}
 }

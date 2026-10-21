@@ -1,6 +1,24 @@
 	<br>
 	<ul class="nav nav-pills nav-stacked">
 
+    {%- if pp_role() == 'guest' and schema != su_schema() -%}
+    <li class="active-group">
+      {%- set back = app.session.get('last:' ~ su_schema()) -%}
+      {%- set back_link = back.link ??
+        path(route|fallback_route(su_schema()), {
+        'schema': su_schema(),
+        'role_short': 'u'})
+      -%}
+      <a href="{{- back_link -}}">
+        <twig:ux:icon name="lucide:undo-2"/>
+        &nbsp;
+        {{- 'btn.back_to_system'|trans({
+          'system': config_str('system.name', su_schema())
+        }) -}}
+      </a>
+    </li>
+    {%- endif -%}
+
     {%- if config_bool('chat.enabled')
       and item_visible('guest')
     -%}

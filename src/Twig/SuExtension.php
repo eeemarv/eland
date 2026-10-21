@@ -16,10 +16,10 @@ class SuExtension
 	{
 	}
 
-  #[AsTwigFunction(name: 'su_role')]
-	public function su_role(string $role):bool
+  #[AsTwigFunction(name: 'su_role_short')]
+	public function su_role_short():string
 	{
-		return $role === $this->su->role();
+		return $this->su->role_short();
 	}
 
   #[AsTwigFunction(name: 'su_ary')]

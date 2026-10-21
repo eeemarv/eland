@@ -1,0 +1,29 @@
+{%- extends 'base/base.html.twig' -%}
+
+{%- set schema = pp_schema() -%}
+
+{%- block title -%}
+	{{- config_str('system.name') -}}
+{%- endblock -%}
+
+{%- block body_attr %} class="body-navbar
+	{%- if pp_has_role('admin') %} admin
+	{%- elseif pp_has_role('guest') %} guest
+	{%- endif -%}"
+{%- endblock body_attr -%}
+
+{%- block logo -%}
+	{%- if config_str('system.logo') -%}
+		<a href="{{- block('system_link') -}}" class="navbar-left hidden-xs logo">
+			<img src="{{- s3(config_str('system.logo')) -}}" height="50">
+		</a>
+	{%- endif -%}
+{%- endblock logo -%}
+
+{%- block system_link -%}
+	{%- if config_str('system.website_url') -%}
+		{{- config_str('system.website_url') -}}
+	{%- else -%}
+		{{- path('home', {}|pp) -}}
+	{%- endif -%}
+{%- endblock -%}

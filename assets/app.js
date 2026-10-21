@@ -10,6 +10,7 @@ import './stimulus_bootstrap.js';
 import "./styles/bs3.scss";
 import "./styles/typeahead.css";
 import "./styles/body.css";
+import "./styles/badge.css";
 // extra styles to migrate to Bootstrap 5
 import "./styles/bs5.css";
 import "./styles/margin5.css";

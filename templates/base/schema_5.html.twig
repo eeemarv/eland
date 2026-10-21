@@ -1,0 +1,44 @@
+{%- extends 'base/schema_4.html.twig' -%}
+
+{%- block btn_row -%}
+<div class="row">
+  <div class="col-md-12 top-buttons mt-5p">
+    <div class="visible-xs pull-left button-offcanvas menu-button">
+      <button type="button" class="btn btn-primary btn-lg" data-toggle="offcanvas" title="{{- 'label.menu'|trans -}}"
+        data-action="click->offcanvas#toggle"
+      >
+        <twig:ux:icon name="lucide:chevron-left"/>
+      </button>
+    </div>
+
+    {%- block btn_top_add -%}{%- endblock -%}
+    {%- block btn_top_edit -%}{%- endblock -%}
+    {%- block btn_top_del -%}{%- endblock -%}
+    {%- block btn_top_password_edit -%}{%- endblock -%}
+    {%- block btn_top_transaction -%}{%- endblock -%}
+    {%- block btn_top_config -%}{%- endblock -%}
+    {%- block btn_top_bulk -%}{%- endblock -%}
+
+    {%- if block('btn_nav_top_right') -%}
+      <div class="pull-right">
+        {%- block btn_nav_top_right -%}
+          {%- if pp_has_role('admin')
+            and (block('csv_download_btn')
+              or block('local_admin_menu'))
+          -%}
+            <div class="btn-group" role="group">
+              {%- block csv_download_btn -%}
+              {%- endblock csv_download_btn -%}
+              {%- block local_admin_menu -%}
+              {%- endblock local_admin_menu -%}
+            </div>
+          {%- endif -%}
+          {%- block btn_show_columns -%}{%- endblock -%}
+          {%- block btn_view -%}{%- endblock -%}
+          {%- block btn_item_nav -%}{%- endblock -%}
+        {%- endblock btn_nav_top_right -%}
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+{%- endblock btn_row -%}
