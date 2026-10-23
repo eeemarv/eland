@@ -9,6 +9,7 @@ use App\Service\AutoMinLimitService;
 use App\Service\ConfigService;
 use App\Render\AccountRender;
 use App\Repository\AccountRepository;
+use Doctrine\DBAL\Types\Types;
 
 class TransactionService
 {
@@ -47,8 +48,21 @@ class TransactionService
 
 		$this->db->beginTransaction();
 
-		$this->db->insert($schema->str() . '.transactions', $transaction);
-		$id = (int) $this->db->lastInsertId($schema->str() . '.transactions_id_seq');
+		//$this->db->insert($schema->str() . '.transactions', $transaction);
+		//$id = (int) $this->db->lastInsertId();
+
+    // use returning id instead of lastinsertid
+
+    $stmt = $this->db->prepare('insert into ' . $schema->str() . '.transactions
+      (id_from, id_to, amount)
+      values
+      (:id_from, :id_to, :amount) returning id');
+    $stmt->bindValue('id_from', $from_id, Types::INTEGER);
+    $stmt->bindValue('id_to', $to_id, Types::INTEGER);
+    $stmt->bindValue('amount', $amount, Types::INTEGER);
+    $res = $stmt->executeQuery();
+    $id = $res->fetchOne();
+
 		$this->account_repository->update_balance(
       account_id: $to_id,
       amount: $amount,

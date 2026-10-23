@@ -143,7 +143,8 @@ class RegisterFormConfirmController extends AbstractController
       {
         $db->insert($pp->schema() . '.users', $user);
 
-        $user_id = (int) $db->lastInsertId($pp->schema() . '.users_id_seq');
+        // TO DO use returning id
+        $user_id = (int) $db->lastInsertId();
 
         $tc = [];
 

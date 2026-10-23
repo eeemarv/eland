@@ -62,9 +62,9 @@ class S3Service
 
 	public function __construct(
 		#[Autowire('%env(AWS_S3_BUCKET)%')]
-		protected string $env_aws_s3_bucket,
+		private readonly string $env_aws_s3_bucket,
 		#[Autowire('%env(AWS_S3_REGION)%')]
-		protected string $env_aws_s3_region
+		private readonly string $env_aws_s3_region
 	)
 	{
 		$this->s3_client = new S3Client([

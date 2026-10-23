@@ -32,7 +32,7 @@ class TagRepository
 			values(:txt, :txt_color, :bg_color, :description, :tag_type, :created_by, (
 				select coalesce(max(pos), 0) + 1 from ' . $schema->str() . '.tags
 				where tag_type = :tag_type
-			))');
+			)) returning id');
 
 		$stmt->bindValue('txt', $txt, Types::STRING);
 		$stmt->bindValue('txt_color', $txt_color, Types::STRING);
@@ -40,9 +40,9 @@ class TagRepository
 		$stmt->bindValue('description', $description, Types::STRING);
 		$stmt->bindValue('tag_type', $tag_type, Types::STRING);
 		$stmt->bindValue('created_by', $created_by, Types::INTEGER);
-		$stmt->executeStatement();
+		$res = $stmt->executeQuery();
 
-		return (int) $this->db->lastInsertId($schema->str() . '.tags_id_seq');
+		return (int) $res->fetchOne();
 	}
 
 	public function update(
@@ -440,7 +440,7 @@ class TagRepository
       $stmt_log->bindValue('action', 'insert', Types::STRING);
       $stmt_log->bindValue('route', $route, Types::STRING);
       $stmt_log->bindValue('bulk_id', $bulk_id, Types::STRING);
-      $stmt_log->bindValue('meta_data', $all_users_tags[$tag_id], Types::JSON);
+      $stmt_log->bindValue('meta_data', $all_users_tags[$tag_id], Types::JSONB);
       $stmt_log->executeStatement();
 
 			$count_changes++;
@@ -477,7 +477,7 @@ class TagRepository
       $stmt_log->bindValue('action', 'delete', Types::STRING);
       $stmt_log->bindValue('route', $route, Types::STRING);
       $stmt_log->bindValue('bulk_id', $bulk_id, Types::GUID);
-      $stmt_log->bindValue('meta_data', $all_users_tags[$tag_id], Types::JSON);
+      $stmt_log->bindValue('meta_data', $all_users_tags[$tag_id], Types::JSONB);
       $stmt_log->executeStatement();
 
 			$count_changes++;
@@ -560,7 +560,7 @@ class TagRepository
         $stmt_log->bindValue('action', 'insert', Types::STRING);
         $stmt_log->bindValue('route', $route, Types::STRING);
         $stmt_log->bindValue('bulk_id', $bulk_id, Types::GUID);
-        $stmt_log->bindValue('meta_data', $tag_meta, Types::JSON);
+        $stmt_log->bindValue('meta_data', $tag_meta, Types::JSONB);
         $stmt_log->executeStatement();
       }
     }
@@ -637,7 +637,7 @@ class TagRepository
         $stmt_log->bindValue('action', 'insert', Types::STRING);
         $stmt_log->bindValue('route', $route, Types::STRING);
         $stmt_log->bindValue('bulk_id', $bulk_id, Types::GUID);
-        $stmt_log->bindValue('meta_data', $tag_meta, Types::JSON);
+        $stmt_log->bindValue('meta_data', $tag_meta, Types::JSONB);
         $stmt_log->executeStatement();
       }
     }

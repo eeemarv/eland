@@ -27,10 +27,10 @@ class PageParamsService
 	private string $route;
 
 	public function __construct(
-		protected RequestStack $request_stack,
-		protected SystemsService $systems_service,
-		#[Autowire('%env(base64:APP_SYSTEM_REDIRECTS)%')]
-		protected string $env_app_system_redirects
+		private readonly RequestStack $request_stack,
+		private readonly SystemsService $systems_service,
+		#[Autowire(env: 'base64:APP_SYSTEM_REDIRECTS')]
+		private readonly string $env_app_system_redirects
 	)
 	{
 	}

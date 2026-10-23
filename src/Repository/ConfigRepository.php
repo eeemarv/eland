@@ -46,7 +46,7 @@ class ConfigRepository
         'last_edit_by'  => $user_id,
         'config_id'  => $config_id
       ], [
-        'data'  => Types::JSON,
+        'data'  => Types::JSONB,
         'last_edit_by' => Types::INTEGER,
         'config_id'  => Types::STRING,
       ]);
@@ -83,9 +83,9 @@ class ConfigRepository
         'config_id' => Types::STRING,
         'route' => Types::STRING,
         'action' => Types::STRING,
-        'new_data'  => Types::JSON,
-        'old_data'  => Types::JSON,
-        'meta_data' => Types::JSON,
+        'new_data'  => Types::JSONB,
+        'old_data'  => Types::JSONB,
+        'meta_data' => Types::JSONB,
         'created_by'  => Types::INTEGER,
         'comment' => Types::STRING,
       ]);

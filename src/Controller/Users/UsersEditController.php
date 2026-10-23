@@ -589,7 +589,8 @@ class UsersEditController extends AbstractController
                 {
                     if ($db->insert($pp->schema() . '.users', $post_user))
                     {
-                        $id = (int) $db->lastInsertId($pp->schema() . '.users_id_seq');
+                       // TODO use returning id
+                        $id = (int) $db->lastInsertId();
                         $this->addFlash('success', 'Gebruiker opgeslagen.');
                     }
                     else

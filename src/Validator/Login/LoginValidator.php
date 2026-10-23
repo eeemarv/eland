@@ -23,7 +23,7 @@ class LoginValidator extends ConstraintValidator
     private readonly UserCacheService $user_cache_service,
     private readonly ConfigService $config_service,
     private readonly PageParamsService $pp,
-    #[Autowire('%env(base64:MASTER_PASSWORD)%')]
+    #[Autowire(env: 'base64:MASTER_PASSWORD')]
     private readonly string $env_master_password
   )
   {

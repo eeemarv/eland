@@ -114,7 +114,8 @@ class CalendarAddController extends AbstractController
 
                 if ($db->insert($pp->schema() . '.news', $news))
                 {
-                    $id = $db->lastInsertId($pp->schema() . '.news_id_seq');
+                   // use returning id
+                    // $id = $db->lastInsertId();
 
                     $this->addFlash('success', 'Nieuwsbericht opgeslagen.');
 

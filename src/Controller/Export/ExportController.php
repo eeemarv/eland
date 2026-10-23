@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Form;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Process\Exception\ProcessFailedException;
@@ -37,9 +38,9 @@ class ExportController extends AbstractController
     SchemaRepository $schema_repository,
     LoggerInterface $logger,
     PageParamsService $pp,
-    #[Autowire('%kernel.cache_dir%')]
+    #[Autowire(param: 'kernel.cache_dir')]
     string $cache_dir,
-    #[Autowire('%env(DATABASE_URL)%')]
+    #[Autowire(env: 'DATABASE_URL')]
     string $env_database_url
   ):Response
   {
@@ -67,6 +68,7 @@ class ExportController extends AbstractController
     if ($download_form->isSubmitted()
       && $download_form->isValid())
     {
+
       /** @var Form $download_form */
       $btn = $download_form->getClickedButton()->getName();
 

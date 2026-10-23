@@ -12,7 +12,7 @@ class GeocodeHandler
     private readonly ContactRepository $contact_repository,
     private readonly HttpClientInterface $http_client,
     private readonly LoggerInterface $logger,
-    #[Autowire('%env(MAIL_HOSTER_ADDRESS)%')]
+    #[Autowire(env: 'MAIL_HOSTER_ADDRESS')]
     private readonly string $env_mail_hoster_address,
   )
   {

@@ -11,40 +11,40 @@ use Symfony\Component\Validator\Constraints\Type;
 
 class TransactionsAddCommand implements CommandInterface
 {
-    #[Type('int')]
+    #[Type(type: 'int')]
     #[Positive()]
     #[NotBlank()]
     public mixed $from_id;
 
-    #[Type('string')]
+    #[Type(type: 'string')]
     public mixed $from_remote_account;
 
-    #[Type('int')]
+    #[Type(type: 'int')]
     #[Positive()]
     #[NotBlank()]
     public mixed $to_id;
 
-    #[Type('int')]
+    #[Type(type: 'int')]
     #[Positive()]
     public mixed $to_remote_id;
 
-    #[Type('string')]
+    #[Type(type: 'string')]
     public mixed $to_remote_account;
 
-    #[Type('int')]
+    #[Type(type: 'int')]
     #[Positive()]
     #[NotBlank()]
     public mixed $amount;
 
-    #[Type('int')]
+    #[Type(type: 'int')]
     #[Positive()]
     public mixed $remote_amount;
 
-    #[Type('string')]
+    #[Type(type: 'string')]
     #[Length(min: 3, max: 60)]
     #[NotBlank()]
     public mixed $description;
 
-    #[Choice(['service', 'stuff'])]
+    #[Choice(choices: ['service', 'stuff'])]
     public mixed $service_stuff;
 }

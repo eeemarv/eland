@@ -15,7 +15,7 @@ class TransactionsBulkServiceStuffCommand implements CommandInterface
   public mixed $selected;
 
   #[NotNull()]
-  #[Choice(options: ['service', 'stuff', 'null_service_stuff'])]
+  #[Choice(choices: ['service', 'stuff', 'null_service_stuff'])]
   public mixed $service_stuff;
 
   #[Type(type: 'bool')]

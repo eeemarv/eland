@@ -35,8 +35,8 @@ class NewsCommand implements CommandInterface
 
   #[Sequentially(constraints: [
     new NotNull(groups: ['add', 'edit']),
-    new Type('string', groups: ['add', 'edit']),
-    new Choice(['admin', 'user', 'guest'], groups: ['add', 'edit', 'del']),
+    new Type(type: 'string', groups: ['add', 'edit']),
+    new Choice(choices: ['admin', 'user', 'guest'], groups: ['add', 'edit', 'del']),
   ])]
   public mixed $access;
 }

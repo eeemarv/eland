@@ -38,26 +38,13 @@ class NotificationsController extends AbstractController
     SessionUserService $su,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'chat.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException(
-        'Chat module not enabled.'
-      );
-    }
-
-    $command = new ConfigAdminCommand();
-    $config_service->load_command(
-      command: $command,
-      schema: $pp->schema_o(),
-    );
 
 
 
-    return $this->render('chat/chat.html.twig', [
-      'chat_rooms'  => [],
+    return $this->render('notifications/notifications_list.html.twig', [
+      'notifications'  => [
+        'djlkfdjs;alkf',
+      ],
     ]);
   }
 }

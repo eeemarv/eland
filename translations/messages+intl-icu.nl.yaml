@@ -460,6 +460,7 @@ label:
   visibility: Zichtbaarheid
   want: Vraag
   wants: Vraag
+  webpush: Web Push
   website: Website
   your_account: Je Account
   your_email: Je E-Mail adres
@@ -494,9 +495,9 @@ mail_form:
     adres ingesteld voor je gebruikersaccount.
 
 modus:
-  admin: Admin modus
-  user: Leden modus
-  guest: Gast modus
+  admin: Admin Modus
+  user: Leden Modus
+  guest: Gast Modus
 
 nav:
   prev: Vorige
@@ -506,7 +507,7 @@ nav:
 pagination:
   row_count_and_page_pos: >-
     Totaal: {row_count}, Pagina {page} van {page_num}
-  per_page: Per pagina
+  per_page: Per Pagina
 
 post:
   info: >-
@@ -523,10 +524,10 @@ upload:
       too_small: Het bestand is te klein
 
 view:
-  list: lijst
-  tiles: Tegels met foto's
+  list: Lijst
+  tiles: Tegels met Foto's
   map: Kaart
-  extended: Lijst met omschrijvingen
+  extended: Lijst met Omschrijvingen
 
 role:
   admin: Admin
@@ -760,7 +761,7 @@ config_modules:
   chat_enabled:
     label: Chat
   messages_enabled:
-    label: Vraag en aanbod
+    label: Vraag en Aanbod
   transactions_enabled:
     label: Transacties
   news_enabled:
@@ -770,13 +771,13 @@ config_modules:
   forum_enabled:
     label: Forum
   support_form_enabled:
-    label: Support formulier
+    label: Support Formulier
   home_menu_enabled:
-    label: Home pagina menu (De home pagina zelf blijft altijd bereikbaar.)
+    label: Home Pagina Menu (De home pagina zelf blijft altijd bereikbaar.)
   contact_form_enabled:
-    label: Contact formulier
+    label: Contact Formulier
   register_form_enabled:
-    label: Inschrijving formulier
+    label: Inschrijving Formulier
   flash:
     change: Modules aangepast
 
@@ -817,7 +818,7 @@ config_mail_addr:
 config_name:
   title: Naam
   config_name:
-    label: Naam van het systeem
+    label: Naam van het Systeem
   home_header_enabled:
     label: >
       Toon standaard hoofdingpaneel met systeemnaam op de home pagina.
@@ -847,7 +848,7 @@ contact_types:
     beschermde contact types.
 
 contact_types_add:
-  title: Contact type toevoegen
+  title: Contact Type Toevoegen
   flash:
     success: Contact type "{name}" toegevoegd
 
@@ -858,7 +859,7 @@ contact_types_del:
     success: Contact type "{name}" verwijderd
 
 contact_types_edit:
-  title: Contact type aanpassen
+  title: Contact Type Aanpassen
   flash:
     success: Contact type "{name}" aangepast
 
@@ -866,7 +867,7 @@ contacts:
   title: Contacten
   menu: Contacten
   type:
-    label: Contact type
+    label: Contact Type
 
 contacts_add:
   title: >-
@@ -896,7 +897,7 @@ docs:
 
 docs_add:
   title: >-
-    Document opladen
+    Document Opladen
   map_name:
     help: >-
       Optioneel. Creëer een nieuwe map of selecteer een bestaande.
@@ -1126,19 +1127,19 @@ messages:
   title: >-
     {self, select,
       self {{with_without_category, select,
-        with {Mijn vraag en aanbod in categorie "{category_name}"}
-        without {Mijn vraag en aanbod zonder categorie}
-        other {Mijn vraag en aanbod}
+        with {Mijn Vraag en Aanbod in Categorie "{category_name}"}
+        without {Mijn Vraag en Aanbod Zonder Categorie}
+        other {Mijn Vraag en Aanbod}
       }}
       some_user {{with_without_category, select,
-        with {Vraag en aanbod van {user} in categorie "{category_name}"}
-        without {Vraag en aanbod van {user} zonder categorie}
-        other {Vraag en aanbod van {user}}
+        with {Vraag en Aanbod van {user} in Categorie "{category_name}"}
+        without {Vraag en Aanbod van {user} Zonder Categorie}
+        other {Vraag en Aanbod van {user}}
       }}
       other {{with_without_category, select,
-        with {Vraag en aanbod in categorie "{category_name}"}
-        without {Vraag en aanbod zonder categorie}
-        other {Vraag en aanbod}
+        with {Vraag en Aanbod in Categorie "{category_name}"}
+        without {Vraag en Aanbod Zonder Categorie}
+        other {Vraag en Aanbod}
       }}
     }
   image_files:
@@ -1206,11 +1207,11 @@ messages_edit:
   title: >-
     {offer_want, select,
       offer {{self, select,
-        self {Je aanbod "{subject}" aanpassen}
+        self {Je Aanbod "{subject}" aanpassen}
         other {Aanbod "{subject}" van {user} aanpassen}
       }}
       want {{self, select,
-        self {Je vraag "{subject}" aanpassen}
+        self {Je Vraag "{subject}" aanpassen}
         other {Vraag "{subject}" van {user} aanpassen}
       }}
       other {** ERR **}
@@ -1219,8 +1220,8 @@ messages_edit:
 messages_images_del:
   title: >-
     {offer_want, select,
-      offer {Afbeeldingen verwijderen van aanbod "{subject}"}
-      want {Afbeeldingen verwijderen van vraag "{subject}"}
+      offer {Afbeeldingen verwijderen van Aanbod "{subject}"}
+      want {Afbeeldingen verwijderen van Vraag "{subject}"}
       other {** ERR **}
     }
   user: >-
@@ -1245,7 +1246,7 @@ messages_modules:
       Submodules/velden vraag en aanbod aangepast
 
 messages_self:
-  title: Mijn vraag en aanbod
+  title: Mijn Vraag en Aanbod
 
 messages_show:
   title: >-
@@ -1557,6 +1558,7 @@ news_sort:
 
 notifications:
   title: Meldingen
+  view_all: Bekijk Alle Meldingen
 
 password_reset:
   title: Paswoord vergeten
@@ -2271,7 +2273,7 @@ users_del:
     Ik ben wis en waarachtig zeker dat
     ik deze gebruiker wil verwijderen.
   warning: >-
-    Alle Gegevens, Vraag en aanbod,
+    Alle Gegevens, Vraag en Aanbod,
     Contacten en Afbeeldingen van {name}
     worden verwijderd.
 
@@ -2778,7 +2780,7 @@ users_show:
       Stuur een e-mail bericht naar {user}
   btn:
     messages:
-      label: Vraag en aanbod van {user} ({count})
+      label: Vraag en Aanbod van {user} ({count})
     transactions:
       label: Transacties van {user} ({count})
   tags:

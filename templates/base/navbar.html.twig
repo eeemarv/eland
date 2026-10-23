@@ -6,11 +6,11 @@
     {%- include 'include/navbar_menu/systems.html.twig' -%}
 
 		{%- if su_role_short() in ['u', 'a'] -%}
-      {%- include 'include/navbar_menu/notifications.html.twig' -%}
+      {%- include 'include/navbar_menu/user.html.twig' -%}
 		{%- endif -%}
 
 		{%- if su_role_short() in ['u', 'a'] -%}
-      {%- include 'include/navbar_menu/user.html.twig' -%}
+      {%- include 'include/navbar_menu/notifications.html.twig' -%}
 		{%- endif -%}
 
 		{%- if su_role_short() == 'a' and su_is_system_self() -%}

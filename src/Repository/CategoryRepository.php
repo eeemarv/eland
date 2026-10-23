@@ -21,20 +21,18 @@ class CategoryRepository
     Schema $schema,
   ):int
 	{
-		$this->db->executeStatement('insert into ' . $schema->str() . '.categories
+		$stmt = $this->db->prepare('insert into ' . $schema->str() . '.categories
       (name, created_by, level, left_id, right_id)
 			select :name, :created_by, 1,
       coalesce(max(right_id), 0) + 1,
       coalesce(max(right_id), 0) + 2
-			from ' . $schema->str() . '.categories', [
-        'name'  => $name,
-        'created_by'  => $created_by,
-      ], [
-        'name'  => Types::STRING,
-        'created_by'  => Types::INTEGER,
-      ]);
-
-		return (int) $this->db->lastInsertId($schema->str() . '.categories_id_seq');
+			from ' . $schema->str() . '.categories
+      returning id');
+    $stmt->bindValue('name', $name, Types::STRING);
+    $stmt->bindValue('created_by', $created_by, Types::INTEGER);
+    $res = $stmt->executeQuery();
+    $id = (int) $res->fetchOne();
+    return $id;
 	}
 
 	public function update_name(
@@ -82,7 +80,8 @@ class CategoryRepository
     ], [
       'id'  => Types::INTEGER,
     ]);
-		return $this->db->commit();
+    $this->db->commit();
+		return true;
 	}
 
 	public function is_unique_name_except_id(

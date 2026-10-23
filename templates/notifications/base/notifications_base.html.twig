@@ -1,10 +1,37 @@
 {%- extends 'base/navbar.html.twig' -%}
 
-{%- set active_menu = 'notifications' -%}
+{%- block btn_top %}
+  <ul class="nav nav-tabs">
 
-{%- block heading_icon -%}
-<twig:ux:icon name="lucide:bell"/>
-{%- endblock heading_icon -%}
+    <li role="presentation"{%- if route == 'notifications' %} class="active"{%- endif -%}>
+      <a href="{{- path('notifications', {}|pp) -}}">
+        <twig:ux:icon name="lucide:bell"/>
+        &nbsp;
+        {{- 'notifications.title'|trans -}}
+      </a>
+    </li>
+
+    {%- if config_bool('notifications.webpush.enabled') -%}
+      <li role="presentation"{%- if route == 'webpush_settings' %} class="active"{%- endif -%}>
+        <a href="{{- path('webpush_settings', {}|pp) -}}">
+          <twig:ux:icon name="lucide:rss"/>
+          &nbsp;
+          {{- 'label.webpush'|trans -}}
+        </a>
+      </li>
+    {%- endif -%}
+
+    {%- if config_bool('notifications.email.enabled') -%}
+      <li role="presentation"{%- if route == 'email_settings' %} class="active"{%- endif -%}>
+        <a href="{{- path('email_settings', {}|pp) -}}">
+          <twig:ux:icon name="lucide:mail"/>
+          &nbsp;
+          {{- 'label.email'|trans -}}
+        </a>
+      </li>
+    {%- endif -%}
+  </ul>
+{%- endblock btn_top %}
 
 
 {%- block content -%}

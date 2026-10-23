@@ -94,16 +94,6 @@ class MessageRepository
     ]);
 	}
 
-  // not used yet
-	public function insert(
-    array $message,
-    Schema $schema,
-  ):int
-	{
-		$this->db->insert($schema->str() . '.messages', $message);
-		return (int) $this->db->lastInsertId($schema->str() . '.messages_id_seq');
-	}
-
   // not used
 	public function update(
     array $message,
@@ -159,7 +149,7 @@ class MessageRepository
         'image_filename' => $image_filename,
         'id'  => $id,
       ], [
-        'image_filename' => Types::JSON,
+        'image_filename' => Types::JSONB,
         'id'  => Types::INTEGER,
       ]);
 	}
@@ -177,7 +167,7 @@ class MessageRepository
     ], [
       'id' => $id,
     ], [
-      'image_files' => Types::JSON,
+      'image_files' => Types::JSONB,
       'id'  => Types::INTEGER,
     ]);
 	}

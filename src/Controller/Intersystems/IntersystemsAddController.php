@@ -89,7 +89,8 @@ class IntersystemsAddController extends AbstractController
                 {
                     $this->addFlash('success', 'Intersysteem opgeslagen.');
 
-                    $id = $db->lastInsertId($pp->schema() . '.letsgroups_id_seq');
+                    // use returning id
+                    // $id = $db->lastInsertId();
 
                     $intersystems_service->clear_cache();
 

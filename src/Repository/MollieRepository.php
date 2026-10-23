@@ -28,12 +28,13 @@ class MollieRepository
       $schema->str() . '.mollie_payment_requests
       (description, created_by)
       values
-      (:description, :created_by)');
+      (:description, :created_by)
+      returning id');
     $stmt_1->bindValue('description', $description, Types::STRING);
     $stmt_1->bindValue('created_by', $created_by, Types::INTEGER);
-    $stmt_1->executeStatement();
+    $res = $stmt_1->executeQuery();
 
-    $request_id = (int) $this->db->lastInsertId($schema->str() . '.mollie_payment_requests_id_seq');
+    $request_id = (int) $res->fetchOne();
 
     $stmt_2 = $this->db->prepare('insert into ' .
       $schema->str() . '.mollie_payments
@@ -229,14 +230,15 @@ class MollieRepository
   ):void
   {
     $this->db->beginTransaction();
-    $this->db->executeStatement('insert into ' .
+    $res = $this->db->executeQuery('insert into ' .
       $schema->str() . '.emails
       (subject, content, route, created_by, sent_to)
       values
       (:subject, :content, :route, :created_by,
         (select jsonb_agg(p.user_id)
           from ' . $schema->str() . '.mollie_payments p
-          where p.id in (:payment_ids)))',[
+          where p.id in (:payment_ids)))
+      returning id', [
       'subject'     => $subject,
       'content'     => $sanitized_content,
       'route'       => $route,
@@ -250,7 +252,7 @@ class MollieRepository
       'payment_ids' => ArrayParameterType::INTEGER,
     ]);
 
-    $email_id = (int) $this->db->lastInsertId($schema->str() . '.emails_id_seq');
+    $email_id = (int) $res->fetchOne();
 
 		$this->db->executeStatement('update ' .
       $schema->str() . '.mollie_payments

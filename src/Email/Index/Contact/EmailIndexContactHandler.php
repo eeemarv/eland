@@ -14,7 +14,7 @@ final class EmailIndexContactHandler
 {
   public function __construct(
     private readonly MessageBusInterface $bus,
-    #[Autowire('%env(MAIL_HOSTER_ADDRESS)%')]
+    #[Autowire(env: 'MAIL_HOSTER_ADDRESS')]
     private readonly string $env_mail_hoster_address,
   ) {}
 

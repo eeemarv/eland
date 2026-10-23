@@ -21,7 +21,7 @@ class SecretRepository
 	public function __construct(
 		private readonly Db $db,
     #[\SensitiveParameter]
-    #[Autowire(env:'APP_SECRETS_ENCRYPTION_KEY')]
+    #[Autowire(env: 'APP_SECRETS_ENCRYPTION_KEY')]
     private readonly string $env_app_secrets_encryption_key,
 	)
 	{

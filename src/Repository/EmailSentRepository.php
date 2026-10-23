@@ -34,6 +34,7 @@ class EmailSentRepository
     null|Schema $schema
   ):void
 	{
+    /* use returning id
     $insert_ary = [
       'email_token'     => $email_token->toRfc4122(),
       'to_addresses'    => $to_addresses->adr_str_ary(),
@@ -48,10 +49,10 @@ class EmailSentRepository
 
     $type_ary = [
       Types::GUID,
-      Types::JSON,
-      Types::JSON,
-      Types::JSON,
-      Types::JSON,
+      Types::JSONB,
+      Types::JSONB,
+      Types::JSONB,
+      Types::JSONB,
       Types::STRING,
       Types::STRING,
       Types::STRING,
@@ -67,7 +68,7 @@ class EmailSentRepository
     if (isset($confirm_data))
     {
       $insert_ary['confirm_data'] = $confirm_data;
-      $type_ary[] = Types::JSON;
+      $type_ary[] = Types::JSONB;
     }
 
     if (isset($bulk_id))
@@ -75,19 +76,48 @@ class EmailSentRepository
       $insert_ary['bulk_id'] = $bulk_id->toRfc4122();
       $type_ary[] = Types::GUID;
     }
+    */
+
+    $single_to_address = null;
 
     if ($to_addresses->count() === 1
       && $cc_addresses->count() === 0
       && $bcc_addresses->count() === 0
     )
     {
-      $insert_ary['single_to_address'] = $to_addresses->adr_str_ary()[0];
-      $type_ary[] = Types::STRING;
+      $single_to_address = $to_addresses->adr_str_ary()[0];
     }
 
     $sch_str = isset($schema) ? $schema->str() : 'xdb';
 
+    /*
     $this->db->insert($sch_str . '.emails_sent',  $insert_ary, $type_ary);
+    */
+
+    $stmt = $this->db->prepare('insert into ' . $sch_str . '.emails_sent
+      (email_token, to_addresses, cc_addresses, bcc_addresses,
+      reply_to_addresses, from_address, template, subject,
+      message_class, confirm_token, confirm_data, bulk_id,
+      single_to_address)
+      values (:email_token, :to_addresses, :cc_addresses, :bcc_addresses,
+      :reply_to_addresses, :from_address, :template, :subject,
+      :message_class, :confirm_token, :confirm_data, :bulk_id,
+      :single_to_address) returning id');
+    $stmt->bindValue('email_token', $email_token->toRfc4122(), Types::GUID);
+    $stmt->bindValue('to_addresses', $to_addresses->adr_str_ary(), Types::JSONB);
+    $stmt->bindValue('cc_addresses', $cc_addresses->adr_str_ary(), Types::JSONB);
+    $stmt->bindValue('bcc_addresses', $bcc_addresses->adr_str_ary(), Types::JSONB);
+    $stmt->bindValue('reply_to_addresses', $reply_to_addresses->adr_str_ary(), Types::JSONB);
+    $stmt->bindValue('from_address', $from_address->getAddress(), Types::STRING);
+    $stmt->bindValue('template', $template, Types::STRING);
+    $stmt->bindValue('subject', $subject, Types::STRING);
+    $stmt->bindValue('message_class', $message_class, Types::STRING);
+    $stmt->bindValue('confirm_token', $confirm_token?->toRfc4122(), Types::GUID);
+    $stmt->bindValue('confirm_data', $confirm_data, Types::JSONB);
+    $stmt->bindValue('bulk_id', $bulk_id?->toRfc4122(), Types::GUID);
+    $stmt->bindValue('single_to_address', $single_to_address, Types::STRING);
+    $res = $stmt->executeQuery();
+    $email_sent_id = (int) $res->fetchOne();
 
     if (isset($mollie_payment_id))
     {
@@ -95,7 +125,7 @@ class EmailSentRepository
       {
         throw new \Exception('missing schema for registering mollie_emails_sent');
       }
-      $email_sent_id = (int) $this->db->lastInsertId($schema->str() . '.emails_sent_id_seq');
+
       $this->db->insert($schema->str() . '.mollie_emails_sent', [
         'payment_id'    => $mollie_payment_id,
         'email_sent_id' => $email_sent_id,

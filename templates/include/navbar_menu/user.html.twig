@@ -74,6 +74,39 @@
         </li>
       {%- endif -%}
 
+      {%- set webpush_en = config_bool('notifications.webpush.enabled', su_schema()) -%}
+      {%- set email_en = config_bool('notifications.email.enabled', su_schema()) -%}
+
+      {%- if webpush_en or email_en -%}
+        <li class="divider"></li>
+      {%- endif -%}
+
+      {%- if webpush_en -%}
+        <li{%- if 'webpush_settings' == route and su_is_system_self() %} class="active"{%- endif -%}>
+          <a href="{{- path('webpush_settings', {
+              'schema': su_schema(),
+              'role_short': b_role_short,
+          }) -}}">
+            <twig:ux:icon name="lucide:rss"/>
+            &nbsp;
+            {{- 'label.webpush'|trans -}}
+          </a>
+        </li>
+      {%- endif -%}
+
+      {%- if email_en -%}
+        <li{%- if 'email_settings' == route and su_is_system_self() %} class="active"{%- endif -%}>
+          <a href="{{- path('email_settings', {
+              'schema': su_schema(),
+              'role_short': b_role_short,
+          }) -}}">
+            <twig:ux:icon name="lucide:mail"/>
+            &nbsp;
+            {{- 'label.email'|trans -}}
+          </a>
+        </li>
+      {%- endif -%}
+
       <li class="divider"></li>
 
     {%- endif -%}

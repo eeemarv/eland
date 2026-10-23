@@ -398,7 +398,9 @@ class TransactionsMassController extends AbstractController
                     }
 
                     $db->insert($pp->schema() . '.transactions', $transaction);
-                    $transaction['id'] = $db->lastInsertId($pp->schema() . '.transactions_id_seq');
+
+                    // TODO use returning id
+                    $transaction['id'] = $db->lastInsertId();
 
                     $account_repository->update_balance(
                       account_id: $to_id,

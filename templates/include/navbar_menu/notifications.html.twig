@@ -1,36 +1,33 @@
+{%- set back = app.session.get('last:' ~ su_schema()) -%}
+{%- set b_role_short = back.role_short ?? su_role_short() -%}
+
 {%- embed 'embed/menu_dropdown.html.twig' -%}
   {%- block label -%}
     <twig:ux:icon name="lucide:bell"/>
+    <span class="label label-as-badge label-danger">2</span>
     <span class="hidden-sm hidden-xs ms-1">
       {{- 'notifications.title'|trans -}}
     </span>
-    <span class="label label-as-badge label-danger">2</span>
   {%- endblock label -%}
 
   {%- block menu_items -%}
-      <li{%- if 'notifications' == active_menu %} class="active"{%- endif -%}>
-        <a href="{{- path('notifications', {'schema': su_schema(), 'role_short': su_role_short()}) -}}">
-          <twig:ux:icon name="lucide:bell"/>
-          &nbsp;
-          {{- 'notifications.title'|trans -}}
-        </a>
-      </li>
 
+    <!-- Dit gedeelte wordt dynamisch gevuld door Stimulus -->
+    <li data-navbar-notifications-target="listContainer" class="d-flex flex-column" style="max-height: 360px; overflow-y: auto;">
+        <div class="text-center p-3 text-muted">Laden...</div>
+    </li>
 
-            <li class="p-3 fw-bold text-dark border-bottom" style="border-bottom: 1px solid #f3f4f6; font-size: 15px;">
-            </li>
-
-            <!-- Dit gedeelte wordt dynamisch gevuld door Stimulus -->
-            <li data-navbar-notifications-target="listContainer" class="d-flex flex-column" style="max-height: 360px; overflow-y: auto;">
-                <div class="text-center p-3 text-muted">Laden...</div>
-            </li>
-
-            <!-- Onderste knop: Bekijk alles -->
-            <li class="text-center border-top" style="border-top: 1px solid #f3f4f6; background-color: #f9fafb; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;">
-                <a href="#" class="d-block p-2 fw-semibold text-decoration-none" style="color: #059669; font-size: 13px;">
-                    Alle meldingen bekijken
-                </a>
-            </li>
+    <li class="divider"></li>
+    <li{%- if route == 'notifications' %} class="active"{%- endif  -%}>
+      <a href="{{- path('notifications', {
+          'schema': su_schema(),
+          'role_short': b_role_short,
+        }) -}}">
+        <twig:ux:icon name="lucide:bell"/>
+        &nbsp;
+        {{- 'notifications.view_all'|trans  -}}
+      </a>
+    </li>
 
   {%- endblock menu_items -%}
 {%- endembed -%}

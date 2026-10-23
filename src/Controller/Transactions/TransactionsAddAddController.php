@@ -778,7 +778,8 @@ class TransactionsAddAddController extends AbstractController
                     $db->beginTransaction();
 
                     $db->insert($pp->schema() . '.transactions', $transaction);
-                    $id = $db->lastInsertId($pp->schema() . '.transactions_id_seq');
+                    // TODO use returning id
+                    $id = $db->lastInsertId();
                     $transaction['id'] = $id;
 
                     $account_repository->update_balance(
@@ -807,7 +808,8 @@ class TransactionsAddAddController extends AbstractController
                     }
 
                     $db->insert($remote_schema . '.transactions', $remote_transaction);
-                    $remote_id = $db->lastInsertId($remote_schema . '.transactions_id_seq');
+                    // TODO use returning id
+                    $remote_id = $db->lastInsertId();
 
                     $remote_transaction['id'] = $remote_id;
                     $account_repository->update_balance(

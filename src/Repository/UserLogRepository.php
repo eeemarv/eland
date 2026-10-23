@@ -63,11 +63,11 @@ class UserLogRepository
       'user_id' => Types::INTEGER,
       'route' => Types::STRING,
       'action'  => Types::STRING,
-      'old_data'  => Types::JSON,
-      'new_data'  => Types::JSON,
+      'old_data'  => Types::JSONB,
+      'new_data'  => Types::JSONB,
       'comment' => Types::STRING,
       'created_by'  => Types::INTEGER,
-      'meta_data' => Types::JSON,
+      'meta_data' => Types::JSONB,
     ];
 
 		$affected_rows = (int) $this->db->insert(
@@ -126,9 +126,9 @@ class UserLogRepository
       $params[$key_user_id] = $user_id;
       $types[$key_user_id] = Types::INTEGER;
       $params[$key_old_data] = $diff_old;
-      $types[$key_old_data] = Types::JSON;
+      $types[$key_old_data] = Types::JSONB;
       $params[$key_new_data] = $diff_new;
-      $types[$key_new_data] = Types::JSON;
+      $types[$key_new_data] = Types::JSONB;
 
       $placeh = '(:' . $key_user_id;
       $placeh .= ', :' . $key_old_data;
@@ -196,8 +196,8 @@ class UserLogRepository
       'comment' => Types::STRING,
       'created_by'  => Types::INTEGER,
       'bulk_id' => Types::GUID,
-      'meta_data' => Types::JSON,
-      'rows'  => Types::JSON,
+      'meta_data' => Types::JSONB,
+      'rows'  => Types::JSONB,
     ];
 
     $sql = 'insert into ' . $schema->str() . '.users_logs

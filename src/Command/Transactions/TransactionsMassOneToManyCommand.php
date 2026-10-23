@@ -30,7 +30,7 @@ class TransactionsMassOneToManyCommand implements CommandInterface
   #[Length(min: 1, max: 60)]
   public mixed $description;
 
-  #[Choice(['service', 'stuff'])]
+  #[Choice(choices: ['service', 'stuff'])]
   public mixed $service_stuff;
 
   #[Type(type: 'bool')]

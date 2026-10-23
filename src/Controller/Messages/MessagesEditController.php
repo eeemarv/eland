@@ -435,7 +435,8 @@ class MessagesEditController extends AbstractController
 
                 $db->insert($pp->schema() . '.messages', $post_message);
 
-                $id = (int) $db->lastInsertId($pp->schema() . '.messages_id_seq');
+                // TODO use returning id
+                $id = (int) $db->lastInsertId();
 
                 $logger->debug('#msg add message with id ' . $id . ' ' . json_encode($post_message), ['schema' => $pp->schema()]);
 

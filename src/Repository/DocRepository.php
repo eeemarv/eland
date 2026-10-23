@@ -238,15 +238,16 @@ class DocRepository
 		Schema $schema
 	):int
 	{
-		$this->db->insert($schema->str() . '.doc_maps', [
-			'name'      => $map_name,
-			'user_id'   => $user_id,
-		], [
-      'name'  => Types::STRING,
-      'user_id' => Types::INTEGER,
-    ]);
+    $stmt = $this->db->prepare('insert into ' . $schema->str() . '.doc_maps
+      (name, user_id)
+      values
+      (:name, :user_id) returning id');
+    $stmt->bindValue('name', $map_name, Types::STRING);
+    $stmt->bindValue('user_id', $user_id, Types::INTEGER);
+    $res = $stmt->executeQuery();
+    $id = (int) $res->fetchOne();
 
-		return (int) $this->db->lastInsertId($schema . '.doc_maps_id_seq');
+		return $id;
 	}
 
 	public function insert_doc(

@@ -17,9 +17,9 @@ class UserRepository
   public function __construct(
     private readonly Db $db,
     private readonly ConfigService $config_service,
-    #[Autowire('%assert.account.group%')]
+    #[Autowire(param: 'assert.account.group')]
     private readonly string $assert_account_group,
-    #[Autowire('%assert.account.status2%')]
+    #[Autowire(param: 'assert.account.status2')]
     private readonly string $assert_account_status,
   )
   {
@@ -403,19 +403,19 @@ class UserRepository
     Schema $schema,
   ): int {
     $this->db->beginTransaction();
-    $this->db->insert($schema->str() . '.users', [
-        'name' => $name,
-        'created_by',
-        $created_by,
-      ], [
-        'name' => Types::STRING,
-        'created_by' => Types::INTEGER,
-      ],
-    );
 
-    $user_id = (int) $this->db->lastInsertId();
+    $stmt_1 = $this->db->prepare('insert into ' . $schema->str() . '.users
+      (name, created_by)
+      values
+      (:name, :created_by)
+      returning id');
+    $stmt_1->bindValue('name', $name, Types::STRING);
+    $stmt_1->bindValue('created_by', $created_by, Types::INTEGER);
+    $res = $stmt_1->executeQuery();
 
-    $stmt = $this->db->prepare(
+    $user_id = (int) $res->fetchOne();
+
+    $stmt_2 = $this->db->prepare(
       'insert into ' . $schema->str() . '.contact c
 			(user_id, value, created_by, is_email, id_type_contact)
 			values(:user_id, :email, :created_by, true, (
@@ -424,10 +424,10 @@ class UserRepository
 			))',
     );
 
-    $stmt->bindValue('user_id', $user_id, Types::INTEGER);
-    $stmt->bindValue('email', $email, Types::STRING);
-    $stmt->bindValue('created_by', $created_by, Types::INTEGER);
-    $stmt->executeStatement();
+    $stmt_2->bindValue('user_id', $user_id, Types::INTEGER);
+    $stmt_2->bindValue('email', $email, Types::STRING);
+    $stmt_2->bindValue('created_by', $created_by, Types::INTEGER);
+    $stmt_2->executeStatement();
 
     $this->db->commit();
 
@@ -733,6 +733,7 @@ class UserRepository
     unset($user['mobile'], $user['phone'], $user['email']);
 
     $this->db->insert($schema->str() . '.users', $user);
+    // TODO returning id
     $user_id = (int) $this->db->lastInsertId();
 
     $tc = [];

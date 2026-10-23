@@ -601,7 +601,8 @@ class TransactionRepository
         (id_from, id_to, amount, description,
           service_stuff, created_by)
         values (:id_from, :id_to, :amount, :description,
-          :service_stuff, :created_by)');
+          :service_stuff, :created_by)
+        returning id');
 
       $stmt_ins->bindValue('id_from', $from_account_id, Types::INTEGER);
       $stmt_ins->bindValue('id_to', $to_account_id, Types::INTEGER);
@@ -610,9 +611,9 @@ class TransactionRepository
       $stmt_ins->bindValue('service_stuff', $service_stuff, Types::STRING);
       $stmt_ins->bindValue('created_by', $created_by, Types::INTEGER);
 
-      $stmt_ins->executeStatement();
+      $res = $stmt_ins->executeQuery();
 
-      $transaction_id = (int) $this->db->lastInsertId();
+      $transaction_id = (int) $res->fetchOne();
 
       $stmt_bal = $this->db->prepare('
         insert into ' . $schema->str() . '.balance
@@ -706,7 +707,8 @@ class TransactionRepository
         (id_from, id_to, amount, description,
           service_stuff, created_by, bulk_id)
         values (:id_from, :id_to, :amount, :description,
-          :service_stuff, :created_by, :bulk_id)');
+          :service_stuff, :created_by, :bulk_id)
+        returning id');
 
       $stmt_bal = $this->db->prepare('
           insert into ' . $schema->str() . '.balance
@@ -731,9 +733,9 @@ class TransactionRepository
         $stmt_ins->bindValue('created_by', $created_by, Types::INTEGER);
         $stmt_ins->bindValue('bulk_id', $bulk_id->toRfc4122(), Types::GUID);
 
-        $stmt_ins->executeStatement();
+        $res = $stmt_ins->executeQuery();
 
-        $transaction_id = (int) $this->db->lastInsertId();
+        $transaction_id = (int) $res->fetchOne();
 
         $stmt_bal->bindValue('account_id', $from_id, Types::INTEGER);
         $stmt_bal->bindValue('amount', -$amount, Types::INTEGER); // Negative because it is leaving the account
@@ -817,7 +819,8 @@ class TransactionRepository
         (id_from, id_to, amount, description,
           service_stuff, created_by, bulk_id)
         values (:id_from, :id_to, :amount, :description,
-          :service_stuff, :created_by, :bulk_id)');
+          :service_stuff, :created_by, :bulk_id)
+        returning id');
 
       $stmt_bal = $this->db->prepare('
           insert into ' . $schema->str() . '.balance
@@ -856,9 +859,9 @@ class TransactionRepository
         $stmt_ins->bindValue('created_by', $created_by, Types::INTEGER);
         $stmt_ins->bindValue('bulk_id', $bulk_id->toRfc4122(), Types::GUID);
 
-        $stmt_ins->executeStatement();
+        $res = $stmt_ins->executeQuery();
 
-        $transaction_id = (int) $this->db->lastInsertId();
+        $transaction_id = (int) $res->fetchOne();
 
         $stmt_bal->bindValue('account_id', $to_id, Types::INTEGER);
         $stmt_bal->bindValue('amount', $amount, Types::INTEGER);

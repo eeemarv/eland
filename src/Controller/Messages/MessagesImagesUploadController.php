@@ -171,7 +171,7 @@ class MessagesImagesUploadController extends AbstractController
                 set image_files = image_files || ?
                 where id = ?',
                 [$filename_ary, $id],
-                [Types::JSON, Types::INTEGER]
+                [Types::JSONB, Types::INTEGER]
             );
         }
 

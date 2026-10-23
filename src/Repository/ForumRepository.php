@@ -175,12 +175,13 @@ class ForumRepository
     ], [
       'topic_id'  => Types::INTEGER,
     ]);
-		$this->db->delete($schema . '.forum_topics',[
+		$this->db->delete($schema->str() . '.forum_topics',[
       'id' => $topic_id,
     ], [
       'id'  => Types::INTEGER,
     ]);
-		return $this->db->commit();
+    $this->db->commit();
+		return true;
 	}
 
 	public function insert_topic(
@@ -191,6 +192,7 @@ class ForumRepository
 		Schema $schema
 	):int
 	{
+    /* use returning id
 		$this->db->insert($schema->str() . '.forum_topics', [
 			'subject'   => $subject,
 			'access'    => $access,
@@ -200,20 +202,29 @@ class ForumRepository
       'access'  => Types::STRING,
       'user_id' => Types::INTEGER,
     ]);
+  */
 
-		$id = (int) $this->db->lastInsertId($schema->str() . '.forum_topics_id_seq');
+    $stmt_1 = $this->db->prepare('insert into ' . $schema->str() . '.forum_topics
+      (subject, access, user_id)
+      values
+      (:subject, :access, :user_id)
+      returning id');
+    $stmt_1->bindValue('subject', $subject, Types::STRING);
+    $stmt_1->bindValue('access', $access, Types::STRING);
+    $stmt_1->bindValue('user_id', $user_id, Types::INTEGER);
+    $res = $stmt_1->executeQuery();
+    $topic_id = (int) $res->fetchOne();
 
-		$this->db->insert($schema->str() . '.forum_posts', [
-			'content'   => $content,
-			'topic_id'  => $id,
-			'user_id'   => $user_id,
-		], [
-      'content'   => Types::STRING,
-      'topic_id'  => Types::INTEGER,
-      'user_id'   => Types::INTEGER,
-    ]);
+    $stmt_2 = $this->db->prepare('insert into ' . $schema->str() . '.forum_posts
+      (content, topic_id, user_id)
+      values
+      (:content, :topic_id, :user_id)');
+    $stmt_2->bindValue('content', $content, Types::STRING);
+    $stmt_2->bindValue('topic_id', $topic_id, Types::INTEGER);
+    $stmt_2->bindValue('user_id', $user_id, Types::INTEGER);
+    $stmt_2->executeStatement();
 
-		return $id;
+		return $topic_id;
 	}
 
 	public function insert_post(
@@ -223,16 +234,18 @@ class ForumRepository
 		Schema $schema
 	):int
 	{
-		$this->db->insert($schema->str() . '.forum_posts', [
-			'content'		=> $content,
-			'user_id'		=> $user_id,
-			'topic_id'	=> $topic_id,
-		], [
-      'content'   => Types::STRING,
-      'user_id'   => Types::INTEGER,
-      'topic_id'  => Types::INTEGER,
-    ]);
-		return (int) $this->db->lastInsertId($schema->str() . '.forum_posts_id_seq');
+    $stmt = $this->db->prepare('insert into ' . $schema->str() . '.forum_posts
+      (content, topic_id, user_id)
+      values
+      (:content, :topic_id, :user_id)
+      returning id');
+    $stmt->bindValue('content', $content, Types::STRING);
+    $stmt->bindValue('topic_id', $topic_id, Types::INTEGER);
+    $stmt->bindValue('user_id', $user_id, Types::INTEGER);
+    $res = $stmt->executeQuery();
+    $post_id = (int) $res->fetchOne();
+
+		return $post_id;
 	}
 
 	public function update_post(
@@ -284,7 +297,7 @@ class ForumRepository
       'content' => Types::STRING,
       'id'  => Types::INTEGER,
     ]);
-
-		return $this->db->commit();
+    $this->db->commit();
+		return true;
 	}
 }

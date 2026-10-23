@@ -28,9 +28,9 @@ final class EmailDispatchHandler
     private readonly EmailSentRepository $email_sent_repository,
     private readonly ConfigService $config_service,
     private readonly UserRepository $user_repository,
-    #[Autowire('%env(MAIL_FROM_ADDRESS)%')]
+    #[Autowire(env: 'MAIL_FROM_ADDRESS')]
     private readonly string $env_mail_from_address,
-    #[Autowire('%env(MAIL_NOREPLY_ADDRESS)%')]
+    #[Autowire(env: 'MAIL_NOREPLY_ADDRESS')]
     private readonly string $env_mail_noreply_address,
     #[Target(name: 'no_img_email_sanitizer')]
     private readonly HtmlSanitizerInterface $html_sanitizer,

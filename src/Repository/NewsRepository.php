@@ -99,33 +99,19 @@ class NewsRepository
 		Schema $schema,
 	):int
 	{
-    try
-    {
-      $this->db->beginTransaction();
-      $this->db->insert($schema->str() . '.news', [
-          'user_id'     => $user_id,
-          'content'	    => $content,
-          'subject'	    => $subject,
-          'access'      => $access,
-          'location'		=> $location,
-          'event_at'		=> $event_at,
-        ], [
-          'user_id'     => Types::INTEGER,
-          'content'	    => Types::STRING,
-          'subject'	    => Types::STRING,
-          'access'      => Types::STRING,
-          'location'		=> Types::STRING,
-          'event_at'		=> Types::DATE_IMMUTABLE,
-        ]);
-
-      $news_id = (int) $this->db->lastInsertId();
-      $this->db->commit();
-    }
-    catch (\Exception $e)
-    {
-      $this->db->rollBack();
-      throw $e;
-    }
+    $stmt = $this->db->prepare('insert into ' . $schema->str() . '.news
+      (user_id, content, subject, access, location, event_at)
+      values
+      (:user_id, :content, :subject, :access, :location, :event_at)
+      returning id');
+    $stmt->bindValue('user_id', $user_id, Types::INTEGER);
+    $stmt->bindValue('content', $content, Types::STRING);
+    $stmt->bindValue('subject', $subject, Types::STRING);
+    $stmt->bindValue('access', $access, Types::STRING);
+    $stmt->bindValue('location', $location, Types::STRING);
+    $stmt->bindValue('event_at', $event_at, Types::DATE_IMMUTABLE);
+    $res = $stmt->executeQuery();
+    $news_id = (int) $res->fetchOne();
 
 		return $news_id;
 	}

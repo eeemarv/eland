@@ -13,9 +13,9 @@ class MailAddrSystemService
 	public function __construct(
 		protected LoggerInterface $logger,
 		protected ConfigService $config_service,
-    #[Autowire('%env(MAIL_FROM_ADDRESS)%')]
+    #[Autowire(env: 'MAIL_FROM_ADDRESS')]
     protected string $env_mail_from_address,
-    #[Autowire('%env(MAIL_NOREPLY_ADDRESS)%')]
+    #[Autowire(env: 'MAIL_NOREPLY_ADDRESS')]
     protected string $env_mail_noreply_address
 	)
 	{

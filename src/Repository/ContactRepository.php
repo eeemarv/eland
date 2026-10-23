@@ -86,18 +86,16 @@ class ContactRepository
 		Schema $schema
 	):int
 	{
-    $this->db->executeStatement('insert into ' .
+    $stmt = $this->db->prepare('insert into ' .
       $schema->str() . '.type_contact
       (abbrev, name)
       values
-      (:abbrev, :name)', [
-        'abbrev'  => $abbrev,
-        'name'   => $name,
-      ], [
-        'abbrev'  => Types::STRING,
-        'name'   => Types::STRING,
-      ]);
-		return (int) $this->db->lastInsertId($schema->str() . '.type_contact_id_seq');
+      (:abbrev, :name) returning id');
+    $stmt->bindValue('abbrev', $abbrev, Types::STRING);
+    $stmt->bindValue('name', $name, Types::STRING);
+    $res = $stmt->executeQuery();
+    $id = (int) $res->fetchOne();
+		return $id;
 	}
 
 	public function update_contact_type(
@@ -271,34 +269,20 @@ class ContactRepository
 		Schema $schema
 	):int
 	{
-		$insert_ary = [
-      'value'   => $value,
-      'id_type_contact' => $contact_type_id,
-      'access'  => $access,
-      'user_id' => $user_id,
-    ];
-		$type_ary = [
-      'value'   => Types::STRING,
-      'id_type_contact' => Types::INTEGER,
-      'access'  => Types::STRING,
-      'user_id' => Types::INTEGER,
-    ];
-
-		if (isset($created_by))
-		{
-			$insert_ary['created_by'] = $created_by;
-			$type_ary['created_by'] = Types::INTEGER;
-		}
-
-    if (isset($comments))
-    {
-			$insert_ary['comments'] = $comments;
-			$type_ary['comments'] = Types::STRING;
-    }
-
-		$this->db->insert($schema->str() . '.contact', $insert_ary, $type_ary);
-
-		return (int) $this->db->lastInsertId($schema->str() . '.contact_id_seq');
+    $stmt = $this->db->prepare('insert into ' . $schema->str() . '.contact
+      (value, id_type_contact, access, user_id, created_by, comments)
+      values
+      (:value, :id_type_contact, :access, :user_id, :created_by, :comments)
+      returning id');
+    $stmt->bindValue('value', $value, Types::STRING);
+    $stmt->bindValue('id_type_contact', $contact_type_id, Types::INTEGER);
+    $stmt->bindValue('access', $access, Types::STRING);
+    $stmt->bindValue('user_id', $user_id, Types::INTEGER);
+    $stmt->bindValue('created_by', $created_by, Types::INTEGER);
+    $stmt->bindValue('comments', $comments, Types::STRING);
+    $res = $stmt->executeQuery();
+    $id = (int) $res->fetchOne();
+    return $id;
 	}
 
 	public function update(

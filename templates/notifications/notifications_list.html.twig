@@ -1,5 +1,11 @@
 {%- extends 'notifications/base/notifications_base.html.twig' -%}
 
+{%- set active_menu = 'notifications' -%}
+
+{%- block heading_icon -%}
+<twig:ux:icon name="lucide:bell"/>
+{%- endblock heading_icon -%}
+
 {%- block content_controllers -%}
 {%- endblock content_controllers -%}
 
