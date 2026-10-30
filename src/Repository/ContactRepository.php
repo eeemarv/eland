@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\DTO\Schema;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
 
@@ -362,4 +363,222 @@ class ContactRepository
 
 		return $res->fetchAllAssociative();
 	}
+
+  public function get_filtered(
+    string|null $value,
+    int|null $user_id,
+    int|null $contact_type_id,
+    array|null $access_ary,
+    string|null $user_status,
+    int $start,
+    int $limit,
+    string $order_by,
+    bool $asc,
+    bool $intersystem_enabled,
+    \DateTimeImmutable $new_user_treshold,   
+    Schema $schema,
+  ):array
+  {
+    $sql = [
+      'where' => [
+        'common' => '1 = 1',
+      ],
+      'params'  => [],
+      'types'   => [],
+    ];
+
+    if (isset($user_id))
+    {
+      $sql['where']['user_id']= 'c.user_id = :user_id';
+      $sql['params']['user_id']= $user_id;
+      $sql['types']['user_id']= Types::INTEGER;
+    }
+
+    if (isset($value))
+    {
+      $sql['where']['value']= '(c.value ilike :value or c.comments ilike :value)';
+      $sql['params']['value']= '%' . $value . '%';
+      $sql['types']['value']= Types::STRING;
+    }
+
+    if (isset($contact_type_id))
+    {
+      $sql['where']['contact_type_id']= 'c.id_type_contact = :contact_type_id';
+      $sql['params']['contact_type_id']= $contact_type_id;
+      $sql['types']['contact_type_id']= Types::INTEGER;
+    }
+
+    if (isset($access_ary) && count($access_ary))
+    {
+      $where_or = [];
+
+      if (in_array('admin', $access_ary))
+      {
+        $where_or[] = 'c.access = \'admin\'';
+      }
+
+      if (in_array('user', $access_ary))
+      {
+        $where_or[] = 'c.access = \'user\'';
+
+        if (!$intersystem_enabled)
+        {
+          $where_or[] = 'c.access = \'guest\'';
+        }
+      }
+
+      if (in_array('guest', $access_ary) && $intersystem_enabled)
+      {
+        $where_or[] = 'c.access = \'guest\'';
+      }
+
+      if (count($where_or))
+      {
+        $sql['where']['access'] = ' (' . implode(' or ', $where_or) . ') ';
+      }
+    }
+
+    if (isset($user_status))
+    {
+      switch ($user_status)
+      {
+        case 'new':
+          $sql['where']['activated_at']= 'u.activated_at > :activated_at and u.is_active';
+          $sql['params']['activated_at']= $new_user_treshold;
+          $sql['types']['activated_at']= Types::DATETIME_IMMUTABLE;
+          break;
+        case 'leaving':
+          $sql['where']['ustatus'] = 'u.is_leaving and u.is_active';
+          break;
+        case 'active':
+          $sql['where']['ustatus'] = 'u.is_active';
+          break;
+        case 'pre-active':
+          $sql['where']['ustatus']= 'not u.is_active 
+            and u.is_activated_at is null';
+          break;
+        case 'post-active':
+          $sql['where']['ustatus']= 'not u.is_active 
+            and u.is_activated_at is not null';
+          break;
+        case 'intersystem':
+          $sql['where']['ustatus']= '(u.remote_schema is not null 
+            or u.remote_email is not null)';
+          break;
+        default:
+          break;
+      }
+    }
+
+    $sql['params']['limit'] = $limit;
+    $sql['types']['limit'] = Types::INTEGER;
+    $sql['params']['offset'] = $start;
+    $sql['types']['offset'] = Types::INTEGER;
+
+    $contacts = [];
+
+    $sql_where = implode(' and ', $sql['where']);
+
+    $query = 'select c.*, tc.abbrev, 
+      u.code, u.name, u.is_active,
+      u.activated_at, u.is_leaving
+      from ' . $schema->str() . '.contact c
+      inner join ' . $schema->str() . '.type_contact tc
+        on c.id_type_contact = tc.id
+      inner join ' . $schema->str() . '.users u
+        on c.user_id = u.id
+      where ' . $sql_where . '
+      order by ' . $order_by . ' ' .
+      ($asc ? 'asc' : 'desc') . '
+      limit :limit offset :offset';
+
+    $res = $this->db->executeQuery($query, $sql['params'], $sql['types']);
+
+    while ($row = $res->fetchAssociative())
+    {
+      $contacts[$row['id']] = $row;
+    }
+
+    $sql_all = $sql;
+    unset($sql_all['params']['limit']);
+    unset($sql_all['types']['limit']);
+    unset($sql_all['params']['offset']);
+    unset($sql_all['types']['offset']);
+
+    $sql_all_where = implode(' and ', $sql_all['where']);
+
+    $sql_omit_access = $sql_all;
+    unset($sql_omit_access['where']['access']);
+    $sql_omit_access_where = implode(' and ', $sql_omit_access['where']);
+
+    $res = $this->db->executeQuery('select
+      count(c.*) filter
+        (where ' . $sql_all_where . ') as row_count,
+      count(c.*) filter
+        (where ' . $sql_omit_access_where . ' and access = \'admin\') as admin,
+      count(c.*) filter
+        (where ' . $sql_omit_access_where . ' and access = \'user\') as user,
+      count(c.*) filter
+        (where ' . $sql_omit_access_where . ' and access = \'guest\') as guest
+      from ' . $schema->str() . '.contact c
+      inner join ' . $schema->str() . '.users u
+        on c.user_id = u.id',
+      $sql_all['params'],
+      $sql_all['types']);
+
+    $count_ary = $res->fetchAssociative();
+
+    if (!$intersystem_enabled)
+    {
+      $count_ary['user'] += $count_ary['guest'];
+    }
+
+    return [
+      'contacts'  => $contacts,
+      'count_ary' => $count_ary,
+    ];
+  }
+
+  public function set_bulk_access(
+    string $access,
+    array $selected_ids,
+    Schema $schema,
+  )
+  {
+    $affected_rows = (int) $this->db->executeStatement('
+      update ' . $schema->str() . '.contact
+      set access = :access
+      where id in (:selected_ids)', [
+      'access'  => $access,
+      'selected_ids'  => $selected_ids,
+    ], [
+      'access'  => Types::STRING,
+      'selected_ids'  => ArrayParameterType::INTEGER,
+    ]);
+    
+    return $affected_rows;
+  }
+
+  public function get_selected(
+    array $selected_ids,
+    Schema $schema,
+  ):array
+  {
+    $contacts = [];
+
+    $res = $this->db->executeQuery('select * 
+      from ' . $schema->str() . '.contact
+      where id in (:selected_ids)', [
+        'selected_ids'  => $selected_ids,
+      ], [
+        'selected_ids'  => ArrayParameterType::INTEGER,
+      ]);
+
+    while ($row = $res->fetchAssociative())
+    {
+      $contacts[$row['id']] = $row;
+    }
+
+    return $contacts;
+  }
 }

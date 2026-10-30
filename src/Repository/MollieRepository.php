@@ -317,7 +317,11 @@ class MollieRepository
   }
 
   public function get_filtered_payments(
-    MollieFilterCommand $filter_command,
+    string|null $description,
+    int|null $user_id,
+    array|null $status_ary,
+    \DateTimeImmutable|null $from_date, 
+    \DateTimeImmutable|null $to_date, 
     int $start,
     int $limit,
     string $order_by,
@@ -349,35 +353,35 @@ class MollieRepository
       'types'     => [],
     ];
 
-    if (isset($filter_command->q))
+    if (isset($description))
     {
-      $sql['where']['q'] = 'r.description ilike :q';
-      $sql['params']['q'] = '%' . $filter_command->q . '%';
-      $sql['types']['q'] = Types::STRING;
+      $sql['where']['description'] = 'r.description ilike :description';
+      $sql['params']['description'] = '%' . $description . '%';
+      $sql['types']['description'] = Types::STRING;
     }
 
-    if (isset($filter_command->user))
+    if (isset($user_id))
     {
       $sql['where']['user_id'] = 'u.id = :user_id';
-      $sql['params']['user_id'] = $filter_command->user;
+      $sql['params']['user_id'] = $user_id;
       $sql['types']['user_id'] = Types::INTEGER;
     }
 
-    if (isset($filter_command->status) && $filter_command->status)
+    if (isset($status_ary) && $status_ary)
     {
       $st_where_or = [];
 
-      if (in_array('open', $filter_command->status))
+      if (in_array('open', $status_ary))
       {
         $st_where_or[] = '(not p.is_paid and not p.is_canceled)';
       }
 
-      if (in_array('paid', $filter_command->status))
+      if (in_array('paid', $status_ary))
       {
         $st_where_or[] = 'p.is_paid';
       }
 
-      if (in_array('canceled', $filter_command->status))
+      if (in_array('canceled', $status_ary))
       {
         $st_where_or[] = 'p.is_canceled';
       }
@@ -388,19 +392,17 @@ class MollieRepository
       }
     }
 
-    if (isset($filter_command->from_date))
+    if (isset($from_date))
     {
-      $from_date_immutable = \DateTimeImmutable::createFromFormat('U', (string) strtotime($filter_command->from_date . ' UTC'));
       $sql['where']['from_date'] = 'p.created_at >= :from_date';
-      $sql['params']['from_date'] = $from_date_immutable;
+      $sql['params']['from_date'] = $from_date;
       $sql['types']['from_date'] = Types::DATETIME_IMMUTABLE;
     }
 
-    if (isset($filter_command->to_date))
+    if (isset($to_date))
     {
-      $to_date_immutable = \DateTimeImmutable::createFromFormat('U', (string) strtotime($filter_command->to_date . ' UTC'));
       $sql['where']['to_date'] = 'p.created_at <= :to_date';
-      $sql['params']['to_date'] = $to_date_immutable;
+      $sql['params']['to_date'] = $to_date;
       $sql['types']['to_date'] = Types::DATETIME_IMMUTABLE;
     }
 

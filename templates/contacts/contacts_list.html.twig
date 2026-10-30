@@ -1,13 +1,12 @@
 {%- extends 'contacts/base/contacts_base.html.twig' -%}
 
 {%- block content_controllers -%}
-csv
+csv bulk-check-table datatable
 {%- endblock content_controllers -%}
 
 {%- block content_controllers_attr -%}
 data-csv-filename-value="{{- 'label.contacts'|trans|lower|replace({' ': '_'}) -}}"
 {%- endblock content_controllers_attr -%}
-
 
 {%- block btn_top_add -%}
   {%- include 'include/btn_top/add.html.twig' with {
@@ -38,7 +37,7 @@ data-csv-filename-value="{{- 'label.contacts'|trans|lower|replace({' ': '_'}) -}
 {%- endblock heading_append -%}
 
 {%- block filter_form_a -%}
-  {%- include 'contacts/include/contacts_filter_form.html.twig' -%}
+  {%- include 'contacts/list/contacts_list_filter_form.html.twig' -%}
 {%- endblock filter_form_a -%}
 
 {%- block pagination -%}
@@ -49,15 +48,12 @@ data-csv-filename-value="{{- 'label.contacts'|trans|lower|replace({' ': '_'}) -}
 
 {%- block data -%}
   {%- if row_count -%}
-    {{- data_list_raw|raw -}}
+    {%- include 'contacts/list/contacts_list_table.html.twig' -%}
   {%- else -%}
     {%- include 'include/no_results.html.twig' -%}
   {%- endif -%}
 {%- endblock data -%}
 
 {%- block bulk_actions -%}
-  {%- if bulk_actions_raw -%}
-    {%- include 'include/panel_bulk_btns.html.twig' -%}
-    {{- bulk_actions_raw|raw -}}
-  {%- endif -%}
+  {%- include 'contacts/list/contacts_list_bulk.html.twig' -%}
 {%- endblock bulk_actions -%}

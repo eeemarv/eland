@@ -42,9 +42,7 @@ class DocsDelType extends AbstractType
     $builder->add('submit', SubmitType::class);
 
     $this->access_field_subscriber->add(
-      type_options: [
-        'disabled' => true,
-      ],
+      disabled: true,
     );
     $builder->addEventSubscriber($this->access_field_subscriber);
   }

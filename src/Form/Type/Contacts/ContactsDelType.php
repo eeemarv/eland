@@ -4,22 +4,16 @@ namespace App\Form\Type\Contacts;
 
 use App\Command\Contacts\ContactsCommand;
 use App\Form\EventSubscriber\AccessFieldSubscriber;
-use App\Repository\ContactRepository;
-use App\Service\PageParamsService;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ContactsDelType extends AbstractType
 {
   public function __construct(
-    private readonly TranslatorInterface $translator,
     private readonly AccessFieldSubscriber $access_field_subscriber,
-    private readonly ContactRepository $contact_repository,
-    private readonly PageParamsService $pp
   )
   {
   }
@@ -49,9 +43,8 @@ class ContactsDelType extends AbstractType
     $builder->add('submit', SubmitType::class);
 
     $this->access_field_subscriber->add(
-      type_options: [
-      'disabled'  => true,
-    ]);
+      disabled: true,
+    );
 
     $builder->addEventSubscriber($this->access_field_subscriber);
   }

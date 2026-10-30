@@ -218,7 +218,13 @@ class TransactionRepository
   }
 
   public function get_filtered_transactions(
-    TransactionsFilterCommand $filter_command,
+    string|null $description,
+    int|null $from_account_id,
+    int|null $to_account_id,
+    string|null $account_logic,
+    \DateTimeImmutable|null $from_date,
+    \DateTimeImmutable|null $to_date,
+    array|null $service_stuff_ary,
     int $start,
     int $limit,
     string $order_by,
@@ -255,72 +261,70 @@ class TransactionRepository
       'types'     => [],
     ];
 
-    if (isset($filter_command->q))
+    if (isset($description))
     {
-      $sql['where']['q'] = 't.description ilike :q';
-      $sql['params']['q'] = '%' . $filter_command->q . '%';
-      $sql['types']['q'] = Types::STRING;
+      $sql['where']['description'] = 't.description ilike :description';
+      $sql['params']['description'] = '%' . $description . '%';
+      $sql['types']['description'] = Types::STRING;
     }
 
-    $accounts_eq = isset($filter_command->account_logic)
-      && $filter_command->account_logic === 'nor' ? '<>' : '=';
+    $accounts_eq = isset($account_logic)
+      && $account_logic === 'nor' ? '<>' : '=';
 
-    if (isset($filter_command->from_account))
+    if (isset($from_account_id))
     {
-      $sql['where']['from_account'] = 't.id_from ' . $accounts_eq . ' :from_account';
-      $sql['params']['from_account'] = $filter_command->from_account;
-      $sql['types']['from_account'] = Types::INTEGER;
+      $sql['where']['from_account_id'] = 't.id_from ' . $accounts_eq . ' :from_account_id';
+      $sql['params']['from_account_id'] = $from_account_id;
+      $sql['types']['from_account_id'] = Types::INTEGER;
     }
 
-    if (isset($filter_command->to_account))
+    if (isset($to_account_id))
     {
-      $sql['where']['to_account'] = 't.id_to ' . $accounts_eq . ' :to_account';
-      $sql['params']['to_account'] = $filter_command->to_account;
-      $sql['types']['to_account'] = Types::INTEGER;
+      $sql['where']['to_account_id'] = 't.id_to ' . $accounts_eq . ' :to_account_id';
+      $sql['params']['to_account_id'] = $to_account_id;
+      $sql['types']['to_account_id'] = Types::INTEGER;
     }
 
-    if (isset($filter_command->account_logic)
-      && $filter_command->account_logic === 'or'
-      && isset($filter_command->from_account)
-      && isset($filter_command->to_account)
+    if (isset($account_logic)
+      && $account_logic === 'or'
+      && isset($from_account_id)
+      && isset($to_account_id)
     )
     {
-      $sql['where']['from_account'] =
-        '(t.id_from = :from_account or t.id_to = :to_account)';
-      unset($sql['where']['to_account']);
+      $sql['where']['from_account_id'] =
+        '(t.id_from = :from_account_id or t.id_to = :to_account_id)';
+      unset($sql['where']['to_account_id']);
     }
 
-    if (isset($filter_command->from_date))
+    if (isset($from_date))
     {
-      $from_date = \DateTimeImmutable::createFromFormat('U', (string) strtotime($filter_command->from_date . ' UTC'));
       $sql['where']['from_date'] = 't.created_at >= :from_date';
       $sql['params']['from_date'] = $from_date;
       $sql['types']['from_date'] = Types::DATETIME_IMMUTABLE;
     }
 
-    if (isset($filter_command->to_date))
+    if (isset($to_date))
     {
-      $to_date = \DateTimeImmutable::createFromFormat('U', (string) strtotime($filter_command->to_date . ' UTC'));
       $sql['where']['to_date'] = 't.created_at <= :to_date';
       $sql['params']['to_date'] = $to_date;
       $sql['types']['to_date'] = Types::DATETIME_IMMUTABLE;
     }
 
-    if (isset($filter_command->srvc))
+    if (isset($service_stuff_ary))
     {
       $srvc_where_or = [];
 
-      if (in_array('srvc', $filter_command->srvc))
+      if (in_array('srvc', $service_stuff_ary))
       {
         $srvc_where_or[] = 't.service_stuff = \'service\'';
       }
 
-      if (in_array('stff', $filter_command->srvc))
+      if (in_array('stff', $service_stuff_ary))
       {
         $srvc_where_or[] = 't.service_stuff = \'stuff\'';
       }
 
-      if (in_array('null', $filter_command->srvc))
+      if (in_array('null', $service_stuff_ary))
       {
         $srvc_where_or[] = 't.service_stuff is null';
       }

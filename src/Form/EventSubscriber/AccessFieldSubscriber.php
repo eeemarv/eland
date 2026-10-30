@@ -13,10 +13,10 @@ use Symfony\Component\Form\FormEvents;
 
 class AccessFieldSubscriber implements EventSubscriberInterface
 {
-  protected array $access_options = [];
-  protected string $name = 'access';
-  protected array $fields_options = [];
-  protected array $type_options = [];
+  private array $fields_options = [];
+  private array $fields_disabled = [];
+  private array $fields_multiple = [];
+  private array $fields_required = [];
 
   public function __construct(
     private readonly PageParamsService $pp,
@@ -36,7 +36,9 @@ class AccessFieldSubscriber implements EventSubscriberInterface
   public function add(
     string $name = 'access',
     array $access_options = ['admin', 'user', 'guest'],
-    array $type_options = [],
+    bool $required = true,
+    bool $multiple = false,
+    bool $disabled = false,
   ):void
   {
     $access_options = array_combine($access_options, $access_options);
@@ -72,7 +74,9 @@ class AccessFieldSubscriber implements EventSubscriberInterface
       $this->fields_options[$name][$access] = $access;
     }
 
-    $this->type_options[$name] = $type_options;
+    $this->fields_disabled[$name] = $disabled;
+    $this->fields_required[$name] = $required;
+    $this->fields_multiple[$name] = $multiple;
   }
 
   public function pre_set_data(FormEvent $event)
@@ -99,7 +103,9 @@ class AccessFieldSubscriber implements EventSubscriberInterface
 
       $options = [
         'choices'   => $access_options,
-        'multiple'  => false,
+        'multiple'  => $this->fields_multiple[$name],
+        'required'  => $this->fields_required[$name],
+        'disabled'  => $this->fields_disabled[$name],
       ];
 
       if (isset($data->$name))
@@ -114,8 +120,6 @@ class AccessFieldSubscriber implements EventSubscriberInterface
         }
       }
 
-      $options = [...$options, ...$this->type_options[$name]];
-
       $form->add($name, BtnChoiceType::class, $options);
     }
   }
@@ -128,8 +132,7 @@ class AccessFieldSubscriber implements EventSubscriberInterface
 
     foreach ($this->fields_options as $name => $access_options)
     {
-      if (isset($this->type_options[$name]['multiple'])
-        && $this->type_options[$name]['multiple'])
+      if ($this->fields_multiple[$name])
       {
         if (!isset($data[$name]))
         {
@@ -150,6 +153,11 @@ class AccessFieldSubscriber implements EventSubscriberInterface
 
         foreach ($data[$name] as $access_option)
         {
+          if (!isset($access_option))
+          {
+            continue;
+          }
+
           if (!in_array($access_option, $access_options))
           {
             throw new UnexpectedTypeException($access_option, 'access');
@@ -160,6 +168,11 @@ class AccessFieldSubscriber implements EventSubscriberInterface
       {
         if (isset($data[$name]))
         {
+          if (!is_string($data[$name]))
+          {
+            continue;
+          }
+
           if (!in_array($data[$name], $access_options))
           {
             throw new UnexpectedTypeException($data[$name], 'access');

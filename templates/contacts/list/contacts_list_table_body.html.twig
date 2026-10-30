@@ -1,0 +1,62 @@
+{%- import 'macro/lbl.html.twig' as l -%}
+
+{%- for cid, c in contacts -%}
+
+  {%- set u_class =
+    is_new(c) ? ' class="bg-success"' :
+    is_leaving(c) ? ' class="bg-danger"' :
+    is_intersystem(c) ? ' class="bg-warning"' :
+    is_pre_active(c) ? ' class="bg-inactive"' :
+    is_post_active(c) ? ' class="bg-info"' : ''
+  -%}
+
+	<tr>
+		{%- if bulk_actions_enabled and pp_has_role('admin') -%}
+			<td>
+        {%- include 'component/bulk_check_table/checkbox.html.twig' with {
+          'id': cid,
+        } -%}
+			</td>
+		{%- endif -%}
+
+		<td>
+      <b>
+        {{- c.abbrev -}}
+      </b>
+    </td>
+
+		<td>
+      <a href="{{- path('contacts_edit', {}|pp(id: cid)) -}}">
+				<b>
+					{{- c.value -}}
+				</b>
+			</a>
+		</td>
+
+    <td{{ u_class|raw }}>
+      <a href="{{- path('users_show', {}|pp(id: c.user_id)) -}}">
+        {{- account(c) -}}
+      </a>
+    </td>
+
+		<td>
+      <a href="{{- path('contacts_edit', {}|pp(id: cid)) -}}">
+				<b>
+					{{- c.comments ?: '***' -}}
+				</b>
+			</a>
+		</td>
+
+    <td>
+      {{- l.btn(c.access) -}}
+    </td>
+
+		<td>
+      <a href="{{- path('contacts_del_admin', {}|pp(id: cid)) -}}"
+        class="btn btn-danger"
+      >
+				{{- 'btn.del'|trans -}}
+			</a>
+		</td>
+	</tr>
+{%- endfor -%}

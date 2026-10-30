@@ -1,0 +1,60 @@
+{%- for p in payments -%}
+  {%- set u_class =
+    is_new(p) ? ' class="bg-success"' :
+    is_leaving(p) ? ' class="bg-danger"' :
+    is_intersystem(p) ? ' class="bg-warning"' :
+    is_pre_active(p) ? ' class="bg-inactive"' :
+    is_post_active(p) ? ' class="bg-info"' : ''
+  -%}
+  <tr>
+    <td{%- if p.is_paid or p.is_canceled %} class="bg-inactive"{%- endif -%}>
+      {%- include 'component/bulk_check_table/checkbox.html.twig' with {
+        'id': p.id,
+        'label': p.amount|replace({'.': ','}),
+        'disabled': p.is_paid or p.is_canceled,
+      }-%}
+    </td>
+    <td>
+      <a href="{{- path('mollie_payments', {'request_id': p.request_id, 'f': {'q': p.description }}|pp) -}}">
+        {{- p.description -}}
+      </a>
+    </td>
+    <td{{ u_class|raw }}>
+      <a href="{{- path('users_show', {}|pp(id: p.user_id)) -}}">
+        {{- account(p) -}}
+      </a>
+    </td>
+    <td>
+      {%- if p.is_paid -%}
+      <span class="label label-success">
+        {{- 'mollie.status.paid'|trans -}}
+      </span>
+      {%- elseif p.is_canceled -%}
+      <span class="label label-default">
+        {{- 'mollie.status.canceled'|trans -}}
+      </span>
+      {%- else -%}
+      <span class="label label-warning">
+        {{- 'mollie.status.open'|trans -}}
+      </span>
+      {%- endif -%}
+    </td>
+    <td>
+      {{- p.created_at|date_format -}}
+    </td>
+    {%- if p.email_addresses|length -%}
+    <td>
+      {{- p.emails_sent|length -}}
+    </td>
+    {%- else -%}
+    <td class="danger">
+      {{- p.emails_sent|length -}}
+      &nbsp;
+      <span class="label label-danger p-1"
+      title="{{- 'mail_form.no_to_address'|trans -}}">
+        <twig:ux:icon name="lucide:triangle-alert" width="16" />
+      </span>
+    </td>
+    {%- endif -%}
+  </tr>
+{%- endfor -%}

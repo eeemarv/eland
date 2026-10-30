@@ -162,10 +162,8 @@ class MessagesFilterType extends AbstractType
 
     $this->access_field_subscriber->add(
       access_options: ['user', 'guest'],
-      type_options: [
-      'multiple' => true,
-      'required' => false,
-      ],
+      multiple: true,
+      required: false,
     );
 
     $builder->addEventSubscriber($this->access_field_subscriber);

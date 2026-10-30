@@ -1,95 +1,14 @@
-{%- set cols = ['amount', 'description', 'code', 'status', 'created_at', 'emails'] -%}
-{%- set order_by = pag_params.s.order_by -%}
-{%- set asc = pag_params.s.asc ? true : false -%}
-
 <div class="panel panel-primary">
   <table class="table table-bordered table-striped
-    table-hover panel-body csv"
+    table-hover panel-body"
   >
     <thead>
       <tr>
-        {%- for c in cols -%}
-        {%- set sort = {
-          s: {
-            order_by: c,
-            asc: order_by == c ? (asc ? '0' : '1') : '0'
-          }
-        } -%}
-        <th>
-          {%- if c in ['status', 'emails'] -%}
-            {{- ('mollie_payments.col.' ~ c)|trans -}}
-          {%- else -%}
-          <a href="{{- path('mollie_payments', pag_params|merge(sort)|pp) -}}">
-            <i class="fa fa-sort{{- order_by == c ? (sort.s.asc == '1' ? '-desc' : '-asc') : '' -}}"></i>
-            &nbsp;
-            {{- ('mollie_payments.col.' ~ c)|trans -}}
-          </a>
-          {%- endif -%}
-        </th>
-        {%- endfor -%}
+        {%- include 'mollie/payments/mollie_payments_table_head.html.twig' -%}
       </tr>
     </thead>
     <tbody>
-    {%- for p in payments -%}
-      {%- set u_class =
-        is_new(p) ? ' class="success"' :
-        is_leaving(p) ? ' class="danger"' :
-        is_intersystem(p) ? ' class="warning"' :
-        is_pre_active(p) ? ' class="inactive"' :
-        is_post_active(p) ? ' class="info"' : ''
-      -%}
-      <tr>
-        <td{%- if p.is_paid or p.is_canceled %} class="bg-inactive"{%- endif -%}>
-          {%- include 'component/bulk_check_table/checkbox.html.twig' with {
-            'id': p.id,
-            'label': p.amount|replace({'.': ','}),
-            'disabled': p.is_paid or p.is_canceled,
-          }-%}
-        </td>
-        <td>
-          <a href="{{- path('mollie_payments', {'request_id': p.request_id, 'f': {'q': p.description }}|pp) -}}">
-            {{- p.description -}}
-          </a>
-        </td>
-        <td{{ u_class|raw }}>
-          <a href="{{- path('users_show', {}|pp(id: p.user_id)) -}}">
-            {{- account(p.user_id) -}}
-          </a>
-        </td>
-        <td>
-          {%- if p.is_paid -%}
-          <span class="label label-success">
-            {{- 'mollie.status.paid'|trans -}}
-          </span>
-          {%- elseif p.is_canceled -%}
-          <span class="label label-default">
-            {{- 'mollie.status.canceled'|trans -}}
-          </span>
-          {%- else -%}
-          <span class="label label-warning">
-            {{- 'mollie.status.open'|trans -}}
-          </span>
-          {%- endif -%}
-        </td>
-        <td>
-          {{- p.created_at|date_format -}}
-        </td>
-        {%- if p.email_addresses|length -%}
-        <td>
-          {{- p.emails_sent|length -}}
-        </td>
-        {%- else -%}
-        <td class="danger">
-          {{- p.emails_sent|length -}}
-          &nbsp;
-          <span class="label label-danger p-1"
-          title="Er is geen E-mail adres ingesteld voor de gebruiker.">
-            <twig:ux:icon name="lucide:triangle-alert" width="16" />
-          </span>
-        </td>
-        {%- endif -%}
-      </tr>
-    {%- endfor -%}
+      {%- include 'mollie/payments/mollie_payments_table_body.html.twig' -%}
     </tbody>
     {%- include 'component/bulk_check_table/tfoot_buttons.html.twig' -%}
   </table>

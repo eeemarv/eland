@@ -2,8 +2,8 @@
 {%- import 'macro/lbl.html.twig' as lbl -%}
 
 {%- block assets_add -%}
-    {{- parent() -}}
-    {{- assets_add(['contacts_del.js']) -}}
+  {{- parent() -}}
+  {{- assets_add(['contacts_del.js']) -}}
 {%- endblock assets_add -%}
 
 {%- if pp_has_role('admin') -%}

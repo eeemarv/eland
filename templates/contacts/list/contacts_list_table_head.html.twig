@@ -1,0 +1,116 @@
+{%- set order_by = pag_params.s.order_by -%}
+{%- set asc = pag_params.s.asc -%}
+{%- set pag = {'start': 0, 'limit':pag_params.p.limit} -%}
+
+{%- if pp_has_role('admin') and bulk_actions_enabled -%}
+{# selector column #}
+<th data-priority="1">
+  &nbsp;
+</th>
+{%- endif -%}
+
+<th data-priority="1">
+  <a href="{{- path('contacts', pag_params|merge({
+    's': {
+      'order_by': 'tc.abbrev',
+      'asc': asc ? '0' : '1',
+    },
+    'p': pag,
+    })|pp) -}}">
+
+    {{- 'label.type'|trans -}}
+    &nbsp;
+    {%- if order_by != 'tc.abbrev' -%}
+      <twig:ux:icon name="lucide:chevrons-up-down" class="text-warning"/>
+    {%- elseif asc -%}
+      <twig:ux:icon name="lucide:chevron-up"/>
+    {%- else -%}
+      <twig:ux:icon name="lucide:chevron-down"/>
+    {%- endif -%}
+  </a>
+</th>
+
+<th data-priority="1">
+  <a href="{{- path('contacts', pag_params|merge({
+    's': {
+      'order_by': 'c.value',
+      'asc': asc ? '0' : '1',
+    },
+    'p': pag,
+    })|pp) -}}">
+    {{- 'label.value'|trans -}}
+    &nbsp;
+    {%- if order_by != 'c.value' -%}
+      <twig:ux:icon name="lucide:chevrons-up-down" class="text-warning"/>
+    {%- elseif asc -%}
+      <twig:ux:icon name="lucide:chevron-up"/>
+    {%- else -%}
+      <twig:ux:icon name="lucide:chevron-down"/>
+    {%- endif -%}
+  </a>
+</th>
+
+<th data-priority="2">
+  <a href="{{- path('contacts', pag_params|merge({
+    's': {
+      'order_by': 'u.code',
+      'asc': asc ? '0' : '1',
+    },
+    'p': pag,
+    })|pp) -}}">
+    {{- 'label.user'|trans -}}
+    &nbsp;
+    {%- if order_by != 'u.code' -%}
+      <twig:ux:icon name="lucide:chevrons-up-down" class="text-warning"/>
+    {%- elseif asc -%}
+      <twig:ux:icon name="lucide:chevron-up"/>
+    {%- else -%}
+      <twig:ux:icon name="lucide:chevron-down"/>
+    {%- endif -%}
+  </a>
+</th>
+
+<th data-priority="3">
+  <a href="{{- path('contacts', pag_params|merge({
+    's': {
+      'order_by': 'c.comments',
+      'asc': asc ? '0' : '1',
+    },
+    'p': pag,
+    })|pp) -}}">
+    {{- 'label.comment'|trans -}}
+    &nbsp;
+    {%- if order_by != 'c.comments' -%}
+      <twig:ux:icon name="lucide:chevrons-up-down" class="text-warning"/>
+    {%- elseif asc -%}
+      <twig:ux:icon name="lucide:chevron-up"/>
+    {%- else -%}
+      <twig:ux:icon name="lucide:chevron-down"/>
+    {%- endif -%}
+  </a>
+</th>
+
+<th data-priority="3">
+  <a href="{{- path('contacts', pag_params|merge({
+    's': {
+      'order_by': 'c.access',
+      'asc': asc ? '0' : '1',
+    },
+    'p': pag,
+    })|pp) -}}">
+    {{- 'access.visible'|trans -}}
+    &nbsp;
+    {%- if order_by != 'c.access' -%}
+      <twig:ux:icon name="lucide:chevrons-up-down" class="text-warning"/>
+    {%- elseif asc -%}
+      <twig:ux:icon name="lucide:chevron-up"/>
+    {%- else -%}
+      <twig:ux:icon name="lucide:chevron-down"/>
+    {%- endif -%}
+  </a>
+</th>
+
+<th data-priority="3">
+  {{- 'btn.del'|trans -}}
+</th>
+

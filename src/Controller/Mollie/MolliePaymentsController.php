@@ -321,8 +321,25 @@ class MolliePaymentsController extends AbstractController
       }
     }
 
+    $from_date = null;
+    $to_date = null;
+
+    if (isset($filter_command->from_date))
+    {
+      $from_date = \DateTimeImmutable::createFromFormat('U', (string) strtotime($filter_command->from_date . ' UTC'));
+    }
+
+    if (isset($filter_command->to_date))
+    {
+      $to_date = \DateTimeImmutable::createFromFormat('U', (string) strtotime($filter_command->to_date . ' UTC'));
+    }
+
     $ret = $mollie_repository->get_filtered_payments(
-      filter_command: $filter_command,
+      description: $filter_command->q ?? null,
+      user_id: $filter_command->user ?? null,
+      status_ary: $filter_command->status ?? null,
+      from_date: $from_date,
+      to_date: $to_date,
       start: $pag_params['p']['start'],
       limit: $pag_params['p']['limit'],
       order_by: $pag_params['s']['order_by'],

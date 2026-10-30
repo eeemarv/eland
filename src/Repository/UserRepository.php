@@ -822,7 +822,8 @@ class UserRepository
     string $full_name_access,
     array $user_ids,
     Schema $schema,
-  ): int {
+  ): int 
+  {
     return (int) $this->db->executeStatement(
       'update ' . $schema->str() . '.users
       set full_name_access = :full_name_access
@@ -840,7 +841,8 @@ class UserRepository
     string|null $comments,
     array $user_ids,
     Schema $schema,
-  ): int {
+  ): int 
+  {
     if (isset($comments)) {
       return (int) $this->db->executeStatement(
         'update ' . $schema->str() . '.users
@@ -869,7 +871,8 @@ class UserRepository
     string|null $admin_comments,
     array $user_ids,
     Schema $schema,
-  ): int {
+  ): int 
+  {
     if (isset($admin_comments)) {
       return (int) $this->db->executeStatement(
         'update ' . $schema->str() . '.users
@@ -898,7 +901,8 @@ class UserRepository
     string $role,
     array $user_ids,
     Schema $schema,
-  ): int {
+  ): int 
+  {
     return (int) $this->db->executeStatement(
       'update ' . $schema->str() . '.users
       set role = :role
@@ -916,7 +920,8 @@ class UserRepository
     int $status,
     array $user_ids,
     Schema $schema,
-  ): int {
+  ): int 
+  {
     return (int) $this->db->executeStatement(
       'update ' . $schema->str() . '.users
       set status = :status
@@ -934,7 +939,8 @@ class UserRepository
     bool $is_active,
     array $user_ids,
     Schema $schema,
-  ): int {
+  ): int 
+  {
     $status = $is_active ? 1 : 0;
     return (int) $this->db->executeStatement(
       'update ' . $schema->str() . '.users
@@ -957,7 +963,8 @@ class UserRepository
     bool $is_leaving,
     array $user_ids,
     Schema $schema,
-  ): int {
+  ): int 
+  {
     $status = $is_leaving ? 2 : 1;
     return (int) $this->db->executeStatement(
       'update ' . $schema->str() . '.users
@@ -982,7 +989,8 @@ class UserRepository
     bool $periodic_overview_en,
     array $user_ids,
     Schema $schema,
-  ): int {
+  ): int 
+  {
     return (int) $this->db->executeStatement(
       'update ' . $schema->str() . '.users
       set periodic_overview_en = :periodic_overview_en

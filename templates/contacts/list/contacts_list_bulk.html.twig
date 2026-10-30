@@ -1,0 +1,29 @@
+<h3>
+  {%- include 'include/label/admin.html.twig' -%}
+  &nbsp;
+  {{- 'contacts.bulk.title'|trans -}}
+</h3>
+
+<div class="panel panel-info">
+  <div class="panel-heading">
+    <ul class="nav nav-tabs" role="tablist">
+      <li class="active">
+        <a href="#access_tab" data-toggle="tab">
+          {{- 'label.access'|trans -}}
+        </a>
+      </li>
+    </ul>
+    <div class="tab-content">
+      <div
+        role="tabpanel"
+        class="tab-pane active"
+        id="access_tab"
+      >
+        <h4>
+          {{- 'contacts.bulk.access.title'|trans -}}
+        </h4>
+        {%- include 'contacts/list/contacts_list_bulk_access_form.html.twig' -%}
+      </div>
+    </div>
+  </div>
+</div>

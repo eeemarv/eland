@@ -11,9 +11,10 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 /**
  * Generate an base64 encoded encryption key and publish it as
  * environment variable
- * php cli (enter with php -a):
+ * use ./generate/encryption.php
+ * or do php cli (enter with php -a):
  * echo base64_encode(random_bytes(SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_KEYBYTES));
- * APP_SECRETS_ENCRYPTION_KEY="your_generated_encryption_key"
+ * APP_ENCRYPTION_KEY="your_generated_encryption_key"
  */
 
 class SecretRepository
@@ -21,8 +22,8 @@ class SecretRepository
 	public function __construct(
 		private readonly Db $db,
     #[\SensitiveParameter]
-    #[Autowire(env: 'APP_SECRETS_ENCRYPTION_KEY')]
-    private readonly string $env_app_secrets_encryption_key,
+    #[Autowire(env: 'APP_ENCRYPTION_KEY')]
+    private readonly string $env_app_encryption_key,
 	)
 	{
 	}
@@ -35,7 +36,7 @@ class SecretRepository
 		Schema $schema,
 	):int
 	{
-    $key = base64_decode($this->env_app_secrets_encryption_key);
+    $key = base64_decode($this->env_app_encryption_key);
 
     $nonce = random_bytes(
       SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES
@@ -50,25 +51,15 @@ class SecretRepository
 
     $encrypted_value = base64_encode($nonce . $cipher_text);
 
-    $insert_ary = [
-      'encrypted_value'  => $encrypted_value,
-      'name' => $name,
-      'comment' => $comment,
-      'created_by'  => $created_by,
-    ];
-
-    $type_ary = [
-      'encrypted_value'  => Types::STRING,
-      'name' => Types::STRING,
-      'comment' => Types::STRING,
-      'created_by'  => Types::INTEGER,
-    ];
-
-		$affected_rows = (int) $this->db->insert(
-      table: $schema->str() . '.secrets',
-      data: $insert_ary,
-      types: $type_ary,
-    );
+    $stmt = $this->db->prepare('insert into ' . $schema->str() . '.secrets
+      (encrypted_value, name, comment, created_by)
+      values
+      (:encrypted_value, :name, :comment, :created_by)');
+    $stmt->bindValue('encrypted_value', $encrypted_value, Types::STRING);
+    $stmt->bindValue('name', $name, Types::STRING);
+    $stmt->bindValue('comment', $comment, Types::STRING);
+    $stmt->bindValue('created_by', $created_by, Types::INTEGER);
+    $affected_rows = (int) $stmt->executeStatement();
 
     return $affected_rows;
 	}
@@ -78,17 +69,13 @@ class SecretRepository
 		Schema $schema,
 	):string|null
 	{
-    $encrypted_value = $this->db->fetchOne(
-      'select encrypted_value from ' . $schema->str() . '.secrets ' .
-      'where name = :name ' .
-      'order by id desc limit 1',
-      [
-        'name' => $name,
-      ],
-      [
-        'name' => Types::STRING,
-      ],
-    );
+    $stmt = $this->db->prepare('select encrypted_value 
+      from ' . $schema->str() . '.secrets 
+      where name = :name ' .
+      'order by id desc limit 1');
+    $stmt->bindValue('name', $name, Types::STRING);
+    $res = $stmt->executeQuery();
+    $encrypted_value = $res->fetchOne();
 
     if ($encrypted_value === false)
     {
@@ -97,7 +84,7 @@ class SecretRepository
 
     $decoded_encrypted_value = base64_decode($encrypted_value);
 
-    $key = base64_decode($this->env_app_secrets_encryption_key);
+    $key = base64_decode($this->env_app_encryption_key);
     $nonce_length = SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_NPUBBYTES;
 
     $nonce = substr($decoded_encrypted_value, 0, $nonce_length);
@@ -187,14 +174,12 @@ class SecretRepository
     Schema $schema,
   ):bool
   {
-    $id = $this->db->fetchOne('select id
+    $stmt = $this->db->prepare('select id
       from ' . $schema->str() . '.secrets
-      where name = :name', [
-        'name' => $name,
-      ], [
-        'name' => Types::STRING,
-      ]);
-
+      where name = :name');
+    $stmt->bindValue('name', $name, Types::STRING);
+    $res = $stmt->executeQuery();
+    $id = $res->fetchOne();
     return $id !== false;
   }
 
@@ -232,7 +217,7 @@ class SecretRepository
   ):array
   {
     $ret = [];
-    $res = $this->db->executeQuery('select
+    $stmt = $this->db->prepare('select
       s.name, s.comment,
       s.created_at, s.created_by,
       u1.name as username,
@@ -258,6 +243,7 @@ class SecretRepository
         \'mollie.enabled\',
         \'mollie.mode\')
       order by created_at desc');
+    $res = $stmt->executeQuery();
 
     while ($row = $res->fetchAssociative())
     {

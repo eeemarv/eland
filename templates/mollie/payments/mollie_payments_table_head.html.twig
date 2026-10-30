@@ -1,0 +1,95 @@
+{%- set order_by = pag_params.s.order_by -%}
+{%- set asc = pag_params.s.asc -%}
+{%- set pag = {'start': 0, 'limit':pag_params.p.limit} -%}
+
+<th data-priority="1">
+  <a href="{{- path('mollie_payments', pag_params|merge({
+    's': {
+      'order_by': 'amount',
+      'asc': asc ? '0' : '1',
+    },
+    'p': pag,
+    })|pp) -}}">
+
+    {{- 'mollie_payments.col.amount'|trans -}}
+    &nbsp;
+    {%- if order_by != 'amount' -%}
+      <twig:ux:icon name="lucide:chevrons-up-down" class="text-warning"/>
+    {%- elseif asc -%}
+      <twig:ux:icon name="lucide:chevron-up"/>
+    {%- else -%}
+      <twig:ux:icon name="lucide:chevron-down"/>
+    {%- endif -%}
+  </a>
+</th>
+
+<th data-priority="1">
+  <a href="{{- path('mollie_payments', pag_params|merge({
+    's': {
+      'order_by': 'description',
+      'asc': asc ? '0' : '1',
+    },
+    'p': pag,
+    })|pp) -}}">
+
+    {{- 'mollie_payments.col.description'|trans -}}
+    &nbsp;
+    {%- if order_by != 'description' -%}
+      <twig:ux:icon name="lucide:chevrons-up-down" class="text-warning"/>
+    {%- elseif asc -%}
+      <twig:ux:icon name="lucide:chevron-up"/>
+    {%- else -%}
+      <twig:ux:icon name="lucide:chevron-down"/>
+    {%- endif -%}
+  </a>
+</th>
+
+<th data-priority="2">
+  <a href="{{- path('mollie_payments', pag_params|merge({
+    's': {
+      'order_by': 'code',
+      'asc': asc ? '0' : '1',
+    },
+    'p': pag,
+    })|pp) -}}">
+
+    {{- 'mollie_payments.col.code'|trans -}}
+    &nbsp;
+    {%- if order_by != 'code' -%}
+      <twig:ux:icon name="lucide:chevrons-up-down" class="text-warning"/>
+    {%- elseif asc -%}
+      <twig:ux:icon name="lucide:chevron-up"/>
+    {%- else -%}
+      <twig:ux:icon name="lucide:chevron-down"/>
+    {%- endif -%}
+  </a>
+</th>
+
+<th data-priority="2">
+  {{- 'mollie_payments.col.status'|trans -}}
+</th>
+
+<th data-priority="4">
+  <a href="{{- path('mollie_payments', pag_params|merge({
+    's': {
+      'order_by': 'created_at',
+      'asc': asc ? '0' : '1',
+    },
+    'p': pag,
+    })|pp) -}}">
+
+    {{- 'mollie_payments.col.created_at'|trans -}}
+    &nbsp;
+    {%- if order_by != 'amount' -%}
+      <twig:ux:icon name="lucide:chevrons-up-down" class="text-warning"/>
+    {%- elseif asc -%}
+      <twig:ux:icon name="lucide:chevron-up"/>
+    {%- else -%}
+      <twig:ux:icon name="lucide:chevron-down"/>
+    {%- endif -%}
+  </a>
+</th>
+
+<th data-priority="2">
+  {{- 'mollie_payments.col.emails'|trans -}}
+</th>

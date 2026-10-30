@@ -17,8 +17,8 @@ class UsersFullNameCommand Implements CommandInterface
 
   #[Sequentially(constraints: [
     new NotNull(),
-    new Type('string'),
-    new Choice(['admin', 'user', 'guest']),
+    new Type(type: 'string'),
+    new Choice(choices: ['admin', 'user', 'guest']),
   ])]
   public mixed $full_name_access;
 }

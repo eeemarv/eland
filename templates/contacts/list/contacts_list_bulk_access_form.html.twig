@@ -1,0 +1,26 @@
+{%- include 'component/bulk_check_table/form_start.html.twig' with {
+  'form': bulk_access_form,
+} -%}
+
+{{- form_row(bulk_access_form.access, {
+  'label': false,
+}) -}}
+
+<p class="alert alert-warning">
+  <b>
+  {{- 'contacts.bulk.access.warning'|trans -}}
+  </b>
+</p>
+
+{{- form_row(bulk_access_form.verify, {
+  'label': 'check.verify',
+}) -}}
+
+{{- form_widget(bulk_access_form.submit, {
+  'label': 'btn.edit',
+  'attr': {
+    'class': 'btn btn-lg btn-primary',
+  },
+}) -}}
+
+{{- form_end(bulk_access_form) -}}

@@ -17,7 +17,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ContactsFilterType extends AbstractType
 {
-  const USTATUS = ['active', 'new', 'leaving', 'inactive', 'ip', 'im', 'extern'];
+  const USTATUS = ['active', 'new', 'leaving', 'intersystem', 'pre-active', 'post-active'];
 
   public function __construct(
     private readonly ConfigService $config_service,
@@ -37,7 +37,7 @@ class ContactsFilterType extends AbstractType
 
     foreach (self::USTATUS as $us)
     {
-      $label = 'status.' . $us;
+      $label = 'status.' . strtr($us, '-', '_');
 
       if ($us === 'new')
       {
@@ -105,10 +105,9 @@ class ContactsFilterType extends AbstractType
     ]);
 
     $this->access_field_subscriber->add(
-      type_options: [
-        'multiple' => true,
-        'required' => false,
-    ]);
+      multiple: true,
+      required: false,
+    );
 
     $builder->addEventSubscriber($this->access_field_subscriber);
   }

@@ -868,6 +868,26 @@ contacts:
   menu: Contacten
   type:
     label: Contact Type
+  bulk:
+    title: Bulk Acties met Contacten
+    access:
+      title: Zichtbaarheid Aanpassen
+      warning: >-
+        Let op, de zichtbaarheid van alle 
+        geselecteerde contacten wordt aangepast.
+      flash:
+        success: >- 
+          {count, plural, 
+            =0 { ** ERR-0- ** }
+            =1 {Zichtbaarheid van 1 contact aangepast}
+            other {Zichtbaarheid van # contacten aangepast}
+          }
+        warning: >- 
+          {count, plural, 
+            =0 { ** ERR-0- ** }
+            =1 {Zichtbaarheid van 1 contact niet aangepast}
+            other {Zichtbaarheid van # contacten niet aangepast}
+          }
 
 contacts_add:
   title: >-

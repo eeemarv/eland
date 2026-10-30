@@ -59,7 +59,7 @@ class MessagesCommand implements CommandInterface
 
   #[Sequentially([
     new NotBlank(),
-    new Choice(['temporal', 'permanent']),
+    new Choice(choices: ['temporal', 'permanent']),
   ], groups: ['expires_at_switch'])]
   public mixed $expires_at_switch;
 
@@ -81,7 +81,7 @@ class MessagesCommand implements CommandInterface
 
   #[Sequentially([
     new NotBlank(),
-    new Choice(['admin', 'user', 'guest']),
+    new Choice(choices: ['admin', 'user', 'guest']),
   ], groups: ['common'])]
   public mixed $access;
 }

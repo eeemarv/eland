@@ -1784,7 +1784,8 @@ class UsersListController extends AbstractController
         schema: $pp->schema_o(),
       );
 
-      if ($cols_command->distance)
+      if (isset($cols_command->distance) 
+        && $cols_command->distance)
       {
         $distance_ary = [];
         foreach ($contacts_ary as $uid => $c_ary)

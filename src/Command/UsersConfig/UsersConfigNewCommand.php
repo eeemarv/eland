@@ -17,21 +17,21 @@ class UsersConfigNewCommand implements CommandInterface
 
   #[Sequentially(constraints: [
     new NotNull(),
-    new Choice(['admin', 'user', 'guest']),
+    new Choice(choices: ['admin', 'user', 'guest']),
   ])]
   #[ConfigMap(type: 'str', key: 'users.new.access')]
   public mixed $access;
 
   #[Sequentially(constraints: [
     new NotNull(),
-    new Choice(['admin', 'user', 'guest']),
+    new Choice(choices: ['admin', 'user', 'guest']),
   ])]
   #[ConfigMap(type: 'str', key: 'users.new.access_list')]
   public mixed $access_list;
 
   #[Sequentially(constraints: [
     new NotNull(),
-    new Choice(['admin', 'user', 'guest']),
+    new Choice(choices: ['admin', 'user', 'guest']),
   ])]
   #[ConfigMap(type: 'str', key: 'users.new.access_pane')]
   public mixed $access_pane;

@@ -7,8 +7,7 @@
   "settings": {
     "intelephense.diagnostics.undefinedTypes": false,
     "emmet.includeLanguages": {
-      "html": "html",
-      "twig": "html"
+      "html": "html"
     },
     "yaml.schemas": {
       "file:///home/martti/.vscode/extensions/continue.continue-1.2.16-linux-x64/config-yaml-schema.json": [
