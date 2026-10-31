@@ -12,8 +12,9 @@ use Symfony\Component\Form\Exception\TransformationFailedException;
 
 class DateFormatService
 {
-  private IntlDateFormatter $date_formatter;
-  private IntlDateFormatter $datetime_formatter;
+  private IntlDateFormatter $i_format_day;
+  private IntlDateFormatter $i_format_min;
+  private IntlDateFormatter $i_format_sec;
   private DateTimeZone $utc;
 
 	const FORMATS = [
@@ -63,26 +64,35 @@ class DateFormatService
 		private readonly ConfigService $config_service
 	)
 	{
-      $this->utc = new DateTimeZone('UTC');
-      $local_timezone = new DateTimeZone('Europe/Brussels');
+    $this->utc = new DateTimeZone('UTC');
+    $local_timezone = new DateTimeZone('Europe/Brussels');
 
-      $this->date_formatter = new IntlDateFormatter(
-        'nl_BE',
-        IntlDateFormatter::NONE,
-        IntlDateFormatter::NONE,
-        $local_timezone,
-        IntlDateFormatter::GREGORIAN,
-        'EEE d MMM yyyy',
-      );
+    $this->i_format_day = new IntlDateFormatter(
+      'nl_BE',
+      IntlDateFormatter::NONE,
+      IntlDateFormatter::NONE,
+      $local_timezone,
+      IntlDateFormatter::GREGORIAN,
+      'EEE d MMM yyyy',
+    );
 
-      $this->datetime_formatter = new IntlDateFormatter(
-        'nl_BE',
-        IntlDateFormatter::NONE,
-        IntlDateFormatter::NONE,
-        $local_timezone,
-        IntlDateFormatter::GREGORIAN,
-        'EEE d MMM yyyy HH:mm',
-      );
+    $this->i_format_min = new IntlDateFormatter(
+      'nl_BE',
+      IntlDateFormatter::NONE,
+      IntlDateFormatter::NONE,
+      $local_timezone,
+      IntlDateFormatter::GREGORIAN,
+      'EEE d MMM yyyy HH:mm',
+    );
+
+    $this->i_format_sec = new IntlDateFormatter(
+      'nl_BE',
+      IntlDateFormatter::NONE,
+      IntlDateFormatter::NONE,
+      $local_timezone,
+      IntlDateFormatter::GREGORIAN,
+      'EEE d MMM yyyy HH:mm:ss',
+    );
 	}
 
 	private function get_format(
@@ -292,9 +302,10 @@ class DateFormatService
   {
     $date = new DateTimeImmutable($timestamp, $this->utc);
 
-    $result = $this->date_formatter->format($date);
+    $result = $this->i_format_day->format($date);
 
-    if ($result === false) {
+    if ($result === false) 
+    {
       throw new RuntimeException(
         sprintf('Date "%s" could not be formatted.', $timestamp)
       );
@@ -309,9 +320,63 @@ class DateFormatService
   {
     $date = new DateTimeImmutable($timestamp, $this->utc);
 
-    $result = $this->datetime_formatter->format($date);
+    $result = $this->i_format_min->format($date);
+
+    if ($result === false) 
+    {
+      throw new RuntimeException(
+        sprintf('Date-time "%s" could not be formatted.', $timestamp)
+      );
+    }
+
+    return $result;
+  }
+
+  public function format_day(
+    string $timestamp,
+  ):string
+  {
+    $date = new DateTimeImmutable($timestamp, $this->utc);
+
+    $result = $this->i_format_day->format($date);
 
     if ($result === false) {
+      throw new RuntimeException(
+        sprintf('Date-time "%s" could not be formatted.', $timestamp)
+      );
+    }
+
+    return $result;
+  }
+
+  public function format_min(
+    string $timestamp,
+  ):string
+  {
+    $date = new DateTimeImmutable($timestamp, $this->utc);
+
+    $result = $this->i_format_min->format($date);
+
+    if ($result === false) 
+    {
+      throw new RuntimeException(
+        sprintf('Date-time "%s" could not be formatted.', $timestamp)
+      );
+    }
+
+    return $result;
+  }
+
+  public function format_sec(
+    string $timestamp,
+  ):string
+  {
+    $date = new DateTimeImmutable($timestamp, $this->utc);
+
+    $result = $this->i_format_sec->format($date);
+
+    if ($result === false) 
+    {
       throw new RuntimeException(
         sprintf('Date-time "%s" could not be formatted.', $timestamp)
       );

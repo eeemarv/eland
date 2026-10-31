@@ -1,0 +1,111 @@
+{%- set order_by = pag_params.s.order_by -%}
+{%- set asc = pag_params.s.asc -%}
+{%- set pag = {'start': 0, 'limit':pag_params.p.limit} -%}
+
+<th data-priority="1">
+  <a href="{{- path('logs', pag_params|merge({
+    's': {
+      'order_by': 'ts',
+      'asc': asc ? '0' : '1',
+    },
+    'p': pag,
+    })|pp) -}}">
+
+    {{- 'label.time'|trans -}}
+    &nbsp;
+    {%- if order_by != 'ts' -%}
+      <twig:ux:icon name="lucide:chevrons-up-down" class="text-warning"/>
+    {%- elseif asc -%}
+      <twig:ux:icon name="lucide:chevron-up"/>
+    {%- else -%}
+      <twig:ux:icon name="lucide:chevron-down"/>
+    {%- endif -%}
+  </a>
+</th>
+
+<th data-priority="8">
+  <a href="{{- path('logs', pag_params|merge({
+    's': {
+      'order_by': 'type',
+      'asc': asc ? '0' : '1',
+    },
+    'p': pag,
+    })|pp) -}}">
+
+    {{- 'label.type'|trans -}}
+    &nbsp;
+    {%- if order_by != 'type' -%}
+      <twig:ux:icon name="lucide:chevrons-up-down" class="text-warning"/>
+    {%- elseif asc -%}
+      <twig:ux:icon name="lucide:chevron-up"/>
+    {%- else -%}
+      <twig:ux:icon name="lucide:chevron-down"/>
+    {%- endif -%}
+  </a>
+</th>
+
+<th data-priority="9">
+  <a href="{{- path('logs', pag_params|merge({
+    's': {
+      'order_by': 'ip',
+      'asc': asc ? '0' : '1',
+    },
+    'p': pag,
+    })|pp) -}}">
+    {{- 'label.ip'|trans -}}
+    &nbsp;
+    {%- if order_by != 'ip' -%}
+      <twig:ux:icon name="lucide:chevrons-up-down" class="text-warning"/>
+    {%- elseif asc -%}
+      <twig:ux:icon name="lucide:chevron-up"/>
+    {%- else -%}
+      <twig:ux:icon name="lucide:chevron-down"/>
+    {%- endif -%}
+  </a>
+</th>
+
+<th data-priority="3">
+  <a href="{{- path('logs', pag_params|merge({
+    's': {
+      'order_by': 'code',
+      'asc': asc ? '0' : '1',
+    },
+    'p': pag,
+    })|pp) -}}">
+
+    {{- 'label.user'|trans -}}
+    &nbsp;
+
+    {%- if order_by != 'code' -%}
+      <twig:ux:icon name="lucide:chevrons-up-down" class="text-warning"/>
+    {%- elseif asc -%}
+      <twig:ux:icon name="lucide:chevron-up"/>
+    {%- else -%}
+      <twig:ux:icon name="lucide:chevron-down"/>
+    {%- endif -%}
+  </a>
+</th>
+
+<th data-priority="1">
+  <a href="{{- path('logs', pag_params|merge({
+    's': {
+      'order_by': 'event',
+      'asc': asc ? '0' : '1',
+    },
+    'p': pag,
+    })|pp) -}}">
+
+    {{- 'label.event'|trans -}}
+    &nbsp;
+
+    {%- if order_by != 'event' -%}
+      <twig:ux:icon name="lucide:chevrons-up-down" class="text-warning"/>
+    {%- elseif asc -%}
+      <twig:ux:icon name="lucide:chevron-up"/>
+    {%- else -%}
+      <twig:ux:icon name="lucide:chevron-down"/>
+    {%- endif -%}
+  </a>
+</th>
+
+

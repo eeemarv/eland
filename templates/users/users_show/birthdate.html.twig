@@ -7,7 +7,7 @@
     </dt>
     <dd>
       {%- if user.birthdate -%}
-        {{- user.birthdate|date_format -}}
+        {{- user.birthdate|format_day -}}
       {%- else -%}
         <twig:ux:icon name="lucide:x"/>
       {%- endif -%}

@@ -3,6 +3,9 @@
 namespace App\Twig;
 
 use App\Service\DateFormatService;
+use DateTimeZone;
+use IntlDateFormatter;
+use RuntimeException;
 use Twig\Attribute\AsTwigFilter;
 use Twig\Attribute\AsTwigFunction;
 
@@ -26,24 +29,6 @@ class DateFormatExtension
 		return $this->date_format_service->datepicker_placeholder($schema);
 	}
 
-  /*
-  #[AsTwigFilter(name: 'date_format', needsContext: true)]
-	public function get(
-    array $context,
-		string|null $ts,
-		string $precision,
-    string|null $schema = null
-	):string|null
-	{
-    if (!isset($ts))
-		{
-			return null;
-		}
-    $sch = $schema ?? $context['schema'] ?? null;
-		return $this->date_format_service->get($ts, $precision, $sch);
-	}
-  */
-
   #[AsTwigFilter(name: 'date_format')]
   public function date_format(
     string $timestamp,
@@ -66,5 +51,41 @@ class DateFormatExtension
       return null;
     }
     return $this->date_format_service->datetime_format($timestamp);
+  }
+
+  #[AsTwigFilter(name: 'format_day')]
+  public function format_day(
+    string $timestamp,
+  ):string|null
+  {
+    if (!isset($timestamp))
+    {
+      return null;
+    }
+    return $this->date_format_service->format_day($timestamp);
+  }
+
+  #[AsTwigFilter(name: 'format_min')]
+  public function format_min(
+    string $timestamp,
+  ):string|null
+  {
+    if (!isset($timestamp))
+    {
+      return null;
+    }
+    return $this->date_format_service->format_min($timestamp);
+  }
+
+  #[AsTwigFilter(name: 'format_sec')]
+  public function format_sec(
+    string $timestamp,
+  ):string|null
+  {
+    if (!isset($timestamp))
+    {
+      return null;
+    }
+    return $this->date_format_service->format_sec($timestamp);
   }
 }

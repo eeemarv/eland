@@ -4,6 +4,14 @@
 
 {%- set admin_heading = true -%}
 
+{%- block content_controllers -%}
+csv
+{%- endblock content_controllers -%}
+
+{%- block content_controllers_attr -%}
+data-csv-filename-value="logs"
+{%- endblock content_controllers_attr -%}
+
 {%- block csv_download_btn -%}
   {%- include 'include/btn_top/csv_download.html.twig' -%}
 {%- endblock csv_download_btn -%}
@@ -21,7 +29,7 @@
 {%- endblock heading_append -%}
 
 {%- block filter_form_a -%}
-  {%- include 'logs/include/logs_filter_form.html.twig' -%}
+  {%- include 'logs/list/logs_list_filter_form.html.twig' -%}
 {%- endblock filter_form_a -%}
 
 {%- block pagination -%}
@@ -32,7 +40,7 @@
 
 {%- block data -%}
   {%- if row_count -%}
-    {{- data_list_raw|raw -}}
+    {%- include 'logs/list/logs_list_table.html.twig' -%}
   {%- else -%}
     {%- include 'include/no_results.html.twig' -%}
   {%- endif -%}

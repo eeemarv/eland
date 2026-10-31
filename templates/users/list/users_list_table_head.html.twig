@@ -51,7 +51,7 @@
   and cols.balance_date -%}
 <th data-type="num" data-priority="6">
   {{- 'label.balance_on_date_var'|trans({
-    'date': cols.balance_date|date_format
+    'date': cols.balance_date|format_day
   }) -}}
 </th>
 {%- endif -%}

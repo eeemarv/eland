@@ -47,7 +47,7 @@
             ~ 'EUR '
             ~ u.amount|replace({'.': ','})
             ~ '\n'
-            ~ u.last_created_at|datetime_format
+            ~ u.last_created_at|format_min
           -%}
           {%- if u.is_paid -%}
           <span class="label label-success" title="{{- title -}}">

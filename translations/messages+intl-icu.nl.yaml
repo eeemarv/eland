@@ -336,6 +336,7 @@ label:
   email: E-mail
   email_tag: E-mail tag
   enabled: Aan
+  event: Event
   event_date: Agendadatum
   example: Voorbeeld
   exclude_counterparties: Exclusief Tegenpartijen
@@ -363,6 +364,7 @@ label:
   image_upload: Afbeelding opladen
   images_remove: Afbeeldingen verwijderen
   in: In
+  ip: IP
   keep_after_date: Behoud na Datum
   last_edit_at: Aangepast
   last_login: Laatst Ingelogd

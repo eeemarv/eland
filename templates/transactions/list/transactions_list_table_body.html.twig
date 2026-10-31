@@ -42,7 +42,7 @@
 		</td>
 
 		<td>
-			{{- t.created_at|datetime_format -}}
+			{{- t.created_at|format_min -}}
 		</td>
 
     {%- if (uid and uid == t.id_to) or not uid -%}

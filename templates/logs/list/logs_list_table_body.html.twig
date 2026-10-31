@@ -1,0 +1,49 @@
+{%- for l in logs -%}
+
+	<tr>
+		<td>
+      {{- l.ts|format_sec -}}
+    </td>
+
+		<td>
+		  {{- l.type -}}
+		</td>
+
+		<td>
+		  {{- l.ip -}}
+		</td>
+
+    {%- if l.user_schema is null 
+      or  l.user_id is null -%}
+      <td>
+        ****
+      </td>
+    {%- elseif l.user_schema != schema -%}
+      <td class="bg-warning">
+        {%- if remote_user_ary[l.user_schema][l.user_id] is defined -%}
+          {%- set ru = remote_user_ary[l.user_schema][l.user_id] -%}
+          {{- ru.code ?? '***' }} {{ ru.name -}}
+        {%- else -%}
+          ****
+        {%- endif -%}
+      </td>
+    {%- else -%}
+      {%- set u_class = 
+        is_new(l) ? ' class="bg-success"' :
+        is_leaving(l) ? ' class="bg-danger"' :
+        is_intersystem(l) ? ' class="bg-warning"' :
+        is_pre_active(l) ? ' class="bg-inactive"' :
+        is_post_active(l) ? ' class="bg-info"' : ''
+      -%}
+      <td{{- u_class|raw -}}>
+        <a href="{{- path('users_show', {}|pp(id: l.user_id)) -}}">
+          {{- l.code ?? '***' }} {{ l.name -}}
+        </a>
+      </td>
+    {%- endif -%}
+
+    <td>
+      {{- l.event -}}
+    </td>
+	</tr>
+{%- endfor -%}

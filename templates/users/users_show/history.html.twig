@@ -11,7 +11,7 @@
       {%- if user.created_at is empty -%}
         <twig:ux:icon name="lucide:x" class="text-bold"/>
       {%- else -%}
-        {{- user.created_at|datetime_format -}}
+        {{- user.created_at|format_min -}}
       {%- endif -%}
     </dd>
     <dt>
@@ -21,7 +21,7 @@
       {%- if user.activated_at is empty -%}
         <twig:ux:icon name="lucide:x" class="text-bold"/>
       {%- else -%}
-        {{- user.activated_at|datetime_format -}}
+        {{- user.activated_at|format_min -}}
       {%- endif -%}
     </dd>
     <dt>
@@ -31,7 +31,7 @@
       {%- if user.last_login is empty -%}
         <twig:ux:icon name="lucide:x" class="text-bold"/>
       {%- else -%}
-        {{- last_login|datetime_format -}}
+        {{- last_login|format_min -}}
       {%- endif -%}
     </dd>
   {%- endblock dl -%}
