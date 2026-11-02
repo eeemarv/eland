@@ -3,7 +3,7 @@
 {%- set pag = {'start': 0, 'limit':pag_params.p.limit} -%}
 
 <th data-priority="1">
-  <a href="{{- path('mollie_payments', pag_params|merge({
+  <a href="{{- path('mollie_payments', all_params|merge({
     's': {
       'order_by': 'amount',
       'asc': asc ? '0' : '1',
@@ -24,7 +24,7 @@
 </th>
 
 <th data-priority="1">
-  <a href="{{- path('mollie_payments', pag_params|merge({
+  <a href="{{- path('mollie_payments', all_params|merge({
     's': {
       'order_by': 'description',
       'asc': asc ? '0' : '1',
@@ -45,7 +45,7 @@
 </th>
 
 <th data-priority="2">
-  <a href="{{- path('mollie_payments', pag_params|merge({
+  <a href="{{- path('mollie_payments', all_params|merge({
     's': {
       'order_by': 'code',
       'asc': asc ? '0' : '1',
@@ -70,7 +70,7 @@
 </th>
 
 <th data-priority="4">
-  <a href="{{- path('mollie_payments', pag_params|merge({
+  <a href="{{- path('mollie_payments', all_params|merge({
     's': {
       'order_by': 'created_at',
       'asc': asc ? '0' : '1',

@@ -10,7 +10,7 @@
 {%- endif -%}
 
 <th data-priority="1">
-  <a href="{{- path('transactions', pag_params|merge({
+  <a href="{{- path('transactions', all_params|merge({
     's': {
       'order_by': 'description',
       'asc': asc ? '0' : '1',
@@ -30,7 +30,7 @@
 </th>
 
 <th data-priority="1">
-  <a href="{{- path('transactions', pag_params|merge({
+  <a href="{{- path('transactions', all_params|merge({
     's': {
       'order_by': 'amount',
       'asc': asc ? '0' : '1',
@@ -51,7 +51,7 @@
 </th>
 
 <th data-priority="2">
-  <a href="{{- path('transactions', pag_params|merge({
+  <a href="{{- path('transactions', all_params|merge({
     's': {
       'order_by': 'created_at',
       'asc': asc ? '0' : '1',
@@ -80,7 +80,7 @@
 {%- else -%}
 
   <th data-priority="3">
-    <a href="{{- path('transactions', pag_params|merge({
+    <a href="{{- path('transactions', all_params|merge({
       's': {
         'order_by': 'from_code',
         'asc': asc ? '0' : '1',
@@ -101,7 +101,7 @@
   </th>
 
   <th data-priority="3">
-    <a href="{{- path('transactions', pag_params|merge({
+    <a href="{{- path('transactions', all_params|merge({
       's': {
         'order_by': 'to_code',
         'asc': asc ? '0' : '1',

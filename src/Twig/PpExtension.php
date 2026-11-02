@@ -56,14 +56,42 @@ class PpExtension
 		return false;
 	}
 
+  private function filter_empty(
+    array $params
+  ):array
+  {
+    foreach ($params as $key => $value) 
+    {
+      if (is_array($value)) 
+      {
+        $params[$key] = $this->filter_empty($value);
+        if (empty($params[$key])) 
+        {
+          unset($params[$key]);
+        }
+      } 
+      else if ($value === null || $value === '') 
+      {
+        unset($params[$key]);
+      }
+    }
+    return $params;
+  }
+
   #[AsTwigFilter(name: 'pp')]
   public function pp(
     array $params,
     int|null $id = null,
     string|null $role_short = null,
     string|null $status = null,
+    bool $filter_empty = true,
   ):array
   {
+    if ($filter_empty && count($params))
+    {
+      $params = $this->filter_empty($params);       
+    }
+
     return [
       ...$params,
       ...$this->pp->ary(),

@@ -53,8 +53,10 @@ class ContactsController extends AbstractController
     $filter_form = $this->createForm(ContactsFilterType::class, $filter_command, $filter_form_options);
     $filter_form->handleRequest($request);
 
-    $f_params = $request->query->all('f');
-    $filter_form_error = isset($f_params['user']) && !isset($filter_command->user);
+    // $f_params = $request->query->all('f');
+    // $filter_form_error = isset($f_params['user']) && !isset($filter_command->user);
+
+    $filter_form_error = $filter_form->isSubmitted() && !$filter_form->isValid();
 
     $intersystem_enabled = $config_service->get_bool(
       config_id: 'intersystem.enabled',

@@ -10,7 +10,7 @@
 {%- endif -%}
 
 <th data-priority="1">
-  <a href="{{- path('contacts', pag_params|merge({
+  <a href="{{- path('contacts', all_params|merge({
     's': {
       'order_by': 'abbrev',
       'asc': asc ? '0' : '1',
@@ -31,7 +31,7 @@
 </th>
 
 <th data-priority="1">
-  <a href="{{- path('contacts', pag_params|merge({
+  <a href="{{- path('contacts', all_params|merge({
     's': {
       'order_by': 'value',
       'asc': asc ? '0' : '1',
@@ -51,7 +51,7 @@
 </th>
 
 <th data-priority="2">
-  <a href="{{- path('contacts', pag_params|merge({
+  <a href="{{- path('contacts', all_params|merge({
     's': {
       'order_by': 'code',
       'asc': asc ? '0' : '1',
@@ -71,7 +71,7 @@
 </th>
 
 <th data-priority="3">
-  <a href="{{- path('contacts', pag_params|merge({
+  <a href="{{- path('contacts', all_params|merge({
     's': {
       'order_by': 'comments',
       'asc': asc ? '0' : '1',
@@ -91,7 +91,7 @@
 </th>
 
 <th data-priority="3">
-  <a href="{{- path('contacts', pag_params|merge({
+  <a href="{{- path('contacts', all_params|merge({
     's': {
       'order_by': 'access',
       'asc': asc ? '0' : '1',

@@ -3,7 +3,7 @@
 {%- set pag = {'start': 0, 'limit':pag_params.p.limit} -%}
 
 <th data-priority="1">
-  <a href="{{- path('logs', pag_params|merge({
+  <a href="{{- path('logs', all_params|merge({
     's': {
       'order_by': 'ts',
       'asc': asc ? '0' : '1',
@@ -24,7 +24,7 @@
 </th>
 
 <th data-priority="8">
-  <a href="{{- path('logs', pag_params|merge({
+  <a href="{{- path('logs', all_params|merge({
     's': {
       'order_by': 'type',
       'asc': asc ? '0' : '1',
@@ -45,7 +45,7 @@
 </th>
 
 <th data-priority="9">
-  <a href="{{- path('logs', pag_params|merge({
+  <a href="{{- path('logs', all_params|merge({
     's': {
       'order_by': 'ip',
       'asc': asc ? '0' : '1',
@@ -65,7 +65,7 @@
 </th>
 
 <th data-priority="3">
-  <a href="{{- path('logs', pag_params|merge({
+  <a href="{{- path('logs', all_params|merge({
     's': {
       'order_by': 'code',
       'asc': asc ? '0' : '1',
@@ -87,7 +87,7 @@
 </th>
 
 <th data-priority="1">
-  <a href="{{- path('logs', pag_params|merge({
+  <a href="{{- path('logs', all_params|merge({
     's': {
       'order_by': 'event',
       'asc': asc ? '0' : '1',

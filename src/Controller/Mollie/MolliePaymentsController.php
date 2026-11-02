@@ -111,8 +111,10 @@ class MolliePaymentsController extends AbstractController
 
     $filter_form->handleRequest($request);
 
-    $f_params = $request->query->all('f');
-    $filter_form_error = isset($f_params['user']) && !isset($filter_command->user);
+    //$f_params = $request->query->all('f');
+    //$filter_form_error = isset($f_params['user']) && !isset($filter_command->user);
+
+    $filter_form_error = $filter_form->isSubmitted() && !$filter_form->isValid();
 
     $pag = $request->query->all('p');
     $sort = $request->query->all('s');
@@ -352,11 +354,17 @@ class MolliePaymentsController extends AbstractController
 
     $filtered = isset($filter_command->q)
       || isset($filter_command->user)
-      || isset($filter_command->status)
+      || (isset($filter_command->status) && $filter_command->status)
       || isset($filter_command->from_date)
       || isset($filter_command->to_date);
 
     $filter_collapse = !($filtered || $filter_form_error);
+
+    error_log('***** filter command ****');
+    error_log(json_encode($filter_command));
+    error_log('filtered ' . ($filtered ? 'true' : 'false'));
+    error_log('filter_form_error ' . ($filter_form_error ? 'true' : 'false'));
+    error_log('filter_collapse ' . ($filter_collapse ? 'true' : 'false'));
 
     return $this->render('mollie/mollie_payments.html.twig', [
       'sel'               => $sel,
