@@ -231,7 +231,6 @@ class TransactionsController extends AbstractController
     $filter_collapse = !$filtered;
 
     $transactions = $fetched_data['transactions'];
-    $inter_ary = $fetched_data['inter_ary'];
     $count_ary = $fetched_data['count_ary'];
 
     return $this->render('transactions/transactions_list.html.twig', [
@@ -246,7 +245,6 @@ class TransactionsController extends AbstractController
       'bulk_actions_enabled' => isset($bulk_service_stuff_form),
       'pag_params'            => $pag_params,
       'transactions'          => $transactions,
-      'inter_ary'             => $inter_ary,
       'count_ary'             => $count_ary,
     ]);
   }

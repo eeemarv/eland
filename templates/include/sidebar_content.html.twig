@@ -4,12 +4,12 @@
     {%- if pp_role() == 'guest' and schema != su_schema() -%}
     <li class="active-group">
       {%- set back = app.session.get('last:' ~ su_schema()) -%}
-      {%- set back_link = back.link ??
+      {%- set back_path = back?.path ??
         path(route|fallback_route(su_schema()), {
         'schema': su_schema(),
         'role_short': 'u'})
       -%}
-      <a href="{{- back_link -}}">
+      <a href="{{- back_path -}}">
         <twig:ux:icon name="lucide:undo-2"/>
         &nbsp;
         {{- 'btn.back_to_system'|trans({

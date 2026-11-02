@@ -308,6 +308,7 @@ label:
   bg_color: Achtergrondkleur
   birthdate: Geboortedatum
   canceled: Geannuleerd
+  canceled_at: Annulatie Tijdstip
   captcha: Anti-spam verificatiecode
   category: Categorie
   change: Verandering
@@ -316,6 +317,7 @@ label:
   comment: Commentaar
   comments: Commentaar
   confirmed: Bevestigd
+  confirmed_at: Bevestiging Tijdstip
   contacts: Contacten
   contact_type: Contact type
   content: Inhoud
@@ -392,19 +394,20 @@ label:
   new_users: Instappers
   news: Nieuws
   next: Volgende
-  not_defined: Niet bepaald
-  new_password: Nieuw paswoord
+  not_confirmed: Niet Bevestigd
+  not_defined: Niet Bepaald
+  new_password: Nieuw Paswoord
   off: Uit
   offer: Aanbod
   offers: Aanbod
   offers_and_wants: Vraag en Aanbod
   on: Aan
   optional: Optioneel
-  original_filename: Orginele bestandsnaam
+  original_filename: Orginele Bestandsnaam
   over_period: Over Periode
   out: Uit
   pending: In Afwachting
-  periodic_overview: Periodiek overzicht (e-mail)
+  periodic_overview: Periodiek Overzicht (e-mail)
   periodic_overview_en: Ontvangst periodieke overzichts email
   periodic_overview_short: Per. overzicht
   permissions_role: Rechten/rol
@@ -1937,8 +1940,12 @@ transactions_leaving_eq:
       richting van deze instelling.
 
 transactions_show:
-  title: >-
-    Transactie
+  title: Transactie
+  status: Type of Status Transactie
+  from_remote_account: >-
+    Initiërende account in het andere systeem
+  to_remote_account: >-
+    Bestemmingsaccount in het andere systeem
 
 users:
   admin_config: >-

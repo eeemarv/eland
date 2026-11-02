@@ -20,13 +20,13 @@
       {%- for sch, rlshrt in su_logins_role_short -%}
         <li{%- if sch == su_schema() %} class="active{%- if sch != schema -%}-group{%- endif -%}"{%- endif -%}>
           {%- set back = app.session.get('last:' ~ sch) -%}
-          {%- set back_link = back.link ??
+          {%- set back_path = back?.path ??
             path(route|fallback_route(sch), {
             'schema': sch,
             'role_short': 'u'})
           -%}
 
-          <a href="{{- back_link -}}">
+          <a href="{{- back_path -}}">
             {{- config_str('system.name', sch) -}}
           </a>
         </li>

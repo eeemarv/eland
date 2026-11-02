@@ -330,10 +330,10 @@ class MollieRepository
   ):array
   {
     $allowed_sort_cols = [
-      'amount'      => 'p',
-      'description' => 'r',
-      'code'        => 'u',
-      'created_at'  => 'p',
+      'amount'      => 'p.amount',
+      'description' => 'r.description',
+      'code'        => 'u.code',
+      'created_at'  => 'p.created_at',
     ];
 
     if (!isset($allowed_sort_cols[$order_by]))
@@ -343,7 +343,7 @@ class MollieRepository
       );
     }
 
-    $prefixed_order_by = $allowed_sort_cols[$order_by] . '.' . $order_by;
+    $real_order_by = $allowed_sort_cols[$order_by];
 
     $sql = [
       'where'     => [
@@ -438,7 +438,7 @@ class MollieRepository
         u.code, u.name,
         u.status, u.is_active, u.activated_at,
         u.is_leaving
-      order by ' . $prefixed_order_by . '
+      order by ' . $real_order_by . '
       ' . ($asc ? 'asc' : 'desc') . '
       limit :limit offset :offset',
       $sql['params'], $sql['types']);

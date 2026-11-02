@@ -1,0 +1,51 @@
+{%- if t.real_to -%}
+  <td class="bg-warning">
+    <div class="clearfix">
+      <div class="btn btn-default pull-left me-1">
+        <twig:ux:icon name="lucide:share-2"/>
+      </div>
+      <div>
+        <a href="{{- path('users_show', {}|pp(id: t.to_user.id)) -}}">
+          {{- t.to_user.code ?? '***' }}
+          {{ (t.to_user.remote_schema_active is defined) 
+          ? config_str('system.name', t.to_user.remote_schema_active) 
+          : t.to_user.name -}}           
+        </a>
+        <br>
+        {%- if t.to_user.remote is defined -%}
+          <a href="{{- path('users_show',{
+            'schema': t.to_user.remote.schema,
+            'os': schema,
+            'role_short': 'g',
+            'id': t.to_user.remote.user.id,
+          }) -}}">
+            {{- t.to_user.remote.user.code  ?? '***' }}
+            {{ t.to_user.remote.user.name -}}
+          </a>
+        {%- else -%}
+          {{- t.real_to -}}
+        {%- endif -%}
+      </div>
+    </div>
+  </td>
+{%- else -%}
+
+  {%- set u_class =
+    is_new(t.to_user) ? ' class="bg-success"' :
+    is_leaving(t.to_user) ? ' class="bg-danger"' :
+    is_intersystem(t.to_user) ? ' class="bg-warning"' :
+    is_pre_active(t.to_user) ? ' class="bg-inactive"' :
+    is_post_active(t.to_user) ? ' class="bg-info"' : ''
+  -%}
+  <td{{- u_class -}}>
+    {%- if t.to_user.is_active or pp_has_role('admin') -%}
+      <a href="{{- path('users_show', {}|pp(id: t.to_user.id)) -}}">
+        {{- t.to_user.code ?? '***' }}
+        {{ t.to_user.name -}}
+      </a>
+    {%- else -%}
+      {{- t.to_user.code ?? '***' }}
+      {{ t.to_user.name -}}
+    {%- endif -%}
+  </td>
+{%- endif -%}

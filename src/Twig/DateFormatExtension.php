@@ -3,9 +3,6 @@
 namespace App\Twig;
 
 use App\Service\DateFormatService;
-use DateTimeZone;
-use IntlDateFormatter;
-use RuntimeException;
 use Twig\Attribute\AsTwigFilter;
 use Twig\Attribute\AsTwigFunction;
 
@@ -55,7 +52,7 @@ class DateFormatExtension
 
   #[AsTwigFilter(name: 'format_day')]
   public function format_day(
-    string $timestamp,
+    string|null $timestamp,
   ):string|null
   {
     if (!isset($timestamp))
@@ -67,7 +64,7 @@ class DateFormatExtension
 
   #[AsTwigFilter(name: 'format_min')]
   public function format_min(
-    string $timestamp,
+    string|null $timestamp,
   ):string|null
   {
     if (!isset($timestamp))
@@ -79,7 +76,7 @@ class DateFormatExtension
 
   #[AsTwigFilter(name: 'format_sec')]
   public function format_sec(
-    string $timestamp,
+    string|null $timestamp,
   ):string|null
   {
     if (!isset($timestamp))

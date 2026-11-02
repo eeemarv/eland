@@ -379,6 +379,22 @@ class ContactRepository
     Schema $schema,
   ):array
   {
+    $allowed_sort_cols = [
+      'id'      => 'c.id',
+      'abbrev'  => 'tc.abbrev',
+      'value'   => 'c.value',
+      'code'    => 'u.code',
+      'comments' => 'c.comments',
+      'access'  => 'c.access',
+    ];
+
+    if (!isset($allowed_sort_cols[$order_by]))
+    {
+      throw new \Exception('Not allowed order_by ' . $order_by);
+    }
+
+    $real_order_by = $allowed_sort_cols[$order_by];
+
     $sql = [
       'where' => [
         'common' => '1 = 1',
@@ -488,7 +504,7 @@ class ContactRepository
       inner join ' . $schema->str() . '.users u
         on c.user_id = u.id
       where ' . $sql_where . '
-      order by ' . $order_by . ' ' .
+      order by ' . $real_order_by . ' ' .
       ($asc ? 'asc' : 'desc') . '
       limit :limit offset :offset';
 

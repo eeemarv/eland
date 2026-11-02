@@ -80,7 +80,7 @@
 
     {{- 'mollie_payments.col.created_at'|trans -}}
     &nbsp;
-    {%- if order_by != 'amount' -%}
+    {%- if order_by != 'created_at' -%}
       <twig:ux:icon name="lucide:chevrons-up-down" class="text-warning"/>
     {%- elseif asc -%}
       <twig:ux:icon name="lucide:chevron-up"/>

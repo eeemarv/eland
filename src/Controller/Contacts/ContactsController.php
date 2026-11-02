@@ -149,7 +149,7 @@ class ContactsController extends AbstractController
 
     $pag_start = (int) ($pag['start'] ?? 0);
     $pag_limit = (int) ($pag['limit'] ?? 25);
-    $sort_order_by = $sort['order_by'] ?? 'c.id';
+    $sort_order_by = $sort['order_by'] ?? 'id';
     $sort_asc = isset($sort['asc']) && $sort['asc'] ? true : false;
 
     $pag_params = [

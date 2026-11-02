@@ -2,9 +2,9 @@
 
 namespace App\Repository;
 
-use App\Command\Transactions\TransactionsFilterCommand;
 use App\DTO\Schema;
 use App\Service\SystemsService;
+use DateTimeImmutable;
 use Deprecated;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection as Db;
@@ -57,30 +57,37 @@ class TransactionRepository
     Schema $schema,
   ):array|false
 	{
+    // only fetch from actively connected intersystems
+    $inter_ary = $this->systems_service->get_inter_ary(
+      schema: $schema->str(),
+    );
+
 		$stmt = $this->db->prepare('with o_transactions as (
         select *,
           lag(id) over (order by id asc) as prev_id,
           lead(id) over (order by id asc) as next_id
         from ' . $schema->str() . '.transactions)
       select ot.*, ot.prev_id, ot.next_id,
-        fu.code as from_code,
-        fu.name as from_name,
-        fu.remote_schema as from_remote_schema,
-        fu.remote_email as from_remote_email,
-        tu.code as to_code,
-        tu.name as to_name,
-        tu.remote_schema as to_remote_schema,
-        tu.remote_email as to_remote_email,
-        case
-          when fu.status in (1,2) or fu.is_active
-          then true
-          else false
-          end as from_is_active,
-        case
-          when tu.status in (1,2) or tu.is_active
-          then true
-          else false
-          end as to_is_active
+        jsonb_build_object(
+          \'id\', fu.id,
+          \'name\', fu.name,
+          \'code\', fu.code,
+          \'is_active\', fu.is_active,
+          \'activated_at\', fu.activated_at,
+          \'is_leaving\', fu.is_leaving,
+          \'remote_schema\', fu.remote_schema,
+          \'remote_email\', fu.remote_email
+        ) as from_user,
+        jsonb_build_object(
+          \'id\', tu.id,
+          \'name\', tu.name,
+          \'code\', tu.code,
+          \'is_active\', tu.is_active,
+          \'activated_at\', tu.activated_at,
+          \'is_leaving\', tu.is_leaving,
+          \'remote_schema\', tu.remote_schema,
+          \'remote_email\', tu.remote_email
+        ) as to_user
       from o_transactions ot
       left join ' . $schema->str() . '.users fu
         on fu.id = ot.id_from
@@ -89,7 +96,103 @@ class TransactionRepository
 			where ot.id = :id');
 		$stmt->bindValue('id', $id, Types::INTEGER);
 		$res = $stmt->executeQuery();
-		return $res->fetchAssociative();
+		$transaction = $res->fetchAssociative();
+
+    $from_user = json_decode($transaction['from_user'], true);
+    $to_user = json_decode($transaction['to_user'], true);
+
+    if (isset($from_user['remote_schema'])
+      && isset($inter_ary[$from_user['remote_schema']]))
+    {
+      $from_user['remote_schema_active'] = $from_user['remote_schema'];
+    }
+
+    if (isset($to_user['remote_schema'])
+      && isset($inter_ary[$to_user['remote_schema']]))
+    {
+      $to_user['remote_schema_active'] = $to_user['remote_schema'];
+    }
+
+    $transaction = [
+      ...$transaction,
+      'from_user' => $from_user,
+      'to_user' => $to_user,
+    ];
+
+    if (isset($to_user['remote_schema_active']) 
+      && isset($transaction['remote_ref'])
+    )
+    {
+      $i_to_schema = $to_user['remote_schema'];
+      $i_stmt_to =  $this->db->prepare('select t.id,
+        jsonb_build_object(
+          \'id\', tu.id,
+          \'name\', tu.name,
+          \'code\', tu.code,
+          \'is_active\', tu.is_active,
+          \'activated_at\', tu.activated_at,
+          \'is_leaving\', tu.is_leaving
+        ) as user
+        from ' . $i_to_schema . '.transactions t
+          inner join ' . $i_to_schema . '.users fu
+            on fu.id = t.id_from
+          inner join ' . $i_to_schema . '.users tu
+            on tu.id = t.id_to
+        where t.remote_ref = :remote_ref
+          and fu.remote_schema = :schema
+          and tu.remote_schema is null
+          and tu.remote_email is null');
+      $i_stmt_to->bindValue('remote_ref', $transaction['remote_ref'], Types::GUID);
+      $i_stmt_to->bindValue('schema', $schema->str(), Types::STRING);
+
+      $res = $i_stmt_to->executeQuery();
+      $row = $res->fetchAssociative();
+      if ($row !== false)
+      {
+        $transaction['to_user']['remote'] = [
+          'id'  => $row['id'],
+          'user'  => json_decode($row['user'], true)
+        ];
+      }
+    }
+    else if (isset($from_user['remote_schema_active']) 
+      && isset($transaction['remote_ref'])
+    )
+    {
+      $i_from_schema = $from_user['remote_schema'];
+      $i_stmt_from =  $this->db->prepare('select t.id,
+        jsonb_build_object(
+          \'id\', fu.id,
+          \'name\', fu.name,
+          \'code\', fu.code,
+          \'is_active\', fu.is_active,
+          \'activated_at\', fu.activated_at,
+          \'is_leaving\', fu.is_leaving
+        ) as user
+        from ' . $i_from_schema . '.transactions t
+          inner join ' . $i_from_schema . '.users fu
+            on fu.id = t.id_from
+          inner join ' . $i_from_schema . '.users tu
+            on tu.id = t.id_to
+        where t.remote_ref = :remote_ref
+          and tu.remote_schema = :schema
+          and fu.remote_schema is null
+          and fu.remote_email is null');
+      $i_stmt_from->bindValue('remote_ref', $transaction['remote_ref'], Types::GUID);
+      $i_stmt_from->bindValue('schema', $schema->str(), Types::STRING);
+
+      $res = $i_stmt_from->executeQuery();
+      $row = $res->fetchAssociative();
+      if ($row !== false)
+      {
+        $transaction['from_user']['remote'] = [
+          'id'  => $row['id'],
+          'user'  => json_decode($row['user'], true),
+        ];
+      }
+    }
+
+    return $transaction;
 	}
 
   public function get_by_remote_ref(
@@ -126,38 +229,6 @@ class TransactionRepository
     return $res->fetchAssociative();
   }
 
-  #[Deprecated()]
-	public function get_next_id(
-    int $id,
-    Schema $schema,
-  ):int|false
-	{
-		$stmt = $this->db->prepare('select id
-			from ' . $schema->str() . '.transactions
-			where id > :id
-			order by id asc
-			limit 1');
-		$stmt->bindValue('id', $id, Types::INTEGER);
-		$res = $stmt->executeQuery();
-		return $res->fetchOne();
-	}
-
-  #[Deprecated()]
-	public function get_prev_id(
-    int $id,
-    Schema $schema,
-  ):int|false
-	{
-		$stmt = $this->db->prepare('select id
-			from ' . $schema->str() . '.transactions
-			where id < :id
-			order by id desc
-			limit 1');
-		$stmt->bindValue('id', $id, Types::INTEGER);
-		$res = $stmt->executeQuery();
-		return $res->fetchOne();
-	}
-
 	public function update_description(
     int $id,
     string $description,
@@ -175,7 +246,7 @@ class TransactionRepository
 	}
 
   public function get_activity_for_each_user(
-    \DateTimeImmutable $since,
+    DateTimeImmutable $since,
     int|null $exclude_account_id,
     Schema $schema,
   ):array
@@ -222,8 +293,8 @@ class TransactionRepository
     int|null $from_account_id,
     int|null $to_account_id,
     string|null $account_logic,
-    \DateTimeImmutable|null $from_date,
-    \DateTimeImmutable|null $to_date,
+    DateTimeImmutable|null $from_date,
+    DateTimeImmutable|null $to_date,
     array|null $service_stuff_ary,
     int $start,
     int $limit,
@@ -233,11 +304,11 @@ class TransactionRepository
   ):array
   {
     $allowed_sort_cols = [
-      'amount'      => 't',
-      'description' => 't',
-      'to_code'     => '',
-      'from_code'   => '',
-      'created_at'  => 't',
+      'amount'      => 't.amount',
+      'description' => 't.description',
+      'to_code'     => 'tu.code',
+      'from_code'   => 'fu.code',
+      'created_at'  => 't.created_at',
     ];
 
     if (!isset($allowed_sort_cols[$order_by]))
@@ -245,13 +316,7 @@ class TransactionRepository
       throw new \Exception('Not allowed order_by ' . $order_by);
     }
 
-    $prefixed_order_by = '';
-    if ($allowed_sort_cols[$order_by])
-    {
-      $prefixed_order_by .= $allowed_sort_cols[$order_by];
-      $prefixed_order_by .= '.';
-    }
-    $prefixed_order_by .= $order_by;
+    $real_order_by = $allowed_sort_cols[$order_by];
 
     $sql = [
       'where'     => [
@@ -342,113 +407,188 @@ class TransactionRepository
 
     $sql_where = implode(' and ', $sql['where']);
 
-    $transactions = [];
-
     $query = 'select t.*,
-      fu.name as from_name,
-      fu.code as from_code,
-      case
-        when fu.status in (1,2) or fu.is_active
-          then true
-          else false
-        end as from_is_active,
-      case
-        when tu.status in (1,2) or tu.is_active
-          then true
-          else false
-        end as to_is_active,
-      fu.remote_schema as from_remote_schema,
-      fu.remote_email as from_remote_email,
-      tu.name as to_name,
-      tu.code as to_code,
-      tu.remote_schema as to_remote_schema,
-      tu.remote_email as to_remote_email
+      jsonb_build_object(
+        \'id\', fu.id,
+        \'name\', fu.name,
+        \'code\', fu.code,
+        \'is_active\', fu.is_active,
+        \'activated_at\', fu.activated_at,
+        \'is_leaving\', fu.is_leaving,
+        \'remote_schema\', fu.remote_schema,
+        \'remote_email\', fu.remote_email
+      ) as from_user,
+      jsonb_build_object(
+        \'id\', tu.id,
+        \'name\', tu.name,
+        \'code\', tu.code,
+        \'is_active\', tu.is_active,
+        \'activated_at\', tu.activated_at,
+        \'is_leaving\', tu.is_leaving,
+        \'remote_schema\', tu.remote_schema,
+        \'remote_email\', tu.remote_email
+      ) as to_user
       from ' . $schema->str() . '.transactions t
         inner join ' . $schema->str() . '.users fu
           on fu.id = t.id_from
         inner join ' . $schema->str() . '.users tu
           on tu.id = t.id_to
       where ' . $sql_where . '
-      order by ' . $prefixed_order_by .
+      order by ' . $real_order_by .
       ($asc ? ' asc' : ' desc') . '
       limit :limit offset :offset';
 
     $res = $this->db->executeQuery($query,
       $sql['params'], $sql['types']);
 
+    $inter_ary = $this->systems_service->get_inter_ary(
+      schema: $schema->str(),
+    );
     $transactions = [];
-    $inter_fetch = [];
-    $inter_ary = [];
+    $from_inter_ref = [];
+    $to_inter_ref = [];
+    $remote_ref_trans_ids = [];
 
     while ($row = $res->fetchAssociative())
     {
-      $transactions[$row['id']] = $row;
+      $from_user = json_decode($row['from_user'], true);
+      $to_user = json_decode($row['to_user'], true);
+
+      if (isset($from_user['remote_schema'])
+        && isset($inter_ary[$from_user['remote_schema']]))
+      {
+        $from_user['remote_schema_active'] = $from_user['remote_schema'];
+      }
+
+      if (isset($to_user['remote_schema'])
+        && isset($inter_ary[$to_user['remote_schema']]))
+      {
+        $to_user['remote_schema_active'] = $to_user['remote_schema'];
+      }
+
+      $transactions[$row['id']] = [
+        ...$row,
+        'from_user' => $from_user,
+        'to_user' => $to_user,
+      ];
+
       if (!isset($row['remote_ref']))
       {
         continue;
       }
-      if (isset($row['from_remote_schema']))
+
+      $remote_ref_trans_ids[$row['remote_ref']] = $row['id'];
+  
+      if (isset($from_user['remote_schema']))
       {
-        if (!isset($inter_fetch[$row['from_remote_schema']]))
+        if (!isset($from_inter_ref[$from_user['remote_schema']]))
         {
-          $inter_fetch[$row['from_remote_schema']] = [];
+          $from_inter_ref[$from_user['remote_schema']] = [];
         }
-        $inter_fetch[$row['from_remote_schema']][] = $row['remote_ref'];
+        $from_inter_ref[$from_user['remote_schema']][] = $row['remote_ref'];
         continue;
       }
-      if (isset($row['to_remote_schema']))
+
+      if (isset($to_user['remote_schema']))
       {
-        if (!isset($inter_fetch[$row['to_remote_schema']]))
+        if (!isset($to_inter_ref[$to_user['remote_schema']]))
         {
-          $inter_fetch[$row['to_remote_schema']] = [];
+          $to_inter_ref[$to_user['remote_schema']] = [];
         }
-        $inter_fetch[$row['to_remote_schema']][] = $row['remote_ref'];
+        $to_inter_ref[$to_user['remote_schema']][] = $row['remote_ref'];
         continue;
       }
     }
 
-    foreach ($inter_fetch as $i_schema => $remote_ref_ary)
+    foreach ($to_inter_ref as $to_schema => $remote_ref_ary)
     {
-      if (!$this->systems_service->has_schema($i_schema))
+      if (!isset($inter_ary[$to_schema]))
       {
+        // This system is not actively connected
         continue;
       }
-      $i_query = 'select t.*,
-        fu.name as from_name,
-        fu.code as from_code,
-        fu.remote_schema as from_remote_schema,
-        case
-          when fu.status in (1,2) or fu.is_active
-          then true
-          else false
-          end as from_is_active,
-        case
-          when tu.status in (1,2) or tu.is_active
-          then true
-          else false
-          end as to_is_active,
-        tu.name as to_name,
-        tu.code as to_code,
-        tu.remote_schema as to_remote_schema
-        from ' . $i_schema . '.transactions t
-          inner join ' . $i_schema . '.users fu
+
+      $to_query = 'select t.id as transaction_id, 
+        t.remote_ref,
+        jsonb_build_object(
+          \'id\', tu.id,
+          \'name\', tu.name,
+          \'code\', tu.code,
+          \'is_active\', tu.is_active,
+          \'activated_at\', tu.activated_at,
+          \'is_leaving\', tu.is_leaving
+        ) as user
+        from ' . $to_schema . '.transactions t
+          inner join ' . $to_schema . '.users fu
             on fu.id = t.id_from
-          inner join ' . $i_schema . '.users tu
+          inner join ' . $to_schema . '.users tu
             on tu.id = t.id_to
-        where t.remote_ref in (:remote_ref_ary)';
-      $res = $this->db->executeQuery($i_query, [
+        where t.remote_ref in (:remote_ref_ary)
+          and fu.remote_schema = :schema
+          and tu.remote_schema is null
+          and tu.remote_email is null';
+      $res = $this->db->executeQuery($to_query, [
           'remote_ref_ary'  => $remote_ref_ary,
+          'schema'  => $schema->str(),
         ], [
           'remote_ref_ary'  => ArrayParameterType::STRING,
+          'schema'  => Types::STRING,
         ]
       );
       while ($row = $res->fetchAssociative())
       {
-        if (!isset($inter_ary[$i_schema]))
-        {
-          $inter_ary[$i_schema] = [];
-        }
-        $inter_ary[$i_schema][$row['remote_ref']] = $row;
+        $t_id = $remote_ref_trans_ids[$row['remote_ref']];
+        $transactions[$t_id]['to_user']['remote'] = [
+          ...$row,
+          'user'  => json_decode($row['user'], true),
+          'schema'  => $to_schema,
+        ];
+      }
+    }
+
+    foreach ($from_inter_ref as $from_schema => $remote_ref_ary)
+    {
+      if (!isset($inter_ary[$from_schema]))
+      {
+        // This system is not actively connected
+        continue;
+      }
+
+      $from_query = 'select t.id, 
+        t.remote_ref,
+        jsonb_build_object(
+          \'id\', fu.id,
+          \'name\', fu.name,
+          \'code\', fu.code,
+          \'is_active\', fu.is_active,
+          \'activated_at\', fu.activated_at,
+          \'is_leaving\', fu.is_leaving
+        ) as user
+        from ' . $from_schema . '.transactions t
+          inner join ' . $from_schema . '.users fu
+            on fu.id = t.id_from
+          inner join ' . $from_schema . '.users tu
+            on tu.id = t.id_to
+        where t.remote_ref in (:remote_ref_ary)
+          and tu.remote_schema = :schema
+          and fu.remote_schema is null
+          and fu.remote_email is null';
+      $res = $this->db->executeQuery($from_query, [
+          'remote_ref_ary'  => $remote_ref_ary,
+          'schema'  => $schema->str(),
+        ], [
+          'remote_ref_ary'  => ArrayParameterType::STRING,
+          'schema'  => Types::STRING,
+        ]
+      );
+      while ($row = $res->fetchAssociative())
+      {
+        $t_id = $remote_ref_trans_ids[$row['remote_ref']];
+        $transactions[$t_id]['from_user']['remote'] = [
+          ...$row,
+          'user'  => json_decode($row['user'], true),
+          'schema'  => $from_schema,
+        ];
       }
     }
 
@@ -549,7 +689,6 @@ class TransactionRepository
 
     return [
       'transactions'  => $transactions,
-      'inter_ary' => $inter_ary,
       'count_ary' => $count_ary,
     ];
   }

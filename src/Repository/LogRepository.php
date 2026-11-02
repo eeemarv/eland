@@ -47,6 +47,21 @@ class LogRepository
     Schema $schema,
   ):array
   {
+    $allowed_sort_cols = [
+      'ts'      => 'ts',
+      'type'  => 'type',
+      'ip'   => 'ip',
+      'code'    => 'code',
+      'event' => 'event',
+    ];
+
+    if (!isset($allowed_sort_cols[$order_by]))
+    {
+      throw new \Exception('Not allowed order_by ' . $order_by);
+    }
+
+    $real_order_by = $allowed_sort_cols[$order_by];
+
     $schema_str = $schema->str();
 
     $sql = [];
@@ -106,7 +121,7 @@ class LogRepository
       left join ' . $schema_str . '.users u
         on (u.id = l.user_id and l.user_schema = :schema)
       where ' . $sql_where;
-    $query .= ' order by ' . $order_by . ' ';
+    $query .= ' order by ' . $real_order_by . ' ';
     $query .= $asc ? 'asc ' : 'desc ';
     $query .= 'limit :limit offset :offset';
 

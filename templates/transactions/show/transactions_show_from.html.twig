@@ -1,0 +1,54 @@
+{%- if transaction.real_from -%}    
+  <dd class="bg-warning">
+    <div class="clearfix">
+      <div class="btn btn-default pull-left me-1">
+        <twig:ux:icon name="lucide:share-2"/>
+      </div>
+      <div>
+        <a href="{{- path('users_show', {}|pp(id: transaction.from_user.id)) -}}">
+          {{- transaction.from_user.code ?? '***' }}
+          {{ (transaction.from_user.remote_schema_active is defined) 
+          ? config_str('system.name', transaction.from_user.remote_schema_active) 
+          : transaction.from_user.name -}}           
+        </a>
+      </div>
+    </div>
+  </dd>
+  <dt>
+    {{- 'transactions_show.from_remote_account'|trans -}}
+  </dt>
+  <dd class="bg-warning">
+    {%- if transaction.from_user.remote is defined -%}
+      <a href="{{- path('users_show',{
+        'schema': transaction.from_user.remote_schema,
+        'os': schema,
+        'role_short': 'g',
+        'id': transaction.from_user.remote.user.id,
+      }) -}}">
+        {{- transaction.from_user.remote.user.code  ?? '***' }}
+        {{ transaction.from_user.remote.user.name -}}
+      </a>
+    {%- else -%}
+      {{- transaction.real_from -}}
+    {%- endif -%}
+  </dd>
+{%- else -%}
+  {%- set u_class =
+    is_new(transaction.from_user) ? ' class="bg-success"' :
+    is_leaving(transaction.from_user) ? ' class="bg-danger"' :
+    is_intersystem(transaction.from_user) ? ' class="bg-warning"' :
+    is_pre_active(transaction.from_user) ? ' class="bg-inactive"' :
+    is_post_active(transaction.from_user) ? ' class="bg-info"' : ''
+  -%}
+  <dd{{- u_class -}}>
+    {%- if transaction.from_user.is_active or pp_has_role('admin') -%}
+      <a href="{{- path('users_show', {}|pp(id: transaction.from_user.id)) -}}">
+        {{- transaction.from_user.code ?? '***' }}
+        {{ transaction.from_user.name -}}
+      </a>
+    {%- else -%}
+      {{- transaction.from_user.code ?? '***' }}
+      {{ transaction.from_user.name -}}
+    {%- endif -%}
+  </td>
+{%- endif -%}

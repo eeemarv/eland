@@ -1,0 +1,112 @@
+{%- import 'macro/lbl.html.twig' as l -%}
+
+{%- set t_panel_class =
+  transaction.is_canceled ? 'inactive' :
+  transaction.is_expired ? 'inactive' :
+  not transaction.is_confirmed ? 'info' :
+  transaction.real_to or transaction.real_from or transaction.remote_ref ? 'warning' :
+  'default'
+-%}
+
+<div class="printview panel panel-{{- t_panel_class -}}">
+  <div class="panel-heading">
+    <dl>
+      <dt>
+        {{- 'transactions_show.status'|trans -}}
+      </dt>
+      <dd>
+        {%- if transaction.is_canceled -%}
+          <div class="label label-default p-2">
+            {{- 'label.canceled'|trans -}}
+          </div>
+          <div class="mb-2"></div>          
+        {%- elseif transaction.is_expired -%}
+          <div class="label label-default p-2">
+            {{- 'label.expired'|trans -}}
+          </div>
+          <div class="mb-2"></div>
+        {%- elseif not transaction.is_confirmed -%}
+          <div class="label label-info p-2">
+            {{- 'label.not_confirmed'|trans -}}
+          </div>
+          <div class="mb-2"></div>
+        {%- elseif transaction.real_from or transaction.real_to -%}
+          <div class="label label-warning p-2">
+            {{- 'label.intersystem'|trans -}}
+          </div>
+          <div class="mb-2"></div>
+        {%- else -%}
+          <div class="label label-success p-2">
+            {{- 'label.confirmed'|trans -}}
+          </div>
+          <div class="mb-2"></div>
+        {%- endif -%}
+      </dd>
+      {%- if transaction.canceled_at is not null -%}
+        <dt>
+          {{- 'label.canceled_at'|trans  -}}
+        </dt>
+        <dd>
+          <div class="label label-default p-2">
+            {{- transaction.canceled_at|format_min }}
+          </div>
+          <div class="mb-2"></div>
+        </dd>
+      {%- elseif transaction.expires_at is not null -%}
+        <dt>
+          {{- 'label.expires_at'|trans  -}}
+        </dt>
+        <dd>
+          <div class="label label-info p-2">
+            {{- transaction.expires_at|format_min }}
+          </div>
+          <div class="mb-2"></div>
+        </dd>
+      {%- elseif transaction.confirmed_at is not null -%}
+        <dt>
+          {{- 'label.confirmed_at'|trans  -}}
+        </dt>
+        <dd>
+          <div class="label label-success p-2">
+            {{- transaction.confirmed_at|format_min }}
+          </div>
+          <div class="mb-2"></div>
+        </dd>
+      {%- endif -%}
+      <dt>
+        {{- 'label.time'|trans -}}
+      </dt>
+      <dd>
+        {{- transaction.created_at|format_min -}}
+      </dd>
+      <dt>
+        {{- 'label.description'|trans -}}
+      </dt>
+      <dd>
+        {{- transaction.description -}}
+      </dd>
+      {%- if config_bool('transactions.fields.service_stuff.enabled') -%}
+        <dt>
+          {{- 'label.service_stuff'|trans -}}
+        </dt>
+        <dd>
+          {{- l.btn(transaction.service_stuff ?? 'null_service_stuff') -}}
+        </dd>
+      {%- endif -%}
+      <dt>
+        {{- 'label.amount'|trans -}}
+      </dt>
+      <dd>
+        {{- transaction.amount }} {{ config_str('transactions.currency.name') -}}
+      </dd>
+      <dt>
+        {{- 'label.from_account'|trans }}
+      </dt>
+      {%- include 'transactions/show/transactions_show_from.html.twig' -%}
+      <dt>
+        {{- 'label.to_account'|trans }}
+      </dt>
+      {%- include 'transactions/show/transactions_show_to.html.twig' -%}
+    </dl>
+  </div>
+</div>

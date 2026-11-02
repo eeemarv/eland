@@ -11,14 +11,11 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 class SystemsService
 {
 	const CACHE_KEY = 'systems';
-	const CACHE_TTL = 86400;
+	const CACHE_TTL = 3600;
 	const CACHE_BETA = 1;
 
 	private array $local_cache_ary;
 	private bool $local_en;
-
-	protected array $schemas = [];
-	protected array $systems = [];
 
 	public function __construct(
     private readonly SystemRepository $system_repository,
@@ -29,6 +26,10 @@ class SystemsService
 		$this->local_en = php_sapi_name() !== 'cli';
 	}
 
+  /**
+   * Returns all schemas as keys, arrays as values 
+   * where intersystems are keys (from active user accounts). 
+   */
   private function read_ary():array
 	{
     $ary = $this->cache->get(self::CACHE_KEY, function(ItemInterface $item){
@@ -48,6 +49,9 @@ class SystemsService
 		return $ary;
 	}
 
+  /**
+   * Returns if an schema exists
+   */
   public function has_schema(string $schema):bool
 	{
 		if (!isset($this->local_cache_ary))

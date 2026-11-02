@@ -47,9 +47,9 @@ class SystemRepository
 
 			if (isset($row['remote_schema']))
 			{
-				// later $row['is_active'] is to be used
+        // TODO later only $row['is_active'] to be used
 				$is_active = in_array($row['status'], [1, 2, 7], true);
-				$schema_ary[$schema][$row['remote_schema']] = $is_active;
+				$schema_ary[$schema][$row['remote_schema']] = $row['is_active'] || $is_active;
 			}
 		}
 
