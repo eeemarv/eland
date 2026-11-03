@@ -107,6 +107,25 @@
         {{- 'label.to_account'|trans }}
       </dt>
       {%- include 'transactions/show/transactions_show_to.html.twig' -%}
+  
+      {%- if transaction.created_by_user is defined
+        and transaction.created_by_user is not null
+        and transaction.created_by_user.id is not null -%}
+        <dt>
+          {{- 'transactions_show.created_by_user'|trans -}}
+        </dt>
+        <dd>
+          {%- if pp_has_role('admin') or transaction.created_by_user.is_active -%}
+          <a href="{{- path('users_show', {}|pp(id: transaction.created_by_user.id)) -}}">
+            {{- transaction.created_by_user.code ?? '***' }}
+            {{ transaction.created_by_user.name -}}
+          </a>
+          {%- else -%}
+            {{- transaction.created_by_user.code ?? '***' }}
+            {{ transaction.created_by_user.name -}}
+          {%- endif -%}
+        </dd>
+      {%- endif -%}
     </dl>
   </div>
 </div>

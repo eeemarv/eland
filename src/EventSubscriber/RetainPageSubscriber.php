@@ -36,6 +36,17 @@ class RetainPageSubscriber implements EventSubscriberInterface
       return;
     }
 
+    if ($request->getRequestFormat() !== 'html') 
+    {
+      return;
+    }
+
+    if ($request->headers->has('Sec-Fetch-Mode') 
+      && $request->headers->get('Sec-Fetch-Mode') !== 'navigate') 
+    {
+      return;
+    }
+
     if (!$request->attributes->has('schema'))
     {
       return;

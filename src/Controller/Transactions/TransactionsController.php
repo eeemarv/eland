@@ -6,6 +6,7 @@ use App\Command\Transactions\TransactionsBulkServiceStuffCommand;
 use App\Command\Transactions\TransactionsFilterCommand;
 use App\Form\Type\Transactions\TransactionsBulkServiceStuffType;
 use App\Form\Type\Transactions\TransactionsFilterType;
+use App\Repository\TransactionLogRepository;
 use App\Repository\TransactionRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -54,6 +55,7 @@ class TransactionsController extends AbstractController
     Request $request,
     bool $is_self,
     TransactionRepository $transaction_repository,
+    TransactionLogRepository $transaction_log_repository,
     ConfigService $config_service,
     PageParamsService $pp,
     SessionUserService $su,
@@ -132,6 +134,9 @@ class TransactionsController extends AbstractController
       $bulk_service_stuff_form = $this->createForm(
         type: TransactionsBulkServiceStuffType::class,
         data: $bulk_service_stuff_command,
+        options: [
+          'log_comment_enabled' => true,
+        ]
       );
       $bulk_service_stuff_form->handleRequest($request);
     }
@@ -144,27 +149,79 @@ class TransactionsController extends AbstractController
       $bulk_service_stuff_command = $bulk_service_stuff_form->getData();
       $selected = $bulk_service_stuff_command->selected;
       $service_stuff = $bulk_service_stuff_command->service_stuff;
+      $log_comment = $bulk_service_stuff_form->get('log_comment')->getData();
+      $service_stuff = $service_stuff === 'null_service_stuff' ? null : $service_stuff;
       $select_ary = explode(',', $selected);
       $s_transaction_ids = [];
       foreach ($select_ary as $sel_id)
       {
         $s_transaction_ids[] = (int) trim($sel_id);
       }
-      $transaction_repository->set_bulk_service_stuff(
-        service_stuff: $service_stuff,
+
+      $u_transactions = $transaction_repository->get_all_by_ids(
         transaction_ids: $s_transaction_ids,
         schema: $pp->schema_o(),
       );
 
-      $this->addFlash(
-        type: 'success',
-        message: [
-          'key' => 'transactions.bulk.service_stuff.flash.success',
-          'params'  => [
-            'count' => count($s_transaction_ids),
+      $transactions_old_data_ary = [];
+      $changed_ary = [];
+      $not_changed_ary = [];
+
+      foreach ($u_transactions as $tid => $t)
+      {
+        if ($t['service_stuff'] === $service_stuff)
+        {
+          $not_changed_ary[] = $tid;
+          continue;
+        }
+        $transactions_old_data_ary[$tid] = [
+          'service_stuff' => $t['service_stuff'],
+        ];
+        $changed_ary[] = $tid;
+      }
+
+      if (count($changed_ary))
+      {
+        $transaction_repository->set_bulk_service_stuff(
+          service_stuff: $service_stuff,
+          transaction_ids: $changed_ary,
+          schema: $pp->schema_o(),
+        );
+
+        $transaction_log_repository->bulk_insert(
+          transactions_old_data_ary: $transactions_old_data_ary,
+          new_data: ['service_stuff' => $service_stuff],
+          comment: $log_comment,
+          created_by: $su->id() ?: null,
+          route: $pp->route(),
+          action: 'service_stuff_edit',
+          schema: $pp->schema_o(),
+        );
+
+        $this->addFlash(
+          type: 'success',
+          message: [
+            'key' => 'transactions.bulk.service_stuff.flash.success',
+            'params'  => [
+              'count' => count($changed_ary),
+            ],
           ],
-        ],
-      );
+        );        
+      }
+
+      if (count($not_changed_ary))
+      {
+        $this->addFlash(
+          type: 'warning',
+          message: [
+            'key' => 'transactions.bulk.service_stuff.flash.warning',
+            'params'  => [
+              'count' => count($not_changed_ary),
+            ],
+          ],
+        );        
+      }
+
       return $this->redirectToRoute(
         route: 'transactions',
         parameters: $pp->ary(),

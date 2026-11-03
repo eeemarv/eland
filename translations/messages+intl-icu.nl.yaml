@@ -1755,6 +1755,10 @@ transactions:
     {per_hour_ratio} {currency} per uur
   valuation: >-
     Valuatie: {per_hour_ratio} {currency} per uur.
+  log_comment:
+    help: >-
+      Dit commentaar wordt opgeslagen in
+      de historiek van de transacties
   bulk:
     title: >-
       Bulk acties met geselecteerde transacties
@@ -1768,12 +1772,20 @@ transactions:
       flash:
         success: >-
           {count, plural,
-            =0 {Niets aangepast}
+            =0 {** ERR **}
             =1 {Diensten/spullen veld van 1
             transactie aangepast}
             other {Diensten/spullen veld van #
             transacties aangepast}
           }
+        warning: >- 
+          {count, plural,
+            =0 {** ERR **}
+            =1 {Diensten/spullen veld van 1
+            transactie NIET aangepast}
+            other {Diensten/spullen veld van #
+            transacties NIET aangepast}
+          }          
 
 transactions_add:
   title: Nieuwe transactie
@@ -1943,9 +1955,11 @@ transactions_show:
   title: Transactie
   status: Type of Status Transactie
   from_remote_account: >-
-    Initiërende account in het andere systeem
+    Initiërende Account in het Andere Systeem
   to_remote_account: >-
-    Bestemmingsaccount in het andere systeem
+    Bestemmingsaccount in het Andere Systeem
+  created_by_user: >-
+    Transactie Aangemaakt Door
 
 users:
   admin_config: >-

@@ -87,12 +87,20 @@ class TransactionRepository
           \'is_leaving\', tu.is_leaving,
           \'remote_schema\', tu.remote_schema,
           \'remote_email\', tu.remote_email
-        ) as to_user
+        ) as to_user,
+        jsonb_build_object(
+          \'id\', cu.id,
+          \'name\', cu.name,
+          \'code\', cu.code,
+          \'is_active\', cu.is_active
+        ) as created_by_user
       from o_transactions ot
       left join ' . $schema->str() . '.users fu
         on fu.id = ot.id_from
       left join ' . $schema->str() . '.users tu
         on tu.id = ot.id_to
+      left join ' . $schema->str() . '.users cu
+        on cu.id = ot.created_by
 			where ot.id = :id');
 		$stmt->bindValue('id', $id, Types::INTEGER);
 		$res = $stmt->executeQuery();
@@ -100,6 +108,7 @@ class TransactionRepository
 
     $from_user = json_decode($transaction['from_user'], true);
     $to_user = json_decode($transaction['to_user'], true);
+    $created_by_user = json_decode($transaction['created_by_user'], true);
 
     if (isset($from_user['remote_schema'])
       && isset($inter_ary[$from_user['remote_schema']]))
@@ -117,6 +126,7 @@ class TransactionRepository
       ...$transaction,
       'from_user' => $from_user,
       'to_user' => $to_user,
+      'created_by_user' => $created_by_user,
     ];
 
     if (isset($to_user['remote_schema_active']) 
@@ -694,12 +704,12 @@ class TransactionRepository
   }
 
   public function set_bulk_service_stuff(
-    string $service_stuff,
+    string|null $service_stuff,
     array $transaction_ids,
     Schema $schema,
   ):void
   {
-    if ($service_stuff === 'null_service_stuff')
+    if (!isset($service_stuff))
     {
       $this->db->executeStatement('update ' .
         $schema->str() . '.transactions
@@ -709,8 +719,16 @@ class TransactionRepository
         ], [
           'transaction_ids' => ArrayParameterType::INTEGER,
         ]);
-        return;
+      return;
     }
+
+    if (!in_array($service_stuff, ['service', 'stuff']))
+    {
+      throw new \InvalidArgumentException(
+        'Wrong value for service_stuff ' . $service_stuff
+      );
+    }
+
     $this->db->executeStatement('update ' .
       $schema->str() . '.transactions
       set service_stuff = :service_stuff
@@ -721,7 +739,7 @@ class TransactionRepository
         'service_stuff' => Types::STRING,
         'transaction_ids' => ArrayParameterType::INTEGER,
       ]);
-      return;
+    return;
   }
 
   public function insert(
@@ -1130,6 +1148,26 @@ class TransactionRepository
       ];
     }
 
+    return $transactions;
+  }
+
+  public function get_all_by_ids(
+    array $transaction_ids,
+    Schema $schema,
+  ):array
+  {
+    $transactions = [];
+    $res = $this->db->executeQuery('select t.*
+      from ' . $schema->str() . '.transactions t
+      where t.id in (:transaction_ids)', [
+        'transaction_ids' => $transaction_ids,
+      ], [
+        'transaction_ids' => ArrayParameterType::INTEGER,
+      ]);
+    while ($row = $res->fetchAssociative())
+    {
+      $transactions[$row['id']] = $row;
+    }
     return $transactions;
   }
 

@@ -9,20 +9,20 @@ use Symfony\Component\DependencyInjection\EnvVarProcessorInterface;
  */
 class TempRedisDsnFixEnvVarProcessor implements EnvVarProcessorInterface
 {
-    public function getEnv(string $prefix, string $name, \Closure $getEnv): mixed
-    {
-        $env = $getEnv($name);
+  public function getEnv(string $prefix, string $name, \Closure $getEnv): mixed
+  {
+    $env = $getEnv($name);
 
-        return strtr($env, [
-            'redis://:'     => 'redis://',
-            'rediss://:'    => 'rediss://',
-        ]);
-    }
+    return strtr($env, [
+      'redis://:'     => 'redis://',
+      'rediss://:'    => 'rediss://',
+    ]);
+  }
 
-    public static function getProvidedTypes():array
-    {
-        return [
-            'temp_redis_dsn_fix'   => 'string',
-        ];
-    }
+  public static function getProvidedTypes():array
+  {
+    return [
+      'temp_redis_dsn_fix'   => 'string',
+    ];
+  }
 }
