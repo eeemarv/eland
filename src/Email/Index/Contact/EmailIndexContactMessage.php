@@ -5,7 +5,7 @@ namespace App\Email\Index\Contact;
 use Symfony\Component\Messenger\Attribute\AsMessage;
 use Symfony\Component\Mime\Address;
 
-#[AsMessage('mail_lo')]
+#[AsMessage(transport: 'mail_lo')]
 final class EmailIndexContactMessage
 {
   public function __construct(

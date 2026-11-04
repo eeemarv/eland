@@ -42,7 +42,10 @@
           <div class="mb-2"></div>
         {%- endif -%}
       </dd>
-      {%- if transaction.canceled_at is not null -%}
+    </dl>
+
+    {%- if transaction.canceled_at is not null -%}
+      <dl>
         <dt>
           {{- 'label.canceled_at'|trans  -}}
         </dt>
@@ -52,17 +55,10 @@
           </div>
           <div class="mb-2"></div>
         </dd>
-      {%- elseif transaction.expires_at is not null -%}
-        <dt>
-          {{- 'label.expires_at'|trans  -}}
-        </dt>
-        <dd>
-          <div class="label label-info p-2">
-            {{- transaction.expires_at|format_min }}
-          </div>
-          <div class="mb-2"></div>
-        </dd>
-      {%- elseif transaction.confirmed_at is not null -%}
+      </dl>
+
+    {%- elseif transaction.confirmed_at is not null -%}
+      <dl>
         <dt>
           {{- 'label.confirmed_at'|trans  -}}
         </dt>
@@ -72,33 +68,102 @@
           </div>
           <div class="mb-2"></div>
         </dd>
-      {%- endif -%}
+      </dl>  
+
+    {%- elseif transaction.expires_at is not null -%}
+      <div class="d-flex justify-content-between">
+        <div>
+          <dl>
+            <dt>
+              {{- 'label.expires_at'|trans  -}}
+            </dt>
+            <dd>
+              <div class="label label-info p-2">
+                {{- transaction.expires_at|format_min }}
+              </div>
+              <div class="mb-2"></div>
+            </dd>
+          </dl>
+        </div>
+        <div>
+
+        </div>
+      </div>
+    {%- endif -%}
+
+    <dl>
       <dt>
         {{- 'label.time'|trans -}}
       </dt>
       <dd>
         {{- transaction.created_at|format_min -}}
       </dd>
-      <dt>
-        {{- 'label.description'|trans -}}
-      </dt>
-      <dd>
-        {{- transaction.description -}}
-      </dd>
-      {%- if config_bool('transactions.fields.service_stuff.enabled') -%}
-        <dt>
-          {{- 'label.service_stuff'|trans -}}
-        </dt>
-        <dd>
-          {{- l.btn(transaction.service_stuff ?? 'null_service_stuff') -}}
-        </dd>
-      {%- endif -%}
+    </dl>
+
+    <div class="d-flex">
+      <div>
+        <dl>
+          <dt>
+            {{- 'label.description'|trans -}}
+          </dt>
+          <dd>
+            {{- transaction.description -}}
+          </dd>
+        </dl>
+      </div>
+      {%- if pp_has_role('admin') -%}
+        <div class="mt-1 ms-3">
+          <a href="{{- path('transactions_show', {}|pp(id: transaction.id)) -}}"
+            class="btn btn-primary"
+            title="{{- 'transactions_edit.title'|trans -}}">
+            <twig:ux:icon name="lucide:pencil"/>
+            &nbsp;
+            <span class="hidden-xs hidden-sm">
+              {{- 'btn.edit'|trans -}}
+            </span>
+          </a>
+        </div>
+      {%- endif  -%}
+    </div>
+
+    {%- if config_bool('transactions.fields.service_stuff.enabled') -%}
+      <div class="d-flex">
+        <div>
+          <dl>
+            <dt>
+              {{- 'label.service_stuff'|trans -}}
+            </dt>
+            <dd>
+              {{- l.btn(transaction.service_stuff ?? 'null_service_stuff') -}}
+            </dd>
+          </dl>
+        </div>
+        {%- if pp_has_role('admin') -%}
+          <div class="mt-1 ms-3">
+            <a href="{{- path('transactions_show', {}|pp(id: transaction.id)) -}}"
+              class="btn btn-primary"
+              title="{{- 'transactions_edit.title'|trans -}}">
+              <twig:ux:icon name="lucide:pencil"/>
+              &nbsp;
+              <span class="hidden-xs hidden-sm">
+                {{- 'btn.edit'|trans -}}
+              </span>
+            </a>
+          </div>
+        {%- endif  -%}
+      </div>
+    {%- endif -%}
+    
+    <dl>
       <dt>
         {{- 'label.amount'|trans -}}
       </dt>
       <dd>
         {{- transaction.amount }} {{ config_str('transactions.currency.name') -}}
       </dd>
+    </dl>
+
+    <dl>
       <dt>
         {{- 'label.from_account'|trans }}
       </dt>
@@ -107,25 +172,33 @@
         {{- 'label.to_account'|trans }}
       </dt>
       {%- include 'transactions/show/transactions_show_to.html.twig' -%}
-  
+    </dl>
+
+    <div class="d-flex">
       {%- if transaction.created_by_user is defined
         and transaction.created_by_user is not null
         and transaction.created_by_user.id is not null -%}
-        <dt>
-          {{- 'transactions_show.created_by_user'|trans -}}
-        </dt>
-        <dd>
-          {%- if pp_has_role('admin') or transaction.created_by_user.is_active -%}
-          <a href="{{- path('users_show', {}|pp(id: transaction.created_by_user.id)) -}}">
-            {{- transaction.created_by_user.code ?? '***' }}
-            {{ transaction.created_by_user.name -}}
-          </a>
-          {%- else -%}
-            {{- transaction.created_by_user.code ?? '***' }}
-            {{ transaction.created_by_user.name -}}
-          {%- endif -%}
-        </dd>
+        <div>
+          <dl>
+            <dt>
+              {{- 'transactions_show.created_by_user'|trans -}}
+            </dt>
+            <dd>
+              {%- if pp_has_role('admin') or transaction.created_by_user.is_active -%}
+              <a href="{{- path('users_show', {}|pp(id: transaction.created_by_user.id)) -}}">
+                {{- transaction.created_by_user.code ?? '***' }}
+                {{ transaction.created_by_user.name -}}
+              </a>
+              {%- else -%}
+                {{- transaction.created_by_user.code ?? '***' }}
+                {{ transaction.created_by_user.name -}}
+              {%- endif -%}
+            </dd>
+          </dl>
+        </div>
       {%- endif -%}
-    </dl>
+
+    </div>
+
   </div>
 </div>

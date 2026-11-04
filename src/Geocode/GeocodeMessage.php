@@ -5,7 +5,7 @@ namespace App\Geocode;
 use App\DTO\Schema;
 use Symfony\Component\Messenger\Attribute\AsMessage;
 
-#[AsMessage('geo')]
+#[AsMessage(transport: 'geo')]
 class GeocodeMessage
 {
   public function __construct(

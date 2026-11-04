@@ -5,7 +5,7 @@ namespace App\Email\MollieBulk\Copy;
 use App\DTO\Schema;
 use Symfony\Component\Messenger\Attribute\AsMessage;
 
-#[AsMessage('mail_hi')]
+#[AsMessage(transport: 'mail_hi')]
 final class EmailMollieBulkCopyMessage
 {
   public function __construct(

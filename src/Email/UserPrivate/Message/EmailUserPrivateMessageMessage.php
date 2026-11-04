@@ -5,7 +5,7 @@ namespace App\Email\UserPrivate\Message;
 use App\DTO\Schema;
 use Symfony\Component\Messenger\Attribute\AsMessage;
 
-#[AsMessage('mail_lo')]
+#[AsMessage(transport: 'mail_lo')]
 final class EmailUserPrivateMessageMessage
 {
   public function __construct(

@@ -5,7 +5,6 @@ namespace App\Controller\Logs;
 use App\Command\Logs\LogsFilterCommand;
 use App\Form\Type\Logs\LogsFilterType;
 use App\Repository\LogRepository;
-use App\Service\LogDbService;
 use App\Service\PageParamsService;
 use App\Service\SystemsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -33,7 +32,6 @@ class LogsController extends AbstractController
   public function __invoke(
     Request $request,
     LogRepository $log_repository,
-    LogDbService $log_db_service,
     SystemsService $systems_service,
     PageParamsService $pp,
   ):Response
@@ -43,8 +41,6 @@ class LogsController extends AbstractController
     $filter_command = new LogsFilterCommand();
     $filter_form = $this->createForm(LogsFilterType::class, $filter_command);
     $filter_form->handleRequest($request);
-
-    $log_db_service->update();
 
     $pag = $request->query->all('p');
     $sort = $request->query->all('s');

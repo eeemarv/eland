@@ -6,7 +6,7 @@ use App\DTO\Schema;
 use Symfony\Component\Messenger\Attribute\AsMessage;
 use Symfony\Component\Mime\Address;
 
-#[AsMessage('mail_lo')]
+#[AsMessage(transport: 'mail_lo')]
 final class EmailContactFormAdminMessage
 {
   public function __construct(

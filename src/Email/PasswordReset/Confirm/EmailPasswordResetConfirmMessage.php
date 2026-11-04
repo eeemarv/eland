@@ -6,7 +6,7 @@ use App\DTO\Schema;
 use Symfony\Component\Messenger\Attribute\AsMessage;
 use Symfony\Component\Mime\Address;
 
-#[AsMessage('mail_hi')]
+#[AsMessage(transport: 'mail_hi')]
 final class EmailPasswordResetConfirmMessage
 {
   public function __construct(

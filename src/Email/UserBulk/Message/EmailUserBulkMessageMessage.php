@@ -5,7 +5,7 @@ namespace App\Email\UserBulk\Message;
 use App\DTO\Schema;
 use Symfony\Component\Messenger\Attribute\AsMessage;
 
-#[AsMessage('mail_lo')]
+#[AsMessage(transport: 'mail_lo')]
 final class EmailUserBulkMessageMessage
 {
   public function __construct(

@@ -1,18 +1,18 @@
 <li class="list-group-item{%- if block('class') %} {% block class %}{% endblock %}{%- endif %}">
-    {%- block item -%}
-    <div class="d-flex justify-content-between">
-        <div>
-            {%- block div_left -%}
-                <dl class="mb-1">
-                    {%- block dl -%}
-                    {%- endblock dl -%}
-                </dl>
-            {%- endblock div_left -%}
-        </div>
-        <div>
-            {%- block div_right -%}
-            {%- endblock div_right -%}
-        </div>
+  {%- block item -%}
+  <div class="d-flex justify-content-between">
+    <div>
+      {%- block div_left -%}
+        <dl class="mb-1">
+          {%- block dl -%}
+          {%- endblock dl -%}
+        </dl>
+      {%- endblock div_left -%}
     </div>
-    {%- endblock item -%}
+    <div>
+      {%- block div_right -%}
+      {%- endblock div_right -%}
+    </div>
+  </div>
+  {%- endblock item -%}
 </li>

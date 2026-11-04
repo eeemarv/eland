@@ -6,7 +6,7 @@ use App\DTO\Schema;
 use Symfony\Component\Messenger\Attribute\AsMessage;
 use Symfony\Component\Uid\Uuid;
 
-#[AsMessage('mail_lo')]
+#[AsMessage(transport: 'mail_lo')]
 final class EmailTransactionsMassOneToManyMessage
 {
   public function __construct(

@@ -206,4 +206,49 @@ class LogRepository
       'remote_user_ary' => $remote_user_ary,
     ];
   }
+
+  public function insert(
+    string $type,
+    string $event,
+    array $data,
+    string|null $ip,
+    int|null $user_id,
+    string|null $user_schema,
+    bool $is_master,
+    Schema $schema,
+  )
+  {
+    $stmt_xdb = $this->db->prepare('insert into xdb.logs
+      (type, event, data, ip, 
+      user_id, user_schema, is_master, schema)
+      values
+      (:type, :event, :data, :ip,
+      :user_id, :user_schema, :is_master, :schema)'
+    );
+    $stmt_xdb->bindValue('type', $type, Types::STRING);
+    $stmt_xdb->bindValue('event', $event, Types::STRING);
+    $stmt_xdb->bindValue('data', $data, Types::JSONB);
+    $stmt_xdb->bindValue('ip', $ip, Types::STRING);
+    $stmt_xdb->bindValue('user_id', $user_id, Types::INTEGER);
+    $stmt_xdb->bindValue('user_schema', $user_schema, Types::STRING);
+    $stmt_xdb->bindValue('is_master', $is_master, Types::BOOLEAN);
+    $stmt_xdb->bindValue('schema', $schema->str(), Types::STRING);
+    $stmt_xdb->executeStatement();
+
+    $stmt = $this->db->prepare('insert into ' . $schema->str() . '.logs
+      (type, event, data, ip, 
+      user_id, user_schema, is_master)
+      values
+      (:type, :event, :data, :ip,
+      :user_id, :user_schema, :is_master)'
+    );
+    $stmt->bindValue('type', $type, Types::STRING);
+    $stmt->bindValue('event', $event, Types::STRING);
+    $stmt->bindValue('data', $data, Types::JSONB);
+    $stmt->bindValue('ip', $ip, Types::STRING);
+    $stmt->bindValue('user_id', $user_id, Types::INTEGER);
+    $stmt->bindValue('user_schema', $user_schema, Types::STRING);
+    $stmt->bindValue('is_master', $is_master, Types::BOOLEAN);
+    $stmt->executeStatement(); 
+  }
 }
