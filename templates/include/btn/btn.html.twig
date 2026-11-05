@@ -1,7 +1,6 @@
 <a href="
 {{- path(btn_route, {}|pp|merge(btn_route_params|default({}))) -}}
 " class="btn btn-{{ btn_class -}}
-{%- if btn_lg is defined and btn_lg %} btn-lg{%- endif -%}
 "{%- if btn_title is defined %} title="{{- btn_title|trans(btn_title_trans_params|default({})) -}}"{%- endif -%}
 {%- for n, v in btn_attr|default({}) %} {{ n -}}="{{- v -}}"{%- endfor -%}
 >

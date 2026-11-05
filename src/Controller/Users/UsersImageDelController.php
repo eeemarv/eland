@@ -119,7 +119,7 @@ class UsersImageDelController extends AbstractController
     $out .= $link_render->btn_cancel('users_show', $pp->ary(), ['id' => $id]);
 
     $out .= '&nbsp;';
-    $out .= '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger btn-lg">';
+    $out .= '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
 
     $out .= '</form>';
 

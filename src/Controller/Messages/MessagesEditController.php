@@ -952,7 +952,7 @@ class MessagesEditController extends AbstractController
         $btn_class = $edit_mode ? 'primary' : 'success';
 
         $out .= '&nbsp;';
-        $out .= '<input type="submit" value="Opslaan" name="zend" class="btn btn-' . $btn_class . ' btn-lg">';
+        $out .= '<input type="submit" value="Opslaan" name="zend" class="btn btn-' . $btn_class . '">';
         $out .= $form_token_service->get_hidden_input();
 
         $out .= '</form>';

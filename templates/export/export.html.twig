@@ -18,7 +18,7 @@
       {{- form_row(download_form.sql, {
         'label': 'btn.download',
         'attr': {
-            'class': 'btn btn-default btn-lg'
+            'class': 'btn btn-default'
         }
       }) -}}
     </div>
@@ -39,7 +39,7 @@
               'label': csv|replace({'csv__': ''}),
               'translation_domain': false,
               'attr': {
-                'class': 'btn btn-default btn-lg'
+                'class': 'btn btn-default'
               }
             }) -}}
           {%- endif -%}
@@ -49,7 +49,7 @@
       {{- form_row(download_form.csv_zip, {
         'label': 'export.csv_zip.label',
         'attr': {
-          'class': 'btn btn-default btn-lg'
+          'class': 'btn btn-default'
         }
       }) -}}
 

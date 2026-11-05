@@ -1,19 +1,30 @@
 {%- extends 'base/schema_5.html.twig' -%}
 
 {%- block heading -%}
-  <h1{%- if block('heading_class') %} class="{%- block heading_class -%}{%- endblock -%}"{%- endif -%}>
-    {%- if admin_heading is defined -%}
-      {%- include 'include/label/admin.html.twig' -%}
+  <div class="d-inline-flex">
+    <h1{%- if block('heading_class') %} class="{%- block heading_class -%}{%- endblock -%}"{%- endif -%}>
+      {%- if admin_heading is defined -%}
+        {%- include 'include/label/admin.html.twig' -%}
+        &nbsp;
+      {%- endif -%}
+      {%- block heading_icon -%}
+      {%- endblock heading_icon -%}
       &nbsp;
-    {%- endif -%}
-    {%- block heading_icon -%}
-    {%- endblock heading_icon -%}
-    &nbsp;
-    {%- block heading_title -%}
-      {{- (active_menu ~ '.title')|trans -}}
-    {%- endblock heading_title -%}
-    {%- block heading_append -%}{%- endblock heading_append -%}
-  </h1>
+      {%- block heading_title -%}
+        {{- (active_menu ~ '.title')|trans -}}
+      {%- endblock heading_title -%}
+      {%- block heading_filtered -%}
+      {%- if filtered is defined and filtered -%}
+        &nbsp;
+        <small>
+          {{- 'label.filtered'|trans -}}
+        </small>
+      {%- endif -%}
+      {%- endblock heading_filtered %}
+    </h1> 
+    {%- block heading_append -%}{%- endblock -%}
+  </div>      
+
 {%- endblock heading -%}
 
 {%- block content_top -%}

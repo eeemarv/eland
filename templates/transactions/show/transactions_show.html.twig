@@ -11,7 +11,7 @@
 <div class="printview panel panel-{{- t_panel_class -}}">
   <div class="panel-heading">
     <dl>
-      <dt>
+      <dt class="mb-2">
         {{- 'transactions_show.status'|trans -}}
       </dt>
       <dd>
@@ -46,7 +46,7 @@
 
     {%- if transaction.canceled_at is not null -%}
       <dl>
-        <dt>
+        <dt class="mb-2">
           {{- 'label.canceled_at'|trans  -}}
         </dt>
         <dd>
@@ -59,7 +59,7 @@
 
     {%- elseif transaction.confirmed_at is not null -%}
       <dl>
-        <dt>
+        <dt class="mb-2">
           {{- 'label.confirmed_at'|trans  -}}
         </dt>
         <dd>

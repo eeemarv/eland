@@ -140,7 +140,7 @@ class IntersystemsAddController extends AbstractController
         $btn = $link_render->btn_cancel('intersystems', $pp->ary(), []);
         $btn .= '&nbsp;';
         $btn .= '<input type="submit" name="zend" value="Opslaan" ';
-        $btn .= 'class="btn btn-success btn-lg">';
+        $btn .= 'class="btn btn-success">';
 
         $content = IntersystemsEditController::render_form(
             $group,

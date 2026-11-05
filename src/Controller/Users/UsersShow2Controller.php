@@ -419,7 +419,7 @@ class UsersShow2Controller extends AbstractController
             }
 
             $out .= '<div class="panel-footer">';
-            $out .= '<span class="btn btn-success btn-lg btn-block fileinput-button">';
+            $out .= '<span class="btn btn-success btn-block fileinput-button">';
             $out .= '<i class="fa fa-plus" id="img_plus"></i> Afbeelding opladen';
             $out .= '<input type="file" name="image" ';
             $out .= 'data-url="';
@@ -450,7 +450,7 @@ class UsersShow2Controller extends AbstractController
                 $out .= $link_render->link_fa('users_image_del_admin', $pp->ary(),
                     ['id' => $id], 'Afbeelding verwijderen', [
                         ...$btn_del_attr,
-                        'class' => 'btn btn-danger btn-lg btn-block',
+                        'class' => 'btn btn-danger btn-block',
                     ],
                     'times');
             }
@@ -459,7 +459,7 @@ class UsersShow2Controller extends AbstractController
                 $out .= $link_render->link_fa('users_image_del', $pp->ary(),
                     [], 'Afbeelding verwijderen', [
                         ...$btn_del_attr,
-                        'class' => 'btn btn-danger btn-lg btn-block',
+                        'class' => 'btn btn-danger btn-block',
                     ],
                     'times');
             }
@@ -739,7 +739,7 @@ class UsersShow2Controller extends AbstractController
             $account_str = $account_render->str($id, $pp->schema());
 
             $attr_link_messages = $attr_link_transactions = [
-                'class'     => 'btn btn-default btn-lg btn-block',
+                'class'     => 'btn btn-default btn-block',
                 'disabled'  => 'disabled',
             ];
 
@@ -871,7 +871,7 @@ class UsersShow2Controller extends AbstractController
 
         $out .= $form_token_service->get_hidden_input();
         $out .= '<input type="submit" name="user_mail_submit" ';
-        $out .= 'value="Versturen" class="btn btn-info btn-lg"';
+        $out .= 'value="Versturen" class="btn btn-info"';
         $out .= $user_mail_disabled ? ' disabled' : '';
         $out .= '>';
 

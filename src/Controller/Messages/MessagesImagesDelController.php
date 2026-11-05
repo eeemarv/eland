@@ -109,7 +109,7 @@ class MessagesImagesDelController extends AbstractController
             $out .= '" class="img-rounded">';
 
             $out .= '<div class="caption">';
-            $out .= '<span class="btn btn-danger btn-lg" data-img="';
+            $out .= '<span class="btn btn-danger" data-img="';
             $out .= $img;
             $out .= '" ';
             $out .= 'data-url="';
@@ -149,7 +149,7 @@ class MessagesImagesDelController extends AbstractController
         $out .= $link_render->btn_cancel('messages_show', $pp->ary(), ['id' => $id]);
 
         $out .= '&nbsp;';
-        $out .= '<input type="submit" value="Alle verwijderen" name="zend" class="btn btn-danger btn-lg">';
+        $out .= '<input type="submit" value="Alle verwijderen" name="zend" class="btn btn-danger">';
 
         $out .= $form_token_service->get_hidden_input();
         $out .= '</form>';

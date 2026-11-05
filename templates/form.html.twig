@@ -79,8 +79,7 @@
 {%- endblock checkbox_radio_label %}
 
 {% block button_widget -%}
-  {#- add btn-lg -#}
-  {%- set attr = attr|merge({class: (attr.class|default('btn-secondary-outline') ~ ' btn btn-lg')|trim}) -%}
+  {%- set attr = attr|merge({class: (attr.class|default('btn-secondary-outline') ~ ' btn')|trim}) -%}
   {{- parent() -}}
 {%- endblock button_widget %}
 

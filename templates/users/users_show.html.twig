@@ -15,6 +15,7 @@
 {#}
 
 {%- block btn_top_edit -%}
+{#}
   {%- if pp_has_role('admin') -%}
     {%- include 'include/btn_top/edit.html.twig' with {
       'btn_route': 'users_edit'
@@ -25,6 +26,7 @@
       'btn_title': 'users_edit_self.title'
     } -%}
   {%- endif -%}
+{#}
 {%- endblock btn_top_edit -%}
 
 {%- block btn_top_del -%}
@@ -46,7 +48,7 @@
     {{- path('users_show', {}|pp(id: prev_id, status: status)) -}}"
   {%- else -%}
   #" disabled
-  {%- endif %} class="btn btn-default btn-lg" title="{{- 'nav.prev'|trans -}}">
+  {%- endif %} class="btn btn-default" title="{{- 'nav.prev'|trans -}}">
     <twig:ux:icon name="lucide:chevron-up"/>
   </a>
 
@@ -55,11 +57,11 @@
     {{- path('users_show', {}|pp(id: next_id, status: status)) -}}"
   {%- else -%}
   #" disabled
-  {%- endif %} class="btn btn-default btn-lg" title="{{- 'nav.next'|trans -}}">
+  {%- endif %} class="btn btn-default" title="{{- 'nav.next'|trans -}}">
     <twig:ux:icon name="lucide:chevron-down"/>
   </a>
 
-  <a href="{{- path('users'|var_route, {}|pp(status: status)) -}}" class="btn btn-default btn-lg" title="{{- 'nav.list'|trans -}}">
+  <a href="{{- path('users'|var_route, {}|pp(status: status)) -}}" class="btn btn-default" title="{{- 'nav.list'|trans -}}">
     <twig:ux:icon name="lucide:users"/>
   </a>
 </div>
@@ -135,7 +137,7 @@ bg-info
     or (su_is_owner(id)
     and config_bool('users.fields.name.self_edit'))
   -%}
-  <div class="pull-right">
+  <div class="ms-2 mt-4">
 
     <a href="{{- path('users_name_edit' ~ (is_self ? '_self' : ''), (is_self ? {} : {'id': id})|pp) -}}"
       class="btn btn-primary"

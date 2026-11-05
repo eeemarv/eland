@@ -213,7 +213,7 @@ class CalendarEditController extends AbstractController
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" name="zend" ';
-        $out .= 'value="Opslaan" class="btn btn-primary btn-lg">';
+        $out .= 'value="Opslaan" class="btn btn-primary">';
         $out .= $form_token_service->get_hidden_input();
 
         $out .= '</form>';

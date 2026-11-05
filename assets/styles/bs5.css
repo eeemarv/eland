@@ -4,6 +4,7 @@
 .position-absolute { position: absolute; }
 
 .d-flex { display: flex; }
+.d-inline-flex { display: inline-flex; }
 .flex-row { flex-direction: row; }
 .flex-column { flex-direction: column; }
 
@@ -81,6 +82,26 @@
 .mb-3 { margin-bottom: 15px; }
 .ms-3 { margin-left: 15px; }
 .me-3 { margin-right: 15px; }
+.p-4 { padding: 20px; }
+.m-4 { margin: 20px; }
+.pt-4 { padding-top: 20px; }
+.pb-4 { padding-bottom: 20px; }
+.ps-4 { padding-left: 20px; }
+.pe-4 { padding-right: 20px; }
+.mt-4 { margin-top: 20px; }
+.mb-4 { margin-bottom: 20px; }
+.ms-4 { margin-left: 20px; }
+.me-4 { margin-right: 20px; }
+.p-5 { padding: 25px;}
+.m-5 { margin: 25px;}
+.pt-5 { padding-top: 25px;}
+.pb-5 { padding-bottom: 25px;}
+.ps-5 { padding-left: 25px;}
+.pe-5 { padding-right: 25px;}
+.mt-5 { margin-top: 25px;}
+.mb-5 { margin-bottom: 25px;}
+.ms-5 { margin-left: 25px;}
+.me-5 { margin-right: 25px;}
 
 .top-0 { top: 0; }
 .top-50 { top: 50%; }

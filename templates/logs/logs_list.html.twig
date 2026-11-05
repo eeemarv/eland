@@ -24,10 +24,6 @@ data-csv-filename-value="logs"
   {{- 'logs.title'|trans -}}
 {%- endblock heading_title -%}
 
-{%- block heading_append -%}
-  {%- include 'include/filter/heading_filter.html.twig' -%}
-{%- endblock heading_append -%}
-
 {%- block filter_form_a -%}
   {%- include 'logs/list/logs_list_filter_form.html.twig' -%}
 {%- endblock filter_form_a -%}

@@ -35,7 +35,7 @@
     {{- path('news_show', {}|pp(id: pprev_id)) -}}"
   {%- else -%}
   #" disabled
-  {%- endif %} class="btn btn-default btn-lg" title="{{- 'nav.prev'|trans -}}">
+  {%- endif %} class="btn btn-default" title="{{- 'nav.prev'|trans -}}">
     <twig:ux:icon name="lucide:chevron-up"/>
   </a>
 
@@ -44,11 +44,11 @@
     {{- path('news_show', {}|pp(id: nnext_id)) -}}"
   {%- else -%}
   #" disabled
-  {%- endif %} class="btn btn-default btn-lg" title="{{- 'nav.next'|trans -}}">
+  {%- endif %} class="btn btn-default" title="{{- 'nav.next'|trans -}}">
     <twig:ux:icon name="lucide:chevron-down"/>
   </a>
 
-  <a href="{{- path('news'|var_route, {}|pp) -}}" class="btn btn-default btn-lg" title="{{- 'nav.list'|trans -}}">
+  <a href="{{- path('news'|var_route, {}|pp) -}}" class="btn btn-default" title="{{- 'nav.list'|trans -}}">
     <twig:ux:icon name="lucide:calendar-range"/>
   </a>
 </div>

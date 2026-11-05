@@ -94,7 +94,7 @@ class IntersystemsDelController extends AbstractController
         $out .= $link_render->btn_cancel('intersystems', $pp->ary(), []);
 
         $out .= '&nbsp;';
-        $out .= '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger btn-lg">';
+        $out .= '<input type="submit" value="Verwijderen" name="zend" class="btn btn-danger">';
         $out .= $form_token_service->get_hidden_input();
 
         $out .= '</form></p>';

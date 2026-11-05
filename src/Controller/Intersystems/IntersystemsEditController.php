@@ -128,7 +128,7 @@ class IntersystemsEditController extends AbstractController
             ['id' => $id]);
         $btn .= '&nbsp;';
         $btn .= '<input type="submit" name="zend" value="Opslaan" ';
-        $btn .= 'class="btn btn-primary btn-lg">';
+        $btn .= 'class="btn btn-primary">';
 
         $content = self::render_form(
             $group,

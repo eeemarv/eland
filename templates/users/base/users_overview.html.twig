@@ -2,13 +2,13 @@
 
 {%- block btn_view -%}
 <div class="btn-group ml-5p" role="group">
-  <a href="{{- path('users_list', route_params|merge(query_params)|merge(d.params|default({}))) -}}" class="btn btn-default btn-lg{%- if 'users_list' == route %} active{%- endif -%}" title="{{- 'view.list'|trans -}}">
+  <a href="{{- path('users_list', route_params|merge(query_params)|merge(d.params|default({}))) -}}" class="btn btn-default{%- if 'users_list' == route %} active{%- endif -%}" title="{{- 'view.list'|trans -}}">
     <twig:ux:icon name="lucide:list"/>
   </a>
-  <a href="{{- path('users_tiles', route_params|merge(query_params)|merge(d.params|default({}))) -}}" class="btn btn-default btn-lg{%- if 'users_tiles' == route %} active{%- endif -%}" title="{{- 'view.tiles'|trans -}}">
+  <a href="{{- path('users_tiles', route_params|merge(query_params)|merge(d.params|default({}))) -}}" class="btn btn-default{%- if 'users_tiles' == route %} active{%- endif -%}" title="{{- 'view.tiles'|trans -}}">
     <twig:ux:icon name="lucide:layout-grid"/>
   </a>
-  <a href="{{- path('users_map', route_params|merge(query_params)|merge(d.params|default({}))) -}}" class="btn btn-default btn-lg{%- if 'users_map' == route %} active{%- endif -%}" title="{{- 'view.map'|trans -}}">
+  <a href="{{- path('users_map', route_params|merge(query_params)|merge(d.params|default({}))) -}}" class="btn btn-default{%- if 'users_map' == route %} active{%- endif -%}" title="{{- 'view.map'|trans -}}">
     <twig:ux:icon name="lucide:map-pin"/>
   </a>
 </div>

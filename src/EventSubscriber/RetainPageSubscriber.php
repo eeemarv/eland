@@ -62,6 +62,11 @@ class RetainPageSubscriber implements EventSubscriberInterface
       return;
     }
 
+    if ($this->pp->is_guest())
+    {
+      return;
+    }
+
     if (!$this->su->is_system_self())
     {
       return;

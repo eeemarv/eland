@@ -19,13 +19,13 @@
 			</h3>
 		</div>
 		<div class="panel-body">
-			<a href="{{- path('index') -}}" class="btn btn-lg btn-primary">
+			<a href="{{- path('index') -}}" class="btn btn-primary">
 				{{- 'btn.back_to_index'|trans -}}
 			</a>
 
       {%- if not success and not is_already_confirmed -%}
         &nbsp;
-        <a href="{{- path('index_contact') -}}" class="btn btn-lg btn-primary">
+        <a href="{{- path('index_contact') -}}" class="btn btn-primary">
           {{- 'btn.try_again'|trans -}}
         </a>
       {%- endif -%}

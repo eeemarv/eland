@@ -1408,7 +1408,7 @@ class UsersEditController extends AbstractController
         $out .= '<input type="submit" name="zend" ';
         $out .= 'value="Opslaan" class="btn btn-';
         $out .= $is_edit ? 'primary' : 'success';
-        $out .= ' btn-lg">';
+        $out .= '">';
         $out .= $form_token_service->get_hidden_input();
 
         $out .= '</form>';

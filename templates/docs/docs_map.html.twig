@@ -39,7 +39,7 @@ data-csv-filename-value="{{- 'label.docs'|trans|lower -}}"
     {{- path('docs_map', {}|pp(id: prev_id)) -}}"
   {%- else -%}
   #" disabled
-  {%- endif %} class="btn btn-default btn-lg" title="{{- 'nav.prev'|trans -}}">
+  {%- endif %} class="btn btn-default" title="{{- 'nav.prev'|trans -}}">
     <twig:ux:icon name="lucide:chevron-up"/>
   </a>
 
@@ -48,11 +48,11 @@ data-csv-filename-value="{{- 'label.docs'|trans|lower -}}"
     {{- path('docs_map', {}|pp(id: next_id)) -}}"
   {%- else -%}
   #" disabled
-  {%- endif %} class="btn btn-default btn-lg" title="{{- 'nav.next'|trans -}}">
+  {%- endif %} class="btn btn-default" title="{{- 'nav.next'|trans -}}">
     <twig:ux:icon name="lucide:chevron-down"/>
   </a>
 
-  <a href="{{- path('docs', {}|pp) -}}" class="btn btn-default btn-lg" title="{{- 'nav.list'|trans -}}">
+  <a href="{{- path('docs', {}|pp) -}}" class="btn btn-default" title="{{- 'nav.list'|trans -}}">
     <twig:ux:icon name="lucide:files"/>
   </a>
 </div>

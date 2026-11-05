@@ -20,13 +20,13 @@
 		</div>
 
 		<div class="panel-body">
-			<a href="{{- path('home', {}|pp) -}}" class="btn btn-lg btn-primary">
+			<a href="{{- path('home', {}|pp) -}}" class="btn btn-primary">
 				{{- 'btn.back_to_home'|trans -}}
 			</a>
 
       {%- if not success and not is_already_confirmed -%}
         &nbsp;
-        <a href="{{- path('register_form', {}|pp) -}}" class="btn btn-lg btn-primary">
+        <a href="{{- path('register_form', {}|pp) -}}" class="btn btn-primary">
           {{- 'btn.try_again'|trans -}}
         </a>
       {%- endif -%}

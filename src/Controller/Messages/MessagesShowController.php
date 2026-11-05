@@ -315,7 +315,7 @@ class MessagesShowController extends AbstractController
         if ($pp->is_admin() || $su->is_owner($message['user_id']))
         {
             $out .= '<div class="panel-footer">';
-            $out .= '<span class="btn btn-success btn-lg btn-block fileinput-button">';
+            $out .= '<span class="btn btn-success btn-block fileinput-button">';
             $out .= '<i class="fa fa-plus" id="img_plus"></i> Afbeelding opladen';
             $out .= '<input type="file" name="images[]" ';
             $out .= 'data-url="';
@@ -338,7 +338,7 @@ class MessagesShowController extends AbstractController
             $out .= $link_render->link_fa('messages_images_del', $pp->ary(),
                 ['id'		=> $id],
                 'Afbeeldingen verwijderen', [
-                    'class'	=> 'btn btn-danger btn-lg btn-block',
+                    'class'	=> 'btn btn-danger btn-block',
                     'id'	=> 'btn_remove',
                     'style'	=> 'display:none;',
                 ],

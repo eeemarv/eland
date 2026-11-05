@@ -765,7 +765,7 @@ class MessagesListController extends AbstractController
                 ]);
 
                 $blk .= '<input type="submit" value="Verlengen" ';
-                $blk .= 'name="bulk_submit[extend]" class="btn btn-primary btn-lg">';
+                $blk .= 'name="bulk_submit[extend]" class="btn btn-primary">';
 
                 $blk .= $form_token_service->get_hidden_input();
 
@@ -814,7 +814,7 @@ class MessagesListController extends AbstractController
                 ]);
 
                 $blk .= '<input type="submit" value="Aanpassen" ';
-                $blk .= 'name="bulk_submit[service_stuff]" class="btn btn-primary btn-lg">';
+                $blk .= 'name="bulk_submit[service_stuff]" class="btn btn-primary">';
                 $blk .= $form_token_service->get_hidden_input();
                 $blk .= '</form>';
                 $blk .= '</div>';
@@ -842,7 +842,7 @@ class MessagesListController extends AbstractController
                 ]);
 
                 $blk .= '<input type="submit" value="Categorie aanpassen" ';
-                $blk .= 'name="bulk_submit[category]" class="btn btn-primary btn-lg">';
+                $blk .= 'name="bulk_submit[category]" class="btn btn-primary">';
                 $blk .= $form_token_service->get_hidden_input();
                 $blk .= '</form>';
                 $blk .= '</div>';
@@ -863,7 +863,7 @@ class MessagesListController extends AbstractController
                 ]);
 
                 $blk .= '<input type="submit" value="Aanpassen" ';
-                $blk .= 'name="bulk_submit[access]" class="btn btn-primary btn-lg">';
+                $blk .= 'name="bulk_submit[access]" class="btn btn-primary">';
                 $blk .= $form_token_service->get_hidden_input();
                 $blk .= '</form>';
                 $blk .= '</div>';

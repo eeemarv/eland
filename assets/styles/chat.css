@@ -7,10 +7,10 @@
   height: min(75vh, 800px);
   min-height: 480px;
 
-  border: 1px solid #ddd;
+  border: 1px solid #848484;
   border-radius: 8px;
   overflow: hidden;
-  background: #ddd;
+  background: #d8dfd6;
 }
 
 /* left column */

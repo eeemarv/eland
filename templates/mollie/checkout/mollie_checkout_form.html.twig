@@ -3,7 +3,7 @@
 {%- include 'mollie/checkout/mollie_checkout_info.html.twig' -%}
 {{- form_widget(form.submit,{
   'label': label|default('mollie_checkout.btn'),
-  'attr': {'class': 'btn btn-primary btn-lg'}
+  'attr': {'class': 'btn btn-primary'}
 }) -}}
 {{- form_end(form) -}}
 <p>{{- 'mollie_checkout.explain'|trans -}}</p>

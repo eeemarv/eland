@@ -37,7 +37,7 @@
 {%- block btn_top_password_edit -%}
   {%- if pp_has_role('admin') or su_is_owner(id) -%}
     {%- set password_edit_route = 'users_password_edit' ~ (su_is_owner(id) ? '_self' : '') -%}
-    <a href="{{- path(password_edit_route, {}|pp(id: id)) -}}" class="btn btn-info btn-lg" title="{{- 'users_password_edit.title'|trans({
+    <a href="{{- path(password_edit_route, {}|pp(id: id)) -}}" class="btn btn-info" title="{{- 'users_password_edit.title'|trans({
       'user': account(id),
       'self': is_self ? 'self' : 'some_user'
     }) -}}"
@@ -71,7 +71,7 @@
     {{- path('users_show', {}|pp(id: prev_id, status: status)) -}}"
   {%- else -%}
   #" disabled
-  {%- endif %} class="btn btn-default btn-lg" title="{{- 'nav.prev'|trans -}}">
+  {%- endif %} class="btn btn-default" title="{{- 'nav.prev'|trans -}}">
     <twig:ux:icon name="lucide:chevron-up"/>
   </a>
 
@@ -80,11 +80,11 @@
     {{- path('users_show', {}|pp(id: next_id, status: status)) -}}"
   {%- else -%}
   #" disabled
-  {%- endif %} class="btn btn-default btn-lg" title="{{- 'nav.next'|trans -}}">
+  {%- endif %} class="btn btn-default" title="{{- 'nav.next'|trans -}}">
     <twig:ux:icon name="lucide:chevron-down"/>
   </a>
 
-  <a href="{{- path('users'|var_route, {}|pp(status: status)) -}}" class="btn btn-default btn-lg" title="{{- 'nav.list'|trans -}}">
+  <a href="{{- path('users'|var_route, {}|pp(status: status)) -}}" class="btn btn-default" title="{{- 'nav.list'|trans -}}">
     <twig:ux:icon name="lucide:users"/>
   </a>
 </div>

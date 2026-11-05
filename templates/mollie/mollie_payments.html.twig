@@ -20,7 +20,7 @@ data-csv-filename-value="mollie"
 {%- endblock btn_top_bulk -%}
 
 {%- block btn_top_config -%}
-<a href="{{- path('mollie_config', {}|pp) -}}" class="btn btn-info btn-lg" title="{{- 'mollie_config.title'|trans -}}">
+<a href="{{- path('mollie_config', {}|pp) -}}" class="btn btn-info" title="{{- 'mollie_config.title'|trans -}}">
   <twig:ux:icon name="lucide:settings"/>
   <span class="hidden-xs hidden-sm">
     &nbsp;
@@ -50,7 +50,6 @@ data-csv-filename-value="mollie"
 {%- endblock heading_title -%}
 
 {%- block heading_append -%}
-  {%- include 'include/filter/heading_filter.html.twig' -%}
   {%- include 'include/filter/heading_btn_filter.html.twig' -%}
 {%- endblock heading_append -%}
 

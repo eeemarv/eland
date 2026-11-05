@@ -1,6 +1,6 @@
 <li class="list-group-item{%- if block('class') %} {% block class %}{% endblock %}{%- endif %}">
   {%- block item -%}
-  <div class="d-flex justify-content-between">
+  <div class="d-flex">
     <div>
       {%- block div_left -%}
         <dl class="mb-1">
@@ -9,7 +9,7 @@
         </dl>
       {%- endblock div_left -%}
     </div>
-    <div>
+    <div class="ms-3">
       {%- block div_right -%}
       {%- endblock div_right -%}
     </div>

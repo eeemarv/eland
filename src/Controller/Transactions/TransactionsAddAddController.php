@@ -1479,7 +1479,7 @@ class TransactionsAddAddController extends AbstractController
 
         $out .= '&nbsp;';
         $out .= '<input type="submit" name="zend" ';
-        $out .= 'value="Overschrijven" class="btn btn-success btn-lg">';
+        $out .= 'value="Overschrijven" class="btn btn-success">';
         $out .= $form_token_service->get_hidden_input();
 
         $out .= '</form>';

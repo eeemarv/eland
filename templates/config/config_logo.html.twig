@@ -29,7 +29,7 @@
       </div>
     </div>
     <br>
-    <span class="btn btn-success btn-lg btn-block fileinput-button">
+    <span class="btn btn-success btn-block fileinput-button">
       <twig:ux:icon name="lucide:image-plus" id="img_plus" />
       &nbsp;
       {{- 'config_logo.btn.upload'|trans -}}
@@ -47,7 +47,7 @@
     <a href="{{- path('config_logo_del', {}|pp) -}}"
       id="btn_remove"
       {%- if logo is same as('') %} style="display:none;"{%- endif %}
-      class="btn btn-danger btn-block btn-lg">
+      class="btn btn-danger btn-block ">
       <twig:ux:icon name="lucide:trash"/>
 
       &nbsp;
