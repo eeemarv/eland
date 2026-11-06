@@ -2,7 +2,9 @@
 {%- set asc = pag_params.s.asc -%}
 {%- set pag = {'start': 0, 'limit':pag_params.p.limit} -%}
 
-<th data-priority="1">
+<th data-priority="1"
+{%- if order_by == 'amount' %} class="bg-warning"
+{%- endif -%}>
   <a href="{{- path('mollie_payments', all_params|merge({
     's': {
       'order_by': 'amount',
@@ -23,7 +25,9 @@
   </a>
 </th>
 
-<th data-priority="1">
+<th data-priority="1"
+{%- if order_by == 'description' %} class="bg-warning"
+{%- endif -%}>
   <a href="{{- path('mollie_payments', all_params|merge({
     's': {
       'order_by': 'description',
@@ -44,7 +48,9 @@
   </a>
 </th>
 
-<th data-priority="2">
+<th data-priority="2"
+{%- if order_by == 'code' %} class="bg-warning"
+{%- endif -%}>
   <a href="{{- path('mollie_payments', all_params|merge({
     's': {
       'order_by': 'code',
@@ -69,7 +75,9 @@
   {{- 'mollie_payments.col.status'|trans -}}
 </th>
 
-<th data-priority="4">
+<th data-priority="4"
+{%- if order_by == 'created_at' %} class="bg-warning"
+{%- endif -%}>
   <a href="{{- path('mollie_payments', all_params|merge({
     's': {
       'order_by': 'created_at',

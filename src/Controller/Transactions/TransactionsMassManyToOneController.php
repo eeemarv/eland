@@ -35,7 +35,6 @@ class TransactionsMassManyToOneController extends AbstractController
     defaults: [
       'status' => 'active',
       'module' => 'transactions',
-      'sub_module' => 'autominlimit',
     ],
   )]
 

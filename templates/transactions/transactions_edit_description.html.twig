@@ -1,0 +1,58 @@
+{%- extends 'transactions/show/transactions_show_base.html.twig' -%}
+
+{%- set cancel_route = 'transactions_show' -%}
+{%- set admin_heading = true -%}
+
+{%- block heading_title -%}
+  {{- 'transactions_edit_description.title'|trans -}}
+{%- endblock heading_title -%}
+
+
+{%- block form_a -%}
+
+{{- form_row(form.from_account_id, {
+  'label': 'label.from_account',
+  'addon': ux_icon('lucide:user'),
+}) -}}
+
+{{- form_row(form.to_account_id, {
+  'label': 'label.to_account',
+  'addon': ux_icon('lucide:user'),
+}) -}}
+
+{{- form_row(form.amount, {
+  'label': 'label.amount',
+  'addon': config_str('transactions.currency.name'),
+}) -}}
+
+{{- form_row(form.description, {
+  'label': 'label.description',
+  'addon': ux_icon('lucide:chevron-right'),
+}) -}}
+
+<ul class="alert alert-warning ps-4">
+  <li>{{- 'transactions_edit_description.explain.1'|trans -}}</li>
+  <li>{{- 'transactions_edit_description.explain.2'|trans -}}</li>
+  <li>{{- 'transactions_edit_description.explain.3'|trans -}}</li>
+</ul>
+
+{%- endblock form_a -%}
+
+{%- block form_log_comment -%}
+{%- include 'form/log_comment.html.twig' with {
+  'form': form,
+  'help': 'transactions.log_comment.help',
+} -%}
+{%- endblock form_log_comment -%}
+
+{%- block form_e -%}
+  {%- if form.service_stuff is defined -%}
+    {{- form_row(form.service_stuff, {
+      'label': false,
+    }) -}}
+  {%- endif -%}
+
+  {{- form_row(form.verify, {
+    'label': 'check.verify',
+  }) -}}
+{%- endblock form_e -%}

@@ -194,7 +194,7 @@ class TransactionsController extends AbstractController
           comment: $log_comment,
           created_by: $su->id() ?: null,
           route: $pp->route(),
-          action: 'service_stuff_edit',
+          action: 'edit_service_stuff',
           schema: $pp->schema_o(),
         );
 

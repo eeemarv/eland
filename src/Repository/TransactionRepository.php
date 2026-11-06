@@ -5,7 +5,6 @@ namespace App\Repository;
 use App\DTO\Schema;
 use App\Service\SystemsService;
 use DateTimeImmutable;
-use Deprecated;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
@@ -21,37 +20,6 @@ class TransactionRepository
 	{
 	}
 
-  // not used(?)
-  #[Deprecated()]
-	public function get_count_for_user_id(
-    int $user_id,
-    Schema $schema,
-  ):int
-	{
-    $stmt = $this->db->prepare('select count(*)
-      from ' . $schema->str() . '.transactions
-      where id_to = :user_id or id_from = :user_id');
-		$stmt->bindValue('user_id', $user_id, Types::INTEGER);
-		$res = $stmt->executeQuery();
-		return $res->fetchOne();
-	}
-
-  #[Deprecated()]
-	public function get(
-    int $id,
-    Schema $schema,
-  ):array|false
-	{
-		$stmt = $this->db->prepare('select *
-			from ' . $schema->str() . '.transactions
-			where id = :id');
-		$stmt->bindValue('id', $id, Types::INTEGER);
-		$res = $stmt->executeQuery();
-		$data = $res->fetchAssociative();
-
-		return $data;
-	}
-
 	public function get_with_prev_next(
     int $id,
     Schema $schema,
@@ -62,12 +30,25 @@ class TransactionRepository
       schema: $schema->str(),
     );
 
-		$stmt = $this->db->prepare('with o_transactions as (
-        select *,
-          lag(id) over (order by id asc) as prev_id,
-          lead(id) over (order by id asc) as next_id
-        from ' . $schema->str() . '.transactions)
-      select ot.*, ot.prev_id, ot.next_id,
+    $stmt = $this->db->prepare('
+      select 
+        t.*,
+        (select id 
+          from ' . $schema->str() . '.transactions 
+          where id < :id 
+          order by id desc 
+          limit 1) 
+          as prev_id,
+        (select id 
+          from ' . $schema->str() . '.transactions 
+          where id > :id 
+          order by id asc 
+          limit 1) 
+          as next_id,
+        (select count(*) 
+          from ' . $schema->str() . '.transactions_logs tl 
+          where tl.transaction_id = t.id) 
+          as log_count,
         jsonb_build_object(
           \'id\', fu.id,
           \'name\', fu.name,
@@ -94,14 +75,13 @@ class TransactionRepository
           \'code\', cu.code,
           \'is_active\', cu.is_active
         ) as created_by_user
-      from o_transactions ot
-      left join ' . $schema->str() . '.users fu
-        on fu.id = ot.id_from
-      left join ' . $schema->str() . '.users tu
-        on tu.id = ot.id_to
-      left join ' . $schema->str() . '.users cu
-        on cu.id = ot.created_by
-			where ot.id = :id');
+      from ' . $schema->str() . '.transactions t
+      left join ' . $schema->str() . '.users fu on fu.id = t.id_from
+      left join ' . $schema->str() . '.users tu on tu.id = t.id_to
+      left join ' . $schema->str() . '.users cu on cu.id = t.created_by
+      where t.id = :id
+    ');
+
 		$stmt->bindValue('id', $id, Types::INTEGER);
 		$res = $stmt->executeQuery();
 		$transaction = $res->fetchAssociative();
@@ -243,16 +223,28 @@ class TransactionRepository
     int $id,
     string $description,
     Schema $schema,
-  )
+  ):int
 	{
-		$this->db->update($schema->str() . '.transactions', [
-      'description'	=> $description,
-    ], [
-      'id' => $id,
-    ], [
-      'description' => Types::STRING,
-      'id'  => Types::INTEGER,
-    ]);
+    $stmt = $this->db->prepare('update ' . $schema->str() . '.transactions 
+      set description = :description
+      where id = :id');
+    $stmt->bindValue('description', $description, Types::STRING);
+    $stmt->bindValue('id', $id, Types::INTEGER);
+    return (int) $stmt->executeStatement();
+	}
+
+	public function update_service_stuff(
+    int $id,
+    string|null $service_stuff,
+    Schema $schema,
+  ):int
+	{
+    $stmt = $this->db->prepare('update ' . $schema->str() . '.transactions 
+      set service_stuff = :service_stuff
+      where id = :id');
+    $stmt->bindValue('service_stuff', $service_stuff, Types::STRING);
+    $stmt->bindValue('id', $id, Types::INTEGER);
+    return (int) $stmt->executeStatement();
 	}
 
   public function get_activity_for_each_user(
@@ -444,7 +436,8 @@ class TransactionRepository
         inner join ' . $schema->str() . '.users tu
           on tu.id = t.id_to
       where ' . $sql_where . '
-      order by ' . $real_order_by .
+      order by ' . $real_order_by . 
+      ($asc ? ' asc' : ' desc') . ', t.id ' .
       ($asc ? ' asc' : ' desc') . '
       limit :limit offset :offset';
 

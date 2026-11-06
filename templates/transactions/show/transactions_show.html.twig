@@ -113,9 +113,9 @@
       </div>
       {%- if pp_has_role('admin') -%}
         <div class="mt-1 ms-3">
-          <a href="{{- path('transactions_show', {}|pp(id: transaction.id)) -}}"
+          <a href="{{- path('transactions_edit_description', {}|pp(id: transaction.id)) -}}"
             class="btn btn-primary"
-            title="{{- 'transactions_edit.title'|trans -}}">
+            title="{{- 'transactions_edit_description.title'|trans -}}">
             <twig:ux:icon name="lucide:pencil"/>
             &nbsp;
             <span class="hidden-xs hidden-sm">
@@ -140,9 +140,9 @@
         </div>
         {%- if pp_has_role('admin') -%}
           <div class="mt-1 ms-3">
-            <a href="{{- path('transactions_show', {}|pp(id: transaction.id)) -}}"
+            <a href="{{- path('transactions_edit_service_stuff', {}|pp(id: transaction.id)) -}}"
               class="btn btn-primary"
-              title="{{- 'transactions_edit.title'|trans -}}">
+              title="{{- 'transactions_edit_service_stuff.title'|trans -}}">
               <twig:ux:icon name="lucide:pencil"/>
               &nbsp;
               <span class="hidden-xs hidden-sm">
@@ -197,8 +197,15 @@
           </dl>
         </div>
       {%- endif -%}
-
     </div>
+
+    {%- if transaction.bulk_id is not null -%}
+    <p>
+      <b>
+        {{- 'transactions_show.part_of_mass_transaction'|trans -}}
+      </b>
+    </p>
+    {%- endif -%}     
 
   </div>
 </div>

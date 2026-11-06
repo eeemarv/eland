@@ -145,4 +145,45 @@ class TransactionLogRepository
 
     return $affected_rows;
 	}
+
+  public function get_history(
+    int $transaction_id,
+    Schema $schema,
+  ):array
+  {
+    $history_ary = [];
+    $stmt = $this->db->prepare('select tl.*,
+      jsonb_build_object(
+        \'id\', cu.id,
+        \'name\', cu.name,
+        \'code\', cu.code,
+        \'is_active\', cu.is_active,
+        \'activated_at\', cu.activated_at,
+        \'is_leaving\', cu.is_leaving,
+        \'remote_schema\', cu.remote_schema,
+        \'remote_email\', cu.remote_email
+      ) as created_by_user
+      from ' . $schema->str() . '.transactions_logs tl
+      left join ' . $schema->str() . '.users cu
+        on cu.id = tl.created_by
+      where transaction_id = :transaction_id
+      order by id desc');
+    $stmt->bindValue('transaction_id', $transaction_id, Types::INTEGER);
+    $res = $stmt->executeQuery();
+    while ($row = $res->fetchAssociative())
+    {
+      $created_by_user = json_decode($row['created_by_user'], true);
+      $old_data = json_decode($row['old_data'], true);
+      $new_data = json_decode($row['new_data'], true);
+      $meta_data = json_decode($row['meta_data'], true);
+      $history_ary[$row['id']] = [
+        ...$row,
+        'created_by_user'  => $created_by_user,
+        'old_data'  => $old_data,
+        'new_data'  => $new_data,
+        'meta_data' => $meta_data,
+      ];
+    }
+    return $history_ary;
+  }
 }

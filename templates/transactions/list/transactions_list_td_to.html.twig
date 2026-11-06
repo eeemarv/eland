@@ -37,7 +37,7 @@
     is_pre_active(t.to_user) ? ' class="bg-inactive"' :
     is_post_active(t.to_user) ? ' class="bg-info"' : ''
   -%}
-  <td{{- u_class -}}>
+  <td{{- u_class|raw -}}>
     {%- if t.to_user.is_active or pp_has_role('admin') -%}
       <a href="{{- path('users_show', {}|pp(id: t.to_user.id)) -}}">
         {{- t.to_user.code ?? '***' }}

@@ -1,0 +1,53 @@
+{%- extends 'transactions/base/transactions_base.html.twig' -%}
+
+{%- block btn_item_nav -%}
+<div class="btn-group ml-5p" role="group">
+  <a href="
+  {%- if next_id -%}
+    {{- path('transactions_show', {}|pp(id: next_id)) -}}"
+  {%- else -%}
+  #" disabled
+  {%- endif %} class="btn btn-default" title="{{- 'nav.next'|trans -}}">
+    <twig:ux:icon name="lucide:chevron-up"/>
+  </a>
+
+  <a href="
+  {%- if prev_id -%}
+    {{- path('transactions_show', {}|pp(id: prev_id)) -}}"
+  {%- else -%}
+  #" disabled
+  {%- endif %} class="btn btn-default" title="{{- 'nav.prev'|trans -}}">
+    <twig:ux:icon name="lucide:chevron-down"/>
+  </a>
+
+  <a href="{{- path('transactions', {}|pp) -}}" class="btn btn-default" title="{{- 'nav.list'|trans -}}">
+    <twig:ux:icon name="lucide:arrow-left-right"/>
+  </a>
+</div>
+{%- endblock btn_item_nav -%}
+
+{%- block heading_title -%}
+  {{- 'transactions_show.title'|trans -}}
+{%- endblock heading_title -%}
+
+{%- block heading_append -%}
+{%- if pp_has_role('admin') -%}
+  <div class="mt-4 ms-2">
+    <a href="{{- path('transactions_show_history', {}|pp(id: id)) -}}" 
+      class="btn btn-default"
+      title="{{- 'transactions_show_history.title'|trans -}}"
+      {{- transaction.log_count ? '' : ' disabled' -}}
+    >
+      <twig:ux:icon name="lucide:history"/>
+      <span class="hidden-sm hidden-xs">
+      &nbsp;
+      {{- 'label.history'|trans -}}
+      </span>
+      &nbsp;({{- transaction.log_count  -}})
+    </a>
+  </div>
+{%- endif -%}
+{%- endblock heading_append -%}
+
+{%- block content -%}
+{%- endblock content -%}

@@ -9,7 +9,9 @@
 </th>
 {%- endif -%}
 
-<th data-priority="1">
+<th data-priority="1"
+{%- if order_by == 'description' %} class="bg-warning"
+{%- endif -%}>
   <a href="{{- path('transactions', all_params|merge({
     's': {
       'order_by': 'description',
@@ -29,7 +31,9 @@
   </a>
 </th>
 
-<th data-priority="1">
+<th data-priority="1"
+{%- if order_by == 'amount' %} class="bg-warning"
+{%- endif -%}>
   <a href="{{- path('transactions', all_params|merge({
     's': {
       'order_by': 'amount',
@@ -50,7 +54,9 @@
   </a>
 </th>
 
-<th data-priority="2">
+<th data-priority="2"
+{%- if order_by == 'created_at' %} class="bg-warning"
+{%- endif -%}>
   <a href="{{- path('transactions', all_params|merge({
     's': {
       'order_by': 'created_at',
@@ -79,7 +85,9 @@
 
 {%- else -%}
 
-  <th data-priority="3">
+  <th data-priority="3"
+  {%- if order_by == 'from_code' %} class="bg-warning"
+  {%- endif -%}>
     <a href="{{- path('transactions', all_params|merge({
       's': {
         'order_by': 'from_code',
@@ -100,7 +108,9 @@
     </a>
   </th>
 
-  <th data-priority="3">
+  <th data-priority="3"
+  {%- if order_by == 'to_code' %} class="bg-warning"
+  {%- endif -%}>
     <a href="{{- path('transactions', all_params|merge({
       's': {
         'order_by': 'to_code',

@@ -9,7 +9,9 @@
 </th>
 {%- endif -%}
 
-<th data-priority="1">
+<th data-priority="1"
+{%- if order_by == 'abbrev' %} class="bg-warning"
+{%- endif -%}>
   <a href="{{- path('contacts', all_params|merge({
     's': {
       'order_by': 'abbrev',
@@ -30,7 +32,9 @@
   </a>
 </th>
 
-<th data-priority="1">
+<th data-priority="1"
+{%- if order_by == 'value' %} class="bg-warning"
+{%- endif -%}>
   <a href="{{- path('contacts', all_params|merge({
     's': {
       'order_by': 'value',
@@ -50,7 +54,9 @@
   </a>
 </th>
 
-<th data-priority="2">
+<th data-priority="2"
+{%- if order_by == 'code' %} class="bg-warning"
+{%- endif -%}>
   <a href="{{- path('contacts', all_params|merge({
     's': {
       'order_by': 'code',
@@ -70,7 +76,9 @@
   </a>
 </th>
 
-<th data-priority="3">
+<th data-priority="3"
+{%- if order_by == 'comments' %} class="bg-warning"
+{%- endif -%}>
   <a href="{{- path('contacts', all_params|merge({
     's': {
       'order_by': 'comments',
@@ -90,7 +98,9 @@
   </a>
 </th>
 
-<th data-priority="3">
+<th data-priority="3"
+{%- if order_by == 'access' %} class="bg-warning"
+{%- endif -%}>
   <a href="{{- path('contacts', all_params|merge({
     's': {
       'order_by': 'access',

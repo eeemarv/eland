@@ -10,10 +10,20 @@ use Symfony\Component\Validator\Constraints\Type;
 
 class TransactionsEditDescriptionCommand implements CommandInterface
 {
+  // disabled
+  public mixed $from_account_id;
+  // disabled
+  public mixed $to_account_id;
+  // disabled
+  public mixed $amount;
+
   #[NotNull()]
   #[Type(type: 'string')]
   #[Length(min: 1, max: 60)]
   public mixed $description;
+
+  // disabled
+  public mixed $service_stuff;
 
   #[Type(type: 'bool')]
   #[IsTrue()]

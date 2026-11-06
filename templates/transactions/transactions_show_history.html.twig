@@ -1,0 +1,148 @@
+{%- extends 'transactions/show/transactions_show_base.html.twig' -%}
+{%- import 'macro/lbl.html.twig' as l -%}
+
+{%- block heading_title -%}
+  {{- 'transactions_show_history.title'|trans -}}
+{%- endblock heading_title -%}
+
+{%- block heading_append -%}
+  <div class="mt-4 ms-2">
+    <a href="{{- path('transactions_show', {}|pp(id: id)) -}}" 
+      class="btn btn-default"
+      title="{{- 'transactions_show.title'|trans -}}"
+      {{- transaction.log_count ? '' : ' disabled' -}}
+    >
+      <twig:ux:icon name="lucide:chevron-left"/>
+    </a>
+  </div>
+{%- endblock heading_append -%}
+
+{%- block data -%}
+<table class="table table-bordered table-striped table-hover">
+  <thead>
+    <tr>
+      <th>
+        {{- 'label.created_at'|trans -}}
+      </th>
+      <th>
+        {{- 'label.created_by'|trans -}}
+      </th>
+      <th>
+        {{- 'label.comment'|trans -}}
+      </th>
+      <th>
+        {{- 'label.old_data'|trans -}}
+      </th>
+      <th>
+        {{- 'label.new_data'|trans -}}
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+  {%- for h in history_ary -%}
+    <tr>
+      <td>
+        {{- h.created_at|format_min -}}
+      </td>
+      {%- set u_class =
+        is_new(h.created_by_user) ? ' class="bg-success"' :
+        is_leaving(h.created_by_user) ? ' class="bg-danger"' :
+        is_intersystem(h.created_by_user) ? ' class="bg-warning"' :
+        is_pre_active(h.created_by_user) ? ' class="bg-inactive"' :
+        is_post_active(h.created_by_user) ? ' class="bg-info"' : ''
+      -%}
+      <td{{- u_class|raw -}}>
+        <a href="{{- path('users_show', {}|pp(id: h.created_by)) -}}">
+          {{- h.created_by_user.code ?? '**' }}
+          {{ h.created_by_user.name -}}
+        </a>
+      </td>
+      <td>
+        {{- h.comment ?? '/' -}}
+      </td>
+      <td>
+        {%- if h.old_data.description is defined -%}
+          "{{- h.old_data.description -}}"
+        {%- elseif h.old_data.service_stuff is defined -%}
+          {%- set sr = h.old_data.service_stuff ?? 'null_service_stuff' -%}
+          {{- l.btn(sr) -}}
+        {%- else -%}
+          /
+        {%- endif -%}
+      </td>
+      <td>
+        {%- if h.new_data.description is defined -%}
+          "{{- h.new_data.description -}}"
+        {%- elseif h.new_data.service_stuff is defined -%}
+          {%- set sr = h.new_data.service_stuff ?? 'null_service_stuff' -%}
+          {{- l.btn(sr) -}}
+        {%- else -%}
+          /
+        {%- endif -%}
+      </td>
+    </tr>
+  {%- endfor -%}
+  </tbody>
+</table>
+
+<table class="table table-bordered table-striped table-hover">
+  <thead>
+    <tr>
+      <th>
+        {{- 'label.created_at'|trans -}}
+      </th>
+      <th>
+        {{- 'label.description'|trans -}}
+      </th>
+      <th>
+        {{- config_str('transactions.currency.name') -}}
+      </th>
+      <th>
+        {{- 'label.from_account'|trans -}}
+      </th>
+      <th>
+        {{- 'label.to_account'|trans -}}
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>
+        {{- transaction.created_at|format_min -}}
+      </td>
+      <td>
+        {{- transaction.description -}}
+      </td>
+      <td>
+        {{- transaction.amount -}}
+      </td>
+      {%- set u_class =
+        is_new(transaction.from_user) ? ' class="bg-success"' :
+        is_leaving(transaction.from_user) ? ' class="bg-danger"' :
+        is_intersystem(transaction.from_user) ? ' class="bg-warning"' :
+        is_pre_active(transaction.from_user) ? ' class="bg-inactive"' :
+        is_post_active(transaction.from_user) ? ' class="bg-info"' : ''
+      -%}
+      <td{{- u_class|raw -}}>
+        <a href="{{- path('users_show', {}|pp(id: transaction.id_from)) -}}">
+          {{- transaction.from_user.code ?? '**' }}
+          {{ transaction.from_user.name -}}
+        </a>
+      </td>
+      {%- set u_class =
+        is_new(transaction.to_user) ? ' class="bg-success"' :
+        is_leaving(transaction.to_user) ? ' class="bg-danger"' :
+        is_intersystem(transaction.to_user) ? ' class="bg-warning"' :
+        is_pre_active(transaction.to_user) ? ' class="bg-inactive"' :
+        is_post_active(transaction.to_user) ? ' class="bg-info"' : ''
+      -%}
+      <td{{- u_class|raw -}}>
+        <a href="{{- path('users_show', {}|pp(id: transaction.id_to)) -}}">
+          {{- transaction.to_user.code ?? '**' }}
+          {{ transaction.to_user.name -}}
+        </a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+{%- endblock data -%}

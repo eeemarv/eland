@@ -1,37 +1,4 @@
-{%- extends 'transactions/base/transactions_base.html.twig' -%}
-
-{%- block btn_item_nav -%}
-<div class="btn-group ml-5p" role="group">
-  <a href="
-  {%- if next_id -%}
-    {{- path('transactions_show', {}|pp(id: next_id)) -}}"
-  {%- else -%}
-  #" disabled
-  {%- endif %} class="btn btn-default" title="{{- 'nav.next'|trans -}}">
-    <twig:ux:icon name="lucide:chevron-up"/>
-  </a>
-
-  <a href="
-  {%- if prev_id -%}
-    {{- path('transactions_show', {}|pp(id: prev_id)) -}}"
-  {%- else -%}
-  #" disabled
-  {%- endif %} class="btn btn-default" title="{{- 'nav.prev'|trans -}}">
-    <twig:ux:icon name="lucide:chevron-down"/>
-  </a>
-
-  <a href="{{- path('transactions', {}|pp) -}}" class="btn btn-default" title="{{- 'nav.list'|trans -}}">
-    <twig:ux:icon name="lucide:arrow-left-right"/>
-  </a>
-</div>
-{%- endblock btn_item_nav -%}
-
-{%- block heading_title -%}
-  {{- 'transactions_show.title'|trans -}}
-{%- endblock heading_title -%}
-
-{%- block content -%}
-{%- endblock content -%}
+{%- extends 'transactions/show/transactions_show_base.html.twig' -%}
 
 {%- block data -%}
 {%- include 'transactions/show/transactions_show.html.twig' -%}

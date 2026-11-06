@@ -24,6 +24,7 @@
           {%- block form_log_comment -%}
             {%- include 'form/log_comment.html.twig' -%}
           {%- endblock form_log_comment -%}
+          {%- block form_e -%}{{- form_e|default('') -}}{%- endblock -%}
           {%- block form_cancel_btn -%}
             {%- include 'form/cancel_btn.html.twig' -%}
           {%- endblock form_cancel_btn -%}

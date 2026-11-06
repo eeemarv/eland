@@ -391,16 +391,18 @@ label:
   modified: Aangepast
   mobile: GSM
   name: Naam
+  new_data: Nieuwe Data
+  new_password: Nieuw Paswoord  
   new_users: Instappers
   news: Nieuws
   next: Volgende
   not_confirmed: Niet Bevestigd
   not_defined: Niet Bepaald
-  new_password: Nieuw Paswoord
   off: Uit
   offer: Aanbod
   offers: Aanbod
   offers_and_wants: Vraag en Aanbod
+  old_data: Oude Data
   on: Aan
   optional: Optioneel
   original_filename: Orginele Bestandsnaam
@@ -1851,21 +1853,44 @@ transactions_currency:
     change: >-
       Munteenheid aangepast
 
-transactions_edit:
+transactions_edit_description:
   title: >-
-    Omschrijving transactie aanpassen
+    Omschrijving Transactie Aanpassen
   explain:
-    admins_only: >-
+    1: >-
       Enkel Admins kunnen de omschrijving
       van een transactie aanpassen.
-    only_when_necessary: >-
+    2: >-
       Pas de omschrijving van een transactie
       enkel aan wanneer het echt noodzakelijk is!
       Dit om verwarring te vermijden.
-    never_undo: >-
+    3: >-
       Transacties kunnen nooit ongedaan
       gemaakt worden. Doe een tegenboeking
       bij vergissing.
+  flash:
+    success: >-
+      Omschrijving van transactie aangepast van
+      "{old_description}" naar "{new_description}"
+
+transactions_edit_service_stuff:
+  title: >-
+    Diensten/Spullen Veld van Transactie Aanpassen
+  explain:
+    1: >-
+      Enkel Admins kunnen het Diensten/Spullen veld
+      van een transactie aanpassen.
+    2: >-
+      Pas het Diensten/Spullen veld van een transactie
+      enkel aan wanneer het echt noodzakelijk is!
+      Dit om verwarring te vermijden.
+    3: >-
+      Transacties kunnen nooit ongedaan
+      gemaakt worden. Doe een tegenboeking
+      bij vergissing.
+  flash:
+    success: >-
+      Diensten/Spullen veld van transactie aangepast
 
 transactions_mass:
   title: Massa Transactie
@@ -1960,6 +1985,12 @@ transactions_show:
     Bestemmingsaccount in het Andere Systeem
   created_by_user: >-
     Transactie Aangemaakt Door
+  part_of_mass_transaction: >-
+    Deze transactie maakt deel uit van
+    een massa transactie
+
+transactions_show_history:
+  title: Transactie Historiek
 
 users:
   admin_config: >-

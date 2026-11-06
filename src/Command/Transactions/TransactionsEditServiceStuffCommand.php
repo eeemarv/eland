@@ -10,8 +10,17 @@ use Symfony\Component\Validator\Constraints\Type;
 
 class TransactionsEditServiceStuffCommand implements CommandInterface
 {
+  // disabled
+  public mixed $from_account_id;
+  // disabled
+  public mixed $to_account_id;
+  // disabled
+  public mixed $amount;
+  // disabled 
+  public mixed $description;
+
   #[NotNull()]
-  #[Choice(choices: ['service', 'stuff'])]
+  #[Choice(choices: ['service', 'stuff', 'null_service_stuff'])]
   public mixed $service_stuff;
 
   #[Type(type: 'bool')]
