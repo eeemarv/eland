@@ -22,7 +22,6 @@ class MollieConfigController extends AbstractController
     name: 'mollie_config',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

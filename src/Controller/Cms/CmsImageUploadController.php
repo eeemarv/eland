@@ -21,7 +21,6 @@ class CmsImageUploadController extends AbstractController
     name: 'cms_image_upload',
     methods: ['POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

@@ -14,7 +14,10 @@ import "./styles/badge.css";
 // extra styles to migrate to Bootstrap 5
 import "./styles/bs5.css";
 import "./styles/margin5.css";
-import "./styles/nav.css";
+
+import "./styles/nav.scss";
+import "./styles/bg.scss";
+
 import "./styles/form.css";
 import "./styles/jssor.css";
 import "./styles/map.css";

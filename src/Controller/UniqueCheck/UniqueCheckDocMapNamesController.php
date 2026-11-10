@@ -20,7 +20,6 @@ class UniqueCheckDocMapNamesController extends AbstractController
     name: 'unique_check_doc_map_names',
     methods: ['GET'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
   )]

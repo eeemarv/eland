@@ -29,7 +29,6 @@ class TransactionsMassManyToOneController extends AbstractController
     methods: ['GET', 'POST'],
     requirements: [
       'status' => '%assert.account.status2%',
-      'schema' => '%assert.schema%',
       'role_short' => '%assert.role_short.admin%',
     ],
     defaults: [

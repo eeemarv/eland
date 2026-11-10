@@ -23,9 +23,7 @@ class UsersHobbiesEditController extends AbstractController
     name: 'users_hobbies_edit',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema' => '%assert.schema%',
       'role_short' => '%assert.role_short.admin%',
-      'id' => '%assert.id%',
     ],
     defaults: [
       'is_self' => false,
@@ -38,7 +36,6 @@ class UsersHobbiesEditController extends AbstractController
     name: 'users_hobbies_edit_self',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema' => '%assert.schema%',
       'role_short' => '%assert.role_short.user%',
     ],
     defaults: [

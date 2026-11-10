@@ -22,7 +22,6 @@ class DocsController extends AbstractController
     priority: 20,
     methods: ['GET'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.guest%',
     ],
     defaults: [

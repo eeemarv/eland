@@ -1,0 +1,52 @@
+{%- extends 'transactions/add/transactions_add_base.html.twig' -%}
+
+{%- block heading_title -%}
+  {{- 'transactions_invitations_add.title'|trans -}}
+{%- endblock heading_title -%}
+
+
+{%- block pre_form -%}
+  <p>
+    {{- 'transactions_invitations_add.help'|trans({
+      'currency': config_str('transactions.currency.name'),
+      'days': 7
+    }) -}}
+  </p>
+{%- endblock pre_form -%}
+
+{%- block form_a -%}
+{{- form_row(form.from_id, {
+  'label': 'label.from_account',
+  'addon': ux_icon('lucide:user'), 
+}) -}}
+
+{{- form_row(form.to_email, {
+  'label': 'label.to_email',
+  'addon': ux_icon('lucide:mail'),
+}) -}}
+
+{{- form_row(form.amount, {
+  'label': 'label.amount',
+  'addon': config_str('transactions.currency.name'),
+}) -}}
+
+{{- form_row(form.description, {
+  'label': 'label.description',
+  'addon': ux_icon('lucide:chevron-right'),
+}) -}}
+
+{%- if form.service_stuff is defined -%}
+  {{- form_row(form.service_stuff, {
+    'label': false,
+  }) -}}
+{%- endif -%}
+
+{%- if form.invitation_text is defined -%}
+  {{- form_row(form.invitation_text, {
+    'label': 'transactions_invitations_add.invitation_text.label',
+  }) -}}
+{%- endif -%}
+
+
+
+{%- endblock form_a -%}

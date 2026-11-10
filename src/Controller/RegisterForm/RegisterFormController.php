@@ -25,7 +25,6 @@ class RegisterFormController extends AbstractController
     methods: ['GET', 'POST'],
     priority: 30,
     requirements: [
-      'schema'        => '%assert.schema%',
     ],
     defaults: [
       'module'        => 'register_form',

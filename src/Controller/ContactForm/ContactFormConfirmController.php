@@ -26,7 +26,6 @@ class ContactFormConfirmController extends AbstractController
     priority: 10,
     requirements: [
       'confirm_token'   => '%uuid_base58%',
-      'schema'          => '%assert.schema%',
     ],
     defaults: [
       'module'          => 'contact_form',

@@ -21,8 +21,6 @@ class IntersystemsShowController extends AbstractController
         name: 'intersystems_show',
         methods: ['GET'],
         requirements: [
-            'id'            => '%assert.id%',
-            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [

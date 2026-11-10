@@ -18,7 +18,6 @@ class MollieConfigHistoryController extends AbstractController
     name: 'mollie_config_history',
     methods: ['GET'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

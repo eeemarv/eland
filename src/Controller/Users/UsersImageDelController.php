@@ -22,8 +22,6 @@ class UsersImageDelController extends AbstractController
     name: 'users_image_del',
     methods: ['GET', 'POST'],
     requirements: [
-      'id'            => '%assert.id%',
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [
@@ -37,7 +35,6 @@ class UsersImageDelController extends AbstractController
     name: 'users_image_del_self',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.user%',
     ],
     defaults: [

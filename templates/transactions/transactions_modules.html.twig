@@ -36,4 +36,10 @@
     'label': 'transactions_modules.mass_enabled.label',
     'required': false
   }) -}}
+
+  {{- form_row(form.invitations_enabled, {
+    'label': 'transactions_modules.invitations_enabled.label',
+    'required': false,
+    'help': 'transactions_modules.invitations_enabled.help',
+  }) -}}
 {%- endblock form_a -%}

@@ -20,11 +20,9 @@ class MessagesImagesInstantDelController extends AbstractController
         name: 'messages_images_instant_del',
         methods: ['POST'],
         requirements: [
-            'id'            => '%assert.id%',
             'img'           => '%assert.message_image%',
             'ext'           => '%assert.image_ext%',
             'form_token'    => '%assert.token%',
-            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.user%',
         ],
         defaults: [

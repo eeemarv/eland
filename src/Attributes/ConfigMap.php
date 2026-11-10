@@ -7,10 +7,10 @@ use Attribute;
 #[Attribute(Attribute::TARGET_PROPERTY)]
 class ConfigMap
 {
-    public function __construct(
-        public string $type,
-        public string $key
-    )
-    {
-    }
+  public function __construct(
+    public string $type,
+    public string $key,
+  )
+  {
+  }
 }

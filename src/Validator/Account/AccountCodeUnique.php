@@ -5,7 +5,7 @@ namespace App\Validator\Account;
 use Symfony\Component\Validator\Constraint;
 
 #[\Attribute]
-class UniqueAccountCode extends Constraint
+class AccountCodeUnique extends Constraint
 {
   public function getTargets():string
   {

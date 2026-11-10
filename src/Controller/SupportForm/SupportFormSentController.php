@@ -17,7 +17,6 @@ class SupportFormSentController extends AbstractController
     name: 'support_form_sent',
     methods: ['GET'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.user%',
     ],
     defaults: [

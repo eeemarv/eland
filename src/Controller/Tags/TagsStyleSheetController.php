@@ -17,12 +17,11 @@ use Symfony\Component\Routing\Attribute\Route;
 class TagsStyleSheetController extends AbstractController
 {
   #[Route(
-    '/{system}/tags/{tag_type}/{thumbprint}_css',
+    '/{schema}/tags/{tag_type}/{thumbprint}_css',
     name: 'tags_css',
     methods: ['GET'],
     priority: 20,
     requirements: [
-      'system'        => '%assert.system%',
       'thumbprint'    => '%assert.thumbprint%',
       'tag_type'      => '%assert.tag_type%',
     ],

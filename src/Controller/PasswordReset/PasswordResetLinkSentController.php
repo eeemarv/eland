@@ -15,7 +15,6 @@ class PasswordResetLinkSentController extends AbstractController
     name: 'password_reset_link_sent',
     methods: ['GET'],
     requirements: [
-      'schema'        => '%assert.schema%',
     ],
     defaults: [
       'module'        => 'users',

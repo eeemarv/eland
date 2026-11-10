@@ -33,21 +33,22 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
-class TransactionsAddAddController extends AbstractController
+class TransactionsAdd2Controller extends AbstractController
 {
+  /*
     #[Route(
         '/{schema}/{role_short}/transactions/addadd',
-        name: 'transactions_add_add',
+        name: 'transactions_add',
         methods: ['GET', 'POST'],
         priority: 10,
         requirements: [
-            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.user%',
         ],
         defaults: [
             'module'        => 'transactions',
         ],
     )]
+  */
 
     public function __invoke(
         Request $request,

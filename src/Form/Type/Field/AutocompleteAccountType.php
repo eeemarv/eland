@@ -43,11 +43,12 @@ class AutocompleteAccountType extends AbstractType
   ):void
   {
     $view->vars['attr']['data-autocomplete-accounts-url-value'] = $this->url_generator->generate(
-      'autocomplete_accounts', [
+      name: 'autocomplete_accounts', 
+      parameters: [
         'schema' => $this->pp->schema(),
         'role_short' => $this->pp->role_short(),
         'group' => $options['account_group'],
-      ]
+      ],
     );
 
     $new_users_enabled = $this->config_service->get_bool(

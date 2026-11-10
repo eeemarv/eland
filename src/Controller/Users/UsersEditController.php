@@ -45,7 +45,6 @@ class UsersEditController extends AbstractController
         name: 'users_add2',
         methods: ['GET', 'POST'],
         requirements: [
-            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
@@ -62,8 +61,6 @@ class UsersEditController extends AbstractController
         methods: ['GET', 'POST'],
         priority: 10,
         requirements: [
-            'id'            => '%assert.id%',
-            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [
@@ -78,7 +75,6 @@ class UsersEditController extends AbstractController
         name: 'users_edit_self',
         methods: ['GET', 'POST'],
         requirements: [
-            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.user%',
         ],
         defaults: [

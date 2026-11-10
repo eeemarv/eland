@@ -1,0 +1,24 @@
+{%- extends 'transactions/base/transactions_base.html.twig' -%}
+
+{%- set admin_heading = true -%}
+
+{%- block heading_title -%}
+  {{- 'transactions_invitations_config.title'|trans -}}
+{%- endblock heading_title -%}
+
+{%- block pre_form -%}
+  <p>
+    {{- 'transactions_invitations_config.help'|trans({
+      'currency': config_str('transactions.currency.name'),
+      'days': 7
+    }) -}}
+  </p>
+{%- endblock pre_form -%}
+
+{%- block form_a -%}
+{{- form_row(form.days, {
+  'label': 'transactions_invitations_config.days.label',
+  'addon': ux_icon('lucide:calendar-days'), 
+}) -}}
+
+{%- endblock form_a -%}

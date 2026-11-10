@@ -22,7 +22,6 @@ class ChatController extends AbstractController
     name: 'chat',
     methods: ['GET'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.guest%',
     ],
     defaults: [

@@ -30,7 +30,6 @@ class PasswordResetConfirmController extends AbstractController
     priority: 30,
     requirements: [
       'confirm_token' => '%uuid_base58%',
-      'schema'        => '%assert.schema%',
     ],
     defaults: [
       'module'        => 'users',

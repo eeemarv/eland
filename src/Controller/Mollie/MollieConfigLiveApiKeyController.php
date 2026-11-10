@@ -22,7 +22,6 @@ class MollieConfigLiveApiKeyController extends AbstractController
     name: 'mollie_config_live_api_key',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

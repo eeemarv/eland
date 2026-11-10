@@ -26,7 +26,6 @@ class TransactionsPlotUserController extends AbstractController
     requirements: [
       'user_id'       => '%assert.id%',
       'days'          => '%assert.id%',
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.guest%',
     ],
     defaults: [

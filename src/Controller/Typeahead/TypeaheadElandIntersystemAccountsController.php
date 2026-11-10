@@ -21,7 +21,6 @@ class TypeaheadElandIntersystemAccountsController extends AbstractController
     methods: ['GET'],
     requirements: [
       'remote_schema' => '%assert.schema%',
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.user%',
       'thumbprint'    => '%assert.thumbprint%',
     ],

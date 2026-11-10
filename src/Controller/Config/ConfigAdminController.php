@@ -21,7 +21,6 @@ class ConfigAdminController extends AbstractController
     name: 'config_admin',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

@@ -1,6 +1,9 @@
 controllers:
   resource: ../../src/Controller/
   type: attribute
+  requirements:
+    schema: '%assert.schema%'
+    id: '%assert.id%'
 
 kernel:
   resource: ../../src/Kernel.php

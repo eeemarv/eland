@@ -1,7 +1,7 @@
 {%- extends 'base/navbar.html.twig' -%}
 
 {%- block btn_top %}
-  <ul class="nav nav-tabs">
+  <ul class="nav nav-tabs pull-left">
 
     <li role="presentation"{%- if route == 'notifications' %} class="active"{%- endif -%}>
       <a href="{{- path('notifications', {}|pp) -}}">

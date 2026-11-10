@@ -22,7 +22,6 @@ class TypeaheadAccountsController extends AbstractController
     methods: ['GET'],
     requirements: [
       'status'        => '%assert.account_status.primary%',
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.guest%',
       'thumbprint'    => '%assert.thumbprint%',
     ],

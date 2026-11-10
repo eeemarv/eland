@@ -21,7 +21,6 @@ class ConfigMailAddrController extends AbstractController
     name: 'config_mail_addr',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

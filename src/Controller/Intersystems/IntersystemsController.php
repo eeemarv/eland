@@ -24,7 +24,6 @@ class IntersystemsController extends AbstractController
         name: 'intersystems',
         methods: ['GET'],
         requirements: [
-            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.admin%',
         ],
         defaults: [

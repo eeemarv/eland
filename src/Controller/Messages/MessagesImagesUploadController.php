@@ -25,7 +25,6 @@ class MessagesImagesUploadController extends AbstractController
         methods: ['POST'],
         requirements: [
             'form_token'    => '%assert.token%',
-            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.user%',
         ],
         defaults: [
@@ -40,9 +39,7 @@ class MessagesImagesUploadController extends AbstractController
         name: 'messages_edit_images_upload',
         methods: ['POST'],
         requirements: [
-            'id'            => '%assert.id%',
             'form_token'    => '%assert.token%',
-            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.user%',
         ],
         defaults: [
@@ -56,8 +53,6 @@ class MessagesImagesUploadController extends AbstractController
         name: 'messages_images_upload',
         methods: ['POST'],
         requirements: [
-            'id'            => '%assert.id%',
-            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.user%',
         ],
         defaults: [

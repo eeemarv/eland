@@ -64,6 +64,19 @@
       </li>
     {%- endif -%}
 
+    {%- if config_bool('transactions.invitations.enabled') -%}
+      <li{%- if active_local_admin_menu is defined
+        and route == 'transactions_invitations_config' %} class="active"
+        {%- endif -%}
+      >
+        <a href="{{- path('transactions_invitations_config', {}|pp) -}}">
+          <twig:ux:icon name="lucide:arrow-left-right"/>
+          &nbsp;
+          {{- ('transactions_invitations_config.menu')|trans -}}
+        </a>
+      </li>
+    {%- endif -%}
+
   {%- endblock menu_items -%}
 {%- endembed -%}
 {%- endblock local_admin_menu -%}

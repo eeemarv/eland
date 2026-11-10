@@ -22,8 +22,6 @@ class DocsMapController extends AbstractController
     priority: 20,
     methods: ['GET'],
     requirements: [
-      'id'            => '%assert.id%',
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.guest%',
     ],
     defaults: [

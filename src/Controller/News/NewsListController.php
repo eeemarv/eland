@@ -20,7 +20,6 @@ class NewsListController extends AbstractController
     methods: ['GET'],
     priority: 20,
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.guest%',
     ],
     defaults: [

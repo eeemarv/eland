@@ -21,8 +21,6 @@ class DocsMapEditController extends AbstractController
     name: 'docs_map_edit',
     methods: ['GET', 'POST'],
     requirements: [
-      'id'            => '%assert.id%',
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

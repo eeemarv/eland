@@ -21,7 +21,6 @@ class UniqueCheckAccountCodesController extends AbstractController
     name: 'unique_check_account_codes',
     methods: ['GET'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.user%',
     ],
   )]

@@ -134,12 +134,15 @@ user:
   role: Ongeldige rol
   status: Ongeldige status
 
-users_account_edit:
-  code_not_unique: >-
+account_code:
+  not_unique: >-
     Deze account code bestaat reeds in het systeem
-  code_chars_not_allowed: >-
+  chars_not_allowed: >-
     Enkel alfanumerieke tekens en
     koppeltekens zijn toegelaten
+  hyphen_should_be_between: >-
+    Een koppelteken moet tussen andere tekens
+    staan
 
 users_name_edit:
   name_not_unique: >-

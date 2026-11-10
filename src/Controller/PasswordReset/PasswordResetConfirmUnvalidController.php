@@ -20,7 +20,6 @@ class PasswordResetConfirmUnvalidController extends AbstractController
     methods: ['GET'],
     requirements: [
       'confirm_token' => '%uuid_base58%',
-      'schema'        => '%assert.schema%',
     ],
     defaults: [
       'module'        => 'users',

@@ -22,7 +22,6 @@ class ImagesUploadMessagesController extends AbstractController
     name: 'images_upload_messages',
     methods: ['POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.user%',
       'message_id'    => '%assert.id%',
     ],
@@ -37,7 +36,6 @@ class ImagesUploadMessagesController extends AbstractController
     name: 'images_upload_messages_temp',
     methods: ['POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.user%',
     ],
     defaults: [

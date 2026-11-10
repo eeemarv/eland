@@ -22,7 +22,6 @@ class ConfigDateFormatController extends AbstractController
     name: 'config_date_format',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

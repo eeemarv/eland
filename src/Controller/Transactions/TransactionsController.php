@@ -27,7 +27,6 @@ class TransactionsController extends AbstractController
     methods: ['GET', 'POST'],
     priority: 10,
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.guest%',
     ],
     defaults: [
@@ -42,7 +41,6 @@ class TransactionsController extends AbstractController
     methods: ['GET', 'POST'],
     priority: 20,
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.user%',
     ],
     defaults: [

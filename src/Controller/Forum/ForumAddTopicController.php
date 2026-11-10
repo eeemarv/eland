@@ -22,7 +22,6 @@ class ForumAddTopicController extends AbstractController
     name: 'forum_add_topic',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.user%',
     ],
     defaults: [

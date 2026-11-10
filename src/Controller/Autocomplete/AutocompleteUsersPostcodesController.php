@@ -20,7 +20,6 @@ class AutocompleteUsersPostcodesController extends AbstractController
     name: 'autocomplete_users_postcodes',
     methods: ['GET'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

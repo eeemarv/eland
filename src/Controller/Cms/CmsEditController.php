@@ -31,7 +31,6 @@ class CmsEditController extends AbstractController
     name: 'cms_edit',
     methods: ['POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

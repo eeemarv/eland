@@ -25,7 +25,6 @@ class MollieWebhookController extends AbstractController
     methods: ['POST'],
     priority: 30,
     requirements: [
-      'schema'  => '%assert.schema%',
     ],
     defaults: [
       'module'  => 'users',

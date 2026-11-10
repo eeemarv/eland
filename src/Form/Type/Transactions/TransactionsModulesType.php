@@ -20,6 +20,7 @@ class TransactionsModulesType extends AbstractType
     $builder->add('limits_enabled', CheckboxType::class);
     $builder->add('autominlimit_enabled', CheckboxType::class);
     $builder->add('mass_enabled', CheckboxType::class);
+    $builder->add('invitations_enabled', CheckboxType::class);
     $builder->add('submit', SubmitType::class);
   }
 

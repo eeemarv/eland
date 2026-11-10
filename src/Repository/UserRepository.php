@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\DTO\AddressAry;
 use App\DTO\Schema;
 use App\Service\ConfigService;
+use App\Service\SystemsService;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Types\Types;
@@ -17,6 +18,7 @@ class UserRepository
   public function __construct(
     private readonly Db $db,
     private readonly ConfigService $config_service,
+    private readonly SystemsService $systems_service,
     #[Autowire(param: 'assert.account.group')]
     private readonly string $assert_account_group,
     #[Autowire(param: 'assert.account.status2')]
@@ -1230,6 +1232,10 @@ class UserRepository
     Schema $schema,
   ): array
   {
+    $inter_ary = $this->systems_service->get_inter_ary(
+      schema: $schema->str(),
+    );
+
     // all|active|active-users|users|intersystems|email-intersystems|inactive
     $account_groups = explode('|', $this->assert_account_group);
 
@@ -1295,6 +1301,12 @@ class UserRepository
     $res = $this->db->executeQuery($query);
 
     while ($row = $res->fetchAssociative()) {
+      if (isset($row['remote_schema'])
+        && isset($inter_ary[$row['remote_schema']])
+      )
+      {
+        $row['name'] = $this->config_service->get_str('system.name', new Schema($row['remote_schema']));
+      }
       $users[] = array_filter($row, fn($v) => !is_null($v));
     }
 

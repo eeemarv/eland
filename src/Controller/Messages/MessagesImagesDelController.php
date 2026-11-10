@@ -22,8 +22,6 @@ class MessagesImagesDelController extends AbstractController
         name: 'messages_images_del',
         methods: ['GET', 'POST'],
         requirements: [
-            'id'            => '%assert.id%',
-            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.user%',
         ],
         defaults: [

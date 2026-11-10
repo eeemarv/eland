@@ -24,7 +24,6 @@ class ContactFormController extends AbstractController
     methods: ['GET', 'POST'],
     priority: 30,
     requirements: [
-      'schema'  => '%assert.schema%',
     ],
     defaults: [
       'module'  => 'contact_form',

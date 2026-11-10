@@ -444,6 +444,7 @@ label:
   tags: Tags
   temporal: Tijdelijk
   text: Tekst
+  to_email: Naar Email
   time: Tijdstip
   title: Titel
   to: Naar
@@ -1790,8 +1791,21 @@ transactions:
           }          
 
 transactions_add:
-  title: Nieuwe transactie
+  title: Nieuwe Transactie
   btn_add_to_user: Nieuwe transactie naar {user}
+  remote_amount:
+    label: >-
+      Aantal in het Andere Systeem
+  from_remote_account:
+    label: >-
+      Van account in het Andere Systeem
+    help: >-
+      De admin kan hier een code of naam ingeven
+      van het initiërende account in het andere 
+      systeem.
+  to_remote_account:
+    label: >- 
+      Naar Account in het Andere Systeem    
 
 transactions_autominlimit:
   title: Automatische Minimum Limiet
@@ -1892,6 +1906,34 @@ transactions_edit_service_stuff:
     success: >-
       Diensten/Spullen veld van transactie aangepast
 
+transactions_invitations_add:
+  title: Nodig uit om Lid te Worden met Transactie
+  menu: Uitnodigen met Transactie
+  help: >- 
+    Met dit formulier kan je een transactie doen
+    naar iemand die nog geen lid is. Er wordt een
+    email verstuurd naar de persoon met de
+    uitnodiging om lid te worden. Als de persoon
+    ingaat op het aanbod zal hij/zij 
+    bij de start meteen de {currency} ontvangen 
+    die jij hebt overgemaakt.
+    De persoon heeft dan {days} dagen de tijd om te
+    reageren op het aanbod. Gedurende die tijd 
+    blijven de {currency} geblokkeerd. 
+    Als de persoon niet ingaat op het aanbod, 
+    gaan de {currency} terug naar jouw rekening.
+  invitation_text: 
+    label: >-
+      Hier kan je eventueel een tekst toevoegen 
+      die wordt meegestuurd in de invitatie-email
+
+transactions_invitations_config:
+  title: Configuratie Uitnodigen met Transactie
+  menu: Configuratie Uitnodigen met Transactie
+  days:
+    label: >- 
+      Aantal dagen dat de uitnodiging geldig blijft
+
 transactions_mass:
   title: Massa Transactie
   menu: Massa Transactie
@@ -1937,6 +1979,11 @@ transactions_modules:
       enkel mogelijk wanneer "limieten" ingeschakeld zijn.
   mass_enabled:
     label: Massa-transactie
+  invitations_enabled:
+    label: Uitnodigen met Transactie
+    help: >-
+      Leden kunnen niet-leden uitnodigen lid te worden
+      met een transactie
   flash:
     change: >-
       Submodules/velden transacties aangepast

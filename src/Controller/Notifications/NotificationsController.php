@@ -22,7 +22,6 @@ class NotificationsController extends AbstractController
     name: 'notifications',
     methods: ['GET'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.user%',
     ],
     defaults: [

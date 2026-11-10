@@ -24,9 +24,7 @@ class UsersLogController extends AbstractController
     name: 'users_log',
     methods: ['GET'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
-      'id'            => '%assert.id%',
     ],
     defaults: [
       'module'        => 'users',

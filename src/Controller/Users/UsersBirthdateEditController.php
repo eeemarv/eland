@@ -22,9 +22,7 @@ class UsersBirthdateEditController extends AbstractController
     name: 'users_birthdate_edit',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
-      'id'            => '%assert.id%',
     ],
     defaults: [
       'is_self'       => false,
@@ -37,9 +35,7 @@ class UsersBirthdateEditController extends AbstractController
     name: 'users_birthdate_edit_self',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.user%',
-      'id'            => '%assert.id%',
     ],
     defaults: [
       'id'            => 0,

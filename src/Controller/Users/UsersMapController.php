@@ -22,7 +22,6 @@ class UsersMapController extends AbstractController
     priority: 20,
     requirements: [
       'status'        => '%assert.account.status2%',
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.guest%',
     ],
     defaults: [

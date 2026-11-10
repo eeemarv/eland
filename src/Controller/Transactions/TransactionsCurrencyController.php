@@ -21,7 +21,6 @@ class TransactionsCurrencyController extends AbstractController
     name: 'transactions_currency',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

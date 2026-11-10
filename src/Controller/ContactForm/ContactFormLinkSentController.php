@@ -17,7 +17,6 @@ class ContactFormLinkSentController extends AbstractController
     name: 'contact_form_link_sent',
     methods: ['GET'],
     requirements: [
-      'schema'  => '%assert.schema%',
     ],
     defaults: [
       'module'  => 'contact_form',

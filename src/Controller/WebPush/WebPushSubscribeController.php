@@ -20,7 +20,6 @@ class WebPushSubscribeController extends AbstractController
     name: 'webpush_subscribe',
     methods: ['POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.user%',
     ],
     defaults: [

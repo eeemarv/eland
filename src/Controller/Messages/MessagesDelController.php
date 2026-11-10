@@ -29,8 +29,6 @@ class MessagesDelController extends AbstractController
     methods: ['GET', 'POST'],
     priority: 10,
     requirements: [
-      'id'            => '%assert.id%',
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.user%',
     ],
     defaults: [

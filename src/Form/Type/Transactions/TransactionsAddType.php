@@ -4,8 +4,8 @@ namespace App\Form\Type\Transactions;
 
 use App\Service\ConfigService;
 use App\Command\Transactions\TransactionsAddCommand;
+use App\Form\Type\Field\AutocompleteAccountType;
 use App\Form\Type\Field\BtnChoiceType;
-use App\Form\Type\Field\TypeaheadType;
 use App\Service\PageParamsService;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -34,37 +34,24 @@ class TransactionsAddType extends AbstractType
     $from_remote_account_options = [];
     $to_remote_account_options = [];
 
-    $typeahead_add = [];
-    $typeahead_add[] = ['accounts', ['status' => 'active']];
-    $typeahead_add[] = ['accounts', ['status' => 'intersystem']];
-
     if ($this->pp->is_admin())
     {
-      $typeahead_add[] = ['accounts', ['status' => 'pre-active']];
-      $typeahead_add[] = ['accounts', ['status' => 'post-active']];
+
     }
 
-    $local_typeahead_options = [
-      'filter'    => 'accounts',
-      'add'       => $typeahead_add,
-    ];
+    $from_id_options = [];
+    $to_id_options = [];
+    $to_remote_id_options = [];
 
-    $from_id_options = $local_typeahead_options;
-    $to_id_options = $local_typeahead_options;
-    $to_remote_id_options = [
-      'filter'    => 'accounts',
-      'add'       => [],
-    ];
-
-    $remote_amount_options = [];
-
-    $builder->add('from_id', TypeaheadType::class, $from_id_options);
+    $builder->add('from_id', AutocompleteAccountType::class, $from_id_options);
     $builder->add('from_remote_account', TextType::class, $from_remote_account_options);
-    $builder->add('to_id', TypeaheadType::class, $to_id_options);
-    $builder->add('to_remote_id', TypeaheadType::class, $to_remote_id_options);
+    $builder->add('to_id', AutocompleteAccountType::class, $to_id_options);
+    $builder->add('to_remote_id', AutocompleteAccountType::class, $to_remote_id_options);
     $builder->add('to_remote_account', TextType::class, $to_remote_account_options);
     $builder->add('amount', IntegerType::class);
-    $builder->add('remote_amount', IntegerType::class);
+    $builder->add('remote_amount', IntegerType::class, [
+      'required'  => false,
+    ]);
     $builder->add('description', TextType::class);
     if ($service_stuff_enabled)
     {

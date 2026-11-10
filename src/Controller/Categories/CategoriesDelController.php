@@ -22,9 +22,7 @@ class CategoriesDelController extends AbstractController
     name: 'categories_del',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
-      'id'            => '%assert.id%',
     ],
     defaults: [
       'module'        => 'messages',

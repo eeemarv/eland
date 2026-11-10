@@ -19,8 +19,6 @@ class TransactionsShowController extends AbstractController
     methods: ['GET'],
     priority: 10,
     requirements: [
-      'id'            => '%assert.id%',
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.guest%',
     ],
     defaults: [

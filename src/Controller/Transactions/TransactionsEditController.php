@@ -29,8 +29,6 @@ class TransactionsEditController extends AbstractController
     name: 'transactions_edit',
     methods: ['GET', 'POST'],
     requirements: [
-      'id'            => '%assert.id%',
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

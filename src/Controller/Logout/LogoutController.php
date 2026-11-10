@@ -22,7 +22,6 @@ class LogoutController extends AbstractController
     methods: ['GET'],
     priority: 30,
     requirements: [
-      'schema'        => '%assert.system%',
       'role_short'    => '%assert.role_short.guest%',
     ],
   )]

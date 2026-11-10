@@ -43,9 +43,7 @@ class UsersShow2Controller extends AbstractController
         methods: ['GET', 'POST'],
         priority: 10,
         requirements: [
-            'id'            => '%assert.id%',
             'status'        => '%assert.account_status%',
-            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.guest%',
         ],
         defaults: [
@@ -61,7 +59,6 @@ class UsersShow2Controller extends AbstractController
         methods: ['GET'],
         priority: 10,
         requirements: [
-            'schema'        => '%assert.schema%',
             'role_short'    => '%assert.role_short.user%',
         ],
         defaults: [

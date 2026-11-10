@@ -22,7 +22,6 @@ class ImagesUpload2Controller extends AbstractController
     methods: ['POST'],
     requirements: [
       'form_token'    => '%assert.token%',
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.user%',
     ],
     defaults: [

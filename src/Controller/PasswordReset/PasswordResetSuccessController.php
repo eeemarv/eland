@@ -15,7 +15,6 @@ class PasswordResetSuccessController extends AbstractController
     name: 'password_reset_success',
     methods: ['GET'],
     requirements: [
-      'schema'        => '%assert.schema%',
     ],
     defaults: [
       'module'        => 'users',

@@ -22,8 +22,6 @@ class UsersImageUploadController extends AbstractController
     name: 'users_image_upload',
     methods: ['POST'],
     requirements: [
-      'id'            => '%assert.id%',
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [
@@ -37,7 +35,6 @@ class UsersImageUploadController extends AbstractController
     name: 'users_image_upload_self',
     methods: ['POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.user%',
     ],
     defaults: [

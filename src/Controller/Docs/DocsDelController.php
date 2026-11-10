@@ -23,8 +23,6 @@ class DocsDelController extends AbstractController
     name: 'docs_del',
     methods: ['GET', 'POST'],
     requirements: [
-      'id' => '%assert.id%',
-      'schema' => '%assert.schema%',
       'role_short' => '%assert.role_short.admin%',
     ],
     defaults: [

@@ -18,7 +18,6 @@ class TypeaheadIntersystemMailAccountsController extends AbstractController
     name: 'typeahead_intersystem_mail_accounts',
     methods: ['GET'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
       'thumbprint'    => '%assert.thumbprint%',
     ],

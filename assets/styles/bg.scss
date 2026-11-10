@@ -1,0 +1,26 @@
+@import './app/variables';
+
+.bg-success
+{
+	background-color: $state-success-bg;
+}
+
+.bg-danger
+{
+	background-color: $state-danger-bg;
+}
+
+.bg-warning
+{
+	background-color: $state-warning-bg;
+}
+
+.bg-info
+{
+	background-color: $state-info-bg;
+}
+
+.bg-inactive
+{
+	background-color: #ddd;
+}

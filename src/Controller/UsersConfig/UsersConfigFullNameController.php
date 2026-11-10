@@ -21,7 +21,6 @@ class UsersConfigFullNameController extends AbstractController
     name: 'users_config_full_name',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

@@ -23,4 +23,8 @@ class TransactionsModulesCommand implements CommandInterface
   #[Type(type: 'bool')]
   #[ConfigMap(type: 'bool', key: 'transactions.mass.enabled')]
   public mixed $mass_enabled;
+
+  #[Type(type: 'bool')]
+  #[ConfigMap(type: 'bool', key: 'transactions.invitations.enabled')]
+  public mixed $invitations_enabled;
 }

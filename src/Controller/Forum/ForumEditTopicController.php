@@ -24,8 +24,6 @@ class ForumEditTopicController extends AbstractController
     name: 'forum_edit_topic',
     methods: ['GET', 'POST'],
     requirements: [
-      'id'            => '%assert.id%',
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.user%',
     ],
     defaults: [

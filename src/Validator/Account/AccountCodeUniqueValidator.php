@@ -9,7 +9,7 @@ use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use App\Service\PageParamsService;
 
-class UniqueAccountCodeValidator extends ConstraintValidator
+class AccountCodeUniqueValidator extends ConstraintValidator
 {
   public function __construct(
     private readonly UserRepository $user_repository,
@@ -23,9 +23,9 @@ class UniqueAccountCodeValidator extends ConstraintValidator
     Constraint $constraint,
   ):void
   {
-    if (!$constraint instanceof UniqueAccountCode)
+    if (!$constraint instanceof AccountCodeUnique)
     {
-      throw new UnexpectedTypeException($constraint, UniqueAccountCode::class);
+      throw new UnexpectedTypeException($constraint, AccountCodeUnique::class);
     }
 
     if (!$command instanceof UsersAccountCodeCommand)
@@ -44,7 +44,7 @@ class UniqueAccountCodeValidator extends ConstraintValidator
 
     if (!$is_unique)
     {
-      $this->context->buildViolation('users_account_edit.code_not_unique')
+      $this->context->buildViolation('account_code.not_unique')
         ->atPath('code')
         ->addViolation();
       return;

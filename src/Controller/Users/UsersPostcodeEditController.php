@@ -22,9 +22,7 @@ class UsersPostcodeEditController extends AbstractController
     name: 'users_postcode_add',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
-      'id'            => '%assert.id%',
     ],
     defaults: [
       'mode'          => 'add',
@@ -38,9 +36,7 @@ class UsersPostcodeEditController extends AbstractController
     name: 'users_postcode_add_self',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.user%',
-      'id'            => '%assert.id%',
     ],
     defaults: [
       'mode'          => 'add',
@@ -55,9 +51,7 @@ class UsersPostcodeEditController extends AbstractController
     name: 'users_postcode_edit',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
-      'id'            => '%assert.id%',
     ],
     defaults: [
       'mode'          => 'edit',
@@ -71,9 +65,7 @@ class UsersPostcodeEditController extends AbstractController
     name: 'users_postcode_edit_self',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.user%',
-      'id'            => '%assert.id%',
     ],
     defaults: [
       'mode'          => 'edit',

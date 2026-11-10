@@ -4,7 +4,7 @@ namespace App\Command\Users;
 
 use App\Command\CommandInterface;
 use App\Validator\Account\AccountCodeChars;
-use App\Validator\Account\UniqueAccountCode;
+use App\Validator\Account\AccountCodeUnique;
 use Symfony\Component\Validator\Constraints\GroupSequence;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints\NotNull;
 use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Component\Validator\Constraints\Type;
 
-#[UniqueAccountCode(groups:['unique'])]
+#[AccountCodeUnique(groups:['unique'])]
 #[GroupSequence(groups:['UsersAccountCodeCommand', 'unique'])]
 class UsersAccountCodeCommand Implements CommandInterface
 {

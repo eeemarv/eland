@@ -22,7 +22,6 @@ class ContactsAddController extends AbstractController
     name: 'contacts_add',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [
@@ -40,7 +39,6 @@ class ContactsAddController extends AbstractController
     methods: ['GET', 'POST'],
     requirements: [
       'user_id'       => '%assert.id%',
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [
@@ -56,7 +54,6 @@ class ContactsAddController extends AbstractController
     name: 'users_contacts_add_self',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.user%',
     ],
     defaults: [

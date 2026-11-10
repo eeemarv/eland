@@ -24,9 +24,7 @@ class UsersAccountCodeEditController extends AbstractController
     name: 'users_account_code_edit',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema' => '%assert.schema%',
       'role_short' => '%assert.role_short.admin%',
-      'id' => '%assert.id%',
     ],
     defaults: [
       'is_self' => false,
@@ -40,9 +38,7 @@ class UsersAccountCodeEditController extends AbstractController
     name: 'users_account_code_edit_self',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema' => '%assert.schema%',
       'role_short' => '%assert.role_short.admin%',
-      'id' => '%assert.id%',
     ],
     defaults: [
       'id' => 0,
@@ -57,9 +53,7 @@ class UsersAccountCodeEditController extends AbstractController
     name: 'users_account_code_add',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema' => '%assert.schema%',
       'role_short' => '%assert.role_short.admin%',
-      'id' => '%assert.id%',
     ],
     defaults: [
       'is_self' => false,
@@ -73,9 +67,7 @@ class UsersAccountCodeEditController extends AbstractController
     name: 'users_account_code_add_self',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema' => '%assert.schema%',
       'role_short' => '%assert.role_short.admin%',
-      'id' => '%assert.id%',
     ],
     defaults: [
       'id' => 0,

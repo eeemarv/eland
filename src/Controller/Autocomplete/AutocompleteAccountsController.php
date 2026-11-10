@@ -21,11 +21,47 @@ class AutocompleteAccountsController extends AbstractController
     methods: ['GET'],
     requirements: [
       'group'         => '%assert.account.group%',
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.guest%',
     ],
     defaults: [
       'group'         => 'active',
+      'detailed'      => false,
+      'remote'        => false,
+      'remote_schema' => null,
+      'module'        => 'users',
+    ],
+  )]
+
+  #[Route(
+    '/{schema}/{role_short}/autocomplete/accounts/{group}/detailed',
+    name: 'autocomplete_accounts_detailed',
+    methods: ['GET'],
+    requirements: [
+      'group'         => '%assert.account.group%',
+      'role_short'    => '%assert.role_short.guest%',
+    ],
+    defaults: [
+      'group'         => 'active',
+      'detailed'      => true,
+      'remote'        => false,
+      'remote_schema' => null,
+      'module'        => 'users',
+    ],
+  )]
+
+  #[Route(
+    '/{schema}/{role_short}/autocomplete/accounts/remote/{remote_schema}',
+    name: 'autocomplete_accounts_remote',
+    methods: ['GET'],
+    requirements: [     
+      'group'         => '%assert.account.group%',
+      'role_short'    => '%assert.role_short.guest%',
+      'remote_schema' => '%assert.schema%',
+    ],
+    defaults: [
+      'group'         => 'active',
+      'detailed'      => true,
+      'remote'        => true,
       'module'        => 'users',
     ],
   )]
@@ -48,7 +84,9 @@ class AutocompleteAccountsController extends AbstractController
 
     if (!$pp->is_admin() && !in_array($group, $allow_groups_for_users))
     {
-      throw $this->createAccessDeniedException('No access.');
+      throw $this->createAccessDeniedException(
+        'No access.'
+      );
     }
 
     $accounts = $user_repository->get_for_autocomplete(

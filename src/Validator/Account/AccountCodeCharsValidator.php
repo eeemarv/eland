@@ -30,10 +30,20 @@ class AccountCodeCharsValidator extends ConstraintValidator
       throw new UnexpectedTypeException($code, 'string');
     }
 
+    /**
+     * A hyphen can not be at the beginning or
+     * end or next to another hyphen
+     */
+    if (preg_match('/(^-|-$|--)/', $code)) 
+    {
+      $this->context
+        ->buildViolation('account_code.hyphen_should_be_between')
+        ->addViolation();
+    }
+
     if (!preg_match('/^[A-Za-z0-9-]+$/D', $code))
     {
-      $this->context->buildViolation('users_account_edit.code_chars_not_allowed')
-        ->atPath('code')
+      $this->context->buildViolation('account_code.chars_not_allowed')
         ->addViolation();
       return;
     }

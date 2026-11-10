@@ -17,7 +17,6 @@ class RegisterFormLinkSentController extends AbstractController
     name: 'register_form_link_sent',
     methods: ['GET'],
     requirements: [
-      'schema'        => '%assert.schema%',
     ],
     defaults: [
       'module'        => 'register_form',

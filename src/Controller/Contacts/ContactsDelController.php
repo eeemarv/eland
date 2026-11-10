@@ -23,8 +23,6 @@ class ContactsDelController extends AbstractController
     name: 'contacts_del_admin',
     methods: ['GET', 'POST'],
     requirements: [
-      'id'            => '%assert.id%',
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [
@@ -44,7 +42,6 @@ class ContactsDelController extends AbstractController
     requirements: [
       'user_id'       => '%assert.id%',
       'contact_id'    => '%assert.id%',
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [
@@ -62,7 +59,6 @@ class ContactsDelController extends AbstractController
     methods: ['GET', 'POST'],
     requirements: [
       'contact_id'    => '%assert.id%',
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.user%',
     ],
     defaults: [

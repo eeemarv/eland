@@ -22,8 +22,6 @@ class TagsDelController extends AbstractController
     name: 'tags_del',
     methods: ['GET', 'POST'],
     requirements: [
-      'id'            => '%assert.id%',
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
       'tag_type'      => '%assert.tag_type%',
     ],

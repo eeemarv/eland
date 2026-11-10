@@ -24,9 +24,7 @@ class UsersAddController extends AbstractController
     name: 'users_add',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema' => '%assert.schema%',
       'role_short' => '%assert.role_short.admin%',
-      'id' => '%assert.id%',
     ],
     defaults: [
       'module' => 'users',

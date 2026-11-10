@@ -20,7 +20,6 @@ class ContactTypesAddController extends AbstractController
     name: 'contact_types_add',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

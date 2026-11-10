@@ -11,6 +11,13 @@ use Symfony\Component\Validator\Exception\LogicException;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
+/**
+ * The config settings are cached in Redis. 
+ * Those are values that are needed 
+ * on many pages. 
+ * For non-cached settings use
+ * the FeaturesService
+ */
 class ConfigService
 {
 	const CACHE_PREFIX = 'config.';

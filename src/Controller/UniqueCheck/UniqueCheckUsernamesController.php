@@ -21,7 +21,6 @@ class UniqueCheckUsernamesController extends AbstractController
     name: 'unique_check_usernames',
     methods: ['GET'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.user%',
     ],
   )]

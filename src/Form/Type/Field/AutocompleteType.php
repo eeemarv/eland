@@ -26,7 +26,8 @@ class AutocompleteType extends AbstractType
   ):void
   {
     $view->vars['attr']['data-autocomplete-url-value'] = $this->url_generator->generate(
-      $options['route'], [
+      name: $options['route'], 
+      parameters: [
         ...$options['route_params'],
         ...$this->pp->ary(),
       ],

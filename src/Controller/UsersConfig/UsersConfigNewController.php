@@ -21,7 +21,6 @@ class UsersConfigNewController extends AbstractController
     name: 'users_config_new',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

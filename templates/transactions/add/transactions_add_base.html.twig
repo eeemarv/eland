@@ -1,0 +1,34 @@
+{%- extends 'transactions/base/transactions_base.html.twig' -%}
+
+{%- set cancel_route = 'transactions' -%}
+
+{%- block btn_top %}
+  {%- if config_bool('transactions.invitations.enabled') -%}
+  <ul class="nav nav-tabs pull-left">
+
+    <li role="presentation"{%- if route == 'transactions_add' %} class="active"{%- endif -%}>
+      <a href="{{- path('transactions_add', {}|pp) -}}">
+        <twig:ux:icon name="lucide:arrow-left-right"/>
+        &nbsp;
+        {{- 'transactions_add.title'|trans -}}
+      </a>
+    </li>
+
+      <li role="presentation"{%- if route == 'transactions_invitations_add' %} class="active"{%- endif -%}>
+        <a href="{{- path('transactions_invitations_add', {}|pp) -}}">
+          <twig:ux:icon name="lucide:arrow-left-right"/>
+          &nbsp;
+          {{- 'transactions_invitations_add.menu'|trans -}}
+        </a>
+      </li>
+  </ul>
+  {%- endif -%}
+{%- endblock btn_top %}
+
+{%- block content -%}
+{%- endblock -%}
+
+{%- block form_submit_btn -%}
+  {%- include 'form/submit_add_btn.html.twig' -%}
+{%- endblock form_submit_btn -%}
+

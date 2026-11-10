@@ -19,9 +19,7 @@ class MessagesExtendController extends AbstractController
     name: 'messages_extend',
     methods: ['GET', 'POST'],
     requirements: [
-      'id'            => '%assert.id%',
       'days'          => '%assert.id%',
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.user%',
     ],
     defaults: [

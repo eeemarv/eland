@@ -21,7 +21,6 @@ class ConfigMaintenanceController extends AbstractController
     name: 'config_maintenance',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

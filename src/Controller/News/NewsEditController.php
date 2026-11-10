@@ -21,8 +21,6 @@ class NewsEditController extends AbstractController
     name: 'news_edit',
     methods: ['GET', 'POST'],
     requirements: [
-      'id'            => '%assert.id%',
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

@@ -28,7 +28,6 @@ class MollieCheckoutController extends AbstractController
     priority: 30,
     requirements: [
       'checkout_token'   => '%uuid_base58%',
-      'schema'           => '%assert.schema%',
     ],
     defaults: [
       'module'        => 'users',

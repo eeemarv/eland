@@ -22,7 +22,6 @@ class TagsAddController extends AbstractController
     name: 'tags_add',
     methods: ['GET', 'POST'],
     requirements: [
-      'schema'        => '%assert.schema%',
       'role_short'    => '%assert.role_short.admin%',
       'tag_type'      => '%assert.tag_type%',
     ],

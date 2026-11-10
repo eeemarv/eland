@@ -26,7 +26,6 @@ class RegisterFormConfirmController extends AbstractController
     priority: 30,
     requirements: [
       'confirm_token' => '%uuid_base58%',
-      'schema'        => '%assert.schema%',
     ],
     defaults: [
       'module'        => 'register_form',

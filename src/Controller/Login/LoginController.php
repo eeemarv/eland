@@ -27,7 +27,6 @@ class LoginController extends AbstractController
     methods: ['GET', 'POST'],
     priority: 30,
     requirements: [
-      'schema'        => '%assert.schema%',
     ],
   )]
 
