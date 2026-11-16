@@ -42,7 +42,7 @@ $brand-danger:          #8c1c18 !default;
 //## Settings for some of the most global styles.
 
 //** Background color for `<body>`.
-$body-bg:               #fff !default;
+$body-bg:               #ddd !default;
 //** Global text color on `<body>`.
 $text-color:            $gray-dark !default;
 
@@ -173,10 +173,10 @@ $table-condensed-cell-padding:  5px !default;
 $table-bg:                      transparent !default;
 //** Background color used for `.table-striped`.
 //$table-bg-accent:               #f9f9f9 !default;
-$table-bg-accent:               #ddd !default;
+$table-bg-accent:               #f2f2f2 !default;
 //** Background color used for `.table-hover`.
 //$table-bg-hover:                #f5f5f5 !default;
-$table-bg-hover:                #eee !default;
+$table-bg-hover:                #f2f2f2 !default;
 $table-bg-active:               $table-bg-hover !default;
 
 //** Border color for table and cell borders.
@@ -233,10 +233,11 @@ $input-bg:                       #fff !default;
 $input-bg-disabled:              $gray-lighter !default;
 
 //** Text color for `<input>`s
-$input-color:                    $gray !default;
+//$input-color:                    $gray !default;
+$input-color:                    #000 !default;
 //** `<input>` border color
 //$input-border:                   #ccc !default;
-$input-border:                   #aaa !default;
+$input-border:                   #888 !default;
 
 // TODO: Rename `$input-border-radius` to `$input-border-radius-base` in v4
 //** Default `.form-control` border radius
@@ -267,7 +268,8 @@ $legend-color:                   $gray-dark !default;
 $legend-border-color:            #e5e5e5 !default;
 
 //** Background color for textual input addons
-$input-group-addon-bg:           $gray-lighter !default;
+// $input-group-addon-bg:           $gray-lighter !default;
+$input-group-addon-bg:           #ddd !default;
 //** Border color for textual input addons
 $input-group-addon-border-color: $input-border !default;
 
@@ -417,16 +419,21 @@ $navbar-collapse-max-height:       340px !default;
 
 //$navbar-default-color:             #777 !default;
 $navbar-default-color:             #444 !default;
-$navbar-default-bg:                #f8f8f8 !default;
-$navbar-default-border:            darken($navbar-default-bg, 6.5%) !default;
+//$navbar-default-bg:                #f8f8f8 !default;
+$navbar-default-bg:                #eee !default;
+$navbar-default-border:            darken($navbar-default-bg, 40%) !default;
 
 // Navbar links
-$navbar-default-link-color:                #777 !default;
-$navbar-default-link-hover-color:          #333 !default;
+//$navbar-default-link-color:                #777 !default;
+$navbar-default-link-color:                #333 !default;
+//$navbar-default-link-hover-color:          #333 !default;
+$navbar-default-link-hover-color:          #111 !default;
 $navbar-default-link-hover-bg:             transparent !default;
-$navbar-default-link-active-color:         #555 !default;
-$navbar-default-link-active-bg:            darken($navbar-default-bg, 6.5%) !default;
-$navbar-default-link-disabled-color:       #ccc !default;
+//$navbar-default-link-active-color:         #555 !default;
+$navbar-default-link-active-color:         #222 !default;
+$navbar-default-link-active-bg:            darken($navbar-default-bg, 10%) !default;
+//$navbar-default-link-disabled-color:       #ccc !default;
+$navbar-default-link-disabled-color:       #aaa !default;
 $navbar-default-link-disabled-bg:          transparent !default;
 
 // Navbar brand label
@@ -482,7 +489,8 @@ $nav-tabs-border-color:                     #ddd !default;
 
 $nav-tabs-link-hover-border-color:          $gray-lighter !default;
 
-$nav-tabs-active-link-hover-bg:             $body-bg !default;
+//nav-tabs-active-link-hover-bg:             $body-bg !default;
+$nav-tabs-active-link-hover-bg:             #fff !default;
 $nav-tabs-active-link-hover-color:          $gray !default;
 $nav-tabs-active-link-hover-border-color:   #ddd !default;
 
@@ -565,7 +573,7 @@ $state-info-text:                #31708f !default;
 $state-info-bg:                  #d9edf7 !default;
 */
 $state-info-text:                #1d5571 !default;
-$state-info-bg:                  #d2e4ee !default;
+$state-info-bg:                  #c6dbe9 !default;
 
 $state-info-border:              darken(adjust-hue($state-info-bg, -10), 7%) !default;
 

@@ -7,7 +7,7 @@ use Symfony\Component\Scheduler\Attribute\AsPeriodicTask;
 #[AsPeriodicTask(610, jitter: 100, transports: 'async')]
 final class GeocodeTaskMessage
 {
-    public function __invoke()
-    {
-    }
+  public function __invoke()
+  {
+  }
 }

@@ -4,16 +4,11 @@ namespace App\Command\Config;
 
 use App\Attributes\ConfigMap;
 use App\Command\CommandInterface;
-use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\NotNull;
-use Symfony\Component\Validator\Constraints\Sequentially;
+use Symfony\Component\Validator\Constraints\Url;
 
 class ConfigLandingPageCommand implements CommandInterface
 {
-  #[Sequentially(constraints: [
-    new NotNull(),
-    new NotBlank(),
-  ])]
+  #[Url()]
   #[ConfigMap(type: 'str', key: 'system.default_landing_page')]
   public mixed $landing_page;
 }

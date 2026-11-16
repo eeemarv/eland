@@ -3,10 +3,10 @@
 {%- block content -%}{%- endblock -%}
 
 {%- block form_header -%}
-    <div class="panel-heading">
-        <h4>
-            {{- (config_title ?? config_menu[route])|trans -}}
-        </h4>
-        {%- block config_title_sub -%}{%- endblock -%}
-    </div>
+  <div class="panel-heading">
+    <h2>
+        {{- (config_title ?? config_menu[route])|trans -}}
+    </h2>
+    {%- block config_title_sub -%}{%- endblock -%}
+  </div>
 {%- endblock form_header -%}

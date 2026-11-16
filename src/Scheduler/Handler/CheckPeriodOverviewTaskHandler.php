@@ -9,27 +9,31 @@ use Symfony\Component\Lock\LockFactory;
 #[AsMessageHandler]
 final class CheckPeriodOverviewTaskHandler
 {
-    public function __construct(
-        private readonly LockFactory $lock_factory
-    )
+  public function __construct(
+    private readonly LockFactory $lock_factory
+  )
+  {
+  }
+
+  public function __invoke(
+    CheckPeriodicOverviewTaskMessage $check_periodic_overview_task_message
+  ):void
+  {
+    $lock = $this->lock_factory->createLock('check_periodic_mail', 300);
+
+    if (!$lock->acquire())
     {
+      return;
     }
 
-    public function __invoke(
-        CheckPeriodicOverviewTaskMessage $check_periodic_overview_task_message
-    ):void
+    try 
     {
-        $lock = $this->lock_factory->createLock('check_periodic_mail', 300);
+      error_log('check_periodic_overview');
 
-        if (!$lock->acquire()){
-            return;
-        }
-
-        try {
-            error_log('check_periodic_overview');
-
-        } finally {
-            $lock->release();
-        }
+    } 
+    finally 
+    {
+      $lock->release();
     }
+  }
 }

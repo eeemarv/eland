@@ -9,27 +9,31 @@ use Symfony\Component\Lock\LockFactory;
 #[AsMessageHandler]
 final class CleanupImagesTaskHandler
 {
-    public function __construct(
-        private readonly LockFactory $lock_factory
-    )
+  public function __construct(
+    private readonly LockFactory $lock_factory
+  )
+  {
+  }
+
+  public function __invoke(
+    CleanupImagesTaskMessage $cleanup_images_task_message
+  ):void
+  {
+    $lock = $this->lock_factory->createLock('cleanup_images', 300);
+
+    if (!$lock->acquire())
     {
+      return;
     }
 
-    public function __invoke(
-        CleanupImagesTaskMessage $cleanup_images_task_message
-    ):void
+    try
     {
-        $lock = $this->lock_factory->createLock('cleanup_images', 300);
+      error_log('cleanup_images');
 
-        if (!$lock->acquire()){
-            return;
-        }
-
-        try {
-            error_log('cleanup_images');
-
-        } finally {
-            $lock->release();
-        }
+    } 
+    finally 
+    {
+      $lock->release();
     }
+  }
 }

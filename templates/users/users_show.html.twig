@@ -88,11 +88,11 @@ bg-info
   }) -}}
   {%- if is_leaving(user) -%}
     <small class="ms-1 text-danger">
-      {{- 'status.leaving'|trans -}}
+      {{- 'status.leaving_user'|trans -}}
     </small>
   {%- elseif is_new(user) -%}
     <small class="ms-1 text-success">
-      {{- 'status.new'|trans -}}
+      {{- 'status.new_user'|trans -}}
     </small>
   {%- elseif is_intersystem(user) -%}
     <small class="ms-1 text-warning">

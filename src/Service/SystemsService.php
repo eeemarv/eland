@@ -62,6 +62,10 @@ class SystemsService
 		return isset($this->local_cache_ary[$schema]);
 	}
 
+  /**
+   * Returns all schemas as keys, arrays as values 
+   * where intersystems are keys (from active user accounts). 
+   */
   public function get_all():array
   {
     return $this->local_cache_ary ?? $this->read_ary();

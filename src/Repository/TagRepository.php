@@ -489,7 +489,7 @@ class TagRepository
 	}
 
   /**
-   * @return array user ids where a tag was added
+   * @return array user ids where a tag is be added
    */
   public function add_tag_for_users(
     array $user_ids,
@@ -497,10 +497,10 @@ class TagRepository
     string|null $comment,
     string|null $route,
     int|null $created_by,
-    Schema $schema
+    Schema $schema,
   ):array
   {
-    $bulk_id = Uuid::v4()->toRfc4122();
+    $bulk_id = Uuid::v7()->toRfc4122();
 
     $this->db->beginTransaction();
 
@@ -571,7 +571,7 @@ class TagRepository
   }
 
   /**
-   * @return array user ids where a tag was deleted
+   * @return array user ids where a tag is to be deleted
    */
   public function del_tag_for_users(
     array $user_ids,

@@ -3,14 +3,20 @@
 .chat-layout {
   display: grid;
   grid-template-columns: 320px minmax(0, 1fr);
-
   height: min(75vh, 800px);
   min-height: 480px;
-
   border: 1px solid #848484;
   border-radius: 8px;
   overflow: hidden;
-  background: #ddd;
+  background: #ccc;
+}
+
+body.admin .chat-layout {
+  background-color: #ccd5e0;
+}
+
+body.guest .chat-layout {
+  background-color: #e0d7cc;
 }
 
 /* left column */

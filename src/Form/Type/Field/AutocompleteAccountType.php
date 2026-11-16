@@ -3,8 +3,6 @@
 namespace App\Form\Type\Field;
 
 use App\Form\DataTransformer\AccountCodeTransformer;
-use App\Service\ConfigService;
-use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -18,8 +16,6 @@ class AutocompleteAccountType extends AbstractType
 {
   public function __construct(
     private readonly PageParamsService $pp,
-    private readonly ItemAccessService $item_access_service,
-    private readonly ConfigService $config_service,
     private readonly AccountCodeTransformer $account_code_transformer,
     private readonly UrlGeneratorInterface $url_generator,
   )
@@ -50,44 +46,6 @@ class AutocompleteAccountType extends AbstractType
         'group' => $options['account_group'],
       ],
     );
-
-    $new_users_enabled = $this->config_service->get_bool(
-      config_id: 'users.new.enabled',
-      schema: $this->pp->schema_o(),
-    );
-    $leaving_users_enabled = $this->config_service->get_bool(
-      config_id: 'users.leaving.enabled',
-      schema: $this->pp->schema_o(),
-    );
-
-    $show_new_status = $new_users_enabled;
-
-    if ($show_new_status)
-    {
-      $new_users_access = $this->config_service->get_str(
-        config_id: 'users.new.access',
-        schema: $this->pp->schema_o(),
-      );
-      $show_new_status = $this->item_access_service->is_visible($new_users_access);
-    }
-
-    $show_leaving_status = $leaving_users_enabled;
-
-    if ($show_leaving_status)
-    {
-      $leaving_users_access = $this->config_service->get_str(
-        config_id: 'users.leaving.access',
-        schema: $this->pp->schema_o(),
-      );
-      $show_leaving_status = $this->item_access_service->is_visible($leaving_users_access);
-    }
-
-    if (!$show_new_status) {
-      $view->vars['attr']['data-autocomplete-accounts-show-new-status-value'] = 'false';
-    }
-    if (!$show_leaving_status) {
-      $view->vars['attr']['data-autocomplete-accounts-show-leaving-status-value'] = 'false';
-    }
   }
 
   public function configureOptions(OptionsResolver $resolver):void
@@ -102,10 +60,6 @@ class AutocompleteAccountType extends AbstractType
 
     $resolver->setDefault('attr', [
       'data-controller' => 'autocomplete-accounts',
-      'data-autocomplete-accounts-new-threshold-value' =>
-        $this->config_service->get_new_user_treshold(
-          schema: $this->pp->schema_o(),
-        )->format('Y-m-d H:i:s'),
     ]);
   }
 

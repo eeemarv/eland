@@ -29,6 +29,8 @@
 {%- endblock -%}
 
 {%- block form_submit_btn -%}
-  {%- include 'form/submit_add_btn.html.twig' -%}
+  {%- include 'form/submit_add_btn.html.twig' with {
+    'label': 'btn.create'
+  } -%}
 {%- endblock form_submit_btn -%}
 

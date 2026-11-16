@@ -9,7 +9,7 @@ use Symfony\Component\Scheduler\Attribute\AsPeriodicTask;
 #[AsPeriodicTask(200, jitter: 60, transports: 'async')]
 final class CleanupImagesTaskMessage
 {
-    public function __construct()
-    {
-    }
+  public function __construct()
+  {
+  }
 }

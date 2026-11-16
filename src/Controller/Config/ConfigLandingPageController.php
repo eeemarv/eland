@@ -47,6 +47,7 @@ class ConfigLandingPageController extends AbstractController
     if ($form->isSubmitted()
       && $form->isValid())
     {
+
       $changed = $config_service->store_command(
         command: $command,
         route: $pp->route(),

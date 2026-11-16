@@ -2,36 +2,24 @@
 
 namespace App\Controller\Transactions;
 
-use App\Cnst\BulkCnst;
-use App\Cnst\MessageTypeCnst;
 use App\Command\Transactions\TransactionsAddCommand;
 use App\DTO\Schema;
 use App\Form\Type\Transactions\TransactionsAddType;
-use App\Render\AccountRender;
-use App\Render\LinkRender;
 use App\Repository\AccountRepository;
+use App\Repository\MessageRepository;
+use App\Repository\UserRepository;
 use App\Service\AutoDeactivateService;
-use App\Service\AutoMinLimitService;
 use App\Service\ConfigService;
-use App\Service\FormTokenService;
-use App\Service\IntersystemsService;
 use App\Service\ItemAccessService;
-use App\Service\MailTransactionService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\SystemsService;
-use App\Service\TransactionService;
-use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
-use Doctrine\DBAL\ArrayParameterType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Doctrine\DBAL\Connection as Db;
-use Doctrine\DBAL\Types\Types;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
@@ -52,20 +40,13 @@ class TransactionsAddController extends AbstractController
 
   public function __invoke(
     Request $request,
-    Db $db,
     AccountRepository $account_repository,
+    MessageRepository $message_repository,
+    UserRepository $user_repository,
     LoggerInterface $logger,
-    AccountRender $account_render,
     ItemAccessService $item_access_service,
     ConfigService $config_service,
-    FormTokenService $form_token_service,
-    IntersystemsService $intersystems_service,
-    LinkRender $link_render,
-    TransactionService $transaction_service,
-    MailTransactionService $mail_transaction_service,
     SystemsService $systems_service,
-    TypeaheadService $typeahead_service,
-    AutoMinLimitService $autominlimit_service,
     AutoDeactivateService $auto_deactivate_service,
     UserCacheService $user_cache_service,
     PageParamsService $pp,
@@ -82,11 +63,65 @@ class TransactionsAddController extends AbstractController
       );
     }
 
-    $errors = [];
+    $command = new TransactionsAddCommand();
 
-    $mid = (int) $request->query->get('mid', 0);
-    $tuid = (int) $request->query->get('tuid', 0);
-    $tus = $request->query->get('tus', '');
+    $inter_ary = $systems_service->get_inter_ary($pp->schema());
+    $to_schema = $pp->schema();
+    $message_id = $request->query->get('mid');
+    $to_user_id = $request->query->get('tuid');
+    $to_user_schema = $request->query->get('tus');
+
+    if (isset($to_user_schema) 
+      && $to_user_schema !== $to_schema
+    )
+    {
+      if (isset($inter_ary[$to_user_schema]))
+      {
+        $to_schema = $to_user_schema;
+      }
+      else
+      {
+        $to_schema = null;
+      }
+    }
+
+    if (isset($message_id) && isset($to_schema))
+    {
+      $message = $message_repository->get_with_prev_next(
+        id: (int) $message_id,
+        schema: new Schema($to_schema),
+      );
+
+      if ($message && $message['is_published'])
+      {
+        $command->to_id = $message['user_id'];
+        $subj = $message['subject'];
+        if (strlen($subj) > 60)
+        {
+          $subj = substr($subj, 0 ,57);
+          $subj .= '...';
+        }
+        $command->description = $subj;
+      }
+    }
+    else if (isset($to_user_id) && isset($to_schema))
+    {
+      $to_user = $user_repository->get(
+        id: (int) $to_user_id,
+        schema: new Schema($to_schema),
+      );
+
+      if ($to_user && $to_user['is_active'])
+      {
+        $command->to_id = $to_user['id'];
+      }
+    }
+
+    $command->from_id = $su->id() ?? null;
+
+
+
+
 
     $currency = $config_service->get_str(
       config_id: 'transactions.currency.name',
@@ -164,7 +199,6 @@ class TransactionsAddController extends AbstractController
      *
      */
 
-    $command = new TransactionsAddCommand();
     $form = $this->createForm(
       type: TransactionsAddType::class,
       data: $command,

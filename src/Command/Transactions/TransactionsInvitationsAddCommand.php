@@ -34,6 +34,6 @@ class TransactionsInvitationsAddCommand implements CommandInterface
     #[Choice(choices: ['service', 'stuff'])]
     public mixed $service_stuff;
 
-    #[Type(stype: 'string')]
+    #[Type(type: 'string')]
     public mixed $invitation_text;
 }

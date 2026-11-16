@@ -76,7 +76,10 @@ class ConfigNameController extends AbstractController
         );
       }
 
-      return $this->redirectToRoute('config_name', $pp->ary());
+      return $this->redirectToRoute(
+        route: 'config_name', 
+        parameters: $pp->ary(),
+      );
     }
 
     return $this->render('config/config_name.html.twig', [

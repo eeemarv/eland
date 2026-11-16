@@ -51,4 +51,4 @@ import "./styles/chat.css";
 
 import "./styles/print.css";
 
-console.log('== assets/app.js');
+console.log('== assets/app.js ==');

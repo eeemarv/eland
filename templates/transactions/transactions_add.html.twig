@@ -1,6 +1,5 @@
 {%- extends 'transactions/add/transactions_add_base.html.twig' -%}
 
-
 {%- block heading_title -%}
   {{- 'transactions_add.title'|trans -}}
 {%- endblock heading_title -%}
@@ -9,15 +8,19 @@
 
 {%- block form_a -%}
 
+<div class="hin">
 {{- form_row(form.from_remote_account, {
   'label': 'transactions_add.from_remote_account.label',
   'help': 'transactions_add.from_remote_account.help',
   'addon': ux_icon('lucide:user'),
 }) -}}
+</div>
 
 {{- form_row(form.from_id, {
   'label': 'label.from_account',
   'addon': ux_icon('lucide:user'),
+  'disabled': not pp_has_role('admin'),
+  'help': pp_has_role('admin') ? 'transactions_add.from_id.help_admin' : false,
 }) -}}
 
 {{- form_row(form.to_id, {

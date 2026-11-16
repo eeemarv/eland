@@ -76,7 +76,10 @@ class ConfigModulesController extends AbstractController
         );
       }
 
-      return $this->redirectToRoute('config_modules', $pp->ary());
+      return $this->redirectToRoute(
+        route: 'config_modules', 
+        parameters: $pp->ary(),
+      );
     }
 
     return $this->render('config/config_modules.html.twig', [

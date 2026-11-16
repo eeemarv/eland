@@ -7,7 +7,7 @@ use Symfony\Component\Scheduler\Attribute\AsPeriodicTask;
 #[AsPeriodicTask(43200, jitter: 6000, transports: 'async')]
 final class CleanupMessagesTaskMessage
 {
-    public function __invoke()
-    {
-    }
+  public function __invoke()
+  {
+  }
 }

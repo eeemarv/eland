@@ -15,19 +15,84 @@ class MessageRepository
 	{
 	}
 
+	public function get_with_prev_next(
+    int $id,
+    Schema $schema,
+  ):array|false
+	{
+    $stmt = $this->db->prepare('
+      select 
+        m.*,
+        (select id 
+          from ' . $schema->str() . '.messages 
+          where id < :id 
+          order by id desc 
+          limit 1) 
+          as prev_id,
+        (select id 
+          from ' . $schema->str() . '.messages 
+          where id > :id 
+          order by id asc 
+          limit 1) 
+          as next_id,
+        (select count(*) 
+          from ' . $schema->str() . '.messages_logs ml 
+          where ml.message_id = m.id) 
+          as log_count,
+        jsonb_build_object(
+          \'id\', u.id,
+          \'name\', u.name,
+          \'code\', u.code,
+          \'is_active\', u.is_active,
+          \'activated_at\', u.activated_at,
+          \'is_leaving\', u.is_leaving,
+          \'remote_schema\', u.remote_schema,
+          \'remote_email\', u.remote_email
+        ) as user,
+        jsonb_build_object(
+          \'id\', cu.id,
+          \'name\', cu.name,
+          \'code\', cu.code,
+          \'is_active\', cu.is_active
+        ) as created_by_user
+      from ' . $schema->str() . '.messages m
+      left join ' . $schema->str() . '.users u on u.id = m.user_id
+      left join ' . $schema->str() . '.users cu on cu.id = m.created_by
+      where m.id = :id
+    ');
+
+		$stmt->bindValue('id', $id, Types::INTEGER);
+		$res = $stmt->executeQuery();
+		$message = $res->fetchAssociative();
+
+    if ($message === false)
+    {
+      return false;
+    }
+
+    $user = json_decode($message['user'], true);
+    $created_by_user = json_decode($message['created_by_user'], true);
+
+    $message = [
+      ...$message,
+      'user' => $user,
+      'created_by_user' => $created_by_user,
+    ];
+
+    return $message;
+	}
+
 	public function get(
     int $id,
     Schema $schema,
   ):array|false
 	{
-    $message = $this->db->fetchAssociative('select *
+    $stmt = $this->db->prepare('select *
       from ' . $schema->str() . '.messages
-      where id = :id', [
-        'id' => $id,
-      ], [
-        'id' => Types::INTEGER,
-      ]);
-
+      where id = :id');
+    $stmt->bindValue('id', $id, Types::INTEGER);
+    $res = $stmt->executeQuery();
+    $message = $res->fetchAssociative();
 		return $message;
 	}
 

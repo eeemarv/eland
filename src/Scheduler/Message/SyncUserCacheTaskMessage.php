@@ -2,12 +2,12 @@
 
 namespace App\Scheduler\Message;
 
-use Symfony\Component\Scheduler\Attribute\AsPeriodicTask;
+use Symfony\Component\Scheduler\Attribute\AsCronTask;
 
-#[AsPeriodicTask(43200, jitter: 4000, transports: 'async')]
+
 final class SyncUserCacheTaskMessage
 {
-    public function __invoke()
-    {
-    }
+  public function __invoke()
+  {
+  }
 }

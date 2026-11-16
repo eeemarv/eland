@@ -78,7 +78,10 @@ class ConfigLogoDelController extends AbstractController
         );
       }
 
-      return $this->redirectToRoute('config_logo', $pp->ary());
+      return $this->redirectToRoute(
+        route: 'config_logo', 
+        parameters: $pp->ary(),
+      );
     }
 
     return $this->render('config/config_logo_del.html.twig', [

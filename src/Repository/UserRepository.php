@@ -27,6 +27,21 @@ class UserRepository
   {
   }
 
+  public function get_id_from_remote_schema(
+    Schema $remote_schema,
+    Schema $schema,
+  ):int|false
+  {
+    $stmt = $this->db->prepare('select remote_schema
+      from ' . $schema->str() . '.users
+      where remote_schema = :remote_schema
+        and remote_schema is not null
+        and is_active');
+    $stmt->bindValue('remote_schema', $remote_schema->str(), Types::STRING);
+    $res = $stmt->executeQuery();
+    return $res->fetchOne();
+  }
+
   public function get_email_addresses(
     int $user_id,
     Schema $schema,
@@ -95,17 +110,36 @@ class UserRepository
     Schema $schema,
   ): string|false
   {
-    $account_str = $this->db->fetchOne(
-      'select trim(concat(coalesce(code,\'\'), \' \', coalesce(name, \'\')))
+    $stmt = $this->db->prepare('select 
+      code, name,
+      remote_schema
       from ' . $schema->str() . '.users
-			where id = :id', [
-        'id' => $id,
-      ], [
-        'id' => Types::INTEGER,
-      ],
-    );
+      where id = :id');
+    $stmt->bindValue('id', $id, Types::INTEGER);
+    $res = $stmt->executeQuery();
+    $row = $res->fetchAssociative();
+    if ($row === false)
+    {
+      return false;
+    }
+    $code = $row['code'] ?? '';
+    $name = $row['name'] ?? '';
+    if (isset($row['remote_schema']))
+    {
+      $inter_ary = $this->systems_service->get_inter_ary(
+        schema: $schema->str(),
+      );
+      if (isset($inter_ary[$row['remote_schema']]))
+      {
+        $remote_schema = new Schema($row['remote_schema']);
+        $name = $this->config_service->get_str(
+          config_id: 'system.name', 
+          schema: $remote_schema,
+        );
+      }
+    }
 
-    return $account_str;
+    return trim($code . ' ' . $name);
   }
 
   public function count_email(
@@ -233,14 +267,14 @@ class UserRepository
 
     $res = $stmt->executeQuery();
 
-    while ($row = $res->fetchAssociative())
+    while ($code = $res->fetchOne())
     {
-      if (empty($row['code']))
+      if (empty($code))
       {
         continue;
       }
 
-      $account_codes[] = $row['code'];
+      $account_codes[] = $code;
     }
 
     return $account_codes;
@@ -254,8 +288,8 @@ class UserRepository
 
     $stmt = $this->db->prepare('select name
       from ' . $schema->str() . '.users
-      where code is not null
-      order by code asc');
+      where name is not null
+      order by name asc');
 
     $res = $stmt->executeQuery();
 
@@ -1229,6 +1263,7 @@ class UserRepository
 
   public function get_for_autocomplete(
     string $account_group,
+    bool $limits_enabled,
     Schema $schema,
   ): array
   {
@@ -1254,40 +1289,54 @@ class UserRepository
         and u.is_active',
       'users' => 'u.remote_schema is null
         and u.remote_email is null',
-      'intersystems' => '(u.remote schema is not null
+      'intersystems' => '(u.remote_schema is not null
         or u.remote_email is not null)
         and u.is_active',
       'email-intersystems' => 'u.remote_email is not null
         and u.is_active',
-      'inactive' => 'u.not is_active',
+      'inactive' => 'not u.is_active',
     };
 
     $users = [];
+
+    $sql_limit_columns = '';
+    $sql_limits_join = '';
+
+    if ($limits_enabled)
+    {
+      $sql_limit_columns = 
+        'min_limit.min_limit,
+        max_limit.max_limit,';
+      $sql_limits_join = 
+          'left join lateral (
+          select minl.min_limit
+          from ' . $schema->str() . '.min_limit minl
+          where minl.account_id = u.id
+          order by minl.created_at desc
+          limit 1
+        ) min_limit on true
+        left join lateral (
+          select maxl.max_limit
+          from ' . $schema->str() . '.max_limit maxl
+          where maxl.account_id = u.id
+          order by maxl.created_at desc
+          limit 1
+        ) max_limit on true';
+    }
 
     $query =
       'select u.id, u.code,
       u.name, u.is_leaving,
       u.is_active,
       activated_at,
-      u.remote_schema, u.remote_email,
-      min_limit.min_limit,
-      max_limit.max_limit,
-      balance.balance
-      from ' . $schema->str() . '.users u
-      left join lateral (
-        select minl.min_limit
-        from ' . $schema->str() . '.min_limit minl
-        where minl.account_id = u.id
-        order by minl.created_at desc
-        limit 1
-      ) min_limit on true
-      left join lateral (
-        select maxl.max_limit
-        from ' . $schema->str() . '.max_limit maxl
-        where maxl.account_id = u.id
-        order by maxl.created_at desc
-        limit 1
-      ) max_limit on true
+      u.remote_schema, 
+      u.remote_email, 
+      u.remote_currency_name, 
+      u.remote_currency_ratio, ' 
+      . $sql_limit_columns . ' 
+      coalesce(balance.balance, 0) as balance
+      from ' . $schema->str() . '.users u '
+      . $sql_limits_join . '
       left join lateral (
         select bal.balance
         from ' . $schema->str() . '.balance bal

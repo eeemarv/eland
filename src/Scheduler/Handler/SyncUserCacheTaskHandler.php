@@ -9,31 +9,34 @@ use Symfony\Component\Lock\LockFactory;
 #[AsMessageHandler]
 final class SyncUserCacheTaskHandler
 {
-    public function __construct(
-        private readonly LockFactory $lock_factory
-    )
+  public function __construct(
+    private readonly LockFactory $lock_factory
+  )
+  {
+  }
+
+  public function __invoke(
+    SyncUserCacheTaskMessage $sync_user_cache_task_message
+  ):void
+  {
+    $lock = $this->lock_factory->createLock('sync_user_cache');
+
+    if (!$lock->acquire())
     {
+      return;
     }
 
-    public function __invoke(
-        SyncUserCacheTaskMessage $sync_user_cache_task_message
-    ):void
+    try 
     {
-        $lock = $this->lock_factory->createLock('sync_user_cache');
-
-        if (!$lock->acquire())
-        {
-            return;
-        }
-
-        try {
-            error_log('sync_user_cache');
+      error_log('sync_user_cache');
 
 
 
 
-        } finally {
-            $lock->release();
-        }
+    } 
+    finally 
+    {
+      $lock->release();
     }
+  }
 }

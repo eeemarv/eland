@@ -73,7 +73,10 @@ class ConfigMailAddrController extends AbstractController
         );
       }
 
-      return $this->redirectToRoute('config_mail_addr', $pp->ary());
+      return $this->redirectToRoute(
+        route: 'config_mail_addr', 
+        parameters: $pp->ary(),
+      );
     }
 
     return $this->render('config/config_mail_addr.html.twig', [

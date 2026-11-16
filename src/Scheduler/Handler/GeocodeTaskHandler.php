@@ -9,27 +9,29 @@ use Symfony\Component\Lock\LockFactory;
 #[AsMessageHandler]
 final class GeocodeTaskHandler
 {
-    public function __construct(
-        private readonly LockFactory $lock_factory
-    )
-    {
+  public function __construct(
+    private readonly LockFactory $lock_factory
+  )
+  {
+  }
 
+  public function __invoke(GeocodeTaskMessage $geocode_task_message):void
+  {
+    $lock = $this->lock_factory->createLock('geocode');
+
+    if (!$lock->acquire())
+    {
+      return;
     }
 
-    public function __invoke(GeocodeTaskMessage $geocode_task_message):void
+    try 
     {
-        $lock = $this->lock_factory->createLock('geocode');
+      error_log('geocode');
 
-        if (!$lock->acquire())
-        {
-            return;
-        }
-
-        try {
-            error_log('geocode');
-
-        } finally {
-            $lock->release();
-        }
+    } 
+    finally 
+    {
+      $lock->release();
     }
+  }
 }

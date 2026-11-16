@@ -1,0 +1,56 @@
+{%- extends 'config/base/config_form.html.twig' -%}
+
+{%- block config_title_sub -%}
+  <p>
+    {{- 'config_notifications.help'|trans -}}
+  </p>
+{%- endblock config_title_sub -%}
+
+{%- block form_a -%}
+  {{- form_row(form.email_enabled, {
+    'label': 'config_notifications.email_enabled.label',
+    'addon': ux_icon('lucide:panels-top-left'),
+  }) -}}
+
+  {{- form_row(form.webpush_enabled, {
+    'label': 'config_notifications.webpush_enabled.label',
+    'addon': ux_icon('lucide:panels-top-left'),
+  }) -}}
+
+  <h3>
+    {{- 'config_notifications.daily.title'|trans -}}
+  </h3>
+
+  {{- form_row(form.daily_hour, {
+    'label': 'config_notifications.daily.hour.label',
+    'addon': ux_icon('lucide:clock'),
+  }) -}}
+
+  <h3>
+    {{- 'config_notifications.weekly.title'|trans -}}
+  </h3>
+
+  {{- form_row(form.weekly_day_of_week, {
+    'label': 'config_notifications.weekly.day_of_week.label',
+    'addon': ux_icon('lucide:clock'),
+  }) -}}
+
+  {{- form_row(form.weekly_hour, {
+    'label': 'config_notifications.weekly.hour.label',
+    'addon': ux_icon('lucide:clock'),
+  }) -}}
+
+  <h3>
+    {{- 'config_notifications.monthly.title'|trans -}}
+  </h3>
+
+  {{- form_row(form.monthly_day_of_month, {
+    'label': 'config_notifications.monthly.day_of_month.label',
+    'addon': ux_icon('lucide:clock'),
+  }) -}}
+
+  {{- form_row(form.monthly_hour, {
+    'label': 'config_notifications.monthly.hour.label',
+    'addon': ux_icon('lucide:clock'),
+  }) -}}
+{%- endblock form_a -%}

@@ -21,6 +21,7 @@ class TagsListController extends AbstractController
     name: 'tags',
     methods: ['GET', 'POST'],
     requirements: [
+      'tag_type'      => '%assert.tag_type%',
       'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [

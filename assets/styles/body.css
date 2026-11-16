@@ -16,7 +16,6 @@ div.row-offcanvas
 
 body
 {
-  background-color: #f9f9ff; 
   overflow-x: hidden;
 }
 
@@ -27,7 +26,7 @@ body.body-navbar
 
 body.admin
 {
-  background-color: #e1edf1;
+  background-color: #d2e5f3; /*#cce3e9; */
 }
 
 body.guest
@@ -144,4 +143,8 @@ div.navbar-header ul.nav
 
 .offcanvas-main-content-bottom {
   height: 150px;
+}
+
+.table-bg {
+  background-color: #f9f9f9;
 }

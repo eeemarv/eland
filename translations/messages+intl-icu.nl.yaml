@@ -54,6 +54,7 @@ btn:
   bulk: Bulk acties
   cancel: Annuleren
   config: Configuratie
+  create: Aanmaken
   del: Verwijderen
   do_cancel: Annuleer
   download: Download
@@ -133,6 +134,15 @@ datepicker:
     B: maand
     a: (wd)
     A: (weekdag)
+
+day_of_week:
+  mon: maandag
+  tue: dinsdag
+  wed: woensdag
+  thu: donderdag
+  fri: vrijdag
+  sat: zaterdag
+  sun: zondag
 
 editor:
   bold: Vet (Ctrl+B)
@@ -564,8 +574,10 @@ status:
   ip: Info-Pakket
   leaving: Uitstappers
   leaving_only: Enkel Uitstappers
+  leaving_user: Uitstapper  
   new: Instappers
   new_only: Enkel Instappers
+  new_user: Instapper  
   post_active: Post-Actief
   pre_active: Pre-Actief
 
@@ -832,6 +844,57 @@ config_name:
       Toon standaard hoofdingpaneel met systeemnaam op de home pagina.
   flash:
     change: Naam systeem of hoofding paneel aangepast
+
+config_notifications:
+  title: Meldingen
+  help: >-
+    Selecteer hier via welke kanalen meldingen buiten 
+    de app de gebruikers kunnen bereiken. De gebruikers kunnen
+    zelf altijd selecteren welke meldingen ze willen 
+    ontvangen en hoe vaak. Gebruikers kunnen er voor 
+    kiezen om meldingen per categorie instant of in een
+    dagelijkse, wekelijkse of maandelijkse samenvatting
+    (digest) te ontvangen. In deze configuratie kan de
+    admin het tijdstip opgeven wanneer deze samenvattingen
+    verzonden worden. De in-app meldingen zijn altijd
+    instant en kunnen niet uitgeschakeld worden.  
+  email_enabled:
+    label: >- 
+      Verzend Meldingen per Email
+  webpush_enabled:
+    label: >-
+      Verzend Meldingen per Webpush 
+  daily:
+    title: Dagelijkse Samenvatting
+    hour:
+      label: >-
+        Uur van de Dag (ongeveer) waarop Dagelijkse
+        Samenvatting wordt verzonden
+  weekly:
+    title: Wekelijkse Samenvatting
+    hour:
+      label: >-
+        Uur van de Dag (ongeveer) waarop de Wekelijkse
+        Samenvatting wordt verzonden
+    day_of_week:
+      label: >- 
+        Dag van de Week waarop de Wekelijkse
+        Samenvatting wordt verzonden 
+  monthly:
+    title: Maandelijkse Samenvatting
+    hour:
+      label: >-
+        Uur van de Dag (ongeveer) waarop de Maandelijkse
+        Samenvatting wordt verzonden
+    day_of_month:
+      label: >- 
+        Dag van de Maand waarop de Maandelijkse
+        Samenvatting wordt verzonden 
+
+    
+  flash:
+    change: >-
+      Configuratie van de meldingen aangepast
 
 contact_form:
   title: Contact
@@ -1793,6 +1856,10 @@ transactions:
 transactions_add:
   title: Nieuwe Transactie
   btn_add_to_user: Nieuwe transactie naar {user}
+  from_id:
+    help_admin: >-
+      Enkel admins kunnen hier een ander account dan
+      het eigen account selecteeren.
   remote_amount:
     label: >-
       Aantal in het Andere Systeem

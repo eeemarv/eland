@@ -3,7 +3,7 @@
  * Forces both 'up' and 'down' triangles to show faintly on unsorted columns.
  */
 table.dataTable thead th div.dt-column-header {
-    display: inline !important;
+  display: inline !important;
 }
 table.dataTable thead > tr > th.dt-orderable-asc .dt-column-order::before,
 table.dataTable thead > tr > th.dt-orderable-desc .dt-column-order::after {

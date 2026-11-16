@@ -73,7 +73,10 @@ class ConfigMaintenanceController extends AbstractController
         );
       }
 
-      return $this->redirectToRoute('config_maintenance', $pp->ary());
+      return $this->redirectToRoute(
+        route: 'config_maintenance', 
+        parameters: $pp->ary(),
+      );
     }
 
     return $this->render('config/config_maintenance.html.twig', [

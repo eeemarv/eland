@@ -5,6 +5,7 @@ namespace App\Form\Extension;
 use App\Form\Extension\FormTokenManagerInterface;
 use App\Service\TokenGeneratorService;
 use Redis;
+use Symfony\Component\Uid\Uuid;
 
 class FormTokenManager implements FormTokenManagerInterface
 {
@@ -24,7 +25,9 @@ class FormTokenManager implements FormTokenManagerInterface
       return $this->token;
     }
 
-    $this->token = $this->token_generator_service->gen();
+    $this->token = Uuid::v4()->toBase58();
+
+    //$this->token = $this->token_generator_service->gen();
 
     $key = FormTokenManagerInterface::STORE_PREFIX . $this->token;
     $this->redis->set($key, '1', FormTokenManagerInterface::TTL);
@@ -37,7 +40,7 @@ class FormTokenManager implements FormTokenManagerInterface
     bool $prevent_double,
   ):string
   {
-    if (strlen($value) !== 12)
+    if (strlen($value) !== 22)
     {
       return 'form.form_token.not_valid';
     }

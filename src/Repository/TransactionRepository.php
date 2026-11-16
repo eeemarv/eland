@@ -86,6 +86,11 @@ class TransactionRepository
 		$res = $stmt->executeQuery();
 		$transaction = $res->fetchAssociative();
 
+    if ($transaction === false)
+    {
+      return false;
+    }
+
     $from_user = json_decode($transaction['from_user'], true);
     $to_user = json_decode($transaction['to_user'], true);
     $created_by_user = json_decode($transaction['created_by_user'], true);
