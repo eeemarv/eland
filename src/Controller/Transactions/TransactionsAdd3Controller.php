@@ -10,6 +10,8 @@ use App\Form\Type\Transactions\TransactionsAddType;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Repository\AccountRepository;
+use App\Routing\AccessLevel;
+use App\Routing\SchemaRoute;
 use App\Service\AutoDeactivateService;
 use App\Service\AutoMinLimitService;
 use App\Service\ConfigService;
@@ -32,25 +34,21 @@ use Doctrine\DBAL\Types\Types;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class TransactionsAdd3Controller extends AbstractController
 {
-  /*
-  #[Route(
-    '/{schema}/{role_short}/transactions/add-3',
+/*
+  #[SchemaRoute(
+    access_level: AccessLevel::User,
+    module: 'transactions',
+    path: '/transactions/add-3',
     name: 'transactions_add_3',
     methods: ['GET', 'POST'],
     priority: 10,
-    requirements: [
-      'role_short'    => '%assert.role_short.user%',
-    ],
-    defaults: [
-      'module'        => 'transactions',
-    ],
   )]
-  */
+*/
+
 
   public function __invoke(
     Request $request,

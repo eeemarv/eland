@@ -4,6 +4,10 @@ namespace App\Controller\Transactions;
 
 use App\Command\Transactions\TransactionsAutoMinLimitCommand;
 use App\Form\Type\Transactions\TransactionsAutoMinLimitType;
+use App\Routing\AccessLevel;
+use App\Routing\LimitsSubModule;
+use App\Routing\SchemaRoute;
+use App\Routing\TransactionsSubModule;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,22 +15,16 @@ use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class TransactionsAutoMinLimitController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/auto-min-limit',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: LimitsSubModule::AutoMinLimit,
+    path: '/auto-min-limit',
     name: 'transactions_autominlimit',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'transactions',
-      'sub_module'    => 'autominlimit',
-    ],
   )]
 
   public function __invoke(
@@ -36,22 +34,6 @@ class TransactionsAutoMinLimitController extends AbstractController
     ConfigService $config_service,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'transactions.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException('Transactions module not enabled.');
-    }
-
-    if (!$config_service->get_bool(
-      config_id: 'accounts.limits.auto_min.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException('Submodule auto min limit not enabled.');
-    }
-
     $command = new TransactionsAutoMinLimitCommand();
     $config_service->load_command(
       command: $command,

@@ -30,6 +30,7 @@ data-csv-filename-value="{{- 'label.docs'|trans|lower -}}"
 {%- block data -%}
   {%- if maps -%}
     {%- include 'docs/include/maps_list.html.twig' -%}
+    <br>
   {%- endif -%}
 
   {%- if docs -%}

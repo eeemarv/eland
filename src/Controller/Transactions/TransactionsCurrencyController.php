@@ -4,6 +4,9 @@ namespace App\Controller\Transactions;
 
 use App\Command\Transactions\TransactionsCurrencyCommand;
 use App\Form\Type\Transactions\TransactionsCurrencyType;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -11,21 +14,16 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class TransactionsCurrencyController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/transactions/currency',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: AppModule::Transactions,
+    path: '/transactions/currency',
     name: 'transactions_currency',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'transactions',
-    ],
   )]
 
   public function __invoke(
@@ -35,13 +33,6 @@ class TransactionsCurrencyController extends AbstractController
     SessionUserService $su,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'transactions.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException('Transactions module not enabled.');
-    }
 
     $command = new TransactionsCurrencyCommand();
     $config_service->load_command(

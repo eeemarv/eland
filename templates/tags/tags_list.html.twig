@@ -12,10 +12,7 @@
 
 {%- block btn_top_add -%}
   {%- include 'include/btn_top/add.html.twig' with {
-    'btn_route': 'tags_add',
-    'btn_route_params': {
-      'tag_type': tag_type,
-    },
+    'btn_route': tag_type ~ '_tags_add',
     'btn_title': 'tags.add.title',
     'btn_title_trans_params': {
       'tag_type': tag_type,
@@ -23,7 +20,7 @@
   } -%}
 {%- endblock btn_top_add -%}
 
-{%- set cancel_route = module|var_route -%}
+{%- set cancel_route = tag_type|var_route -%}
 
 {%- block content_controllers -%}
   sortable-tags
@@ -54,10 +51,7 @@
         {%- endif -%}
         <div class="pull-right">
           {%- include 'include/btn/edit.html.twig' with {
-            'btn_route': 'tags_edit',
-            'btn_route_params': {
-              'tag_type': tag_type,
-            },
+            'btn_route': tag_type ~ '_tags_edit',
             'id': tag.id,
             'btn_title': 'tags.edit.title',
             'btn_title_trans_params': {
@@ -68,10 +62,7 @@
 
           {%- if tag.count == 0 -%}
             {%- include 'include/btn/del.html.twig' with {
-              'btn_route': 'tags_del',
-              'btn_route_params': {
-                'tag_type': tag_type,
-              },
+              'btn_route': tag_type ~ '_tags_del',
               'id': tag.id,
               'btn_title': 'tags.del.title',
               'btn_title_trans_params': {

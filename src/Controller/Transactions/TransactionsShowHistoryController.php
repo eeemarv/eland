@@ -4,43 +4,32 @@ namespace App\Controller\Transactions;
 
 use App\Repository\TransactionLogRepository;
 use App\Repository\TransactionRepository;
-use App\Service\ConfigService;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class TransactionsShowHistoryController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/transactions/{id}/history',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: AppModule::Transactions,
+    path: '/transactions/{id}/history',
     name: 'transactions_show_history',
     methods: ['GET'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'transactions',
-    ],
   )]
 
   public function __invoke(
     int $id,
     TransactionLogRepository $transaction_log_repository,
     TransactionRepository $transaction_repository,
-    ConfigService $config_service,
     PageParamsService $pp,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'transactions.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException('Transactions module not enabled.');
-    }
 
     $transaction = $transaction_repository->get_with_prev_next(
       id: $id,

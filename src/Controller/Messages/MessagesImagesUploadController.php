@@ -2,10 +2,12 @@
 
 namespace App\Controller\Messages;
 
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\ImageUploadService;
 use App\Service\PageParamsService;
@@ -14,77 +16,57 @@ use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class MessagesImagesUploadController extends AbstractController
 {
-    #[Route(
-        '/{schema}/{role_short}/messages/images/upload/{form_token}',
+    #[SchemaRoute(
+        access_level: AccessLevel::User,
+        module: AppModule::Messages,
+        mode: 'add',
+        path: '/messages/images/upload/{form_token}',
         name: 'messages_add_images_upload',
         methods: ['POST'],
         requirements: [
             'form_token'    => '%assert.token%',
-            'role_short'    => '%assert.role_short.user%',
-        ],
-        defaults: [
-            'id'            => 0,
-            'mode'          => 'add',
-            'module'        => 'messages',
         ],
     )]
 
-    #[Route(
-        '/{schema}/{role_short}/messages/{id}/images/upload/{form_token}',
+    #[SchemaRoute(
+        access_level: AccessLevel::User,
+        module: AppModule::Messages,
+        mode: 'edit',
+        path: '/messages/{id}/images/upload/{form_token}',
         name: 'messages_edit_images_upload',
         methods: ['POST'],
         requirements: [
             'form_token'    => '%assert.token%',
-            'role_short'    => '%assert.role_short.user%',
-        ],
-        defaults: [
-            'mode'          => 'edit',
-            'module'        => 'messages',
         ],
     )]
 
-    #[Route(
-        '/{schema}/{role_short}/messages/{id}/images/upload',
+    #[SchemaRoute(
+        access_level: AccessLevel::User,
+        module: AppModule::Messages,
+        mode: 'show',
+        path: '/messages/{id}/images/upload',
         name: 'messages_images_upload',
         methods: ['POST'],
-        requirements: [
-            'role_short'    => '%assert.role_short.user%',
-        ],
-        defaults: [
-            'mode'          => 'show',
-            'form_token'    => '',
-            'module'        => 'messages',
-        ],
     )]
 
     public function __invoke(
         Request $request,
-        int $id,
-        string $mode,
-        string $form_token,
+        string $_mode,
         Db $db,
         FormTokenService $form_token_service,
-        ConfigService $config_service,
         LoggerInterface $logger,
         PageParamsService $pp,
         SessionUserService $su,
-        ImageUploadService $image_upload_service
+        ImageUploadService $image_upload_service,
+        int|null $id = null,
+        string|null $form_token = null,
     ):Response
     {
-        if (!$config_service->get_bool(
-          config_id: 'messages.enabled',
-          schema: $pp->schema_o(),
-        ))
-        {
-            throw $this->createNotFoundException('Messages (offers/wants) module not enabled.');
-        }
-
-        if (in_array($mode, ['add', 'edit']))
+        if (in_array($_mode, ['add', 'edit']))
         {
             if ($error = $form_token_service->get_ajax_error($form_token))
             {
@@ -107,7 +89,7 @@ class MessagesImagesUploadController extends AbstractController
             ], 400);
         }
 
-        if ($id)
+        if (isset($id))
         {
             $message = MessagesShowController::get_message($db, $id, $pp->schema());
 
@@ -142,7 +124,7 @@ class MessagesImagesUploadController extends AbstractController
 
             $filename = $res['filename'];
 
-            if ($mode === 'show')
+            if ($_mode === 'show')
             {
                 $update_db = true;
 

@@ -4,6 +4,9 @@ namespace App\Controller\Mollie;
 
 use App\Form\Type\Mollie\MollieCheckoutType;
 use App\Repository\MollieRepository;
+use App\Routing\AccessLevel;
+use App\Routing\SchemaRoute;
+use App\Routing\UsersSubModule;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Mollie\Api\Http\Data\Money;
@@ -14,24 +17,21 @@ use Symfony\Component\HttpFoundation\Response;
 use Mollie\Api\MollieApiClient;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Uid\Uuid;
 
 #[AsController]
 class MollieCheckoutController extends AbstractController
 {
-  #[Route(
-    '/{schema}/mollie/checkout/{checkout_token}',
+  #[SchemaRoute(
+    access_level: AccessLevel::Anonymous,
+    module: UsersSubModule::Mollie,
+    path: '/mollie/checkout/{checkout_token}',
     name: 'mollie_checkout',
     methods: ['GET', 'POST'],
     priority: 30,
     requirements: [
       'checkout_token'   => '%uuid_base58%',
-    ],
-    defaults: [
-      'module'        => 'users',
-      'sub_module'    => 'mollie',
     ],
   )]
 
@@ -45,16 +45,6 @@ class MollieCheckoutController extends AbstractController
     PageParamsService $pp
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'mollie.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException(
-        'Mollie submodule (users) not enabled.'
-      );
-    }
-
     $uuid_checkout_token = Uuid::fromBase58($checkout_token);
 
     $mollie_payment = $mollie_repository->get_payment(

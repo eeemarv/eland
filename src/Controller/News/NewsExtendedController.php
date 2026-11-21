@@ -3,28 +3,26 @@
 namespace App\Controller\News;
 
 use App\Repository\NewsRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class NewsExtendedController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/news/extended',
+  #[SchemaRoute(
+    access_level: AccessLevel::Guest,
+    module: AppModule::News,
+    path: '/news/extended',
     name: 'news_extended',
     methods: ['GET'],
     priority: 20,
-    requirements: [
-      'role_short'    => '%assert.role_short.guest%',
-    ],
-    defaults: [
-      'module'        => 'news',
-    ],
   )]
 
   public function __invoke(
@@ -34,13 +32,6 @@ class NewsExtendedController extends AbstractController
     PageParamsService $pp,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id:'news.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException('News module not enabled.');
-    }
 
     $show_access = ($pp->is_user()
       && $config_service->get_intersystem_en(

@@ -16,6 +16,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[AsController]
 class TypeaheadAccountsController extends AbstractController
 {
+  /*
   #[Route(
     '/{schema}/{role_short}/typeahead-accounts/{status}/{thumbprint}',
     name: 'typeahead_accounts',
@@ -29,6 +30,7 @@ class TypeaheadAccountsController extends AbstractController
       'module'        => 'users',
     ],
   )]
+  */
 
   public function __invoke(
     string $status,

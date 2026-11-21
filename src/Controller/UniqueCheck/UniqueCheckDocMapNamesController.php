@@ -3,25 +3,26 @@
 namespace App\Controller\UniqueCheck;
 
 use App\Repository\DocRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class UniqueCheckDocMapNamesController extends AbstractController
 {
   use EtagJsonResponseTrait;
 
-  #[Route(
-    '/{schema}/{role_short}/unique-check/doc-map-names',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: AppModule::Docs,
+    path: '/unique-check/doc-map-names',
     name: 'unique_check_doc_map_names',
     methods: ['GET'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
   )]
 
   public function __invoke(

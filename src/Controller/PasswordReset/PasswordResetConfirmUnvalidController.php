@@ -4,26 +4,26 @@ namespace App\Controller\PasswordReset;
 
 use App\Email\PasswordReset\Confirm\EmailPasswordResetConfirmMessage;
 use App\Repository\EmailSentRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Uid\Uuid;
 
 #[AsController]
 class PasswordResetConfirmUnvalidController extends AbstractController
 {
-  #[Route(
-    '/{schema}/password-reset/unvalid/{confirm_token}',
+  #[SchemaRoute(
+    access_level: AccessLevel::Anonymous,
+    module: AppModule::PasswordReset,
+    path: '/password-reset/unvalid/{confirm_token}',
     name: 'password_reset_confirm_unvalid',
     methods: ['GET'],
     requirements: [
       'confirm_token' => '%uuid_base58%',
-    ],
-    defaults: [
-      'module'        => 'users',
-      'sub_module'    => 'password_reset',
     ],
   )]
 

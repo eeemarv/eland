@@ -5,12 +5,13 @@ namespace App\Cnst;
 class ConfigCnst
 {
   const LANDING_PAGE_OPTIONS = [
-    'messages'		=> 'Vraag en aanbod',
-    'users'			=> 'Leden',
-    'transactions'	=> 'Transacties',
-    'news'			=> 'Nieuws',
-    'docs'          => 'Documenten',
-    'forum'         => 'Forum',
+    'chat',
+    'messages',
+    'users',
+    'transactions',
+    'news',
+    'docs',
+    'forum',
   ];
 
   const BLOCK_ARY = [

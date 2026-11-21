@@ -4,6 +4,9 @@ namespace App\Controller\Config;
 
 use App\Command\Config\ConfigAdminCommand;
 use App\Form\Type\Config\ConfigAdminType;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,21 +14,16 @@ use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class ConfigAdminController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/config/admin',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: AppModule::Config,
+    path: '/config/admin',
     name: 'config_admin',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'config',
-    ],
   )]
 
   public function __invoke(

@@ -5,46 +5,35 @@ namespace App\Controller\News;
 use App\Command\News\NewsCommand;
 use App\Form\Type\News\NewsDelType;
 use App\Repository\NewsRepository;
-use App\Service\ConfigService;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\PageParamsService;
 use App\Service\VarRouteService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class NewsDelController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/news/{id}/del',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: AppModule::News,
+    path: '/news/{id}/del',
     name: 'news_del',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'news',
-    ],
   )]
 
   public function __invoke(
     Request $request,
     int $id,
     NewsRepository $news_repository,
-    ConfigService $config_service,
     PageParamsService $pp,
     VarRouteService $vr,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'news.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException('News module not enabled.');
-    }
 
     $news_item = $news_repository->get(
       id: $id,

@@ -8,29 +8,26 @@ use App\Form\Type\Users\UsersActivateType;
 use App\Form\Type\Users\UsersActiveType;
 use App\Repository\UserLogRepository;
 use App\Repository\UserRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\UserCacheService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class UsersActiveEditController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/users/{id}/active/edit',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: AppModule::Users,
+    path: '/users/{id}/active/edit',
     name: 'users_active_edit',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short' => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module' => 'users',
-    ],
   )]
 
   public function __invoke(
@@ -39,16 +36,17 @@ class UsersActiveEditController extends AbstractController
     UserCacheService $user_cache_service,
     UserRepository $user_repository,
     UserLogRepository $user_log_repository,
-    ConfigService $config_service,
     PageParamsService $pp,
     SessionUserService $su,
-  ): Response {
+  ): Response 
+  {
     $user = $user_repository->get(
       id: $id,
       schema: $pp->schema_o(),
     );
 
-    if ($user === false) {
+    if ($user === false) 
+    {
       throw $this->createNotFoundException(
         'User with id ' . $id . ' not found'
       );
@@ -72,20 +70,24 @@ class UsersActiveEditController extends AbstractController
     if (
       $form->isSubmitted()
       && $form->isValid()
-    ) {
+    ) 
+    {
       $is_active = $command->is_active;
       $send_email = $command->send_email;
       $send_email_cc = $command->send_email_cc;
       $log_comment = $form->get('log_comment')->getData();
 
-      if ($is_active === $user['is_active']) {
+      if ($is_active === $user['is_active']) 
+      {
         $this->addFlash(
           type: 'warning',
           message: [
             'key' => 'flash.no_change',
           ]
         );
-      } else {
+      } 
+      else 
+      {
         $user_repository->set_is_active(
           id: $id,
           is_active: $is_active,
@@ -103,7 +105,8 @@ class UsersActiveEditController extends AbstractController
             active_only: false,
           );
 
-          if ($email_addresses->count()) {
+          if ($email_addresses->count()) 
+          {
 
 
 

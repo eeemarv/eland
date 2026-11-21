@@ -11,6 +11,9 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Psr\Log\LoggerInterface;
 use App\Render\LinkRender;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\ConfigService;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
@@ -26,37 +29,30 @@ use Doctrine\DBAL\Types\Types;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class MessagesEditController extends AbstractController
 {
-    #[Route(
-        '/{schema}/{role_short}/messages/add',
+    #[SchemaRoute(
+        access_level: AccessLevel::User,
+        module: AppModule::Messages,
+        path: '/messages/add',
         name: 'messages_add',
         methods: ['GET', 'POST'],
-        priority: 10,
-        requirements: [
-            'role_short'    => '%assert.role_short.user%',
-        ],
         defaults: [
             'id'            => 0,
             'mode'          => 'add',
-            'module'        => 'messages',
         ],
     )]
 
-    #[Route(
-        '/{schema}/{role_short}/messages/{id}/edit',
+    #[SchemaRoute(
+        access_level: AccessLevel::User,
+        module: AppModule::Messages,
+        path: '/messages/{id}/edit',
         name: 'messages_edit',
         methods: ['GET', 'POST'],
-        priority: 10,
-        requirements: [
-            'role_short'    => '%assert.role_short.user%',
-        ],
         defaults: [
             'mode'          => 'edit',
-            'module'        => 'messages',
         ],
     )]
 
@@ -81,13 +77,6 @@ class MessagesEditController extends AbstractController
         string $env_s3_url
     ):Response
     {
-        if (!$config_service->get_bool(
-          config_id: 'messages.enabled',
-          schema: $pp->schema_o(),
-        ))
-        {
-          throw $this->createNotFoundException('Messages (offers/wants) module not enabled.');
-        }
 
         $errors = [];
 

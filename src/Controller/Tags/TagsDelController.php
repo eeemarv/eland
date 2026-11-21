@@ -8,60 +8,35 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\TagRepository;
-use App\Service\ConfigService;
+use App\Routing\AccessLevel;
+use App\Routing\SchemaRoute;
+use App\Routing\UsersSubModule;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class TagsDelController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/tags/{tag_type}/{id}/del',
-    name: 'tags_del',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: UsersSubModule::Tags,
+    path: '/users/tags/{id}/del',
+    name: 'users_tags_del',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-      'tag_type'      => '%assert.tag_type%',
-    ],
-    defaults: [
-      'sub_module'    => 'tags',
-    ],
   )]
 
   public function __invoke(
     Request $request,
     int $id,
-    string $tag_type,
-    ConfigService $config_service,
+    string $_module,
     TagRepository $tag_repository,
     PageParamsService $pp,
   ):Response
   {
-    switch ($tag_type)
-    {
-      case 'users':
-        if (!$config_service->get_bool(
-          config_id: 'users.tags.enabled',
-          schema: $pp->schema_o(),
-        ))
-        {
-          throw $this->createNotFoundException(
-            'Tags for users not enabled.'
-          );
-        }
-        break;
-      default:
-        throw $this->createNotFoundException(
-          'Tag type not supported.'
-        );
-        break;
-    }
-
     $tag = $tag_repository->get_with_count(
       id: $id,
-      tag_type: $tag_type,
+      tag_type: $_module,
       schema: $pp->schema_o(),
     );
 
@@ -85,11 +60,11 @@ class TagsDelController extends AbstractController
     $command->bg_color = $tag['bg_color'];
     $command->description = $tag['description'];
     $command->id = $id;
-    $command->tag_type = $tag_type;
+    $command->tag_type = $_module;
 
     $form = $this->createForm(TagsDefType::class, $command, [
       'del'       => true,
-      'tag_type'  => $tag_type,
+      'tag_type'  => $_module,
     ]);
     $form->handleRequest($request);
 
@@ -99,7 +74,7 @@ class TagsDelController extends AbstractController
 
       $tag_repository->del(
         id: $id,
-        tag_type: $tag_type,
+        tag_type: $_module,
         schema: $pp->schema_o(),
       );
 
@@ -118,16 +93,15 @@ class TagsDelController extends AbstractController
         ],
       );
 
-      return $this->redirectToRoute('tags', [
-        ...$pp->ary(),
-        'tag_type'  => $tag_type,
-      ]);
+      return $this->redirectToRoute(
+        route: $_module . '_tags', 
+        parameters: $pp->ary(),
+      );
     }
 
     return $this->render('tags/tags_del.html.twig', [
       'form'      => $form->createView(),
-      'module'    => $tag_type,
-      'tag_type'  => $tag_type,
+      'tag_type'  => $_module,
     ]);
   }
 }

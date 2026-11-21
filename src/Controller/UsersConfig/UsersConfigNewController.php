@@ -4,6 +4,9 @@ namespace App\Controller\UsersConfig;
 
 use App\Command\UsersConfig\UsersConfigNewCommand;
 use App\Form\Type\UsersConfig\UsersConfigNewType;
+use App\Routing\AccessLevel;
+use App\Routing\SchemaRoute;
+use App\Routing\UsersSubModule;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -11,21 +14,16 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class UsersConfigNewController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/users/config/new',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: UsersSubModule::New,
+    path: '/users/config/new',
     name: 'users_config_new',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'users',
-    ],
   )]
 
   public function __invoke(
@@ -35,13 +33,6 @@ class UsersConfigNewController extends AbstractController
     SessionUserService $su,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'users.new.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException('New users not enabled.');
-    }
 
     $command = new UsersConfigNewCommand();
     $config_service->load_command(

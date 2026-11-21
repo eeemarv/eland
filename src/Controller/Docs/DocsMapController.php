@@ -6,27 +6,25 @@ use App\Form\Type\Filter\QTextSearchFilterType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\DocRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class DocsMapController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/docs/{id}',
+  #[SchemaRoute(
+    access_level: AccessLevel::Guest,
+    module: AppModule::Docs,
+    path: '/docs/{id}',
     name: 'docs_map',
     priority: 20,
     methods: ['GET'],
-    requirements: [
-      'role_short'    => '%assert.role_short.guest%',
-    ],
-    defaults: [
-      'module'        => 'docs',
-    ],
   )]
 
   public function __invoke(
@@ -38,13 +36,6 @@ class DocsMapController extends AbstractController
     PageParamsService $pp
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'docs.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException('Documents module not enabled.');
-    }
 
     $visible_ary = $item_access_service->get_visible_ary_for_page();
 

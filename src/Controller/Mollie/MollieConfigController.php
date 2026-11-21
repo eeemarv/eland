@@ -5,6 +5,9 @@ namespace App\Controller\Mollie;
 use App\Command\Mollie\MollieConfigModeCommand;
 use App\Form\Type\Mollie\MollieConfigModeType;
 use App\Repository\SecretRepository;
+use App\Routing\AccessLevel;
+use App\Routing\SchemaRoute;
+use App\Routing\UsersSubModule;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,22 +15,16 @@ use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class MollieConfigController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/mollie/config',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: UsersSubModule::Mollie,
+    path: '/mollie/config',
     name: 'mollie_config',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'users',
-      'sub_module'    => 'mollie',
-    ],
   )]
 
   public function __invoke(
@@ -38,16 +35,6 @@ class MollieConfigController extends AbstractController
     SessionUserService $su,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'mollie.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException(
-        'Mollie submodule (users) not enabled.'
-      );
-    }
-
     $has = $secret_repository->have_values(
       name_ary: [
         'mollie_test_api_key',

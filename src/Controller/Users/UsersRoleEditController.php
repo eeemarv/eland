@@ -6,6 +6,9 @@ use App\Command\Users\UsersRoleCommand;
 use App\Form\Type\Users\UsersRoleType;
 use App\Repository\UserLogRepository;
 use App\Repository\UserRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,21 +16,16 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\UserCacheService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class UsersRoleEditController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/users/{id}/role/edit',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: AppModule::Users,
+    path: '/users/{id}/role/edit',
     name: 'users_role_edit',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short' => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module' => 'users',
-    ],
   )]
 
   public function __invoke(
@@ -38,8 +36,10 @@ class UsersRoleEditController extends AbstractController
     UserCacheService $user_cache_service,
     PageParamsService $pp,
     SessionUserService $su,
-  ): Response {
-    if ($su->is_owner($id)) {
+  ): Response 
+  {
+    if ($su->is_owner($id)) 
+    {
       throw $this->createAccessDeniedException(
         'You can\'t edit your own role'
       );
@@ -52,7 +52,8 @@ class UsersRoleEditController extends AbstractController
       schema: $pp->schema_o(),
     );
 
-    if ($user === false) {
+    if ($user === false) 
+    {
       throw $this->createNotFoundException(
         'User with id ' . $id . ' not found'
       );

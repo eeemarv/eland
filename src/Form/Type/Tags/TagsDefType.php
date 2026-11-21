@@ -3,7 +3,7 @@
 namespace App\Form\Type\Tags;
 
 use App\Command\Tags\TagsDefCommand;
-use App\Enum\TagTypeEnum;
+use App\Enum\TagType;
 use App\Form\DataTransformer\ColorTransformer;
 use App\Form\Type\Field\UniqueCheckType;
 use Symfony\Component\Form\AbstractType;
@@ -65,7 +65,7 @@ class TagsDefType extends AbstractType
     $resolver->setDefault('tag_type', null);
     $resolver->setRequired('tag_type');
     $resolver->setAllowedTypes('tag_type', 'string');
-    $resolver->setAllowedValues('tag_type', TagTypeEnum::values());
+    $resolver->setAllowedValues('tag_type', TagType::values());
     $resolver->setDefault('data_class', TagsDefCommand::class);
   }
 }

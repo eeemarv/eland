@@ -7,25 +7,27 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Form\Type\Filter\QTextSearchFilterType;
 use App\Repository\UserRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class UsersTilesController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/users/tiles/{status}',
+  #[SchemaRoute(
+    access_level: AccessLevel::Guest,
+    module: AppModule::Users,
+    path: '/users/tiles/{status}',
     name: 'users_tiles',
     methods: ['GET'],
     priority: 20,
     requirements: [
       'status'        => '%assert.account.status2%',
-      'role_short'    => '%assert.role_short.guest%',
     ],
     defaults: [
       'status'        => 'active',
-      'module'        => 'users',
     ],
   )]
 
@@ -36,7 +38,10 @@ class UsersTilesController extends AbstractController
     PageParamsService $pp,
   ):Response
   {
-    if (!$pp->is_admin() && !in_array($status, ['active', 'new', 'leaving']))
+    if (
+      !$pp->is_admin() 
+      && !in_array($status, ['active', 'new', 'leaving'])
+    )
     {
       throw $this->createAccessDeniedException(
         'No access for status: ' . $status

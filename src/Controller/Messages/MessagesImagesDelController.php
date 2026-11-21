@@ -6,34 +6,30 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Render\LinkRender;
-use App\Service\ConfigService;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\FormTokenService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class MessagesImagesDelController extends AbstractController
 {
-    #[Route(
-        '/{schema}/{role_short}/messages/{id}/images/del',
+    #[SchemaRoute(
+        access_level: AccessLevel::User,
+        module: AppModule::Messages,
+        path: '/messages/{id}/images/del',
         name: 'messages_images_del',
         methods: ['GET', 'POST'],
-        requirements: [
-            'role_short'    => '%assert.role_short.user%',
-        ],
-        defaults: [
-            'module'        => 'messages',
-        ],
     )]
 
     public function __invoke(
         Request $request,
         int $id,
         Db $db,
-        ConfigService $config_service,
         FormTokenService $form_token_service,
         LinkRender $link_render,
         PageParamsService $pp,
@@ -41,13 +37,6 @@ class MessagesImagesDelController extends AbstractController
         string $env_s3_url
     ):Response
     {
-        if (!$config_service->get_bool(
-          config_id: 'messages.enabled',
-          schema: $pp->schema_o(),
-        ))
-        {
-            throw $this->createNotFoundException('Messages (offers/wants) module not enabled.');
-        }
 
         $errors = [];
 

@@ -5,28 +5,25 @@ namespace App\Controller\ContactTypes;
 use App\Command\ContactTypes\ContactTypesCommand;
 use App\Form\Type\ContactTypes\ContactTypesType;
 use App\Repository\ContactRepository;
+use App\Routing\AccessLevel;
+use App\Routing\ContactsSubModule;
+use App\Routing\SchemaRoute;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class ContactTypesEditController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/contact-types/{id}/edit',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: ContactsSubModule::ContactTypes,
+    path: '/contact-types/{id}/edit',
     name: 'contact_types_edit',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'users',
-      'sub_module'    => 'contact_types',
-    ],
   )]
 
   public function __invoke(

@@ -3,8 +3,10 @@
 namespace App\Controller\Chat;
 
 use App\Command\Config\ConfigAdminCommand;
-use App\Form\Type\Config\ConfigAdminType;
 use App\Repository\ChatRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,21 +14,16 @@ use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class ChatController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/chat',
+  #[SchemaRoute(
+    access_level: AccessLevel::Guest,
+    module: AppModule::Chat,
+    path: '/chat',
     name: 'chat',
     methods: ['GET'],
-    requirements: [
-      'role_short'    => '%assert.role_short.guest%',
-    ],
-    defaults: [
-      'module'        => 'chat',
-    ],
   )]
 
   public function __invoke(
@@ -37,16 +34,6 @@ class ChatController extends AbstractController
     SessionUserService $su,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'chat.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException(
-        'Chat module not enabled.'
-      );
-    }
-
     $command = new ConfigAdminCommand();
     $config_service->load_command(
       command: $command,

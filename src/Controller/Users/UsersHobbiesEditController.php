@@ -5,78 +5,62 @@ namespace App\Controller\Users;
 use App\Command\Users\UsersHobbiesCommand;
 use App\Form\Type\Users\UsersHobbiesType;
 use App\Repository\UserRepository;
+use App\Routing\AccessLevel;
+use App\Routing\SchemaRoute;
+use App\Routing\UsersSubModule;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\UserCacheService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class UsersHobbiesEditController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/users/{id}/hobbies/edit',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: UsersSubModule::Hobbies,
+    is_self: false,
+    path: '/users/{id}/hobbies/edit',
     name: 'users_hobbies_edit',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short' => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'is_self' => false,
-      'module' => 'users',
-    ],
   )]
 
-  #[Route(
-    '/{schema}/{role_short}/users/self/hobbies/edit',
+  #[SchemaRoute(
+    access_level: AccessLevel::User,
+    module: UsersSubModule::Hobbies,
+    is_self: true,
+    path: '/users/self/hobbies/edit',
     name: 'users_hobbies_edit_self',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short' => '%assert.role_short.user%',
-    ],
-    defaults: [
-      'id' => 0,
-      'is_self' => true,
-      'module' => 'users',
-    ],
   )]
 
   public function __invoke(
     Request $request,
-    int $id,
-    bool $is_self,
+    bool $_is_self,
     UserRepository $user_repository,
     UserCacheService $user_cache_service,
-    ConfigService $config_service,
     PageParamsService $pp,
     SessionUserService $su,
-  ): Response {
-    if (
-      !$config_service->get_bool(
-        config_id: 'users.fields.hobbies.enabled',
-        schema: $pp->schema_o(),
-      )
-    ) {
-      throw $this->createAccessDeniedException(
-        'Users hobbies submodule not enabled.'
-      );
-    }
+    int|null $id = null,
+  ): Response 
+  {
 
     if (
-      !$is_self
+      !$_is_self
       && $su->is_owner($id)
-    ) {
+    ) 
+    {
       return $this->redirectToRoute(
         route: 'users_hobbies_edit_self',
         parameters: $pp->ary(),
       );
     }
 
-    if ($is_self) {
+    if ($_is_self) 
+    {
       $id = $su->id();
     }
 
@@ -87,7 +71,8 @@ class UsersHobbiesEditController extends AbstractController
       schema: $pp->schema_o(),
     );
 
-    if ($user === false) {
+    if ($user === false) 
+    {
       throw $this->createNotFoundException(
         'User with id ' . $id . ' not found'
       );
@@ -106,15 +91,19 @@ class UsersHobbiesEditController extends AbstractController
     if (
       $form->isSubmitted()
       && $form->isValid()
-    ) {
-      if ($command->hobbies === $user['hobbies']) {
+    ) 
+    {
+      if ($command->hobbies === $user['hobbies']) 
+      {
         $this->addFlash(
           type: 'warning',
           message: [
             'key' => 'flash.no_change',
           ]
         );
-      } else {
+      } 
+      else 
+      {
         $user_repository->set_hobbies(
           id: $id,
           hobbies: $command->hobbies,
@@ -131,14 +120,15 @@ class UsersHobbiesEditController extends AbstractController
           message: [
             'key' => 'users_hobbies_edit.flash.success',
             'params' => [
-              'self' => $is_self ? 'yes' : 'no',
+              'self' => $_is_self ? 'yes' : 'no',
               'user' => $user['name'],
             ]
           ]
         );
       }
 
-      if ($is_self) {
+      if ($_is_self) 
+      {
         return $this->redirectToRoute(
           route: 'users_show_self',
           parameters: $pp->ary(),
@@ -158,7 +148,7 @@ class UsersHobbiesEditController extends AbstractController
       'form' => $form->createView(),
       'user' => $user,
       'id' => $id,
-      'is_self' => $is_self,
+      'is_self' => $_is_self,
       'is_intersystem' => $is_intersystem,
     ]);
   }

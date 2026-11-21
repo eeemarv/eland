@@ -737,7 +737,10 @@ config_landing_page:
   help: >-
     De standaard pagina waar men terecht
     komt na login. De betreffende module
-    moet ingeschakeld zijn. (Zie "Modules")
+    moet ingeschakeld zijn. (Zie "{ao}Modules{ac}")
+    Wanneer de betreffende module niet
+    is ingeschakeld is de standaard 
+    landingspagina "Leden".
   title: Landingspagina
   landing_page:
     label: Standaard landingspagina
@@ -851,27 +854,36 @@ config_notifications:
     Selecteer hier via welke kanalen meldingen buiten 
     de app de gebruikers kunnen bereiken. De gebruikers kunnen
     zelf altijd selecteren welke meldingen ze willen 
-    ontvangen en hoe vaak. Gebruikers kunnen er voor 
-    kiezen om meldingen per categorie instant of in een
-    dagelijkse, wekelijkse of maandelijkse samenvatting
-    (digest) te ontvangen. In deze configuratie kan de
-    admin het tijdstip opgeven wanneer deze samenvattingen
-    verzonden worden. De in-app meldingen zijn altijd
-    instant en kunnen niet uitgeschakeld worden.  
+    ontvangen en hoe vaak.  
   email_enabled:
     label: >- 
       Verzend Meldingen per Email
   webpush_enabled:
     label: >-
       Verzend Meldingen per Webpush 
+  email_digest: 
+    title: >-
+      Tijdstippen Email Samenvatting (digest)
+    help: >- 
+      Gebruikers kunnen zelf kiezen per email
+      adres in hun account welke emails ze ontvangen
+      per categorie van meldingen. Ze kunnen de
+      meldingen instant ontvangen, of samengevat per
+      dag, week of maand. Hier kan de admin het tijdstip
+      ingeven wanneer de samenvattingen verzonden
+      worden. 
+    warning: >-
+      Samenvattingen per email worden alleen verzonden
+      als "Meldingen per Email" hierboven 
+      ingeschakeld is
   daily:
-    title: Dagelijkse Samenvatting
+    title: Dagelijkse Email Samenvatting
     hour:
       label: >-
         Uur van de Dag (ongeveer) waarop Dagelijkse
         Samenvatting wordt verzonden
   weekly:
-    title: Wekelijkse Samenvatting
+    title: Wekelijkse Email Samenvatting
     hour:
       label: >-
         Uur van de Dag (ongeveer) waarop de Wekelijkse
@@ -881,7 +893,7 @@ config_notifications:
         Dag van de Week waarop de Wekelijkse
         Samenvatting wordt verzonden 
   monthly:
-    title: Maandelijkse Samenvatting
+    title: Maandelijkse Email Samenvatting
     hour:
       label: >-
         Uur van de Dag (ongeveer) waarop de Maandelijkse
@@ -2976,12 +2988,11 @@ users_show:
       success: >-
         Wijzigingen van tags opgeslagen ({count})
 
-users_tags_edit:
+users_tags_assign:
   title: >-
     {self, select,
-      yes {Tags voor je profiel aanpassen}
-      no {Tags voor {user} aanpassen}
-      other {**ERR**}
+      self {Tags voor je profiel aanpassen}
+      other {Tags voor {user} aanpassen}
     }
   log_comment:
     help: >-
@@ -2996,9 +3007,8 @@ users_tags_edit:
   flash:
     success: >-
       {self, select,
-        yes {Tags voor je profiel aangepast}
-        no {Tags voor {user} aangepast}
-        other {**ERR**}
+        self {Tags voor je profiel aangepast}
+        other {Tags voor {user} aangepast}
       }
 
 users_tags_logs:

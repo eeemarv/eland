@@ -23,6 +23,9 @@ class PageParamsService
 	private bool $is_guest;
 	private bool $is_anonymous;
 
+  private string $access_level;
+  private string $module; 
+
 	private string|null $org_schema;
 	private string $route;
 
@@ -39,6 +42,9 @@ class PageParamsService
 	{
 		$this->request = $this->request_stack->getCurrentRequest();
 		$this->route = $this->request->attributes->get('_route');
+		$this->access_level = $this->request->attributes->get('_access_level');
+		$this->module = $this->request->attributes->get('_module');
+
 		$this->role_short = $this->request->attributes->get('role_short');
 
     switch ($this->role_short)
@@ -170,6 +176,24 @@ class PageParamsService
       $this->init();
     }
 		return $this->role_short;
+	}
+
+	public function access_level():string
+	{
+    if (!isset($this->route))
+    {
+      $this->init();
+    }
+		return $this->access_level;
+	}
+
+	public function module():string
+	{
+    if (!isset($this->route))
+    {
+      $this->init();
+    }
+		return $this->module;
 	}
 
 	public function is_admin():bool

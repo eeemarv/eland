@@ -7,28 +7,29 @@ use App\Email\RegisterForm\Confirm\EmailRegisterFormConfirmMessage;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\EmailSentRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Uid\Uuid;
 
 #[AsController]
 class RegisterFormConfirmController extends AbstractController
 {
-  #[Route(
-    '/{schema}/register/{confirm_token}',
+  #[SchemaRoute(
+    access_level: AccessLevel::Anonymous,
+    module: AppModule::RegisterForm,
+    path: '/register/{confirm_token}',
     name: 'register_form_confirm',
     methods: ['GET'],
     priority: 30,
     requirements: [
       'confirm_token' => '%uuid_base58%',
-    ],
-    defaults: [
-      'module'        => 'register_form',
     ],
   )]
 
@@ -41,13 +42,6 @@ class RegisterFormConfirmController extends AbstractController
     PageParamsService $pp
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'register_form.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException('Register form not enabled.');
-    }
 
     $uuid_confirm_token = Uuid::fromBase58($confirm_token);
 

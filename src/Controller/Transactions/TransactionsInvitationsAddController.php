@@ -6,6 +6,9 @@ use App\Command\Transactions\TransactionsInvitationsAddCommand;
 use App\Form\Type\Transactions\TransactionsInvitationsAddType;
 use App\Render\AccountRender;
 use App\Repository\AccountRepository;
+use App\Routing\AccessLevel;
+use App\Routing\SchemaRoute;
+use App\Routing\TransactionsSubModule;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
@@ -16,21 +19,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class TransactionsInvitationsAddController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/transactions/invitations/add',
+  #[SchemaRoute(
+    access_level: AccessLevel::User,
+    module: TransactionsSubModule::Invitations,
+    path: '/transactions/invitations/add',
     name: 'transactions_invitations_add',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.user%',
-    ],
-    defaults: [
-      'module'        => 'transactions',
-    ],
   )]
 
   public function __invoke(
@@ -45,26 +43,6 @@ class TransactionsInvitationsAddController extends AbstractController
     SessionUserService $su,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'transactions.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException(
-        'Transactions module not enabled.'
-      );
-    }
-
-    if (!$config_service->get_bool(
-      config_id: 'transactions.invitations.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException(
-        'Transactions invitations submodule not enabled.'
-      );
-    }
-
     $currency = $config_service->get_str(
       config_id: 'transactions.currency.name',
       schema: $pp->schema_o(),

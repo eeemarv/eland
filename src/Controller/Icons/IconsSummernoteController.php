@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class IconsSummernoteController extends AbstractController
 {
   #[Route(
-    '/icons/summernote.js',
+    path: '/icons/summernote.js',
     name: 'icons_summernote',
     methods: ['GET'],
   )]

@@ -3,57 +3,37 @@
 namespace App\Controller\Categories;
 
 use App\Command\Categories\CategoriesNameCommand;
+use App\Command\Messages\MessagesCleanupCommand;
 use App\Form\Type\Categories\CategoriesNameType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\CategoryRepository;
-use App\Service\ConfigService;
+use App\Routing\AccessLevel;
+use App\Routing\MessagesSubModule;
+use App\Routing\SchemaRoute;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class CategoriesAddController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/categories/add',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: MessagesSubModule::Categories,
+    path: '/categories/add',
     name: 'categories_add',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'messages',
-      'sub_module'    => 'categories',
-    ],
   )]
 
   public function __invoke(
     Request $request,
     CategoryRepository $category_repository,
-    ConfigService $config_service,
     PageParamsService $pp,
     SessionUserService $su,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'messages.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException('messages (offer/want) module not enabled.');
-    }
-
-    if (!$config_service->get_bool(
-      config_id: 'messages.fields.category.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException('Categories module not enabled.');
-    }
-
     $command = new CategoriesNameCommand();
     $command->id = 0;
 

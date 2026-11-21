@@ -16,7 +16,7 @@ use Symfony\Component\Routing\RouterInterface;
 class DevCheckRoutesController extends AbstractController
 {
   #[Route(
-    '/_dev/check-routes',
+    path: '/_dev/check-routes',
     name: 'dev_check_routes',
     methods: ['GET'],
     env: 'dev',

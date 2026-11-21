@@ -3,6 +3,10 @@
 namespace App\Controller\Autocomplete;
 
 use App\Repository\UserRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
+use App\Routing\UsersSubModule;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
@@ -11,7 +15,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 #[AsController]
@@ -19,17 +22,17 @@ class AutocompleteAccountsController extends AbstractController
 {
   use EtagJsonResponseTrait;
 
-  #[Route(
-    '/{schema}/{role_short}/autocomplete/accounts/{group}',
+  #[SchemaRoute(
+    access_level: AccessLevel::Guest,
+    module: UsersSubModule::Accounts,
+    path: '/autocomplete/accounts/{group}',
     name: 'autocomplete_accounts',
     methods: ['GET'],
     requirements: [
       'group'         => '%assert.account.group%',
-      'role_short'    => '%assert.role_short.guest%',
     ],
     defaults: [
       'group'         => 'active',
-      'module'        => 'users',
     ],
   )]
 

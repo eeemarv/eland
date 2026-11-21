@@ -5,6 +5,9 @@ namespace App\Controller\Transactions;
 use App\DTO\Schema;
 use App\Render\LinkRender;
 use App\Repository\AccountRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\PageParamsService;
@@ -14,22 +17,19 @@ use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class TransactionsPlotUserController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/transactions/plot-user/{user_id}/{days}',
+  #[SchemaRoute(
+    access_level: AccessLevel::Guest,
+    module: AppModule::Transactions,
+    path: '/transactions/plot-user/{user_id}/{days}',
     name: 'transactions_plot_user',
     methods: ['GET'],
     requirements: [
       'user_id'       => '%assert.id%',
       'days'          => '%assert.id%',
-      'role_short'    => '%assert.role_short.guest%',
-    ],
-    defaults: [
-      'module'        => 'transactions',
     ],
   )]
 

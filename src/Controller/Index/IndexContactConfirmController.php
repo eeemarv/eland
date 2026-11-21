@@ -18,7 +18,7 @@ use Symfony\Component\Uid\Uuid;
 class IndexContactConfirmController extends AbstractController
 {
   #[Route(
-    '/contact/{confirm_token}',
+    path: '/contact/{confirm_token}',
     name: 'index_contact_confirm',
     methods: ['GET'],
     requirements: [

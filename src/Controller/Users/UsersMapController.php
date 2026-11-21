@@ -3,30 +3,32 @@
 namespace App\Controller\Users;
 
 use App\Repository\UserRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 #[AsController]
 class UsersMapController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/users/map/{status}',
+  #[SchemaRoute(
+    access_level: AccessLevel::Guest,
+    module: AppModule::Users,
+    path: '/users/map/{status}',
     name: 'users_map',
     methods: ['GET'],
     priority: 20,
     requirements: [
       'status'        => '%assert.account.status2%',
-      'role_short'    => '%assert.role_short.guest%',
     ],
     defaults: [
       'status'        => 'active',
-      'module'        => 'users',
     ],
   )]
 

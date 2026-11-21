@@ -5,7 +5,9 @@ namespace App\Controller\Docs;
 use App\Command\Docs\DocsCommand;
 use App\Form\Type\Docs\DocsDelType;
 use App\Repository\DocRepository;
-use App\Service\ConfigService;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\PageParamsService;
 use App\Service\S3Service;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -13,41 +15,27 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class DocsDelController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/docs/{id}/del',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: AppModule::Docs,
+    path: '/docs/{id}/del',
     name: 'docs_del',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short' => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module' => 'docs',
-    ],
   )]
 
   public function __invoke(
     Request $request,
     int $id,
     DocRepository $doc_repository,
-    ConfigService $config_service,
     LoggerInterface $logger,
     S3Service $s3_service,
     PageParamsService $pp,
     string $env_s3_url,
   ): Response {
-    if (
-      !$config_service->get_bool(
-        config_id: 'docs.enabled',
-        schema: $pp->schema_o(),
-      )
-    ) {
-      throw $this->createNotFoundException('Documents module not enabled.');
-    }
 
     $command = new DocsCommand();
 

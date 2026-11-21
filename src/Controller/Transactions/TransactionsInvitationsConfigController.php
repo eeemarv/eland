@@ -4,6 +4,9 @@ namespace App\Controller\Transactions;
 
 use App\Command\Transactions\TransactionsInvitationsConfigCommand;
 use App\Form\Type\Transactions\TransactionsInvitationsConfigType;
+use App\Routing\AccessLevel;
+use App\Routing\SchemaRoute;
+use App\Routing\TransactionsSubModule;
 use App\Service\ConfigService;
 use App\Service\FeaturesService;
 use App\Service\PageParamsService;
@@ -12,21 +15,16 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class TransactionsInvitationsConfigController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/transactions/invitations/config',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: TransactionsSubModule::Invitations,
+    path: '/transactions/invitations/config',
     name: 'transactions_invitations_config',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'transactions',
-    ],
   )]
 
   public function __invoke(

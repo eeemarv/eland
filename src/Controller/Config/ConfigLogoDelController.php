@@ -3,6 +3,9 @@
 namespace App\Controller\Config;
 
 use App\Form\Type\Del\DelType;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -11,21 +14,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class ConfigLogoDelController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/logo/del',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: AppModule::Config,
+    path: '/logo/del',
     name: 'config_logo_del',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'config',
-    ],
   )]
 
   public function __invoke(

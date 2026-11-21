@@ -6,6 +6,9 @@ use App\Cnst\BulkCnst;
 use App\Cnst\MessageTypeCnst;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
@@ -19,21 +22,16 @@ use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class TransactionsEditController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/transactions/{id}/edit',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: AppModule::Transactions,
+    path: '/transactions/{id}/edit',
     name: 'transactions_edit',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'transactions',
-    ],
   )]
 
   public function __invoke(
@@ -51,13 +49,6 @@ class TransactionsEditController extends AbstractController
     SessionUserService $su,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'transactions.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException('Transactions module not enabled.');
-    }
 
     $errors = [];
 

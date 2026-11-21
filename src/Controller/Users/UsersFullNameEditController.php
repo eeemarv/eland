@@ -6,6 +6,9 @@ use App\Command\Users\UsersFullNameCommand;
 use App\Form\Type\Users\UsersFullNameType;
 use App\Repository\UserLogRepository;
 use App\Repository\UserRepository;
+use App\Routing\AccessLevel;
+use App\Routing\SchemaRoute;
+use App\Routing\UsersSubModule;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,71 +17,53 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\UserCacheService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class UsersFullNameEditController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/users/{id}/full-name/edit',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: UsersSubModule::FullName,
+    is_self: false,
+    path: '/users/{id}/full-name/edit',
     name: 'users_full_name_edit',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short' => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'is_self' => false,
-      'module' => 'users',
-    ],
   )]
 
-  #[Route(
-    '/{schema}/{role_short}/users/self/full-name/edit',
+  #[SchemaRoute(
+    access_level: AccessLevel::User,
+    module: UsersSubModule::FullName,
+    is_self: true,
+    path: '/users/self/full-name/edit',
     name: 'users_full_name_edit_self',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short' => '%assert.role_short.user%',
-    ],
-    defaults: [
-      'id' => 0,
-      'is_self' => true,
-      'module' => 'users',
-    ],
   )]
 
   public function __invoke(
     Request $request,
-    int $id,
-    bool $is_self,
+    bool $_is_self,
     UserRepository $user_repository,
     UserCacheService $user_cache_service,
     UserLogRepository $user_log_repository,
     ConfigService $config_service,
     PageParamsService $pp,
     SessionUserService $su,
-  ): Response {
+    int|null $id = null,
+  ): Response 
+  {
     if (
-      !$config_service->get_bool(
-        config_id: 'users.fields.full_name.enabled',
-        schema: $pp->schema_o(),
-      )
-    ) {
-      throw $this->createAccessDeniedException(
-        'Users full name submodule not enabled.'
-      );
-    }
-
-    if (
-      !$is_self
+      !$_is_self
       && $su->is_owner($id)
-    ) {
+    ) 
+    {
       return $this->redirectToRoute(
         route: 'users_full_name_edit_self',
         parameters: $pp->ary(),
       );
     }
 
-    if ($is_self) {
+    if ($_is_self) 
+    {
       $id = $su->id();
     }
 
@@ -90,12 +75,18 @@ class UsersFullNameEditController extends AbstractController
     $form_options = [];
     $full_name_edit_en = true;
 
-    if ($is_self && !$pp->is_admin() && !$self_edit_en) {
+    if (
+      $_is_self 
+      && !$pp->is_admin() 
+      && !$self_edit_en
+    ) 
+    {
       $full_name_edit_en = false;
       $form_options['full_name_edit_en'] = false;
     }
 
-    if ($pp->is_admin()) {
+    if ($pp->is_admin()) 
+    {
       $form_options['log_comment_enabled'] = true;
     }
 
@@ -106,7 +97,8 @@ class UsersFullNameEditController extends AbstractController
       schema: $pp->schema_o(),
     );
 
-    if ($user === false) {
+    if ($user === false) 
+    {
       throw $this->createNotFoundException(
         'User with id ' . $id . ' not found'
       );
@@ -128,26 +120,31 @@ class UsersFullNameEditController extends AbstractController
     if (
       $form->isSubmitted()
       && $form->isValid()
-    ) {
+    ) 
+    {
       $log_comment = $pp->is_admin() ? $form->get('log_comment')->getData() : null;
       $changed_full_name = false;
       $changed_access = false;
       $full_name = $user['full_name'];
       $full_name_access = $user['full_name_access'];
 
-      if ($full_name_edit_en) {
-        if ($command->full_name !== $full_name) {
+      if ($full_name_edit_en) 
+      {
+        if ($command->full_name !== $full_name) 
+        {
           $full_name = $command->full_name;
           $changed_full_name = true;
         }
       }
 
-      if ($command->full_name_access !== $full_name_access) {
+      if ($command->full_name_access !== $full_name_access) 
+      {
         $full_name_access = $command->full_name_access;
         $changed_access = true;
       }
 
-      if ($changed_full_name || $changed_access) {
+      if ($changed_full_name || $changed_access) 
+      {
         $user_repository->set_full_name(
           id: $id,
           full_name: $full_name,
@@ -170,13 +167,14 @@ class UsersFullNameEditController extends AbstractController
           schema: $pp->schema_o(),
         );
 
-        if ($changed_full_name) {
+        if ($changed_full_name) 
+        {
           $this->addFlash(
             type: 'success',
             message: [
               'key' => 'users_full_name_edit.flash.success.full_name',
               'params' => [
-                'self' => $is_self ? 'yes' : 'no',
+                'self' => $_is_self ? 'yes' : 'no',
                 'user' => $user['name'],
                 'old_full_name' => $user['full_name'],
                 'new_full_name' => $full_name,
@@ -185,13 +183,14 @@ class UsersFullNameEditController extends AbstractController
           );
         }
 
-        if ($changed_access) {
+        if ($changed_access) 
+        {
           $this->addFlash(
             type: 'success',
             message: [
               'key' => 'users_full_name_edit.flash.success.access',
               'params' => [
-                'self' => $is_self ? 'yes' : 'no',
+                'self' => $_is_self ? 'yes' : 'no',
                 'user' => $user['name'],
                 'old_access' => $user['full_name_access'],
                 'new_access' => $full_name_access,
@@ -199,7 +198,9 @@ class UsersFullNameEditController extends AbstractController
             ]
           );
         }
-      } else {
+      } 
+      else 
+      {
         $this->addFlash(
           type: 'warning',
           message: [
@@ -208,7 +209,8 @@ class UsersFullNameEditController extends AbstractController
         );
       }
 
-      if ($is_self) {
+      if ($_is_self) 
+      {
         return $this->redirectToRoute(
           route: 'users_show_self',
           parameters: $pp->ary(),
@@ -229,7 +231,7 @@ class UsersFullNameEditController extends AbstractController
       'user' => $user,
       'id' => $id,
       'full_name_edit_en' => $full_name_edit_en,
-      'is_self' => $is_self,
+      'is_self' => $_is_self,
       'is_intersystem' => $is_intersystem,
     ]);
   }

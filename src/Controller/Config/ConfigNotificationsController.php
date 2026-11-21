@@ -4,6 +4,9 @@ namespace App\Controller\Config;
 
 use App\Command\Config\ConfigNotificationsCommand;
 use App\Form\Type\Config\ConfigNotificationsType;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,21 +18,16 @@ use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Messenger\EventListener\StopWorkerOnRestartSignalListener;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class ConfigNotificationsController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/config/notifications',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: AppModule::Config,
+    path: '/config/notifications',
     name: 'config_notifications',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'  => 'config',
-    ],
   )]
 
   public function __invoke(

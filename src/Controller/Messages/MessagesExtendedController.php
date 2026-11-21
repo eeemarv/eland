@@ -7,48 +7,42 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class MessagesExtendedController extends AbstractController
 {
-    #[Route(
-        '/{schema}/{role_short}/messages/extended',
+    #[SchemaRoute(
+        access_level: AccessLevel::Guest,
+        module: AppModule::Messages,
+        is_self: false,
+        path: '/messages/extended',
         name: 'messages_extended',
         methods: ['GET'],
         priority: 20,
-        requirements: [
-            'role_short'    => '%assert.role_short.guest%',
-        ],
-        defaults: [
-            'is_self'       => false,
-            'module'        => 'messages',
-        ],
     )]
 
-    #[Route(
-        '/{schema}/{role_short}/messages/extended/self',
+    #[SchemaRoute(
+        access_level: AccessLevel::User,
+        module: AppModule::Messages,
+        is_self: true,
+        path: '/messages/extended/self',
         name: 'messages_extended_self',
         methods: ['GET'],
         priority: 20,
-        requirements: [
-            'role_short'    => '%assert.role_short.user%',
-        ],
-        defaults: [
-            'is_self'       => true,
-            'module'        => 'messages',
-        ],
     )]
 
     public function __invoke(
         Request $request,
         Db $db,
-        bool $is_self,
+        bool $_is_self,
         MessagesListController $messages_list_controller,
         AccountRender $account_render,
         ConfigService $config_service,
@@ -58,12 +52,6 @@ class MessagesExtendedController extends AbstractController
         string $env_s3_url
     ):Response
     {
-        if (!$config_service->get_bool(
-          config_id: 'messages.enabled',
-          schema: $pp->schema_o()))
-        {
-            throw $this->createNotFoundException('Messages (offers/wants) module not enabled.');
-        }
 
         $expires_at_enabled = $config_service->get_bool(
           config_id: 'messages.fields.expires_at.enabled',
@@ -77,7 +65,7 @@ class MessagesExtendedController extends AbstractController
         $fetch_and_filter = $messages_list_controller->fetch_and_filter(
             $request,
             $db,
-            $is_self,
+            $_is_self,
             $config_service,
             $pp,
             $su
@@ -214,7 +202,7 @@ class MessagesExtendedController extends AbstractController
             'bulk_actions_raw'      => '',
             'categories'            => $categories,
             'row_count'             => $row_count,
-            'is_self'               => $is_self,
+            'is_self'               => $_is_self,
             'uid'                   => $uid,
             'cat_id'                => $filter_command->cat ?? null,
             'filter_form'           => $filter_form,

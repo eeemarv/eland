@@ -5,27 +5,24 @@ namespace App\Controller\ContactTypes;
 use App\Command\ContactTypes\ContactTypesCommand;
 use App\Form\Type\ContactTypes\ContactTypesType;
 use App\Repository\ContactRepository;
+use App\Routing\AccessLevel;
+use App\Routing\ContactsSubModule;
+use App\Routing\SchemaRoute;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class ContactTypesAddController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/contact-types/add',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: ContactsSubModule::ContactTypes,
+    path: '/contact-types/add',
     name: 'contact_types_add',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'users',
-      'sub_module'    => 'contact_types',
-    ],
   )]
 
   public function __invoke(

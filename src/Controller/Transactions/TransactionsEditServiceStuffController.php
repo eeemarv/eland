@@ -6,28 +6,25 @@ use App\Command\Transactions\TransactionsEditServiceStuffCommand;
 use App\Form\Type\Transactions\TransactionsEditServiceStuffType;
 use App\Repository\TransactionLogRepository;
 use App\Repository\TransactionRepository;
+use App\Routing\AccessLevel;
+use App\Routing\SchemaRoute;
+use App\Routing\TransactionsSubModule;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class TransactionsEditServiceStuffController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/transactions/{id}/edit-service-stuff',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: TransactionsSubModule::ServiceStuff,
+    path: '/transactions/{id}/edit-service-stuff',
     name: 'transactions_edit_service_stuff',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short' => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module' => 'transactions',
-    ],
   )]
 
   public function __invoke(
@@ -37,28 +34,8 @@ class TransactionsEditServiceStuffController extends AbstractController
     TransactionLogRepository $transaction_log_repository,
     PageParamsService $pp,
     SessionUserService $su,
-    ConfigService $config_service,
-  ): Response {
-    if (!$config_service->get_bool(
-        config_id: 'transactions.enabled',
-        schema: $pp->schema_o(),
-      )
-    )
-    {
-      throw $this->createNotFoundException(
-        'Transactions module not enabled.'
-      );
-    }
-    if (!$config_service->get_bool(
-        config_id: 'transactions.fields.service_stuff.enabled',
-        schema: $pp->schema_o(),
-      )
-    )
-    {
-      throw $this->createNotFoundException(
-        'service/stuff submodule not enabled.'
-      );      
-    }
+  ): Response 
+  {
 
     $transaction = $transaction_repository->get_with_prev_next(
       id: $id,

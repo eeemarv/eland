@@ -4,58 +4,49 @@ namespace App\Controller\Users;
 
 use App\Render\LinkRender;
 use App\Repository\UserRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
-use App\Service\UserCacheService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class UsersImageDelController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/users/{id}/image/del',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: AppModule::Users,
+    is_self: false,
+    path: '/users/{id}/image/del',
     name: 'users_image_del',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'is_self'       => false,
-      'module'        => 'users',
-    ],
   )]
 
-  #[Route(
-    '/{schema}/{role_short}/users/self/image/del',
+  #[SchemaRoute(
+    access_level: AccessLevel::User,
+    module: AppModule::Users,
+    is_self: true,
+    path: '/users/self/image/del',
     name: 'users_image_del_self',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.user%',
-    ],
-    defaults: [
-      'id'            => 0,
-      'is_self'       => true,
-      'module'        => 'users',
-    ],
   )]
 
   public function __invoke(
     Request $request,
-    int $id,
-    bool $is_self,
+    bool $_is_self,
     LinkRender $link_render,
     UserRepository $user_repository,
     PageParamsService $pp,
     SessionUserService $su,
     string $env_s3_url,
+    int|null $id = null,
   ):Response
   {
-    if ($is_self)
+    if ($_is_self)
     {
       $id = $su->id();
     }
@@ -126,7 +117,7 @@ class UsersImageDelController extends AbstractController
     return $this->render('users/users_image_del.html.twig', [
       'content'   => $out,
       'id'        => $id,
-      'is_self'   => $is_self,
+      'is_self'   => $_is_self,
       'user'      => $user,
     ]);
   }

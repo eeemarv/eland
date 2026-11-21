@@ -2,6 +2,9 @@
 
 namespace App\Controller\Cms;
 
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\ImageUploadService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -11,21 +14,16 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class CmsImageUploadController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/cms/image-upload',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: AppModule::Cms,
+    path: '/cms/image-upload',
     name: 'cms_image_upload',
     methods: ['POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'cms',
-    ],
   )]
 
   public function __invoke(
@@ -41,7 +39,9 @@ class CmsImageUploadController extends AbstractController
 
     if (!$uploaded_file)
     {
-      throw new BadRequestHttpException('Afbeeldingsbestand ontbreekt.');
+      throw new BadRequestHttpException(
+        'Image file missing'
+      );
     }
 
     $file = $image_upload_service->upload($uploaded_file,

@@ -8,60 +8,36 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Command\Tags\TagsDefCommand;
 use App\Form\Type\Tags\TagsDefType;
 use App\Repository\TagRepository;
-use App\Service\ConfigService;
+use App\Routing\AccessLevel;
+use App\Routing\SchemaRoute;
+use App\Routing\UsersSubModule;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class TagsAddController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/tags/{tag_type}/add',
-    name: 'tags_add',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: UsersSubModule::Tags,
+    path: 'users/tags/add',
+    name: 'users_tags_add',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-      'tag_type'      => '%assert.tag_type%',
-    ],
-    defaults: [
-      'sub_module'    => 'tags',
-    ],
   )]
 
   public function __invoke(
-    string $tag_type,
+    string $_module,
     Request $request,
     TagRepository $tag_repository,
-    ConfigService $config_service,
     PageParamsService $pp,
     SessionUserService $su,
   ):Response
   {
-    switch ($tag_type)
-    {
-      case 'users':
-        if (!$config_service->get_bool(
-          config_id: 'users.tags.enabled',
-          schema: $pp->schema_o(),
-        ))
-        {
-          throw $this->createNotFoundException(
-            'Tags for users not enabled.'
-          );
-        }
-        break;
-      default:
-        throw $this->createNotFoundException(
-          'Tag type not supported.'
-        );
-        break;
-    }
 
     $command = new TagsDefCommand();
     $command->id = 0;
-    $command->tag_type = $tag_type;
+    $command->tag_type = $_module;
     $command->bg_color = '#eeeeee';
     $command->txt_color = '#555555';
     $command->txt = null;
@@ -71,7 +47,7 @@ class TagsAddController extends AbstractController
       type: TagsDefType::class,
       data: $command,
       options: [
-        'tag_type'  => $tag_type,
+        'tag_type'  => $_module,
       ],
     );
 
@@ -86,7 +62,7 @@ class TagsAddController extends AbstractController
       $bg_color = $command->bg_color;
 
       $tag_repository->insert(
-        tag_type: $tag_type,
+        tag_type: $_module,
         txt: (string) $txt,
         txt_color: $txt_color,
         bg_color: $bg_color,
@@ -110,16 +86,15 @@ class TagsAddController extends AbstractController
         ],
       );
 
-      return $this->redirectToRoute('tags', [
-        ...$pp->ary(),
-        'tag_type'  => $tag_type,
-      ]);
+      return $this->redirectToRoute(
+        route: $_module . '_tags', 
+        parameters: $pp->ary(),
+      );
     }
 
     return $this->render('tags/tags_add.html.twig', [
       'form'      => $form->createView(),
-      'module'    => $tag_type,
-      'tag_type'  => $tag_type,
+      'tag_type'  => $_module,
     ]);
   }
 }

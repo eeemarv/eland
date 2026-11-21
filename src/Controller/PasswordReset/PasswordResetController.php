@@ -7,6 +7,9 @@ use App\Email\PasswordReset\Confirm\EmailPasswordResetConfirmMessage;
 use App\Form\Type\PasswordReset\PasswordResetType;
 use App\Render\AccountRender;
 use App\Repository\UserRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,22 +17,17 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Mime\Address;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class PasswordResetController extends AbstractController
 {
-  #[Route(
-    '/{schema}/password-reset',
+  #[SchemaRoute(
+    access_level: AccessLevel::Anonymous,
+    module: AppModule::PasswordReset,
+    path: '/password-reset',
     name: 'password_reset',
     methods: ['GET', 'POST'],
     priority: 30,
-    requirements: [
-    ],
-    defaults: [
-      'module'        => 'users',
-      'sub_module'    => 'password_reset',
-    ],
   )]
 
   public function __invoke(

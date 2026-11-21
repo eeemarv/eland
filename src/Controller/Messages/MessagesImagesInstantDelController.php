@@ -2,6 +2,9 @@
 
 namespace App\Controller\Messages;
 
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -10,23 +13,20 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class MessagesImagesInstantDelController extends AbstractController
 {
-    #[Route(
-        '/{schema}/{role_short}/messages/{id}/images/{img}/{ext}/del/{form_token}',
+    #[SchemaRoute(
+        access_level: AccessLevel::User,
+        module: AppModule::Messages,
+        path: '/messages/{id}/images/{img}/{ext}/del/{form_token}',
         name: 'messages_images_instant_del',
         methods: ['POST'],
         requirements: [
             'img'           => '%assert.message_image%',
             'ext'           => '%assert.image_ext%',
             'form_token'    => '%assert.token%',
-            'role_short'    => '%assert.role_short.user%',
-        ],
-        defaults: [
-            'module'        => 'messages',
         ],
     )]
 

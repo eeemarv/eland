@@ -5,98 +5,71 @@ namespace App\Controller\Users;
 use App\Command\Users\UsersPostcodeCommand;
 use App\Form\Type\Users\UsersPostcodeType;
 use App\Repository\UserRepository;
-use App\Service\ConfigService;
+use App\Routing\AccessLevel;
+use App\Routing\SchemaRoute;
+use App\Routing\UsersSubModule;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class UsersPostcodeEditController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/users/{id}/postcode/add',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: UsersSubModule::Postcode,
+    is_self: false,
+    mode: 'add',
+    path: '/users/{id}/postcode/add',
     name: 'users_postcode_add',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'mode'          => 'add',
-      'is_self'       => false,
-      'module'        => 'users',
-    ],
   )]
 
-  #[Route(
-    '/{schema}/{role_short}/users/self/postcode/add',
+  #[SchemaRoute(
+    access_level: AccessLevel::User,
+    module: UsersSubModule::Postcode,
+    is_self: true,
+    mode: 'add',
+    path: '/users/self/postcode/add',
     name: 'users_postcode_add_self',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.user%',
-    ],
-    defaults: [
-      'mode'          => 'add',
-      'id'            => 0,
-      'is_self'       => true,
-      'module'        => 'users',
-    ],
   )]
 
-  #[Route(
-    '/{schema}/{role_short}/users/{id}/postcode/edit',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: UsersSubModule::Postcode,
+    is_self: false,
+    mode: 'edit',
+    path: '/users/{id}/postcode/edit',
     name: 'users_postcode_edit',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'mode'          => 'edit',
-      'is_self'       => false,
-      'module'        => 'users',
-    ],
   )]
 
-  #[Route(
-    '/{schema}/{role_short}/users/self/postcode/edit',
+  #[SchemaRoute(
+    access_level: AccessLevel::User,
+    module: UsersSubModule::Postcode,
+    is_self: true,
+    mode: 'edit',
+    path: '/users/self/postcode/edit',
     name: 'users_postcode_edit_self',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.user%',
-    ],
-    defaults: [
-      'mode'          => 'edit',
-      'id'            => 0,
-      'is_self'       => true,
-      'module'        => 'users',
-    ],
   )]
 
   public function __invoke(
     Request $request,
-    int $id,
-    bool $is_self,
-    string $mode,
+    bool $_is_self,
+    string $_mode,
     UserRepository $user_repository,
-    ConfigService $config_service,
     PageParamsService $pp,
     SessionUserService $su,
+    int|null $id = null,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'users.fields.postcode.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createAccessDeniedException(
-        'Users postcode submodule not enabled.'
-      );
-    }
 
-    if (!$is_self
+    if (!$_is_self
       && $su->is_owner($id))
     {
       return $this->redirectToRoute(
@@ -105,7 +78,7 @@ class UsersPostcodeEditController extends AbstractController
       );
     }
 
-    if ($is_self)
+    if ($_is_self)
     {
       $id = $su->id();
     }
@@ -131,7 +104,7 @@ class UsersPostcodeEditController extends AbstractController
 
     if ($postcode_set_previously)
     {
-      if ($mode === 'add')
+      if ($_mode === 'add')
       {
         throw $this->createAccessDeniedException(
           'Wrong route: postcode already exists (use edit route instead)'
@@ -140,7 +113,7 @@ class UsersPostcodeEditController extends AbstractController
     }
     else
     {
-      if ($mode === 'edit')
+      if ($_mode === 'edit')
       {
         throw $this->createAccessDeniedException(
           'Wrong route: can not edit non-existing postcode (use add route instead)'
@@ -186,9 +159,9 @@ class UsersPostcodeEditController extends AbstractController
           message: [
             'key' => 'users_postcode_edit.flash.success',
             'params' => [
-              'self'   => $is_self ? 'yes' : 'no',
+              'self'   => $_is_self ? 'yes' : 'no',
               'user'  => $user['name'],
-              'mode'  => $mode,
+              'mode'  => $_mode,
               'old_postcode'  => $user['postcode'],
               'new_postcode'  => $command->postcode,
             ]
@@ -196,7 +169,7 @@ class UsersPostcodeEditController extends AbstractController
         );
       }
 
-      if ($is_self)
+      if ($_is_self)
       {
         return $this->redirectToRoute(
           route: 'users_show_self',
@@ -216,9 +189,9 @@ class UsersPostcodeEditController extends AbstractController
     return $this->render('users/users_postcode_edit.html.twig', [
       'form'              => $form->createView(),
       'user'              => $user,
-      'mode'              => $mode,
+      'mode'              => $_mode,
       'id'                => $id,
-      'is_self'           => $is_self,
+      'is_self'           => $_is_self,
       'is_intersystem'    => $is_intersystem,
     ]);
   }

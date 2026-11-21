@@ -4,6 +4,9 @@ namespace App\Controller\Messages;
 
 use App\Command\Messages\MessagesCleanupCommand;
 use App\Form\Type\Messages\MessagesCleanupType;
+use App\Routing\AccessLevel;
+use App\Routing\MessagesSubModule;
+use App\Routing\SchemaRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,21 +14,16 @@ use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class MessagesCleanupController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/messages/cleanup',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: MessagesSubModule::Expire,
+    path: '/messages/cleanup',
     name: 'messages_cleanup',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'messages',
-    ],
   )]
 
   public function __invoke(
@@ -35,21 +33,6 @@ class MessagesCleanupController extends AbstractController
     SessionUserService $su,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'messages.fields.expires_at.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException('Messages cleanup submodule not enabled.');
-    }
-
-    if (!$config_service->get_bool(
-      config_id: 'messages.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException('Messages (offers/wants) module not enabled.');
-    }
 
     $command = new MessagesCleanupCommand();
     $config_service->load_command(

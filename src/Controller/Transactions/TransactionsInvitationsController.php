@@ -4,7 +4,9 @@ namespace App\Controller\Transactions;
 
 use App\Command\Transactions\TransactionsInvitationsConfigCommand;
 use App\Form\Type\Transactions\TransactionsInvitationsConfigType;
-use App\Service\ConfigService;
+use App\Routing\AccessLevel;
+use App\Routing\SchemaRoute;
+use App\Routing\TransactionsSubModule;
 use App\Service\FeaturesService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -12,55 +14,25 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class TransactionsInvitationsController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/transactions/invitations',
+  #[SchemaRoute(
+    access_level: AccessLevel::User,
+    module: TransactionsSubModule::Invitations,
+    path: '/transactions/invitations',
     name: 'transactions_invitations',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.user%',
-    ],
-    defaults: [
-      'module'        => 'transactions',
-    ],
   )]
 
   public function __invoke(
     Request $request,
-    ConfigService $config_service,
     FeaturesService $features_service,
     PageParamsService $pp,
     SessionUserService $su,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'transactions.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException(
-        'Transactions module not enabled.'
-      );
-    }
-
-    if (!$config_service->get_bool(
-      config_id: 'transactions.invitations.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException(
-        'Transactions invitations submodule not enabled.'
-      );
-    }
-
-    /***
-     *
-     *
-     */
 
     $command = new TransactionsInvitationsConfigCommand();
 

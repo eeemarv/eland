@@ -9,6 +9,9 @@ use App\Form\Type\Filter\QTextSearchFilterType;
 use App\Form\Type\Transactions\TransactionsMassManyToOneType;
 use App\Repository\TransactionRepository;
 use App\Repository\UserRepository;
+use App\Routing\AccessLevel;
+use App\Routing\SchemaRoute;
+use App\Routing\TransactionsSubModule;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,23 +20,22 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Uid\Uuid;
 
 #[AsController]
 class TransactionsMassManyToOneController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/transactions/many-to-one/{status}',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: TransactionsSubModule::Mass,
+    path: '/transactions/many-to-one/{status}',
     name: 'transactions_mass_many_to_one',
     methods: ['GET', 'POST'],
     requirements: [
       'status' => '%assert.account.status2%',
-      'role_short' => '%assert.role_short.admin%',
     ],
     defaults: [
       'status' => 'active',
-      'module' => 'transactions',
     ],
   )]
 
@@ -46,28 +48,8 @@ class TransactionsMassManyToOneController extends AbstractController
     SessionUserService $su,
     ConfigService $config_service,
     MessageBusInterface $bus,
-  ): Response {
-    if (!$config_service->get_bool(
-        config_id: 'transactions.enabled',
-        schema: $pp->schema_o(),
-      )
-    )
-    {
-      throw $this->createNotFoundException(
-        'Transactions module not enabled.'
-      );
-    }
-
-    if (!$config_service->get_bool(
-      config_id: 'transactions.mass.enabled',
-      schema: $pp->schema_o(),
-      )
-    )
-    {
-      throw $this->createNotFoundException(
-        'Mass transactions sub module not enabled.'
-      );
-    }
+  ): Response 
+  {
 
     if ($status === 'intersystem')
     {

@@ -5,6 +5,9 @@ namespace App\Controller\RegisterForm;
 use App\Command\RegisterForm\RegisterFormCommand;
 use App\Email\RegisterForm\Confirm\EmailRegisterFormConfirmMessage;
 use App\Form\Type\RegisterForm\RegisterFormType;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -14,21 +17,17 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Mime\Address;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class RegisterFormController extends AbstractController
 {
-  #[Route(
-    '/{schema}/register',
+  #[SchemaRoute(
+    access_level: AccessLevel::Anonymous,
+    module: AppModule::RegisterForm,
+    path: '/register',
     name: 'register_form',
     methods: ['GET', 'POST'],
     priority: 30,
-    requirements: [
-    ],
-    defaults: [
-      'module'        => 'register_form',
-    ],
   )]
 
   public function __invoke(
@@ -39,13 +38,6 @@ class RegisterFormController extends AbstractController
     PageParamsService $pp
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'register_form.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException('Register form not enabled.');
-    }
 
     $postcode_enabled = $config_service->get_bool(
       config_id: 'users.fields.postcode.enabled',

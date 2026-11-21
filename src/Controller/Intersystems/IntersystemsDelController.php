@@ -17,6 +17,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[AsController]
 class IntersystemsDelController extends AbstractController
 {
+  /*
     #[Route(
         '/{schema}/{role_short}/intersystems/{id}/del',
         name: 'intersystems_del',
@@ -29,6 +30,7 @@ class IntersystemsDelController extends AbstractController
             'sub_module'    => 'intersystem',
         ],
     )]
+  */
 
     public function __invoke(
         Request $request,

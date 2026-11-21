@@ -15,6 +15,8 @@ use App\Queue\MailQueue;
 use App\Render\LinkRender;
 use App\Render\SelectRender;
 use App\Repository\AccountRepository;
+use App\Routing\AccessLevel;
+use App\Routing\SchemaRoute;
 use App\Security\User;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
@@ -35,55 +37,49 @@ use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class UsersEditController extends AbstractController
 {
-    #[Route(
-        '/{schema}/{role_short}/users/add2',
+  /* to remove
+    #[SchemaRoute(
+        access_level: AccessLevel::Admin,
+        module: 'users',
+        path: '/users/add2',
         name: 'users_add2',
         methods: ['GET', 'POST'],
-        requirements: [
-            'role_short'    => '%assert.role_short.admin%',
-        ],
         defaults: [
             'id'            => 0,
             'is_add'        => true,
             'is_self'       => false,
-            'module'        => 'users',
         ],
     )]
 
-    #[Route(
-        '/{schema}/{role_short}/users/{id}/edit',
+    #[SchemaRoute(
+        access_level: AccessLevel::Admin,
+        module: 'users',
+        path: '/users/{id}/edit',
         name: 'users_edit',
         methods: ['GET', 'POST'],
-        priority: 10,
-        requirements: [
-            'role_short'    => '%assert.role_short.admin%',
-        ],
         defaults: [
             'is_add'        => false,
             'is_self'       => false,
-            'module'        => 'users',
         ],
     )]
 
-    #[Route(
-        '/{schema}/{role_short}/users/edit-self',
+    #[SchemaRoute(
+        access_level: AccessLevel::User,
+        module: 'users',
+        path: '/users/edit-self',
         name: 'users_edit_self',
         methods: ['GET', 'POST'],
-        requirements: [
-            'role_short'    => '%assert.role_short.user%',
-        ],
         defaults: [
             'id'            => 0,
             'is_add'        => false,
             'is_self'       => true,
-            'module'        => 'users',
         ],
     )]
+    */
 
     public function __invoke(
         Request $request,

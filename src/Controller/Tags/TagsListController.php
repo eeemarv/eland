@@ -8,60 +8,34 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\TagRepository;
-use App\Service\ConfigService;
+use App\Routing\AccessLevel;
+use App\Routing\SchemaRoute;
+use App\Routing\UsersSubModule;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class TagsListController extends AbstractController
 {
-    #[Route(
-    '/{schema}/{role_short}/tags/{tag_type}',
-    name: 'tags',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: UsersSubModule::Tags,
+    path: '/users/tags',
+    name: 'users_tags',
     methods: ['GET', 'POST'],
-    requirements: [
-      'tag_type'      => '%assert.tag_type%',
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'users',
-      'sub_module'    => 'tags',
-    ],
   )]
 
   public function __invoke(
-    string $tag_type,
+    string $_module,
     Request $request,
-    ConfigService $config_service,
     TagRepository $tag_repository,
     PageParamsService $pp,
   ):Response
   {
-    switch ($tag_type)
-    {
-      case 'users':
-        if (!$config_service->get_bool(
-          config_id: 'users.tags.enabled',
-          schema: $pp->schema_o(),
-        ))
-        {
-          throw $this->createNotFoundException(
-            'Tags for users not enabled.'
-          );
-        }
-        break;
-      default:
-        throw $this->createNotFoundException(
-          'Tag type not supported.'
-        );
-        break;
-    }
-
     $command = new TagsListCommand();
 
     $tags = $tag_repository->get_all_with_count(
-      tag_type: $tag_type,
+      tag_type: $_module,
       schema: $pp->schema_o(),
     );
 
@@ -94,7 +68,7 @@ class TagsListController extends AbstractController
 
       $update_count = $tag_repository->update_list(
         tags_list: $tags_list,
-        tag_type: $tag_type,
+        tag_type: $_module,
         schema: $pp->schema_o(),
       );
 
@@ -117,17 +91,16 @@ class TagsListController extends AbstractController
         );
       }
 
-      return $this->redirectToRoute('tags', [
-        'tag_type'  => $tag_type,
-        ...$pp->ary(),
-      ]);
+      return $this->redirectToRoute(
+        route: $_module . '_tags',
+        parameters: $pp->ary(),
+      );
     }
 
     return $this->render('tags/tags_list.html.twig', [
       'tags'      => $tags,
       'form'      => $form->createView(),
-      'module'    => $tag_type,
-      'tag_type'  => $tag_type,
+      'tag_type'  => $_module,
     ]);
   }
 }

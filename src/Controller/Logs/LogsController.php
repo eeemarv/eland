@@ -5,27 +5,25 @@ namespace App\Controller\Logs;
 use App\Command\Logs\LogsFilterCommand;
 use App\Form\Type\Logs\LogsFilterType;
 use App\Repository\LogRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\PageParamsService;
 use App\Service\SystemsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class LogsController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/logs',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: AppModule::Logs,
+    path: '/logs',
     name: 'logs',
     methods: ['GET'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'logs',
-    ],
   )]
 
   public function __invoke(

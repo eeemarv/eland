@@ -1,9 +1,6 @@
 {%- extends 'tags/base/tags_base.html.twig' -%}
 
-{%- set cancel_route = 'tags' -%}
-{%- set cancel_route_params = {
-  'tag_type': tag_type
-} -%}
+{%- set cancel_route = tag_type ~ '_tags' -%}
 
 {%- block heading_icon -%}
 <twig:ux:icon name="lucide:tag"/>

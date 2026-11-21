@@ -2,26 +2,25 @@
 
 namespace App\Controller\Pages;
 
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\SessionUserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class PagesHomeController extends AbstractController
 {
-  #[Route(
-    '/{schema}/',
+  #[SchemaRoute(
+    access_level: AccessLevel::Anonymous,
+    module: AppModule::Home,
+    path: '/',
     name: 'home',
     methods: ['GET'],
     priority: 30,
-    requirements: [
-    ],
-    defaults: [
-      'module'  => 'home',
-    ],
   )]
 
   public function __invoke(

@@ -4,6 +4,9 @@ namespace App\Controller\UsersConfig;
 
 use App\Command\UsersConfig\UsersConfigLeavingCommand;
 use App\Form\Type\UsersConfig\UsersConfigLeavingType;
+use App\Routing\AccessLevel;
+use App\Routing\AccountsSubModule;
+use App\Routing\SchemaRoute;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -11,21 +14,16 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class UsersConfigLeavingController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/users/config/leaving',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: AccountsSubModule::Leaving,
+    path: '/users/config/leaving',
     name: 'users_config_leaving',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'users',
-    ],
   )]
 
   public function __invoke(

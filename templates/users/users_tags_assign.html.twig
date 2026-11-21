@@ -5,15 +5,15 @@
 {%- endblock heading_icon -%}
 
 {%- block heading_title -%}
-  {{- 'users_tags_edit.title'|trans({
-    'self': is_self ? 'yes' : 'no',
+  {{- 'users_tags_assign.title'|trans({
+    'self': is_self ? 'self' : 'other',
     'user': account(id)
   }) -}}
 {%- endblock heading_title -%}
 
 {%- block heading_sub -%}
   <p>
-    {{- 'users_tags_edit.only_visible_for_admins'|trans -}}
+    {{- 'users_tags_assign.only_visible_for_admins'|trans -}}
   </p>
 {%- endblock heading_sub -%}
 
@@ -21,13 +21,13 @@
   {{- form_row(form.tags, {
     'label': 'label.tags',
     'addon': ux_icon('lucide:tags'),
-    'help': 'users_tags_edit.tags.help',
+    'help': 'users_tags_assign.tags.help',
   }) -}}
 {%- endblock form_a -%}
 
 {%- block form_log_comment -%}
   {%- include 'form/log_comment.html.twig' with {
-    'help': 'users_tags_edit.log_comment.help',
+    'help': 'users_tags_assign.log_comment.help',
     'help_translation_parameters': {
       'ao': '<a href="' ~ path('users_tags_logs', {}|pp(id: id)) ~ '">',
       'ac': '</a>',

@@ -6,6 +6,9 @@ use App\Command\SupportForm\SupportFormCommand;
 use App\Email\SupportForm\Admin\EmailSupportFormAdminMessage;
 use App\Email\SupportForm\Copy\EmailSupportFormCopyMessage;
 use App\Form\Type\SupportForm\SupportFormType;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\ConfigService;
 use App\Service\MailAddrSystemService;
 use App\Service\MailAddrUserService;
@@ -16,22 +19,17 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class SupportFormController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/support',
+  #[SchemaRoute(
+    access_level: AccessLevel::User,
+    module: AppModule::SupportForm,
+    path: '/support',
     name: 'support_form',
     methods: ['GET', 'POST'],
     priority: 20,
-    requirements: [
-      'role_short'    => '%assert.role_short.user%',
-    ],
-    defaults: [
-      'module'        => 'support_form',
-    ],
   )]
 
   public function __invoke(
@@ -44,14 +42,6 @@ class SupportFormController extends AbstractController
     MailAddrSystemService $mail_addr_system_service
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'support_form.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException('Support form not enabled.');
-    }
-
     $is_master = $su->is_master();
     $mail_enabled = $config_service->get_bool(
       config_id: 'mail.enabled',

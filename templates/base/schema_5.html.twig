@@ -3,13 +3,8 @@
 {%- block btn_row -%}
 <div class="row">
   <div class="col-md-12 top-buttons mt-5p">
-    <div class="visible-xs pull-left button-offcanvas menu-button">
-      <button type="button" class="btn btn-primary" data-toggle="offcanvas" title="{{- 'label.menu'|trans -}}"
-        data-action="click->offcanvas#toggle"
-      >
-        <twig:ux:icon name="lucide:chevron-left"/>
-      </button>
-    </div>
+
+    {%- include 'include/btn_top/offcanvas.html.twig' -%}
 
     {%- block btn_top_add -%}{%- endblock -%}
     {%- block btn_top_edit -%}{%- endblock -%}

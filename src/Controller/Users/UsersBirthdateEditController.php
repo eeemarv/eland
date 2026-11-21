@@ -2,66 +2,51 @@
 
 namespace App\Controller\Users;
 
-use App\Cache\ConfigCache;
 use App\Command\Users\UsersBirthdateCommand;
 use App\Form\Type\Users\UsersBirthdateType;
 use App\Repository\UserRepository;
+use App\Routing\AccessLevel;
+use App\Routing\SchemaRoute;
+use App\Routing\UsersSubModule;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class UsersBirthdateEditController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/users/{id}/birthdate/edit',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: UsersSubModule::Birthdate,
+    is_self: false,
+    path: '/users/{id}/birthdate/edit',
     name: 'users_birthdate_edit',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'is_self'       => false,
-      'module'        => 'users',
-    ],
   )]
 
-  #[Route(
-    '/{schema}/{role_short}/users/self/birthdate/edit',
+  #[SchemaRoute(
+    access_level: AccessLevel::User,
+    module: UsersSubModule::Birthdate,
+    is_self: true,
+    path: '/users/self/birthdate/edit',
     name: 'users_birthdate_edit_self',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.user%',
-    ],
-    defaults: [
-      'id'            => 0,
-      'is_self'       => true,
-      'module'        => 'users',
-    ],
   )]
 
   public function __invoke(
     Request $request,
-    int $id,
-    bool $is_self,
+    bool $_is_self,
     UserRepository $user_repository,
-    ConfigCache $config_service,
     PageParamsService $pp,
     SessionUserService $su,
+    int|null $id = null,
   ):Response
   {
-    if (!$config_service->get_bool('users.fields.birthdate.enabled', $pp->schema()))
-    {
-      throw $this->createAccessDeniedException(
-        'Users birthdate submodule not enabled.'
-      );
-    }
 
-    if (!$is_self
+    if (!$_is_self
       && $su->is_owner($id))
     {
       return $this->redirectToRoute(
@@ -70,7 +55,7 @@ class UsersBirthdateEditController extends AbstractController
       );
     }
 
-    if ($is_self)
+    if ($_is_self)
     {
       $id = $su->id();
     }
@@ -121,14 +106,14 @@ class UsersBirthdateEditController extends AbstractController
           message: [
             'key' => 'users_birthdate_edit.flash.success',
             'params'  => [
-              'self'  => $is_self ? 'yes' : 'no',
+              'self'  => $_is_self ? 'yes' : 'no',
               'user'  => $user['name'],
             ]
           ]
         );
       }
 
-      if ($is_self)
+      if ($_is_self)
       {
         return $this->redirectToRoute(
           route: 'users_show_self',
@@ -149,7 +134,7 @@ class UsersBirthdateEditController extends AbstractController
       'form'              => $form->createView(),
       'user'              => $user,
       'id'                => $id,
-      'is_self'           => $is_self,
+      'is_self'           => $_is_self,
       'is_intersystem'    => $is_intersystem,
     ]);
   }

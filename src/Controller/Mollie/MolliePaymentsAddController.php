@@ -8,6 +8,9 @@ use App\Form\Type\Mollie\MolliePaymentsAddType;
 use App\Render\LinkRender;
 use App\Repository\MollieRepository;
 use App\Repository\UserRepository;
+use App\Routing\AccessLevel;
+use App\Routing\SchemaRoute;
+use App\Routing\UsersSubModule;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -15,23 +18,21 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class MolliePaymentsAddController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/mollie/payments/add/{status}',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: UsersSubModule::Mollie,
+    path: '/mollie/payments/add/{status}',
     name: 'mollie_payments_add',
     methods: ['GET', 'POST'],
     requirements: [
       'status'        => '%assert.account.status2%',
-      'role_short'    => '%assert.role_short.admin%',
     ],
     defaults: [
       'status'        => 'active',
-      'module'        => 'users',
-      'sub_module'    => 'mollie',
     ],
   )]
 
@@ -46,15 +47,6 @@ class MolliePaymentsAddController extends AbstractController
     SessionUserService $su
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'mollie.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException(
-        'Mollie submodule (users) not enabled.'
-      );
-    }
 
     $mollie_apikey = $config_service->get_str(
       config_id: 'mollie.apikey',

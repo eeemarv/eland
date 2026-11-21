@@ -15,6 +15,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[AsController]
 class TypeaheadElandIntersystemAccountsController extends AbstractController
 {
+  /*
   #[Route(
     '/{schema}/{role_short}/typeahead-eland-intersystem-accounts/{remote_schema}/{thumbprint}',
     name: 'typeahead_eland_intersystem_accounts',
@@ -28,6 +29,7 @@ class TypeaheadElandIntersystemAccountsController extends AbstractController
       'module'        => 'users',
     ],
   )]
+  */
 
   public function __invoke(
     string $remote_schema,

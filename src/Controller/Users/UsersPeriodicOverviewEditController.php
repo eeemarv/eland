@@ -5,66 +5,48 @@ namespace App\Controller\Users;
 use App\Command\Users\UsersPeriodicOverviewCommand;
 use App\Form\Type\Users\UsersPeriodicOverviewType;
 use App\Repository\UserRepository;
+use App\Routing\AccessLevel;
+use App\Routing\SchemaRoute;
+use App\Routing\UsersSubModule;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class UsersPeriodicOverviewEditController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/users/{id}/periodic-overview/edit',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: UsersSubModule::PeriodicMail,
+    is_self: false,
+    path: '/users/{id}/periodic-overview/edit',
     name: 'users_periodic_overview_edit',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'is_self'       => false,
-      'module'        => 'users',
-    ],
   )]
 
-  #[Route(
-    '/{schema}/{role_short}/users/self/periodic-overview/edit',
+  #[SchemaRoute(
+    access_level: AccessLevel::User,
+    module: UsersSubModule::PeriodicMail,
+    is_self: true,
+    path: '/users/self/periodic-overview/edit',
     name: 'users_periodic_overview_edit_self',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.user%',
-    ],
-    defaults: [
-      'id'            => 0,
-      'is_self'       => true,
-      'module'        => 'users',
-    ],
   )]
 
   public function __invoke(
     Request $request,
-    int $id,
-    bool $is_self,
+    bool $_is_self,
     UserRepository $user_repository,
-    ConfigService $config_service,
     PageParamsService $pp,
     SessionUserService $su,
+    int|null $id = null,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'periodic_mail.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createAccessDeniedException(
-        'Periodic mail submodule not enabled.'
-      );
-    }
 
-    if (!$is_self
+    if (!$_is_self
       && $su->is_owner($id))
     {
       return $this->redirectToRoute(
@@ -73,7 +55,7 @@ class UsersPeriodicOverviewEditController extends AbstractController
       );
     }
 
-    if ($is_self)
+    if ($_is_self)
     {
       $id = $su->id();
     }
@@ -130,7 +112,7 @@ class UsersPeriodicOverviewEditController extends AbstractController
           message: [
             'key' => 'users_periodic_overview_edit.flash.success',
             'params' => [
-              'self'   => $is_self ? 'yes' : 'no',
+              'self'   => $_is_self ? 'yes' : 'no',
               'switch'   => $command->enabled ? 'on' : 'off',
               'user'  => $user['name'],
             ]
@@ -138,7 +120,7 @@ class UsersPeriodicOverviewEditController extends AbstractController
         );
       }
 
-      if ($is_self)
+      if ($_is_self)
       {
         return $this->redirectToRoute(
           route: 'users_show_self',
@@ -159,7 +141,7 @@ class UsersPeriodicOverviewEditController extends AbstractController
       'form'              => $form->createView(),
       'user'              => $user,
       'id'                => $id,
-      'is_self'           => $is_self,
+      'is_self'           => $_is_self,
       'is_intersystem'    => $is_intersystem,
     ]);
   }

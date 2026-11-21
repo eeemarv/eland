@@ -8,6 +8,9 @@ use App\Form\Type\Transactions\TransactionsBulkServiceStuffType;
 use App\Form\Type\Transactions\TransactionsFilterType;
 use App\Repository\TransactionLogRepository;
 use App\Repository\TransactionRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,42 +19,33 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class TransactionsController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/transactions',
+  #[SchemaRoute(
+    access_level: AccessLevel::Guest,
+    module: AppModule::Transactions,
+    is_self: false,
+    path: '/transactions',
     name: 'transactions',
     methods: ['GET', 'POST'],
     priority: 10,
-    requirements: [
-      'role_short'    => '%assert.role_short.guest%',
-    ],
-    defaults: [
-      'is_self'       => false,
-      'module'        => 'transactions',
-    ],
   )]
 
-  #[Route(
-    '/{schema}/{role_short}/transactions/self',
+  #[SchemaRoute(
+    access_level: AccessLevel::User,
+    module: AppModule::Transactions,
+    is_self: true,
+    path: '/transactions/self',
     name: 'transactions_self',
     methods: ['GET', 'POST'],
     priority: 20,
-    requirements: [
-      'role_short'    => '%assert.role_short.user%',
-    ],
-    defaults: [
-      'is_self'       => true,
-      'module'        => 'transactions',
-    ],
   )]
 
   public function __invoke(
     Request $request,
-    bool $is_self,
+    bool $_is_self,
     TransactionRepository $transaction_repository,
     TransactionLogRepository $transaction_log_repository,
     ConfigService $config_service,
@@ -59,16 +53,6 @@ class TransactionsController extends AbstractController
     SessionUserService $su,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'transactions.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException(
-        'Transactions module not enabled.'
-      );
-    }
-
     if (!$request->isMethod('GET') && !$pp->is_admin())
     {
       throw new BadRequestHttpException('POST not allowed');
@@ -86,7 +70,7 @@ class TransactionsController extends AbstractController
       $uid = (int) $request->query->get('uid');
     }
 
-    if ($is_self)
+    if ($_is_self)
     {
       $uid = $su->id();
     }
@@ -294,7 +278,7 @@ class TransactionsController extends AbstractController
       'filtered'              => $filtered,
       'filter_collapse'       => $filter_collapse,
       'row_count'             => $count_ary['row_count'],
-      'is_self'               => $is_self,
+      'is_self'               => $_is_self,
       'uid'                   => $uid ?? null,
       'bulk_service_stuff_form' => $bulk_service_stuff_form ?? null,
       'bulk_actions_enabled' => isset($bulk_service_stuff_form),

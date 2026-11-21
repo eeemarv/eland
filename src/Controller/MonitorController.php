@@ -11,21 +11,19 @@ use Symfony\Component\Routing\Attribute\Route;
 #[AsController]
 class MonitorController extends AbstractController
 {
-    #[Route(
-        '/monitor',
-        name: 'monitor',
-        methods: ['GET'],
-        priority: 40,
-    )]
+  #[Route(
+    '/monitor',
+    name: 'monitor',
+    methods: ['GET'],
+    priority: 40,
+  )]
 
-    public function __invoke(
-        MonitorProcessService $monitor_process_service
-    ):Response
-    {
-        $out = $monitor_process_service->monitor();
+  public function __invoke(
+    MonitorProcessService $monitor_process_service
+  ):Response
+  {
+    $monitor_process_service->monitor();
 
-        return $this->render('base/minimal.html.twig', [
-            'content'   => $out,
-        ]);
-    }
+    return $this->render('base/minimal.html.twig');
+  }
 }

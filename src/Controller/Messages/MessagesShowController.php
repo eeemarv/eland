@@ -16,6 +16,9 @@ use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Repository\CategoryRepository;
 use App\Repository\ContactRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\DistanceService;
@@ -30,22 +33,17 @@ use App\Service\VarRouteService;
 use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class MessagesShowController extends AbstractController
 {
-    #[Route(
-        '/{schema}/{role_short}/messages/{id}',
+    #[SchemaRoute(
+        access_level: AccessLevel::Guest,
+        module: AppModule::Messages,
+        path: '/messages/{id}',
         name: 'messages_show',
         methods: ['GET', 'POST'],
         priority: 10,
-        requirements: [
-            'role_short'    => '%assert.role_short.guest%',
-        ],
-        defaults: [
-            'module'        => 'messages',
-        ],
     )]
 
     public function __invoke(
@@ -74,13 +72,6 @@ class MessagesShowController extends AbstractController
         string $env_map_tiles_url
     ):Response
     {
-        if (!$config_service->get_bool(
-          config_id: 'messages.enabled',
-          schema: $pp->schema_o(),
-        ))
-        {
-            throw $this->createNotFoundException('Messages (offers/wants) module not enabled.');
-        }
 
         $errors = [];
 

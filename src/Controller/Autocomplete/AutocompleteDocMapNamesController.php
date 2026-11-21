@@ -3,6 +3,9 @@
 namespace App\Controller\Autocomplete;
 
 use App\Repository\DocRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,16 +18,12 @@ class AutocompleteDocMapNamesController extends AbstractController
 {
   use EtagJsonResponseTrait;
 
-  #[Route(
-    '/{schema}/{role_short}/autocomplete/doc-map-names',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: AppModule::Docs,
+    path: '/autocomplete/doc-map-names',
     name: 'autocomplete_doc_map_names',
     methods: ['GET'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'docs',
-    ],
   )]
 
   public function __invoke(

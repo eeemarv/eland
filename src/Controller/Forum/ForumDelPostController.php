@@ -6,7 +6,9 @@ use App\Command\Forum\ForumPostCommand;
 use App\Form\Type\Forum\ForumPostDelType;
 use App\Render\AccountRender;
 use App\Repository\ForumRepository;
-use App\Service\ConfigService;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -14,21 +16,16 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class ForumDelPostController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/forum/{id}/del-post',
+  #[SchemaRoute(
+    access_level: AccessLevel::User,
+    module: AppModule::Forum,
+    path: '/forum/{id}/del-post',
     name: 'forum_del_post',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.user%',
-    ],
-    defaults: [
-      'module'        => 'forum',
-    ],
   )]
 
   public function __invoke(
@@ -36,19 +33,11 @@ class ForumDelPostController extends AbstractController
     int $id,
     ForumRepository $forum_repository,
     AccountRender $account_render,
-    ConfigService $config_service,
     PageParamsService $pp,
     SessionUserService $su,
     ItemAccessService $item_access_service,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'forum.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException('Forum module not enabled.');
-    }
 
     $forum_post = $forum_repository->get_post(
       post_id: $id,

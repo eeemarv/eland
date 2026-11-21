@@ -13,6 +13,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[AsController]
 class TypeaheadIntersystemMailAccountsController extends AbstractController
 {
+  /*
   #[Route(
     '/{schema}/{role_short}/typeahead-intersystem-mail-accounts/{thumbprint}',
     name: 'typeahead_intersystem_mail_accounts',
@@ -25,6 +26,7 @@ class TypeaheadIntersystemMailAccountsController extends AbstractController
       'module'        => 'transactions',
     ],
   )]
+  */
 
   public function __invoke(
     string $thumbprint,

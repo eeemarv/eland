@@ -4,6 +4,9 @@ namespace App\Controller\News;
 
 use App\Command\News\NewsSortCommand;
 use App\Form\Type\News\NewsSortType;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,21 +14,16 @@ use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class NewsSortController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/news/sort',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: AppModule::News,
+    path: '/news/sort',
     name: 'news_sort',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'news',
-    ],
   )]
 
   public function __invoke(
@@ -35,15 +33,6 @@ class NewsSortController extends AbstractController
     SessionUserService $su,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'news.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createAccessDeniedException(
-        'News module not enabled.'
-      );
-    }
 
     $command = new NewsSortCommand();
 

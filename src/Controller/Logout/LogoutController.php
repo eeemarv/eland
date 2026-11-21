@@ -3,6 +3,9 @@
 namespace App\Controller\Logout;
 
 use App\Repository\LogoutRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Psr\Log\LoggerInterface;
@@ -11,19 +14,17 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class LogoutController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/logout',
+  #[SchemaRoute(
+    access_level: AccessLevel::User,
+    module: AppModule::Logout,
+    path: '/logout',
     name: 'logout',
     methods: ['GET'],
     priority: 30,
-    requirements: [
-      'role_short'    => '%assert.role_short.guest%',
-    ],
   )]
 
   public function __invoke(

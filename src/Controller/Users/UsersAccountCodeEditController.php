@@ -6,111 +6,85 @@ use App\Command\Users\UsersAccountCodeCommand;
 use App\Form\Type\Users\UsersAccountCodeType;
 use App\Repository\UserLogRepository;
 use App\Repository\UserRepository;
+use App\Routing\AccessLevel;
+use App\Routing\SchemaRoute;
+use App\Routing\UsersSubModule;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\UserCacheService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class UsersAccountCodeEditController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/users/{id}/account-code/edit',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: UsersSubModule::Accounts,
+    is_self: false,
+    mode: 'edit',
+    path: '/users/{id}/account-code/edit',
     name: 'users_account_code_edit',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short' => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'is_self' => false,
-      'mode' => 'edit',
-      'module' => 'users',
-    ],
   )]
 
-  #[Route(
-    '/{schema}/{role_short}/users/self/account-code/edit',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: UsersSubModule::Accounts,
+    is_self: true,
+    mode: 'edit',
+    path: '/users/self/account-code/edit',
     name: 'users_account_code_edit_self',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short' => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'id' => 0,
-      'is_self' => true,
-      'mode' => 'edit',
-      'module' => 'users',
-    ],
   )]
 
-  #[Route(
-    '/{schema}/{role_short}/users/{id}/account-code/add',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: UsersSubModule::Accounts,
+    is_self: false,
+    mode: 'add',
+    path: '/users/{id}/account-code/add',
     name: 'users_account_code_add',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short' => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'is_self' => false,
-      'mode' => 'add',
-      'module' => 'users',
-    ],
   )]
 
-  #[Route(
-    '/{schema}/{role_short}/users/self/account-code/add',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: UsersSubModule::Accounts,
+    is_self: true,
+    mode: 'add',
+    path: '/users/self/account-code/add',
     name: 'users_account_code_add_self',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short' => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'id' => 0,
-      'is_self' => true,
-      'mode' => 'add',
-      'module' => 'users',
-    ],
   )]
 
   public function __invoke(
     Request $request,
-    int $id,
-    bool $is_self,
-    string $mode,
+    bool $_is_self,
+    string $_mode,
     UserCacheService $user_cache_service,
     UserRepository $user_repository,
     UserLogRepository $user_log_repository,
-    ConfigService $config_service,
     PageParamsService $pp,
     SessionUserService $su,
-  ): Response {
+    int|null $id = null,
+  ): Response 
+  {
     if (
-      !$config_service->get_bool(
-        config_id: 'transactions.enabled',
-        schema: $pp->schema_o(),
-      )
-    ) {
-      throw $this->createNotFoundException(
-        'Users account edit not possible: transactions module not enabled.'
-      );
-    }
-
-    if (
-      !$is_self
+      !$_is_self
       && $su->is_owner($id)
-    ) {
+    ) 
+    {
       return $this->redirectToRoute(
         route: 'users_account_edit_self',
         parameters: $pp->ary(),
       );
     }
 
-    if ($is_self) {
+    if ($_is_self) 
+    {
       $id = $su->id();
     }
 
@@ -119,7 +93,8 @@ class UsersAccountCodeEditController extends AbstractController
       schema: $pp->schema_o(),
     );
 
-    if ($user === false) {
+    if ($user === false) 
+    {
       throw $this->createNotFoundException(
         'User with id ' . $id . ' not found'
       );
@@ -127,18 +102,22 @@ class UsersAccountCodeEditController extends AbstractController
 
     $code_set_previously = false;
 
-    if (isset($user['code']) && $user['code'] !== '') {
+    if (isset($user['code']) && $user['code'] !== '') 
+    {
       $code_set_previously = true;
     }
 
-    if ($code_set_previously) {
-      if ($mode === 'add') {
+    if ($code_set_previously) 
+    {
+      if ($_mode === 'add') {
         throw $this->createAccessDeniedException(
           'Wrong route: account already exists (use edit route instead)'
         );
       }
-    } else {
-      if ($mode === 'edit') {
+    } 
+    else 
+    {
+      if ($_mode === 'edit') {
         throw $this->createAccessDeniedException(
           'Wrong route: can not edit non-existing account (use add route instead)'
         );
@@ -168,7 +147,8 @@ class UsersAccountCodeEditController extends AbstractController
     if (
       $form->isSubmitted()
       && $form->isValid()
-    ) {
+    ) 
+    {
       $log_comment = $form->get('log_comment')->getData();
 
       if ($command->code === $user['code']) {
@@ -208,13 +188,14 @@ class UsersAccountCodeEditController extends AbstractController
               'old_code' => $user['code'],
               'new_code' => $command->code,
               'code' => $command->code,
-              'mode' => $mode,
+              'mode' => $_mode,
             ]
           ],
         );
       }
 
-      if ($is_self) {
+      if ($_is_self) 
+      {
         return $this->redirectToRoute(
           route: 'users_show_self',
           parameters: $pp->ary(),
@@ -234,8 +215,8 @@ class UsersAccountCodeEditController extends AbstractController
       'form' => $form->createView(),
       'user' => $user,
       'id' => $id,
-      'is_self' => $is_self,
-      'mode' => $mode,
+      'is_self' => $_is_self,
+      'mode' => $_mode,
       'is_intersystem' => $is_intersystem,
     ]);
   }

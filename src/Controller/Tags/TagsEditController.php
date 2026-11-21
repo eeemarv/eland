@@ -8,59 +8,37 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\TagRepository;
+use App\Routing\AccessLevel;
+use App\Routing\SchemaRoute;
+use App\Routing\UsersSubModule;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class TagsEditController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/tags/{tag_type}/{id}/edit',
-    name: 'tags_edit',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: UsersSubModule::Tags,
+    path: '/users/tags/{id}/edit',
+    name: 'users_tags_edit',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-      'tag_type'      => '%assert.tag_type%',
-    ],
-    defaults: [
-      'sub_module'    => 'tags',
-    ],
   )]
 
   public function __invoke(
     Request $request,
     int $id,
-    string $tag_type,
+    string $_module,
     ConfigService $config_service,
     TagRepository $tag_repository,
     PageParamsService $pp,
   ):Response
   {
-    switch ($tag_type)
-    {
-      case 'users':
-        if (!$config_service->get_bool(
-          config_id: 'users.tags.enabled',
-          schema: $pp->schema_o(),
-        ))
-        {
-          throw $this->createNotFoundException(
-            'Tags for users not enabled.'
-          );
-        }
-        break;
-      default:
-        throw $this->createNotFoundException(
-          'Tag type not supported.'
-        );
-        break;
-    }
 
     $tag = $tag_repository->get(
       id: $id,
-      tag_type: $tag_type,
+      tag_type: $_module,
       schema: $pp->schema_o(),
     );
 
@@ -73,7 +51,7 @@ class TagsEditController extends AbstractController
 
     $command = new TagsDefCommand();
     $command->id = $id;
-    $command->tag_type = $tag_type;
+    $command->tag_type = $_module;
     $command->txt = $tag['txt'];
     $command->txt_color = $tag['txt_color'];
     $command->bg_color = $tag['bg_color'];
@@ -83,7 +61,7 @@ class TagsEditController extends AbstractController
       type: TagsDefType::class,
       data: $command,
       options: [
-        'tag_type'  => $tag_type,
+        'tag_type'  => $_module,
         'txt_omit'  => $tag['txt'],
       ],
     );
@@ -97,41 +75,57 @@ class TagsEditController extends AbstractController
       $bg_color = $command->bg_color;
       $description = $command->description;
 
-      $tag_repository->update(
-        id: $id,
-        tag_type: $tag_type,
-        txt: $txt,
-        txt_color: $txt_color,
-        bg_color: $bg_color,
-        description: $description,
-        schema: $pp->schema_o(),
-      );
+      $changed = $txt !== $tag['txt']
+        || $txt_color !== $tag['txt_color']
+        || $bg_color !== $tag['bg_color']
+        || $description !== $tag['description'];
 
-      $tag = $this->renderView('component/tag.html.twig', [
-        'tag' => $command,
-      ]);
+      if ($changed)
+      {
+        $tag_repository->update(
+          id: $id,
+          tag_type: $_module,
+          txt: $txt,
+          txt_color: $txt_color,
+          bg_color: $bg_color,
+          description: $description,
+          schema: $pp->schema_o(),
+        );
 
-      $this->addFlash(
-        type:'success',
-        message: [
-          'key' => 'tags.edit.flash.success',
-          'params'  => [
-            'tag' => $tag,
+        $tag = $this->renderView('component/tag.html.twig', [
+          'tag' => $command,
+        ]);
+
+        $this->addFlash(
+          type:'success',
+          message: [
+            'key' => 'tags.edit.flash.success',
+            'params'  => [
+              'tag' => $tag,
+            ],
+            'is_raw' => true,
           ],
-          'is_raw' => true,
-        ],
-      );
+        );
+      } 
+      else
+      {
+        $this->addFlash(
+          type: 'warning',
+          message: [
+            'key' => 'flash.no_change',
+          ],
+        );
+      }
 
-      return $this->redirectToRoute('tags', [
-        ...$pp->ary(),
-        'tag_type'  => $tag_type,
-      ]);
+      return $this->redirectToRoute(
+        route: $_module . '_tags', 
+        parameters: $pp->ary(),
+      );
     }
 
     return $this->render('tags/tags_edit.html.twig', [
       'form'      => $form->createView(),
-      'module'    => $tag_type,
-      'tag_type'  => $tag_type,
+      'tag_type'  => $_module,
     ]);
   }
 }

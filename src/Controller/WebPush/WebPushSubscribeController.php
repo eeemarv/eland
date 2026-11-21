@@ -3,48 +3,34 @@
 namespace App\Controller\WebPush;
 
 use App\Repository\WebPushRepository;
+use App\Routing\AccessLevel;
+use App\Routing\NotificationsSubModule;
+use App\Routing\SchemaRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class WebPushSubscribeController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/webpush-subscribe',
+  #[SchemaRoute(
+    access_level: AccessLevel::User,
+    module: NotificationsSubModule::WebPush,
+    path: '/webpush-subscribe',
     name: 'webpush_subscribe',
     methods: ['POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.user%',
-    ],
-    defaults: [
-      'module'        => 'notifications',
-    ],
   )]
 
   public function __invoke(
     Request $request,
     WebPushRepository $webpush_repository,
-    ConfigService $config_service,
     PageParamsService $pp,
     SessionUserService $su,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'notifications.webpush.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      return $this->json([
-        'error' => 'Web Push not enabled',
-      ], 400);
-    }
-
     $sub = json_decode($request->getContent(), true);
 
     if (!isset($sub['endpoint']))

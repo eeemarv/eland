@@ -8,44 +8,33 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\DocRepository;
-use App\Service\ConfigService;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class DocsEditController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/docs/{id}/edit',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: AppModule::Docs,
+    path: '/docs/{id}/edit',
     name: 'docs_edit',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'docs',
-    ],
   )]
 
   public function __invoke(
     Request $request,
     int $id,
     DocRepository $doc_repository,
-    ConfigService $config_service,
     PageParamsService $pp,
     SessionUserService $su,
     string $env_s3_url,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'docs.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException('Documents module not enabled.');
-    }
 
     $command = new DocsCommand();
 

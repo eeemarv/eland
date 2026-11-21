@@ -19,8 +19,8 @@ class VarRouteExtension
 	}
 
   #[AsTwigFilter(name: 'fallback_route')]
-	public function get_fallback(string $active_menu, string $schema):string
+	public function get_fallback(string $route, string $schema):string
 	{
-		return $this->vr->get_fallback_route($active_menu, $schema);
+		return $this->vr->get_fallback_route($route, $schema);
 	}
 }

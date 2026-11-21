@@ -4,6 +4,9 @@ namespace App\Controller\UsersConfig;
 
 use App\Command\UsersConfig\UsersConfigFullNameCommand;
 use App\Form\Type\UsersConfig\UsersConfigFullNameType;
+use App\Routing\AccessLevel;
+use App\Routing\SchemaRoute;
+use App\Routing\UsersSubModule;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,21 +14,16 @@ use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class UsersConfigFullNameController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/users/config/full-name',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: UsersSubModule::FullName,
+    path: '/users/config/full-name',
     name: 'users_config_full_name',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'users',
-    ],
   )]
 
   public function __invoke(
@@ -35,13 +33,6 @@ class UsersConfigFullNameController extends AbstractController
     SessionUserService $su,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'users.fields.full_name.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createAccessDeniedException('Full name module not enabled.');
-    }
 
     $command = new UsersConfigFullNameCommand();
     $config_service->load_command(

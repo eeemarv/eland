@@ -6,7 +6,9 @@ use App\Command\Users\UsersAdminCommentsCommand;
 use App\Form\Type\Users\UsersAdminCommentsType;
 use App\Repository\UserLogRepository;
 use App\Repository\UserRepository;
-use App\Service\ConfigService;
+use App\Routing\AccessLevel;
+use App\Routing\SchemaRoute;
+use App\Routing\UsersSubModule;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,71 +16,53 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\UserCacheService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class UsersAdminCommentsEditController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/users/{id}/admin-comments/edit',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: UsersSubModule::AdminComments,
+    is_self: false,
+    path: '/users/{id}/admin-comments/edit',
     name: 'users_admin_comments_edit',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short' => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'is_self' => false,
-      'module' => 'users',
-    ],
   )]
 
-  #[Route(
-    '/{schema}/{role_short}/users/self/admin-comments/edit',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: UsersSubModule::AdminComments,
+    is_self: true,
+    path: '/users/self/admin-comments/edit',
     name: 'users_admin_comments_edit_self',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short' => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'is_self' => true,
-      'id' => 0,
-      'module' => 'users',
-    ],
   )]
 
   public function __invoke(
     Request $request,
-    int $id,
-    bool $is_self,
+    bool $_is_self,
     UserCacheService $user_cache_service,
     UserRepository $user_repository,
     UserLogRepository $user_log_repository,
-    ConfigService $config_service,
     PageParamsService $pp,
     SessionUserService $su,
-  ): Response {
-    if (
-      !$config_service->get_bool(
-        config_id: 'users.fields.admin_comments.enabled',
-        schema: $pp->schema_o(),
-      )
-    ) {
-      throw $this->createAccessDeniedException(
-        'Admin comments submodule not enabled.'
-      );
-    }
+    int|null $id = null,
+  ): Response 
+  {
 
     if (
-      !$is_self
+      !$_is_self
       && $su->is_owner($id)
-    ) {
+    ) 
+    {
       return $this->redirectToRoute(
         route: 'users_admin_comments_edit_self',
         parameters: $pp->ary(),
       );
     }
 
-    if ($is_self) {
+    if ($_is_self) 
+    {
       $id = $su->id();
     }
 
@@ -87,7 +71,8 @@ class UsersAdminCommentsEditController extends AbstractController
       schema: $pp->schema_o(),
     );
 
-    if ($user === false) {
+    if ($user === false) 
+    {
       throw $this->createNotFoundException(
         'User with id ' . $id . ' not found'
       );
@@ -112,7 +97,8 @@ class UsersAdminCommentsEditController extends AbstractController
     if (
       $form->isSubmitted()
       && $form->isValid()
-    ) {
+    ) 
+    {
       $log_comment = $form->get('log_comment')->getData();
 
       if ($command->admin_comments === $user['admin_comments']) {
@@ -122,7 +108,9 @@ class UsersAdminCommentsEditController extends AbstractController
             'key' => 'flash.no_change',
           ]
         );
-      } else {
+      } 
+      else 
+      {
         $user_repository->set_admin_comments(
           id: $id,
           admin_comments: $command->admin_comments,
@@ -149,14 +137,14 @@ class UsersAdminCommentsEditController extends AbstractController
           message: [
             'key' => 'users_admin_comments_edit.flash.success',
             'params' => [
-              'self' => $is_self ? 'yes' : 'no',
+              'self' => $_is_self ? 'yes' : 'no',
               'user' => $user['name'],
             ],
           ]
         );
       }
 
-      if ($is_self) {
+      if ($_is_self) {
         return $this->redirectToRoute(
           route: 'users_show_self',
           parameters: $pp->ary(),
@@ -174,7 +162,7 @@ class UsersAdminCommentsEditController extends AbstractController
 
     return $this->render('users/users_admin_comments_edit.html.twig', [
       'form' => $form->createView(),
-      'is_self' => $is_self,
+      'is_self' => $_is_self,
       'user' => $user,
       'id' => $id,
       'is_intersystem' => $is_intersystem,

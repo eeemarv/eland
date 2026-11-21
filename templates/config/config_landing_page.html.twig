@@ -2,7 +2,10 @@
 
 {%- block config_title_sub -%}
   <p>
-    {{- 'config_landing_page.help'|trans -}}
+    {{- 'config_landing_page.help'|trans({
+      'ao': a_open('config_modules', {}|pp),
+      'ac': '</a>'
+    })|raw -}}
   </p>
 {%- endblock config_title_sub -%}
 

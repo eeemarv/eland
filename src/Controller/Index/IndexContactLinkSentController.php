@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class IndexContactLinkSentController extends AbstractController
 {
   #[Route(
-    '/contact/link_sent',
+    path: '/contact/link_sent',
     name: 'index_contact_link_sent',
     methods: ['GET'],
   )]

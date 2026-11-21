@@ -5,48 +5,34 @@ namespace App\Controller\Mollie;
 use App\Command\Mollie\MollieConfigTestApiKeyCommand;
 use App\Form\Type\Mollie\MollieConfigTestApiKeyType;
 use App\Repository\SecretRepository;
+use App\Routing\AccessLevel;
+use App\Routing\SchemaRoute;
+use App\Routing\UsersSubModule;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class MollieConfigTestApiKeyController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/mollie/config/test-api-key',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: UsersSubModule::Mollie,
+    path: '/mollie/config/test-api-key',
     name: 'mollie_config_test_api_key',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'users',
-      'sub_module'    => 'mollie',
-    ],
-)]
+  )]
 
   public function __invoke(
     Request $request,
     SecretRepository $secret_repository,
-    ConfigService $config_service,
     PageParamsService $pp,
     SessionUserService $su,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'mollie.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException(
-        'Mollie submodule (users) not enabled.'
-      );
-    }
 
     $current = $secret_repository->get_current(
       name: 'mollie_test_api_key',

@@ -2,26 +2,24 @@
 
 namespace App\Controller\Config;
 
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 #[AsController]
 class ConfigRefreshController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/config/refresh',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: AppModule::Config,
+    path: '/config/refresh',
     name: 'config_refresh',
     methods: ['GET'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'config',
-    ],
   )]
 
   public function __invoke(

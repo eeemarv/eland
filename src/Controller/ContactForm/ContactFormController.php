@@ -5,6 +5,9 @@ namespace App\Controller\ContactForm;
 use App\Command\ContactForm\ContactFormCommand;
 use App\Email\ContactForm\Confirm\EmailContactFormConfirmMessage;
 use App\Form\Type\ContactForm\ContactFormType;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,21 +16,17 @@ use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Mime\Address;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class ContactFormController extends AbstractController
 {
-  #[Route(
-    '/{schema}/contact',
+  #[SchemaRoute(
+    access_level: AccessLevel::Anonymous,
+    module: AppModule::ContactForm,
+    path: '/contact',
     name: 'contact_form',
     methods: ['GET', 'POST'],
     priority: 30,
-    requirements: [
-    ],
-    defaults: [
-      'module'  => 'contact_form',
-    ],
   )]
 
   public function __invoke(
@@ -37,13 +36,6 @@ class ContactFormController extends AbstractController
     MessageBusInterface $bus,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'contact_form.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException('Contact form module not enabled.');
-    }
 
     $support_email_addr = $config_service->get_ary(
       config_id: 'mail.addresses.support',

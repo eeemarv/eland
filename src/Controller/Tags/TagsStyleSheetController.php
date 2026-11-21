@@ -6,18 +6,23 @@ use App\Cache\ResponseCache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\TagRepository;
+use App\Routing\AccessLevel;
+use App\Routing\SchemaRoute;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Attribute\Cache;
-use Symfony\Component\Routing\Attribute\Route;
 
+// NOT USED (styling is inline now)
 #[AsController]
 #[Cache(public: true, maxage: 31536000)]
 class TagsStyleSheetController extends AbstractController
 {
-  #[Route(
-    '/{schema}/tags/{tag_type}/{thumbprint}_css',
+  /*
+  #[SchemaRoute(
+    access_level: AccessLevel::Anonymous,
+    module: 'tags',
+    path: '/tags/{tag_type}/{thumbprint}_css',
     name: 'tags_css',
     methods: ['GET'],
     priority: 20,
@@ -26,6 +31,7 @@ class TagsStyleSheetController extends AbstractController
       'tag_type'      => '%assert.tag_type%',
     ],
   )]
+  */
 
   public function __invoke(
     string $tag_type,

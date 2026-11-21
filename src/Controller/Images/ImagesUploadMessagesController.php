@@ -3,6 +3,9 @@
 namespace App\Controller\Images;
 
 use App\Repository\MessageRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,34 +15,31 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class ImagesUploadMessagesController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/images/upload/messages/{message_id}',
+  #[SchemaRoute(
+    access_level: AccessLevel::User,
+    module: AppModule::Images,
+    path: '/images/upload/messages/{message_id}',
     name: 'images_upload_messages',
     methods: ['POST'],
     requirements: [
-      'role_short'    => '%assert.role_short.user%',
       'message_id'    => '%assert.id%',
     ],
     defaults: [
-      'module'        => 'images',
       'temp'          => false,
     ],
   )]
 
-  #[Route(
-    '/{schema}/{role_short}/images/upload/messages/temp',
+  #[SchemaRoute(
+    access_level: AccessLevel::User,
+    module: AppModule::Images,
+    path: '/images/upload/messages/temp',
     name: 'images_upload_messages_temp',
     methods: ['POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.user%',
-    ],
     defaults: [
-      'module'        => 'images',
       'temp'          => true,
       'message_id'    => 0,
     ],

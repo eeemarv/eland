@@ -9,6 +9,9 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Cnst\StatusCnst;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\FormTokenService;
 use App\Service\IntersystemsService;
 use App\Service\PageParamsService;
@@ -18,21 +21,16 @@ use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class UsersDelController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/users/{id}/del',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: AppModule::Users,
+    path: '/users/{id}/del',
     name: 'users_del',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short' => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module' => 'users',
-    ],
   )]
 
   public function __invoke(
@@ -47,7 +45,8 @@ class UsersDelController extends AbstractController
     PageParamsService $pp,
     SessionUserService $su,
     VarRouteService $vr
-  ): Response {
+  ): Response 
+  {
     $errors = [];
 
     if ($su->id() === $id) {
@@ -63,20 +62,24 @@ class UsersDelController extends AbstractController
         [$id, $id],
         [Types::INTEGER, Types::INTEGER]
       )
-    ) {
+    ) 
+    {
       throw $this->createAccessDeniedException(
-        'A user with transactions can not be removed.
-            '
+        'A user with transactions can not be removed.'
       );
     }
 
     $user = $user_cache_service->get($id, $pp->schema());
 
-    if (!$user) {
-      throw $this->createNotFoundException('The user with id ' . $id . ' does not exist.');
+    if (!$user) 
+    {
+      throw $this->createNotFoundException(
+        'The user with id ' . $id . ' does not exist.'
+      );
     }
 
-    if ($request->isMethod('POST')) {
+    if ($request->isMethod('POST')) 
+    {
       if ($error_token = $form_token_service->get_error()) {
         $errors[] = $error_token;
       }
@@ -92,7 +95,9 @@ class UsersDelController extends AbstractController
         foreach ($errors as $error) {
           $this->addFlash('error', $error);
         }
-      } else {
+      } 
+      else 
+      {
         $this->remove_user(
           $id,
           $db,

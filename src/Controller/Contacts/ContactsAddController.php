@@ -9,74 +9,59 @@ use App\Command\Contacts\ContactsCommand;
 use App\Form\Type\Contacts\ContactsType;
 use App\Queue\GeocodeQueue;
 use App\Repository\ContactRepository;
+use App\Routing\AccessLevel;
+use App\Routing\SchemaRoute;
+use App\Routing\UsersSubModule;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class ContactsAddController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/contacts/add',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: UsersSubModule::Contacts,
+    is_self: false,
+    path: '/contacts/add',
     name: 'contacts_add',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'redirect_contacts'     => true,
-      'user_id'               => 0,
-      'is_self'               => false,
-      'module'                => 'users',
-      'sub_module'            => 'contacts',
-    ],
   )]
 
-  #[Route(
-    '/{schema}/{role_short}/users/{user_id}/contacts/add',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: UsersSubModule::Contacts,
+    is_self: false,
+    path: '/users/{user_id}/contacts/add',
     name: 'users_contacts_add',
     methods: ['GET', 'POST'],
     requirements: [
       'user_id'       => '%assert.id%',
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'redirect_contacts'     => false,
-      'is_self'               => false,
-      'module'                => 'users',
-      'sub_module'            => 'contacts',
     ],
   )]
 
-  #[Route(
-    '/{schema}/{role_short}/users/contacts/add',
+  #[SchemaRoute(
+    access_level: AccessLevel::User,
+    module: UsersSubModule::Contacts,
+    is_self: true,
+    path: '/users/contacts/add',
     name: 'users_contacts_add_self',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.user%',
-    ],
-    defaults: [
-      'user_id'               => 0,
-      'redirect_contacts'     => false,
-      'is_self'               => true,
-      'module'                => 'users',
-      'sub_module'            => 'contacts',
-    ],
   )]
 
   public function __invoke(
     Request $request,
-    int $user_id,
-    bool $is_self,
-    bool $redirect_contacts,
+    bool $_is_self,
     ContactRepository $contact_repository,
     GeocodeQueue $geocode_queue,
     PageParamsService $pp,
     SessionUserService $su,
+    int|null $user_id = null,
   ):Response
   {
-    if ($is_self)
+    $redirect_contacts = $pp->route() === 'contacts_add';
+
+    if ($_is_self)
     {
       $user_id = $su->id();
     }
@@ -174,7 +159,7 @@ class ContactsAddController extends AbstractController
 
     return $this->render('contacts/contacts_add.html.twig', [
       'form'              => $form->createView(),
-      'is_self'           => $is_self,
+      'is_self'           => $_is_self,
       'user_id'           => $user_id,
       'redirect_contacts' => $redirect_contacts,
     ]);

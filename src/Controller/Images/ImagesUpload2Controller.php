@@ -2,6 +2,9 @@
 
 namespace App\Controller\Images;
 
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,21 +14,18 @@ use App\Service\ImageUploadService;
 use App\Service\PageParamsService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class ImagesUpload2Controller extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/images/upload/{form_token}',
+  #[SchemaRoute(
+    access_level: AccessLevel::User,
+    module: AppModule::Images,
+    path: '/images/upload/{form_token}',
     name: 'images_upload_2',
     methods: ['POST'],
     requirements: [
       'form_token'    => '%assert.token%',
-      'role_short'    => '%assert.role_short.user%',
-    ],
-    defaults: [
-      'module'        => 'images',
     ],
   )]
 

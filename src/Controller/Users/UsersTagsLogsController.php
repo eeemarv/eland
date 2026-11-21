@@ -6,6 +6,9 @@ use App\Command\Users\UsersTagsCommand;
 use App\Form\Type\Users\UsersTagsType;
 use App\Repository\TagRepository;
 use App\Repository\UserRepository;
+use App\Routing\AccessLevel;
+use App\Routing\SchemaRoute;
+use App\Routing\UsersSubModule;
 use App\Service\ConfigService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,22 +16,16 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class UsersTagsLogsController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/users/{id}/tags/logs',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: UsersSubModule::Tags,
+    path: '/users/{id}/tags/logs',
     name: 'users_tags_logs',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'users',
-      'is_self'       => false,
-    ],
   )]
 
   public function __invoke(

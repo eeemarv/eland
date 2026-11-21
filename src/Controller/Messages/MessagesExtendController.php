@@ -2,28 +2,27 @@
 
 namespace App\Controller\Messages;
 
+use App\Routing\AccessLevel;
+use App\Routing\MessagesSubModule;
+use App\Routing\SchemaRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class MessagesExtendController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/messages/{id}/extend/{days}',
+  #[SchemaRoute(
+    access_level: AccessLevel::User,
+    module: MessagesSubModule::Expire,
+    path: '/messages/{id}/extend/{days}',
     name: 'messages_extend',
     methods: ['GET', 'POST'],
     requirements: [
       'days'          => '%assert.id%',
-      'role_short'    => '%assert.role_short.user%',
-    ],
-    defaults: [
-      'module'        => 'messages',
     ],
   )]
 
@@ -31,26 +30,10 @@ class MessagesExtendController extends AbstractController
     int $id,
     int $days,
     Db $db,
-    ConfigService $config_service,
     PageParamsService $pp,
     SessionUserService $su,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'messages.fields.expires_at.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException('Expire messages submodule not enabled.');
-    }
-
-    if (!$config_service->get_bool(
-      config_id: 'messages.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException('Messages (offers/wants) module not enabled.');
-    }
 
     $message = MessagesShowController::get_message($db, $id, $pp->schema());
 

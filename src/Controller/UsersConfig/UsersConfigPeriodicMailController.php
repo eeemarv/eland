@@ -5,6 +5,9 @@ namespace App\Controller\UsersConfig;
 use App\Cnst\ConfigCnst;
 use App\Command\UsersConfig\UsersConfigPeriodicMailCommand;
 use App\Form\Type\UsersConfig\UsersConfigPeriodicMailType;
+use App\Routing\AccessLevel;
+use App\Routing\SchemaRoute;
+use App\Routing\UsersSubModule;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,21 +15,16 @@ use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class UsersConfigPeriodicMailController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/users/config_periodic-mail',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: UsersSubModule::PeriodicMail,
+    path: '/users/config_periodic-mail',
     name: 'users_config_periodic_mail',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'users',
-    ],
   )]
 
   public function __invoke(
@@ -36,13 +34,6 @@ class UsersConfigPeriodicMailController extends AbstractController
     SessionUserService $su,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'periodic_mail.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException('Periodic mail module not enabled');
-    }
 
     $mollie_enabled = $config_service->get_bool(
       config_id: 'mollie.enabled',

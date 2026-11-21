@@ -3,6 +3,9 @@
 namespace App\Controller\Export;
 
 use App\Repository\SchemaRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,21 +18,16 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class ExportController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/export',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: AppModule::Export,
+    path: '/export',
     name: 'export',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'export',
-    ],
   )]
 
   public function __invoke(

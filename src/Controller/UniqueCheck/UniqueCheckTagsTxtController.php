@@ -3,24 +3,27 @@
 namespace App\Controller\UniqueCheck;
 
 use App\Repository\TagRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class UniqueCheckTagsTxtController extends AbstractController
 {
   use EtagJsonResponseTrait;
 
-  #[Route(
-    '/{schema}/{role_short}/unique-check/tags-txt/{tag_type}',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: AppModule::Users,
+    path: '/unique-check/tags-txt/{tag_type}',
     name: 'unique_check_tags_txt',
     methods: ['GET'],
     requirements: [
-      'role_short'    => '%assert.role_short.admin%',
       'tag_type'      => '%assert.tag_type%',
     ],
   )]

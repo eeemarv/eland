@@ -2,9 +2,10 @@
 
 namespace App\Controller\Notifications;
 
-use App\Command\Config\ConfigAdminCommand;
-use App\Form\Type\Config\ConfigAdminType;
 use App\Repository\ChatRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,21 +13,16 @@ use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class NotificationsController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/notifications',
+  #[SchemaRoute(
+    access_level: AccessLevel::User,
+    module: AppModule::Notifications,
+    path: '/notifications',
     name: 'notifications',
     methods: ['GET'],
-    requirements: [
-      'role_short'    => '%assert.role_short.user%',
-    ],
-    defaults: [
-      'module'        => 'notifications',
-    ],
   )]
 
   public function __invoke(
@@ -42,7 +38,7 @@ class NotificationsController extends AbstractController
 
     return $this->render('notifications/notifications_list.html.twig', [
       'notifications'  => [
-        'djlkfdjs;alkf',
+        'djlkfdj',
       ],
     ]);
   }

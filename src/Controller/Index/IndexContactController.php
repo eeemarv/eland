@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class IndexContactController extends AbstractController
 {
   #[Route(
-    '/contact',
+    path: '/contact',
     name: 'index_contact',
     methods: ['GET', 'POST'],
     priority: 40,

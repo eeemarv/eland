@@ -20,7 +20,7 @@ class ConfigLandingPageType extends AbstractType
     $choices = [];
     $choice_translation_parameters = [];
 
-    foreach(ConfigCnst::LANDING_PAGE_OPTIONS as $opt => $lang)
+    foreach(ConfigCnst::LANDING_PAGE_OPTIONS as $opt)
     {
       $key = $opt . '.title';
       $choices[$key] = $opt;

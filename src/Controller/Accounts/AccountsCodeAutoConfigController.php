@@ -12,6 +12,9 @@ use App\Form\Type\Transactions\TransactionsAddType;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Repository\AccountRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AccountsSubModule;
+use App\Routing\SchemaRoute;
 use App\Service\AutoDeactivateService;
 use App\Service\AutoMinLimitService;
 use App\Service\ConfigService;
@@ -25,30 +28,21 @@ use App\Service\SystemsService;
 use App\Service\TransactionService;
 use App\Service\TypeaheadService;
 use App\Service\UserCacheService;
-use Doctrine\DBAL\ArrayParameterType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Doctrine\DBAL\Connection as Db;
-use Doctrine\DBAL\Types\Types;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class AccountsCodeAutoConfigController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/accounts/code-auto-config',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: AccountsSubModule::CodeAuto,
+    path: '/accounts/code-auto-config',
     name: 'accounts_code_auto_config',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'users',
-    ],
   )]
 
   public function __invoke(
@@ -72,15 +66,6 @@ class AccountsCodeAutoConfigController extends AbstractController
     SessionUserService $su
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'transactions.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException(
-        'Transactions module not enabled.'
-      );
-    }
 
     $mid = (int) $request->query->get('mid', 0);
     $tuid = (int) $request->query->get('tuid', 0);

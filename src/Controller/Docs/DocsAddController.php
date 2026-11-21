@@ -8,47 +8,35 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\DocRepository;
-use App\Service\ConfigService;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\PageParamsService;
 use App\Service\S3Service;
 use App\Service\SessionUserService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class DocsAddController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/docs/add',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: AppModule::Docs,
+    path: '/docs/add',
     name: 'docs_add',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'docs',
-    ],
   )]
 
   public function __invoke(
     Request $request,
     DocRepository $doc_repository,
-    ConfigService $config_service,
     LoggerInterface $logger,
     S3Service $s3_service,
     PageParamsService $pp,
     SessionUserService $su,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'docs.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException('Documents module not enabled.');
-    }
-
     $command = new DocsCommand();
 
     if ($request->query->has('map_id'))

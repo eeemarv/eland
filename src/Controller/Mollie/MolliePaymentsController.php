@@ -12,6 +12,9 @@ use App\Form\Type\Mollie\MollieBulkEmailType;
 use App\Form\Type\Mollie\MollieFilterType;
 use App\Render\AccountRender;
 use App\Repository\MollieRepository;
+use App\Routing\AccessLevel;
+use App\Routing\SchemaRoute;
+use App\Routing\UsersSubModule;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -23,22 +26,16 @@ use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class MolliePaymentsController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/mollie/payments',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: UsersSubModule::Mollie,
+    path: '/mollie/payments',
     name: 'mollie_payments',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'users',
-      'sub_module'    => 'mollie',
-    ],
   )]
 
   public function __invoke(
@@ -54,13 +51,6 @@ class MolliePaymentsController extends AbstractController
     HtmlSanitizerInterface $html_sanitizer,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'mollie.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException('Mollie submodule (users) not enabled.');
-    }
 
     $no_apikey = false;
     $no_live_apikey = false;

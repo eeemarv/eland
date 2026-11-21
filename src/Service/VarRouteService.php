@@ -19,7 +19,7 @@ class VarRouteService
 	public function __construct(
 		private readonly RequestStack $request_stack,
 		private readonly PageParamsService $pp,
-		private readonly ConfigService $config_service
+		private readonly ConfigService $config_service,
 	)
 	{
 		$this->session = $this->request_stack->getSession();
@@ -76,16 +76,20 @@ class VarRouteService
 	}
 
 	public function get_fallback_route(
-    string $active_menu,
+    string $route_str,
     string $schema,
   ):string
 	{
     $schema_o = new Schema($schema);
 
-		if (isset(PagesCnst::LANDING[$active_menu]))
+
+
+
+
+		if (isset(PagesCnst::LANDING[$route_str]))
 		{
 			$route_enabled = $this->config_service->get_bool(
-        config_id: $active_menu . '.enabled',
+        config_id: $route_str . '.enabled',
         schema: $schema_o,
       );
 		}
@@ -104,9 +108,9 @@ class VarRouteService
         config_id: $default_route . '.enabled',
         schema: $schema_o,
       );
-			$active_menu = $default_enabled ? $default_route : 'users';
+			$route_str = $default_enabled ? $default_route : 'users';
 		}
 
-		return $this->var_route_ary[$active_menu] ?? $active_menu;
+		return $this->var_route_ary[$route_str] ?? $route_str;
 	}
 }

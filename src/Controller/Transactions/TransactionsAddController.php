@@ -8,6 +8,9 @@ use App\Form\Type\Transactions\TransactionsAddType;
 use App\Repository\AccountRepository;
 use App\Repository\MessageRepository;
 use App\Repository\UserRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\AutoDeactivateService;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
@@ -20,22 +23,17 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class TransactionsAddController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/transactions/add',
+  #[SchemaRoute(
+    access_level: AccessLevel::User,
+    module: AppModule::Transactions,
+    path: '/transactions/add',
     name: 'transactions_add',
     methods: ['GET', 'POST'],
     priority: 10,
-    requirements: [
-      'role_short'    => '%assert.role_short.user%',
-    ],
-    defaults: [
-      'module'        => 'transactions',
-    ],
   )]
 
   public function __invoke(
@@ -53,15 +51,6 @@ class TransactionsAddController extends AbstractController
     SessionUserService $su
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'transactions.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException(
-        'Transactions module not enabled.'
-      );
-    }
 
     $command = new TransactionsAddCommand();
 

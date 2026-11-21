@@ -10,6 +10,9 @@ use App\Email\UserPrivate\Copy\EmailUserPrivateCopyMessage;
 use App\Email\UserPrivate\Message\EmailUserPrivateMessageMessage;
 use App\Form\Type\MailContact\MailContactType;
 use App\Repository\UserRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
@@ -18,48 +21,46 @@ use Doctrine\DBAL\Connection as Db;
 use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class UsersShowController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/users/{id}/{status}',
+  #[SchemaRoute(
+    access_level: AccessLevel::Guest,
+    module: AppModule::Users,
+    is_self: false,
+    path: '/users/{id}/{status}',
     name: 'users_show',
     methods: ['GET', 'POST'],
     priority: 10,
     requirements: [
       'status'        => '%assert.account.status2%',
-      'role_short'    => '%assert.role_short.guest%',
     ],
     defaults: [
-      'is_self'       => false,
       'status'        => 'active',
-      'module'        => 'users',
     ],
   )]
 
-  #[Route(
-    '/{schema}/{role_short}/users/self',
+  #[SchemaRoute(
+    access_level: AccessLevel::User,
+    module: AppModule::Users,
+    is_self: true,
+    path: '/users/self/{status}',
     name: 'users_show_self',
     methods: ['GET'],
     priority: 10,
     requirements: [
-      'role_short'    => '%assert.role_short.user%',
-    ],
+      'status'        => '%assert.account.status2%',
+    ],    
     defaults: [
-      'id'            => 0,
-      'is_self'       => true,
       'status'        => 'active',
-      'module'        => 'users',
     ],
   )]
 
   public function __invoke(
     Request $request,
     string $status,
-    int $id,
-    bool $is_self,
+    bool $_is_self,
     Db $db,
     UserRepository $user_repository,
     ItemAccessService $item_access_service,
@@ -67,6 +68,7 @@ class UsersShowController extends AbstractController
     MessageBusInterface $bus,
     PageParamsService $pp,
     SessionUserService $su,
+    int|null $id = null,    
   ):Response
   {
     if (!$pp->is_admin()
@@ -77,9 +79,20 @@ class UsersShowController extends AbstractController
       );
     }
 
-    if ($id === 0 && $is_self)
+    if ($_is_self)
     {
       $id = $su->id();
+    }
+    else if ($id === $su->id()
+      && !$pp->is_guest())
+    {
+      return $this->redirectToRoute(
+        route: 'users_show_self',
+        parameters: [
+          ...$pp->ary(),
+          'status'  => $status,
+        ]
+      );
     }
 
     $tdays = $request->query->get('tdays', '365');
@@ -257,7 +270,7 @@ class UsersShowController extends AbstractController
       'user'      => $user,
       'id'        => $id,
       'status'    => $status,
-      'is_self'   => $is_self,
+      'is_self'   => $_is_self,
       'full_name_edit_en'     => $full_name_edit_en,
       'prev_id'     => $user['prev_id'],
       'next_id'     => $user['next_id'],

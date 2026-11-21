@@ -6,48 +6,39 @@ use App\Email\ContactForm\Admin\EmailContactFormAdminMessage;
 use App\Email\ContactForm\Confirm\EmailContactFormConfirmMessage;
 use App\Email\ContactForm\Success\EmailContactFormSuccessMessage;
 use App\Repository\EmailSentRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Mime\Address;
-use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Uid\Uuid;
 
 #[AsController]
 class ContactFormConfirmController extends AbstractController
 {
-  #[Route(
-    '/{schema}/contact/{confirm_token}',
+  #[SchemaRoute(
+    access_level: AccessLevel::Anonymous,
+    module: AppModule::ContactForm,
+    path: '/contact/{confirm_token}',
     name: 'contact_form_confirm',
     methods: ['GET'],
     priority: 10,
     requirements: [
       'confirm_token'   => '%uuid_base58%',
     ],
-    defaults: [
-      'module'          => 'contact_form',
-    ],
   )]
 
   public function __invoke(
     string $confirm_token,
-    ConfigService $config_service,
     EmailSentRepository $email_sent_repository,
     PageParamsService $pp,
     MessageBusInterface $bus,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'contact_form.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException('Contact form module not enabled.');
-    }
-
     $uuid_confirm_token = Uuid::fromBase58($confirm_token);
 
     $is_not_found = false;

@@ -6,6 +6,9 @@ use App\Command\Users\UsersNameCommand;
 use App\Form\Type\Users\UsersNameType;
 use App\Repository\UserLogRepository;
 use App\Repository\UserRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,62 +17,54 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\UserCacheService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class UsersNameEditController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/users/{id}/name/edit',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: AppModule::Users,
+    is_self: false,
+    path: '/users/{id}/name/edit',
     name: 'users_name_edit',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short' => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'is_self' => false,
-      'mode' => 'edit',
-      'module' => 'users',
-    ],
   )]
 
-  #[Route(
-    '/{schema}/{role_short}/users/self/name/edit',
+  #[SchemaRoute(
+    access_level: AccessLevel::User,
+    module: AppModule::Users,
+    is_self: true,
+    mode: 'edit',
+    path: '/users/self/name/edit',
     name: 'users_name_edit_self',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short' => '%assert.role_short.user%',
-    ],
-    defaults: [
-      'id' => 0,
-      'is_self' => true,
-      'mode' => 'edit',
-      'module' => 'users',
-    ],
   )]
 
   public function __invoke(
     Request $request,
-    int $id,
-    bool $is_self,
+    bool $_is_self,
     UserRepository $user_repository,
     UserLogRepository $user_log_repository,
     UserCacheService $user_cache_service,
     ConfigService $config_service,
     PageParamsService $pp,
     SessionUserService $su,
-  ): Response {
+    int|null $id = null,
+  ): Response 
+  {
     if (
-      !$is_self
+      !$_is_self
       && $su->is_owner($id)
-    ) {
+    ) 
+    {
       return $this->redirectToRoute(
         route: 'users_account_edit_self',
         parameters: $pp->ary(),
       );
     }
 
-    if ($is_self) {
+    if ($_is_self) 
+    {
       $id = $su->id();
     }
 
@@ -79,7 +74,8 @@ class UsersNameEditController extends AbstractController
         config_id: 'users.fields.name.self_edit',
         schema: $pp->schema_o(),
       )
-    ) {
+    ) 
+    {
       throw $this->createAccessDeniedException(
         'Changing own username not accepted by configuration.'
       );
@@ -90,7 +86,8 @@ class UsersNameEditController extends AbstractController
       schema: $pp->schema_o(),
     );
 
-    if ($user === false) {
+    if ($user === false) 
+    {
       throw $this->createNotFoundException(
         'User with id ' . $id . ' not found'
       );
@@ -105,7 +102,8 @@ class UsersNameEditController extends AbstractController
     $command->name = $user['name'];
     $old_data = (array) $command;
 
-    if ($pp->is_admin()) {
+    if ($pp->is_admin()) 
+    {
       $form_options['log_comment_enabled'] = true;
     }
 
@@ -120,17 +118,21 @@ class UsersNameEditController extends AbstractController
     if (
       $form->isSubmitted()
       && $form->isValid()
-    ) {
+    ) 
+    {
       $log_comment = $pp->is_admin() ? $form->get('log_comment')->getData() : null;
 
-      if ($command->name === $user['name']) {
+      if ($command->name === $user['name']) 
+      {
         $this->addFlash(
           type: 'warning',
           message: [
             'key' => 'flash.no_change',
           ]
         );
-      } else {
+      } 
+      else 
+      {
         $user_repository->set_name(
           id: $id,
           name: $command->name,
@@ -157,7 +159,7 @@ class UsersNameEditController extends AbstractController
           message: [
             'key' => 'users_name_edit.flash.success',
             'params' => [
-              'self' => $is_self ? 'yes' : 'no',
+              'self' => $_is_self ? 'yes' : 'no',
               'old_name' => $user['name'],
               'new_name' => $command->name,
             ]
@@ -165,7 +167,8 @@ class UsersNameEditController extends AbstractController
         );
       }
 
-      if ($is_self) {
+      if ($_is_self) 
+      {
         return $this->redirectToRoute(
           route: 'users_show_self',
           parameters: $pp->ary(),
@@ -185,7 +188,7 @@ class UsersNameEditController extends AbstractController
       'form' => $form->createView(),
       'user' => $user,
       'id' => $id,
-      'is_self' => $is_self,
+      'is_self' => $_is_self,
       'is_intersystem' => $is_intersystem,
     ]);
   }

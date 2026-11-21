@@ -2,6 +2,9 @@
 
 namespace App\Controller\Users;
 
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\ImageUploadService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -12,51 +15,39 @@ use Symfony\Component\HttpFoundation\Response;
 use Doctrine\DBAL\Connection as Db;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class UsersImageUploadController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/users/{id}/image/upload',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: AppModule::Users,
+    path: '/users/{id}/image/upload',
     name: 'users_image_upload',
     methods: ['POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'is_admin'      => true,
-      'module'        => 'users',
-    ],
   )]
 
-  #[Route(
-    '/{schema}/{role_short}/users/self/image/upload',
+  #[SchemaRoute(
+    access_level: AccessLevel::User,
+    module: AppModule::Users,
+    path: '/users/self/image/upload',
     name: 'users_image_upload_self',
     methods: ['POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.user%',
-    ],
-    defaults: [
-      'id'            => 0,
-      'is_admin'      => false,
-      'module'        => 'users',
-    ],
   )]
 
   public function __invoke(
     Request $request,
-    int $id,
-    bool $is_admin,
+    string $_access_level,
     Db $db,
     LoggerInterface $logger,
     ImageUploadService $image_upload_service,
     UserCacheService $user_cache_service,
     PageParamsService $pp,
-    SessionUserService $su
+    SessionUserService $su,
+    int|null $id = null,
   ):Response
   {
-    if (!$is_admin)
+    if ($_access_level !== 'admin')
     {
       $id = $su->id();
     }
@@ -66,7 +57,7 @@ class UsersImageUploadController extends AbstractController
     if (!$uploaded_file)
     {
       return $this->json([
-        'error' => 'Afbeeldingsbestand ontbreekt.',
+        'error' => 'Image file missing.',
         'code'  => 400,
       ], 400);
     }

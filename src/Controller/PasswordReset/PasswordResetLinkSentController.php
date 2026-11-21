@@ -2,24 +2,22 @@
 
 namespace App\Controller\PasswordReset;
 
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class PasswordResetLinkSentController extends AbstractController
 {
-  #[Route(
-    '/{schema}/password-reset/link-sent',
+  #[SchemaRoute(
+    access_level: AccessLevel::Anonymous,
+    module: AppModule::PasswordReset,
+    path: '/password-reset/link-sent',
     name: 'password_reset_link_sent',
     methods: ['GET'],
-    requirements: [
-    ],
-    defaults: [
-      'module'        => 'users',
-      'sub_module'    => 'password_reset',
-    ],
   )]
 
   public function __invoke():Response

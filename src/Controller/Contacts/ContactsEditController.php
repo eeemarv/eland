@@ -10,88 +10,71 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use App\Queue\GeocodeQueue;
 use App\Repository\ContactRepository;
+use App\Routing\AccessLevel;
+use App\Routing\SchemaRoute;
+use App\Routing\UsersSubModule;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class ContactsEditController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/contacts/{id}/edit',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: UsersSubModule::Contacts,
+    is_self: false,
+    path: '/contacts/{id}/edit',
     name: 'contacts_edit',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'user_id'               => 0,
-      'contact_id'            => 0,
-      'redirect_contacts'     => true,
-      'is_self'               => false,
-      'module'                => 'users',
-      'sub_module'            => 'contacts',
-    ],
   )]
 
-  #[Route(
-    '/{schema}/{role_short}/users/{user_id}/contacts/{contact_id}/edit',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: UsersSubModule::Contacts,
+    is_self: false,
+    path: '/users/{user_id}/contacts/{contact_id}/edit',
     name: 'users_contacts_edit',
     methods: ['GET', 'POST'],
     requirements: [
       'user_id'       => '%assert.id%',
       'contact_id'    => '%assert.id%',
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'id'                    => 0,
-      'redirect_contacts'     => false,
-      'is_self'               => false,
-      'module'                => 'users',
-      'sub_module'            => 'contacts',
     ],
   )]
 
-  #[Route(
-    '/{schema}/{role_short}/users/contacts/{contact_id}/edit',
+  #[SchemaRoute(
+    access_level: AccessLevel::User,
+    module: UsersSubModule::Contacts,
+    is_self: true,
+    path: '/users/contacts/{contact_id}/edit',
     name: 'users_contacts_edit_self',
     methods: ['GET', 'POST'],
     requirements: [
       'contact_id'    => '%assert.id%',
-      'role_short'    => '%assert.role_short.user%',
-    ],
-    defaults: [
-      'id'                    => 0,
-      'user_id'               => 0,
-      'redirect_contacts'     => false,
-      'is_self'               => true,
-      'module'                => 'users',
-      'sub_module'            => 'contacts',
     ],
   )]
 
   public function __invoke(
     Request $request,
-    int $user_id,
-    int $contact_id,
-    int $id,
-    bool $redirect_contacts,
-    bool $is_self,
+    bool $_is_self,
     ContactRepository $contact_repository,
     PageParamsService $pp,
     SessionUserService $su,
-    GeocodeQueue $geocode_queue
+    GeocodeQueue $geocode_queue,
+    int|null $user_id = null,
+    int|null $contact_id = null,
+    int|null $id = null,    
   ):Response
   {
-    $id = $contact_id ?: $id;
+    $redirect_contacts = $pp->route() === 'contacts_edit';
+    $id = $contact_id ?? $id;
 
     $contact = $contact_repository->get(
       id: $id,
       schema: $pp->schema_o(),
     );
 
-    if ($is_self)
+    if ($_is_self)
     {
       $user_id = $su->id();
     }
@@ -209,7 +192,7 @@ class ContactsEditController extends AbstractController
     return $this->render('contacts/contacts_edit.html.twig', [
       'form'      => $form->createView(),
       'contact'   => $contact,
-      'is_self'   => $is_self,
+      'is_self'   => $_is_self,
       'user_id'   => $user_id,
       'redirect_contacts' => $redirect_contacts,
     ]);

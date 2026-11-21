@@ -10,24 +10,26 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Render\AccountRender;
 use App\Repository\LoginRepository;
 use App\Repository\UserRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\VarRouteService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class LoginController extends AbstractController
 {
-  #[Route(
-    '/{schema}/login',
+  #[SchemaRoute(
+    access_level: AccessLevel::Anonymous,
+    module: AppModule::Login,
+    path: '/login',
     name: 'login',
     methods: ['GET', 'POST'],
     priority: 30,
-    requirements: [
-    ],
   )]
 
   public function __invoke(

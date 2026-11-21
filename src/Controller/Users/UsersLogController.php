@@ -7,6 +7,9 @@ use App\Form\Type\Users\UsersAccountLimitsType;
 use App\Repository\AccountRepository;
 use App\Repository\UserLogRepository;
 use App\Repository\UserRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\ConfigService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,21 +17,16 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class UsersLogController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/users/{id}/log',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: AppModule::Users,
+    path: '/users/{id}/log',
     name: 'users_log',
     methods: ['GET'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'users',
-    ],
   )]
 
   public function __invoke(
@@ -43,24 +41,6 @@ class UsersLogController extends AbstractController
     SessionUserService $su,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'transactions.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException(
-        'Users account edit not possible: transactions module not enabled.'
-      );
-    }
-
-    if (!$config_service->get_bool(
-      config_id: 'accounts.limits.enabled',
-      schema: $pp->schema_o()))
-    {
-      throw $this->createNotFoundException(
-        'Limits on transaction accounts are not enabled in the configuration.'
-      );
-    }
 
     if (!$is_self
       && $su->is_owner($id))

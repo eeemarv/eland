@@ -18,6 +18,19 @@
     </dd>
   {%- endblock dl -%}
   {%- block div_right -%}
+    <a href="{{- path('users_tags_assign' ~ (is_self ? '_self' : ''), (is_self ? {} : {'id': id})|pp) -}}"
+      class="btn btn-primary"
+      title="{{- 'users_tags_assign.title'|trans({
+        'self': is_self ? 'self' : 'other',
+        'user': user.name,
+      }) -}}">
+      <twig:ux:icon name="lucide:pencil"/>
+      &nbsp;
+      <span class="hidden-xs hidden-sm">
+        {{- 'btn.edit'|trans -}}
+      </span>
+    </a>
+
     <a href="{{- path('users_tags_logs', {}|pp(id: id)) -}}"
       class="btn btn-default"
       title="{{- 'users_tags_logs.title'|trans({
@@ -27,19 +40,6 @@
       &nbsp;
       <span class="hidden-xs hidden-sm">
         {{- 'label.history'|trans -}}
-      </span>
-    </a>
-
-    <a href="{{- path('users_tags_edit' ~ (is_self ? '_self' : ''), (is_self ? {} : {'id': id})|pp) -}}"
-      class="btn btn-primary"
-      title="{{- 'users_tags_edit.title'|trans({
-        'self': is_self ? 'yes' : 'no',
-        'user': user.name,
-      }) -}}">
-      <twig:ux:icon name="lucide:pencil"/>
-      &nbsp;
-      <span class="hidden-xs hidden-sm">
-        {{- 'btn.edit'|trans -}}
       </span>
     </a>
   {%- endblock div_right -%}

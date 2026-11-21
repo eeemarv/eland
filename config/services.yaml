@@ -7,9 +7,6 @@ parameters:
   assert.thumbprint: '[a-f0-9-]{8}'
   assert.token: '[a-z0-9-]{12}'
   assert.schema: '[a-z][a-z0-9]*'
-  assert.role_short.guest: '[gua]'
-  assert.role_short.user: '[ua]'
-  assert.role_short.admin: 'a'
   assert.id: \d++
   assert.view: 'extended|list|map|tiles'
   assert.account_status: 'active|new|leaving|inactive|im|ip|extern|all'

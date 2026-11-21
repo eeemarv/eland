@@ -3,28 +3,26 @@
 namespace App\Controller\Autocomplete;
 
 use App\Repository\LogRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class AutocompleteLogTypesController extends AbstractController
 {
   use EtagJsonResponseTrait;
 
-  #[Route(
-    '/{schema}/{role_short}/autocomplete/log-types',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: AppModule::Logs,
+    path: '/autocomplete/log-types',
     name: 'autocomplete_log_types',
     methods: ['GET'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'logs',
-    ],
   )]
 
   public function __invoke(

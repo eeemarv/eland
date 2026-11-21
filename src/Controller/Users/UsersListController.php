@@ -46,6 +46,9 @@ use App\Repository\TagRepository;
 use App\Repository\TransactionRepository;
 use App\Repository\UserLogRepository;
 use App\Repository\UserRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
@@ -57,23 +60,22 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class UsersListController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/users/{status}',
+  #[SchemaRoute(
+    access_level: AccessLevel::Guest,
+    module: AppModule::Users,
+    path: '/users/{status}',
     name: 'users_list',
     methods: ['GET', 'POST'],
     priority: 20,
     requirements: [
       'status'        => '%assert.account.status2%',
-      'role_short'    => '%assert.role_short.guest%',
     ],
     defaults: [
       'status'        => 'active',
-      'module'        => 'users',
     ],
   )]
 
@@ -100,14 +102,21 @@ class UsersListController extends AbstractController
     VarRouteService $vr,
   ):Response
   {
-    if (!$pp->is_admin() && !in_array($status, ['active', 'new', 'leaving', 'intersystem']))
+    if (
+      !$pp->is_admin() 
+      && !in_array($status, ['active', 'new', 'leaving', 'intersystem'])
+    )
     {
-      throw $this->createAccessDeniedException('No access for status: ' . $status);
+      throw $this->createAccessDeniedException(
+        'No access for status: ' . $status
+      );
     }
 
     if (!$request->isMethod('GET') && !$pp->is_admin())
     {
-      throw new BadRequestHttpException('POST not allowed');
+      throw new BadRequestHttpException(
+        'POST not allowed'
+      );
     }
 
     $full_name_enabled = $config_service->get_bool(

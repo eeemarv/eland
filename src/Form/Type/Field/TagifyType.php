@@ -2,7 +2,7 @@
 
 namespace App\Form\Type\Field;
 
-use App\Enum\TagTypeEnum;
+use App\Enum\TagType;
 use App\Form\DataTransformer\TagsTransformer;
 use App\Repository\TagRepository;
 use App\Service\PageParamsService;
@@ -58,7 +58,7 @@ class TagifyType extends AbstractType
     $resolver->setDefault('max_tags', null);
     $resolver->setAllowedTypes('max_tags', ['int', 'null']);
     $resolver->setAllowedTypes('tag_type', 'string');
-    $resolver->setAllowedValues('tag_type', TagTypeEnum::values());
+    $resolver->setAllowedValues('tag_type', TagType::values());
     $resolver->setDefault('attr', [
       'data-controller' => 'tagify',
     ]);

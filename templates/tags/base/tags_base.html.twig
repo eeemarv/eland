@@ -1,5 +1,7 @@
-{%- extends module ~ '/base/' ~ module ~ '_base.html.twig' -%}
+{%- extends tag_type ~ '/base/' ~ tag_type ~ '_base.html.twig' -%}
 
+
+{%- set active_menu = tag_type -%}
 {%- set active_local_admin_menu = 'tags' -%}
 
 {%- block content -%}{%- endblock -%}

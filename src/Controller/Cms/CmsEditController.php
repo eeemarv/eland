@@ -4,6 +4,9 @@ namespace App\Controller\Cms;
 
 use App\Command\Cms\CmsEditCommand;
 use App\Form\Type\Cms\CmsEditType;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,7 +15,6 @@ use App\Service\SessionUserService;
 use App\Service\StaticContentService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
@@ -26,16 +28,12 @@ class CmsEditController extends AbstractController
     '<p></p>'       => true,
   ];
 
-  #[Route(
-    '/{schema}/{role_short}/cms-edit',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: AppModule::Cms,
+    path: '/cms-edit',
     name: 'cms_edit',
     methods: ['POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'cms',
-    ],
   )]
 
   public function __invoke(

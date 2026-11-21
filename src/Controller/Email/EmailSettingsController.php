@@ -4,6 +4,9 @@ namespace App\Controller\Email;
 
 use App\Command\UsersConfig\UsersConfigLeavingCommand;
 use App\Form\Type\UsersConfig\UsersConfigLeavingType;
+use App\Routing\AccessLevel;
+use App\Routing\NotificationsSubModule;
+use App\Routing\SchemaRoute;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -11,21 +14,16 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class EmailSettingsController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/email-settings',
+  #[SchemaRoute(
+    access_level: AccessLevel::User,
+    module: NotificationsSubModule::Email,
+    path: '/email-settings',
     name: 'email_settings',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.user%',
-    ],
-    defaults: [
-      'module'        => 'notifications',
-    ],
   )]
 
   public function __invoke(
@@ -35,14 +33,6 @@ class EmailSettingsController extends AbstractController
     SessionUserService $su,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'notifications.email.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException('Email notifications not enabled.');
-    }
-
     $command = new UsersConfigLeavingCommand();
 
     $config_service->load_command(

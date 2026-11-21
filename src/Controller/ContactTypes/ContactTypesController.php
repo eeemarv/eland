@@ -3,28 +3,25 @@
 namespace App\Controller\ContactTypes;
 
 use App\Repository\ContactRepository;
+use App\Routing\AccessLevel;
+use App\Routing\ContactsSubModule;
+use App\Routing\SchemaRoute;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class ContactTypesController extends AbstractController
 {
   const PROTECTED = ['mail', 'gsm', 'tel', 'adr', 'web'];
 
-  #[Route(
-    '/{schema}/{role_short}/contact-types',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: ContactsSubModule::ContactTypes,
+    path: '/contact-types',
     name: 'contact_types',
     methods: ['GET'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'users',
-      'sub_module'    => 'contact_types',
-    ],
   )]
 
   public function __invoke(

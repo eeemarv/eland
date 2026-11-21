@@ -5,6 +5,9 @@ namespace App\Controller\Forum;
 use App\Command\Forum\ForumPostCommand;
 use App\Form\Type\Forum\ForumPostType;
 use App\Repository\ForumRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
@@ -13,22 +16,16 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class ForumTopicController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/forum/{id}',
+  #[SchemaRoute(
+    access_level: AccessLevel::Guest,
+    module: AppModule::Forum,
+    path: '/forum/{id}',
     name: 'forum_topic',
     methods: ['GET', 'POST'],
-    priority: 10,
-    requirements: [
-      'role_short'    => '%assert.role_short.guest%',
-    ],
-    defaults: [
-      'module'        => 'forum',
-    ],
   )]
 
   public function __invoke(
@@ -41,13 +38,6 @@ class ForumTopicController extends AbstractController
     SessionUserService $su,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'forum.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException('Forum module not enabled.');
-    }
 
     $visible_ary = $item_access_service->get_visible_ary_for_page();
 

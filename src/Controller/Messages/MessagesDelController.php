@@ -8,6 +8,9 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Repository\CategoryRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
@@ -18,22 +21,16 @@ use App\Service\SessionUserService;
 use App\Service\VarRouteService;
 use Doctrine\DBAL\Connection as Db;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class MessagesDelController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/messages/{id}/del',
+  #[SchemaRoute(
+    access_level: AccessLevel::User,
+    module: AppModule::Messages,
+    path: '/messages/{id}/del',
     name: 'messages_del',
     methods: ['GET', 'POST'],
-    priority: 10,
-    requirements: [
-      'role_short'    => '%assert.role_short.user%',
-    ],
-    defaults: [
-      'module'        => 'messages',
-    ],
   )]
 
   public function __invoke(
@@ -53,13 +50,6 @@ class MessagesDelController extends AbstractController
     VarRouteService $vr,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'messages.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException('Messages (offers/wants) module not enabled.');
-    }
 
     $message = MessagesShowController::get_message($db, $id, $pp->schema());
 

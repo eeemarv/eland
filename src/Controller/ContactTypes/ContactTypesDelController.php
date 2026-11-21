@@ -5,28 +5,25 @@ namespace App\Controller\ContactTypes;
 use App\Command\ContactTypes\ContactTypesCommand;
 use App\Form\Type\ContactTypes\ContactTypesDelType;
 use App\Repository\ContactRepository;
+use App\Routing\AccessLevel;
+use App\Routing\ContactsSubModule;
+use App\Routing\SchemaRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class ContactTypesDelController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/contact-types/{id}/del',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: ContactsSubModule::ContactTypes,
+    path: '/contact-types/{id}/del',
     name: 'contact_types_del',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'users',
-      'sub_module'    => 'contact_types',
-    ],
   )]
 
   public function __invoke(

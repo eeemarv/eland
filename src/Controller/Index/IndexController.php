@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class IndexController extends AbstractController
 {
   #[Route(
-    '/',
+    path: '/',
     name: 'index',
     methods: ['GET'],
     priority: 40,

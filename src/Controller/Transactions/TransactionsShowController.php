@@ -3,27 +3,25 @@
 namespace App\Controller\Transactions;
 
 use App\Repository\TransactionRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class TransactionsShowController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/transactions/{id}',
+  #[SchemaRoute(
+    access_level: AccessLevel::Guest,
+    module: AppModule::Transactions,
+    path: '/transactions/{id}',
     name: 'transactions_show',
     methods: ['GET'],
     priority: 10,
-    requirements: [
-      'role_short'    => '%assert.role_short.guest%',
-    ],
-    defaults: [
-      'module'        => 'transactions',
-    ],
   )]
 
   public function __invoke(

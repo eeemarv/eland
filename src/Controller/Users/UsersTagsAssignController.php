@@ -6,76 +6,58 @@ use App\Command\Users\UsersTagsCommand;
 use App\Form\Type\Users\UsersTagsType;
 use App\Repository\TagRepository;
 use App\Repository\UserRepository;
-use App\Service\ConfigService;
+use App\Routing\AccessLevel;
+use App\Routing\SchemaRoute;
+use App\Routing\UsersSubModule;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
-class UsersTagsEditController extends AbstractController
+class UsersTagsAssignController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/users/{id}/tags/edit',
-    name: 'users_tags_edit',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: UsersSubModule::Tags,
+    is_self: false,
+    path: '/users/{id}/tags/assign',
+    name: 'users_tags_assign',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'users',
-      'is_self'       => false,
-    ],
   )]
 
-  #[Route(
-    '/{schema}/{role_short}/users/self/tags/edit',
-    name: 'users_tags_edit_self',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: UsersSubModule::Tags,
+    is_self: true, 
+    path: '/users/self/tags/assign',
+    name: 'users_tags_assign_self',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'users',
-      'is_self'       => true,
-      'id'            => 0,
-    ],
   )]
 
   public function __invoke(
     Request $request,
-    int $id,
-    bool $is_self,
+    bool $_is_self,
     UserRepository $user_repository,
     TagRepository $tag_repository,
-    ConfigService $config_service,
     PageParamsService $pp,
     SessionUserService $su,
+    int|null $id = null,    
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'users.tags.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createAccessDeniedException(
-        'Tags submodule not enabled.'
-      );
-    }
 
-    if (!$is_self
+    if (!$_is_self
       && $su->is_owner($id))
     {
       return $this->redirectToRoute(
-        route: 'users_tags_edit_self',
+        route: 'users_tags_assign_self',
         parameters: $pp->ary(),
       );
     }
 
-    if ($is_self)
+    if ($_is_self)
     {
       $id = $su->id();
     }
@@ -141,9 +123,9 @@ class UsersTagsEditController extends AbstractController
         $this->addFlash(
           type: 'success',
           message: [
-            'key' => 'users_tags_edit.flash.success',
+            'key' => 'users_tags_assign.flash.success',
             'params'  => [
-              'is_self' => $is_self,
+              'self' => $_is_self ? 'self' : 'other',
               'count_changes' => $count_changes,
               'user'  => $user['name'],
             ],
@@ -160,10 +142,10 @@ class UsersTagsEditController extends AbstractController
       );
     }
 
-    return $this->render('users/users_tags_edit.html.twig', [
+    return $this->render('users/users_tags_assign.html.twig', [
       'form'              => $form->createView(),
       'user'              => $user,
-      'is_self'           => $is_self,
+      'is_self'           => $_is_self,
       'id'                => $id,
       'is_intersystem'    => $is_intersystem,
     ]);

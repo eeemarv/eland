@@ -4,6 +4,9 @@ namespace App\Controller\Transactions;
 
 use App\Command\Transactions\TransactionsSystemLimitsCommand;
 use App\Form\Type\Transactions\TransactionsSystemLimitsType;
+use App\Routing\AccessLevel;
+use App\Routing\SchemaRoute;
+use App\Routing\TransactionsSubModule;
 use App\Service\ConfigService;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
@@ -11,21 +14,16 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class TransactionsSystemLimitsController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/transactions/system-limits',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: TransactionsSubModule::Limits,
+    path: '/transactions/system-limits',
     name: 'transactions_system_limits',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'transactions',
-    ],
   )]
 
   public function __invoke(
@@ -35,13 +33,6 @@ class TransactionsSystemLimitsController extends AbstractController
     SessionUserService $su,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'transactions.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException('Transactions module not enabled.');
-    }
 
     $command = new TransactionsSystemLimitsCommand();
     $config_service->load_command(
@@ -85,7 +76,10 @@ class TransactionsSystemLimitsController extends AbstractController
         );
       }
 
-      return $this->redirectToRoute('transactions_system_limits', $pp->ary());
+      return $this->redirectToRoute(
+        route: 'transactions_system_limits', 
+        parameters: $pp->ary(),
+      );
     }
 
     return $this->render('transactions/transactions_system_limits.html.twig', [

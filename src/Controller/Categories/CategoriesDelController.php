@@ -8,53 +8,31 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\CategoryRepository;
-use App\Service\ConfigService;
+use App\Routing\AccessLevel;
+use App\Routing\MessagesSubModule;
+use App\Routing\SchemaRoute;
 use App\Service\PageParamsService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class CategoriesDelController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/categories/{id}/del',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: MessagesSubModule::Categories,
+    path: '/categories/{id}/del',
     name: 'categories_del',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module'        => 'messages',
-      'sub_module'    => 'categories'
-    ],
   )]
 
   public function __invoke(
     Request $request,
     int $id,
     CategoryRepository $category_repository,
-    ConfigService $config_service,
     PageParamsService $pp,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'messages.fields.category.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException('Categories module not enabled.');
-    }
-
-    if (!$config_service->get_bool(
-      config_id: 'messages.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException(
-        'messages (offer/want) module not enabled.'
-      );
-    }
 
     $category = $category_repository->get_with_messages_count(
       id: $id,

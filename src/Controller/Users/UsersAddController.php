@@ -6,6 +6,9 @@ use App\Command\Users\UsersAddCommand;
 use App\Form\Type\Users\UsersAddType;
 use App\Repository\UserLogRepository;
 use App\Repository\UserRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,35 +17,28 @@ use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use App\Service\UserCacheService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class UsersAddController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/users/add',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: AppModule::Users,
+    path: '/users/add',
     name: 'users_add',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short' => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'module' => 'users',
-    ],
   )]
 
   public function __invoke(
     Request $request,
-    int $id,
-    bool $is_self,
-    string $mode,
     UserCacheService $user_cache_service,
     UserRepository $user_repository,
     UserLogRepository $user_log_repository,
     ConfigService $config_service,
     PageParamsService $pp,
     SessionUserService $su,
-  ): Response {
+  ): Response 
+  {
     $command = new UsersAddCommand();
     $old_data = (array) $command;
     $form_options = [
@@ -60,7 +56,8 @@ class UsersAddController extends AbstractController
     if (
       $form->isSubmitted()
       && $form->isValid()
-    ) {
+    ) 
+    {
       $command = $form->getData();
       $log_comment = $form->get('log_comment')->getData();
 

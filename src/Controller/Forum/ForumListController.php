@@ -4,6 +4,9 @@ namespace App\Controller\Forum;
 
 use App\Form\Type\Filter\QTextSearchFilterType;
 use App\Repository\ForumRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\ConfigService;
 use App\Service\ItemAccessService;
 use App\Service\PageParamsService;
@@ -11,22 +14,16 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class ForumListController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/forum',
+  #[SchemaRoute(
+    access_level: AccessLevel::Guest,
+    module: AppModule::Forum,
+    path: '/forum',
     name: 'forum',
     methods: ['GET'],
-    priority: 20,
-    requirements: [
-      'role_short'    => '%assert.role_short.guest%',
-    ],
-    defaults: [
-      'module'        => 'forum',
-    ],
   )]
 
   public function __invoke(
@@ -37,13 +34,6 @@ class ForumListController extends AbstractController
     PageParamsService $pp,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'forum.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException('Forum module not enabled.');
-    }
 
     $filter_form = $this->createForm(
       type: QTextSearchFilterType::class,

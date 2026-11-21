@@ -14,6 +14,9 @@ use App\Form\Type\Messages\MessagesFilterType;
 use App\Render\AccountRender;
 use App\Render\LinkRender;
 use App\Render\SelectRender;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\ConfigService;
 use App\Service\DateFormatService;
 use App\Service\FormTokenService;
@@ -25,7 +28,6 @@ use App\Service\VarRouteService;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Types\Types;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class MessagesListController extends AbstractController
@@ -79,38 +81,30 @@ class MessagesListController extends AbstractController
         ],
     ];
 
-    #[Route(
-        '/{schema}/{role_short}/messages',
+    #[SchemaRoute(
+        access_level: AccessLevel::Guest,
+        module: AppModule::Messages,
+        is_self: false,
+        path: '/messages',
         name: 'messages_list',
         methods: ['GET', 'POST'],
         priority: 20,
-        requirements: [
-            'role_short'    => '%assert.role_short.guest%',
-        ],
-        defaults: [
-            'is_self'       => false,
-            'module'        => 'messages',
-        ],
     )]
 
-    #[Route(
-        '/{schema}/{role_short}/messages/self',
+    #[SchemaRoute(
+        access_level: AccessLevel::User,
+        module: AppModule::Messages,
+        is_self: true,
+        path: '/messages/self',
         name: 'messages_list_self',
         methods: ['GET', 'POST'],
         priority: 20,
-        requirements: [
-            'role_short'    => '%assert.role_short.user%',
-        ],
-        defaults: [
-            'is_self'       => true,
-            'module'        => 'messages',
-        ],
     )]
 
     public function __invoke(
         Request $request,
         Db $db,
-        bool $is_self,
+        bool $_is_self,
         FormTokenService $form_token_service,
         AccountRender $account_render,
         DateFormatService $date_format_service,
@@ -124,15 +118,8 @@ class MessagesListController extends AbstractController
         VarRouteService $vr
     ):Response
     {
-        if (!$config_service->get_bool(
-          config_id: 'messages.enabled',
-          schema: $pp->schema_o(),
-        ))
-        {
-            throw $this->createNotFoundException('Messages (offers/wants) module not enabled.');
-        }
 
-        $vr_route = $vr->get('messages' . ($is_self ? '_self' : ''));
+        $vr_route = $vr->get('messages' . ($_is_self ? '_self' : ''));
 
         $errors = [];
 
@@ -398,7 +385,7 @@ class MessagesListController extends AbstractController
         $fetch_and_filter = $this->fetch_and_filter(
             $request,
             $db,
-            $is_self,
+            $_is_self,
             $config_service,
             $pp,
             $su
@@ -880,7 +867,7 @@ class MessagesListController extends AbstractController
             'bulk_actions_raw'      => $blk ?? '',
             'categories'            => $categories,
             'row_count'             => $row_count,
-            'is_self'               => $is_self,
+            'is_self'               => $_is_self,
             'uid'                   => $uid,
             'cat_id'                => $filter_command->cat ?: null,
             'filter_form'           => $filter_form,

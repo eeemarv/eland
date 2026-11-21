@@ -2,27 +2,27 @@
 
 namespace App\Controller\UniqueCheck;
 
-use App\Repository\DocRepository;
 use App\Repository\UserRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AppModule;
+use App\Routing\SchemaRoute;
 use App\Service\PageParamsService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class UniqueCheckUsernamesController extends AbstractController
 {
   use EtagJsonResponseTrait;
 
-  #[Route(
-    '/{schema}/{role_short}/unique-check/usernames',
+  #[SchemaRoute(
+    access_level: AccessLevel::User,
+    module: AppModule::Users,
+    path: '/unique-check/usernames',
     name: 'unique_check_usernames',
     methods: ['GET'],
-    requirements: [
-      'role_short'    => '%assert.role_short.user%',
-    ],
   )]
 
   public function __invoke(

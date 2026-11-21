@@ -7,6 +7,9 @@ use App\Form\Type\Users\UsersAccountLimitsType;
 use App\Repository\AccountRepository;
 use App\Repository\UserLogRepository;
 use App\Repository\UserRepository;
+use App\Routing\AccessLevel;
+use App\Routing\AccountsSubModule;
+use App\Routing\SchemaRoute;
 use App\Service\ConfigService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,70 +17,42 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Service\PageParamsService;
 use App\Service\SessionUserService;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
 class UsersAccountLimitsEditController extends AbstractController
 {
-  #[Route(
-    '/{schema}/{role_short}/users/{id}/account-limits/edit',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: AccountsSubModule::Limits,
+    is_self: false,
+    path: '/users/{id}/account-limits/edit',
     name: 'users_account_limits_edit',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'is_self'       => false,
-      'module'        => 'users',
-    ],
   )]
 
-  #[Route(
-    '/{schema}/{role_short}/users/self/account-limits/edit',
+  #[SchemaRoute(
+    access_level: AccessLevel::Admin,
+    module: AccountsSubModule::Limits,
+    is_self: true,
+    path: '/users/self/account-limits/edit',
     name: 'users_account_limits_edit_self',
     methods: ['GET', 'POST'],
-    requirements: [
-      'role_short'    => '%assert.role_short.admin%',
-    ],
-    defaults: [
-      'id'            => 0,
-      'is_self'       => true,
-      'module'        => 'users',
-    ],
   )]
 
   public function __invoke(
     Request $request,
-    int $id,
-    bool $is_self,
+    bool $_is_self,
     UserRepository $user_repository,
     UserLogRepository $user_log_repository,
     AccountRepository $account_repository,
     ConfigService $config_service,
     PageParamsService $pp,
     SessionUserService $su,
+    int|null $id = null,
   ):Response
   {
-    if (!$config_service->get_bool(
-      config_id: 'transactions.enabled',
-      schema: $pp->schema_o(),
-    ))
-    {
-      throw $this->createNotFoundException(
-        'Users account edit not possible: transactions module not enabled.'
-      );
-    }
 
-    if (!$config_service->get_bool(
-      config_id: 'accounts.limits.enabled',
-      schema: $pp->schema_o()))
-    {
-      throw $this->createNotFoundException(
-        'Limits on transaction accounts are not enabled in the configuration.'
-      );
-    }
-
-    if (!$is_self
+    if (!$_is_self
       && $su->is_owner($id))
     {
       return $this->redirectToRoute(
@@ -86,7 +61,7 @@ class UsersAccountLimitsEditController extends AbstractController
       );
     }
 
-    if ($is_self)
+    if ($_is_self)
     {
       $id = $su->id();
     }
@@ -245,7 +220,7 @@ class UsersAccountLimitsEditController extends AbstractController
         );
       }
 
-      if ($is_self)
+      if ($_is_self)
       {
         return $this->redirectToRoute(
           route: 'users_show_self',
@@ -266,7 +241,7 @@ class UsersAccountLimitsEditController extends AbstractController
       'form'              => $form->createView(),
       'user'              => $user,
       'id'                => $id,
-      'is_self'           => $is_self,
+      'is_self'           => $_is_self,
       'is_intersystem'    => $is_intersystem,
     ]);
   }
